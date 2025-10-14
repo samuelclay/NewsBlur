@@ -8,31 +8,32 @@ import org.junit.Assert
 import org.junit.Test
 
 class SessionDataSourceTest {
-
-    private val folders = listOf(
+    private val folders =
+        listOf(
             "F1",
             "F2",
             "F3",
             "F4",
             "F5",
-    )
+        )
 
-    private val folderChildren = listOf(
+    private val folderChildren =
+        listOf(
             emptyList(),
             listOf(
-                    createFeed("20"),
-                    createFeed("21"),
-                    createFeed("22"),
+                createFeed("20"),
+                createFeed("21"),
+                createFeed("22"),
             ),
             listOf(
-                    createFeed("30"),
+                createFeed("30"),
             ),
             emptyList(),
             listOf(
-                    createFeed("50"),
-                    createFeed("51"),
-            )
-    )
+                createFeed("50"),
+                createFeed("51"),
+            ),
+        )
 
     @Test
     fun `session constructor test`() {
@@ -158,8 +159,9 @@ class SessionDataSourceTest {
         } ?: Assert.fail("Next session is null for F5 feedSetFolder")
     }
 
-    private fun createFeed(id: String) = Feed().apply {
-        feedId = id
-        title = "Feed #$id"
-    }
+    private fun createFeed(id: String) =
+        Feed().apply {
+            feedId = id
+            title = "Feed #$id"
+        }
 }

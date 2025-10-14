@@ -18,7 +18,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class Profile : NbActivity() {
-
     @Inject
     lateinit var userApi: UserApi
 
@@ -39,12 +38,12 @@ class Profile : NbActivity() {
         applyView(binding)
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.profile), true)
 
-        userId = if (savedInstanceState == null) {
-            intent.getStringExtra(USER_ID)
-        } else {
-            savedInstanceState.getString(USER_ID)
-        }
-
+        userId =
+            if (savedInstanceState == null) {
+                intent.getStringExtra(USER_ID)
+            } else {
+                savedInstanceState.getString(USER_ID)
+            }
 
         if (supportFragmentManager.findFragmentByTag(detailsTag) == null) {
             val detailsTransaction = supportFragmentManager.beginTransaction()
@@ -65,8 +64,8 @@ class Profile : NbActivity() {
         userId?.let { savedInstanceState.putString(USER_ID, it) }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
             android.R.id.home -> {
                 finish()
                 true
@@ -74,30 +73,29 @@ class Profile : NbActivity() {
 
             else -> super.onOptionsItemSelected(item)
         }
-    }
 
     private fun loadUserDetails() {
         lifecycleScope.executeAsyncTask(
-                onPreExecute = {
-                    if (userId.isNullOrEmpty() && detailsFragment != null) {
-                        detailsFragment!!.setUser(prefsRepo.getUserDetails(), true)
-                    }
-                },
-                doInBackground = {
-                    if (!userId.isNullOrEmpty()) {
-                        val intentUserId = intent.getStringExtra(USER_ID)
-                        userApi.getUser(intentUserId)?.user
-                    } else {
-                        userApi.updateUserProfile()
-                        prefsRepo.getUserDetails()
-                    }
-                },
-                onPostExecute = { userDetails ->
-                    if (userDetails != null && detailsFragment != null && activityDetailsPagerAdapter != null) {
-                        detailsFragment!!.setUser(userDetails, TextUtils.isEmpty(userId))
-                        activityDetailsPagerAdapter!!.setUser(userDetails, iconLoader)
-                    }
+            onPreExecute = {
+                if (userId.isNullOrEmpty() && detailsFragment != null) {
+                    detailsFragment!!.setUser(prefsRepo.getUserDetails(), true)
                 }
+            },
+            doInBackground = {
+                if (!userId.isNullOrEmpty()) {
+                    val intentUserId = intent.getStringExtra(USER_ID)
+                    userApi.getUser(intentUserId)?.user
+                } else {
+                    userApi.updateUserProfile()
+                    prefsRepo.getUserDetails()
+                }
+            },
+            onPostExecute = { userDetails ->
+                if (userDetails != null && detailsFragment != null && activityDetailsPagerAdapter != null) {
+                    detailsFragment!!.setUser(userDetails, TextUtils.isEmpty(userId))
+                    activityDetailsPagerAdapter!!.setUser(userDetails, iconLoader)
+                }
+            },
         )
     }
 

@@ -5,9 +5,8 @@ import android.widget.RemoteViewsService
 import com.newsblur.util.Log
 
 class WidgetRemoteViewsService : RemoteViewsService() {
-
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory =
-            WidgetRemoteViewsFactory(this.applicationContext, intent).also {
-                Log.d("WidgetRemoteViewsFactory", "onGetViewFactory")
-            }
+        WidgetRemoteViewsFactory(this.applicationContext, intent).also {
+            Log.d("WidgetRemoteViewsFactory", "onGetViewFactory")
+        }
 }

@@ -12,12 +12,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.RequestBody
 
 class UserApiImpl(
-        @param:ApplicationContext private val context: Context,
-        private val gson: Gson,
-        private val networkClient: NetworkClient,
-        private val prefsRepo: PrefsRepo,
+    @param:ApplicationContext private val context: Context,
+    private val gson: Gson,
+    private val networkClient: NetworkClient,
+    private val prefsRepo: PrefsRepo,
 ) : UserApi {
-
     override suspend fun updateUserProfile(): ProfileResponse? {
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MY_PROFILE)
         val response: APIResponse = networkClient.get(urlString)
@@ -31,27 +30,30 @@ class UserApiImpl(
     }
 
     override suspend fun followUser(userId: String?): Boolean {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_USERID, userId)
-        }
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_USERID, userId)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_FOLLOW)
         val response: APIResponse = networkClient.post(urlString, values)
         return !response.isError
     }
 
     override suspend fun unfollowUser(userId: String?): Boolean {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_USERID, userId)
-        }
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_USERID, userId)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_UNFOLLOW)
         val response: APIResponse = networkClient.post(urlString, values)
         return !response.isError
     }
 
     override suspend fun getUser(userId: String?): ProfileResponse? {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_USERID, userId)
-        }
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_USERID, userId)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_USER_PROFILE)
         val response: APIResponse = networkClient.get(urlString, values)
         return if (!response.isError) {
@@ -61,12 +63,16 @@ class UserApiImpl(
         }
     }
 
-    override suspend fun getActivities(userId: String, pageNumber: Int): ActivitiesResponse? {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_USER_ID, userId)
-            put(APIConstants.PARAMETER_LIMIT, "10")
-            put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber.toString())
-        }
+    override suspend fun getActivities(
+        userId: String,
+        pageNumber: Int,
+    ): ActivitiesResponse? {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_USER_ID, userId)
+                put(APIConstants.PARAMETER_LIMIT, "10")
+                put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber.toString())
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_USER_ACTIVITIES)
         val response: APIResponse = networkClient.get(urlString, values)
         return if (!response.isError) {
@@ -76,12 +82,16 @@ class UserApiImpl(
         }
     }
 
-    override suspend fun getInteractions(userId: String, pageNumber: Int): InteractionsResponse? {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_USER_ID, userId)
-            put(APIConstants.PARAMETER_LIMIT, "10")
-            put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber.toString())
-        }
+    override suspend fun getInteractions(
+        userId: String,
+        pageNumber: Int,
+    ): InteractionsResponse? {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_USER_ID, userId)
+                put(APIConstants.PARAMETER_LIMIT, "10")
+                put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber.toString())
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_USER_INTERACTIONS)
         val response: APIResponse = networkClient.get(urlString, values)
         return if (!response.isError) {
@@ -91,7 +101,10 @@ class UserApiImpl(
         }
     }
 
-    override suspend fun saveReceipt(orderId: String?, productId: String?): NewsBlurResponse? {
+    override suspend fun saveReceipt(
+        orderId: String?,
+        productId: String?,
+    ): NewsBlurResponse? {
         val values = ContentValues()
         values.put(APIConstants.PARAMETER_ORDER_ID, orderId)
         values.put(APIConstants.PARAMETER_PRODUCT_ID, productId)

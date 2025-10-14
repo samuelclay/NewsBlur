@@ -23,7 +23,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginProgress : FragmentActivity() {
-
     @Inject
     lateinit var userApi: UserApi
 
@@ -46,48 +45,50 @@ class LoginProgress : FragmentActivity() {
         val password = intent.getStringExtra("password")
 
         lifecycleScope.executeAsyncTask(
-                onPreExecute = {
-                    val a = AnimationUtils.loadAnimation(this, R.anim.text_up)
-                    binding.loginLoggingIn.startAnimation(a)
-                },
-                doInBackground = {
-                    val response = authApi.login(
-                            username.orEmpty(),
-                            password.orEmpty(),
+            onPreExecute = {
+                val a = AnimationUtils.loadAnimation(this, R.anim.text_up)
+                binding.loginLoggingIn.startAnimation(a)
+            },
+            doInBackground = {
+                val response =
+                    authApi.login(
+                        username.orEmpty(),
+                        password.orEmpty(),
                     )
-                    // pre-load the profile if the login was good
-                    if (!response.isError) {
-                        userApi.updateUserProfile()
-                    }
-                    val roundedUserImage = prefsRepo.getUserImage(this)?.let { userImage ->
+                // pre-load the profile if the login was good
+                if (!response.isError) {
+                    userApi.updateUserProfile()
+                }
+                val roundedUserImage =
+                    prefsRepo.getUserImage(this)?.let { userImage ->
                         UIUtils.clipAndRound(userImage, true, false)
                     }
-                    response to roundedUserImage
-                },
-                onPostExecute = { (response, userImage) ->
-                    if (!response.isError) {
-                        val a = AnimationUtils.loadAnimation(this, R.anim.text_down)
-                        binding.loginLoggingIn.setText(R.string.login_logged_in)
-                        binding.loginLoggingInProgress.visibility = View.GONE
-                        binding.loginLoggingIn.startAnimation(a)
-                        if (userImage != null) {
-                            binding.loginProfilePicture.visibility = View.VISIBLE
-                            binding.loginProfilePicture.setImageBitmap(userImage)
-                        }
-                        binding.loginFeedProgress.visibility = View.VISIBLE
-                        val b = AnimationUtils.loadAnimation(this, R.anim.text_up)
-                        binding.loginRetrievingFeeds.setText(R.string.login_retrieving_feeds)
-                        binding.loginFeedProgress.startAnimation(b)
-
-                        SubscriptionSyncService.schedule(this)
-
-                        val startMain = Intent(this, Main::class.java)
-                        startActivity(startMain)
-                    } else {
-                        Toast.makeText(this, response.getErrorMessage(getString(R.string.login_message_error)), Toast.LENGTH_LONG).show()
-                        startActivity(Intent(this, Login::class.java))
+                response to roundedUserImage
+            },
+            onPostExecute = { (response, userImage) ->
+                if (!response.isError) {
+                    val a = AnimationUtils.loadAnimation(this, R.anim.text_down)
+                    binding.loginLoggingIn.setText(R.string.login_logged_in)
+                    binding.loginLoggingInProgress.visibility = View.GONE
+                    binding.loginLoggingIn.startAnimation(a)
+                    if (userImage != null) {
+                        binding.loginProfilePicture.visibility = View.VISIBLE
+                        binding.loginProfilePicture.setImageBitmap(userImage)
                     }
+                    binding.loginFeedProgress.visibility = View.VISIBLE
+                    val b = AnimationUtils.loadAnimation(this, R.anim.text_up)
+                    binding.loginRetrievingFeeds.setText(R.string.login_retrieving_feeds)
+                    binding.loginFeedProgress.startAnimation(b)
+
+                    SubscriptionSyncService.schedule(this)
+
+                    val startMain = Intent(this, Main::class.java)
+                    startActivity(startMain)
+                } else {
+                    Toast.makeText(this, response.getErrorMessage(getString(R.string.login_message_error)), Toast.LENGTH_LONG).show()
+                    startActivity(Intent(this, Login::class.java))
                 }
+            },
         )
     }
 }

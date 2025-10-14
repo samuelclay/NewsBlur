@@ -29,7 +29,6 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 open class NbActivity : AppCompatActivity() {
-
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
 
@@ -121,10 +120,11 @@ open class NbActivity : AppCompatActivity() {
         FeedUtils.triggerSync(this)
     }
 
-    private fun handleSyncUpdate(nbSync: NBSync) = when (nbSync) {
-        is NBSync.Update -> handleUpdate(nbSync.type)
-        is NBSync.Error -> handleErrorMsg(nbSync.msg)
-    }
+    private fun handleSyncUpdate(nbSync: NBSync) =
+        when (nbSync) {
+            is NBSync.Update -> handleUpdate(nbSync.type)
+            is NBSync.Error -> handleErrorMsg(nbSync.msg)
+        }
 
     protected open fun handleUpdate(updateType: Int) {
         Log.w(this, "activity doesn't implement handleUpdate")

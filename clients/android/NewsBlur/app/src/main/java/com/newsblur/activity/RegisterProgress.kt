@@ -24,7 +24,6 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class RegisterProgress : FragmentActivity() {
-
     @Inject
     lateinit var authApi: AuthApi
 
@@ -46,28 +45,34 @@ class RegisterProgress : FragmentActivity() {
         binding.progressLogo.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate))
 
         lifecycleScope.executeAsyncTask(
-                doInBackground = {
-                    authApi.signup(
-                            username.orEmpty(),
-                            password.orEmpty(),
-                            email.orEmpty(),
-                    )
-                },
-                onPostExecute = {
-                    if (it.authenticated) showAuth()
-                    else showError(it)
+            doInBackground = {
+                authApi.signup(
+                    username.orEmpty(),
+                    password.orEmpty(),
+                    email.orEmpty(),
+                )
+            },
+            onPostExecute = {
+                if (it.authenticated) {
+                    showAuth()
+                } else {
+                    showError(it)
                 }
+            },
         )
     }
 
     private fun showAuth() {
-        startActivity(Intent(this, Main::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        })
+        startActivity(
+            Intent(this, Main::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            },
+        )
     }
 
     private fun showError(response: RegisterResponse) {
-        val errorMessage = response.errorMessage
+        val errorMessage =
+            response.errorMessage
                 ?: resources.getString(R.string.register_message_error)
         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
         startActivity(Intent(this, Login::class.java))

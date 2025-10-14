@@ -19,18 +19,23 @@ import com.newsblur.util.FeedExt.setNotifyUnread
 import com.newsblur.util.ImageLoader
 
 class NotificationsAdapter(
-        private val imageLoader: ImageLoader,
-        private val listener: Listener,
+    private val imageLoader: ImageLoader,
+    private val listener: Listener,
 ) : RecyclerView.Adapter<NotificationsAdapter.ViewHolder>() {
-
     private val feeds: MutableList<Feed> = mutableListOf()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder {
         val binding = ViewNotificationsItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding, imageLoader)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(feeds[position], listener)
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) = holder.bind(feeds[position], listener)
 
     override fun getItemCount(): Int = feeds.size
 
@@ -40,15 +45,23 @@ class NotificationsAdapter(
         this.notifyItemRangeInserted(0, feeds.size)
     }
 
-    class ViewHolder(val binding: ViewNotificationsItemBinding, val imageLoader: ImageLoader) : RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(feed: Feed, listener: Listener) {
+    class ViewHolder(
+        val binding: ViewNotificationsItemBinding,
+        val imageLoader: ImageLoader,
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(
+            feed: Feed,
+            listener: Listener,
+        ) {
             binding.textTitle.text = feed.title
             imageLoader.displayImage(feed.faviconUrl, binding.imgIcon, binding.imgIcon.height, true)
 
             with(binding.groupFilter) {
-                if (feed.isNotifyUnread()) check(binding.btnUnread.id)
-                else if (feed.isNotifyFocus()) check(binding.btnFocus.id)
+                if (feed.isNotifyUnread()) {
+                    check(binding.btnUnread.id)
+                } else if (feed.isNotifyFocus()) {
+                    check(binding.btnFocus.id)
+                }
             }
 
             with(binding.groupPlatform) {
@@ -68,14 +81,22 @@ class NotificationsAdapter(
             }
         }
 
-        private fun updateFilter(feed: Feed, checkedBtnId: Int, isChecked: Boolean) {
+        private fun updateFilter(
+            feed: Feed,
+            checkedBtnId: Int,
+            isChecked: Boolean,
+        ) {
             when (checkedBtnId) {
                 binding.btnUnread.id -> if (isChecked) feed.setNotifyUnread()
                 binding.btnFocus.id -> if (isChecked) feed.setNotifyFocus()
             }
         }
 
-        private fun updatePlatform(feed: Feed, checkedBtnId: Int, isChecked: Boolean) {
+        private fun updatePlatform(
+            feed: Feed,
+            checkedBtnId: Int,
+            isChecked: Boolean,
+        ) {
             when (checkedBtnId) {
                 binding.btnEmail.id -> FeedExt.NOTIFY_EMAIL
                 binding.btnWeb.id -> FeedExt.NOTIFY_WEB
@@ -83,8 +104,11 @@ class NotificationsAdapter(
                 binding.btnIos.id -> FeedExt.NOTIFY_ANDROID
                 else -> null
             }?.let {
-                if (isChecked) feed.enableNotificationType(it)
-                else feed.disableNotificationType(it)
+                if (isChecked) {
+                    feed.enableNotificationType(it)
+                } else {
+                    feed.disableNotificationType(it)
+                }
             }
         }
     }

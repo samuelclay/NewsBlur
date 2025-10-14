@@ -22,7 +22,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginAsDialogFragment : DialogFragment() {
-
     @Inject
     lateinit var userApi: UserApi
 
@@ -48,24 +47,24 @@ class LoginAsDialogFragment : DialogFragment() {
         builder.setPositiveButton(R.string.alert_dialog_ok) { _, _ ->
             val username = binding.usernameField.text.toString()
             lifecycleScope.executeAsyncTask(
-                    doInBackground = {
-                        val result = authApi.loginAs(username)
-                        if (result) {
-                            SyncService.stop(requireContext())
-                            syncServiceState.clearState()
-                            prefsRepo.clearPrefsAndDbForLoginAs(dbHelper)
-                            userApi.updateUserProfile()
-                        }
-                        result
-                    },
-                    onPostExecute = {
-                        if (it) {
-                            val startMain = Intent(requireContext(), Main::class.java)
-                            requireContext().startActivity(startMain)
-                        } else {
-                            Toast.makeText(requireActivity(), "Login as $username failed", Toast.LENGTH_LONG).show()
-                        }
+                doInBackground = {
+                    val result = authApi.loginAs(username)
+                    if (result) {
+                        SyncService.stop(requireContext())
+                        syncServiceState.clearState()
+                        prefsRepo.clearPrefsAndDbForLoginAs(dbHelper)
+                        userApi.updateUserProfile()
                     }
+                    result
+                },
+                onPostExecute = {
+                    if (it) {
+                        val startMain = Intent(requireContext(), Main::class.java)
+                        requireContext().startActivity(startMain)
+                    } else {
+                        Toast.makeText(requireActivity(), "Login as $username failed", Toast.LENGTH_LONG).show()
+                    }
+                },
             )
             dismiss()
         }

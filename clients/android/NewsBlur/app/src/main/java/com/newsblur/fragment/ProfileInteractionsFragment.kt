@@ -12,12 +12,17 @@ import com.newsblur.view.InteractionsAdapter
  * Created by mark on 15/06/15.
  */
 class ProfileInteractionsFragment : ProfileActivityDetailsFragment() {
-    override fun createAdapter(context: Context?, user: UserDetails?, iconLoader: ImageLoader): ActivityDetailsAdapter? =
-            InteractionsAdapter(context, user, iconLoader)
+    override fun createAdapter(
+        context: Context?,
+        user: UserDetails?,
+        iconLoader: ImageLoader,
+    ): ActivityDetailsAdapter? = InteractionsAdapter(context, user, iconLoader)
 
-    override suspend fun loadActivityDetails(id: String, pageNumber: Int): Array<ActivityDetails>? {
+    override suspend fun loadActivityDetails(
+        id: String,
+        pageNumber: Int,
+    ): Array<ActivityDetails>? {
         val interactionsResponse: InteractionsResponse? = userApi.getInteractions(id, pageNumber)
         return interactionsResponse?.interactions
     }
 }
-

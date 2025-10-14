@@ -1,6 +1,5 @@
 package com.newsblur.activity
 
-import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.database.Cursor
@@ -58,8 +57,11 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListener, KeyboardListener {
-
+abstract class Reading :
+    NbActivity(),
+    OnPageChangeListener,
+    ScrollChangeListener,
+    KeyboardListener {
     @Inject
     lateinit var feedUtils: FeedUtils
 
@@ -123,13 +125,15 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         } catch (re: RuntimeException) {
             // in the wild, the notification system likes to pass us an Intent that has missing or very stale
             // Serializable extras.
-            com.newsblur.util.Log.e(this, "failed to unfreeze required extras", re)
+            com.newsblur.util.Log
+                .e(this, "failed to unfreeze required extras", re)
             finish()
             return
         }
 
         if (fs == null) {
-            com.newsblur.util.Log.w(this.javaClass.name, "reading view had no FeedSet")
+            com.newsblur.util.Log
+                .w(this.javaClass.name, "reading view had no FeedSet")
             finish()
             return
         }
@@ -140,11 +144,12 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
         // Only use the storyHash the first time the activity is loaded. Ignore when
         // recreated due to rotation etc.
-        storyHash = if (savedInstanceBundle == null) {
-            intent.getStringExtra(EXTRA_STORY_HASH)
-        } else {
-            savedInstanceBundle.getString(EXTRA_STORY_HASH)
-        }
+        storyHash =
+            if (savedInstanceBundle == null) {
+                intent.getStringExtra(EXTRA_STORY_HASH)
+            } else {
+                savedInstanceBundle.getString(EXTRA_STORY_HASH)
+            }
 
         intelState = prefsRepo.getStateFilter()
         volumeKeyNavigation = prefsRepo.getVolumeKeyNavigation()
@@ -196,7 +201,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         }
     }
 
-    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
+    override fun onMultiWindowModeChanged(
+        isInMultiWindowMode: Boolean,
+        newConfig: Configuration,
+    ) {
         super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
         isMultiWindowModeHack = isInMultiWindowMode
     }
@@ -219,9 +227,9 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         enableProgressCircle(binding.readingOverlayProgressRight, false)
 
         supportFragmentManager.findFragmentByTag(ReadingPagerFragment::class.java.name)
-                ?: supportFragmentManager.commit {
-                    add(R.id.content, ReadingPagerFragment.newInstance(), ReadingPagerFragment::class.java.name)
-                }
+            ?: supportFragmentManager.commit {
+                add(R.id.content, ReadingPagerFragment.newInstance(), ReadingPagerFragment::class.java.name)
+            }
     }
 
     private fun setupListeners() {
@@ -242,11 +250,14 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
      * Overrides on back pressed to use overridden [Reading.finish] method
      */
     private fun setupOnBackPressed() {
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(enabled = true) {
-            override fun handleOnBackPressed() {
-                finish()
-            }
-        })
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(enabled = true) {
+                override fun handleOnBackPressed() {
+                    finish()
+                }
+            },
+        )
     }
 
     private fun getActiveStoriesCursor(finishOnInvalidFs: Boolean = false) {
@@ -264,7 +275,8 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
     private fun setCursorData(cursor: Cursor) {
         if (!dbHelper.isFeedSetReady(fs)) {
-            com.newsblur.util.Log.i(this.javaClass.name, "stale load")
+            com.newsblur.util.Log
+                .i(this.javaClass.name, "stale load")
             // the system can and will re-use activities, so during the initial mismatch of
             // data, don't show the old stories
             pager!!.visibility = View.INVISIBLE
@@ -280,7 +292,8 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
         storyCounts = cursor.count
 
-        com.newsblur.util.Log.d(this.javaClass.name, "loaded cursor with count: $storyCounts")
+        com.newsblur.util.Log
+            .d(this.javaClass.name, "loaded cursor with count: $storyCounts")
         storyCounts?.let { count ->
             if (count < 1) {
                 triggerRefresh(AppConstants.READING_STORY_PRELOAD)
@@ -312,11 +325,12 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             binding.readingEmptyViewText.visibility = View.INVISIBLE
             return
         }
-        val position: Int = if (storyHash == FIND_FIRST_UNREAD) {
-            readingAdapter!!.findFirstUnread()
-        } else {
-            readingAdapter!!.findHash(storyHash!!)
-        }
+        val position: Int =
+            if (storyHash == FIND_FIRST_UNREAD) {
+                readingAdapter!!.findFirstUnread()
+            } else {
+                readingAdapter!!.findHash(storyHash!!)
+            }
 
         if (stopLoading) return
 
@@ -341,7 +355,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
      * activity, we need a way to get access to the pager when it is created and only
      * then can we set it up.
      */
-    fun offerPager(pager: ViewPager, childFragmentManager: FragmentManager) {
+    fun offerPager(
+        pager: ViewPager,
+        childFragmentManager: FragmentManager,
+    ) {
         this.pager = pager
 
         // since it might start on the wrong story, create the pager as invisible
@@ -390,14 +407,13 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             return if (result < 0) 0 else result
         }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == android.R.id.home) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        if (item.itemId == android.R.id.home) {
             finish()
             true
         } else {
             super.onOptionsItemSelected(item)
         }
-    }
 
     override fun handleUpdate(updateType: Int) {
         if (updateType and UPDATE_REBUILD != 0) {
@@ -437,33 +453,42 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
     // interface OnPageChangeListener
     override fun onPageScrollStateChanged(arg0: Int) {}
 
-    override fun onPageScrolled(arg0: Int, arg1: Float, arg2: Int) {}
+    override fun onPageScrolled(
+        arg0: Int,
+        arg1: Float,
+        arg2: Int,
+    ) {}
 
     override fun onPageSelected(position: Int) {
         lifecycleScope.executeAsyncTask(
-                doInBackground = {
-                    readingAdapter?.let { readingAdapter ->
-                        val story = readingAdapter.getStory(position)
-                        if (story != null) {
-                            synchronized(pageHistory) {
-                                // if the history is just starting out or the last entry in it isn't this page, add this page
-                                if (pageHistory.size < 1 || story != pageHistory[pageHistory.size - 1]) {
-                                    pageHistory.add(story)
-                                }
+            doInBackground = {
+                readingAdapter?.let { readingAdapter ->
+                    val story = readingAdapter.getStory(position)
+                    if (story != null) {
+                        synchronized(pageHistory) {
+                            // if the history is just starting out or the last entry in it isn't this page, add this page
+                            if (pageHistory.size < 1 || story != pageHistory[pageHistory.size - 1]) {
+                                pageHistory.add(story)
                             }
-
-                            triggerMarkStoryReadBehavior(story)
                         }
-                        checkStoryCount(position)
-                        updateOverlayText()
-                        enableOverlays()
+
+                        triggerMarkStoryReadBehavior(story)
                     }
+                    checkStoryCount(position)
+                    updateOverlayText()
+                    enableOverlays()
                 }
+            },
         )
     }
 
     // interface ScrollChangeListener
-    override fun scrollChanged(hPos: Int, vPos: Int, currentWidth: Int, currentHeight: Int) {
+    override fun scrollChanged(
+        hPos: Int,
+        vPos: Int,
+        currentWidth: Int,
+        currentHeight: Int,
+    ) {
         // only update overlay alpha every few pixels. modern screens are so dense that it
         // is way overkill to do it on every pixel
         if (abs(lastVScrollPos - vPos) < 2) return
@@ -499,13 +524,12 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             }
         }
 
-        val _overflowExtras = overflowExtras
         runOnUiThread {
             UIUtils.setViewAlpha(binding.readingOverlayLeft, a, true)
             UIUtils.setViewAlpha(binding.readingOverlayRight, a, true)
             UIUtils.setViewAlpha(binding.readingOverlayProgress, a, true)
             UIUtils.setViewAlpha(binding.readingOverlayText, a, true)
-            UIUtils.setViewAlpha(binding.readingOverlaySend, a, !_overflowExtras)
+            UIUtils.setViewAlpha(binding.readingOverlaySend, a, !overflowExtras)
         }
     }
 
@@ -531,9 +555,13 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         binding.readingOverlayLeft.isEnabled = getLastReadPosition(false) != -1
         binding.readingOverlayRight.setText(if (currentUnreadCount > 0) R.string.overlay_next else R.string.overlay_done)
         if (currentUnreadCount > 0) {
-            binding.readingOverlayRight.setBackgroundResource(UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRight, android.R.attr.background))
+            binding.readingOverlayRight.setBackgroundResource(
+                UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRight, android.R.attr.background),
+            )
         } else {
-            binding.readingOverlayRight.setBackgroundResource(UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRightDone, android.R.attr.background))
+            binding.readingOverlayRight.setBackgroundResource(
+                UIUtils.getThemedResource(this, R.attr.selectorOverlayBackgroundRightDone, android.R.attr.background),
+            )
         }
 
         if (startingUnreadCount == 0) {
@@ -551,16 +579,22 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
     }
 
     private fun updateOverlayText() {
-        runOnUiThread(Runnable {
-            val item = readingFragment ?: return@Runnable
-            if (item.selectedViewMode == DefaultFeedView.STORY) {
-                binding.readingOverlayText.setBackgroundResource(UIUtils.getThemedResource(this@Reading, R.attr.selectorOverlayBackgroundText, android.R.attr.background))
-                binding.readingOverlayText.setText(R.string.overlay_text)
-            } else {
-                binding.readingOverlayText.setBackgroundResource(UIUtils.getThemedResource(this@Reading, R.attr.selectorOverlayBackgroundStory, android.R.attr.background))
-                binding.readingOverlayText.setText(R.string.overlay_story)
-            }
-        })
+        runOnUiThread(
+            Runnable {
+                val item = readingFragment ?: return@Runnable
+                if (item.selectedViewMode == DefaultFeedView.STORY) {
+                    binding.readingOverlayText.setBackgroundResource(
+                        UIUtils.getThemedResource(this@Reading, R.attr.selectorOverlayBackgroundText, android.R.attr.background),
+                    )
+                    binding.readingOverlayText.setText(R.string.overlay_text)
+                } else {
+                    binding.readingOverlayText.setBackgroundResource(
+                        UIUtils.getThemedResource(this@Reading, R.attr.selectorOverlayBackgroundStory, android.R.attr.background),
+                    )
+                    binding.readingOverlayText.setText(R.string.overlay_story)
+                }
+            },
+        )
     }
 
 //    override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -595,7 +629,10 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         enableProgressCircle(binding.readingOverlayProgressLeft, enabled)
     }
 
-    private fun enableProgressCircle(view: CircularProgressIndicator, enabled: Boolean) {
+    private fun enableProgressCircle(
+        view: CircularProgressIndicator,
+        enabled: Boolean,
+    ) {
         runOnUiThread {
             if (enabled) {
                 view.progress = 0
@@ -609,7 +646,8 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
     private fun triggerRefresh(desiredStoryCount: Int) {
         if (!stopLoading) {
-            val gotSome = fs?.let { syncServiceState.requestMoreForFeed(it, desiredStoryCount, storyCounts) }
+            val gotSome =
+                fs?.let { syncServiceState.requestMoreForFeed(it, desiredStoryCount, storyCounts) }
                     ?: false
             if (gotSome) triggerSync()
         }
@@ -628,7 +666,7 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         } else {
             // if there are unreads, go to the next one
             lifecycleScope.executeAsyncTask(
-                    doInBackground = { nextUnread() }
+                doInBackground = { nextUnread() },
             )
         }
     }
@@ -664,18 +702,19 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
             }
             // iterate through the stories in our cursor until we find an unread one
             if (story != null) {
-                unreadFound = if (story.read) {
-                    if (candidate > currentIndex) {
-                        // if we are still searching past the current story, search forward
-                        candidate++
+                unreadFound =
+                    if (story.read) {
+                        if (candidate > currentIndex) {
+                            // if we are still searching past the current story, search forward
+                            candidate++
+                        } else {
+                            // if we hit the end and re-started before the current story, search backward
+                            candidate--
+                        }
+                        continue@unreadSearch
                     } else {
-                        // if we hit the end and re-started before the current story, search backward
-                        candidate--
+                        true
                     }
-                    continue@unreadSearch
-                } else {
-                    true
-                }
             }
             // if we didn't continue or break, the cursor probably changed out from under us, so stop.
             break@unreadSearch
@@ -756,8 +795,12 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
     }
 
     private val readingFragment: ReadingItemFragment?
-        get() = if (readingAdapter == null || pager == null) null
-        else readingAdapter!!.getExistingItem(pager!!.currentItem)
+        get() =
+            if (readingAdapter == null || pager == null) {
+                null
+            } else {
+                readingAdapter!!.getExistingItem(pager!!.currentItem)
+            }
 
     fun viewModeChanged() {
         var frag = readingAdapter!!.getExistingItem(pager!!.currentItem)
@@ -770,25 +813,34 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         updateOverlayText()
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        return if (isVolumeKeyNavigationEvent(keyCode)) {
+    override fun onKeyDown(
+        keyCode: Int,
+        event: KeyEvent,
+    ): Boolean =
+        if (isVolumeKeyNavigationEvent(keyCode)) {
             processVolumeKeyNavigationEvent(keyCode)
             true
         } else if (KeyboardManager.hasHardwareKeyboard(this)) {
             val isKnownKeyCode = keyboardManager.isKnownKeyCode(keyCode)
-            if (isKnownKeyCode) true
-            else super.onKeyDown(keyCode, event)
+            if (isKnownKeyCode) {
+                true
+            } else {
+                super.onKeyDown(keyCode, event)
+            }
         } else {
             super.onKeyDown(keyCode, event)
         }
-    }
 
-    private fun isVolumeKeyNavigationEvent(keyCode: Int): Boolean = volumeKeyNavigation != VolumeKeyNavigation.OFF
-            && (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP)
+    private fun isVolumeKeyNavigationEvent(keyCode: Int): Boolean =
+        volumeKeyNavigation != VolumeKeyNavigation.OFF &&
+            (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP)
 
     private fun processVolumeKeyNavigationEvent(keyCode: Int) {
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && volumeKeyNavigation == VolumeKeyNavigation.DOWN_NEXT ||
-                keyCode == KeyEvent.KEYCODE_VOLUME_UP && volumeKeyNavigation == VolumeKeyNavigation.UP_NEXT) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN &&
+            volumeKeyNavigation == VolumeKeyNavigation.DOWN_NEXT ||
+            keyCode == KeyEvent.KEYCODE_VOLUME_UP &&
+            volumeKeyNavigation == VolumeKeyNavigation.UP_NEXT
+        ) {
             nextStory()
         } else {
             previousStory()
@@ -819,14 +871,20 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
         }
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+    override fun onKeyUp(
+        keyCode: Int,
+        event: KeyEvent,
+    ): Boolean {
         // Required to prevent the default sound playing when the volume key is pressed
         return if (isVolumeKeyNavigationEvent(keyCode)) {
             true
         } else if (KeyboardManager.hasHardwareKeyboard(this)) {
             val handledKeyCode = keyboardManager.onKeyUp(keyCode, event)
-            if (handledKeyCode) true
-            else super.onKeyUp(keyCode, event)
+            if (handledKeyCode) {
+                true
+            } else {
+                super.onKeyUp(keyCode, event)
+            }
         } else {
             super.onKeyUp(keyCode, event)
         }
@@ -838,17 +896,21 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
 
         val delayMillis = markStoryReadBehavior.getDelayMillis()
         if (delayMillis >= 0) {
-            markStoryReadJob = createMarkStoryReadJob(story, delayMillis).also {
-                it.start()
-            }
+            markStoryReadJob =
+                createMarkStoryReadJob(story, delayMillis).also {
+                    it.start()
+                }
         }
     }
 
-    private fun createMarkStoryReadJob(story: Story, delayMillis: Long): Job =
-            lifecycleScope.launch(Dispatchers.Default) {
-                if (isActive) delay(delayMillis)
-                if (isActive) feedUtils.markStoryAsRead(story, this@Reading)
-            }
+    private fun createMarkStoryReadJob(
+        story: Story,
+        delayMillis: Long,
+    ): Job =
+        lifecycleScope.launch(Dispatchers.Default) {
+            if (isActive) delay(delayMillis)
+            if (isActive) feedUtils.markStoryAsRead(story, this@Reading)
+        }
 
     override fun onKeyboardEvent(event: KeyboardEvent) {
         when (event) {
@@ -878,12 +940,16 @@ abstract class Reading : NbActivity(), OnPageChangeListener, ScrollChangeListene
      * passes back the last read item position from the pager
      */
     override fun finish() {
-        setResult(RESULT_OK, Intent().apply {
-            pager?.currentItem?.let { position ->
-                com.newsblur.util.Log.d(this@Reading.javaClass.name, "Finish reading at position $position")
-                putExtra(LAST_READING_POS, position)
-            }
-        })
+        setResult(
+            RESULT_OK,
+            Intent().apply {
+                pager?.currentItem?.let { position ->
+                    com.newsblur.util.Log
+                        .d(this@Reading.javaClass.name, "Finish reading at position $position")
+                    putExtra(LAST_READING_POS, position)
+                }
+            },
+        )
         super.finish()
     }
 

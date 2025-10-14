@@ -23,8 +23,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
-
+class StoryUserTagsFragment :
+    DialogFragment(),
+    TagsAdapter.OnTagClickListener {
     @Inject
     lateinit var feedUtils: FeedUtils
 
@@ -44,8 +45,10 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
     private val newTags = HashSet<StarredCount>()
 
     companion object {
-
-        fun newInstance(story: Story, fs: FeedSet): StoryUserTagsFragment {
+        fun newInstance(
+            story: Story,
+            fs: FeedSet,
+        ): StoryUserTagsFragment {
             val fragment = StoryUserTagsFragment()
             val args = Bundle()
             args.putSerializable("story", story)
@@ -171,7 +174,10 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
         updateListAdapters()
     }
 
-    override fun onTagClickListener(starredTag: StarredCount, type: TagsAdapter.Type) {
+    override fun onTagClickListener(
+        starredTag: StarredCount,
+        type: TagsAdapter.Type,
+    ) {
         if (type == TagsAdapter.Type.OTHER) {
             otherTags.remove(starredTag.tag)
             // tag story count increases because the story

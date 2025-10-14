@@ -17,13 +17,12 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class NetworkClientImpl(
-        private val context: Context,
-        @param:ApiOkHttpClient
-        private val client: OkHttpClient,
-        initialUserAgent: String,
-        prefsRepo: PrefsRepo,
+    private val context: Context,
+    @param:ApiOkHttpClient
+    private val client: OkHttpClient,
+    initialUserAgent: String,
+    prefsRepo: PrefsRepo,
 ) : NetworkClient {
-
     private var customUserAgent: String = initialUserAgent
 
     init {
@@ -40,13 +39,20 @@ class NetworkClientImpl(
         return response
     }
 
-    override suspend fun get(urlString: String, values: ContentValues): APIResponse =
-            get(urlString + "?" + builderGetParametersString(values))
+    override suspend fun get(
+        urlString: String,
+        values: ContentValues,
+    ): APIResponse = get(urlString + "?" + builderGetParametersString(values))
 
-    override suspend fun get(urlString: String, valueMap: ValueMultimap): APIResponse =
-            get(urlString + "?" + valueMap.getParameterString())
+    override suspend fun get(
+        urlString: String,
+        valueMap: ValueMultimap,
+    ): APIResponse = get(urlString + "?" + valueMap.getParameterString())
 
-    override suspend fun post(urlString: String, formBody: RequestBody): APIResponse {
+    override suspend fun post(
+        urlString: String,
+        formBody: RequestBody,
+    ): APIResponse {
         var response: APIResponse
         var tryCount = 0
         do {
@@ -56,7 +62,10 @@ class NetworkClientImpl(
         return response
     }
 
-    override suspend fun post(urlString: String, values: ContentValues): APIResponse {
+    override suspend fun post(
+        urlString: String,
+        values: ContentValues,
+    ): APIResponse {
         val formEncodingBuilder = FormBody.Builder()
         for (entry in values.valueSet()) {
             formEncodingBuilder.add(entry.key, entry.value as String)
@@ -64,8 +73,10 @@ class NetworkClientImpl(
         return post(urlString, formEncodingBuilder.build())
     }
 
-    override suspend fun post(urlString: String, valueMap: ValueMultimap): APIResponse =
-            post(urlString, valueMap.asFormEncodedRequestBody())
+    override suspend fun post(
+        urlString: String,
+        valueMap: ValueMultimap,
+    ): APIResponse = post(urlString, valueMap.asFormEncodedRequestBody())
 
     override fun updateCustomUserAgent(customUserAgent: String) {
         this.customUserAgent = customUserAgent
@@ -104,8 +115,8 @@ class NetworkClientImpl(
     }
 
     private fun postSingle(
-            urlString: String,
-            formBody: RequestBody,
+        urlString: String,
+        formBody: RequestBody,
     ): APIResponse {
         if (!NetworkUtils.isOnline(context)) {
             return APIResponse()

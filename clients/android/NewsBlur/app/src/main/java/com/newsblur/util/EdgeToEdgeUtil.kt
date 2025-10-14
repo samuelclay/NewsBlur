@@ -16,21 +16,24 @@ import com.newsblur.R
 import com.newsblur.util.PrefConstants.ThemeValue
 
 object EdgeToEdgeUtil {
-
     fun Activity.applyTheme(theme: ThemeValue) {
-        val themeRes: Int = when (theme) {
-            ThemeValue.LIGHT -> R.style.NewsBlurTheme
-            ThemeValue.DARK -> R.style.NewsBlurDarkTheme
-            ThemeValue.BLACK -> R.style.NewsBlurBlackTheme
-            ThemeValue.AUTO -> {
-                val nightModeFlags = (this.resources.configuration.uiMode
-                        and Configuration.UI_MODE_NIGHT_MASK)
-                if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES)
-                    R.style.NewsBlurDarkTheme
-                else
-                    R.style.NewsBlurTheme
+        val themeRes: Int =
+            when (theme) {
+                ThemeValue.LIGHT -> R.style.NewsBlurTheme
+                ThemeValue.DARK -> R.style.NewsBlurDarkTheme
+                ThemeValue.BLACK -> R.style.NewsBlurBlackTheme
+                ThemeValue.AUTO -> {
+                    val nightModeFlags = (
+                        this.resources.configuration.uiMode
+                            and Configuration.UI_MODE_NIGHT_MASK
+                    )
+                    if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+                        R.style.NewsBlurDarkTheme
+                    } else {
+                        R.style.NewsBlurTheme
+                    }
+                }
             }
-        }
 
         this.setTheme(themeRes)
 
@@ -60,11 +63,11 @@ object EdgeToEdgeUtil {
 
             // AppBarLayout or Toolbar
             findViewById<View>(R.id.app_bar_layout)?.applyToolbarInsets(statusBar, navBar)
-                    ?: findViewById<View>(R.id.toolbar)?.applyToolbarInsets(statusBar, navBar)
+                ?: findViewById<View>(R.id.toolbar)?.applyToolbarInsets(statusBar, navBar)
 
             // Container or Content
             findViewById<View>(R.id.container)?.applyContentInsets(navBar)
-                    ?: findViewById<View>(R.id.content)?.applyContentInsets(navBar)
+                ?: findViewById<View>(R.id.content)?.applyContentInsets(navBar)
 
             // Reading - activity_reading.xml
             findViewById<View>(R.id.content_bottom_overlay)?.let {
@@ -77,7 +80,8 @@ object EdgeToEdgeUtil {
             // sets the background on the navigation bar in landscape mode
             if (navBar.left > 0 || navBar.right > 0) {
                 val tv = TypedValue()
-                binding.root.context.theme.resolveAttribute(android.R.attr.navigationBarColor, tv, true)
+                binding.root.context.theme
+                    .resolveAttribute(android.R.attr.navigationBarColor, tv, true)
                 binding.root.setBackgroundColor(tv.data)
             } else {
                 binding.root.setBackgroundColor(0)
@@ -93,12 +97,17 @@ object EdgeToEdgeUtil {
         }
     }
 
-    private fun View.navBarInsetBottom(): Int? = ViewCompat.getRootWindowInsets(this)
+    private fun View.navBarInsetBottom(): Int? =
+        ViewCompat
+            .getRootWindowInsets(this)
             ?.getInsets(WindowInsetsCompat.Type.navigationBars())
             ?.bottom
 
-    private fun shouldUseLightIcons(context: Context, theme: ThemeValue): Boolean {
-        return when (theme) {
+    private fun shouldUseLightIcons(
+        context: Context,
+        theme: ThemeValue,
+    ): Boolean =
+        when (theme) {
             ThemeValue.LIGHT -> true
             ThemeValue.DARK, ThemeValue.BLACK -> false
             ThemeValue.AUTO -> {
@@ -106,7 +115,6 @@ object EdgeToEdgeUtil {
                 nightMode != Configuration.UI_MODE_NIGHT_YES
             }
         }
-    }
 
     private fun View.updateBottomPadding(bottom: Int) {
         setPadding(paddingLeft, paddingTop, paddingRight, bottom)
@@ -121,7 +129,10 @@ object EdgeToEdgeUtil {
         }
     }
 
-    private fun View.applyToolbarInsets(statusBar: Insets, navBar: Insets) {
+    private fun View.applyToolbarInsets(
+        statusBar: Insets,
+        navBar: Insets,
+    ) {
         if (navBar.left > 0 || navBar.right > 0) {
             updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 leftMargin = navBar.left

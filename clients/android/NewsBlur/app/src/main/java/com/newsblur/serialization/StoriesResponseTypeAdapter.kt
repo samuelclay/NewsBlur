@@ -1,21 +1,30 @@
 package com.newsblur.serialization
 
-import com.google.gson.*
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonArray
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import com.newsblur.domain.Story
 import com.newsblur.network.domain.StoriesResponse
 import java.lang.reflect.Type
-import java.util.*
+import java.util.Date
 
 class StoriesResponseTypeAdapter : JsonDeserializer<StoriesResponse> {
+    private val gson =
+        GsonBuilder()
+            .apply {
+                registerTypeAdapter(Date::class.java, DateStringTypeAdapter())
+                registerTypeAdapter(Boolean::class.java, BooleanTypeAdapter())
+                registerTypeAdapter(Boolean::class.javaPrimitiveType, BooleanTypeAdapter())
+                registerTypeAdapter(Story::class.java, StoryTypeAdapter())
+            }.create()
 
-    private val gson = GsonBuilder().apply {
-        registerTypeAdapter(Date::class.java, DateStringTypeAdapter())
-        registerTypeAdapter(Boolean::class.java, BooleanTypeAdapter())
-        registerTypeAdapter(Boolean::class.javaPrimitiveType, BooleanTypeAdapter())
-        registerTypeAdapter(Story::class.java, StoryTypeAdapter())
-    }.create()
-
-    override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?): StoriesResponse {
+    override fun deserialize(
+        json: JsonElement,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?,
+    ): StoriesResponse {
         if (json.isJsonObject) {
             val jsonObject = json.asJsonObject
             val feedsElement: JsonElement? = jsonObject.get("feeds")

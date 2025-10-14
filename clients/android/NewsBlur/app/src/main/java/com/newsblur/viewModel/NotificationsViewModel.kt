@@ -18,50 +18,54 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NotificationsViewModel
-@Inject constructor(
+    @Inject
+    constructor(
         private val dbHelper: BlurDatabaseHelper,
         private val feedUtils: FeedUtils,
-) : ViewModel() {
+    ) : ViewModel() {
+        private val cancellationSignal = CancellationSignal()
 
-    private val cancellationSignal = CancellationSignal()
+        private val _feeds = MutableStateFlow<Map<String, Feed>>(emptyMap())
+        val feeds: StateFlow<Map<String, Feed>> = _feeds.asStateFlow()
 
-    private val _feeds = MutableStateFlow<Map<String, Feed>>(emptyMap())
-    val feeds: StateFlow<Map<String, Feed>> = _feeds.asStateFlow()
-
-    init {
-        loadFeeds()
-    }
-
-    fun updateFeed(context: Context, feed: Feed) {
-        viewModelScope.launch(Dispatchers.IO) {
-            feedUtils.updateFeedNotifications(context, feed)
+        init {
+            loadFeeds()
         }
-    }
 
-    private fun loadFeeds() {
-        viewModelScope.launch(Dispatchers.IO) {
-            dbHelper.getFeedsCursor(cancellationSignal).use { cursor ->
-                val feeds = extractFeeds(cursor).filterValues(notificationFeedFilter)
-                _feeds.emit(feeds)
+        fun updateFeed(
+            context: Context,
+            feed: Feed,
+        ) {
+            viewModelScope.launch(Dispatchers.IO) {
+                feedUtils.updateFeedNotifications(context, feed)
             }
         }
-    }
 
-    private fun extractFeeds(cursor: Cursor): Map<String, Feed> = buildMap {
-        if (!cursor.isBeforeFirst) return@buildMap
+        private fun loadFeeds() {
+            viewModelScope.launch(Dispatchers.IO) {
+                dbHelper.getFeedsCursor(cancellationSignal).use { cursor ->
+                    val feeds = extractFeeds(cursor).filterValues(notificationFeedFilter)
+                    _feeds.emit(feeds)
+                }
+            }
+        }
 
-        while (cursor.moveToNext()) {
-            val feed = Feed.fromCursor(cursor)
-            this[feed.feedId] = feed
+        private fun extractFeeds(cursor: Cursor): Map<String, Feed> =
+            buildMap {
+                if (!cursor.isBeforeFirst) return@buildMap
+
+                while (cursor.moveToNext()) {
+                    val feed = Feed.fromCursor(cursor)
+                    this[feed.feedId] = feed
+                }
+            }
+
+        private val notificationFeedFilter: (Feed) -> Boolean = {
+            it.active && !it.notificationFilter.isNullOrBlank()
+        }
+
+        override fun onCleared() {
+            cancellationSignal.cancel()
+            super.onCleared()
         }
     }
-
-    private val notificationFeedFilter: (Feed) -> Boolean = {
-        it.active && !it.notificationFilter.isNullOrBlank()
-    }
-
-    override fun onCleared() {
-        cancellationSignal.cancel()
-        super.onCleared()
-    }
-}

@@ -3,29 +3,31 @@ package com.newsblur.service
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.ensureActive
 
-class StarredSubService(delegate: SyncServiceDelegate) : SyncSubService(delegate) {
+class StarredSubService(
+    delegate: SyncServiceDelegate,
+) : SyncSubService(delegate) {
+    override suspend fun execute() =
+        coroutineScope {
+            ensureActive()
 
-    override suspend fun execute() = coroutineScope {
-        ensureActive()
+            // get all starred story hashes from remote db
+            val starredHashesResponse = storyApi.getStarredStoryHashes()
 
-        // get all starred story hashes from remote db
-        val starredHashesResponse = storyApi.getStarredStoryHashes()
+            ensureActive()
 
-        ensureActive()
+            // get all starred story hashes from local db
+            val localStoryHashes = dbHelper.starredStoryHashes
 
-        // get all starred story hashes from local db
-        val localStoryHashes = dbHelper.starredStoryHashes
+            ensureActive()
 
-        ensureActive()
+            val newStarredHashes = starredHashesResponse.starredStoryHashes.minus(localStoryHashes)
+            val invalidStarredHashes = localStoryHashes.minus(starredHashesResponse.starredStoryHashes)
 
-        val newStarredHashes = starredHashesResponse.starredStoryHashes.minus(localStoryHashes)
-        val invalidStarredHashes = localStoryHashes.minus(starredHashesResponse.starredStoryHashes)
-
-        if (newStarredHashes.isNotEmpty()) {
-            dbHelper.markStoryHashesStarred(newStarredHashes, true)
+            if (newStarredHashes.isNotEmpty()) {
+                dbHelper.markStoryHashesStarred(newStarredHashes, true)
+            }
+            if (invalidStarredHashes.isNotEmpty()) {
+                dbHelper.markStoryHashesStarred(invalidStarredHashes, false)
+            }
         }
-        if (invalidStarredHashes.isNotEmpty()) {
-            dbHelper.markStoryHashesStarred(invalidStarredHashes, false)
-        }
-    }
 }

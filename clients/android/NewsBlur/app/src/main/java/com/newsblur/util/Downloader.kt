@@ -12,18 +12,25 @@ import com.newsblur.R
 import com.newsblur.network.APIConstants
 
 object FileDownloader {
-
-    fun exportOpml(context: Context, userName: String?, cookie: String?): Long {
+    fun exportOpml(
+        context: Context,
+        userName: String?,
+        cookie: String?,
+    ): Long {
         val manager = context.getSystemService(DownloadManager::class.java)
         val url = APIConstants.buildUrl(APIConstants.PATH_EXPORT_OPML)
 
-        val file = StringBuilder().apply {
-            append(context.getString(R.string.newsbluropml))
-            userName?.let { append("-$userName") }
-            append(".xml")
-        }.toString()
+        val file =
+            StringBuilder()
+                .apply {
+                    append(context.getString(R.string.newsbluropml))
+                    userName?.let { append("-$userName") }
+                    append(".xml")
+                }.toString()
 
-        val request = DownloadManager.Request(url.toUri())
+        val request =
+            DownloadManager
+                .Request(url.toUri())
                 .setMimeType(MimeTypeMap.getSingleton().getMimeTypeFromExtension(".xml"))
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .addRequestHeader("Cookie", cookie)
@@ -34,8 +41,10 @@ object FileDownloader {
 }
 
 class DownloadCompleteReceiver : BroadcastReceiver() {
-
-    override fun onReceive(context: Context?, intent: Intent?) {
+    override fun onReceive(
+        context: Context?,
+        intent: Intent?,
+    ) {
         if (intent?.action == DownloadManager.ACTION_DOWNLOAD_COMPLETE) {
             val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
             if (id == expectedFileDownloadId) {
@@ -48,7 +57,6 @@ class DownloadCompleteReceiver : BroadcastReceiver() {
     }
 
     companion object {
-
         var expectedFileDownloadId: Long? = null
     }
 }

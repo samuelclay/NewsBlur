@@ -59,8 +59,9 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @AndroidEntryPoint
-open class SyncService : JobService(), CoroutineScope {
-
+open class SyncService :
+    JobService(),
+    CoroutineScope {
     @Inject
     lateinit var storyApi: StoryApi
 
@@ -95,12 +96,12 @@ open class SyncService : JobService(), CoroutineScope {
     private var mainJob: Job? = null
 
     override val coroutineContext: CoroutineContext =
-            CoroutineName("SyncService") +
-                    Dispatchers.IO +
-                    serviceJob +
-                    CoroutineExceptionHandler { context, throwable ->
-                        Log.e("SyncService", "Coroutine exception on context $context with $throwable")
-                    }
+        CoroutineName("SyncService") +
+            Dispatchers.IO +
+            serviceJob +
+            CoroutineExceptionHandler { context, throwable ->
+                Log.e("SyncService", "Coroutine exception on context $context with $throwable")
+            }
 
     private val delegate: SyncServiceDelegate = SyncServiceDelegateImpl(this)
 
@@ -118,20 +119,25 @@ open class SyncService : JobService(), CoroutineScope {
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
         mainJob?.cancel()
-        mainJob = launch {
-            try {
-                sync()
-            } finally {
-                jobFinished(params, false)
+        mainJob =
+            launch {
+                try {
+                    sync()
+                } finally {
+                    jobFinished(params, false)
+                }
             }
-        }
         return true // async
     }
 
     /**
      * Kickoff hook for when we are started via Context.startService()
      */
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         Log.d(this, "onStartCommand")
         mainJob?.cancel()
         mainJob = launch { sync() }
@@ -151,65 +157,67 @@ open class SyncService : JobService(), CoroutineScope {
         Log.d(this, "onNetworkChanged")
     }
 
-    private suspend fun sync() = supervisorScope {
-        Log.d(this, "Starting primary sync")
-        ensureActive()
+    private suspend fun sync() =
+        supervisorScope {
+            Log.d(this, "Starting primary sync")
+            ensureActive()
 
-        housekeeping()
-        ensureActive()
+            housekeeping()
+            ensureActive()
 
-        // ping activities to indicate that housekeeping is done, and the DB is safe to use
-        sendSyncUpdate(UPDATE_DB_READY)
+            // ping activities to indicate that housekeeping is done, and the DB is safe to use
+            sendSyncUpdate(UPDATE_DB_READY)
 
-        if (!NetworkUtils.isOnline(this@SyncService)) {
-            Log.d(this.javaClass.name, "Skipping sync: device is offline")
-            return@supervisorScope
+            if (!NetworkUtils.isOnline(this@SyncService)) {
+                Log.d(this.javaClass.name, "Skipping sync: device is offline")
+                return@supervisorScope
+            }
+
+            if (!isAppForeground && !prefsRepo.isBackgroundNeeded(this@SyncService)) {
+                Log.d(this.javaClass.name, "Skipping sync: device is in the background and background sync is disabled")
+                return@supervisorScope
+            }
+
+            if (!isAppForeground && !prefsRepo.isBackgroundNetworkAllowed(this@SyncService)) {
+                Log.d(this.javaClass.name, "Skipping sync: network type not appropriate for background sync.")
+                return@supervisorScope
+            }
+
+            val subSyncJobs = mutableListOf<Job>()
+
+            fun trackSubSync(job: Job) {
+                subSyncJobs += job
+            }
+
+            // first: catch up
+            syncActions()
+
+            // if MD is stale, sync it first so unreads don't get backwards with story unread state
+            syncMetadata(this, ::trackSubSync)
+
+            // handle fetching of stories that are actively being requested by the live UI
+            syncPendingFeedStories()
+
+            // re-apply the local state of any actions executed before local UI interaction
+            finishActions()
+
+            // after all actions, double-check local state vs remote state consistency
+            checkRecounts()
+
+            // async story and image prefetch are lower priority and don't affect active reading, do them last
+            unreadsSubService.launchIn(this).also { trackSubSync(it) }
+            imagePrefetchSubService.launchIn(this).also { trackSubSync(it) }
+
+            // almost all notifications will be pushed after the unreadsService gets new stories, but double-check
+            // here in case some made it through the feed sync loop first
+            pushNotifications()
+
+            subSyncJobs.joinAll()
+
+            Log.d(this, "Finishing primary sync")
+
+            syncServiceState.setServiceState(ServiceState.Idle)
         }
-
-        if (!isAppForeground && !prefsRepo.isBackgroundNeeded(this@SyncService)) {
-            Log.d(this.javaClass.name, "Skipping sync: device is in the background and background sync is disabled")
-            return@supervisorScope
-        }
-
-        if (!isAppForeground && !prefsRepo.isBackgroundNetworkAllowed(this@SyncService)) {
-            Log.d(this.javaClass.name, "Skipping sync: network type not appropriate for background sync.")
-            return@supervisorScope
-        }
-
-        val subSyncJobs = mutableListOf<Job>()
-        fun trackSubSync(job: Job) {
-            subSyncJobs += job
-        }
-
-        // first: catch up
-        syncActions()
-
-        // if MD is stale, sync it first so unreads don't get backwards with story unread state
-        syncMetadata(this, ::trackSubSync)
-
-        // handle fetching of stories that are actively being requested by the live UI
-        syncPendingFeedStories()
-
-        // re-apply the local state of any actions executed before local UI interaction
-        finishActions()
-
-        // after all actions, double-check local state vs remote state consistency
-        checkRecounts()
-
-        // async story and image prefetch are lower priority and don't affect active reading, do them last
-        unreadsSubService.launchIn(this).also { trackSubSync(it) }
-        imagePrefetchSubService.launchIn(this).also { trackSubSync(it) }
-
-        // almost all notifications will be pushed after the unreadsService gets new stories, but double-check
-        // here in case some made it through the feed sync loop first
-        pushNotifications()
-
-        subSyncJobs.joinAll()
-
-        Log.d(this, "Finishing primary sync")
-
-        syncServiceState.setServiceState(ServiceState.Idle)
-    }
 
     override fun onDestroy() {
         Log.d(this, "onDestroy")
@@ -323,7 +331,10 @@ open class SyncService : JobService(), CoroutineScope {
      * The very first step of a sync - get the feed/folder list, unread counts, and
      * unread hashes. Doing this resets pagination on the server!
      */
-    private suspend fun syncMetadata(scope: CoroutineScope, trackSubSync: (Job) -> Unit) {
+    private suspend fun syncMetadata(
+        scope: CoroutineScope,
+        trackSubSync: (Job) -> Unit,
+    ) {
         if (backoffBackgroundCalls()) return
 
         val untriedActions = dbHelper.getUntriedActionCount()
@@ -535,7 +546,6 @@ open class SyncService : JobService(), CoroutineScope {
 
             ensureActive()
             while (isActive && totalStoriesSeen < syncServiceState.pendingFeedTarget) {
-
                 // bail if the active view has changed
                 if (fs != syncServiceState.pendingFeed) {
                     return
@@ -544,7 +554,14 @@ open class SyncService : JobService(), CoroutineScope {
                 ensureActive()
 
                 pageNumber++
-                val apiResponse = storyApi.getStories(fs, pageNumber, cursorFilters.storyOrder, cursorFilters.readFilter, prefsRepo.getInfrequentCutoff())
+                val apiResponse =
+                    storyApi.getStories(
+                        fs,
+                        pageNumber,
+                        cursorFilters.storyOrder,
+                        cursorFilters.readFilter,
+                        prefsRepo.getInfrequentCutoff(),
+                    )
 
                 if (!isStoryResponseGood(apiResponse)) return
 
@@ -578,7 +595,11 @@ open class SyncService : JobService(), CoroutineScope {
         }
     }
 
-    private fun insertStories(apiResponse: StoriesResponse, fs: FeedSet, stateFilter: StateFilter) {
+    private fun insertStories(
+        apiResponse: StoriesResponse,
+        fs: FeedSet,
+        stateFilter: StateFilter,
+    ) {
         if (fs.isAllRead) {
             // Ugly Hack Warning: the API doesn't vend the sortation key necessary to display
             // stories when in the "read stories" view. It does, however, return them in the
@@ -673,7 +694,10 @@ open class SyncService : JobService(), CoroutineScope {
         syncServiceState.clearFollowupActions()
     }
 
-    fun prefetchImages(apiResponse: StoriesResponse, scope: CoroutineScope) {
+    fun prefetchImages(
+        apiResponse: StoriesResponse,
+        scope: CoroutineScope,
+    ) {
         storyLoop@ for (story in apiResponse.stories) {
             // only prefetch for unreads, so we don't grind to cache when the user scrolls
             // through old read stories
@@ -698,7 +722,11 @@ open class SyncService : JobService(), CoroutineScope {
      * set but also when we sync a page of stories, since there are no guarantees which
      * will happen first.
      */
-    fun prepareReadingSession(prefsRepo: PrefsRepo, dbHelper: BlurDatabaseHelper, fs: FeedSet) {
+    fun prepareReadingSession(
+        prefsRepo: PrefsRepo,
+        dbHelper: BlurDatabaseHelper,
+        fs: FeedSet,
+    ) {
         synchronized(syncServiceState.pendingFeedMutex) {
             val cursorFilters = CursorFilters(prefsRepo, fs)
             if (fs != dbHelper.getSessionFeedSet()) {
@@ -838,7 +866,6 @@ open class SyncService : JobService(), CoroutineScope {
     fun isDisabledFeed(feedId: String): Boolean = disabledFeedIds.contains(feedId)
 
     companion object {
-
         fun stop(context: Context) {
             Log.i(SyncService::class.java.name, "Stop service")
             val stopIntent = Intent(context, SyncService::class.java)

@@ -12,39 +12,41 @@ enum class NbThemeVariant { Light, Dark, Black, System }
 
 @Composable
 fun NewsBlurTheme(
-        variant: NbThemeVariant,
-        dynamic: Boolean = true, // Android 12+
-        content: @Composable () -> Unit
+    variant: NbThemeVariant,
+    dynamic: Boolean = true, // Android 12+
+    content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
-    val dark = when (variant) {
-        NbThemeVariant.Light -> false
-        NbThemeVariant.Dark, NbThemeVariant.Black -> true
-        NbThemeVariant.System -> isSystemInDarkTheme()
-    }
+    val dark =
+        when (variant) {
+            NbThemeVariant.Light -> false
+            NbThemeVariant.Dark, NbThemeVariant.Black -> true
+            NbThemeVariant.System -> isSystemInDarkTheme()
+        }
 
     val scheme =
-            if (dynamic && android.os.Build.VERSION.SDK_INT >= 31) {
-                if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-            } else {
-                when (variant) {
-                    NbThemeVariant.Light -> LightColors
-                    NbThemeVariant.Dark -> DarkColors
-                    NbThemeVariant.Black -> BlackColors
-                    NbThemeVariant.System -> if (dark) DarkColors else LightColors
-                }
+        if (dynamic && android.os.Build.VERSION.SDK_INT >= 31) {
+            if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        } else {
+            when (variant) {
+                NbThemeVariant.Light -> LightColors
+                NbThemeVariant.Dark -> DarkColors
+                NbThemeVariant.Black -> BlackColors
+                NbThemeVariant.System -> if (dark) DarkColors else LightColors
             }
+        }
 
     MaterialTheme(
-            colorScheme = scheme,
-            typography = NbTypography,
-            content = content
+        colorScheme = scheme,
+        typography = NbTypography,
+        content = content,
     )
 }
 
-fun ThemeValue.toVariant(): NbThemeVariant = when (this) {
-    ThemeValue.LIGHT -> NbThemeVariant.Light
-    ThemeValue.DARK -> NbThemeVariant.Dark
-    ThemeValue.BLACK -> NbThemeVariant.Black
-    ThemeValue.AUTO -> NbThemeVariant.System
-}
+fun ThemeValue.toVariant(): NbThemeVariant =
+    when (this) {
+        ThemeValue.LIGHT -> NbThemeVariant.Light
+        ThemeValue.DARK -> NbThemeVariant.Dark
+        ThemeValue.BLACK -> NbThemeVariant.Black
+        ThemeValue.AUTO -> NbThemeVariant.System
+    }

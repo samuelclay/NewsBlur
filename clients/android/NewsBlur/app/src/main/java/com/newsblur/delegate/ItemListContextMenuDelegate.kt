@@ -28,45 +28,66 @@ import com.newsblur.util.ThumbnailStyle
 import com.newsblur.util.UIUtils
 
 interface ItemListContextMenuDelegate {
-    fun onCreateMenuOptions(menu: Menu, menuInflater: MenuInflater, fs: FeedSet): Boolean
+    fun onCreateMenuOptions(
+        menu: Menu,
+        menuInflater: MenuInflater,
+        fs: FeedSet,
+    ): Boolean
 
-    fun onPrepareMenuOptions(menu: Menu, fs: FeedSet, showSavedSearch: Boolean): Boolean
+    fun onPrepareMenuOptions(
+        menu: Menu,
+        fs: FeedSet,
+        showSavedSearch: Boolean,
+    ): Boolean
 
-    fun onOptionsItemSelected(item: MenuItem, fragment: ItemSetFragment, fs: FeedSet, searchInputView: EditText, saveSearchFeedId: String?): Boolean
+    fun onOptionsItemSelected(
+        item: MenuItem,
+        fragment: ItemSetFragment,
+        fs: FeedSet,
+        searchInputView: EditText,
+        saveSearchFeedId: String?,
+    ): Boolean
 }
 
 open class ItemListContextMenuDelegateImpl(
-        private val activity: ItemsList,
-        private val feedUtils: FeedUtils,
-        private val prefsRepo: PrefsRepo,
-        private val syncServiceState: SyncServiceState,
-) : ItemListContextMenuDelegate, ReadingActionListener by activity {
-
-    override fun onCreateMenuOptions(menu: Menu, menuInflater: MenuInflater, fs: FeedSet): Boolean {
+    private val activity: ItemsList,
+    private val feedUtils: FeedUtils,
+    private val prefsRepo: PrefsRepo,
+    private val syncServiceState: SyncServiceState,
+) : ItemListContextMenuDelegate,
+    ReadingActionListener by activity {
+    override fun onCreateMenuOptions(
+        menu: Menu,
+        menuInflater: MenuInflater,
+        fs: FeedSet,
+    ): Boolean {
         menuInflater.inflate(R.menu.itemslist, menu)
 
         if (fs.isGlobalShared ||
-                fs.isAllSocial ||
-                fs.isFilterSaved ||
-                fs.isAllSaved ||
-                fs.isSingleSavedTag ||
-                fs.isInfrequent ||
-                fs.isAllRead) {
+            fs.isAllSocial ||
+            fs.isFilterSaved ||
+            fs.isAllSaved ||
+            fs.isSingleSavedTag ||
+            fs.isInfrequent ||
+            fs.isAllRead
+        ) {
             menu.findItem(R.id.menu_mark_all_as_read).isVisible = false
         }
 
         if (fs.isGlobalShared ||
-                fs.isAllSocial ||
-                fs.isAllRead) {
+            fs.isAllSocial ||
+            fs.isAllRead
+        ) {
             menu.findItem(R.id.menu_story_order).isVisible = false
         }
 
         if (fs.isGlobalShared ||
-                fs.isFilterSaved ||
-                fs.isAllSaved ||
-                fs.isSingleSavedTag ||
-                fs.isInfrequent ||
-                fs.isAllRead) {
+            fs.isFilterSaved ||
+            fs.isAllSaved ||
+            fs.isSingleSavedTag ||
+            fs.isInfrequent ||
+            fs.isAllRead
+        ) {
             menu.findItem(R.id.menu_read_filter).isVisible = false
             menu.findItem(R.id.menu_mark_read_on_scroll).isVisible = false
             menu.findItem(R.id.menu_story_content_preview_style).isVisible = false
@@ -74,9 +95,10 @@ open class ItemListContextMenuDelegateImpl(
         }
 
         if (fs.isGlobalShared ||
-                fs.isAllSocial ||
-                fs.isInfrequent ||
-                fs.isAllRead) {
+            fs.isAllSocial ||
+            fs.isInfrequent ||
+            fs.isAllRead
+        ) {
             menu.findItem(R.id.menu_search_stories).isVisible = false
         }
 
@@ -96,7 +118,11 @@ open class ItemListContextMenuDelegateImpl(
         return true
     }
 
-    override fun onPrepareMenuOptions(menu: Menu, fs: FeedSet, showSavedSearch: Boolean): Boolean {
+    override fun onPrepareMenuOptions(
+        menu: Menu,
+        fs: FeedSet,
+        showSavedSearch: Boolean,
+    ): Boolean {
         val storyOrder = prefsRepo.getStoryOrder(fs)
         if (storyOrder == StoryOrder.NEWEST) {
             menu.findItem(R.id.menu_story_order_newest).isChecked = true
@@ -171,11 +197,11 @@ open class ItemListContextMenuDelegateImpl(
     }
 
     override fun onOptionsItemSelected(
-            item: MenuItem,
-            fragment: ItemSetFragment,
-            fs: FeedSet,
-            searchInputView: EditText,
-            saveSearchFeedId: String?,
+        item: MenuItem,
+        fragment: ItemSetFragment,
+        fs: FeedSet,
+        searchInputView: EditText,
+        saveSearchFeedId: String?,
     ): Boolean {
         if (item.itemId == android.R.id.home) {
             activity.finish()
@@ -291,27 +317,44 @@ open class ItemListContextMenuDelegateImpl(
         return false
     }
 
-    private fun updateTextSizeStyle(fragment: ItemSetFragment, listTextSize: ListTextSize) {
+    private fun updateTextSizeStyle(
+        fragment: ItemSetFragment,
+        listTextSize: ListTextSize,
+    ) {
         prefsRepo.setListTextSize(listTextSize.size)
         fragment.updateTextSize()
     }
 
-    private fun updateSpacingStyle(fragment: ItemSetFragment, spacingStyle: SpacingStyle) {
+    private fun updateSpacingStyle(
+        fragment: ItemSetFragment,
+        spacingStyle: SpacingStyle,
+    ) {
         prefsRepo.setSpacingStyle(spacingStyle)
         fragment.updateSpacingStyle()
     }
 
-    private fun updateStoryOrder(fragment: ItemSetFragment, fs: FeedSet, storyOrder: StoryOrder) {
+    private fun updateStoryOrder(
+        fragment: ItemSetFragment,
+        fs: FeedSet,
+        storyOrder: StoryOrder,
+    ) {
         prefsRepo.updateStoryOrder(fs, storyOrder)
         restartReadingSession(fragment, fs)
     }
 
-    private fun updateReadFilter(fragment: ItemSetFragment, fs: FeedSet, readFilter: ReadFilter) {
+    private fun updateReadFilter(
+        fragment: ItemSetFragment,
+        fs: FeedSet,
+        readFilter: ReadFilter,
+    ) {
         prefsRepo.updateReadFilter(fs, readFilter)
         restartReadingSession(fragment, fs)
     }
 
-    private fun restartReadingSession(fragment: ItemSetFragment, fs: FeedSet) {
+    private fun restartReadingSession(
+        fragment: ItemSetFragment,
+        fs: FeedSet,
+    ) {
         syncServiceState.resetFetchState(fs)
         feedUtils.prepareReadingSession(fs, true)
         triggerSync(activity)

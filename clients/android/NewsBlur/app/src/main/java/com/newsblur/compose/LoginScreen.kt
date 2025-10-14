@@ -50,10 +50,10 @@ import com.newsblur.preference.PrefsRepo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-        prefsRepo: PrefsRepo,
-        onStartLoginProgress: (username: String, password: String) -> Unit,
-        onStartRegisterProgress: (username: String, password: String, email: String) -> Unit,
-        onOpenForgotPassword: () -> Unit
+    prefsRepo: PrefsRepo,
+    onStartLoginProgress: (username: String, password: String) -> Unit,
+    onStartRegisterProgress: (username: String, password: String, email: String) -> Unit,
+    onOpenForgotPassword: () -> Unit,
 ) {
     val cs = MaterialTheme.colorScheme
     val context = LocalContext.current
@@ -69,9 +69,10 @@ fun LoginScreen(
     var regPassword by rememberSaveable { mutableStateOf("") }
     var regEmail by rememberSaveable { mutableStateOf("") }
 
-    val initialCustomServer = remember {
-        prefsRepo.getCustomSever().orEmpty()
-    }
+    val initialCustomServer =
+        remember {
+            prefsRepo.getCustomSever().orEmpty()
+        }
     var customServerEnabled by rememberSaveable { mutableStateOf(initialCustomServer.isNotEmpty()) }
     var customServerValue by rememberSaveable { mutableStateOf(initialCustomServer) }
 
@@ -92,8 +93,8 @@ fun LoginScreen(
                     prefsRepo.saveCustomServer(value)
                 } else {
                     Toast
-                            .makeText(context, R.string.login_custom_server_scheme_error, Toast.LENGTH_LONG)
-                            .show()
+                        .makeText(context, R.string.login_custom_server_scheme_error, Toast.LENGTH_LONG)
+                        .show()
                     return false
                 }
             }
@@ -126,54 +127,62 @@ fun LoginScreen(
 
     Scaffold(containerColor = cs.background) { padding ->
         Column(
-                modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(horizontal = 20.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 20.dp),
         ) {
-            Image(modifier = Modifier.padding(vertical = 32.dp),
-                    painter = painterResource(id = R.drawable.logo_newsblur_blur_dark),
-                    contentDescription = stringResource(R.string.newsblur)
+            Image(
+                modifier = Modifier.padding(vertical = 32.dp),
+                painter = painterResource(id = R.drawable.logo_newsblur_blur_dark),
+                contentDescription = stringResource(R.string.newsblur),
             )
 
             AnimatedContent(
-                    targetState = mode,
-                    transitionSpec = {
-                        fadeIn(tween(180)) togetherWith fadeOut(tween(120))
-                    },
-                    label = "auth",
-                    modifier = Modifier
-                            .fillMaxWidth()
-                            .animateContentSize(tween(220))
+                targetState = mode,
+                transitionSpec = {
+                    fadeIn(tween(180)) togetherWith fadeOut(tween(120))
+                },
+                label = "auth",
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .animateContentSize(tween(220)),
             ) { state ->
                 when (state) {
-                    LoginMode.Login -> LoginForm(
+                    LoginMode.Login ->
+                        LoginForm(
                             username = loginUsername,
                             onUsername = { loginUsername = it },
                             password = loginPassword,
                             onPassword = { loginPassword = it },
-                            onDone = { logIn() }
-                    )
+                            onDone = { logIn() },
+                        )
 
-                    LoginMode.Register -> RegisterForm(
-                            username = regUsername, onUsername = { regUsername = it },
-                            password = regPassword, onPassword = { regPassword = it },
-                            email = regEmail, onEmail = { regEmail = it },
-                            onDone = { signUp() }
-                    )
+                    LoginMode.Register ->
+                        RegisterForm(
+                            username = regUsername,
+                            onUsername = { regUsername = it },
+                            password = regPassword,
+                            onPassword = { regPassword = it },
+                            email = regEmail,
+                            onEmail = { regEmail = it },
+                            onDone = { signUp() },
+                        )
                 }
             }
 
             Spacer(Modifier.height(24.dp))
 
             Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.End,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.End,
             ) {
                 if (mode == LoginMode.Register) {
                     Button(
-                            onClick = { signUp() },
-                            modifier = Modifier.widthIn(min = 120.dp)
+                        onClick = { signUp() },
+                        modifier = Modifier.widthIn(min = 120.dp),
                     ) { Text(stringResource(id = R.string.login_registration_register)) }
 
                     Spacer(Modifier.height(20.dp))
@@ -183,8 +192,8 @@ fun LoginScreen(
                     }
                 } else {
                     Button(
-                            onClick = { logIn() },
-                            modifier = Modifier.wrapContentWidth()
+                        onClick = { logIn() },
+                        modifier = Modifier.wrapContentWidth(),
                     ) { Text(stringResource(id = R.string.login_button_login)) }
 
                     Spacer(Modifier.height(20.dp))
@@ -201,8 +210,8 @@ fun LoginScreen(
 
             if (!customServerEnabled) {
                 TextButton(
-                        modifier = Modifier.align(Alignment.End),
-                        onClick = { customServerEnabled = !customServerEnabled },
+                    modifier = Modifier.align(Alignment.End),
+                    onClick = { customServerEnabled = !customServerEnabled },
                 ) {
                     Text(stringResource(id = R.string.login_custom_server))
                 }
@@ -213,32 +222,35 @@ fun LoginScreen(
             AnimatedVisibility(visible = customServerEnabled) {
                 Column {
                     Text(
-                            text = stringResource(id = R.string.login_registration_custom_server),
-                            style = MaterialTheme.typography.titleMedium
+                        text = stringResource(id = R.string.login_registration_custom_server),
+                        style = MaterialTheme.typography.titleMedium,
                     )
                     Spacer(Modifier.height(4.dp))
                     OutlinedTextField(
-                            modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(56.dp),
-                            value = customServerValue,
-                            onValueChange = { customServerValue = it },
-                            label = { Text(stringResource(id = R.string.login_custom_server_hint)) },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Uri,
-                                    imeAction = ImeAction.Done
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                        value = customServerValue,
+                        onValueChange = { customServerValue = it },
+                        label = { Text(stringResource(id = R.string.login_custom_server_hint)) },
+                        singleLine = true,
+                        keyboardOptions =
+                            KeyboardOptions(
+                                keyboardType = KeyboardType.Uri,
+                                imeAction = ImeAction.Done,
                             ),
-                            keyboardActions = KeyboardActions(
-                                    onDone = {
-                                        defaultKeyboardAction(ImeAction.Done)
-                                    }
+                        keyboardActions =
+                            KeyboardActions(
+                                onDone = {
+                                    defaultKeyboardAction(ImeAction.Done)
+                                },
                             ),
                     )
                     Spacer(Modifier.height(6.dp))
                     TextButton(
-                            onClick = { resetCustomServer() },
-                            modifier = Modifier.align(Alignment.End)
+                        onClick = { resetCustomServer() },
+                        modifier = Modifier.align(Alignment.End),
                     ) {
                         Text(stringResource(id = R.string.login_registration_reset_url))
                     }
@@ -252,98 +264,108 @@ private enum class LoginMode { Login, Register }
 
 @Composable
 private fun LoginForm(
-        username: String,
-        onUsername: (String) -> Unit,
-        password: String,
-        onPassword: (String) -> Unit,
-        onDone: () -> Unit
+    username: String,
+    onUsername: (String) -> Unit,
+    password: String,
+    onPassword: (String) -> Unit,
+    onDone: () -> Unit,
 ) {
     Column {
         OutlinedTextField(
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                value = username,
-                onValueChange = onUsername,
-                label = { Text(stringResource(id = R.string.login_username_hint)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+            value = username,
+            onValueChange = onUsername,
+            label = { Text(stringResource(id = R.string.login_username_hint)) },
+            singleLine = true,
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next,
                 ),
         )
         Spacer(Modifier.height(12.dp))
         OutlinedTextField(
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                value = password,
-                onValueChange = onPassword,
-                label = { Text(stringResource(id = R.string.login_password_hint)) },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+            value = password,
+            onValueChange = onPassword,
+            label = { Text(stringResource(id = R.string.login_password_hint)) },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done,
                 ),
-                keyboardActions = KeyboardActions(onDone = { onDone() })
+            keyboardActions = KeyboardActions(onDone = { onDone() }),
         )
     }
 }
 
 @Composable
 private fun RegisterForm(
-        username: String,
-        onUsername: (String) -> Unit,
-        password: String,
-        onPassword: (String) -> Unit,
-        email: String,
-        onEmail: (String) -> Unit,
-        onDone: () -> Unit
+    username: String,
+    onUsername: (String) -> Unit,
+    password: String,
+    onPassword: (String) -> Unit,
+    email: String,
+    onEmail: (String) -> Unit,
+    onDone: () -> Unit,
 ) {
     Column {
         OutlinedTextField(
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                value = username,
-                onValueChange = onUsername,
-                label = { Text(stringResource(id = R.string.login_username_hint)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+            value = username,
+            onValueChange = onUsername,
+            label = { Text(stringResource(id = R.string.login_username_hint)) },
+            singleLine = true,
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next,
                 ),
         )
         Spacer(Modifier.height(12.dp))
         OutlinedTextField(
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                value = password,
-                onValueChange = onPassword,
-                label = { Text(stringResource(id = R.string.login_password_hint)) },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Next
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+            value = password,
+            onValueChange = onPassword,
+            label = { Text(stringResource(id = R.string.login_password_hint)) },
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next,
                 ),
         )
         Spacer(Modifier.height(12.dp))
         OutlinedTextField(
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                value = email,
-                onValueChange = onEmail,
-                label = { Text(stringResource(id = R.string.login_registration_email_hint)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Done
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+            value = email,
+            onValueChange = onEmail,
+            label = { Text(stringResource(id = R.string.login_registration_email_hint)) },
+            singleLine = true,
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Done,
                 ),
-                keyboardActions = KeyboardActions(onDone = { onDone() }),
+            keyboardActions = KeyboardActions(onDone = { onDone() }),
         )
     }
 }

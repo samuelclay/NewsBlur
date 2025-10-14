@@ -14,7 +14,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class NotifyMarkreadReceiver : BroadcastReceiver() {
-
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
 
@@ -24,21 +23,24 @@ class NotifyMarkreadReceiver : BroadcastReceiver() {
     @Inject
     lateinit var storyRepository: StoryRepository
 
-    override fun onReceive(c: Context, i: Intent) {
+    override fun onReceive(
+        c: Context,
+        i: Intent,
+    ) {
         val storyHash = i.getStringExtra(Reading.EXTRA_STORY_HASH)
         NotificationUtils.cancel(c, storyHash.hashCode())
         storyHash ?: return
         NBScope.executeAsyncTask(
-                doInBackground = {
-                    dbHelper.putStoryDismissed(storyHash)
-                    storyRepository.setStoryReadStateExternal(storyHash, true)
-                },
-                onPostExecute = {
-                    val feedId = inferFeedId(storyHash)
-                    val impactedFeed = FeedSet.singleFeed(feedId)
-                    syncServiceState.addRecountCandidates(setOf(impactedFeed))
-                    triggerSync(c)
-                }
+            doInBackground = {
+                dbHelper.putStoryDismissed(storyHash)
+                storyRepository.setStoryReadStateExternal(storyHash, true)
+            },
+            onPostExecute = {
+                val feedId = inferFeedId(storyHash)
+                val impactedFeed = FeedSet.singleFeed(feedId)
+                syncServiceState.addRecountCandidates(setOf(impactedFeed))
+                triggerSync(c)
+            },
         )
     }
 }

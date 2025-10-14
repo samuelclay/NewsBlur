@@ -27,8 +27,13 @@ import com.newsblur.util.executeAsyncTask
 import com.newsblur.view.FlowLayout
 import java.lang.ref.WeakReference
 
-class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: View, inflater: LayoutInflater, story: Story?, iconLoader: ImageLoader) {
-
+class SetupCommentSectionTask(
+    private val fragment: ReadingItemFragment,
+    view: View,
+    inflater: LayoutInflater,
+    story: Story?,
+    iconLoader: ImageLoader,
+) {
     private val topCommentViews: MutableList<View> = mutableListOf()
     private val topShareViews: MutableList<View> = mutableListOf()
     private val publicCommentViews: MutableList<View> = mutableListOf()
@@ -49,12 +54,12 @@ class SetupCommentSectionTask(private val fragment: ReadingItemFragment, view: V
      */
     fun execute() {
         fragment.lifecycleScope.executeAsyncTask(
-                doInBackground = {
-                    doInBackground()
-                },
-                onPostExecute = {
-                    onPostExecute()
-                }
+            doInBackground = {
+                doInBackground()
+            },
+            onPostExecute = {
+                onPostExecute()
+            },
         )
     }
 

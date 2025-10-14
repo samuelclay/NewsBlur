@@ -23,16 +23,15 @@ import kotlin.String
 import kotlin.apply
 
 class StoryApiImpl(
-        private val gson: Gson,
-        private val networkClient: NetworkClient,
+    private val gson: Gson,
+    private val networkClient: NetworkClient,
 ) : StoryApi {
-
     override suspend fun getStories(
-            fs: FeedSet,
-            pageNumber: Int,
-            order: StoryOrder,
-            filter: ReadFilter,
-            infrequentCutoff: Int,
+        fs: FeedSet,
+        pageNumber: Int,
+        order: StoryOrder,
+        filter: ReadFilter,
+        infrequentCutoff: Int,
     ): StoriesResponse? {
         val uri: Uri
         val values = ValueMultimap()
@@ -45,7 +44,13 @@ class StoryApiImpl(
             values.put(APIConstants.PARAMETER_INFREQUENT, APIConstants.VALUE_FALSE)
             values.put(APIConstants.PARAMETER_LIMIT, WidgetUtils.STORIES_LIMIT.toString())
         } else if (fs.getSingleFeed() != null) {
-            uri = APIConstants.buildUrl(APIConstants.PATH_FEED_STORIES).toUri().buildUpon().appendPath(fs.getSingleFeed()).build()
+            uri =
+                APIConstants
+                    .buildUrl(APIConstants.PATH_FEED_STORIES)
+                    .toUri()
+                    .buildUpon()
+                    .appendPath(fs.getSingleFeed())
+                    .build()
             values.put(APIConstants.PARAMETER_FEEDS, fs.getSingleFeed())
             values.put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE)
             if (fs.isFilterSaved) values.put(APIConstants.PARAMETER_READ_FILTER, APIConstants.VALUE_STARRED)
@@ -57,7 +62,15 @@ class StoryApiImpl(
         } else if (fs.singleSocialFeed != null) {
             val feedId = fs.singleSocialFeed.key
             val username = fs.singleSocialFeed.value
-            uri = APIConstants.buildUrl(APIConstants.PATH_SOCIALFEED_STORIES).toUri().buildUpon().appendPath(feedId).appendPath(username).build()
+            uri =
+                APIConstants
+                    .buildUrl(
+                        APIConstants.PATH_SOCIALFEED_STORIES,
+                    ).toUri()
+                    .buildUpon()
+                    .appendPath(feedId)
+                    .appendPath(username)
+                    .build()
             values.put(APIConstants.PARAMETER_USER_ID, feedId)
             values.put(APIConstants.PARAMETER_USERNAME, username)
         } else if (fs.multipleSocialFeeds != null) {
@@ -104,11 +117,15 @@ class StoryApiImpl(
         return response.getResponse<StoriesResponse?>(gson, StoriesResponse::class.java)
     }
 
-    override suspend fun getStoryText(feedId: String?, storyId: String): StoryTextResponse? {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_FEEDID, feedId)
-            put(APIConstants.PARAMETER_STORYID, storyId)
-        }
+    override suspend fun getStoryText(
+        feedId: String?,
+        storyId: String,
+    ): StoryTextResponse? {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_FEEDID, feedId)
+                put(APIConstants.PARAMETER_STORYID, storyId)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_STORY_TEXT)
         val response: APIResponse = networkClient.get(urlString, values)
         return if (!response.isError) {
@@ -118,38 +135,45 @@ class StoryApiImpl(
         }
     }
 
-    override suspend fun getStoryChanges(storyHash: String?, showChanges: kotlin.Boolean): StoryChangesResponse? {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_STORY_HASH, storyHash)
-            put(APIConstants.PARAMETER_SHOW_CHANGES, if (showChanges) APIConstants.VALUE_TRUE else APIConstants.VALUE_FALSE)
-        }
+    override suspend fun getStoryChanges(
+        storyHash: String?,
+        showChanges: kotlin.Boolean,
+    ): StoryChangesResponse? {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_STORY_HASH, storyHash)
+                put(APIConstants.PARAMETER_SHOW_CHANGES, if (showChanges) APIConstants.VALUE_TRUE else APIConstants.VALUE_FALSE)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_STORY_CHANGES)
         val response: APIResponse = networkClient.get(urlString, values)
         return response.getResponse(gson, StoryChangesResponse::class.java)
     }
 
     override suspend fun markStoryHashUnread(hash: String?): NewsBlurResponse? {
-        val values = ValueMultimap().apply {
-            put(APIConstants.PARAMETER_STORY_HASH, hash)
-        }
+        val values =
+            ValueMultimap().apply {
+                put(APIConstants.PARAMETER_STORY_HASH, hash)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_STORY_HASH_UNREAD)
         val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
     override suspend fun markStoryAsUnstarred(storyHash: String?): NewsBlurResponse? {
-        val values = ValueMultimap().apply {
-            put(APIConstants.PARAMETER_STORY_HASH, storyHash)
-        }
+        val values =
+            ValueMultimap().apply {
+                put(APIConstants.PARAMETER_STORY_HASH, storyHash)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_STORY_AS_UNSTARRED)
         val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
     override suspend fun getUnreadStoryHashes(): UnreadStoryHashesResponse {
-        val values = ValueMultimap().apply {
-            put(APIConstants.PARAMETER_INCLUDE_TIMESTAMPS, "1")
-        }
+        val values =
+            ValueMultimap().apply {
+                put(APIConstants.PARAMETER_INCLUDE_TIMESTAMPS, "1")
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_UNREAD_HASHES)
         val response: APIResponse = networkClient.get(urlString, values)
         return response.getResponse(gson, UnreadStoryHashesResponse::class.java)
@@ -162,86 +186,109 @@ class StoryApiImpl(
     }
 
     override suspend fun getStoriesByHash(storyHashes: List<String>): StoriesResponse? {
-        val values = ValueMultimap().apply {
-            for (hash in storyHashes) {
-                put(APIConstants.PARAMETER_H, hash)
+        val values =
+            ValueMultimap().apply {
+                for (hash in storyHashes) {
+                    put(APIConstants.PARAMETER_H, hash)
+                }
+                put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE)
             }
-            put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE)
-        }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_RIVER_STORIES)
         val response: APIResponse = networkClient.get(urlString, values)
         return response.getResponse(gson, StoriesResponse::class.java)
     }
 
     override suspend fun markStoryAsRead(storyHash: String): NewsBlurResponse? {
-        val values = ValueMultimap().apply {
-            put(APIConstants.PARAMETER_STORY_HASH, storyHash)
-
-        }
+        val values =
+            ValueMultimap().apply {
+                put(APIConstants.PARAMETER_STORY_HASH, storyHash)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_STORIES_READ)
         val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun markStoryAsStarred(storyHash: String, highlights: List<String>, userTags: List<String>): NewsBlurResponse? {
-        val values = ValueMultimap().apply {
-            put(APIConstants.PARAMETER_STORY_HASH, storyHash)
-            for (tag in userTags) {
-                put(APIConstants.PARAMETER_USER_TAGS, tag)
+    override suspend fun markStoryAsStarred(
+        storyHash: String,
+        highlights: List<String>,
+        userTags: List<String>,
+    ): NewsBlurResponse? {
+        val values =
+            ValueMultimap().apply {
+                put(APIConstants.PARAMETER_STORY_HASH, storyHash)
+                for (tag in userTags) {
+                    put(APIConstants.PARAMETER_USER_TAGS, tag)
+                }
+                for (highlight in highlights) {
+                    put(APIConstants.PARAMETER_HIGHLIGHTS, highlight)
+                }
             }
-            for (highlight in highlights) {
-                put(APIConstants.PARAMETER_HIGHLIGHTS, highlight)
-            }
-        }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_STORY_AS_STARRED)
         val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun saveExternalStory(storyTitle: String, storyUrl: String): APIResponse {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_TITLE, storyTitle)
-            put(APIConstants.PARAMETER_STORY_URL, storyUrl)
-
-        }
+    override suspend fun saveExternalStory(
+        storyTitle: String,
+        storyUrl: String,
+    ): APIResponse {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_TITLE, storyTitle)
+                put(APIConstants.PARAMETER_STORY_URL, storyUrl)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SAVE_EXTERNAL_STORY)
         return networkClient.post(urlString, values)
     }
 
-    override suspend fun shareExternalStory(storyTitle: String, storyUrl: String, shareComments: String): APIResponse {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_TITLE, storyTitle)
-            put(APIConstants.PARAMETER_STORY_URL, storyUrl)
-            put(APIConstants.PARAMETER_SHARE_COMMENT, shareComments)
-
-        }
+    override suspend fun shareExternalStory(
+        storyTitle: String,
+        storyUrl: String,
+        shareComments: String,
+    ): APIResponse {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_TITLE, storyTitle)
+                put(APIConstants.PARAMETER_STORY_URL, storyUrl)
+                put(APIConstants.PARAMETER_SHARE_COMMENT, shareComments)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SHARE_EXTERNAL_STORY)
         return networkClient.post(urlString, values)
     }
 
-    override suspend fun shareStory(storyId: String?, feedId: String?, comment: String?, sourceUserId: String?): StoriesResponse? {
-        val values = ContentValues().apply {
-            if (!comment.isNullOrEmpty()) {
-                put(APIConstants.PARAMETER_SHARE_COMMENT, comment)
-            }
-            if (!sourceUserId.isNullOrEmpty()) {
-                put(APIConstants.PARAMETER_SHARE_SOURCEID, sourceUserId)
-            }
+    override suspend fun shareStory(
+        storyId: String?,
+        feedId: String?,
+        comment: String?,
+        sourceUserId: String?,
+    ): StoriesResponse? {
+        val values =
+            ContentValues().apply {
+                if (!comment.isNullOrEmpty()) {
+                    put(APIConstants.PARAMETER_SHARE_COMMENT, comment)
+                }
+                if (!sourceUserId.isNullOrEmpty()) {
+                    put(APIConstants.PARAMETER_SHARE_SOURCEID, sourceUserId)
+                }
 
-            put(APIConstants.PARAMETER_FEEDID, feedId)
-            put(APIConstants.PARAMETER_STORYID, storyId)
-        }
+                put(APIConstants.PARAMETER_FEEDID, feedId)
+                put(APIConstants.PARAMETER_STORYID, storyId)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_SHARE_STORY)
         val response: APIResponse = networkClient.post(urlString, values)
         // this call returns a new copy of the story with all fields updated and some metadata
         return response.getResponse(gson, StoriesResponse::class.java)
     }
 
-    override suspend fun unshareStory(storyId: String?, feedId: String?): StoriesResponse? {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_FEEDID, feedId)
-            put(APIConstants.PARAMETER_STORYID, storyId)
-        }
+    override suspend fun unshareStory(
+        storyId: String?,
+        feedId: String?,
+    ): StoriesResponse? {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_FEEDID, feedId)
+                put(APIConstants.PARAMETER_STORYID, storyId)
+            }
 
         val urlString = APIConstants.buildUrl(APIConstants.PATH_UNSHARE_STORY)
         val response: APIResponse = networkClient.post(urlString, values)
@@ -249,62 +296,91 @@ class StoryApiImpl(
         return response.getResponse<StoriesResponse?>(gson, StoriesResponse::class.java)
     }
 
-    override suspend fun favouriteComment(storyId: String?, commentUserId: String?, feedId: String?): NewsBlurResponse? {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_STORYID, storyId)
-            put(APIConstants.PARAMETER_STORY_FEEDID, feedId)
-            put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId)
-        }
+    override suspend fun favouriteComment(
+        storyId: String?,
+        commentUserId: String?,
+        feedId: String?,
+    ): NewsBlurResponse? {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_STORYID, storyId)
+                put(APIConstants.PARAMETER_STORY_FEEDID, feedId)
+                put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_LIKE_COMMENT)
         val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse<NewsBlurResponse?>(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun unFavouriteComment(storyId: String?, commentUserId: String?, feedId: String?): NewsBlurResponse? {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_STORYID, storyId)
-            put(APIConstants.PARAMETER_STORY_FEEDID, feedId)
-            put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId)
-        }
+    override suspend fun unFavouriteComment(
+        storyId: String?,
+        commentUserId: String?,
+        feedId: String?,
+    ): NewsBlurResponse? {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_STORYID, storyId)
+                put(APIConstants.PARAMETER_STORY_FEEDID, feedId)
+                put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_UNLIKE_COMMENT)
         val response: APIResponse = networkClient.post(urlString, values)
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun replyToComment(storyId: String?, storyFeedId: String?, commentUserId: String?, reply: String?): CommentResponse? {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_STORYID, storyId)
-            put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId)
-            put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId)
-            put(APIConstants.PARAMETER_REPLY_TEXT, reply)
-        }
+    override suspend fun replyToComment(
+        storyId: String?,
+        storyFeedId: String?,
+        commentUserId: String?,
+        reply: String?,
+    ): CommentResponse? {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_STORYID, storyId)
+                put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId)
+                put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId)
+                put(APIConstants.PARAMETER_REPLY_TEXT, reply)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_REPLY_TO)
         val response: APIResponse = networkClient.post(urlString, values)
         // this call returns a new copy of the comment with all fields updated
         return response.getResponse(gson, CommentResponse::class.java)
     }
 
-    override suspend fun editReply(storyId: String?, storyFeedId: String?, commentUserId: String?, replyId: String?, reply: String?): CommentResponse? {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_STORYID, storyId)
-            put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId)
-            put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId)
-            put(APIConstants.PARAMETER_REPLY_ID, replyId)
-            put(APIConstants.PARAMETER_REPLY_TEXT, reply)
-        }
+    override suspend fun editReply(
+        storyId: String?,
+        storyFeedId: String?,
+        commentUserId: String?,
+        replyId: String?,
+        reply: String?,
+    ): CommentResponse? {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_STORYID, storyId)
+                put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId)
+                put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId)
+                put(APIConstants.PARAMETER_REPLY_ID, replyId)
+                put(APIConstants.PARAMETER_REPLY_TEXT, reply)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_EDIT_REPLY)
         val response: APIResponse = networkClient.post(urlString, values)
         // this call returns a new copy of the comment with all fields updated
         return response.getResponse(gson, CommentResponse::class.java)
     }
 
-    override suspend fun deleteReply(storyId: String?, storyFeedId: String?, commentUserId: String?, replyId: String?): CommentResponse? {
-        val values = ContentValues().apply {
-            put(APIConstants.PARAMETER_STORYID, storyId)
-            put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId)
-            put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId)
-            put(APIConstants.PARAMETER_REPLY_ID, replyId)
-        }
+    override suspend fun deleteReply(
+        storyId: String?,
+        storyFeedId: String?,
+        commentUserId: String?,
+        replyId: String?,
+    ): CommentResponse? {
+        val values =
+            ContentValues().apply {
+                put(APIConstants.PARAMETER_STORYID, storyId)
+                put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId)
+                put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId)
+                put(APIConstants.PARAMETER_REPLY_ID, replyId)
+            }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_DELETE_REPLY)
         val response: APIResponse = networkClient.post(urlString, values)
         // this call returns a new copy of the comment with all fields updated
