@@ -1,5 +1,7 @@
 package com.newsblur.network.domain;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /* note: this class cannot extend NewsBlurResponse like all other responses, since it makes the
@@ -27,6 +29,7 @@ public class RegisterResponse {
      * user-facing error messages if registration fails. This method attempts to extract a
      * user-vendable message from one of those fields, or null if none is found.
      */
+    @Nullable
     public String getErrorMessage() {
         String errorMessage = null;
         if(errors != null && errors.email != null && errors.email.length > 0) {

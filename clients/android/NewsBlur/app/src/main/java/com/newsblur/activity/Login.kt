@@ -11,6 +11,7 @@ import com.newsblur.compose.LoginScreen
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.AppConstants
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,16 +29,14 @@ class Login : FragmentActivity() {
         setContent {
             NewsBlurTheme(variant = variant) {
                 LoginScreen(
-                    prefsRepo = prefsRepo,
-                    onStartLoginProgress = ::startLogin,
-                    onStartRegisterProgress = { username, password, email ->
-                        startActivity(
-                            Intent(this, RegisterProgress::class.java).apply {
-                                putExtra("username", username)
-                                putExtra("password", password)
-                                putExtra("email", email)
-                            },
-                        )
+                    onAuthCompleted = {
+                        SubscriptionSyncService.schedule(this)
+
+                        val startMain =
+                            Intent(this, Main::class.java).apply {
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            }
+                        startActivity(startMain)
                     },
                     onOpenForgotPassword = {
                         try {
@@ -48,17 +47,5 @@ class Login : FragmentActivity() {
                 )
             }
         }
-    }
-
-    private fun startLogin(
-        username: String,
-        password: String,
-    ) {
-        startActivity(
-            Intent(this, LoginProgress::class.java).apply {
-                putExtra("username", username)
-                putExtra("password", password)
-            },
-        )
     }
 }

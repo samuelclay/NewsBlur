@@ -85,7 +85,7 @@ class LoginProgress : FragmentActivity() {
                     val startMain = Intent(this, Main::class.java)
                     startActivity(startMain)
                 } else {
-                    Toast.makeText(this, response.getErrorMessage(getString(R.string.login_message_error)), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, response.getErrorMessage(), Toast.LENGTH_LONG).show()
                     startActivity(Intent(this, Login::class.java))
                 }
             },
