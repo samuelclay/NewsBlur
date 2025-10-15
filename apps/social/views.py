@@ -87,7 +87,10 @@ def load_social_stories(request, user_id, username=None):
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
     # Normalize date filters from user timezone to UTC
-    from apps.reader.views import adjust_read_filter_for_date_range, normalize_date_filters
+    from apps.reader.views import (
+        adjust_read_filter_for_date_range,
+        normalize_date_filters,
+    )
     from utils import log as logging_util
 
     date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
