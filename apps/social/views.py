@@ -75,6 +75,8 @@ def load_social_stories(request, user_id, username=None):
     page = int(request.GET.get("page", 1))
     order = request.GET.get("order", "newest")
     read_filter = request.GET.get("read_filter", "all")
+    date_filter_start = request.GET.get("date_filter_start")
+    date_filter_end = request.GET.get("date_filter_end")
     query = request.GET.get("query", "").strip()
     include_story_content = is_true(request.GET.get("include_story_content", True))
     stories = []
@@ -83,6 +85,29 @@ def load_social_stories(request, user_id, username=None):
     if page:
         offset = limit * (int(page) - 1)
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+
+    # Normalize date filters from user timezone to UTC
+    from apps.reader.views import (
+        adjust_read_filter_for_date_range,
+        normalize_date_filters,
+    )
+    from utils import log as logging_util
+
+    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+        date_filter_start, date_filter_end, user.profile.timezone
+    )
+
+    # Auto-switch from unread to all if date filter extends beyond unread cutoff
+    read_filter = adjust_read_filter_for_date_range(
+        read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
+    )
+
+    if date_filter_start or date_filter_end:
+        logging_util.user(
+            request,
+            "~FBDate filters for social stories: start=%s end=%s (UTC: start=%s end=%s)"
+            % (date_filter_start, date_filter_end, date_filter_start_utc, date_filter_end_utc),
+        )
 
     social_profile = MSocialProfile.get_user(social_user.pk)
     try:
@@ -104,7 +129,13 @@ def load_social_stories(request, user_id, username=None):
     elif socialsub and (read_filter == "unread" or order == "oldest"):
         cutoff_date = max(socialsub.mark_read_date, user.profile.unread_cutoff)
         story_hashes = socialsub.get_stories(
-            order=order, read_filter=read_filter, offset=offset, limit=limit, cutoff_date=cutoff_date
+            order=order,
+            read_filter=read_filter,
+            offset=offset,
+            limit=limit,
+            cutoff_date=cutoff_date,
+            date_filter_start=date_filter_start_utc,
+            date_filter_end=date_filter_end_utc,
         )
         story_date_order = "%sshared_date" % ("" if order == "oldest" else "-")
         if story_hashes:
@@ -115,9 +146,12 @@ def load_social_stories(request, user_id, username=None):
                 story.extract_image_urls()
             stories = Feed.format_stories(mstories)
     else:
-        mstories = MSharedStory.objects(user_id=social_user.pk).order_by("-shared_date")[
-            offset : offset + limit
-        ]
+        mstories_query = MSharedStory.objects(user_id=social_user.pk)
+        if date_filter_start_utc:
+            mstories_query = mstories_query.filter(shared_date__gte=date_filter_start_utc)
+        if date_filter_end_utc:
+            mstories_query = mstories_query.filter(shared_date__lt=date_filter_end_utc)
+        mstories = mstories_query.order_by("-shared_date")[offset : offset + limit]
         for story in mstories:
             story.extract_image_urls()
         stories = Feed.format_stories(mstories)
@@ -261,6 +295,8 @@ def load_river_blurblog(request):
     page = int(request.GET.get("page", 1))
     order = request.GET.get("order", "newest")
     read_filter = request.GET.get("read_filter", "unread")
+    date_filter_start = request.GET.get("date_filter_start")
+    date_filter_end = request.GET.get("date_filter_end")
     relative_user_id = request.GET.get("relative_user_id", None)
     global_feed = request.GET.get("global_feed", None)
     on_dashboard = is_true(request.GET.get("dashboard", False))
@@ -283,6 +319,21 @@ def load_river_blurblog(request):
     offset = (page - 1) * limit
     limit = page * limit - 1
 
+    # Normalize date filters from user timezone to UTC
+    from apps.reader.views import (
+        adjust_read_filter_for_date_range,
+        normalize_date_filters,
+    )
+
+    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+        date_filter_start, date_filter_end, user.profile.timezone
+    )
+
+    # Auto-switch from unread to all if date filter extends beyond unread cutoff
+    read_filter = adjust_read_filter_for_date_range(
+        read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
+    )
+
     story_hashes, story_dates, unread_feed_story_hashes = MSocialSubscription.feed_stories(
         user.pk,
         social_user_ids,
@@ -293,6 +344,8 @@ def load_river_blurblog(request):
         relative_user_id=relative_user_id,
         socialsubs=socialsubs,
         cutoff_date=user.profile.unread_cutoff,
+        date_filter_start=date_filter_start_utc,
+        date_filter_end=date_filter_end_utc,
         dashboard_global=on_dashboard and global_feed,
     )
     mstories = MStory.find_by_story_hashes(story_hashes)
@@ -443,6 +496,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
     format = request.GET.get("format", None)
     has_next_page = False
     feed_id = kwargs.get("feed_id") or request.GET.get("feed_id")
+    date_filter_start = request.GET.get("date_filter_start")
+    date_filter_end = request.GET.get("date_filter_end")
     if page:
         offset = limit * (page - 1)
     social_services = None
@@ -466,6 +521,21 @@ def load_social_page(request, user_id, username=None, **kwargs):
         current_tab = "global"
         global_feed = True
 
+    # Normalize date filters from user timezone to UTC
+    from apps.reader.views import normalize_date_filters
+    from utils import log as logging_util
+
+    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+        date_filter_start, date_filter_end, user.profile.timezone
+    )
+
+    if date_filter_start or date_filter_end:
+        logging_util.user(
+            request,
+            "~FBDate filters for social stories: start=%s end=%s (UTC: start=%s end=%s)"
+            % (date_filter_start, date_filter_end, date_filter_start_utc, date_filter_end_utc),
+        )
+
     if social_profile.private and (
         not user.is_authenticated or not social_profile.is_followed_by_user(user.pk)
     ):
@@ -482,6 +552,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
             relative_user_id=relative_user_id,
             cache=request.user.is_authenticated,
             cutoff_date=user.profile.unread_cutoff,
+            date_filter_start=date_filter_start_utc,
+            date_filter_end=date_filter_end_utc,
         )
         if len(story_ids) > limit:
             has_next_page = True
@@ -502,7 +574,14 @@ def load_social_page(request, user_id, username=None, **kwargs):
             params["story_feed_id"] = feed_id
         if "story_db_id" in params:
             params.pop("story_db_id")
-        mstories = MSharedStory.objects(**params).order_by("-shared_date")[offset : offset + limit + 1]
+
+        mstories_query = MSharedStory.objects(**params)
+        if date_filter_start_utc:
+            mstories_query = mstories_query.filter(shared_date__gte=date_filter_start_utc)
+        if date_filter_end_utc:
+            mstories_query = mstories_query.filter(shared_date__lt=date_filter_end_utc)
+
+        mstories = mstories_query.order_by("-shared_date")[offset : offset + limit + 1]
         stories = Feed.format_stories(mstories, include_permalinks=True)
 
         if len(stories) > limit:

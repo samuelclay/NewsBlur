@@ -65,4 +65,5 @@
     "cSpell.words": [
         "NEWSBLUR"
     ],
+    "idf.pythonInstallPath": "/usr/local/bin/python",
 }

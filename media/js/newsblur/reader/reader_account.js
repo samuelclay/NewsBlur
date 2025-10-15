@@ -432,7 +432,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
         NEWSBLUR.log(["form['send_emails']", form['send_emails']]);
         this.model.preference('send_emails', form['send_emails']);
-        this.model.save_account_settings(form, function (data) {
+        this.model.save_account_settings(form, _.bind(function (data) {
             if (data.code == -1) {
                 $('.NB-preference-username .NB-preference-error', this.$modal).text(data.message);
                 return self.disable_save();
@@ -449,7 +449,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             $('.NB-module-account-username').text(NEWSBLUR.Globals.username);
             $('.NB-feeds-header-user-name').text(NEWSBLUR.Globals.username);
             self.close();
-        });
+        }, this));
     },
 
     make_premium_expire: function () {

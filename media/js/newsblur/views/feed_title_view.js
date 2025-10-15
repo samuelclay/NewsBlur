@@ -103,6 +103,23 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
               <div class="NB-feedbar-options-container">\
                   <span class="NB-feedbar-options" role="button">\
                       <div class="NB-icon"></div>\
+                      <% \
+                        var start_date = NEWSBLUR.reader.flags.date_filter_start;\
+                        var end_date = NEWSBLUR.reader.flags.date_filter_end;\
+                        if (start_date && end_date) { %>\
+                        <% if (start_date === end_date) { %>\
+                        Stories on <%= start_date %>\
+                        <% } else { %>\
+                        Stories from <%= start_date %> to <%= end_date %>\
+                        <% } %>\
+                        &middot;\
+                      <% } else if (start_date) { %>\
+                        Stories newer than <%= start_date %>\
+                        &middot;\
+                      <% } else if (end_date) { %>\
+                        Stories older than <%= end_date %>\
+                        &middot;\
+                      <% } %>\
                       <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
                       &middot;\
                       <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
