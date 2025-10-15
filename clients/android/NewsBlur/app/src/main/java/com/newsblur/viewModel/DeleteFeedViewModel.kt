@@ -18,8 +18,8 @@ class DeleteFeedViewModel
         private val feedRepository: FeedRepository,
     ) : ViewModel() {
         fun deleteFeed(
-            feedId: String,
-            folderName: String,
+            feedId: String?,
+            folderName: String?,
         ) {
             viewModelScope.launch(Dispatchers.IO) {
                 feedRepository.deleteFeed(feedId, folderName)
