@@ -714,6 +714,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             order: this.view_setting('starred', 'order'),
             tag: tag,
             highlights: highlights,
+            date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
+            date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
             v: 2
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
@@ -740,7 +742,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/read_stories', {
             page: page,
             query: NEWSBLUR.reader.flags.search,
-            order: this.view_setting('read', 'order')
+            order: this.view_setting('read', 'order'),
+            date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
+            date_filter_end: NEWSBLUR.reader.flags.date_filter_end
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'

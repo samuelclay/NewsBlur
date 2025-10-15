@@ -1161,6 +1161,9 @@ def load_starred_stories(request):
     page = int(request.GET.get("page", 0))
     query = request.GET.get("query", "").strip()
     order = request.GET.get("order", "newest")
+    read_filter = request.GET.get("read_filter", "all")
+    date_filter_start = request.GET.get("date_filter_start")
+    date_filter_end = request.GET.get("date_filter_end")
     tag = request.GET.get("tag")
     highlights = is_true(request.GET.get("highlights", False))
     story_hashes = request.GET.getlist("h") or request.GET.getlist("h[]")
@@ -1172,44 +1175,75 @@ def load_starred_stories(request):
     if page:
         offset = limit * (page - 1)
 
+    # Normalize date filters from user timezone to UTC
+    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+        date_filter_start, date_filter_end, user.profile.timezone
+    )
+
+    # Auto-switch from unread to all if date filter extends beyond unread cutoff
+    read_filter = adjust_read_filter_for_date_range(
+        read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
+    )
+
     if query:
         # results = SearchStarredStory.query(user.pk, query)
         # story_ids = [result.db_id for result in results]
         if user.profile.is_premium:
             stories = MStarredStory.find_stories(
-                query, user.pk, tag=tag, offset=offset, limit=limit, order=order
+                query,
+                user.pk,
+                tag=tag,
+                offset=offset,
+                limit=limit,
+                order=order,
+                date_filter_start=date_filter_start_utc,
+                date_filter_end=date_filter_end_utc,
             )
         else:
             stories = []
             message = "You must be a premium subscriber to search."
     elif highlights:
         if user.profile.is_premium:
-            mstories = MStarredStory.objects(
+            mstories_query = MStarredStory.objects(
                 user_id=user.pk, highlights__exists=True, __raw__={"$where": "this.highlights.length > 0"}
-            ).order_by("%sstarred_date" % order_by)[offset : offset + limit]
+            )
+            if date_filter_start_utc:
+                mstories_query = mstories_query.filter(starred_date__gte=date_filter_start_utc)
+            if date_filter_end_utc:
+                mstories_query = mstories_query.filter(starred_date__lt=date_filter_end_utc)
+            mstories = mstories_query.order_by("%sstarred_date" % order_by)[offset : offset + limit]
             stories = Feed.format_stories(mstories)
         else:
             stories = []
             message = "You must be a premium subscriber to read through saved story highlights."
     elif tag:
         if user.profile.is_premium:
-            mstories = MStarredStory.objects(user_id=user.pk, user_tags__contains=tag).order_by(
-                "%sstarred_date" % order_by
-            )[offset : offset + limit]
+            mstories_query = MStarredStory.objects(user_id=user.pk, user_tags__contains=tag)
+            if date_filter_start_utc:
+                mstories_query = mstories_query.filter(starred_date__gte=date_filter_start_utc)
+            if date_filter_end_utc:
+                mstories_query = mstories_query.filter(starred_date__lt=date_filter_end_utc)
+            mstories = mstories_query.order_by("%sstarred_date" % order_by)[offset : offset + limit]
             stories = Feed.format_stories(mstories)
         else:
             stories = []
             message = "You must be a premium subscriber to read saved stories by tag."
     elif story_hashes:
         limit = 100
-        mstories = MStarredStory.objects(user_id=user.pk, story_hash__in=story_hashes).order_by(
-            "%sstarred_date" % order_by
-        )[offset : offset + limit]
+        mstories_query = MStarredStory.objects(user_id=user.pk, story_hash__in=story_hashes)
+        if date_filter_start_utc:
+            mstories_query = mstories_query.filter(starred_date__gte=date_filter_start_utc)
+        if date_filter_end_utc:
+            mstories_query = mstories_query.filter(starred_date__lt=date_filter_end_utc)
+        mstories = mstories_query.order_by("%sstarred_date" % order_by)[offset : offset + limit]
         stories = Feed.format_stories(mstories)
     else:
-        mstories = MStarredStory.objects(user_id=user.pk).order_by("%sstarred_date" % order_by)[
-            offset : offset + limit
-        ]
+        mstories_query = MStarredStory.objects(user_id=user.pk)
+        if date_filter_start_utc:
+            mstories_query = mstories_query.filter(starred_date__gte=date_filter_start_utc)
+        if date_filter_end_utc:
+            mstories_query = mstories_query.filter(starred_date__lt=date_filter_end_utc)
+        mstories = mstories_query.order_by("%sstarred_date" % order_by)[offset : offset + limit]
         stories = Feed.format_stories(mstories)
 
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
@@ -1566,11 +1600,25 @@ def load_read_stories(request):
     limit = int(request.GET.get("limit", 10))
     page = int(request.GET.get("page", 0))
     order = request.GET.get("order", "newest")
+    date_filter_start = request.GET.get("date_filter_start")
+    date_filter_end = request.GET.get("date_filter_end")
     query = request.GET.get("query", "").strip()
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
     if page:
         offset = limit * (page - 1)
+
+    # Normalize date filters from user timezone to UTC
+    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+        date_filter_start, date_filter_end, user.profile.timezone
+    )
+
+    if date_filter_start or date_filter_end:
+        logging.user(
+            request,
+            "~FBDate filters for read stories: start=%s end=%s (UTC: start=%s end=%s)"
+            % (date_filter_start, date_filter_end, date_filter_start_utc, date_filter_end_utc),
+        )
 
     if query:
         stories = []
@@ -1581,7 +1629,14 @@ def load_read_stories(request):
         #     stories = []
         #     message = "You must be a premium subscriber to search."
     else:
-        story_hashes = RUserStory.get_read_stories(user.pk, offset=offset, limit=limit, order=order)
+        story_hashes = RUserStory.get_read_stories(
+            user.pk,
+            offset=offset,
+            limit=limit,
+            order=order,
+            date_filter_start=date_filter_start_utc,
+            date_filter_end=date_filter_end_utc,
+        )
         mstories = MStory.objects(story_hash__in=story_hashes)
         stories = Feed.format_stories(mstories)
         stories = sorted(
