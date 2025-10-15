@@ -15,7 +15,13 @@
   shell: |
     echo "disable server {{ backend_name }}/{{ inventory_hostname }}" | \
     docker exec -i haproxy socat stdio /var/run/haproxy.sock
+  register: haproxy_disable
   when: backend_name is defined and disable_consul_services_ie_staging is not defined
+
+- name: Show HAProxy disable result
+  debug:
+    msg: "HAProxy response for {{ inventory_hostname }}: {{ haproxy_disable.stdout }}"
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined and haproxy_disable is defined
 
 - name: Wait for connections to drain
   pause:
@@ -104,7 +110,13 @@
   shell: |
     echo "enable server {{ backend_name }}/{{ inventory_hostname }}" | \
     docker exec -i haproxy socat stdio /var/run/haproxy.sock
+  register: haproxy_enable
   when: backend_name is defined and disable_consul_services_ie_staging is not defined
+
+- name: Show HAProxy enable result
+  debug:
+    msg: "HAProxy response for {{ inventory_hostname }}: {{ haproxy_enable.stdout }}"
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined and haproxy_enable is defined
 
 - name: Start Consul
   become: yes
