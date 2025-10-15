@@ -141,7 +141,6 @@ class ReadingItemFragment :
     private val isLoadFinished = AtomicBoolean(false)
     private var savedScrollPosRel = 0f
     private val webViewContentMutex = Any()
-    private val loadLock = Any()
 
     private lateinit var binding: FragmentReadingitemBinding
     private lateinit var readingItemActionsBinding: ReadingItemActionsBinding
@@ -184,6 +183,8 @@ class ReadingItemFragment :
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
+        if (!::binding.isInitialized) return
+
         val heightm = binding.readingScrollview.getChildAt(0).measuredHeight
         val pos = binding.readingScrollview.scrollY
         savedInstanceState.putFloat(BUNDLE_SCROLL_POS_REL, pos.toFloat() / heightm)
@@ -762,6 +763,7 @@ class ReadingItemFragment :
                         binding.readingItemAuthors.setTextColor(
                             ContextCompat.getColor(requireContext(), R.color.negative),
                         )
+
                     else ->
                         binding.readingItemAuthors.setTextColor(
                             UIUtils.getThemedColor(requireContext(), R.attr.readingItemMetadata, android.R.attr.textColor),
