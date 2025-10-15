@@ -92,8 +92,16 @@
   changed_when: yes
   notify: reload haproxy
 
-- name: Install socat
+- name: Install socat on host
   apt:
     name: socat
     state: present
   become: yes
+
+- name: Install socat in HAProxy container
+  become: yes
+  shell: docker exec haproxy sh -c 'apt-get update && apt-get install -y socat'
+  register: socat_install
+  changed_when: "'is already the newest version' not in socat_install.stdout"
+  failed_when: socat_install.rc != 0
+  tags: socat

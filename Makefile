@@ -216,6 +216,10 @@ test_deploy_app:
 	./utils/load_test_deploy.sh --app
 test_deploy_app_static:
 	./utils/load_test_deploy.sh --app --static
+test_haproxy:
+	./utils/test_haproxy_toggle.sh
+test_haproxy_staging:
+	./utils/test_haproxy_toggle.sh --staging
 celery_stop:
 	ansible-playbook ansible/deploy.yml -l task --tags stop
 sentry:
