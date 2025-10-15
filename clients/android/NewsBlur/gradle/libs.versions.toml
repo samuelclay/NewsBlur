@@ -1,5 +1,8 @@
 [versions]
+activityCompose = "1.11.0"
 compileSdk = "36"
+hiltLifecycleViewmodelCompose = "1.3.0"
+material3 = "1.4.0"
 minSdk = "26"
 targetSdk = "36"
 
@@ -28,6 +31,7 @@ okhttp = "5.1.0"
 pagingRuntimeKtx = "3.3.6"
 splashScreen = "1.0.1"
 swiperefreshlayout = "1.1.0"
+uiTooling = "1.9.3"
 uiToolingPreviewAndroid = "1.9.2"
 uiAutomator = "2.3.0"
 benchmarkMacroJunit4 = "1.4.1"
@@ -40,10 +44,16 @@ espressoCore = "3.7.0"
 composeMaterial3 = "1.5.3"
 
 [libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "uiTooling" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "uiTooling" }
+androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiTooling" }
 androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen" }
+androidx-hilt-lifecycle-viewmodel-compose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "hiltLifecycleViewmodelCompose" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
 androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
 androidx-paging-runtime-ktx = { module = "androidx.paging:paging-runtime-ktx", version.ref = "pagingRuntimeKtx" }

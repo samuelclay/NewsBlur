@@ -11,7 +11,6 @@ import com.newsblur.compose.LoginScreen
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
 import com.newsblur.preference.PrefsRepo
-import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.AppConstants
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,8 +37,6 @@ class LoginActivity : FragmentActivity() {
     }
 
     private fun onAuthCompleted() {
-        SubscriptionSyncService.schedule(this)
-
         val startMain =
             Intent(this, Main::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP

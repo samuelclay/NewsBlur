@@ -97,19 +97,11 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation("androidx.hilt:hilt-lifecycle-viewmodel-compose:1.3.0")
+    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 
-    // 1) Compose BOM — keeps all compose libs in sync
-    implementation(platform("androidx.compose:compose-bom:2025.10.00"))
-
-    // Core Compose
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-
-    // Material 3
-    implementation("androidx.compose.material3:material3")
-
-    // Interop: Compose in Activity
-    implementation("androidx.activity:activity-compose:1.11.0")
+    implementation(libs.androidx.material3)
 }

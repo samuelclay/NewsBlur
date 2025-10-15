@@ -8,6 +8,7 @@ import com.newsblur.network.APIConstants
 import com.newsblur.network.AuthApi
 import com.newsblur.network.UserApi
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -42,6 +43,7 @@ class LoginRegisterViewModel
                         prefsRepo.getUserImage(context)?.let { userImage ->
                             UIUtils.clipAndRound(userImage, true, false)
                         }
+                    SubscriptionSyncService.schedule(context)
                     _uiState.emit(UiState.SignedIn(roundedUserImage))
                 } else {
                     val message = response.getErrorMessage()
