@@ -15,6 +15,7 @@
     <string name="login_retrieving_feeds">Retrieving feeds…</string>
     <string name="login_next">Next</string>
     <string name="login_custom_server_scheme_error">Expected \'https://\' in custom server URL</string>
+    <string name="user_profile_picture">User profile picture</string>
 
     <string name="search_for_feed">Search for feeds</string>
 
@@ -250,7 +251,7 @@
     <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus.\n\nSwitch to All or Unread.</string>
     <string name="empty_list_view_no_saved_stories">You have no saved stories.\n\nSwitch to All or Unread.</string>
     
-    <string name="login_registration_custom_server">Custom server</string>
+    <string name="login_registration_custom_server">Set custom server</string>
     <string name="login_registration_reset_url"><u>Reset</u></string>
     <string name="login_registration_register">Register</string>
     <string name="register_message_error">There was problem registering for NewsBlur.</string>
@@ -804,5 +805,6 @@
 
     <string name="short_add_site">Add Site</string>
     <string name="short_add_site_key">\u2325 A</string>
+    <string name="registering">Registering...</string>
 
 </resources>
