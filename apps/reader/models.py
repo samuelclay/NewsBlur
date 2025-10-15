@@ -1597,18 +1597,76 @@ class RUserStory:
         return story_hashes
 
     @staticmethod
-    def get_read_stories(user_id, offset=0, limit=12, order="newest"):
+    def get_read_stories(
+        user_id, offset=0, limit=12, order="newest", date_filter_start=None, date_filter_end=None
+    ):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         key = "lRS:%s" % user_id
 
-        if order == "oldest":
-            count = r.llen(key)
-            if offset >= count:
+        # If date filtering is required, create a temporary sorted set and use zremrangebyscore
+        if date_filter_start or date_filter_end:
+            import time
+
+            from apps.rss_feeds.models import MStory
+
+            # Get all story hashes from the list
+            all_hashes = r.lrange(key, 0, -1)
+
+            if not all_hashes:
                 return []
-            offset = max(0, count - (offset + limit))
-            story_hashes = r.lrange(key, offset, offset + limit)
-        elif order == "newest":
-            story_hashes = r.lrange(key, offset, offset + limit)
+
+            # Fetch story dates from MongoDB
+            mstories = MStory.objects(story_hash__in=all_hashes).only("story_hash", "story_date")
+            story_dates = {}
+            for story in mstories:
+                if story.story_date:
+                    story_date = story.story_date
+                    # Ensure story_date is naive for timestamp conversion
+                    if story_date.tzinfo:
+                        story_date = story_date.replace(tzinfo=None)
+                    story_dates[story.story_hash] = int(time.mktime(story_date.timetuple()))
+
+            # Create temporary sorted set with story_date as score
+            temp_key = "zT:RS:%s" % user_id
+            pipeline = r.pipeline()
+
+            # Add stories to sorted set with their dates as scores
+            for story_hash in all_hashes:
+                if story_hash in story_dates:
+                    pipeline.zadd(temp_key, {story_hash: story_dates[story_hash]})
+
+            pipeline.expire(temp_key, 60 * 60)  # 1 hour TTL
+            pipeline.execute()
+
+            # Apply date filtering with zremrangebyscore
+            if date_filter_start:
+                start_score = int(time.mktime(date_filter_start.timetuple()))
+                r.zremrangebyscore(temp_key, "-inf", start_score - 1)
+
+            if date_filter_end:
+                end_score = int(time.mktime(date_filter_end.timetuple()))
+                r.zremrangebyscore(temp_key, end_score, "+inf")
+
+            # Retrieve filtered results
+            if order == "oldest":
+                story_hashes = r.zrange(temp_key, offset, offset + limit - 1)
+            else:  # newest
+                story_hashes = r.zrevrange(temp_key, offset, offset + limit - 1)
+
+            # Clean up temp key
+            r.delete(temp_key)
+
+            return story_hashes
+        else:
+            # Original behavior without date filtering
+            if order == "oldest":
+                count = r.llen(key)
+                if offset >= count:
+                    return []
+                offset = max(0, count - (offset + limit))
+                story_hashes = r.lrange(key, offset, offset + limit)
+            elif order == "newest":
+                story_hashes = r.lrange(key, offset, offset + limit)
 
         return story_hashes
 

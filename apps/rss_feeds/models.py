@@ -3879,7 +3879,17 @@ class MStarredStory(mongo.DynamicDocument):
         return super(MStarredStory, self).save(*args, **kwargs)
 
     @classmethod
-    def find_stories(cls, query, user_id, tag=None, offset=0, limit=25, order="newest"):
+    def find_stories(
+        cls,
+        query,
+        user_id,
+        tag=None,
+        offset=0,
+        limit=25,
+        order="newest",
+        date_filter_start=None,
+        date_filter_end=None,
+    ):
         stories_db = cls.objects(
             Q(user_id=user_id)
             & (
@@ -3890,6 +3900,11 @@ class MStarredStory(mongo.DynamicDocument):
         )
         if tag:
             stories_db = stories_db.filter(user_tags__contains=tag)
+
+        if date_filter_start:
+            stories_db = stories_db.filter(starred_date__gte=date_filter_start)
+        if date_filter_end:
+            stories_db = stories_db.filter(starred_date__lt=date_filter_end)
 
         stories_db = stories_db.order_by("%sstarred_date" % ("-" if order == "newest" else ""))[
             offset : offset + limit
