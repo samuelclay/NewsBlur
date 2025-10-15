@@ -403,6 +403,7 @@ private fun CustomServerSection(
         Text(
             text = stringResource(R.string.login_registration_custom_server),
             style = MaterialTheme.typography.titleMedium,
+            color = LocalNbColors.current.textDefault,
         )
         Spacer(Modifier.height(4.dp))
 
