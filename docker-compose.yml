@@ -158,7 +158,7 @@ services:
     restart: unless-stopped
     ports:
       - 29019:29019
-    command: mongod --port 29019
+    command: mongod --port 29019 --wiredTigerEngineConfigString="file_manager=(close_idle_time=0)"
     volumes:
       - ./docker/volumes/db_mongo:/data/db
     # Ensure the MongoDB data directory has proper permissions
