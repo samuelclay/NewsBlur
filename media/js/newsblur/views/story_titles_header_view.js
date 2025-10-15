@@ -93,9 +93,26 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         <div class="NB-feedbar-options-container">\
                             <span class="NB-feedbar-options">\
                                 <div class="NB-icon"></div>\
-                                <%= NEWSBLUR.assets.view_setting(folder_id, "read_filter") %>\
+                                <% \
+                                  var start_date = NEWSBLUR.reader.flags.date_filter_start;\
+                                  var end_date = NEWSBLUR.reader.flags.date_filter_end;\
+                                  if (start_date && end_date) { %>\
+                                    <% if (start_date === end_date) { %>\
+                                    Stories on <%= start_date %>\
+                                    <% } else { %>\
+                                    Stories from <%= start_date %> to <%= end_date %>\
+                                    <% } %>\
+                                    &middot;\
+                                <% } else if (start_date) { %>\
+                                  Stories newer than <%= start_date %>\
+                                  &middot;\
+                                <% } else if (end_date) { %>\
+                                  Stories older than <%= end_date %>\
+                                  &middot;\
+                                <% } %>\
+                                <%= folder_id ? NEWSBLUR.assets.view_setting(folder_id, "read_filter") : "unread" %>\
                                 &middot;\
-                                <%= NEWSBLUR.assets.view_setting(folder_id, "order") %>\
+                                <%= folder_id ? NEWSBLUR.assets.view_setting(folder_id, "order") : "newest" %>\
                                 <% if (infrequent_stories) { %>\
                                     &middot;\
                                     &lt; <%= infrequent_freq %> stories/month\

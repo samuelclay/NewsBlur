@@ -50,7 +50,7 @@ groups:
   work: inventory_hostname.startswith('htask-work')
 
   staging: inventory_hostname.startswith('hstaging')
-  staging_a: inventory_hostname.startswith('hstaging-') and inventory_hostname.split('-')[-1] | int % 2 == 1
+  staging_a: inventory_hostname == 'hstaging' or (inventory_hostname.startswith('hstaging-') and inventory_hostname.split('-')[-1] | int % 2 == 1)
   staging_b: inventory_hostname.startswith('hstaging-') and inventory_hostname.split('-')[-1] | int % 2 == 0
 
   hdb: inventory_hostname.startswith('hdb')

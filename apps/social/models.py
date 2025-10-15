@@ -1078,6 +1078,8 @@ class MSocialSubscription(mongo.Document):
         include_timestamps=False,
         group_by_user=True,
         cutoff_date=None,
+        date_filter_start=None,
+        date_filter_end=None,
     ):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         pipeline = r.pipeline()
@@ -1131,7 +1133,28 @@ class MSocialSubscription(mongo.Document):
                     min_score, max_score = max_score, min_score
 
                 pipeline.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
-                byscorefunc(unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps)
+
+                # Apply date filtering if specified
+                if date_filter_start or date_filter_end:
+                    # Remove stories outside the date range
+                    if date_filter_start:
+                        start_score = int(date_filter_start.replace(tzinfo=datetime.timezone.utc).timestamp())
+                        pipeline.zremrangebyscore(unread_ranked_stories_key, "-inf", start_score - 1)
+
+                    if date_filter_end:
+                        end_score = int(date_filter_end.replace(tzinfo=datetime.timezone.utc).timestamp())
+                        pipeline.zremrangebyscore(unread_ranked_stories_key, end_score, "+inf")
+
+                    # After filtering, retrieve all remaining stories
+                    if order == "oldest":
+                        byscorefunc(unread_ranked_stories_key, "-inf", "+inf", withscores=include_timestamps)
+                    else:
+                        byscorefunc(unread_ranked_stories_key, "+inf", "-inf", withscores=include_timestamps)
+                else:
+                    byscorefunc(
+                        unread_ranked_stories_key, min_score, max_score, withscores=include_timestamps
+                    )
+
                 pipeline.delete(unread_ranked_stories_key)
                 if expire_unread_stories_key:
                     pipeline.delete(unread_stories_key)
@@ -1158,6 +1181,8 @@ class MSocialSubscription(mongo.Document):
         withscores=False,
         hashes_only=False,
         cutoff_date=None,
+        date_filter_start=None,
+        date_filter_end=None,
         mark_read_complement=False,
     ):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
@@ -1185,13 +1210,42 @@ class MSocialSubscription(mongo.Document):
         )
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
 
+        # If there's a date filter, we need to filter the stories by date
+        if date_filter_start or date_filter_end:
+            # Create temp key for date filtering when using persistent sorted_stories_key
+            # to avoid corrupting the shared feed data for all users
+            if read_filter != "unread":
+                temp_ranked_stories_key = f"zT:{self.user_id}:{self.subscription_user_id}"
+                r.zunionstore(temp_ranked_stories_key, [unread_ranked_stories_key])
+                r.expire(temp_ranked_stories_key, 1 * 60 * 60)  # 1 hour
+                unread_ranked_stories_key = temp_ranked_stories_key
+
+            # Remove stories outside the date range from temp copy
+            if date_filter_start:
+                start_score = int(date_filter_start.replace(tzinfo=datetime.timezone.utc).timestamp())
+                r.zremrangebyscore(unread_ranked_stories_key, "-inf", start_score - 1)
+
+            if date_filter_end:
+                end_score = int(date_filter_end.replace(tzinfo=datetime.timezone.utc).timestamp())
+                r.zremrangebyscore(unread_ranked_stories_key, end_score, "+inf")
+
         now = datetime.datetime.now()
         current_time = int(time.time() + 60 * 60 * 24)
         mark_read_time = int(time.mktime(self.mark_read_date.timetuple())) + 1
         if cutoff_date:
             mark_read_time = int(time.mktime(cutoff_date.timetuple())) + 1
 
-        if order == "oldest":
+        # After date filtering, retrieve all remaining stories (don't filter by score again if date filters applied)
+        if date_filter_start or date_filter_end:
+            if order == "oldest":
+                byscorefunc = r.zrangebyscore
+                min_score = "-inf"
+                max_score = "+inf"
+            else:
+                byscorefunc = r.zrevrangebyscore
+                min_score = "+inf"
+                max_score = "-inf"
+        elif order == "oldest":
             byscorefunc = r.zrangebyscore
             min_score = mark_read_time
             max_score = current_time
@@ -1233,6 +1287,8 @@ class MSocialSubscription(mongo.Document):
         cache=True,
         socialsubs=None,
         cutoff_date=None,
+        date_filter_start=None,
+        date_filter_end=None,
         dashboard_global=False,
     ):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
@@ -1279,6 +1335,8 @@ class MSocialSubscription(mongo.Document):
             group_by_user=False,
             socialsubs=socialsubs,
             cutoff_date=cutoff_date,
+            date_filter_start=date_filter_start,
+            date_filter_end=date_filter_end,
         )
         if not story_hashes:
             return [], [], []
@@ -1306,6 +1364,8 @@ class MSocialSubscription(mongo.Document):
                 group_by_user=False,
                 socialsubs=socialsubs,
                 cutoff_date=cutoff_date,
+                date_filter_start=date_filter_start,
+                date_filter_end=date_filter_end,
             )
             if unread_story_hashes:
                 pipeline = rt.pipeline()
