@@ -14,7 +14,7 @@ The date filter lives in the feed options popover, right where you'd expect it n
 
 Each column has a date input field where you can manually enter a date, or use the quick duration buttons for common time ranges. Want to see the past week? Click "1w" under "Newer". Want to see stories from a specific month? Set the "Newer" and "Older" dates to bracket that month.
 
-This feature is particularly useful when you're catching up after being away, or when you want to research how some event in the past was covered. Combined with NewsBlur's full-text search, you can now both search for topics and filter by when they were published. And of course the recently launched Discover feature lets you see related stories and related feeds to follow interesting bunny trails.
+This feature is particularly useful when you're catching up after being away, or when you want to research how some event in the past was covered. Combined with NewsBlur's full-text search, you can now both search for topics and filter by when they were published. And of course the [recently launched Discover feature](/2025/02/02/discover-related-stories-and-sites/) lets you see related stories and related feeds to follow interesting bunny trails.
 
 The date filters work across all of NewsBlur's views - individual feeds, folders, saved stories, and the river of news. The filters don't persist between feeds, so you can set different date ranges for different feeds without the settings interfering with each other.
 
