@@ -3906,6 +3906,11 @@ class MStarredStory(mongo.DynamicDocument):
         if date_filter_end:
             stories_db = stories_db.filter(starred_date__lt=date_filter_end)
 
+        if date_filter_start or date_filter_end:
+            start_log = date_filter_start.isoformat() if date_filter_start else ""
+            end_log = date_filter_end.isoformat() if date_filter_end else ""
+            logging.debug(f" ---> ~FBDate filter: start={start_log} end_exclusive={end_log}")
+
         stories_db = stories_db.order_by("%sstarred_date" % ("-" if order == "newest" else ""))[
             offset : offset + limit
         ]
