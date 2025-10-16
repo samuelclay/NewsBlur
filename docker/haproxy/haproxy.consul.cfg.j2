@@ -67,6 +67,7 @@ frontend public
     redirect scheme https if is_root !{ ssl_fc }
     
     use_backend app_push if { hdr_end(host) -i push.newsblur.com }
+    use_backend app_push if { path_beg /newsletters/receive }
     use_backend node_socket if { path_beg /v3/socket.io/ }
     use_backend node_favicons if { path_beg /rss_feeds/icon/ }
     use_backend node_text if { path_beg /rss_feeds/original_text_fetcher }
