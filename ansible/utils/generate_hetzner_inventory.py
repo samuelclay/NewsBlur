@@ -19,14 +19,12 @@ with open(TOKEN_FILE, "r") as file:
 user = credentials["hetzner_robot"]["username"]
 password = credentials["hetzner_robot"]["password"]
 outfile = f"/srv/newsblur/ansible/inventories/hetzner.ini"
-print(user, password)
 robot = Robot(user, password)
-
-# Check if the request was successful
-if robot.servers:
+servers = list(getattr(robot, "servers", []) or [])
+if servers:
     with open(outfile, "w") as inventory_file:
         inventory_file.write("[hetzner_servers]\n")
-        for server in robot.servers:
+        for server in servers:
             # Assuming the server IP is under 'server_ip' key
             inventory_file.write(f"{server.ip}\n")
         print(f"Inventory file 'hetzner_inventory.ini' created with {len(servers)} servers")

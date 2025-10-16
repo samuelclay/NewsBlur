@@ -12,6 +12,10 @@ global
     # log 127.0.0.1 local1 info
     stats socket /var/run/haproxy.sock mode 660 level admin
 
+resolvers consul
+    nameserver consul 127.0.0.1:53
+    accepted_payload_size 8192 # allow larger DNS payloads
+
 defaults
     log global
     maxconn 100000
@@ -28,7 +32,7 @@ defaults
     timeout client 10s
     timeout server 120s
     timeout tunnel 1h
-    retries 3
+    retries 2
     errorfile 502 /srv/newsblur/templates/502.http
     errorfile 503 /srv/newsblur/templates/502.http
     errorfile 504 /srv/newsblur/templates/502.http
@@ -115,29 +119,20 @@ backend nginx
 backend app_django_counts
     balance roundrobin
     option httpchk GET /_haproxychk
-    {% if maintenance_mode is not defined or not maintenance_mode %}
-    server app_django 127.0.0.1:8000 check inter 3000ms
-    {% else %}
-    server app_django_backup 127.0.0.1:8001 check inter 3000ms backup
-    {% endif %}
+    retry-on all-retryable-errors
+    server hstaging 127.0.0.1:8000 check inter 1000ms fall 2
 
 backend app_django_refresh
     balance roundrobin
     option httpchk GET /_haproxychk
-    {% if maintenance_mode is not defined or not maintenance_mode %}
-    server app_django 127.0.0.1:8000 check inter 3000ms
-    {% else %}
-    server app_django_backup 127.0.0.1:8001 check inter 3000ms backup
-    {% endif %}
+    retry-on all-retryable-errors
+    server hstaging 127.0.0.1:8000 check inter 1000ms fall 2
 
 backend app_django
     balance roundrobin
     option httpchk GET /_haproxychk
-    {% if maintenance_mode is not defined or not maintenance_mode %}
-    server app_django 127.0.0.1:8000 check inter 3000ms
-    {% else %}
-    server app_django_backup 127.0.0.1:8001 check inter 3000ms backup
-    {% endif %}
+    retry-on all-retryable-errors
+    server hstaging 127.0.0.1:8000 check inter 1000ms fall 2
 
 backend maintenance
     option httpchk HEAD /maintenance

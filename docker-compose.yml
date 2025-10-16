@@ -9,7 +9,7 @@ services:
     # user: "${CURRENT_UID}:${CURRENT_GID}"
     environment:
       - DOCKERBUILD=True
-      - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD?Use the `make` command instead of docker CLI}
+      - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD:-True}
     stdin_open: true
     tty: true
     restart: unless-stopped
@@ -33,7 +33,7 @@ services:
   newsblur_node:
     container_name: node
     image: newsblur/newsblur_node:latest
-    user: "${CURRENT_UID}:${CURRENT_GID}"
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     environment:
       - NODE_ENV=docker
       - MONGODB_PORT=29019
@@ -54,7 +54,7 @@ services:
     container_name: imageproxy
     # image: ghcr.io/willnorris/imageproxy:latest # Enable if you don't need arm64 and want the original imageproxy
     image: yusukeito/imageproxy:v0.11.2 # Enable if you want arm64
-    user: "${CURRENT_UID}:${CURRENT_GID}"
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     entrypoint: /app/imageproxy -addr 0.0.0.0:8088 -cache /tmp/imageproxy -verbose
     restart: unless-stopped
     ports:
@@ -158,16 +158,16 @@ services:
     restart: unless-stopped
     ports:
       - 29019:29019
-    command: mongod --port 29019
+    command: mongod --port 29019 --wiredTigerEngineConfigString="file_manager=(close_idle_time=0)"
     volumes:
-      - ./docker/volumes/db_mongo:/data/db
+      - ./docker/volumes/db_mongo:/data/db:delegated
     # Ensure the MongoDB data directory has proper permissions
-    user: "${CURRENT_UID}:${CURRENT_GID}"
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
 
   task_celery:
     container_name: task_celery
     image: newsblur/newsblur_python3
-    user: "${CURRENT_UID}:${CURRENT_GID}"
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     command: "celery worker -A newsblur_web -B --loglevel=INFO"
     restart: unless-stopped
     volumes:
