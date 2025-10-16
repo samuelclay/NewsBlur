@@ -17,7 +17,7 @@ def _normalize_improvmx_to_mailgun(improvmx_data):
     params = {}
 
     # Full logging of raw data
-    logging.debug(" ---> Email newsletter raw ImprovMX data: %s" % json.dumps(improvmx_data))
+    # logging.debug(" ---> Email newsletter raw ImprovMX data: %s" % json.dumps(improvmx_data))
 
     # Extract recipient from envelope (the actual NewsBlur newsletter address)
     envelope = improvmx_data.get("envelope", {})
