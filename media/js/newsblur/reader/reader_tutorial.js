@@ -281,11 +281,11 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
       $.make('div', { className: 'NB-page NB-page-5' }, [
         $.make('h4', 'Stay connected to NewsBlur on Twitter'),
         $.make('div', { className: 'NB-tutorial-twitter' }, [
-          $.make('a', { className: 'NB-splash-link', href: 'http://twitter.com/samuelclay', target: '_blank' }, [
+          $.make('a', { className: 'NB-splash-link', href: 'https://x.com/samuelclay', target: '_blank' }, [
             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/static/Samuel%20Clay%20sq.jpg', style: 'border-color: #505050;' }),
             $.make('span', '@samuelclay')
           ]),
-          $.make('a', { className: 'NB-splash-link', href: 'http://twitter.com/newsblur', target: '_blank' }, [
+          $.make('a', { className: 'NB-splash-link', href: 'http://x.com/newsblur', target: '_blank' }, [
             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/logo_128.png' }),
             $.make('span', '@newsblur')
           ])

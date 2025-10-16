@@ -4,6 +4,7 @@
     src: /srv/secrets-newsblur/settings/common_settings.py
     dest: /srv/newsblur/newsblur_web/local_settings.py
   register: app_changed
+  tags: env
 
 - name: Copy app env
   copy:
@@ -15,7 +16,7 @@
   lineinfile:
     path: /srv/newsblur/newsblur_web/app_env.py
     line: 'SERVER_NAME = "{{ inventory_hostname }}"'
-  
+
 - name: Start monitor docker container
   become: yes
   docker_container:
@@ -23,18 +24,13 @@
     image: newsblur/newsblur_monitor:latest
     pull: yes
     state: started
-    command: bash -c "python /srv/newsblur/flask_monitor/db_monitor.py"
+    command: bash -c "/venv/bin/python /srv/newsblur/flask_monitor/db_monitor.py"
     hostname: "{{ inventory_hostname }}"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
     volumes:
       - /srv/newsblur:/srv/newsblur
-    networks_cli_compatible: yes
-    network_mode: default
-    networks:
-      - name: newsblurnet
-    ports:
-      - "5579:5579"
+    network_mode: host
 
 - name: Restart monitor
   become: yes

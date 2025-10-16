@@ -55,6 +55,9 @@
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
 //@property (nonatomic, readonly) NSIndexPath *selectedIndexPath;
 @property (nonatomic) CGFloat storyHeight;
+@property (nonatomic) NSIndexPath *swipingIndexPath;
+@property (nonatomic, strong) NSString *swipingStoryHash;
+
 @property (nonatomic, readonly) BOOL canPullToRefresh;
 @property (nonatomic, readonly) BOOL isMarkReadOnScroll;
 @property (nonatomic, readonly) BOOL isLegacyTable;

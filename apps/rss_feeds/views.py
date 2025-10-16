@@ -1,5 +1,7 @@
 import base64
 import datetime
+import time
+from collections import defaultdict
 from urllib.parse import urlparse
 
 import redis
@@ -21,6 +23,7 @@ from apps.reader.models import UserSubscription
 
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, MFeedIcon, MFetchHistory, MStory, merge_feeds
+from apps.search.models import MUserSearch
 from utils import feedfinder_forman as feedfinder
 from utils import json_functions as json
 from utils import log as logging
@@ -580,6 +583,7 @@ def status(request):
     return render(request, "rss_feeds/status.xhtml", {"feeds": feeds, "queues": queues})
 
 
+@ratelimit(minutes=1, requests=30)
 @json.json_view
 def original_text(request):
     # iOS sends a POST, web sends a GET
@@ -644,3 +648,64 @@ def story_changes(request):
         return {"code": -1, "message": "Story not found.", "original_page": None, "failed": True}
 
     return {"story": Feed.format_story(story, show_changes=show_changes)}
+
+
+@ajax_login_required
+@json.json_view
+def discover_feeds(request, feed_id=None):
+    page = int(request.GET.get("page") or request.POST.get("page") or 1)
+    limit = 5
+    offset = (page - 1) * limit
+
+    if request.method == "GET" and feed_id:
+        similar_feed_ids = list(
+            Feed.get_by_id(feed_id)
+            .count_similar_feeds(force=True, offset=offset, limit=limit)
+            .values_list("pk", flat=True)
+        )
+    elif request.method == "POST":
+        feed_ids = request.POST.getlist("feed_ids")
+        similar_feeds = Feed.find_similar_feeds(feed_ids=feed_ids, offset=offset, limit=limit)
+        similar_feed_ids = [result["_source"]["feed_id"] for result in similar_feeds]
+    else:
+        return {"code": -1, "message": "Missing feed_ids.", "discover_feeds": None, "failed": True}
+
+    feeds = Feed.objects.filter(pk__in=similar_feed_ids)
+    discover_feeds = defaultdict(dict)
+    for feed in feeds:
+        discover_feeds[feed.pk]["feed"] = feed.canonical(include_favicon=False)
+        discover_feeds[feed.pk]["stories"] = feed.get_stories(limit=5)
+
+    logging.user(request, "~FCDiscovering similar feeds, page %s: ~SB%s" % (page, similar_feed_ids))
+    return {"discover_feeds": discover_feeds}
+
+
+@ajax_login_required
+@json.json_view
+def discover_stories(request, story_hash):
+    page = int(request.GET.get("page") or request.POST.get("page") or 1)
+    feed_ids = request.GET.getlist("feed_ids") or request.POST.getlist("feed_ids")
+    limit = 5
+    offset = (page - 1) * limit
+    story, _ = MStory.find_story(story_hash=story_hash)
+    if not story:
+        return {"code": -1, "message": "Story not found.", "discover_stories": None, "failed": True}
+
+    user_search = MUserSearch.get_user(request.user.pk)
+    user_search.touch_discover_date()
+
+    similar_stories = story.fetch_similar_stories(feed_ids=feed_ids, offset=offset, limit=limit)
+    similar_story_hashes = [result["_id"] for result in similar_stories]
+    stories = MStory.objects.filter(story_hash__in=similar_story_hashes)
+    stories = Feed.format_stories(stories)
+
+    # Find unsubscribed feeds
+    subscribed_feed_ids = UserSubscription.objects.filter(
+        user=request.user, feed_id__in=set(story["story_feed_id"] for story in stories)
+    ).values_list("feed_id", flat=True)
+    feeds = Feed.objects.filter(
+        pk__in=set(story["story_feed_id"] for story in stories) - set(subscribed_feed_ids)
+    )
+    feeds = {feed.pk: feed.canonical(include_favicon=False) for feed in feeds}
+
+    return {"discover_stories": stories, "feeds": feeds}

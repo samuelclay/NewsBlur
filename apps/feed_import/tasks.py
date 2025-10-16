@@ -24,3 +24,13 @@ def ProcessOPML(user_id):
 
     UserSubscription.queue_new_feeds(user)
     UserSubscription.refresh_stale_feeds(user, exclude_new=True)
+
+
+@app.task()
+def ProcessOPMLExport(user_id):
+    user = User.objects.get(pk=user_id)
+    logging.user(user, "~FR~SBOPML export (task) starting...")
+
+    user.profile.send_opml_export_email(reason="Your OPML export is ready.", force=True)
+
+    logging.user(user, "~FR~SBOPML export (task) complete: sent email to %s" % user.email)

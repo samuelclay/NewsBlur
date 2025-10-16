@@ -10,7 +10,7 @@
   title="The NewsBlur Blog RSS feed" 
   href="/feed.xml" /><!-- Begin Jekyll SEO tag v2.8.0 -->
 <title>Page 9 of 11 for The NewsBlur Blog | A new sound of an old instrument</title>
-<meta name="generator" content="Jekyll v4.2.2" />
+<meta name="generator" content="Jekyll v4.3.4" />
 <meta property="og:title" content="The NewsBlur Blog" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="NewsBlur is a personal news reader that brings people together to talk about the world. A new sound of an old instrument." />
@@ -65,7 +65,71 @@
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
         <div class="home">
-    <ul class="post-list"><li><span class="post-meta">Jul 24, 2013</span>
+    <ul class="post-list"><li><span class="post-meta">Sep 16, 2013</span>
+        <h3>
+          <a class="post-link" href="/2013/09/16/upping-unread-stories-to-30-days-for-premium/">
+            Upping unread stories to 30 days for premium accounts
+          </a>
+        </h3>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>While I love shipping new features and fixing bugs, the single largest user request was neither a feature nor a bug. NewsBlur allows for two weeks of unread stories. Once a story is more than 14 days old, it would no longer show up as unread. The justification for this was simple: you have a week to read a story, and have a second week as a grace period.</p>
+
+<p>But after scaling out to tens of thousands of users, a new pattern emerged. Some users would go on vacation for two weeks at a time and then want to catch up on everything they missed. Some users only check RSS once a month. Some users just want to leave lightly updated feeds alone until they have free time to read them, and that can take a few weeks to get to.</p>
+
+<p>Starting today, all premium users are automatically upgraded to 30 days of unread stories. Free standard users will remain at 14 days. I wish I could have offered the full 30 days to everybody, but after testing that out, my server and performance graphs all made a very scary movement up.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/30d_mongodb_page_faults-day.png" alt="" /></p>
+
+<p>With the new 30 day unread interval in place, NewsBlur has a great track record in listening to user feedback and working out a solution, however large the task may be.</p>
+
+
+        </div>
+      </li><li><span class="post-meta">Sep 13, 2013</span>
+        <h3>
+          <a class="post-link" href="/2013/09/13/mark-as-read-by-number-of-days-and-other/">
+            Mark as read by number of days and other improvements
+          </a>
+        </h3>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Here’s a few big improvements for the NewsBlur website.</p>
+
+<ul>
+  <li>The site title bar is now mounted to the bottom of the screen. This will allow you to mark a site/folder as read at any time.</li>
+  <li>
+    <p>Marking as read can go back a configurable amount: 1, 3, 7, and 14 days back.</p>
+  </li>
+  <li>If you’re reading in newest-first order, when you mark a site as read, any newer stories that have come in since you’ve loaded the site will no longer be marked as read.</li>
+  <li>When you add, move, or delete a site or folder, all of your open web browsers will reload to correctly show the change. This allows you to have NewsBlur open at home and at work, knowing they will be synced when you change or add sites.</li>
+</ul>
+
+<p>You may be thinking to yourself, 1, 3, and 7 days back makes sense, but why 14 if the unread limit is at 14 days? Why, having 14 days as an option would only make sense if the full limit was… (stay tuned).</p>
+
+
+        </div>
+      </li><li><span class="post-meta">Jul 30, 2013</span>
+        <h3>
+          <a class="post-link" href="/2013/07/30/simple-search-for-feeds-saved-stories-and-blurblogs/">
+            Simple Search for Feeds, Saved Stories, and Blurblogs
+          </a>
+        </h3>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Search, which can easily be considered one of the most important features of a world-class news reader, is also one of the most difficult features to build.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/search2.png" alt="" /></p>
+
+<p>While working on the feature, I came across a great method that allows searching through story titles, authors, and tags on a per-feed basis. It’s not perfect and it’s not the full feature, but this will get us 80% of the way there.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/search.png" alt="" /></p>
+
+<p>Also comes with a handy keyboard shortcut (and a refactored keyboard shortcut dialog).</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/keyboard.png" alt="" /></p>
+
+<p>You can also search your saved stories and shared stories. This feature will soon find it’s way to both Android and iOS, and is available today to all premium users.</p>
+
+
+        </div>
+      </li><li><span class="post-meta">Jul 24, 2013</span>
         <h3>
           <a class="post-link" href="/2013/07/24/newsblur-puzzle-t-shirt-2013/">
             NewsBlur Puzzle T-shirt 2013
@@ -320,71 +384,6 @@
 </ul>
 
 <p>Go forth and privatize! It’ll be our little secret, at least until we discover that one of you is having an affair with your biographer.</p>
-
-
-        </div>
-      </li><li><span class="post-meta">Dec 17, 2012</span>
-        <h3>
-          <a class="post-link" href="/2012/12/17/sharing-bookmarklet/">
-            The sharing bookmarklet: bringing your online explorations to NewsBlur
-          </a>
-        </h3>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>There are lots of reasons not to post a cool article you’ve seen to your blurblog. Maybe you already follow too many blogs, and don’t have room to add any more to your feed (in which case, may we humbly recommend a Premium account?) Maybe you don’t want everyone to know just how crazy you’ve gotten about jai-alai or aerotrekking or My Little Pony: Friendship Is Magic. Or maybe you found a cool article on Facebook or Twitter or through an e-mail from a friend, and don’t want to go through the hassle of adding the site’s whole feed to your NewsBlur dashboard just to post one piece.</p>
-
-<p>That’s what the <a href="http://www.newsblur.com/?next=goodies">NewsBlur bookmarklet tool</a> is for. Whether it’s a great article from a site that you don’t like enough to follow regularly, or a first glimpse at an intriguing new site, the bookmarklet makes it easy to post anything you find around the Web to your blurblog.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Screen%20Shot%202012-12-17%20at%20Dec%2017%2011.58.26%20AM.png" alt="image" /></p>
-
-<p>Setting up the bookmarklet tool is easy: Click on the little sprocket in the bottom left of your dashboard, and choose “Goodies &amp; Extras” from the menu. You’ll see “Add Site &amp; Share Story Bookmarklet,” and next to that, a button that says “Share on NewsBlur.” Drag the button to the Bookmarks Bar in your browser, and you’re in business.</p>
-
-<p><a href="http://www.newsblur.com/?next=goodies"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Screen%20Shot%202012-12-17%20at%20Dec%2017%2011.56.14%20AM.png" alt="image" /></a></p>
-
-<p>The next time you see an article that strikes your fancy, just click the bookmarklet and the NewsBlur window will open. (If you click it by accident or decide you don’t want to share, just click anywhere outside of the box, and you’ll be back where you started.) The bookmarklet automatically selects all text on a page by default, but if you only want to blog a certain chunk of a story, just highlight it beforehand, and it’ll appear solo in the box.</p>
-
-<p>You can also type within the box to edit the headline and text or delete any extraneous junk that may have wandered in. Add a comment of your own, click “Share This Story,” and you’re on your way. It’s frankly almost too easy, so be sure you’re in the right browser tab when you launch it– <a href="http://alliepape.newsblur.com">Allie</a> once accidentally posted the contents of her Gmail inbox to her blurblog when she wasn’t paying attention. If any of you happened to be on there in those two minutes, she hopes you enjoyed the sneak peek into her darkest secrets, like all the books she has on hold at the library.</p>
-
-<p>Using the bookmarklet is awesome and makes NewsBlur’s content (and by extension, <a href="http://popular.newsblur.com">the Popular blog</a>) far more interesting and diverse, so get out there and drag back the best of the Web to share with your fellow users. <a href="http://www.youtube.com/watch?v=S_E2EHVxNAE">As Richard Marx would put it</a>: Wherever you go, whatever you do (on the Internet, at least), the NewsBlur bookmarklet will be right here waiting for you.</p>
-
-
-        </div>
-      </li><li><span class="post-meta">Oct 29, 2012</span>
-        <h3>
-          <a class="post-link" href="/2012/10/29/free-newsblur-swag-time/">
-            Time for some free NewsBlur swag!
-          </a>
-        </h3>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>That’s right, t-shirts, stickers, buttons, and magnets. I’ve got a whole lot of good stuff to send out, so give me some critical info and I’ll get you hooked up with the latest in startup love.</p>
-
-<p><strong>The t-shirt entry form has been taken down as of Thursday, November 29th. Hopefully you’ve ordered your t-shirt by now.</strong></p>
-
-
-        </div>
-      </li><li><span class="post-meta">Oct 26, 2012</span>
-        <h3>
-          <a class="post-link" href="/2012/10/26/ios-update-1-6/">
-            Extreme makeover: NewsBlur iOS app edition
-          </a>
-        </h3>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>Now that NewsBlur has joined the wonderful world of Android, we’re turning our attention back to the iOS app, with a full-scale feature parity push for the new iPhone 5 and iOS 6. It’s perfect for catching up on your reading when you realize that Apple Maps has sent you to the wrong address. Again.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iOS%20v1.6%20-%20Folders.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/iOS%20v1.6%20-%20Menus.png" alt="image" /></p>
-
-<p>We’ve tried to incorporate as many of your suggestions as possible, and here are some of the new features you’ll find:</p>
-
-<ul>
-  <li>Collapsible folders: Check out folders one at a time (and save your scrolling fingers some work)</li>
-  <li>Saved stories: Access all your saved stories from the Web or other devices, and save other stories for later</li>
-  <li>Mark stories as unread: For that fresh new-story feeling</li>
-  <li>Send stories to Instapaper for reading later, or e-mail them to your friends/enemies</li>
-  <li>Share stories on Twitter and Facebook, and crush social-media naysayers who think you’re just telling people what you ate for breakfast</li>
-  <li>New app-wide menus: An interface almost as stylish as your new device, and far less vulnerable to breakage and theft</li>
-  <li>Bug fixes, improvements, speed-ups, fine-tuning, and other things that aren’t particularly noticeable (but done because we love you)</li>
-</ul>
-
-<p>Check out the update, and be sure to let us know if anything isn’t working the way it should. And Android folks, don’t feel left out; an update with bug fixes is in the pipeline, so stay tuned (and thanks for the feedback!).</p>
 
 
         </div>

@@ -1,0 +1,136 @@
+---
+# Included task file for deploying one A/B group with static assets
+- name: Determine backend name for this server
+  set_fact:
+    backend_name: "{{ 'app_count' if inventory_hostname in groups.get('hcount', []) else 'app_refresh' if inventory_hostname in groups.get('hrefresh', []) else 'app_push' if inventory_hostname in groups.get('hpush', []) else 'app_django' if (inventory_hostname in groups.get('hdjango', []) or inventory_hostname in groups.get('staging', [])) else '' }}"
+  tags: always
+
+- name: Disable servers in HAProxy (Group {{ group_name }})
+  delegate_to: "{{ haproxy_host }}"
+  shell: docker exec haproxy sh -c 'echo "set server {{ backend_name }}/{{ inventory_hostname }} state maint" | socat stdio /var/run/haproxy.sock'
+  register: haproxy_disable
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined
+  tags: always
+
+- name: Show HAProxy disable result
+  debug:
+    msg: "HAProxy response for {{ inventory_hostname }}: {{ haproxy_disable.stdout }}"
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined and haproxy_disable is defined
+  tags: always
+
+- name: Verify server is in MAINT mode
+  delegate_to: "{{ haproxy_host }}"
+  shell: docker exec haproxy sh -c 'echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock' | grep '{{ inventory_hostname }}' | awk '{print $7}'
+  register: server_state
+  failed_when: server_state.stdout != "1"
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined
+  tags: always
+
+- name: Wait for connections to drain
+  pause:
+    seconds: 5
+  tags: always
+
+- name: Downloading JS/CSS assets from S3
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  amazon.aws.aws_s3:
+    bucket: newsblur-backups
+    object: static_py3.tgz
+    dest: /srv/newsblur/static.tgz
+    mode: get
+    overwrite: different
+    aws_access_key: "{{ lookup('ini', 'aws_access_key_id section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
+    aws_secret_key: "{{ lookup('ini', 'aws_secret_access_key section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"
+    endpoint_url: "https://s3.us-east-1.amazonaws.com"
+  register: jscss_updated
+  tags: always
+
+- name: Decompress downloaded JS/CSS
+  unarchive:
+    src: /srv/newsblur/static.tgz
+    dest: /srv/newsblur/static
+  when: jscss_updated is succeeded
+  tags: always
+
+- name: Fix permissions on static files
+  file:
+    path: /srv/newsblur/static
+    mode: u=rwX,g=rX,o=rX
+    recurse: yes
+  when: jscss_updated is succeeded
+  tags: always
+
+- name: Pull newsblur_web github
+  git:
+    repo: https://github.com/samuelclay/NewsBlur.git
+    dest: /srv/newsblur/
+    version: "{{ git_branch }}"
+  register: pulled
+  tags: always
+
+- name: Restart newsblur_web container
+  docker_container:
+    name: newsblur_web
+    image: newsblur/newsblur_python3
+    container_default_behavior: no_defaults
+    pull: yes
+    env:
+      DOCKERBUILD: ""
+    state: started
+    restart: yes
+    command: gunicorn --config /srv/newsblur/config/gunicorn_conf.py newsblur_web.wsgi:application
+    hostname: "{{ inventory_hostname }}"
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
+    ports:
+      - "8000:8000"
+    restart_policy: unless-stopped
+    user: 1000:1001
+    volumes:
+      - /srv/newsblur:/srv/newsblur
+  tags: always
+
+- name: Wait for container to be healthy
+  uri:
+    url: "http://localhost:8000/_haproxychk"
+    status_code: 200
+  register: result
+  retries: 10
+  delay: 5
+  until: result.status == 200
+  tags: always
+
+- name: Re-enable servers in HAProxy (Group {{ group_name }})
+  delegate_to: "{{ haproxy_host }}"
+  shell: docker exec haproxy sh -c 'echo "set server {{ backend_name }}/{{ inventory_hostname }} state ready" | socat stdio /var/run/haproxy.sock'
+  register: haproxy_enable
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined
+  tags: always
+
+- name: Show HAProxy enable result
+  debug:
+    msg: "HAProxy response for {{ inventory_hostname }}: {{ haproxy_enable.stdout }}"
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined and haproxy_enable is defined
+  tags: always
+
+- name: Verify server is enabled (not in MAINT)
+  delegate_to: "{{ haproxy_host }}"
+  shell: docker exec haproxy sh -c 'echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock' | grep '{{ inventory_hostname }}' | awk '{print $7}'
+  register: server_state_enabled
+  failed_when: server_state_enabled.stdout == "1"
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined
+  tags: always
+
+- name: Start Consul
+  become: yes
+  service:
+    name: consul
+    state: started
+    enabled: true
+  tags: always

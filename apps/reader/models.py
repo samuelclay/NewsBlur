@@ -130,6 +130,8 @@ class UserSubscription(models.Model):
         include_timestamps=False,
         group_by_feed=False,
         cutoff_date=None,
+        date_filter_start=None,
+        date_filter_end=None,
         across_all_feeds=True,
         store_stories_key=None,
         offset=0,
@@ -225,6 +227,31 @@ class UserSubscription(models.Model):
                 else:
                     ranked_stories_key = sorted_stories_key
 
+                # If there's a date filter, we need to filter the stories by date
+                if date_filter_start or date_filter_end:
+                    # Create temp key for date filtering when using persistent sorted_stories_key
+                    # to avoid corrupting the shared feed data for all users
+                    if read_filter != "unread":
+                        temp_ranked_stories_key = f"zT:{user_id}:{feed_id}"
+                        pipeline.zunionstore(temp_ranked_stories_key, [ranked_stories_key])
+                        pipeline.expire(temp_ranked_stories_key, 1 * 60 * 60)  # 1 hour
+                        ranked_stories_key = temp_ranked_stories_key
+
+                    # Remove stories outside the date range from temp copy
+                    if date_filter_start:
+                        start_score = int(date_filter_start.replace(tzinfo=datetime.timezone.utc).timestamp())
+                        pipeline.zremrangebyscore(ranked_stories_key, "-inf", start_score - 1)
+
+                    if date_filter_end:
+                        end_score = int(date_filter_end.replace(tzinfo=datetime.timezone.utc).timestamp())
+                        pipeline.zremrangebyscore(ranked_stories_key, end_score, "+inf")
+
+                    # After filtering, retrieve all remaining stories (don't filter by score again)
+                    min_score = "-inf"
+                    max_score = "+inf"
+                    if order != "oldest":
+                        min_score, max_score = max_score, min_score
+
                 # If archive premium user has manually marked an older story as unread
                 if is_archive and feed_id in manual_unread_feed_oldest_date and read_filter == "unread":
                     if order == "oldest":
@@ -277,35 +304,43 @@ class UserSubscription(models.Model):
                     else:
                         story_hashes.extend(hashes)
 
-        if store_stories_key:
-            chunk_count = 0
-            chunk_size = 1000
-            if len(unread_ranked_stories_keys) < chunk_size:
-                r.zunionstore(store_stories_key, unread_ranked_stories_keys)
-            else:
-                pipeline = r.pipeline()
-                for unread_ranked_stories_keys_group in chunks(unread_ranked_stories_keys, chunk_size):
-                    pipeline.zunionstore(
-                        f"{store_stories_key}-chunk{chunk_count}",
-                        unread_ranked_stories_keys_group,
-                        aggregate="MAX",
-                    )
-                    chunk_count += 1
-                pipeline.execute()
-                r.zunionstore(
-                    store_stories_key,
-                    [f"{store_stories_key}-chunk{i}" for i in range(chunk_count)],
-                    aggregate="MAX",
-                )
-                pipeline = r.pipeline()
-                for i in range(chunk_count):
-                    pipeline.delete(f"{store_stories_key}-chunk{i}")
-                pipeline.execute()
-
         if not store_stories_key:
             return story_hashes
 
-    def get_stories(self, offset=0, limit=6, order="newest", read_filter="all", cutoff_date=None):
+        chunk_count = 0
+        chunk_size = 1000
+        if len(unread_ranked_stories_keys) < chunk_size:
+            r.zunionstore(store_stories_key, unread_ranked_stories_keys)
+        else:
+            pipeline = r.pipeline()
+            for unread_ranked_stories_keys_group in chunks(unread_ranked_stories_keys, chunk_size):
+                pipeline.zunionstore(
+                    f"{store_stories_key}-chunk{chunk_count}",
+                    unread_ranked_stories_keys_group,
+                    aggregate="MAX",
+                )
+                chunk_count += 1
+            pipeline.execute()
+            r.zunionstore(
+                store_stories_key,
+                [f"{store_stories_key}-chunk{i}" for i in range(chunk_count)],
+                aggregate="MAX",
+            )
+            pipeline = r.pipeline()
+            for i in range(chunk_count):
+                pipeline.delete(f"{store_stories_key}-chunk{i}")
+            pipeline.execute()
+
+    def get_stories(
+        self,
+        offset=0,
+        limit=6,
+        order="newest",
+        read_filter="all",
+        cutoff_date=None,
+        date_filter_start=None,
+        date_filter_end=None,
+    ):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         unread_ranked_stories_key = "zU:%s:%s" % (self.user_id, self.feed_id)
 
@@ -323,6 +358,8 @@ class UserSubscription(models.Model):
                 offset=offset,
                 limit=limit,
                 cutoff_date=cutoff_date,
+                date_filter_start=date_filter_start,
+                date_filter_end=date_filter_end,
             )
 
         story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
@@ -343,6 +380,8 @@ class UserSubscription(models.Model):
         cutoff_date=None,
         all_feed_ids=None,
         cache_prefix="",
+        date_filter_start=None,
+        date_filter_end=None,
     ):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         across_all_feeds = False
@@ -358,7 +397,7 @@ class UserSubscription(models.Model):
         if not all_feed_ids:
             all_feed_ids = [f for f in feed_ids]
 
-        # feeds_string = ""
+        # Truncate feed list to keep Redis key manageable
         feeds_string = ",".join(str(f) for f in sorted(all_feed_ids))[:30]
         ranked_stories_keys = "%szU:%s:feeds:%s" % (cache_prefix, user_id, feeds_string)
         unread_ranked_stories_keys = "%szhU:%s:feeds:%s" % (cache_prefix, user_id, feeds_string)
@@ -387,8 +426,10 @@ class UserSubscription(models.Model):
             cutoff_date=cutoff_date,
             across_all_feeds=across_all_feeds,
             store_stories_key=ranked_stories_keys,
+            date_filter_start=date_filter_start,
+            date_filter_end=date_filter_end,
         )
-        story_hashes = range_func(ranked_stories_keys, offset, limit)
+        story_hashes = range_func(ranked_stories_keys, offset, offset + limit)
 
         if read_filter == "unread":
             unread_feed_story_hashes = story_hashes
@@ -402,8 +443,10 @@ class UserSubscription(models.Model):
                 include_timestamps=True,
                 cutoff_date=cutoff_date,
                 store_stories_key=unread_ranked_stories_keys,
+                date_filter_start=date_filter_start,
+                date_filter_end=date_filter_end,
             )
-            unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, limit)
+            unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, offset + limit)
 
         rt.expire(ranked_stories_keys, 60 * 60)
         rt.expire(unread_ranked_stories_keys, 60 * 60)
@@ -506,6 +549,9 @@ class UserSubscription(models.Model):
 
             feed.setup_feed_for_premium_subscribers(allow_skip_resync=allow_skip_resync)
             feed.count_subscribers()
+
+            if feed.archive_count:
+                feed.schedule_fetch_archive_feed()
 
             r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             r.publish(user.username, "reload:feeds")
@@ -654,13 +700,15 @@ class UserSubscription(models.Model):
         celery.chord(search_chunks)(callback)
 
     @classmethod
-    def fetch_archive_feeds_chunk(cls, user_id, feed_ids):
+    def fetch_archive_feeds_chunk(cls, feed_ids, user_id=None):
         from apps.rss_feeds.models import Feed
 
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-        user = User.objects.get(pk=user_id)
-
-        logging.user(user, "~FCFetching archive stories from %s feeds..." % len(feed_ids))
+        if user_id:
+            user = User.objects.get(pk=user_id)
+            logging.user(user, "~FCFetching archive stories from %s feeds..." % len(feed_ids))
+        else:
+            logging.debug("~FCFetching archive stories from %s feeds..." % len(feed_ids))
 
         for feed_id in feed_ids:
             feed = Feed.get_by_id(feed_id)
@@ -669,7 +717,8 @@ class UserSubscription(models.Model):
 
             feed.fill_out_archive_stories()
 
-        r.publish(user.username, "fetch_archive:feeds:%s" % ",".join([str(f) for f in feed_ids]))
+        if user_id:
+            r.publish(user.username, "fetch_archive:feeds:%s" % ",".join([str(f) for f in feed_ids]))
 
     @classmethod
     def finish_fetch_archive_feeds(cls, user_id, start_time, starting_story_count):
@@ -1542,18 +1591,76 @@ class RUserStory:
         return story_hashes
 
     @staticmethod
-    def get_read_stories(user_id, offset=0, limit=12, order="newest"):
+    def get_read_stories(
+        user_id, offset=0, limit=12, order="newest", date_filter_start=None, date_filter_end=None
+    ):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         key = "lRS:%s" % user_id
 
-        if order == "oldest":
-            count = r.llen(key)
-            if offset >= count:
+        # If date filtering is required, create a temporary sorted set and use zremrangebyscore
+        if date_filter_start or date_filter_end:
+            import time
+
+            from apps.rss_feeds.models import MStory
+
+            # Get all story hashes from the list
+            all_hashes = r.lrange(key, 0, -1)
+
+            if not all_hashes:
                 return []
-            offset = max(0, count - (offset + limit))
-            story_hashes = r.lrange(key, offset, offset + limit)
-        elif order == "newest":
-            story_hashes = r.lrange(key, offset, offset + limit)
+
+            # Fetch story dates from MongoDB
+            mstories = MStory.objects(story_hash__in=all_hashes).only("story_hash", "story_date")
+            story_dates = {}
+            for story in mstories:
+                if story.story_date:
+                    story_date = story.story_date
+                    # Ensure story_date is naive for timestamp conversion
+                    if story_date.tzinfo:
+                        story_date = story_date.replace(tzinfo=None)
+                    story_dates[story.story_hash] = int(time.mktime(story_date.timetuple()))
+
+            # Create temporary sorted set with story_date as score
+            temp_key = "zT:RS:%s" % user_id
+            pipeline = r.pipeline()
+
+            # Add stories to sorted set with their dates as scores
+            for story_hash in all_hashes:
+                if story_hash in story_dates:
+                    pipeline.zadd(temp_key, {story_hash: story_dates[story_hash]})
+
+            pipeline.expire(temp_key, 60 * 60)  # 1 hour TTL
+            pipeline.execute()
+
+            # Apply date filtering with zremrangebyscore
+            if date_filter_start:
+                start_score = int(time.mktime(date_filter_start.timetuple()))
+                r.zremrangebyscore(temp_key, "-inf", start_score - 1)
+
+            if date_filter_end:
+                end_score = int(time.mktime(date_filter_end.timetuple()))
+                r.zremrangebyscore(temp_key, end_score, "+inf")
+
+            # Retrieve filtered results
+            if order == "oldest":
+                story_hashes = r.zrange(temp_key, offset, offset + limit - 1)
+            else:  # newest
+                story_hashes = r.zrevrange(temp_key, offset, offset + limit - 1)
+
+            # Clean up temp key
+            r.delete(temp_key)
+
+            return story_hashes
+        else:
+            # Original behavior without date filtering
+            if order == "oldest":
+                count = r.llen(key)
+                if offset >= count:
+                    return []
+                offset = max(0, count - (offset + limit))
+                story_hashes = r.lrange(key, offset, offset + limit)
+            elif order == "newest":
+                story_hashes = r.lrange(key, offset, offset + limit)
 
         return story_hashes
 

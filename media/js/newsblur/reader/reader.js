@@ -89,6 +89,7 @@
             this.constants = {
                 FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
                 FILL_OUT_PAGES: 100,
+                FILL_OUT_PAGES_SEARCH_STORY_TITLE: 10,
                 FIND_NEXT_UNREAD_STORY_TRIES: 100,
                 RIVER_STORIES_FOR_STANDARD_ACCOUNT: 3,
                 MIN_FEED_LIST_SIZE: 225,
@@ -245,12 +246,17 @@
                 $windows.toggleClass('NB-narrow-content', narrow);
                 var extranarrow = center_width < 666;
                 $windows.toggleClass('NB-extra-narrow-content', extranarrow);
-                var wide = center_width > 860;
+                var wide = center_width > 980;
                 $windows.toggleClass('NB-wide-content', wide);
                 var extrawide = center_width > 1180;
                 $windows.toggleClass('NB-extra-wide-content', extrawide);
                 this.flags.narrow_content = !!narrow;
                 content_width = center_width + (west ? west.width() : 0);
+
+                // Reposition discover view if it's open
+                if (this.active_story && this.active_story.story_discover_view) {
+                    this.active_story.story_discover_view.autosize();
+                }
             }
 
             if ((north && north.width() < 640) ||
@@ -763,10 +769,11 @@
 
         select_story_in_feed: function (options) {
             options = _.extend({}, options);
-            var story_id = this.flags['select_story_in_feed'];
+            var story_id = this.flags['select_story_in_feed'] || options['story_id'];
+            var story_title = this.flags['select_story_title_in_feed'] || options['story_title'];
             var story = NEWSBLUR.assets.stories.get(story_id);
             if (!story) story = NEWSBLUR.assets.stories.get_by_story_hash(story_id);
-            // NEWSBLUR.log(['select_story_in_feed', story_id, story, this.story_view, this.counts['select_story_in_feed'], this.flags['no_more_stories']]);
+            NEWSBLUR.log(['select_story_in_feed', story_id, story, this.story_view, this.counts['select_story_in_feed'], this.flags['no_more_stories']]);
 
             if (story) {
                 this.counts['select_story_in_feed'] = 0;
@@ -774,6 +781,18 @@
                 _.delay(_.bind(function () {
                     story.set('selected', true, { scroll_to_comments: options.scroll_to_comments });
                 }, this), 100);
+            } else if ((this.counts['select_story_in_feed'] == this.constants.FILL_OUT_PAGES_SEARCH_STORY_TITLE || NEWSBLUR.assets.stories.no_more_stories) &&
+                story_title) {
+                // Still not found but because we have a story title, we can search for it.
+                NEWSBLUR.reader.flags.searching = true;
+                NEWSBLUR.reader.flags.search = story_title;
+                this.counts['select_story_in_feed'] = 0;
+                this.flags['select_story_in_feed'] = null;
+                this.flags['select_story_title_in_feed'] = null;
+                this.open_feed(this.active_feed, {
+                    story_id: story_id,
+                    search: story_title
+                });
             } else if (this.counts['select_story_in_feed'] < this.constants.FILL_OUT_PAGES &&
                 !NEWSBLUR.assets.stories.no_more_stories) {
                 // Nothing up, nothing down, but still not found. Load 1 page then find it.
@@ -801,7 +820,12 @@
                 feed_id: this.active_feed
             });
 
-            if (!$next_feed || $current_feed == $next_feed) return;
+            // If the user has no feeds visible and only folders, then we need to show the All Site Stories folder
+            if (!$next_feed || !$next_feed.length) {
+                return this.open_river_stories('river:all');
+            }
+            console.log(['show_next_feed', $current_feed, $next_feed]);
+            if ($current_feed == $next_feed) return;
             if ($current_feed && $current_feed.data('id') == $next_feed.data('id')) return;
 
             var next_feed_id = $next_feed.data('id');
@@ -818,10 +842,13 @@
         show_next_folder: function (direction, $current_folder) {
             var $next_folder = this.get_next_folder(direction, $current_folder);
 
-            if (!$next_folder) return;
+            if (!$next_folder) {
+                console.log(['No next folder', $current_folder, $next_folder]);
+                return;
+            }
 
             var folder = NEWSBLUR.assets.folders.get_view($next_folder);
-
+            console.log(['show_next_folder', $current_folder, $next_folder, folder]);
             this.open_river_stories($next_folder, folder && folder.model);
         },
 
@@ -880,7 +907,7 @@
 
             var next_folder_index = (current_folder + direction) % ($folders.length);
             var $next_folder = $folders.eq(next_folder_index);
-
+            console.log(['get_next_folder', direction, $current_folder, current_folder, $next_folder, next_folder_index, $folders.length]);
             return $next_folder;
         },
 
@@ -1309,7 +1336,7 @@
                 'starred_view': false,
                 'select_story_in_feed': null,
                 'global_blurblogs': false,
-                'reloading_feeds': false
+                'reloading_feeds': false,
             });
 
             $.extend(this.cache, {
@@ -1333,11 +1360,21 @@
                 'select_story_in_feed': 0
             });
 
+            if (options.select_story_in_feed) {
+                this.flags['select_story_in_feed'] = options.select_story_in_feed;
+            }
             // console.log(['reset feed', options, options.search]);
 
             if (_.isUndefined(options.search)) {
                 this.flags.search = "";
                 this.flags.searching = false;
+            }
+            if (_.isUndefined(options.date_filter_start) && _.isUndefined(options.date_filter_end)) {
+                this.flags.date_filter_start = null;
+                this.flags.date_filter_end = null;
+            } else {
+                this.flags.date_filter_start = options.date_filter_start;
+                this.flags.date_filter_end = options.date_filter_end;
             }
             this.$s.$feed_scroll.scrollTop(0);
             this.$s.$starred_header.removeClass('NB-selected');
@@ -1369,12 +1406,8 @@
             this.model.stories.deselect();
             this.model.starred_feeds.deselect();
             this.model.searches_feeds.deselect();
-            if (_.string.contains(this.active_feed, 'social:')) {
-                this.model.social_feeds.deselect();
-            }
-            if (_.string.contains(this.active_feed, 'river:')) {
-                this.model.folders.deselect();
-            }
+            this.model.folders.deselect();
+            this.model.social_feeds.deselect();
 
             this.active_folder = null;
             this.active_feed = null;
@@ -1399,10 +1432,11 @@
                 this.open_read_stories(options);
             } else if (this.flags['social_view'] &&
                 this.active_feed == 'river:blurblogs') {
-                this.open_river_blurblogs_stories();
+                this.open_river_blurblogs_stories(options);
             } else if (this.flags['social_view'] &&
                 this.active_feed == 'river:global') {
-                this.open_river_blurblogs_stories({ 'global': true });
+                options.global = true;
+                this.open_river_blurblogs_stories(options);
             } else if (this.flags['social_view']) {
                 this.open_social_stories(this.active_feed, options);
             } else if (this.flags['river_view']) {
@@ -1446,6 +1480,9 @@
                 this.hide_splash_page();
                 if (options.story_id) {
                     this.flags['select_story_in_feed'] = options.story_id;
+                }
+                if (options.story_title) {
+                    this.flags['select_story_title_in_feed'] = options.story_title;
                 }
 
                 this.active_feed = feed.id;
@@ -2024,9 +2061,8 @@
 
         open_river_stories: function ($folder, folder, options) {
             options = options || {};
-            var $story_titles = this.$s.$story_titles;
             $folder = $folder || this.$s.$feed_list;
-            var folder_title = folder && folder.get('folder_title') || "Everything";
+            var folder_title = folder && folder.get('folder_title') || 'Everything';
 
             this.reset_feed(options);
 
@@ -2056,8 +2092,10 @@
                     options.feed.set('selected', true);
                 } else {
                     var folder_view = NEWSBLUR.assets.folders.get_view($folder) ||
-                        this.active_folder && this.active_folder.folder_view;
-                    folder_view.model.set('selected', true);
+                        folder && folder.folder_view;
+                    if (folder_view && folder_view.model) {
+                        folder_view.model.set('selected', true);
+                    }
                 }
             }
             this.active_folder = folder || NEWSBLUR.assets.folders;
@@ -2587,6 +2625,14 @@
         // = Send To =
         // ===========
 
+        send_story_to_thirdparty: function (story_id, service) {
+            if (this['send_story_to_' + service]) {
+                this['send_story_to_' + service](story_id);
+            } else {
+                this.send_story_to_email(story_id);
+            }
+        },
+
         send_story_to_instapaper: function (story_id) {
             var story = this.model.get_story(story_id);
             var url = 'https://www.instapaper.com/edit';
@@ -2659,7 +2705,7 @@
 
         send_story_to_twitter: function (story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'https://twitter.com/intent/tweet';
+            var url = 'https://x.com/intent/post';
             var twitter_url = [
                 url,
                 '?text=',
@@ -2686,9 +2732,23 @@
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 
+        send_story_to_reddit: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://www.reddit.com/submit?';
+            var reddit_url = [
+                url,
+                'url=',
+                encodeURIComponent(story.get('story_permalink')),
+                '&title=',
+                encodeURIComponent(story.get('story_title'))
+            ].join('');
+            window.open(reddit_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
         send_story_to_pinboard: function (story_id) {
             var story = this.model.get_story(story_id);
-            var url = 'https://pinboard.in/add/?';
+            var url = 'https://pinboard.in/add?';
             var pinboard_url = [
                 url,
                 'url=',
@@ -2715,6 +2775,144 @@
                 encodeURIComponent(story.get('story_tags').join(', '))
             ].join('');
             window.open(raindrop_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_linkedin: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://www.linkedin.com/sharing/share-offsite/?url=';
+            var linkedin_url = [
+                url,
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(linkedin_url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_whatsapp: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://api.whatsapp.com/send?text=',
+                encodeURIComponent(story.get('story_title')),
+                "%20",
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_bluesky: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://bsky.app/intent/compose?text=',
+                encodeURIComponent(story.get('story_title')),
+                "%20",
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_mastodon: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://mastodon.social/share?text=',
+                encodeURIComponent(story.get('story_title')),
+                "%20",
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_livejournal: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'http://www.livejournal.com/update.bml?subject=',
+                encodeURIComponent(story.get('story_title')),
+                "&event=",
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_hackernews: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://news.ycombinator.com/submitlink?t=',
+                encodeURIComponent(story.get('story_title')),
+                "&u=",
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_flipboard: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://share.flipboard.com/bookmarklet/popout?v=2&title=',
+                encodeURIComponent(story.get('story_title')),
+                "&url=",
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_lineme: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://social-plugins.line.me/lineit/share?url=',
+                encodeURIComponent(story.get('story_permalink'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_copyurl: function (story_id) {
+            // Copy story url to clipboard
+            var story = this.model.get_story(story_id);
+            navigator.clipboard.writeText(story.get('story_permalink'));
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+            var $thirdparty = $('.NB-menu-manage-story-thirdparty');
+            $('.NB-menu-manage-title', $thirdparty).text('Copied URL');
+        },
+
+        send_story_to_copytext: function (story_id) {
+            // Copy story title to clipboard
+            var story = this.model.get_story(story_id);
+            var content_text = story.get('story_content');
+            content_text = $(content_text).text();
+            navigator.clipboard.writeText(story.get('story_title') + "\n\n" + story.get('story_permalink') + "\n\n" + content_text);
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+            var $thirdparty = $('.NB-menu-manage-story-thirdparty');
+            $('.NB-menu-manage-title', $thirdparty).text('Copied text');
+
+        },
+
+        send_story_to_print: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var text_view = this.story_view == 'text';
+            // Open /rss_feeds/print?story_id=story_id
+            var url = '/reader/print?story_hash=' + story.get('story_hash');
+            if (text_view) {
+                url += '&text=true';
+            }
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
+        send_story_to_telegram: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = [
+                'https://telegram.me/share/url?url=',
+                encodeURIComponent(story.get('story_permalink')),
+                "&text=",
+                encodeURIComponent(story.get('story_title'))
+            ].join('');
+            window.open(url, '_blank');
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 
@@ -2792,7 +2990,25 @@
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
 
+        send_story_to_readwise: function (story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://readwise.io/save?';
+            var url = [
+                url,
+                'url=',
+                encodeURIComponent(story.get('story_permalink')),
+                '&title=',
+                encodeURIComponent(story.get('story_title'))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+        },
+
         send_story_to_email: function (story) {
+            // If story is a story_id (string), get the story object
+            if (_.isString(story)) {
+                story = this.model.get_story(story);
+            }
             NEWSBLUR.reader_send_email = new NEWSBLUR.ReaderSendEmail(story);
             NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
         },
@@ -2942,7 +3158,7 @@
             NEWSBLUR.assets.preference('has_found_friends', true);
             NEWSBLUR.reader.check_hide_getting_started();
 
-            NEWSBLUR.reader_friends = new NEWSBLUR.ReaderFriends();
+            NEWSBLUR.intro = new NEWSBLUR.ReaderIntro({ 'page': 3 });
         },
 
         open_profile_editor_modal: function () {
@@ -3696,7 +3912,7 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-recommend', role: "button" }, [
@@ -3780,7 +3996,7 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     (feed.get('user_id') != NEWSBLUR.Globals.user_id && $.make('li', { className: 'NB-menu-item NB-menu-manage-delete NB-menu-manage-socialfeed-delete', role: "button" }, [
@@ -3903,114 +4119,23 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
                     ]),
-                    $.make('li', { className: 'NB-menu-item NB-menu-manage-story-thirdparty' }, [
-                        (NEWSBLUR.Preferences['story_share_facebook'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-facebook' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Facebook').parent().addClass('NB-menu-manage-highlight-facebook');
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-story-thirdparty' }, _.map(NEWSBLUR.assets.third_party_sharing_services, function (label, key) {
+                        return NEWSBLUR.Preferences['story_share_' + key] && $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-' + key }).bind('mouseenter', _.bind(function (e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text(label).parent().addClass('NB-menu-manage-highlight-' + key);
                         }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-facebook');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_twitter'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-twitter' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Twitter').parent().addClass('NB-menu-manage-highlight-twitter');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-twitter');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_readitlater'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-readitlater' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Pocket (RIL)').parent().addClass('NB-menu-manage-highlight-readitlater');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-readitlater');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_tumblr'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-tumblr' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Tumblr').parent().addClass('NB-menu-manage-highlight-tumblr');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-tumblr');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_blogger'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-blogger' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Blogger').parent().addClass('NB-menu-manage-highlight-blogger');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-blogger');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_delicious'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-delicious' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Delicious').parent().addClass('NB-menu-manage-highlight-delicious');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-delicious');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_pinboard'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pinboard' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Pinboard').parent().addClass('NB-menu-manage-highlight-pinboard');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-pinboard');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_raindrop'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-raindrop' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Raindrop.io').parent().addClass('NB-menu-manage-highlight-raindrop');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-raindrop');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_pinterest'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-pinterest' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Pinterest').parent().addClass('NB-menu-manage-highlight-pinterest');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-pinterest');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_buffer'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-buffer' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Buffer').parent().addClass('NB-menu-manage-highlight-buffer');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-buffer');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_diigo'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-diigo' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Diigo').parent().addClass('NB-menu-manage-highlight-diigo');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-diigo');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_evernote'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-evernote' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Evernote').parent().addClass('NB-menu-manage-highlight-evernote');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-evernote');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_googleplus'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-googleplus' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Google+').parent().addClass('NB-menu-manage-highlight-googleplus');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-googleplus');
-                        }, this))),
-                        (NEWSBLUR.Preferences['story_share_instapaper'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-instapaper' }).bind('mouseenter', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Instapaper').parent().addClass('NB-menu-manage-highlight-instapaper');
-                        }, this)).bind('mouseleave', _.bind(function (e) {
-                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-instapaper');
-                        }, this))),
-                        $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-email', role: "button" }),
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-' + key);
+                        }, this))
+                    }).concat(
+                        $.make('div', { className: 'NB-menu-manage-thirdpartyicon NB-menu-manage-thirdparty-email', role: "button" }),
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Email story')
-                    ]).bind('click', _.bind(function (e) {
+                    )).bind('click', _.bind(function (e) {
                         e.preventDefault();
                         e.stopPropagation();
                         var $target = $(e.target);
-                        if ($target.hasClass('NB-menu-manage-thirdparty-facebook')) {
-                            this.send_story_to_facebook(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-twitter')) {
-                            this.send_story_to_twitter(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-readitlater')) {
-                            this.send_story_to_readitlater(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-tumblr')) {
-                            this.send_story_to_tumblr(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-blogger')) {
-                            this.send_story_to_blogger(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-delicious')) {
-                            this.send_story_to_delicious(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-pinboard')) {
-                            this.send_story_to_pinboard(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-raindrop')) {
-                            this.send_story_to_raindrop(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-pinterest')) {
-                            this.send_story_to_pinterest(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-buffer')) {
-                            this.send_story_to_buffer(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-diigo')) {
-                            this.send_story_to_diigo(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-evernote')) {
-                            this.send_story_to_evernote(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-googleplus')) {
-                            this.send_story_to_googleplus(story.id);
-                        } else if ($target.hasClass('NB-menu-manage-thirdparty-instapaper')) {
-                            this.send_story_to_instapaper(story.id);
-                        } else {
-                            this.send_story_to_email(story);
+                        var service = $target.hasClass('NB-menu-manage-thirdpartyicon') ? $target.attr('class').match(/NB-menu-manage-thirdparty-(\w+)/)[1] : 'email';
+                        if (service && service.length > 0) {
+                            this.send_story_to_thirdparty(story.id, service);
                         }
                     }, this)),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story NB-menu-manage-story-share', role: "button" }, [
@@ -4026,7 +4151,7 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story-train', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
+                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     (order == "newest" && $.make('li', { className: 'NB-menu-item NB-menu-manage-story-mark-read-newer NB-up', role: "button" }, [
@@ -4107,7 +4232,7 @@
             var $manage_menu = this.make_manage_menu(type, feed_id, story_id, inverse, $item);
             $manage_menu_container.empty().append($manage_menu);
             $manage_menu_container.data('item', $item && $item[0]);
-            $('.NB-task-manage').parents('.NB-taskbar').css('z-index', 2);
+            $('.NB-taskbar').css('z-index', 2);
             if (type == 'site') {
                 if (inverse) {
                     $('li', $manage_menu_container).each(function () {
@@ -4353,7 +4478,7 @@
             var self = this;
             feed_id = feed_id || this.active_feed;
             var feed = this.model.get_feed(feed_id);
-            var feed_view = feed.get_view($feed);
+            var feed_view = feed.get_view($feed, true);
             feed.delete_feed({ view: feed_view });
         },
 
@@ -4980,6 +5105,11 @@
             this.slide_intelligence_slider(value);
         },
 
+        clear_active_feed_date_filters: function () {
+            NEWSBLUR.reader.flags.date_filter_start = null;
+            NEWSBLUR.reader.flags.date_filter_end = null;
+        },
+
         toggle_read_filter: function () {
             var read_filter = NEWSBLUR.assets.view_setting(this.active_feed, 'read_filter');
             var setting = {
@@ -5165,6 +5295,7 @@
             if (!force && NEWSBLUR.Globals.is_anonymous) return;
             // if (!force && !NEWSBLUR.Globals.is_premium) return;
             if (this.socket && !this.socket.connected) {
+                NEWSBLUR.log(["Reconnecting to existing socket..."]);
                 this.socket.connect();
             } else if (force || !this.socket || !this.socket.connected) {
                 var server = window.location.protocol + '//' + window.location.hostname;
@@ -5176,18 +5307,60 @@
                 if (local) {
                     port = https ? 8889 : 8888;
                 }
+
+                NEWSBLUR.log(["Creating new socket connection to", server + ":" + port]);
+
                 this.socket = this.socket || io.connect(server + ":" + port, {
-                    "reconnection delay": 2000,
-                    "connect timeout": 2000,
-                    "path": "/v3/socket.io",
-                    "transports": ['websocket'],
-                    "upgrade": false
+                    path: "/v3/socket.io",
+                    reconnectionDelay: 2000,
+                    connectTimeout: 45000,
+                    pingTimeout: 60000,
+                    pingInterval: 25000,
+                    transports: ['websocket'],
+                    upgrade: false
                 });
+
+                // Debug socket connection events
+                this.socket.on('connect_error', _.bind(function (error) {
+                    NEWSBLUR.log(["Socket connect_error:", error.message]);
+                }, this));
+
+                this.socket.on('connect_timeout', _.bind(function () {
+                    NEWSBLUR.log(["Socket connect_timeout"]);
+                }, this));
+
+                this.socket.on('reconnect', _.bind(function (attemptNumber) {
+                    NEWSBLUR.log(["Socket reconnected after", attemptNumber, "attempts"]);
+                }, this));
+
+                this.socket.on('reconnect_attempt', _.bind(function (attemptNumber) {
+                    NEWSBLUR.log(["Socket reconnect attempt #", attemptNumber]);
+                }, this));
+
+                this.socket.on('reconnect_error', _.bind(function (error) {
+                    NEWSBLUR.log(["Socket reconnect_error:", error.message]);
+                }, this));
+
+                this.socket.on('reconnect_failed', _.bind(function () {
+                    NEWSBLUR.log(["Socket reconnect_failed"]);
+                }, this));
+
+                this.socket.on('error', _.bind(function (error) {
+                    NEWSBLUR.log(["Socket error:", error]);
+                }, this));
+
+                this.socket.on('ping', _.bind(function () {
+                    NEWSBLUR.log(["Socket ping sent at", new Date().toISOString()]);
+                }, this));
+
+                this.socket.on('pong', _.bind(function (latency) {
+                    NEWSBLUR.log(["Socket pong received, latency:", latency, "ms"]);
+                }, this));
 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
                 this.socket.on('connect', _.bind(function () {
                     var active_feeds = this.send_socket_active_feeds();
-                    NEWSBLUR.log(["Connected to real-time pubsub with " + active_feeds.length + " feeds."]);
+                    NEWSBLUR.log(["Connected to real-time pubsub with " + active_feeds.length + " feeds at", new Date().toISOString()]);
                     this.flags.feed_refreshing_in_realtime = true;
                     this.setup_feed_refresh();
                     NEWSBLUR.assets.stories.retry_failed_marked_read_stories();
@@ -5216,16 +5389,17 @@
                 this.socket.on('user:update', _.bind(this.handle_realtime_update, this));
 
 
-                this.socket.on('disconnect', _.bind(function () {
-                    NEWSBLUR.log(["Lost connection to real-time pubsub. Falling back to polling."]);
+                this.socket.on('disconnect', _.bind(function (reason) {
+                    NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);
                     this.flags.feed_refreshing_in_realtime = false;
                     this.setup_feed_refresh();
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
                     $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error').removeClass('NB-active');
                     this.apply_tipsy_titles();
                 }, this));
-                this.socket.on('error', _.bind(function () {
-                    NEWSBLUR.log(["Can't connect to real-time pubsub."]);
+
+                this.socket.on('error', _.bind(function (error) {
+                    NEWSBLUR.log(["Can't connect to real-time pubsub:", error]);
                     this.flags.feed_refreshing_in_realtime = false;
                     this.setup_feed_refresh();
                     // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
@@ -5233,15 +5407,24 @@
                     this.apply_tipsy_titles();
                     _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), Math.random() * 60 * 1000);
                 }, this));
-                this.socket.on('reconnect_failed', _.bind(function () {
-                    console.log(["Socket.io reconnect failed"]);
-                }, this));
-                this.socket.on('reconnect', _.bind(function () {
-                    console.log(["Socket.io reconnected successfully!"]);
-                }, this));
-                this.socket.on('reconnecting', _.bind(function () {
-                    console.log(["Socket.io reconnecting..."]);
-                }, this));
+
+                // Add a heartbeat check to detect stalled connections
+                this.socket_heartbeat_interval = setInterval(_.bind(function () {
+                    if (this.socket && this.socket.connected) {
+                        var now = Date.now();
+                        if (!this.last_heartbeat_time) {
+                            this.last_heartbeat_time = now;
+                        } else if (now - this.last_heartbeat_time > 70000) { // 70 seconds (longer than pingInterval)
+                            NEWSBLUR.log(["Socket heartbeat missed, reconnecting...",
+                                "Last heartbeat:", new Date(this.last_heartbeat_time).toISOString(),
+                                "Current time:", new Date(now).toISOString(),
+                                "Difference:", now - this.last_heartbeat_time, "ms"]);
+                            this.socket.disconnect();
+                            this.socket.connect();
+                        }
+                        this.last_heartbeat_time = now;
+                    }
+                }, this), 30000); // Check every 30 seconds
             }
 
             // this.watch_navigator_online();
@@ -5312,6 +5495,9 @@
                     if (NEWSBLUR.app.active_search) {
                         NEWSBLUR.app.active_search.update_indexing_progress(message);
                     }
+                } else if (_.string.startsWith(message, "discover_index_complete:")) {
+                    message = message.replace('discover_index_complete:', '');
+                    this.update_discover_indexing_progress(message);
                 } else if (_.string.startsWith(message, "refresh:")) {
                     var feeds = message.replace('refresh:', '').split(",");
                     this.force_feeds_refresh(null, false, feeds);
@@ -5322,6 +5508,65 @@
                     }
                 }
             }
+        },
+
+        update_discover_indexing_progress: function (message) {
+            var $related_stories_buttons = $('.NB-sideoption.NB-feed-story-discover');
+
+            if (message == "start") {
+                this.show_discover_indexing_tooltip(true);
+            } else if (message == "done") {
+                var tipsy = $related_stories_buttons.data('tipsy');
+                _.defer(function () {
+                    if (!tipsy) return;
+                    tipsy.disable();
+                    tipsy.hide();
+                });
+                this.retry();
+            } else if (_.string.startsWith(message, 'feeds:')) {
+                var feed_ids = message.replace('feeds:', '').split(',');
+                _.each(feed_ids, function (feed_id) {
+                    var feed = NEWSBLUR.assets.get_feed(parseInt(feed_id, 10));
+                    if (feed) {
+                        feed.set('discover_indexed', true);
+                    }
+                });
+                this.show_discover_indexing_tooltip(false);
+                var indexed = NEWSBLUR.assets.feeds.discover_indexed();
+                var total = NEWSBLUR.assets.feeds.length;
+                progress = Math.ceil(indexed / total * 100);
+                NEWSBLUR.utils.attach_loading_gradient($related_stories_buttons, progress);
+            }
+        },
+
+        show_discover_indexing_tooltip: function (show) {
+            var $related_stories_buttons = $('.NB-sideoption.NB-feed-story-discover');
+
+            $related_stories_buttons.each(function () {
+                var $button = $(this);
+                var tipsy = $button.data('tipsy');
+                console.log(["tipsy", $button, tipsy]);
+                if (tipsy) return;
+
+                $button.tipsy({
+                    title: function () { return "Hang tight, indexing..."; },
+                    gravity: 'se',
+                    fade: true,
+                    trigger: 'hover',
+                    position: 'top-right',
+                    offset: 4
+                });
+                var tipsy = $button.data('tipsy');
+                _.defer(function () {
+                    tipsy.enable();
+                    if (show) tipsy.show();
+                });
+                _.delay(function () {
+                    tipsy.hide();
+                }, 3 * 1000);
+            });
+
+            return $related_stories_buttons;
         },
 
         watch_navigator_online: function () {
@@ -5914,8 +6159,8 @@
         hide_tryfeed_view: function () {
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
             $tryfeed_container.slideUp(350);
-            this.$s.$story_taskbar.find('.NB-tryfeed-add').remove();
-            this.$s.$story_taskbar.find('.NB-tryfeed-follow').remove();
+            this.$s.$story_taskbar.find('.NB-tryfeed-add').hide();
+            this.$s.$story_taskbar.find('.NB-tryfeed-follow').hide();
             this.flags['showing_feed_in_tryfeed_view'] = false;
             this.flags['showing_social_feed_in_tryfeed_view'] = false;
         },
@@ -5923,11 +6168,10 @@
         show_tryfeed_add_button: function () {
             if (this.$s.$story_taskbar.find('.NB-tryfeed-add:visible').length) return;
 
-            var $add = $.make('div', { className: 'NB-modal-submit' }, [
-                $.make('div', { className: 'NB-tryfeed-add NB-modal-submit-green NB-modal-submit-button' }, 'Subscribe')
-            ]).css({ 'opacity': 0 });
-            this.$s.$story_taskbar.append($add);
-            $add.animate({ 'opacity': 1 }, { 'duration': 600 });
+            this.$s.$story_taskbar.find(".NB-tryfeed-add")
+                .css({ 'opacity': 0 })
+                .show()
+                .animate({ 'opacity': 1 }, { 'duration': 600 });
         },
 
         correct_tryfeed_title: function () {
@@ -5939,21 +6183,19 @@
         show_tryfeed_follow_button: function () {
             if (this.$s.$story_taskbar.find('.NB-tryfeed-follow:visible').length) return;
 
-            var $add = $.make('div', { className: 'NB-modal-submit' }, [
-                $.make('div', { className: 'NB-tryfeed-follow NB-modal-submit-green NB-modal-submit-button' }, 'Follow')
-            ]).css({ 'opacity': 0 });
-            this.$s.$story_taskbar.append($add);
-            $add.animate({ 'opacity': 1 }, { 'duration': 600 });
+            this.$s.$story_taskbar.find(".NB-tryfeed-follow")
+                .css({ 'opacity': 0 })
+                .show()
+                .animate({ 'opacity': 1 }, { 'duration': 600 });
         },
 
         show_tryout_signup_button: function () {
             if (this.$s.$story_taskbar.find('.NB-tryout-signup:visible').length) return;
 
-            var $add = $.make('div', { className: 'NB-modal-submit' }, [
-                $.make('div', { className: 'NB-tryout-signup NB-modal-submit-green NB-modal-submit-button' }, 'Sign Up')
-            ]).css({ 'opacity': 0 });
-            this.$s.$story_taskbar.append($add);
-            $add.animate({ 'opacity': 1 }, { 'duration': 600 });
+            this.$s.$story_taskbar.find(".NB-tryfeed-signup")
+                .css({ 'opacity': 0 })
+                .show()
+                .animate({ 'opacity': 1 }, { 'duration': 600 });
         },
 
         hide_tryout_signup_button: function () {

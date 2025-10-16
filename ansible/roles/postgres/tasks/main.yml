@@ -19,7 +19,7 @@
     dest: /srv/newsblur/docker/postgres/postgres.conf
   notify: reload postgres
   register: updated_config
-  
+
 - name: Create Postgres docker volumes with correct permissions
   become: yes
   file:
@@ -141,6 +141,7 @@
     src: /srv/secrets-newsblur/settings/common_settings.py
     dest: /srv/newsblur/newsblur_web/local_settings.py
   register: app_changed
+  tags: env
 
 - name: Add sanity checkers cronjob for disk usage
   cron:

@@ -1,4 +1,4 @@
-Mercury = require('@postlight/mercury-parser')
+Mercury = require('@postlight/parser')
 log    = require './log.js'
 
 original_text = (app) =>

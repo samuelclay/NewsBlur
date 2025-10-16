@@ -71,7 +71,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         var feeds = NEWSBLUR.assets.feeds;
 
         this.$el.empty();
-        this.$s.$story_taskbar.css({ 'display': 'block' });
+        this.$s.$story_taskbar.css({ 'display': 'flex' });
         this.folder_view = new NEWSBLUR.Views.Folder({
             collection: folders,
             root: true,

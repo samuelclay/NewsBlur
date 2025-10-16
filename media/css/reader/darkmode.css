@@ -184,6 +184,10 @@ color: #a85b40;
     box-shadow: none;
 }
 
+.NB-dark .NB-modal-feedchooser .NB-premium-prorate-message {
+    color: rgba(216, 216, 216, 0.5);
+}
+
 .NB-dark .NB-feed-badge {
     background-color: #303739;
 }
@@ -800,8 +804,16 @@ color: #a85b40;
     background-color: #252D30;
 }
 
-.NB-dark .NB-classifiers .NB-classifier {
+.NB-dark .NB-classifier {
     background-color: #59656D;
+}
+
+.NB-dark .NB-classifiers .NB-classifier.NB-classifier-like {
+    box-shadow: 1px 1px 1px #1f1f21;
+}
+
+.NB-dark .NB-classifiers .NB-classifier.NB-classifier-dislike {
+    box-shadow: 1px 1px 1px #1f1f21;
 }
 
 .NB-dark .NB-classifiers .NB-classifier label b {
@@ -918,7 +930,7 @@ color: #a85b40;
 .NB-dark .NB-taskbar-options,
 .NB-dark .NB-feedbar-options {
     background: none;
-    background-color: #565759;
+    background-color: #212225;
     color: #c0c0c0;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
     /*border: 1px solid #90928b;*/
@@ -983,7 +995,8 @@ color: #a85b40;
 .NB-dark .NB-dashboard-river .NB-dashboard-river-options,
 .NB-dark #story_taskbar .NB-taskbar-options,
 .NB-dark .NB-feedbar .NB-story-title-indicator,
-.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read {
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read,
+.NB-dark .NB-feedbar .NB-feedbar-discover-container {
     color: #c0c0c0;
     border: 1px solid rgba(0, 0, 0, .3);
     background-color: #303739;
@@ -999,7 +1012,8 @@ color: #a85b40;
 .NB-dark .NB-feedbar .NB-story-title-indicator:hover,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read:hover,
 .NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-time:hover,
-.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-expand:hover {
+.NB-dark .NB-feedbar .NB-feedbar-mark-feed-read-expand:hover,
+.NB-dark .NB-feedbar .NB-feedbar-discover-container:hover {
     background-color: #606466;
 }
 
@@ -1486,7 +1500,8 @@ color: #fff;
 }
 
 .NB-dark .NB-sideoption-save,
-.NB-dark .NB-sideoption-share {
+.NB-dark .NB-sideoption-share,
+.NB-dark .NB-sideoption-discover {
     border: 1px solid #303739;
 }
 
@@ -1494,6 +1509,10 @@ color: #fff;
 .NB-dark .NB-sideoption-save .NB-sideoption-save-title,
 .NB-dark .NB-sideoption-share .NB-sideoption-share-title {
     text-shadow: none;
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-sideoption-discover .segmented-control-item a {
     color: #c0c0c0;
 }
 
@@ -1919,4 +1938,8 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-history-fetch.NB-errorcode {
     color: #953524;
+}
+
+.NB-dark .NB-subscribed {
+    color: #3c7922;
 }

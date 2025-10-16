@@ -1,3 +1,4 @@
+import datetime
 import http.client
 import re
 import time
@@ -370,6 +371,8 @@ class PageImporter(object):
             )
 
     def save_page_s3(self, html):
+        expires = datetime.datetime.utcnow() + datetime.timedelta(days=60)
+        expires = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
         s3_object = settings.S3_CONN.Object(settings.S3_PAGES_BUCKET_NAME, self.feed.s3_pages_key)
         s3_object.put(
             Body=compress_string_with_gzip(html.encode("utf-8")),

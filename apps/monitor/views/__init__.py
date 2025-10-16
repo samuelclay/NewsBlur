@@ -13,4 +13,5 @@ from apps.monitor.views.newsblur_tasks_pipeline import TasksPipeline
 from apps.monitor.views.newsblur_tasks_servers import TasksServers
 from apps.monitor.views.newsblur_tasks_times import TasksTimes
 from apps.monitor.views.newsblur_updates import Updates
+from apps.monitor.views.newsblur_user_searches import UserSearches
 from apps.monitor.views.newsblur_users import Users

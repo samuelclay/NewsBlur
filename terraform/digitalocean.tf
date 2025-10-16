@@ -177,6 +177,7 @@ resource "digitalocean_droplet" "app-refresh" {
 resource "digitalocean_droplet" "blog" {
   image    = var.droplet_os
   name     = "blog"
+  count    = 0
   region   = var.droplet_region
   size     = var.droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -330,10 +331,10 @@ resource "digitalocean_droplet" "node-page" {
 }
 
 resource "digitalocean_droplet" "db-elasticsearch" {
-  count    = 1
-  image    = var.droplet_os
+  count = 1
+  image = var.droplet_os
   # name     = "db-elasticsearch"
-  name     = "db-elasticsearch${count.index+1}"
+  name     = "db-elasticsearch${count.index + 1}"
   region   = var.droplet_region
   size     = var.elasticsearch_droplet_size
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]
@@ -420,11 +421,11 @@ resource "digitalocean_droplet" "db-redis-pubsub" {
 }
 
 resource "digitalocean_droplet" "db-postgres" {
-  count  = 1
+  count   = 1
   backups = true
-  image  = var.droplet_os
-  name   = contains([0], count.index) ? "db-postgres${count.index + 2}" : "db-postgres${count.index + 2}"
-  region = var.droplet_region
+  image   = var.droplet_os
+  name    = contains([0], count.index) ? "db-postgres${count.index + 2}" : "db-postgres${count.index + 2}"
+  region  = var.droplet_region
   # size   = contains([0], count.index) ? var.droplet_size_160 : var.droplet_size_320
   size     = var.droplet_size_320
   ssh_keys = [digitalocean_ssh_key.default.fingerprint]

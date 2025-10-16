@@ -13,6 +13,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import "NewsBlur-Swift.h"
 
+NSString * const ThemeStyleAuto = @"auto";
 NSString * const ThemeStyleLight = @"light";
 NSString * const ThemeStyleSepia = @"sepia";
 NSString * const ThemeStyleMedium = @"medium";
@@ -42,6 +43,7 @@ NSString * const ThemeStyleDark = @"dark";
 
 @property (nonatomic, readonly) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) BOOL justToggledViaGesture;
+@property (nonatomic) BOOL isAutoDark;
 
 @end
 
@@ -66,16 +68,13 @@ NSString * const ThemeStyleDark = @"dark";
     NSString *theme = [[NSUserDefaults standardUserDefaults] objectForKey:@"theme_style"];
     
     if (![self isValidTheme:theme]) {
-        theme = ThemeStyleLight;
+        theme = ThemeStyleAuto;
     }
     
     return theme;
 }
 
 - (void)setTheme:(NSString *)theme {
-    // Automatically turn off following the system appearance when manually changing the theme.
-    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"theme_follow_system"];
-    
     [self reallySetTheme:theme];
     
     NSLog(@"Manually changed to theme: %@", self.themeDisplayName);  // log
@@ -97,8 +96,10 @@ NSString * const ThemeStyleDark = @"dark";
         return @"Sepia";
     } else if ([theme isEqualToString:ThemeStyleMedium]) {
         return @"Medium";
-    } else {
+    } else if ([theme isEqualToString:ThemeStyleLight]) {
         return @"Light";
+    } else {
+        return @"Auto";
     }
 }
 
@@ -107,10 +108,14 @@ NSString * const ThemeStyleDark = @"dark";
     
     if ([theme isEqualToString:ThemeStyleDark]) {
         return @"Dark";
-    } else if ([theme isEqualToString:ThemeStyleSepia]) {
-        return @"Sepia";
     } else if ([theme isEqualToString:ThemeStyleMedium]) {
         return @"Medium";
+    } else if ([theme isEqualToString:ThemeStyleSepia]) {
+        return @"Sepia";
+    } else if ([theme isEqualToString:ThemeStyleLight]) {
+        return @"Light";
+    } else if (self.isSystemDark) {
+        return @"Dark";
     } else {
         return @"Light";
     }
@@ -125,13 +130,23 @@ NSString * const ThemeStyleDark = @"dark";
         return ThemeStyleDark;
     } else if ([theme isEqualToString:ThemeStyleSepia]) {
         return ThemeStyleLight;
-    } else {
+    } else if ([theme isEqualToString:ThemeStyleLight]) {
         return ThemeStyleSepia;
+    } else {
+        return ThemeStyleAuto;
     }
+}
+
+- (BOOL)isAutoTheme {
+    return [self.theme isEqualToString:ThemeStyleAuto];
 }
 
 - (BOOL)isDarkTheme {
     NSString *theme = self.theme;
+    
+    if (self.isAutoTheme) {
+        return self.isSystemDark;
+    }
     
     return [theme isEqualToString:ThemeStyleDark] || [theme isEqualToString:ThemeStyleMedium];
 }
@@ -145,7 +160,7 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (BOOL)isValidTheme:(NSString *)theme {
-    return [theme isEqualToString:ThemeStyleLight] || [theme isEqualToString:ThemeStyleSepia] || [theme isEqualToString:ThemeStyleMedium] || [theme isEqualToString:ThemeStyleDark];
+    return [theme isEqualToString:ThemeStyleAuto] || [theme isEqualToString:ThemeStyleLight] || [theme isEqualToString:ThemeStyleSepia] || [theme isEqualToString:ThemeStyleMedium] || [theme isEqualToString:ThemeStyleDark];
 }
 
 - (NewsBlurAppDelegate *)appDelegate {
@@ -173,7 +188,9 @@ NSString * const ThemeStyleDark = @"dark";
 - (UIColor *)colorFromLightRGB:(NSInteger)lightRGBValue sepiaRGB:(NSUInteger)sepiaRGBValue mediumRGB:(NSUInteger)mediumRGBValue darkRGB:(NSUInteger)darkRGBValue {
     NSInteger rgbValue = lightRGBValue;
     
-    if ([self.theme isEqualToString:ThemeStyleSepia]) {
+    if (self.isAutoTheme) {
+        rgbValue = self.isSystemDark ? darkRGBValue : rgbValue;
+    } else if ([self.theme isEqualToString:ThemeStyleSepia]) {
         rgbValue = sepiaRGBValue;
     } else if ([self.theme isEqualToString:ThemeStyleMedium]) {
         rgbValue = mediumRGBValue;
@@ -193,7 +210,13 @@ NSString * const ThemeStyleDark = @"dark";
     // Debug method to log all of the unique colors; leave commented out
 //        [self debugColor:rgbValue]; 
     
-    if ([theme isEqualToString:ThemeStyleDark]) {
+    if (self.isAutoTheme) {
+        if (self.isSystemDark) {
+            return [UIColor colorWithRed:1.0 - red green:1.0 - green blue:1.0 - blue alpha:1.0];
+        } else {
+            return [UIColor colorWithRed:red green:green blue:blue alpha:1.0];
+        }
+    } else if ([theme isEqualToString:ThemeStyleDark]) {
         return [UIColor colorWithRed:1.0 - red green:1.0 - green blue:1.0 - blue alpha:1.0];
     } else if ([theme isEqualToString:ThemeStyleMedium]) {
         if (rgbValue == 0x8F918B) {
@@ -284,6 +307,8 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)updateThemeSegmentedControl:(UISegmentedControl *)segmentedControl {
+    [self updateSegmentedControl:segmentedControl];
+    
     segmentedControl.tintColor = [UIColor clearColor];
 #if !TARGET_OS_MACCATALYST
     segmentedControl.backgroundColor = [UIColor clearColor];
@@ -304,6 +329,14 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)prepareForWindow:(UIWindow *)window {
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+    
+    // Can remove this once everyone has updated to version 13.1.2 or later.
+    if ([prefs boolForKey:@"theme_follow_system"]) {
+        self.theme = ThemeStyleAuto;
+        [prefs setBool:NO forKey:@"theme_follow_system"];
+    }
+    
     [self autoChangeTheme];
     [self setupTheme];
     [self addThemeGestureRecognizerToView:window];
@@ -335,10 +368,14 @@ NSString * const ThemeStyleDark = @"dark";
     NSString *theme = self.theme;
     NewsBlurAppDelegate *appDelegate = self.appDelegate;
     
-    if (self.isDarkTheme) {
-        [prefs setObject:theme forKey:@"theme_dark"];
+    if (self.isAutoTheme) {
+        self.isAutoDark = self.isSystemDark;
     } else {
-        [prefs setObject:theme forKey:@"theme_light"];
+        if (self.isDarkTheme) {
+            [prefs setObject:theme forKey:@"theme_dark"];
+        } else {
+            [prefs setObject:theme forKey:@"theme_light"];
+        }
     }
     
     [self setupTheme];
@@ -459,14 +496,24 @@ NSString * const ThemeStyleDark = @"dark";
     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
     NSString *wantTheme = nil;
     
-    if (![prefs boolForKey:@"theme_follow_system"]) {
+    if (!self.isAutoTheme) {
         return;
     }
     
-    if (isDark) {
-        wantTheme = [prefs objectForKey:@"theme_dark"];
+    if (self.isAutoTheme) {
+        if (isDark != self.isAutoDark) {
+            [self updateTheme];
+            
+            NSLog(@"System changed to %@ appearance", isDark ? @"dark" : @"light");  // log
+        }
+        
+        return;
     } else {
-        wantTheme = [prefs objectForKey:@"theme_light"];
+        if (isDark) {
+            wantTheme = [prefs objectForKey:@"theme_dark"];
+        } else {
+            wantTheme = [prefs objectForKey:@"theme_light"];
+        }
     }
     
     if (self.theme != wantTheme) {

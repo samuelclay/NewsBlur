@@ -4,6 +4,7 @@ import pickle
 from xml.etree.ElementTree import Comment, Element, SubElement, tostring
 
 import mongoengine as mongo
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from lxml import etree
@@ -117,9 +118,17 @@ class OPMLImporter(Importer):
         self.user = user
         self.opml_xml = opml_xml
 
-    @timelimit(10)
     def try_processing(self):
-        folders = self.process()
+        # Disable timeout in test environment
+        if getattr(settings, "TEST_DEBUG", False):
+            folders = self.process()
+            return folders
+
+        @timelimit(10)
+        def _timed_process():
+            return self.process()
+
+        folders = _timed_process()
         return folders
 
     def process(self):

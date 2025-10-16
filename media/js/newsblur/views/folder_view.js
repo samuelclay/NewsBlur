@@ -19,6 +19,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         "click .NB-feedbar-mark-feed-read-expand": "expand_mark_read",
         "click .NB-feedbar-mark-feed-read-time": "mark_folder_as_read_days",
         "click .NB-feedbar-options": "open_options_popover",
+        "click .NB-feedbar-discover-container": "open_discover_popover",
         "click .NB-story-title-indicator": "show_hidden_story_titles",
         "mousedown .folder_title": "highlight_feeds",
         "mouseenter": "add_hover_inverse",
@@ -46,6 +47,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         } else if (this.options.feed_chooser) {
             this.collection.sort();
         }
+
+        // Store view reference on DOM element for easy retrieval
+        this.$el.data('folder_view', this);
     },
 
     remove: function () {
@@ -166,6 +170,24 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                     <div class="NB-feedbar-options-container">\
                         <span class="NB-feedbar-options">\
                             <div class="NB-icon"></div>\
+                            <% \
+                              var feed_id = NEWSBLUR.reader.active_feed;\
+                              var start_date = NEWSBLUR.reader.flags.date_filter_start;\
+                              var end_date = NEWSBLUR.reader.flags.date_filter_end;\
+                              if (start_date && end_date) { %>\
+                                <% if (start_date === end_date) { %>\
+                                Stories on <%= start_date %>\
+                                <% } else { %>\
+                                Stories from <%= start_date %> to <%= end_date %>\
+                                <% } %>\
+                                &middot;\
+                            <% } else if (start_date) { %>\
+                              Stories newer than <%= start_date %>\
+                              &middot;\
+                            <% } else if (end_date) { %>\
+                              Stories older than <%= end_date %>\
+                              &middot;\
+                            <% } %>\
                             <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "read_filter") %>\
                             &middot;\
                             <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
@@ -175,6 +197,12 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                         <div class="NB-story-title-indicator-count"></div>\
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
                     </div>\
+                    <% if (show_discover) { %>\
+                        <div class="NB-feedbar-discover-container">\
+                            <div class="NB-feedbar-discover-icon"></div>\
+                            <div class="NB-icon"></div>\
+                        </div>\
+                    <% } %>\
                 <% } %>\
                 <div class="NB-folder-icon">\
                 <% if (feedbar) { %>\
@@ -199,6 +227,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             is_collapsed: this.options.collapsed && !this.options.feed_chooser,
             root: this.options.root,
             feedbar: this.options.feedbar,
+            show_discover: NEWSBLUR.assets.preference("show_discover"),
             list_type: this.options.feedbar ? 'div' : 'li'
         });
 
@@ -563,6 +592,14 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
 
     show_hidden_story_titles: function () {
         NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
+    },
+
+    open_discover_popover: function () {
+        NEWSBLUR.DiscoverFeedsPopover.create({
+            anchor: this.$(".NB-feedbar-discover-container"),
+            feed_ids: this.model.feed_ids_in_folder(),
+            selected_folder_title: this.options.folder_title
+        });
     }
 
 });
