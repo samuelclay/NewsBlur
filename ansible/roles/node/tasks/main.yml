@@ -133,6 +133,9 @@
     container_default_behavior: no_defaults
     hostname: "{{ inventory_hostname }}"
     pull: true
+    log_driver: json-file
+    log_options:
+      max-size: 100m
     ports:
       - "{{ item.ports }}"
     env:

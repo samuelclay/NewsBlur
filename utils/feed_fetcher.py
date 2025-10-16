@@ -144,7 +144,7 @@ def preprocess_feed_encoding(raw_xml):
 
 MAX_ENTRIES_TO_PROCESS = 100
 MAX_ENTRIES_HIGH_VOLUME = 250
-HIGH_VOLUME_FEED_URLS = ['arxiv.org']  # Feeds that can handle more stories per fetch
+HIGH_VOLUME_FEED_URLS = ["arxiv.org"]  # Feeds that can handle more stories per fetch
 
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
 
@@ -274,8 +274,15 @@ class FetchFeed:
                 # We don't need to do anything else here - just let the normal fetch flow continue
             else:
                 # Regular forbidden feed fetch
-                forbidden_feed = self.fetch_forbidden()
-                if not forbidden_feed:
+                forbidden_status, forbidden_feed = self.fetch_forbidden()
+                if forbidden_status == 304:
+                    logging.debug(
+                        "   ---> [%-30s] ~FGForbidden feed not modified (304)" % (self.feed.log_title[:30])
+                    )
+                    self.feed = self.feed.save()
+                    self.feed.save_feed_history(304, "Not modified")
+                    return FEED_SAME, None
+                if not forbidden_feed or not forbidden_status:
                     logging.debug(
                         "   ***> [%-30s] ~FRForbidden feed fetch failed: %s"
                         % (self.feed.log_title[:30], address)
@@ -471,44 +478,171 @@ class FetchFeed:
         youtube_fetcher = YoutubeFetcher(self.feed, self.options)
         return youtube_fetcher.fetch()
 
-    def fetch_forbidden(self, js_scrape=False):
+    def fetch_scrapingbee(self, js_scrape=False):
+        url = "https://app.scrapingbee.com/api/v1"
+        params = {
+            "api_key": settings.SCRAPINGBEE_API_KEY,
+            "url": self.feed.feed_address,
+            "render_js": "true" if js_scrape else "false",
+            "return_page_source": "true",
+        }
+
+        # Add etag and last-modified headers for conditional requests
+        # ScrapingBee requires spb- prefix and forward_headers enabled
+        headers = {}
+        if self.feed.etag or self.feed.last_modified:
+            params["forward_headers"] = "true"
+
+        if self.feed.etag:
+            headers["spb-etag"] = self.feed.etag
+        if self.feed.last_modified:
+            modified = self.feed.last_modified.utctimetuple()[:7]
+            short_weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            modified_header = "%s, %02d %s %04d %02d:%02d:%02d GMT" % (
+                short_weekdays[modified[6]],
+                modified[2],
+                months[modified[1] - 1],
+                modified[0],
+                modified[3],
+                modified[4],
+                modified[5],
+            )
+            headers["spb-last-modified"] = modified_header
+
+        logging.debug(
+            "   ***> [%-30s] ~FRForbidden feed fetch with ScrapingBee%s: %s"
+            % (self.feed.log_title[:30], " (JS enabled)" if js_scrape else "", self.feed.feed_address)
+        )
+
+        try:
+            response = requests.get(url, params=params, headers=headers, timeout=15)
+
+            if response.status_code == 304:
+                logging.debug(
+                    "   ***> [%-30s] ~FGScrapingBee returned 304 Not Modified" % (self.feed.log_title[:30],)
+                )
+                return response.status_code, None
+
+            if response.status_code != 200:
+                logging.debug(
+                    "   ***> [%-30s] ~FRScrapingBee fetch failed with status %s"
+                    % (self.feed.log_title[:30], response.status_code)
+                )
+                return response.status_code, None
+
+            body = smart_str(response.content)
+            if not body:
+                logging.debug(
+                    "   ***> [%-30s] ~FRScrapingBee fetch failed: empty response"
+                    % (self.feed.log_title[:30],)
+                )
+                return response.status_code, None
+
+            logging.debug(
+                "   ***> [%-30s] ~FGScrapingBee fetch succeeded: %s bytes"
+                % (self.feed.log_title[:30], len(body))
+            )
+            return response.status_code, body
+        except Exception as e:
+            logging.debug(
+                "   ***> [%-30s] ~FRScrapingBee fetch error: %s" % (self.feed.log_title[:30], str(e))
+            )
+            return None, None
+
+    def fetch_scrapeninja(self, js_scrape=False):
         url = "https://scrapeninja.p.rapidapi.com/scrape"
         if js_scrape:
             url = "https://scrapeninja.p.rapidapi.com/scrape-js"
 
         payload = {"url": self.feed.feed_address}
+
+        # Add custom headers for conditional requests
+        custom_headers = {}
+        if self.feed.etag:
+            custom_headers["If-None-Match"] = self.feed.etag
+        if self.feed.last_modified:
+            modified = self.feed.last_modified.utctimetuple()[:7]
+            short_weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            modified_header = "%s, %02d %s %04d %02d:%02d:%02d GMT" % (
+                short_weekdays[modified[6]],
+                modified[2],
+                months[modified[1] - 1],
+                modified[0],
+                modified[3],
+                modified[4],
+                modified[5],
+            )
+            custom_headers["If-Modified-Since"] = modified_header
+
+        if custom_headers:
+            payload["customHeaders"] = custom_headers
+
         headers = {
             "x-rapidapi-key": settings.SCRAPENINJA_API_KEY,
             "x-rapidapi-host": "scrapeninja.p.rapidapi.com",
             "Content-Type": "application/json",
         }
         logging.debug(
-            "   ***> [%-30s] ~FRForbidden feed fetch: %s -> %s" % (self.feed.log_title[:30], url, payload)
+            "   ***> [%-30s] ~FRForbidden feed fetch with ScrapeNinja: %s -> %s"
+            % (self.feed.log_title[:30], url, payload)
         )
-        response = requests.post(url, json=payload, headers=headers)
 
-        if response.status_code != 200:
+        try:
+            response = requests.post(url, json=payload, headers=headers, timeout=15)
+
+            if response.status_code == 304:
+                logging.debug(
+                    "   ***> [%-30s] ~FGScrapeNinja returned 304 Not Modified" % (self.feed.log_title[:30],)
+                )
+                return response.status_code, None
+
+            if response.status_code != 200:
+                logging.debug(
+                    "   ***> [%-30s] ~FRScrapeNinja fetch failed with status %s"
+                    % (self.feed.log_title[:30], response.status_code)
+                )
+                return response.status_code, None
+
+            body = response.json().get("body")
+            if not body:
+                logging.debug(
+                    "   ***> [%-30s] ~FRScrapeNinja fetch failed: empty body in response"
+                    % (self.feed.log_title[:30],)
+                )
+                return response.status_code, None
+
+            if "enable JS" in body and not js_scrape:
+                logging.debug(
+                    "   ***> [%-30s] ~FYScrapeNinja requires JS, retrying with JS enabled"
+                    % (self.feed.log_title[:30],)
+                )
+                return self.fetch_scrapeninja(js_scrape=True)
+
             logging.debug(
-                "   ***> [%-30s] ~FRForbidden feed fetch failed: %s -> %s"
-                % (self.feed.log_title[:30], url, payload)
+                "   ***> [%-30s] ~FGScrapeNinja fetch succeeded: %s bytes"
+                % (self.feed.log_title[:30], len(body))
             )
-            return None
-        body = response.json().get("body")
-        if not body:
+            return response.status_code, body
+        except Exception as e:
             logging.debug(
-                "   ***> [%-30s] ~FRForbidden feed fetch failed: %s -> %s"
-                % (self.feed.log_title[:30], url, response.json())
+                "   ***> [%-30s] ~FRScrapeNinja fetch error: %s" % (self.feed.log_title[:30], str(e))
             )
-            return None
+            return None, None
 
-        if "enable JS" in body and not js_scrape:
-            return self.fetch_forbidden(js_scrape=True)
+    def fetch_forbidden(self, js_scrape=False):
+        # Try ScrapingBee first
+        status_code, body = self.fetch_scrapingbee(js_scrape=js_scrape)
+        if status_code and (body or status_code == 304):
+            return status_code, body
 
+        # If ScrapingBee fails, try ScrapeNinja
         logging.debug(
-            "   ***> [%-30s] ~FRForbidden feed fetch succeeded: %s -> %s"
-            % (self.feed.log_title[:30], url, body)
+            "   ***> [%-30s] ~FYScrapingBee failed, trying ScrapeNinja" % (self.feed.log_title[:30],)
         )
-        return body
+
+        return self.fetch_scrapeninja(js_scrape=js_scrape)
 
 
 class ProcessFeed:
@@ -568,16 +702,18 @@ class ProcessFeed:
                         )
 
         self.feed_entries = self.fpf.entries
-        
+
         # Check if this is a high-volume feed that can handle more stories
         max_entries = MAX_ENTRIES_TO_PROCESS
         feed_address_lower = self.feed.feed_address.lower()
         for high_volume_url in HIGH_VOLUME_FEED_URLS:
             if high_volume_url in feed_address_lower:
                 max_entries = MAX_ENTRIES_HIGH_VOLUME
-                logging.debug(f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {max_entries} stories")
+                logging.debug(
+                    f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {max_entries} stories"
+                )
                 break
-        
+
         # If there are more than max_entries, we should sort the entries in date descending order and cut them off
         if len(self.feed_entries) > max_entries:
             self.feed_entries = sorted(self.feed_entries, key=lambda x: extract_story_date(x), reverse=True)[

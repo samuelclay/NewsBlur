@@ -1,0 +1,79 @@
+name: Django Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Pull Docker images
+        run: |
+          docker pull newsblur/newsblur_python3:latest || true
+          docker pull newsblur/newsblur_node:latest || true
+
+      - name: Create certificates directory
+        run: |
+          mkdir -p config/certificates
+          openssl dhparam -out config/certificates/dhparam-2048.pem 2048
+
+      - name: Create docker volumes with proper permissions
+        run: |
+          mkdir -p docker/volumes/db_mongo
+          mkdir -p docker/volumes/db_postgres
+          mkdir -p docker/volumes/db_redis
+          mkdir -p docker/volumes/db_elasticsearch
+          chmod -R 777 docker/volumes
+
+      - name: Start services
+        run: docker compose up -d
+        env:
+          NEWSBLUR_BASE: python3
+
+      - name: Check container status
+        run: |
+          echo "Checking container status..."
+          docker ps -a
+          echo "MongoDB logs:"
+          docker logs db_mongo || true
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for PostgreSQL..."
+          timeout 60 bash -c 'until docker exec db_postgres pg_isready -U newsblur; do sleep 2; done'
+          echo "Waiting for MongoDB..."
+          timeout 60 bash -c 'until docker exec db_mongo mongo --port 29019 --eval "db.adminCommand({ping: 1})" --quiet; do sleep 2; done'
+          echo "Waiting for Redis..."
+          timeout 60 bash -c 'until docker exec db_redis redis-cli -p 6579 ping; do sleep 2; done'
+          echo "All services ready"
+
+      - name: Run migrations
+        run: docker exec newsblur_web python3 manage.py migrate --noinput
+
+      - name: Load bootstrap fixtures
+        run: docker exec newsblur_web python3 manage.py loaddata config/fixtures/bootstrap.json
+
+      - name: Run tests
+        run: docker compose exec -T newsblur_web python3 manage.py test apps.rss_feeds.test_rss_feeds --noinput -v 2
+        timeout-minutes: 2
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
