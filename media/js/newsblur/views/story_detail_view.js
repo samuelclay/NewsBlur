@@ -333,8 +333,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     </div>\
                 <% } %>\
                 <% if (show_sideoption_train) { %>\
-                    <div class="NB-sideoption NB-feed-story-train" role="button">\
-                        <div class="NB-sideoption-title">Train</div>\
+                    <div class="NB-sideoption NB-feed-story-prompt" role="button">\
+                        <div class="NB-sideoption-title">Filter</div>\
                         <div class="NB-sideoption-icon">&nbsp;</div>\
                     </div>\
                 <% } %>\

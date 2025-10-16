@@ -3901,9 +3901,9 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Notifications')
                     ]),
-                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train', role: "button" }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-prompt', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Train &amp; Filter'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
@@ -3985,9 +3985,9 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
                     ]),
-                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train', role: "button" }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-prompt', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Train &amp; filter'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
@@ -4140,9 +4140,9 @@
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-item NB-menu-manage-story-train', role: "button" }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-story-prompt', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Train &amp; filter'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
