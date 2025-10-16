@@ -1,21 +1,25 @@
 # NewsBlur Development Guidelines
 
-## Python Environment
-- **Always use `uv run` to execute Python scripts** - This automatically activates the virtualenv
-- Example: `uv run python utils/script.py`
-- Do NOT use `source ~/.virtualenvs/newsblur/bin/activate` - use `uv run` instead
-
 ## Build & Test Commands
-- `make nb` - Build and start all services
+- `make nb` - Build and start all services (ONLY use for initial setup, not during development)
 - `make bounce` - Restart all containers with new images
 - `make shell` - Django shell inside container
 - `make debug` - Debug mode for pdb
 - `make log` - View logs
 - `make lint` - Run linting (isort, black, flake8)
-- `make test` - Run all tests
-- Run single test: `docker exec -t newsblur_web python3 manage.py test apps.path.to.test.TestClass.test_method -v 3`
+- `make test` - Run all tests (defaults: SCOPE=apps, ARGS="--noinput -v 1 --failfast")
+- `make test SCOPE=apps.rss_feeds ARGS="-v 2"`
+
+**IMPORTANT: Do NOT run `make nb` during development!**
+- Web and Node servers restart automatically when code changes
+- Task/Celery server must be manually restarted only when working on background tasks
+- Running `make nb` unnecessarily rebuilds everything and wastes time
 
 Note: All docker commands must use `-t` instead of `-it` to avoid interactive mode issues when running through Claude.
+
+## Python Environment
+- **Always run Python code and Django management commands inside the Docker container** - Use `docker exec newsblur_web bash -c "python <script>"`
+- Do NOT use `uv run` or local Python environment - always use the Docker container
 
 ## Deployment Commands
 - `aps` - Alias for `ansible-playbook ansible/setup.yml`
@@ -59,3 +63,16 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - **Prioritize readability over performance**
 - **Leave no TODOs or placeholders**
 - **Always reference file names in comments**
+
+## API Testing
+- Test API endpoints: `make api URL=/reader/feeds`
+- With POST data: `make api URL=/reader/river_stories ARGS="-X POST -d 'feeds[]=1&feeds[]=2&feeds[]=3'"`
+
+## Browser Testing with Chrome DevTools MCP
+- Local dev: `https://localhost`
+- Open All Site Stories: `NEWSBLUR.reader.open_river_stories()`
+- Open feed: `NEWSBLUR.reader.open_feed(feedId)`
+- Open feed options popover: Click `.NB-feedbar-options` element (no API)
+- Get feed IDs: `NEWSBLUR.assets.feeds` is a Backbone.js collection with underscore.js operations. E.g. `var feedId = NEWSBLUR.assets.feeds.find((e) => e.get('nt') > 0).get('id')` for first feed with neutral unread stories
+- Open folder: Click `.folder .folder_title` element (no API)
+- **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts

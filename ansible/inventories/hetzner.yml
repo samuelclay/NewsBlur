@@ -12,12 +12,20 @@ groups:
   hweb: inventory_hostname.startswith('happ')
   django: inventory_hostname.startswith('happ-web')
   hdjango: inventory_hostname.startswith('happ-web')
+  hdjango_a: inventory_hostname.startswith('happ-web') and inventory_hostname.split('-')[-1] | int % 2 == 1
+  hdjango_b: inventory_hostname.startswith('happ-web') and inventory_hostname.split('-')[-1] | int % 2 == 0
   refresh: inventory_hostname.startswith('happ-refresh')
   hrefresh: inventory_hostname.startswith('happ-refresh')
+  hrefresh_a: inventory_hostname.startswith('happ-refresh') and inventory_hostname.split('-')[-1] | int % 2 == 1
+  hrefresh_b: inventory_hostname.startswith('happ-refresh') and inventory_hostname.split('-')[-1] | int % 2 == 0
   count: inventory_hostname.startswith('happ-count')
   hcount: inventory_hostname.startswith('happ-count')
+  hcount_a: inventory_hostname.startswith('happ-count') and inventory_hostname.split('-')[-1] | int % 2 == 1
+  hcount_b: inventory_hostname.startswith('happ-count') and inventory_hostname.split('-')[-1] | int % 2 == 0
   push: inventory_hostname.startswith('happ-push')
   hpush: inventory_hostname.startswith('happ-push')
+  hpush_a: inventory_hostname.startswith('happ-push') and inventory_hostname.split('-')[-1] | int % 2 == 1
+  hpush_b: inventory_hostname.startswith('happ-push') and inventory_hostname.split('-')[-1] | int % 2 == 0
   blogs: inventory_hostname.startswith('hblog')
   forum: inventory_hostname.startswith('hforum')
 
@@ -42,6 +50,8 @@ groups:
   work: inventory_hostname.startswith('htask-work')
 
   staging: inventory_hostname.startswith('hstaging')
+  staging_a: inventory_hostname == 'hstaging' or (inventory_hostname.startswith('hstaging-') and inventory_hostname.split('-')[-1] | int % 2 == 1)
+  staging_b: inventory_hostname.startswith('hstaging-') and inventory_hostname.split('-')[-1] | int % 2 == 0
 
   hdb: inventory_hostname.startswith('hdb')
   db: inventory_hostname.startswith('hdb')
