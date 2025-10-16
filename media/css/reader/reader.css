@@ -10177,6 +10177,11 @@ form.opml_import_form input {
     filter: hue-rotate(311deg) saturate(16);
 }
 
+.NB-menu-manage .NB-menu-manage-services .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/circular/menu_icn_services2.png') no-repeat 0 0;
+    background-size: 18px;
+}
+
 .NB-menu-manage .NB-menu-manage-premium .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/circular/g_icn_greensun.png') no-repeat 0 0px;
     background-size: 18px;
@@ -12879,7 +12884,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-newsletters .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_modal_mail.png');
+    background: transparent url('/media/embed/icons/circular/menu_icn_mail2.png');
     background-size: 28px;
 }
 
@@ -14703,6 +14708,15 @@ form.opml_import_form input {
 
 .NB-modal-friends .NB-profile-section-heading {
     margin: 18px 0 0px;
+}
+
+/* ========================== */
+/* = Sharing Services Modal = */
+/* ========================== */
+
+.NB-modal-services .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/menu_icn_services2.png');
+    background-size: 28px;
 }
 
 

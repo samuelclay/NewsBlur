@@ -3743,7 +3743,10 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Organize Sites'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Cleanup and rearrange feeds')
                     ]),
-
+                    (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-premium', role: "button" }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Upgrade to premium')
+                    ])),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-keyboard', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),

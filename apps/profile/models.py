@@ -525,9 +525,9 @@ class Profile(models.Model):
             if settings.DEBUG:
                 application_context["return_url"] = f"https://a6d3-161-77-224-226.ngrok.io{paypal_return}"
             else:
-                application_context[
-                    "return_url"
-                ] = f"https://{Site.objects.get_current().domain}{paypal_return}"
+                application_context["return_url"] = (
+                    f"https://{Site.objects.get_current().domain}{paypal_return}"
+                )
             paypal_subscription = paypal_api.post(
                 f"/v1/billing/subscriptions",
                 {
@@ -2686,3 +2686,37 @@ class RNewUserQueue:
         r.zrem(cls.KEY, user)
 
         return user
+
+
+class MUserServices(mongo.Document):
+    user_id = mongo.IntField(unique=True)
+    service_name = mongo.StringField()
+    service_url = mongo.StringField()
+    service_access_token = mongo.StringField()
+    last_used_date = mongo.DateTimeField(default=datetime.datetime.now)
+
+    meta = {
+        "collection": "custom_styling",
+        "allow_inheritance": False,
+        "indexes": ["user_id"],
+    }
+
+    def __unicode__(self):
+        return "%s custom style %s/%s %s" % (
+            self.user_id,
+            len(self.custom_css) if self.custom_css else "-",
+            len(self.custom_js) if self.custom_js else "-",
+            self.updated_date,
+        )
+
+    def canonical(self):
+        return {
+            "css": self.custom_css,
+            "js": self.custom_js,
+        }
+
+    @classmethod
+    def get_user(cls, user_id):
+        services = cls.objects.filter(user_id=user_id)
+
+        return services
