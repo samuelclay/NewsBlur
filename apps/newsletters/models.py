@@ -21,10 +21,13 @@ from utils.story_functions import linkify
 
 class EmailNewsletter:
     def receive_newsletter(self, params):
+        logging.debug(f" ---> receive_newsletter called with recipient: {params.get('recipient')}")
         user = self._user_from_email(params["recipient"])
         if not user:
+            logging.debug(" ***> receive_newsletter: No user found, returning early")
             return
 
+        logging.debug(f" ---> receive_newsletter: Processing for user {user.username}")
         sender_name, sender_username, sender_domain = self._split_sender(params["from"])
         feed_address = self._feed_address(user, "%s@%s" % (sender_username, sender_domain))
 
@@ -160,19 +163,25 @@ class EmailNewsletter:
         logging.user(user, "~BB~FM~SBSending first newsletter email to: %s" % user.email)
 
     def _user_from_email(self, email):
-        tokens = re.search("(\w+)[\+\-\.](\w+)@newsletters.newsblur.com", email)
+        # Support both @newsletters.newsblur.com and @improvmx.newsblur.com
+        tokens = re.search(r"(\w+)[\+\-\.](\w+)@(?:newsletters|improvmx)\.newsblur\.com", email)
         if not tokens:
+            logging.debug(f" ***> Newsletter email regex failed for: {email}")
             return
 
         username, secret_token = tokens.groups()
+        logging.debug(f" ---> Newsletter parsed email: username={username}, secret_token={secret_token}")
         try:
             profiles = Profile.objects.filter(secret_token=secret_token)
             if not profiles:
+                logging.debug(f" ***> No profile found for secret_token: {secret_token}")
                 return
             profile = profiles[0]
         except Profile.DoesNotExist:
+            logging.debug(f" ***> Profile.DoesNotExist for secret_token: {secret_token}")
             return
 
+        logging.debug(f" ---> Newsletter found user: {profile.user.username}")
         return profile.user
 
     def _feed_address(self, user, sender_email):
@@ -205,7 +214,9 @@ class EmailNewsletter:
 
     def _clean_content(self, content):
         original = content
-        scrubber = Scrubber()
+        # Disable autolink since newsletter HTML already has proper anchor tags
+        # apps/newsletters/models.py
+        scrubber = Scrubber(autolink=False)
         content = scrubber.scrub(content)
         if len(content) < len(original) * 0.01:
             content = original

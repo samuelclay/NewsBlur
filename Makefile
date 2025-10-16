@@ -1,18 +1,17 @@
 SHELL := /bin/bash
-CURRENT_UID := $(shell id -u)
-CURRENT_GID := $(shell id -g)
 # Use timeout on Linux and gtimeout on macOS
-TIMEOUT_CMD := $(shell command -v gtimeout || command -v timeout)
-newsblur := $(shell $(TIMEOUT_CMD) 2s docker ps -qf "name=newsblur_web")
+TIMEOUT_CMD := $(shell command -v gtimeout 2>/dev/null || command -v timeout 2>/dev/null || echo timeout)
+newsblur := $(shell $(TIMEOUT_CMD) 2s docker ps -qf "name=newsblur_web" 2>/dev/null || docker ps -qf "name=newsblur_web")
 
-.PHONY: node
+.PHONY: node api
 
-nb: pull bounce migrate bootstrap collectstatic
+rebuild: pull bounce migrate bootstrap collectstatic
 nb-fast: pull bounce-fast migrate bootstrap collectstatic
 nbfast: nb-fast
+nb: nbfast
 
 metrics:
-	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
+	docker compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
 
 collectstatic: 
 	rm -fr static
@@ -21,19 +20,19 @@ collectstatic:
 
 #creates newsblur, builds new images, and creates/refreshes SSL keys
 bounce:
-	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose down
+	docker compose down
 	[[ -d config/certificates ]] && echo "keys exist" || make keys
-	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d --build --remove-orphans
+	docker compose up -d --build --remove-orphans
 
 bounce-fast:
-	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose down
-	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d --remove-orphans
+	docker compose down
+	docker compose up -d --remove-orphans
 
 bootstrap:
 	docker exec newsblur_web ./manage.py loaddata config/fixtures/bootstrap.json
 
 nbup:
-	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose up -d --build --remove-orphans
+	docker compose up -d --build --remove-orphans
 coffee:
 	coffee -c -w **/*.coffee
 migrations:
@@ -53,16 +52,16 @@ bash:
 debug:
 	docker attach ${newsblur}
 log:
-	RUNWITHMAKEBUILD=True docker compose logs -f --tail 20 newsblur_web newsblur_node
+	docker compose logs -f --tail 20 newsblur_web newsblur_node
 logweb:
-	RUNWITHMAKEBUILD=True docker compose logs -f --tail 20 newsblur_web newsblur_node task_celery
+	docker compose logs -f --tail 20 newsblur_web newsblur_node task_celery
 logcelery:
-	RUNWITHMAKEBUILD=True docker compose logs -f --tail 20 task_celery
+	docker compose logs -f --tail 20 task_celery
 logtask: logcelery
 logmongo:
-	RUNWITHMAKEBUILD=True docker compose logs -f db_mongo
+	docker compose logs -f db_mongo
 alllogs: 
-	RUNWITHMAKEBUILD=True docker compose logs -f --tail 20
+	docker compose logs -f --tail 20
 logall: alllogs
 mongo:
 	docker exec -it db_mongo mongo --port 29019
@@ -73,7 +72,7 @@ postgres:
 stripe:
 	stripe listen --forward-to localhost/zebra/webhooks/v2/
 down:
-	RUNWITHMAKEBUILD=True docker compose -f docker-compose.yml -f docker-compose.metrics.yml down
+	docker compose -f docker-compose.yml -f docker-compose.metrics.yml down
 nbdown: down
 jekyll:
 	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --config _config.yml
@@ -82,7 +81,7 @@ jekyll_drafts:
 lint:
 	docker exec -t newsblur_web isort --profile black .
 	docker exec -t newsblur_web black --line-length 110 .
-	docker exec -t newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv
+	docker exec -t newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv,apps/analyzer/archive,utils/archive,vendor
 	
 deps:
 	docker exec -t newsblur_web pip install -U uv
@@ -92,9 +91,11 @@ jekyll_build:
 	cd blog && JEKYLL_ENV=production bundle exec jekyll build
 	
 # runs tests
+# Usage: make test [SCOPE=apps.reader] [ARGS="--noinput -v 2"]
+SCOPE ?= apps
+ARGS ?= --noinput -v 1 --failfast
 test:
-	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} TEST=True docker compose -f docker-compose.yml up -d newsblur_web
-	RUNWITHMAKEBUILD=True CURRENT_UID=${CURRENT_UID} CURRENT_GID=${CURRENT_GID} docker compose exec newsblur_web bash -c "NOSE_EXCLUDE_DIRS=./vendor DJANGO_SETTINGS_MODULE=newsblur_web.test_settings python3 manage.py test -v 3 --failfast"
+	docker compose exec -T newsblur_web python3 manage.py test $(SCOPE) --noinput $(ARGS)
 
 keys:
 	mkdir -p config/certificates
@@ -207,6 +208,18 @@ staging: deploy_staging
 deploy_staging_static: staging_static
 staging_static:
 	ansible-playbook ansible/deploy.yml -l staging --tags static
+test_deploy_staging:
+	./utils/load_test_deploy.sh --staging
+test_deploy_staging_static:
+	./utils/load_test_deploy.sh --staging --static
+test_deploy_app:
+	./utils/load_test_deploy.sh --app
+test_deploy_app_static:
+	./utils/load_test_deploy.sh --app --static
+test_haproxy:
+	./utils/test_haproxy_toggle.sh
+test_haproxy_staging:
+	./utils/test_haproxy_toggle.sh --staging
 celery_stop:
 	ansible-playbook ansible/deploy.yml -l task --tags stop
 sentry:
@@ -215,6 +228,8 @@ maintenance_on:
 	ansible-playbook ansible/deploy.yml -l web --tags maintenance_on
 maintenance_off:
 	ansible-playbook ansible/deploy.yml -l web --tags maintenance_off
+env:
+	ansible-playbook ansible/setup.yml -l app,task --tags env
 
 # Provision
 firewall:
@@ -255,6 +270,16 @@ perf-docker:
 clean:
 	find . -name \*.pyc -delete
 
+# API testing with authenticated curl
+# Usage: make api URL=/reader/feeds
+# Usage: make api URL=/reader/feeds ARGS="-X POST -d 'foo=bar'"
+api:
+	@if [ ! -f .dev_session ]; then \
+		echo "Generating dev session..."; \
+		docker exec -t newsblur_web ./manage.py generate_dev_session; \
+	fi
+	@SESSION_ID=$$(cat .dev_session); \
+	curl -k -H "Cookie: sessionid=$$SESSION_ID" https://localhost$(URL) $(ARGS)
 
 grafana-dashboards:
 	uv run python utils/grafana_backup.py

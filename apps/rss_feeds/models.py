@@ -730,7 +730,10 @@ class Feed(models.Model):
             self.save_popular_tags()
             self.save_feed_story_history_statistics()
 
-        self.set_next_scheduled_update(verbose=settings.DEBUG, delay_fetch_sec=delay_fetch_sec)
+        if force or count_extra:
+            self.sync_redis()
+
+        self.set_next_scheduled_update(delay_fetch_sec=delay_fetch_sec)
 
     def calculate_last_story_date(self):
         last_story_date = None
@@ -766,7 +769,7 @@ class Feed(models.Model):
     def setup_feed_for_premium_subscribers(self, allow_skip_resync=False):
         self.count_subscribers()
         self.count_similar_feeds()
-        self.set_next_scheduled_update(verbose=settings.DEBUG)
+        self.set_next_scheduled_update()
         self.sync_redis(allow_skip_resync=allow_skip_resync)
 
     def schedule_fetch_archive_feed(self):
@@ -780,6 +783,10 @@ class Feed(models.Model):
         )
 
     def check_feed_link_for_feed_address(self):
+        # Skip checking test fixtures with placeholder paths
+        if "%(NEWSBLUR_DIR)s" in self.feed_address:
+            return False, self
+
         @timelimit(10)
         def _1():
             feed_address = None
@@ -850,7 +857,7 @@ class Feed(models.Model):
         if status_code not in (200, 304):
             self.errors_since_good += 1
             self.count_errors_in_history("feed", status_code, fetch_history=fetch_history)
-            self.set_next_scheduled_update(verbose=settings.DEBUG)
+            self.set_next_scheduled_update()
         elif self.has_feed_exception or self.errors_since_good:
             self.errors_since_good = 0
             self.has_feed_exception = False
@@ -1479,7 +1486,7 @@ class Feed(models.Model):
             feed = Feed.get_by_id(feed.pk)
         if feed:
             feed.last_update = datetime.datetime.utcnow()
-            feed.set_next_scheduled_update(verbose=settings.DEBUG)
+            feed.set_next_scheduled_update()
             r.zadd("fetched_feeds_last_hour", {feed.pk: int(datetime.datetime.now().strftime("%s"))})
 
         if not feed or original_feed_id != feed.pk:
@@ -1975,11 +1982,32 @@ class Feed(models.Model):
     #     for f, u in urls:
     #         print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
 
-    def get_stories(self, offset=0, limit=25, order="newest", force=False):
+    def get_stories(
+        self,
+        offset=0,
+        limit=25,
+        order="newest",
+        force=False,
+        date_filter_start=None,
+        date_filter_end=None,
+    ):
         if order == "newest":
-            stories_db = MStory.objects(story_feed_id=self.pk)[offset : offset + limit]
+            stories_db = MStory.objects(story_feed_id=self.pk)
         elif order == "oldest":
-            stories_db = MStory.objects(story_feed_id=self.pk).order_by("story_date")[offset : offset + limit]
+            stories_db = MStory.objects(story_feed_id=self.pk).order_by("story_date")
+
+        if date_filter_start:
+            stories_db = stories_db.filter(story_date__gte=date_filter_start)
+
+        if date_filter_end:
+            stories_db = stories_db.filter(story_date__lt=date_filter_end)
+
+        if date_filter_start or date_filter_end:
+            start_log = date_filter_start.isoformat() if date_filter_start else ""
+            end_log = date_filter_end.isoformat() if date_filter_end else ""
+            logging.debug(f" ---> ~FBDate filter: start={start_log} end_exclusive={end_log}")
+
+        stories_db = stories_db[offset : offset + limit]
         stories = self.format_stories(stories_db, self.pk)
 
         return stories
@@ -2886,7 +2914,9 @@ class Feed(models.Model):
                 notification_count = MUserFeedNotification.objects.filter(feed_id=self.pk).count()
                 spd = self.stories_last_month / 30.0
                 months_since_last_story = (
-                    seconds_timesince(self.last_story_date) / (60 * 60 * 24 * 30) if self.last_story_date else 999
+                    seconds_timesince(self.last_story_date) / (60 * 60 * 24 * 30)
+                    if self.last_story_date
+                    else 999
                 )
 
                 logging.debug(
@@ -2924,7 +2954,13 @@ class Feed(models.Model):
                     logging.debug(
                         "   ---> [%-30s] ~FBScheduling feed fetch geometrically: "
                         "~SB%s errors (errors_since_good=%s + redis_errors). Time adjusted from %s to %s min"
-                        % (self.log_title[:30], error_count, self.errors_since_good, original_total, minutes_until_next_fetch)
+                        % (
+                            self.log_title[:30],
+                            error_count,
+                            self.errors_since_good,
+                            original_total,
+                            minutes_until_next_fetch,
+                        )
                     )
 
         random_factor = random.randint(0, int(minutes_until_next_fetch)) / 4
@@ -3568,19 +3604,41 @@ class MStory(mongo.Document):
             )
             return
 
-        # Don't delete redis keys because they take time to rebuild and subs can
-        # be counted incorrectly during that time.
-        # r.delete('F:%s' % story_feed_id)
-        # r.delete('zF:%s' % story_feed_id)
+        # Get all story hashes currently in Redis
+        set_key = "F:%s" % story_feed_id
+        zset_key = "zF:%s" % story_feed_id
+        redis_hashes = r.smembers(set_key)
+
+        # Get all story hashes that should be in Redis from MongoDB
+        mongo_stories = list(stories.only("story_hash", "story_date"))
+        mongo_hashes = set(story.story_hash for story in mongo_stories)
+
+        # Find differences
+        to_remove = redis_hashes - mongo_hashes
+        to_add = [story for story in mongo_stories if story.story_hash not in redis_hashes]
 
         logging.info(
-            "   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis"
-            % (feed and feed.log_title[:30] or story_feed_id, stories.count())
+            "   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis (-%s/+%s)"
+            % (feed and feed.log_title[:30] or story_feed_id, len(mongo_hashes), len(to_remove), len(to_add))
         )
-        p = r.pipeline()
-        for story in stories:
-            story.sync_redis(r=p)
-        p.execute()
+
+        # Remove stories that don't exist in MongoDB
+        if to_remove:
+            p = r.pipeline()
+            for story_hash in to_remove:
+                p.srem(set_key, story_hash)
+                p.zrem(zset_key, story_hash)
+            p.execute()
+
+        # Add stories that are missing in Redis
+        if to_add:
+            p = r.pipeline()
+            for story in to_add:
+                p.sadd(set_key, story.story_hash)
+                p.zadd(zset_key, {story.story_hash: time.mktime(story.story_date.timetuple())})
+            p.expire(set_key, feed.days_of_story_hashes * 24 * 60 * 60)
+            p.expire(zset_key, feed.days_of_story_hashes * 24 * 60 * 60)
+            p.execute()
 
     def count_comments(self):
         from apps.social.models import MSharedStory
@@ -3821,7 +3879,17 @@ class MStarredStory(mongo.DynamicDocument):
         return super(MStarredStory, self).save(*args, **kwargs)
 
     @classmethod
-    def find_stories(cls, query, user_id, tag=None, offset=0, limit=25, order="newest"):
+    def find_stories(
+        cls,
+        query,
+        user_id,
+        tag=None,
+        offset=0,
+        limit=25,
+        order="newest",
+        date_filter_start=None,
+        date_filter_end=None,
+    ):
         stories_db = cls.objects(
             Q(user_id=user_id)
             & (
@@ -3832,6 +3900,11 @@ class MStarredStory(mongo.DynamicDocument):
         )
         if tag:
             stories_db = stories_db.filter(user_tags__contains=tag)
+
+        if date_filter_start:
+            stories_db = stories_db.filter(starred_date__gte=date_filter_start)
+        if date_filter_end:
+            stories_db = stories_db.filter(starred_date__lt=date_filter_end)
 
         stories_db = stories_db.order_by("%sstarred_date" % ("-" if order == "newest" else ""))[
             offset : offset + limit

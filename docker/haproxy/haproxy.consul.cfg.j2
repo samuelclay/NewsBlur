@@ -10,6 +10,7 @@ global
     ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
     log 127.0.0.1 local0 notice
     log 127.0.0.1 local1 info
+    stats socket /var/run/haproxy.sock mode 660 level admin
 
 resolvers consul
     nameserver consul 127.0.0.1:53
@@ -66,6 +67,7 @@ frontend public
     redirect scheme https if is_root !{ ssl_fc }
     
     use_backend app_push if { hdr_end(host) -i push.newsblur.com }
+    use_backend app_push if { path_beg /newsletters/receive }
     use_backend node_socket if { path_beg /v3/socket.io/ }
     use_backend node_favicons if { path_beg /rss_feeds/icon/ }
     use_backend node_text if { path_beg /rss_feeds/original_text_fetcher }
@@ -108,26 +110,18 @@ backend app_django
     balance roundrobin
     option allbackups
     option httpchk GET /_haproxychk
-    default-server check inter 1000ms on-error mark-down fall 2 rise 2 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 1000ms on-error mark-down fall 2 rise 1 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.hdjango %}
-        {% if maintenance_mode is defined and maintenance_mode %}
-            server {{host}} {{host}}.node.nyc1.consul:8001 backup
-        {% else %}
-            server {{host}} {{host}}.node.nyc1.consul:8000
-        {% endif %}
+    server {{host}} {{host}}.node.nyc1.consul:8000
     {% endfor %}
 
 backend app_count
     balance roundrobin
     option allbackups
     option httpchk GET /_haproxychk
-    default-server check inter 1000ms on-error mark-down fall 2 rise 2 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 1000ms on-error mark-down fall 2 rise 1 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.hcount %}
-        {% if maintenance_mode is defined and maintenance_mode %}
-            server {{host}} {{host}}.node.nyc1.consul:8001 backup
-        {% else %}
-            server {{host}} {{host}}.node.nyc1.consul:8000
-        {% endif %}
+    server {{host}} {{host}}.node.nyc1.consul:8000
     {% endfor %}
     # server-template app-counts 1 _app-counts._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     
@@ -135,13 +129,9 @@ backend app_refresh
     balance roundrobin
     option allbackups
     option httpchk GET /_haproxychk
-    default-server check inter 2000ms on-error mark-down fall 2 rise 2 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 1000ms on-error mark-down fall 2 rise 1 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.hrefresh %}
-        {% if maintenance_mode is defined and maintenance_mode %}
-            server {{host}} {{host}}.node.nyc1.consul:8001 backup
-        {% else %}
-            server {{host}} {{host}}.node.nyc1.consul:8000
-        {% endif %}
+    server {{host}} {{host}}.node.nyc1.consul:8000
     {% endfor %}
     # server-template app-refresh 1 _app-refresh._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
@@ -149,13 +139,9 @@ backend app_push
     balance roundrobin
     option allbackups
     option httpchk GET /_haproxychk
-    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 1000ms on-error mark-down fall 2 rise 1 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.hpush %}
-        {% if maintenance_mode is defined and maintenance_mode %}
-            server {{host}} {{host}}.node.nyc1.consul:8001 backup
-        {% else %}
-            server {{host}} {{host}}.node.nyc1.consul:8000
-        {% endif %}
+    server {{host}} {{host}}.node.nyc1.consul:8000
     {% endfor %}
     # server-template app-push 1 _app-push._tcp.service.nyc1.consul:8000 check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
 
@@ -209,13 +195,9 @@ backend node_page
 backend staging
     balance roundrobin
     option httpchk GET /_haproxychk
-    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    default-server check inter 1000ms on-error mark-down fall 2 rise 1 resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     {% for host in groups.staging %}
-        {% if maintenance_mode is defined and maintenance_mode %}
-            server {{host}} {{host}}.node.nyc1.consul:8001 backup
-        {% else %}
-            server {{host}} {{host}}.node.nyc1.consul:8000
-        {% endif %}
+    server {{host}} {{host}}.node.nyc1.consul:8000
     {% endfor %}
 
 backend blog

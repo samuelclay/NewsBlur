@@ -269,7 +269,7 @@ def set_view_setting(request):
         "~FMView settings: %s/%s/%s/%s"
         % (feed_view_setting, feed_order_setting, feed_read_filter_setting, feed_layout_setting),
     )
-    response = dict(code=code)
+    response = dict(code=code, view_settings=view_settings)
     return response
 
 

@@ -280,7 +280,7 @@ class AWSAuthConnection:
             elif scheme == "https":
                 is_secure = False
             else:
-                raise invalidURL("Not http/https: " + location)
+                raise http.client.InvalidURL("Not http/https: " + location)
             if query:
                 path += "?" + query
             # retry with redirect

@@ -1,10 +1,53 @@
 [
     {
+        "pk": 5,
+        "model": "auth.user",
+        "fields": {
+            "username": "conesus",
+            "first_name": "",
+            "last_name": "",
+            "is_active": 1,
+            "is_superuser": 1,
+            "is_staff": 1,
+            "last_login": "2009-04-07 19:22:24",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$180000$fpQMtncRvf8S$n3XmosswKzC3ERp8IBfP+rup9S2g4Zk/MNLKiy9DQ4k=",
+            "email": "samuel@newsblur.com",
+            "date_joined": "2009-01-04 17:32:58"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "profile.profile",
+        "fields": {
+            "user": 5,
+            "is_premium": false,
+            "is_archive": false,
+            "is_pro": false,
+            "premium_expire": null,
+            "send_emails": false,
+            "preferences": "{}",
+            "hide_getting_started": false,
+            "has_setup_feeds": false,
+            "has_found_friends": false,
+            "has_trained_intelligence": false,
+            "last_seen_on": "2011-07-18 00:23:49",
+            "last_seen_ip": "127.0.0.1",
+            "secret_token": "token5",
+            "stripe_4_digits": null,
+            "stripe_id": null,
+            "feed_pane_size": 240,
+            "collapsed_folders": "",
+            "dashboard_date": "2011-07-18 00:23:49"
+        }
+    },
+    {
         "pk": 1,
         "model": "reader.usersubscriptionfolders",
         "fields": {
             "folders": "[{\"Tech\": [4, 5]}, 1, 2, 3, 6]",
-            "user": 1
+            "user": 5
         }
     }
 ]
