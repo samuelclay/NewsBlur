@@ -16,6 +16,9 @@ def _normalize_improvmx_to_mailgun(improvmx_data):
     """
     params = {}
 
+    # Full logging of raw data
+    logging.debug(" ---> Email newsletter raw ImprovMX data: %s" % json.dumps(improvmx_data))
+
     # Extract recipient from 'to' array
     if improvmx_data.get("to") and len(improvmx_data["to"]) > 0:
         params["recipient"] = improvmx_data["to"][0].get("email", "")
