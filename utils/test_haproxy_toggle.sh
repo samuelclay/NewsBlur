@@ -78,7 +78,7 @@ echo "⏸  DISABLING server $SERVER in HAProxy..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 cd /Users/sclay/projects/newsblur
-./utils/ssh_hz.sh -n hwww "echo 'disable server $BACKEND/$SERVER' | docker exec -i haproxy socat stdio /var/run/haproxy.sock" || {
+./utils/ssh_hz.sh -n hwww "docker exec haproxy sh -c 'echo \"set server $BACKEND/$SERVER state maint\" | socat stdio /var/run/haproxy.sock'" || {
     echo "Failed to disable server. Stopping hey..."
     kill -INT $HEY_PID 2>/dev/null
     wait $HEY_PID 2>/dev/null
@@ -97,7 +97,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "▶  RE-ENABLING server $SERVER in HAProxy..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-./utils/ssh_hz.sh -n hwww "echo 'enable server $BACKEND/$SERVER' | docker exec -i haproxy socat stdio /var/run/haproxy.sock" || {
+./utils/ssh_hz.sh -n hwww "docker exec haproxy sh -c 'echo \"set server $BACKEND/$SERVER state ready\" | socat stdio /var/run/haproxy.sock'" || {
     echo "Failed to re-enable server!"
     kill -INT $HEY_PID 2>/dev/null
     wait $HEY_PID 2>/dev/null
