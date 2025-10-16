@@ -229,6 +229,7 @@ class UserSubscription(models.Model):
 
                 # If there's a date filter, we need to filter the stories by date
                 if date_filter_start or date_filter_end:
+                    logging.debug(f"Applying date filter: {date_filter_start} - {date_filter_end}")
                     # Create temp key for date filtering when using persistent sorted_stories_key
                     # to avoid corrupting the shared feed data for all users
                     if read_filter != "unread":
@@ -1599,6 +1600,8 @@ class RUserStory:
 
         # If date filtering is required, create a temporary sorted set and use zremrangebyscore
         if date_filter_start or date_filter_end:
+            logging.debug(f"Applying date filter: {date_filter_start} - {date_filter_end}")
+
             import time
 
             from apps.rss_feeds.models import MStory
