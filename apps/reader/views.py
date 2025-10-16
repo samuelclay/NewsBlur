@@ -813,6 +813,11 @@ def load_single_feed(request, feed_id):
     read_filter = request.GET.get("read_filter", "all")
     date_filter_start = request.GET.get("date_filter_start")
     date_filter_end = request.GET.get("date_filter_end")
+    # Sanitize date filters - JS sends "null" as a string
+    if date_filter_start in ("null", "None", "", None):
+        date_filter_start = None
+    if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
     query = request.GET.get("query", "").strip()
     include_story_content = is_true(request.GET.get("include_story_content", True))
     include_hidden = is_true(request.GET.get("include_hidden", False))
@@ -1164,6 +1169,11 @@ def load_starred_stories(request):
     read_filter = request.GET.get("read_filter", "all")
     date_filter_start = request.GET.get("date_filter_start")
     date_filter_end = request.GET.get("date_filter_end")
+    # Sanitize date filters - JS sends "null" as a string
+    if date_filter_start in ("null", "None", "", None):
+        date_filter_start = None
+    if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
     tag = request.GET.get("tag")
     highlights = is_true(request.GET.get("highlights", False))
     story_hashes = request.GET.getlist("h") or request.GET.getlist("h[]")
@@ -1602,6 +1612,11 @@ def load_read_stories(request):
     order = request.GET.get("order", "newest")
     date_filter_start = request.GET.get("date_filter_start")
     date_filter_end = request.GET.get("date_filter_end")
+    # Sanitize date filters - JS sends "null" as a string
+    if date_filter_start in ("null", "None", "", None):
+        date_filter_start = None
+    if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
     query = request.GET.get("query", "").strip()
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
@@ -1730,6 +1745,11 @@ def load_river_stories__redis(request):
     read_filter = get_post.get("read_filter", "unread")
     date_filter_start = get_post.get("date_filter_start")
     date_filter_end = get_post.get("date_filter_end")
+    # Sanitize date filters - JS sends "null" as a string
+    if date_filter_start in ("null", "None", "", None):
+        date_filter_start = None
+    if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
     query = get_post.get("query", "").strip()
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
@@ -3058,6 +3078,7 @@ def _mark_story_as_starred(request):
                 datas.append(
                     {"code": -1, "message": "Could not save story due to: %s" % e, "story_hash": story_hash}
                 )
+                continue
 
             created = True
             MActivity.new_starred_story(

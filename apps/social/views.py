@@ -77,6 +77,11 @@ def load_social_stories(request, user_id, username=None):
     read_filter = request.GET.get("read_filter", "all")
     date_filter_start = request.GET.get("date_filter_start")
     date_filter_end = request.GET.get("date_filter_end")
+    # Sanitize date filters - JS sends "null" as a string
+    if date_filter_start in ("null", "None", "", None):
+        date_filter_start = None
+    if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
     query = request.GET.get("query", "").strip()
     include_story_content = is_true(request.GET.get("include_story_content", True))
     stories = []
@@ -297,6 +302,11 @@ def load_river_blurblog(request):
     read_filter = request.GET.get("read_filter", "unread")
     date_filter_start = request.GET.get("date_filter_start")
     date_filter_end = request.GET.get("date_filter_end")
+    # Sanitize date filters - JS sends "null" as a string
+    if date_filter_start in ("null", "None", "", None):
+        date_filter_start = None
+    if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
     relative_user_id = request.GET.get("relative_user_id", None)
     global_feed = request.GET.get("global_feed", None)
     on_dashboard = is_true(request.GET.get("dashboard", False))
@@ -498,6 +508,11 @@ def load_social_page(request, user_id, username=None, **kwargs):
     feed_id = kwargs.get("feed_id") or request.GET.get("feed_id")
     date_filter_start = request.GET.get("date_filter_start")
     date_filter_end = request.GET.get("date_filter_end")
+    # Sanitize date filters - JS sends "null" as a string
+    if date_filter_start in ("null", "None", "", None):
+        date_filter_start = None
+    if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
     if page:
         offset = limit * (page - 1)
     social_services = None
