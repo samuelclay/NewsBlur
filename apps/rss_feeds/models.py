@@ -1,9 +1,12 @@
 import base64
+import csv
 import datetime
 import difflib
 import hashlib
 import html
 import math
+import os
+import pickle
 import random
 import re
 import time
@@ -14,6 +17,7 @@ from operator import itemgetter
 
 import bson
 import mongoengine as mongo
+import numpy as np
 import pymongo
 import redis
 import requests
@@ -22,8 +26,7 @@ from bson.objectid import ObjectId
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-
-# from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
+from django.core.management.base import BaseCommand, CommandError
 from django.db import IntegrityError, models
 from django.db.models.query import QuerySet
 from django.db.utils import DatabaseError
@@ -33,9 +36,14 @@ from django.utils.encoding import DjangoUnicodeDecodeError, smart_bytes, smart_s
 from mongoengine.errors import ValidationError
 from mongoengine.queryset import NotUniqueError, OperationError, Q
 
-from apps.rss_feeds.tasks import PushFeeds, ScheduleCountTagsForUser, UpdateFeeds
+from apps.rss_feeds.tasks import (
+    IndexDiscoverStories,
+    PushFeeds,
+    ScheduleCountTagsForUser,
+    UpdateFeeds,
+)
 from apps.rss_feeds.text_importer import TextImporter
-from apps.search.models import SearchFeed, SearchStory
+from apps.search.models import DiscoverStory, SearchFeed, SearchStory
 from apps.statistics.rstats import RStats
 from utils import feedfinder_forman, feedfinder_pilgrim
 from utils import json_functions as json
@@ -104,8 +112,14 @@ class Feed(models.Model):
     s3_page = models.BooleanField(default=False, blank=True, null=True)
     s3_icon = models.BooleanField(default=False, blank=True, null=True)
     search_indexed = models.BooleanField(default=None, null=True, blank=True)
+    discover_indexed = models.BooleanField(default=None, null=True, blank=True)
     fs_size_bytes = models.IntegerField(null=True, blank=True)
     archive_count = models.IntegerField(null=True, blank=True)
+    similar_feeds = models.ManyToManyField(
+        "self", related_name="feeds_by_similarity", symmetrical=False, blank=True
+    )
+    is_forbidden = models.BooleanField(blank=True, null=True)
+    date_forbidden = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = "feeds"
@@ -231,6 +245,7 @@ class Feed(models.Model):
             "is_newsletter": self.is_newsletter,
             "fetched_once": self.fetched_once,
             "search_indexed": self.search_indexed,
+            "discover_indexed": self.discover_indexed,
             "not_yet_fetched": not self.fetched_once,  # Legacy. Doh.
             "favicon_color": self.favicon_color,
             "favicon_fade": self.favicon_fade(),
@@ -241,6 +256,7 @@ class Feed(models.Model):
             "s3_page": self.s3_page,
             "s3_icon": self.s3_icon,
             "disabled_page": not self.has_page,
+            "similar_feeds": [f["pk"] for f in self.similar_feeds.values("pk")],
         }
 
         if include_favicon:
@@ -332,14 +348,14 @@ class Feed(models.Model):
             SearchFeed.create_elasticsearch_mapping(delete=True)
 
         last_pk = cls.objects.latest("pk").pk
-        for f in range(offset, last_pk, 1000):
+        for f in range(offset, last_pk, 10):
             print(
                 " ---> {f} / {last_pk} ({pct}%)".format(
                     f=f, last_pk=last_pk, pct=str(float(f) / last_pk * 100)[:2]
                 )
             )
             feeds = Feed.objects.filter(
-                pk__in=range(f, f + 1000), active=True, active_subscribers__gte=subscribers
+                pk__in=range(f, f + 10), active=True, active_subscribers__gte=subscribers
             ).values_list("pk")
             for (feed_id,) in feeds:
                 Feed.objects.get(pk=feed_id).index_feed_for_search()
@@ -355,10 +371,11 @@ class Feed(models.Model):
                 address=self.feed_address,
                 link=self.feed_link,
                 num_subscribers=self.num_subscribers,
+                content_vector=SearchFeed.generate_feed_content_vector(self.pk),
             )
 
-    def index_stories_for_search(self):
-        if self.search_indexed:
+    def index_stories_for_search(self, force=False):
+        if self.search_indexed and not force:
             return
 
         stories = MStory.objects(story_feed_id=self.pk)
@@ -366,6 +383,24 @@ class Feed(models.Model):
             story.index_story_for_search()
 
         self.search_indexed = True
+        self.save()
+
+    def index_stories_for_discover(self, force=False):
+        if self.discover_indexed and not force:
+            return
+
+        # If there are no premium archive subscribers, don't index stories for discover.
+        if not self.archive_subscribers or self.archive_subscribers <= 0:
+            logging.debug(f" ---> ~FBNo premium archive subscribers, skipping discover index for {self}")
+            return
+
+        stories = MStory.objects(story_feed_id=self.pk)
+        for index, story in enumerate(stories):
+            if index % 100 == 0:
+                logging.debug(f" ---> ~FBIndexing discover story {index} of {len(stories)} in {self}")
+            story.index_story_for_discover()
+
+        self.discover_indexed = True
         self.save()
 
     def sync_redis(self, allow_skip_resync=False):
@@ -431,6 +466,12 @@ class Feed(models.Model):
             if match:
                 user_id, alert_id = match.groups()
                 self.feed_address = "http://www.google.com/alerts/feeds/%s/%s" % (user_id, alert_id)
+
+    def set_is_forbidden(self):
+        self.is_forbidden = True
+        self.date_forbidden = datetime.datetime.now()
+
+        return self.save()
 
     @classmethod
     def schedule_feed_fetches_immediately(cls, feed_ids, user_id=None):
@@ -515,27 +556,34 @@ class Feed(models.Model):
                 .filter(**criteria("feed_address", address))
                 .order_by("-num_subscribers")
             )
+            logging.debug(f" ---> Feeds found by address: {feed}")
             if not feed:
                 duplicate_feed = DuplicateFeed.objects.filter(**criteria("duplicate_address", address))
                 if duplicate_feed and len(duplicate_feed) > offset:
                     feed = [duplicate_feed[offset].feed]
+                logging.debug(
+                    f" ---> Feeds found by duplicate address: {duplicate_feed} {feed} (offset: {offset})"
+                )
             if not feed and aggressive:
                 feed = (
                     cls.objects.filter(branch_from_feed=None)
                     .filter(**criteria("feed_link", address))
                     .order_by("-num_subscribers")
                 )
+                logging.debug(f" ---> Feeds found by link: {feed}")
 
             return feed
 
         @timelimit(10)
         def _feedfinder_forman(url):
             found_feed_urls = feedfinder_forman.find_feeds(url)
+            logging.debug(f" ---> Feeds found by forman: {found_feed_urls}")
             return found_feed_urls
 
         @timelimit(10)
         def _feedfinder_pilgrim(url):
             found_feed_urls = feedfinder_pilgrim.feeds(url)
+            logging.debug(f" ---> Feeds found by pilgrim: {found_feed_urls}")
             return found_feed_urls
 
         # Normalize and check for feed_address, dupes, and feed_link
@@ -659,7 +707,7 @@ class Feed(models.Model):
         else:
             logging.debug(" ---> No errored feeds to drain")
 
-    def update_all_statistics(self, has_new_stories=False, force=False):
+    def update_all_statistics(self, has_new_stories=False, force=False, delay_fetch_sec=None):
         recount = not self.counts_converted_to_redis
         count_extra = False
         if random.random() < 0.01 or not self.data.popular_tags or not self.data.popular_authors:
@@ -667,6 +715,9 @@ class Feed(models.Model):
 
         self.count_subscribers(recount=recount)
         self.calculate_last_story_date()
+
+        # if force or count_extra:
+        #     self.count_similar_feeds()
 
         if force or has_new_stories or count_extra:
             self.save_feed_stories_last_month()
@@ -678,6 +729,11 @@ class Feed(models.Model):
             self.save_popular_authors()
             self.save_popular_tags()
             self.save_feed_story_history_statistics()
+
+        if force or count_extra:
+            self.sync_redis()
+
+        self.set_next_scheduled_update(delay_fetch_sec=delay_fetch_sec)
 
     def calculate_last_story_date(self):
         last_story_date = None
@@ -712,10 +768,25 @@ class Feed(models.Model):
 
     def setup_feed_for_premium_subscribers(self, allow_skip_resync=False):
         self.count_subscribers()
-        self.set_next_scheduled_update(verbose=settings.DEBUG)
+        self.count_similar_feeds()
+        self.set_next_scheduled_update()
         self.sync_redis(allow_skip_resync=allow_skip_resync)
 
+    def schedule_fetch_archive_feed(self):
+        from apps.profile.tasks import FetchArchiveFeedsChunk
+
+        logging.debug(f"~FC~SBScheduling fetch of archive feed ~SB{self.log_title}")
+        FetchArchiveFeedsChunk.apply_async(
+            kwargs=dict(feed_ids=[self.pk]),
+            queue="search_indexer",
+            time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+        )
+
     def check_feed_link_for_feed_address(self):
+        # Skip checking test fixtures with placeholder paths
+        if "%(NEWSBLUR_DIR)s" in self.feed_address:
+            return False, self
+
         @timelimit(10)
         def _1():
             feed_address = None
@@ -786,7 +857,7 @@ class Feed(models.Model):
         if status_code not in (200, 304):
             self.errors_since_good += 1
             self.count_errors_in_history("feed", status_code, fetch_history=fetch_history)
-            self.set_next_scheduled_update(verbose=settings.DEBUG)
+            self.set_next_scheduled_update()
         elif self.has_feed_exception or self.errors_since_good:
             self.errors_since_good = 0
             self.has_feed_exception = False
@@ -1043,6 +1114,46 @@ class Feed(models.Model):
                     ),
                     end=" ",
                 )
+
+    def count_similar_feeds(self, feed_ids=None, force=False, offset=0, limit=5):
+        if not force and self.similar_feeds.count() and offset == 0:
+            logging.debug(f"Found {self.similar_feeds.count()} cached similar feeds for {self}")
+            return self.similar_feeds.all()[:limit]
+
+        if not feed_ids:
+            feed_ids = [self.pk]
+        if self.pk not in feed_ids:
+            feed_ids.append(self.pk)
+
+        results = self.find_similar_feeds(feed_ids=feed_ids, offset=offset, limit=limit)
+
+        similar_feeds = []
+        if offset == 0:
+            feed_ids = [result["_source"]["feed_id"] for result in results]
+            similar_feeds = Feed.objects.filter(pk__in=feed_ids).distinct("feed_title")
+            try:
+                self.similar_feeds.set(similar_feeds)
+            except IntegrityError:
+                logging.debug(f" ---> ~FRIntegrity error adding similar feed: {feed_ids}")
+                pass
+        else:
+            feed_ids = [result["_source"]["feed_id"] for result in results]
+            similar_feeds = Feed.objects.filter(pk__in=feed_ids).distinct("feed_title")
+            if self.similar_feeds.count() < 5:
+                self.similar_feeds.add(*similar_feeds[: 5 - self.similar_feeds.count()])
+        return similar_feeds
+
+    @classmethod
+    def find_similar_feeds(cls, feed_ids=None, offset=0, limit=5):
+        combined_content_vector = SearchFeed.generate_combined_feed_content_vector(feed_ids)
+        results = SearchFeed.vector_query(
+            combined_content_vector, feed_ids_to_exclude=feed_ids, offset=offset, max_results=limit
+        )
+        logging.debug(
+            f"Found {len(results)} recommendations for feeds {feed_ids}: {[r['_id'] for r in results]}"
+        )
+
+        return results
 
     def _split_favicon_color(self, color=None):
         if not color:
@@ -1375,7 +1486,7 @@ class Feed(models.Model):
             feed = Feed.get_by_id(feed.pk)
         if feed:
             feed.last_update = datetime.datetime.utcnow()
-            feed.set_next_scheduled_update(verbose=settings.DEBUG)
+            feed.set_next_scheduled_update()
             r.zadd("fetched_feeds_last_hour", {feed.pk: int(datetime.datetime.now().strftime("%s"))})
 
         if not feed or original_feed_id != feed.pk:
@@ -1427,6 +1538,7 @@ class Feed(models.Model):
         ret_values = dict(new=0, updated=0, same=0, error=0)
         error_count = self.error_count
         new_story_hashes = [s.get("story_hash") for s in stories]
+        discover_story_ids = []
 
         if settings.DEBUG or verbose:
             logging.debug(
@@ -1469,7 +1581,7 @@ class Feed(models.Model):
                 story_has_changed = False
 
             if existing_story is None:
-                if settings.DEBUG and False:
+                if settings.DEBUG and verbose:
                     logging.debug(
                         "   ---> New story in feed (%s - %s): %s"
                         % (self.feed_title, story.get("title"), len(story_content))
@@ -1496,8 +1608,10 @@ class Feed(models.Model):
                             "   ---> [%-30s] ~SN~FRIntegrityError on new story: %s - %s"
                             % (self.feed_title[:30], story.get("guid"), e)
                         )
-                if self.search_indexed:
+                if self.search_indexed and s:
                     s.index_story_for_search()
+                if s and s.story_hash:
+                    discover_story_ids.append(s.story_hash)
             elif existing_story and story_has_changed and not updates_off and ret_values["updated"] < 3:
                 # update story
                 original_content = None
@@ -1582,6 +1696,8 @@ class Feed(models.Model):
                         )
                 if self.search_indexed:
                     existing_story.index_story_for_search()
+                if existing_story.story_hash:
+                    discover_story_ids.append(existing_story.story_hash)
             else:
                 ret_values["same"] += 1
                 if verbose:
@@ -1589,6 +1705,21 @@ class Feed(models.Model):
                         "Unchanged story (%s): %s / %s "
                         % (story.get("story_hash"), story.get("guid"), story.get("title"))
                     )
+
+        # If there are no premium archive subscribers, don't index stories for discover.
+        if discover_story_ids:
+            if self.archive_subscribers and self.archive_subscribers > 0:
+                # IndexDiscoverStories.apply_async(
+                # Run immediately
+                IndexDiscoverStories.apply(
+                    kwargs=dict(story_ids=discover_story_ids),
+                    queue="discover_indexer",
+                    time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+                )
+            else:
+                logging.debug(
+                    f" ---> ~FBNo premium archive subscribers, skipping discover indexing for {discover_story_ids} for {self}"
+                )
 
         return ret_values
 
@@ -1851,11 +1982,32 @@ class Feed(models.Model):
     #     for f, u in urls:
     #         print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
 
-    def get_stories(self, offset=0, limit=25, order="neweat", force=False):
+    def get_stories(
+        self,
+        offset=0,
+        limit=25,
+        order="newest",
+        force=False,
+        date_filter_start=None,
+        date_filter_end=None,
+    ):
         if order == "newest":
-            stories_db = MStory.objects(story_feed_id=self.pk)[offset : offset + limit]
+            stories_db = MStory.objects(story_feed_id=self.pk)
         elif order == "oldest":
-            stories_db = MStory.objects(story_feed_id=self.pk).order_by("story_date")[offset : offset + limit]
+            stories_db = MStory.objects(story_feed_id=self.pk).order_by("story_date")
+
+        if date_filter_start:
+            stories_db = stories_db.filter(story_date__gte=date_filter_start)
+
+        if date_filter_end:
+            stories_db = stories_db.filter(story_date__lt=date_filter_end)
+
+        if date_filter_start or date_filter_end:
+            start_log = date_filter_start.isoformat() if date_filter_start else ""
+            end_log = date_filter_end.isoformat() if date_filter_end else ""
+            logging.debug(f" ---> ~FBDate filter: start={start_log} end_exclusive={end_log}")
+
+        stories_db = stories_db[offset : offset + limit]
         stories = self.format_stories(stories_db, self.pk)
 
         return stories
@@ -1973,7 +2125,7 @@ class Feed(models.Model):
         # pprint(sorted_popularity)
         return sorted_popularity
 
-    def well_read_score(self):
+    def well_read_score(self, user_id=None):
         """Average percentage of stories read vs published across recently active subscribers"""
         from apps.reader.models import UserSubscription
         from apps.social.models import MSharedStory
@@ -1986,7 +2138,9 @@ class Feed(models.Model):
         subscribing_users = UserSubscription.objects.filter(feed_id=self.pk).values("user_id")
         subscribing_user_ids = [sub["user_id"] for sub in subscribing_users]
 
-        for user_id in subscribing_user_ids:
+        for sub_user_id in subscribing_user_ids:
+            if user_id and sub_user_id != user_id:
+                continue
             user_rs = "RS:%s:%s" % (user_id, self.pk)
             p.scard(user_rs)
 
@@ -2002,7 +2156,7 @@ class Feed(models.Model):
         else:
             average_pct = 0
 
-        reach_score = average_pct * reader_count * story_count
+        reach_score = round(average_pct * reader_count * story_count)
 
         return {
             "read_pct": average_pct,
@@ -2444,11 +2598,11 @@ class Feed(models.Model):
 
             seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
 
-            similiar_length_min = 1000
+            similar_length_min = 1000
             if existing_story.story_permalink == story_link and existing_story.story_title == story.get(
                 "title"
             ):
-                similiar_length_min = 20
+                similar_length_min = 20
 
             # Skip content check if already failed due to a timeout. This way we catch titles
             if lightweight:
@@ -2457,7 +2611,7 @@ class Feed(models.Model):
             if (
                 seq
                 and story_content
-                and len(story_content) > similiar_length_min
+                and len(story_content) > similar_length_min
                 and existing_story_content
                 and seq.real_quick_ratio() > 0.9
                 and seq.quick_ratio() > 0.95
@@ -2526,6 +2680,11 @@ class Feed(models.Model):
 
     def get_next_scheduled_update(self, force=False, verbose=True, premium_speed=False, pro_speed=False):
         if self.min_to_decay and not force and not premium_speed:
+            if verbose:
+                logging.debug(
+                    "   ---> [%-30s] Using cached min_to_decay: %s min"
+                    % (self.log_title[:30], self.min_to_decay)
+                )
             return self.min_to_decay
 
         from apps.notifications.models import MUserFeedNotification
@@ -2536,10 +2695,23 @@ class Feed(models.Model):
             self.pro_subscribers += 1
 
         spd = self.stories_last_month / 30.0
+        # Weighted subscriber calculation: premium users count fully, regular users count as 1/10
         subs = self.active_premium_subscribers + (
             (self.active_subscribers - self.active_premium_subscribers) / 10.0
         )
         notification_count = MUserFeedNotification.objects.filter(feed_id=self.pk).count()
+
+        if verbose:
+            logging.debug(
+                "   ---> [%-30s] ~FBWeighted subscriber calculation:~SN %.1f = %s premium + (%s-%s)/10 regular"
+                % (
+                    self.log_title[:30],
+                    subs,
+                    self.active_premium_subscribers,
+                    self.active_subscribers,
+                    self.active_premium_subscribers,
+                )
+            )
         # Calculate sub counts:
         #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 10 AND stories_last_month >= 30;
         #   SELECT COUNT(*) FROM feeds WHERE active_premium_subscribers > 1 AND active_premium_subscribers < 10 AND stories_last_month >= 30;
@@ -2558,24 +2730,46 @@ class Feed(models.Model):
         if spd >= 1:
             if subs >= 10:
                 total = 6
+                decay_reason = "High activity: >=1 story/day, >=10 weighted subs"
             elif subs > 1:
                 total = 15
+                decay_reason = "Good activity: >=1 story/day, >1 weighted subs"
             else:
                 total = 45
+                decay_reason = "Moderate activity: >=1 story/day, <=1 weighted subs"
         elif spd > 0:
             if subs > 1:
                 total = 60 - (spd * 60)
+                decay_reason = (
+                    "Low activity: <1 story/day (%.2f), >1 weighted subs, formula: 60-(%.2f*60)=%.1f"
+                    % (spd, spd, total)
+                )
             else:
                 total = 60 * 6 - (spd * 60 * 6)
+                decay_reason = (
+                    "Very low activity: <1 story/day (%.2f), <=1 weighted subs, formula: 360-(%.2f*360)=%.1f"
+                    % (spd, spd, total)
+                )
         elif spd == 0:
             if subs > 1:
                 total = 60 * 6
+                decay_reason = "No stories: 0 stories/month, >1 weighted subs"
             elif subs == 1:
                 total = 60 * 12
+                decay_reason = "No stories: 0 stories/month, =1 weighted subs"
             else:
                 total = 60 * 24
+                decay_reason = "No stories: 0 stories/month, <1 weighted subs"
             months_since_last_story = seconds_timesince(self.last_story_date) / (60 * 60 * 24 * 30)
             total *= max(1, months_since_last_story)
+            if months_since_last_story > 1:
+                decay_reason += ", multiplied by %.1f months since last story" % months_since_last_story
+
+        if verbose:
+            logging.debug(
+                "   ---> [%-30s] ~FBBase decay calculation:~SN %s min - %s"
+                % (self.log_title[:30], total, decay_reason)
+            )
         # updates_per_day_delay = 3 * 60 / max(.25, ((max(0, self.active_subscribers)**.2)
         #                                             * (self.stories_last_month**0.25)))
         # if self.active_premium_subscribers > 0:
@@ -2593,35 +2787,96 @@ class Feed(models.Model):
         #     subscriber_bonus /= min(self.active_subscribers+self.premium_subscribers, 5)
         # subscriber_bonus = int(subscriber_bonus)
 
+        original_total = total
+        adjustments = []
+
         if self.is_push:
             fetch_history = MFetchHistory.feed(self.pk)
             if len(fetch_history["push_history"]):
+                before_push = total
                 total = total * 12
+                adjustments.append("Push feed penalty: %s min -> %s min (x12)" % (before_push, total))
 
         # Any notifications means a 30 min minumum
         if notification_count > 0:
+            before_notif = total
             total = min(total, 30)
+            if before_notif != total:
+                adjustments.append(
+                    "Notification boost: %s min -> %s min (30 min max for %s notifications)"
+                    % (before_notif, total, notification_count)
+                )
 
         # 4 hour max for premiums, 48 hour max for free
         if subs >= 1:
+            before_cap = total
             total = min(total, 60 * 4 * 1)
+            if before_cap != total:
+                adjustments.append(
+                    "Premium cap: %s min -> %s min (4 hour max with %.1f weighted subs)"
+                    % (before_cap, total, subs)
+                )
         else:
+            before_cap = total
             total = min(total, 60 * 24 * 2)
+            if before_cap != total:
+                adjustments.append("Free cap: %s min -> %s min (48 hour max)" % (before_cap, total))
 
         # Craigslist feeds get 6 hours minimum
         if "craigslist" in self.feed_address:
+            before_cl = total
             total = max(total, 60 * 6)
+            if before_cl != total:
+                adjustments.append("Craigslist minimum: %s min -> %s min (6 hour min)" % (before_cl, total))
 
         # Twitter feeds get 2 hours minimum
         if "twitter" in self.feed_address:
+            before_tw = total
             total = max(total, 60 * 2)
+            if before_tw != total:
+                adjustments.append("Twitter minimum: %s min -> %s min (2 hour min)" % (before_tw, total))
 
         # Pro subscribers get absolute minimum
         if self.pro_subscribers and self.pro_subscribers >= 1:
+            before_pro = total
             if self.stories_last_month == 0:
                 total = min(total, 60)
+                if before_pro != total:
+                    adjustments.append(
+                        "Pro boost (no stories): %s min -> %s min (60 min max for %s pro subs)"
+                        % (before_pro, total, self.pro_subscribers)
+                    )
             else:
                 total = min(total, settings.PRO_MINUTES_BETWEEN_FETCHES)
+                if before_pro != total:
+                    adjustments.append(
+                        "Pro boost: %s min -> %s min (%s min max for %s pro subs)"
+                        % (before_pro, total, settings.PRO_MINUTES_BETWEEN_FETCHES, self.pro_subscribers)
+                    )
+
+        # Forbidden feeds get a min of 6 hours
+        if self.is_forbidden:
+            before_forbidden = total
+            if self.num_subscribers > 1000:
+                hours = 3
+            elif self.num_subscribers > 100:
+                hours = 6
+            elif self.num_subscribers > 1:
+                hours = 12
+            else:
+                hours = 18
+            total = max(total, hours * 60)
+            if before_forbidden != total:
+                adjustments.append(
+                    "Forbidden penalty: %s min -> %s min (%s hour min for %s subs)"
+                    % (before_forbidden, total, hours, self.num_subscribers)
+                )
+
+        if verbose and adjustments:
+            logging.debug(
+                "   ---> [%-30s] ~FBDecay adjustments applied:~SN\n         %s"
+                % (self.log_title[:30], "\n         ".join(adjustments))
+            )
 
         if verbose:
             logging.debug(
@@ -2639,33 +2894,127 @@ class Feed(models.Model):
             )
         return total
 
-    def set_next_scheduled_update(self, verbose=False, skip_scheduling=False):
+    def set_next_scheduled_update(self, verbose=False, skip_scheduling=False, delay_fetch_sec=None):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
-        total = self.get_next_scheduled_update(force=True, verbose=verbose)
-        error_count = self.error_count
 
-        if error_count:
-            total = total * error_count
-            total = min(total, 60 * 24 * 7)
+        # Use Cache-Control max-age if provided
+        if delay_fetch_sec is not None:
+            minutes_until_next_fetch = delay_fetch_sec / 60
+            base_total = minutes_until_next_fetch
             if verbose:
                 logging.debug(
-                    "   ---> [%-30s] ~FBScheduling feed fetch geometrically: "
-                    "~SB%s errors. Time: %s min" % (self.log_title[:30], self.errors_since_good, total)
+                    "   ---> [%-30s] ~FBScheduling feed fetch using cache-control: "
+                    "~SB%s minutes" % (self.log_title[:30], minutes_until_next_fetch)
+                )
+        else:
+            # Log subscriber counts for debugging
+            if verbose:
+                from apps.notifications.models import MUserFeedNotification
+
+                notification_count = MUserFeedNotification.objects.filter(feed_id=self.pk).count()
+                spd = self.stories_last_month / 30.0
+                months_since_last_story = (
+                    seconds_timesince(self.last_story_date) / (60 * 60 * 24 * 30)
+                    if self.last_story_date
+                    else 999
                 )
 
-        random_factor = random.randint(0, int(total)) / 4
-        next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(minutes=total + random_factor)
+                logging.debug(
+                    "   ---> [%-30s] ~FBCalculating decay time with:~SN\n"
+                    "         Subscribers: total=%s, active=%s, active_premium=%s, pro=%s, archive=%s\n"
+                    "         Stories: last_month=%s (%.2f/day), last_story_date=%s (%.1f months ago)\n"
+                    "         State: is_push=%s, is_forbidden=%s, notifications=%s, errors_since_good=%s"
+                    % (
+                        self.log_title[:30],
+                        self.num_subscribers,
+                        self.active_subscribers,
+                        self.active_premium_subscribers,
+                        self.pro_subscribers,
+                        self.archive_subscribers,
+                        self.stories_last_month,
+                        spd,
+                        self.last_story_date,
+                        months_since_last_story,
+                        self.is_push,
+                        self.is_forbidden,
+                        notification_count,
+                        self.errors_since_good,
+                    )
+                )
+
+            minutes_until_next_fetch = self.get_next_scheduled_update(force=True, verbose=verbose)
+            base_total = minutes_until_next_fetch
+            error_count = self.error_count
+
+            if error_count:
+                original_total = minutes_until_next_fetch
+                minutes_until_next_fetch = minutes_until_next_fetch * error_count
+                minutes_until_next_fetch = min(minutes_until_next_fetch, 60 * 24 * 7)
+                if verbose:
+                    logging.debug(
+                        "   ---> [%-30s] ~FBScheduling feed fetch geometrically: "
+                        "~SB%s errors (errors_since_good=%s + redis_errors). Time adjusted from %s to %s min"
+                        % (
+                            self.log_title[:30],
+                            error_count,
+                            self.errors_since_good,
+                            original_total,
+                            minutes_until_next_fetch,
+                        )
+                    )
+
+        random_factor = random.randint(0, int(minutes_until_next_fetch)) / 4
+        if minutes_until_next_fetch <= 5:
+            # 5 min fetches should be between 5 and 10 minutes
+            random_factor = random.randint(0, int(minutes_until_next_fetch))
+
+        if verbose and delay_fetch_sec is None:
+            logging.debug(
+                "   ---> [%-30s] ~FBFinal decay calculation:~SN base=%s min, with_errors=%s min, random_factor=%.1f min"
+                % (self.log_title[:30], base_total, minutes_until_next_fetch, random_factor)
+            )
+
+            # Explain why this specific time was chosen
+            reasons = []
+            if self.active_premium_subscribers >= 1:
+                reasons.append("has %s active premium subscriber(s)" % self.active_premium_subscribers)
+            if self.pro_subscribers >= 1:
+                reasons.append("has %s pro subscriber(s)" % self.pro_subscribers)
+            if self.is_push:
+                reasons.append("is push feed")
+            if self.is_forbidden:
+                reasons.append("is forbidden (rate limited)")
+            if error_count > 0:
+                reasons.append("has %s error(s)" % error_count)
+            if self.stories_last_month == 0:
+                reasons.append("no stories in last month")
+
+            if reasons:
+                logging.debug(
+                    "   ---> [%-30s] ~FBReasons for %s min decay:~SN %s"
+                    % (self.log_title[:30], minutes_until_next_fetch, ", ".join(reasons))
+                )
+
+        next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
+            minutes=minutes_until_next_fetch + random_factor
+        )
         original_min_to_decay = self.min_to_decay
-        self.min_to_decay = total
+        self.min_to_decay = minutes_until_next_fetch
 
         delta = self.next_scheduled_update - datetime.datetime.now()
-        minutes_to_next_fetch = (delta.seconds + (delta.days * 24 * 3600)) / 60
-        if minutes_to_next_fetch > self.min_to_decay or not skip_scheduling:
+        minutes_to_next_fetch_current = (delta.seconds + (delta.days * 24 * 3600)) / 60
+        if minutes_to_next_fetch_current > self.min_to_decay or not skip_scheduling:
             self.next_scheduled_update = next_scheduled_update
             if self.active_subscribers >= 1:
                 r.zadd("scheduled_updates", {self.pk: self.next_scheduled_update.strftime("%s")})
             r.zrem("tasked_feeds", self.pk)
             r.srem("queued_feeds", self.pk)
+
+            if verbose:
+                logging.debug(
+                    "   ---> [%-30s] ~FBScheduled next update for:~SN %s (in %.1f min)"
+                    % (self.log_title[:30], next_scheduled_update, minutes_until_next_fetch + random_factor)
+                )
 
         updated_fields = ["last_update", "next_scheduled_update"]
         if self.min_to_decay != original_min_to_decay:
@@ -2850,8 +3199,8 @@ class MFeedPage(mongo.Document):
                     data = zlib.decompress(page_data_z)
                 except zlib.error as e:
                     logging.debug(" ***> Zlib decompress error: %s" % e)
-                    self.page_data = None
-                    self.save()
+                    feed_page.page_data = None
+                    feed_page.save()
                     return
 
         if not data:
@@ -3000,13 +3349,18 @@ class MStory(mongo.Document):
         stories.delete()
 
     @classmethod
-    def index_all_for_search(cls, offset=0):
+    def index_all_for_search(cls, offset=0, search=False, discover=False):
         if not offset:
-            SearchStory.create_elasticsearch_mapping(delete=True)
+            if search:
+                logging.debug("Re-creating search index")
+                SearchStory.create_elasticsearch_mapping(delete=True)
+            if discover:
+                logging.debug("Re-creating discover index")
+                DiscoverStory.create_elasticsearch_mapping(delete=True)
 
         last_pk = Feed.objects.latest("pk").pk
         for f in range(offset, last_pk, 1000):
-            print(" ---> %s / %s (%.2s%%)" % (f, last_pk, float(f) / last_pk * 100))
+            logging.debug(" ---> %s / %s (%.2s%%)" % (f, last_pk, float(f) / last_pk * 100))
             feeds = Feed.objects.filter(
                 pk__in=list(range(f, f + 1000)), active=True, active_subscribers__gte=1
             ).values_list("pk")
@@ -3014,9 +3368,16 @@ class MStory(mongo.Document):
                 stories = cls.objects.filter(story_feed_id=f)
                 if not len(stories):
                     continue
-                print(f"Indexing {len(stories)} stories in feed {f}")
-                for story in stories:
-                    story.index_story_for_search()
+                logging.debug(
+                    f"Indexing {len(stories)} stories in feed {f} for {'search' if search else 'discover' if discover else 'both search and discover'}"
+                )
+                for s, story in enumerate(stories):
+                    if s % 100 == 0:
+                        logging.debug(f" ---> Indexing story {s} of {len(stories)} in feed {f}")
+                    if search:
+                        story.index_story_for_search()
+                    if discover:
+                        story.index_story_for_discover()
 
     def index_story_for_search(self):
         story_content = self.story_content or ""
@@ -3032,9 +3393,28 @@ class MStory(mongo.Document):
             story_date=self.story_date,
         )
 
+    @classmethod
+    def index_stories_for_discover(cls, story_hashes, verbose=False):
+        logging.debug(f" ---> ~FBIndexing {len(story_hashes)} stories for ~FC~SBdiscover")
+        for story_hash in story_hashes:
+            try:
+                story = cls.objects.get(story_hash=story_hash)
+                story.index_story_for_discover(verbose=verbose)
+            except cls.DoesNotExist:
+                logging.debug(f" ---> ~FBStory not found for discover indexing: {story_hash}")
+
+    def index_story_for_discover(self, verbose=False):
+        DiscoverStory.index(
+            story_hash=self.story_hash,
+            story_feed_id=self.story_feed_id,
+            story_date=self.story_date,
+            verbose=verbose,
+        )
+
     def remove_from_search_index(self):
         try:
             SearchStory.remove(self.story_hash)
+            DiscoverStory.remove(self.story_hash)
         except Exception:
             pass
 
@@ -3224,19 +3604,41 @@ class MStory(mongo.Document):
             )
             return
 
-        # Don't delete redis keys because they take time to rebuild and subs can
-        # be counted incorrectly during that time.
-        # r.delete('F:%s' % story_feed_id)
-        # r.delete('zF:%s' % story_feed_id)
+        # Get all story hashes currently in Redis
+        set_key = "F:%s" % story_feed_id
+        zset_key = "zF:%s" % story_feed_id
+        redis_hashes = r.smembers(set_key)
+
+        # Get all story hashes that should be in Redis from MongoDB
+        mongo_stories = list(stories.only("story_hash", "story_date"))
+        mongo_hashes = set(story.story_hash for story in mongo_stories)
+
+        # Find differences
+        to_remove = redis_hashes - mongo_hashes
+        to_add = [story for story in mongo_stories if story.story_hash not in redis_hashes]
 
         logging.info(
-            "   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis"
-            % (feed and feed.log_title[:30] or story_feed_id, stories.count())
+            "   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis (-%s/+%s)"
+            % (feed and feed.log_title[:30] or story_feed_id, len(mongo_hashes), len(to_remove), len(to_add))
         )
-        p = r.pipeline()
-        for story in stories:
-            story.sync_redis(r=p)
-        p.execute()
+
+        # Remove stories that don't exist in MongoDB
+        if to_remove:
+            p = r.pipeline()
+            for story_hash in to_remove:
+                p.srem(set_key, story_hash)
+                p.zrem(zset_key, story_hash)
+            p.execute()
+
+        # Add stories that are missing in Redis
+        if to_add:
+            p = r.pipeline()
+            for story in to_add:
+                p.sadd(set_key, story.story_hash)
+                p.zadd(zset_key, {story.story_hash: time.mktime(story.story_date.timetuple())})
+            p.expire(set_key, feed.days_of_story_hashes * 24 * 60 * 60)
+            p.expire(zset_key, feed.days_of_story_hashes * 24 * 60 * 60)
+            p.execute()
 
     def count_comments(self):
         from apps.social.models import MSharedStory
@@ -3401,6 +3803,21 @@ class MStory(mongo.Document):
 
         return original_page
 
+    def fetch_similar_stories(self, feed_ids=None, offset=0, limit=5):
+        combined_content_vector = DiscoverStory.generate_combined_story_content_vector([self.story_hash])
+        results = DiscoverStory.vector_query(
+            combined_content_vector,
+            feed_ids_to_include=feed_ids,
+            story_hashes_to_exclude=[self.story_hash],
+            offset=offset,
+            max_results=limit,
+        )
+        logging.debug(
+            f"Found {len(results)} recommendations for stories related to {self}: {[r['_id'] for r in results]}"
+        )
+
+        return results
+
 
 class MStarredStory(mongo.DynamicDocument):
     """Like MStory, but not inherited due to large overhead of _cls and _type in
@@ -3462,7 +3879,17 @@ class MStarredStory(mongo.DynamicDocument):
         return super(MStarredStory, self).save(*args, **kwargs)
 
     @classmethod
-    def find_stories(cls, query, user_id, tag=None, offset=0, limit=25, order="newest"):
+    def find_stories(
+        cls,
+        query,
+        user_id,
+        tag=None,
+        offset=0,
+        limit=25,
+        order="newest",
+        date_filter_start=None,
+        date_filter_end=None,
+    ):
         stories_db = cls.objects(
             Q(user_id=user_id)
             & (
@@ -3473,6 +3900,11 @@ class MStarredStory(mongo.DynamicDocument):
         )
         if tag:
             stories_db = stories_db.filter(user_tags__contains=tag)
+
+        if date_filter_start:
+            stories_db = stories_db.filter(starred_date__gte=date_filter_start)
+        if date_filter_end:
+            stories_db = stories_db.filter(starred_date__lt=date_filter_end)
 
         stories_db = stories_db.order_by("%sstarred_date" % ("-" if order == "newest" else ""))[
             offset : offset + limit

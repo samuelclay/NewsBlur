@@ -9,7 +9,7 @@
   log = require('./log.js');
 
   unread_counts = (server) => {
-    var ENV_DEV, ENV_DOCKER, ENV_PROD, REDIS_PORT, REDIS_SERVER, SECURE, io;
+    var ENV_DEV, ENV_DOCKER, ENV_PROD, REDIS_PORT, REDIS_SERVER, SECURE, active_connections, io, pub_client, redis_opts, setup_redis_client, sub_client;
     ENV_DEV = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'debug';
     ENV_PROD = process.env.NODE_ENV === 'production';
     ENV_DOCKER = process.env.NODE_ENV === 'docker';
@@ -38,24 +38,114 @@
     } else {
       log.debug("Running as production server");
     }
-    io = require('socket.io')(server, {
-      path: "/v3/socket.io"
+    
+    // Create Redis clients for Socket.IO adapter with improved configuration
+    redis_opts = {
+      host: REDIS_SERVER,
+      port: REDIS_PORT,
+      retry_strategy: function(options) {
+        // Exponential backoff with a cap
+        return Math.min(options.attempt * 100, 3000);
+      },
+      connect_timeout: 10000
+    };
+    pub_client = redis.createClient(redis_opts);
+    sub_client = redis.createClient(redis_opts);
+    // Handle Redis adapter client errors
+    pub_client.on("error", function(err) {
+      return log.debug(`Redis Pub Error: ${err}`);
     });
-    // io.set('transports', ['websocket'])
-
-    // io.set 'store', new RedisStore
-    //     redisPub    : rpub
-    //     redisSub    : rsub
-    //     redisClient : rclient
+    sub_client.on("error", function(err) {
+      return log.debug(`Redis Sub Error: ${err}`);
+    });
+    pub_client.on("reconnecting", function(attempt) {
+      return log.debug(`Redis Pub reconnecting... Attempt ${attempt}`);
+    });
+    sub_client.on("reconnecting", function(attempt) {
+      return log.debug(`Redis Sub reconnecting... Attempt ${attempt}`);
+    });
+    io = require('socket.io')(server, {
+      path: "/v3/socket.io",
+      pingTimeout: 120000, // Increased from 60s to 120s
+      pingInterval: 30000, // Increased from 25s to 30s
+      connectTimeout: 60000, // Increased from 45s to 60s
+      transports: ['websocket'], // Prefer websocket transport
+      maxHttpBufferSize: 1e8, // Increase buffer size to 100MB
+      cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+      },
+      allowEIO3: true, // Allow compatibility with Socket.IO v3 clients
+      adapter: require('@socket.io/redis-adapter').createAdapter(pub_client, sub_client)
+    });
+    // Setup Redis error handling and reconnection
+    setup_redis_client = function(socket, username) {
+      var client;
+      client = redis.createClient({
+        host: REDIS_SERVER,
+        port: REDIS_PORT,
+        retry_strategy: function(options) {
+          return Math.min(options.attempt * 100, 3000);
+        },
+        connect_timeout: 10000
+      });
+      client.on("error", (err) => {
+        return log.info(username, `Redis Error: ${err}`);
+      });
+      // Don't quit on error, let retry strategy handle it
+      client.on("reconnecting", (attempt) => {
+        return log.info(username, `Redis reconnecting... Attempt ${attempt}`);
+      });
+      return client;
+    };
+    // Track active connections by username for debugging
+    active_connections = {};
+    
+    // Log engine events for debugging
+    io.engine.on('connection', function(socket) {
+      return log.debug(`Engine connection established: ${socket.id}`);
+    });
+    io.engine.on('close', function(socket) {
+      return log.debug(`Engine connection closed: ${socket.id}`);
+    });
     io.on('connection', function(socket) {
-      var ip;
+      var ip, socket_id;
       ip = socket.handshake.headers['X-Forwarded-For'] || socket.handshake.address;
+      socket_id = socket.id;
+      log.debug(`Socket connected: ${socket_id} from ${ip}`);
+      
+      // Store socket data for tracking
+      socket.data = {
+        ip: ip,
+        socket_id: socket_id,
+        connected_at: Date.now()
+      };
+      
+      // Set a longer ping timeout for this socket
+      socket.conn.pingTimeout = 120000;
+      socket.conn.on('error', function(err) {
+        return log.debug(`Socket ${socket_id} - connection error: ${err}`);
+      });
+      socket.conn.on('close', function(reason) {
+        return log.debug(`Socket ${socket_id} - connection closed: ${reason}`);
+      });
       socket.on('subscribe:feeds', (feeds, username) => {
         var ref;
-        this.feeds = feeds;
-        this.username = username;
-        log.info(this.username, `Connecting (${this.feeds.length} feeds, ${ip}),` + ` (${io.engine.clientsCount} connected) ` + ` ${SECURE ? "(SSL)" : ""}`);
-        if (!this.username) {
+        // Store user data directly on the socket for access during disconnect
+        socket.data.feeds = feeds;
+        socket.data.username = username;
+        socket.data.subscribed_at = Date.now();
+        log.info(username, `Connecting (${feeds.length} feeds, ${ip}), (${io.engine.clientsCount} connected) ${SECURE ? "(SSL)" : ""}`);
+        
+        // Track connections by username for debugging
+        active_connections[username] = active_connections[username] || {};
+        active_connections[username][socket_id] = {
+          connected_at: socket.data.connected_at,
+          subscribed_at: socket.data.subscribed_at,
+          feed_count: feeds.length
+        };
+        log.debug(`${username} now has ${Object.keys(active_connections[username]).length} active connections, adding ${socket_id}`);
+        if (!username) {
           return;
         }
         socket.on("error", function(err) {
@@ -64,45 +154,85 @@
         if ((ref = socket.subscribe) != null) {
           ref.quit();
         }
-        socket.subscribe = redis.createClient(REDIS_PORT, REDIS_SERVER);
-        socket.subscribe.on("error", (err) => {
-          var ref1;
-          log.info(this.username, `Error: ${err} (${this.feeds.length} feeds)`);
-          return (ref1 = socket.subscribe) != null ? ref1.quit() : void 0;
-        });
+        socket.subscribe = setup_redis_client(socket, username);
         socket.subscribe.on("connect", () => {
           var feeds_story;
-          log.info(this.username, `Connected (${this.feeds.length} feeds, ${ip}),` + ` (${io.engine.clientsCount} connected) ` + ` ${SECURE ? "(SSL)" : "(non-SSL)"}`);
-          socket.subscribe.subscribe(this.feeds);
-          feeds_story = this.feeds.map(function(f) {
+          log.info(username, `Connected (${feeds.length} feeds, ${ip}), (${io.engine.clientsCount} connected) ${SECURE ? "(SSL)" : "(non-SSL)"}`);
+          socket.subscribe.subscribe(feeds);
+          feeds_story = feeds.map(function(f) {
             return `${f}:story`;
           });
           socket.subscribe.subscribe(feeds_story);
-          return socket.subscribe.subscribe(this.username);
+          return socket.subscribe.subscribe(username);
         });
         return socket.subscribe.on('message', (channel, message) => {
           var event_name;
           event_name = 'feed:update';
-          if (channel === this.username) {
+          if (channel === username) {
             event_name = 'user:update';
           } else if (channel.indexOf(':story') >= 0) {
             event_name = 'feed:story:new';
           }
-          log.info(this.username, `Update on ${channel}: ${event_name} - ${message}`);
+          log.info(username, `Update on ${channel}: ${event_name} - ${message}`);
           return socket.emit(event_name, channel, message);
         });
       });
-      return socket.on('disconnect', () => {
-        var ref, ref1;
+      return socket.on('disconnect', function(reason) {
+        var connected_at, connection_duration, feeds, now, ref, subscribed_at, subscription_duration, username;
+        // Use the data stored on the socket
+        username = socket.data.username;
+        feeds = socket.data.feeds;
+        ip = socket.data.ip;
+        socket_id = socket.data.socket_id;
+        connected_at = socket.data.connected_at;
+        subscribed_at = socket.data.subscribed_at;
+        
+        // Calculate connection duration
+        now = Date.now();
+        connection_duration = now - (connected_at || now);
+        subscription_duration = subscribed_at ? now - subscribed_at : 0;
+        log.debug(`Socket ${socket_id} disconnected: ${reason}, username: ${username}, connection duration: ${connection_duration}ms, subscription duration: ${subscription_duration}ms`);
+        
+        // Update connection tracking
+        if (username && active_connections[username]) {
+          if (active_connections[username][socket_id]) {
+            delete active_connections[username][socket_id];
+            log.debug(`${username} now has ${Object.keys(active_connections[username]).length} active connections after removing ${socket_id}`);
+          } else {
+            log.debug(`Socket ${socket_id} not found in active connections for ${username}`);
+          }
+          if (Object.keys(active_connections[username]).length === 0) {
+            delete active_connections[username];
+          }
+        }
         if ((ref = socket.subscribe) != null) {
           ref.quit();
         }
-        return log.info(this.username, `Disconnect (${(ref1 = this.feeds) != null ? ref1.length : void 0} feeds, ${ip}),` + ` there are now ${io.engine.clientsCount} users. ` + ` ${SECURE ? "(SSL)" : "(non-SSL)"}`);
+        if (username && feeds) {
+          return log.info(username, `Disconnect (${feeds.length} feeds, ${ip}), there are now ${io.engine.clientsCount} users. ${SECURE ? "(SSL)" : "(non-SSL)"}`);
+        }
       });
     });
-    return io.sockets.on('error', function(err) {
+    io.engine.on('connection_error', function(err) {
+      return log.debug(`Connection Error: ${err.code} - ${err.message}`);
+    });
+    io.sockets.on('error', function(err) {
       return log.debug(`Error (sockets): ${err}`);
     });
+    
+    // Periodically log connection stats
+    setInterval(function() {
+      var sockets, total_connections, total_tracked, total_users, username;
+      total_users = Object.keys(active_connections).length;
+      total_connections = io.engine.clientsCount;
+      total_tracked = 0;
+      for (username in active_connections) {
+        sockets = active_connections[username];
+        total_tracked += Object.keys(sockets).length;
+      }
+      return log.debug(`Connection stats: ${total_users} users with ${total_connections} total connections (${total_tracked} tracked)`);
+    }, 60000);
+    return io;
   };
 
   exports.unread_counts = unread_counts;

@@ -1,4 +1,4 @@
-FROM node:14.4.0
+FROM node:22.11.0
 ENV NODE_ENV=production
 WORKDIR /node
 # Install app dependencies

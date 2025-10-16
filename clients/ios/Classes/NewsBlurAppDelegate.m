@@ -964,11 +964,6 @@
     if (system_font_enabled) {
         [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
     }
-    BOOL theme_follow_system = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_follow_system"];
-    if (theme_follow_system) {
-        [hiddenSet addObjectsFromArray:@[@"theme_auto_toggle", @"theme_auto_brightness", @"theme_style", @"theme_gesture"]];
-        [[ThemeManager themeManager] updateForSystemAppearance];
-    }
     BOOL theme_auto_toggle = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_auto_toggle"];
     if (theme_auto_toggle) {
         [hiddenSet addObjectsFromArray:@[@"theme_style", @"theme_gesture"]];
@@ -1932,25 +1927,38 @@
 
 - (void)confirmLogout {
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Positive?" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    
     [alertController addAction:[UIAlertAction actionWithTitle: @"Logout" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
         [alertController dismissViewControllerAnimated:YES completion:nil];
-        NSLog(@"Logging out...");
-        NSString *urlString = [NSString stringWithFormat:@"%@/reader/logout?api=1",
-                               self.url];
-        [self GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            [self showLogin];
-        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-        }];
-        
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        HUD.labelText = @"Logging out...";
+        [self actuallyLogout];
     }]];
+//#if TARGET_OS_MACCATALYST
+//    [alertController addAction:[UIAlertAction actionWithTitle: @"Delete Account" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+//        [alertController dismissViewControllerAnimated:YES completion:nil];
+//        [self actuallyLogout];
+//        NSURL *url = [NSURL URLWithString:@"https://www.newsblur.com/profile/delete_account"];
+//        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+//    }]];
+//#endif
     [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                                         style:UIAlertActionStyleCancel handler:nil]];
     [self.feedsViewController presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)actuallyLogout {
+    NSLog(@"Logging out...");
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/logout?api=1",
+                           self.url];
+    [self GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        [self showLogin];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    }];
+    
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Logging out...";
 }
 
 - (void)showConnectToService:(NSString *)serviceName {
@@ -3131,7 +3139,7 @@
         }
     }
     
-    [self.feedsViewController deferredUpdateFeedTitlesTable];
+    [self.feedsViewController deferredReloadFeedTitlesTable];
     
     [self.storyPagesViewController reloadWidget];
 }
@@ -3150,7 +3158,7 @@
     [self.storyPagesViewController setNextPreviousButtons];
     originalStoryCount += 1;
     
-    [self.feedsViewController updateFeedTitlesTable];
+    [self.feedsViewController reloadFeedTitlesTable];
 }
 
 - (void)failedMarkAsUnread:(NSDictionary *)params {
@@ -4743,7 +4751,7 @@
         feedIds = @[[storiesCollection.activeFeed objectForKey:@"id"]];
     }
     NSString *sql = [NSString stringWithFormat:@"SELECT c.image_url, c.story_hash FROM cached_images c "
-                     "WHERE c.image_cached = 1 AND c.failed is null AND c.story_feed_id in (\"%@\")",
+                     "WHERE c.image_cached = 1 AND c.story_feed_id in (\"%@\")",
                      [feedIds componentsJoinedByString:@"\",\""]];
     FMResultSet *cursor = [db executeQuery:sql];
     

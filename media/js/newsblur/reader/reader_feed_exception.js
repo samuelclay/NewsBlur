@@ -2,7 +2,8 @@ NEWSBLUR.ReaderFeedException = function (feed_id, options) {
     var defaults = {
         'onOpen': function () {
             $(window).trigger('resize.simplemodal');
-        }
+        },
+        'width': 700
     };
 
     this.options = $.extend({}, defaults, options);

@@ -241,6 +241,7 @@ def set_view_setting(request):
     feed_read_filter_setting = request.POST.get("feed_read_filter_setting")
     feed_layout_setting = request.POST.get("feed_layout_setting")
     feed_dashboard_count_setting = request.POST.get("feed_dashboard_count_setting")
+    feed_stories_discover_setting = request.POST.get("feed_stories_discover_setting")
     view_settings = json.decode(request.user.profile.view_settings)
 
     setting = view_settings.get(feed_id, {})
@@ -256,6 +257,8 @@ def set_view_setting(request):
         setting["d"] = feed_dashboard_count_setting
     if feed_layout_setting:
         setting["l"] = feed_layout_setting
+    if feed_stories_discover_setting:
+        setting["s"] = feed_stories_discover_setting
 
     view_settings[feed_id] = setting
     request.user.profile.view_settings = json.encode(view_settings)
@@ -266,7 +269,7 @@ def set_view_setting(request):
         "~FMView settings: %s/%s/%s/%s"
         % (feed_view_setting, feed_order_setting, feed_read_filter_setting, feed_layout_setting),
     )
-    response = dict(code=code)
+    response = dict(code=code, view_settings=view_settings)
     return response
 
 
@@ -435,6 +438,17 @@ def paypal_archive_return(request):
 
 
 @login_required
+def paypal_pro_return(request):
+    return render(
+        request,
+        "reader/paypal_pro_return.xhtml",
+        {
+            "user_profile": request.user.profile,
+        },
+    )
+
+
+@login_required
 def activate_premium(request):
     return HttpResponseRedirect(reverse("index"))
 
@@ -533,7 +547,7 @@ def save_ios_receipt(request):
             transaction_identifier,
             receipt,
         )
-        mail_admins(subject, message)
+        # mail_admins(subject, message)
     else:
         logging.user(
             request,
@@ -563,7 +577,7 @@ def save_android_receipt(request):
             product_id,
             order_id,
         )
-        mail_admins(subject, message)
+        # mail_admins(subject, message)
     else:
         logging.user(
             request, "~BM~FBNot sending Android Receipt email, already paid: %s %s" % (product_id, order_id)
@@ -743,7 +757,7 @@ def stripe_checkout(request):
     if plan == "change_stripe":
         checkout_session = stripe.billing_portal.Session.create(
             customer=request.user.profile.stripe_id,
-            return_url="https://%s%s?next=payments" % (domain, reverse('index')),
+            return_url="https://%s%s?next=payments" % (domain, reverse("index")),
         )
         return HttpResponseRedirect(checkout_session.url, status=303)
 
@@ -758,8 +772,8 @@ def stripe_checkout(request):
         ],
         "mode": "subscription",
         "metadata": {"newsblur_user_id": request.user.pk},
-        "success_url": "https://%s%s" % (domain, reverse('stripe-return')),
-        "cancel_url": "https://%s%s" % (domain, reverse('index')),
+        "success_url": "https://%s%s" % (domain, reverse("stripe-return")),
+        "cancel_url": "https://%s%s" % (domain, reverse("index")),
     }
     if request.user.profile.stripe_id:
         session_dict["customer"] = request.user.profile.stripe_id

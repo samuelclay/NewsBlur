@@ -26,6 +26,9 @@ class DetailViewController: BaseViewController {
         
         /// Width of the feeds view, i.e. the primary split column.
         static let feedsWidth = "split_primary_width"
+        
+        /// Width of the feed detail view, i.e. the supplementary split column.
+        static let feedDetailWidth = "split_supplementary_width"
     }
     
     /// Preference values.
@@ -231,6 +234,26 @@ class DetailViewController: BaseViewController {
         }
     }
     
+    /// Width of the feed detail view, i.e. the supplementary split column.
+    var feedDetailWidth: CGFloat {
+        get {
+            let value = CGFloat(UserDefaults.standard.float(forKey: Key.feedDetailWidth))
+            
+            if value == 0 {
+                return 400
+            } else {
+                return value
+            }
+        }
+        set {
+            guard newValue > 0, newValue != feedDetailWidth else {
+                return
+            }
+            
+            UserDefaults.standard.set(Float(newValue), forKey: Key.feedDetailWidth)
+        }
+    }
+    
     /// Top container view.
     @IBOutlet weak var topContainerView: UIView!
     
@@ -411,10 +434,16 @@ class DetailViewController: BaseViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        let width = splitViewController?.primaryColumnWidth ?? 320
+        let currentFeedsWidth = splitViewController?.primaryColumnWidth ?? 320
         
-        if width != feedsWidth {
-            feedsWidth = width
+        if currentFeedsWidth != feedsWidth {
+            feedsWidth = currentFeedsWidth
+        }
+        
+        let currentFeedDetailWidth = splitViewController?.supplementaryColumnWidth ?? 400
+        
+        if currentFeedDetailWidth != feedDetailWidth {
+            feedDetailWidth = currentFeedDetailWidth
         }
     }
     
@@ -480,7 +509,10 @@ private extension DetailViewController {
         splitViewController?.primaryBackgroundStyle = .sidebar
         splitViewController?.minimumPrimaryColumnWidth = 250
         splitViewController?.maximumPrimaryColumnWidth = 700
+        splitViewController?.minimumSupplementaryColumnWidth = 250
+        splitViewController?.maximumSupplementaryColumnWidth = 700
         splitViewController?.preferredPrimaryColumnWidth = feedsWidth
+        splitViewController?.preferredSupplementaryColumnWidth = feedDetailWidth
 #endif
         
         if layout != .grid || isPhone {

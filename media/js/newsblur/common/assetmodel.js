@@ -1,5 +1,35 @@
 NEWSBLUR.AssetModel = Backbone.Router.extend({
 
+    third_party_sharing_services: {
+        "copyurl": "Copy URL",
+        "copytext": "Copy Text",
+        "print": "Print",
+        "facebook": "Facebook",
+        "twitter": "X / Twitter",
+        "reddit": "Reddit",
+        "readitlater": "Pocket",
+        "tumblr": "Tumblr",
+        "delicious": "Delicious",
+        "blogger": "Blogger",
+        "pinboard": "Pinboard",
+        "raindrop": "Raindrop",
+        "whatsapp": "WhatsApp",
+        "bluesky": "Bluesky",
+        "mastodon": "Mastodon",
+        "pinterest": "Pinterest",
+        "buffer": "Buffer",
+        "diigo": "Diigo",
+        "evernote": "Evernote",
+        "instapaper": "Instapaper",
+        "livejournal": "LiveJournal",
+        "flipboard": "Flipboard",
+        "lineme": "Line.me",
+        "hackernews": "Hacker News",
+        "telegram": "Telegram",
+        "linkedin": "LinkedIn",
+        "readwise": "Readwise"
+    },
+
     initialize: function () {
         this.defaults = {
             classifiers: {
@@ -10,6 +40,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
         };
         this.feeds = new NEWSBLUR.Collections.Feeds();
+        this.temp_feeds = new NEWSBLUR.Collections.Feeds();
         this.social_feeds = new NEWSBLUR.Collections.SocialSubscriptions();
         this.folders = new NEWSBLUR.Collections.Folders([]);
         this.favicons = {};
@@ -552,6 +583,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     feed_address: feed.get('feed_address'),
                     order: this.view_setting(feed_id, 'order'),
                     read_filter: this.view_setting(feed_id, 'read_filter'),
+                    date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
+                    date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
                     query: NEWSBLUR.reader.flags.search,
                     include_hidden: true
                 }, pre_callback,
@@ -681,6 +714,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             order: this.view_setting('starred', 'order'),
             tag: tag,
             highlights: highlights,
+            date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
+            date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
             v: 2
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
@@ -707,7 +742,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/read_stories', {
             page: page,
             query: NEWSBLUR.reader.flags.search,
-            order: this.view_setting('read', 'order')
+            order: this.view_setting('read', 'order'),
+            date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
+            date_filter_end: NEWSBLUR.reader.flags.date_filter_end
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
@@ -721,6 +758,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
+            date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
+            date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
             query: NEWSBLUR.reader.flags.search,
             include_hidden: true,
             infrequent: false
@@ -764,6 +803,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
+            date_filter_start: options.date_filter_start,
+            date_filter_end: options.date_filter_end,
             query: options.query,
             limit: 5,
             infrequent: false,
@@ -876,7 +917,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             global_feed: options.global,
-            read_filter: this.view_setting(feed_id, 'read_filter')
+            read_filter: this.view_setting(feed_id, 'read_filter'),
+            date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
+            date_filter_end: NEWSBLUR.reader.flags.date_filter_end
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
@@ -897,6 +940,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             page: page,
             order: this.view_setting(feed_id, 'order'),
             read_filter: this.view_setting(feed_id, 'read_filter'),
+            date_filter_start: NEWSBLUR.reader.flags.date_filter_start,
+            date_filter_end: NEWSBLUR.reader.flags.date_filter_end,
             query: NEWSBLUR.reader.flags.search
         }, pre_callback, error_callback, {
             'ajax_group': (page > 1 ? 'feed_page' : 'feed'),
@@ -1110,6 +1155,21 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return this.feeds.get(feed_id);
     },
 
+    set_temp_feed: function (feed_id, feed) {
+        if (!feed) {
+            feed = feed_id;
+            feed_id = feed.id;
+        }
+        feed.temp = true;
+        if (!this.temp_feeds.get(feed)) {
+            this.temp_feeds.add(feed);
+        } else {
+            this.temp_feeds.get(feed_id).set(feed);
+        }
+
+        return this.temp_feeds.get(feed_id);
+    },
+
     add_social_feed: function (feed) {
         var social_feed = this.social_feeds.get(feed);
         if (!social_feed) {
@@ -1135,7 +1195,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         } else if (_.string.startsWith(feed_id, 'feed:')) {
             return this.feeds.get(parseInt(feed_id.replace('feed:', ''), 10));
         } else {
-            return this.feeds.get(feed_id);
+            var feed = this.feeds.get(feed_id);
+            if (!feed) {
+                feed = this.temp_feeds.get(feed_id);
+            }
+            return feed;
         }
     },
 
@@ -1445,9 +1509,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             view_settings = { 'view': view_settings };
         }
         var params = { 'feed_id': feed_id + '' };
-        _.each(['view', 'order', 'read_filter', 'layout', 'dashboard_count'], function (facet) {
-            if (setting[facet]) {
-                view_settings[facet.substr(0, 1)] = setting[facet];
+        _.each([
+            'view',
+            'order',
+            'read_filter',
+            'layout',
+            'dashboard_count',
+            'stories_discover'
+        ], function (facet) {
+            if (setting.hasOwnProperty(facet)) {
+                var key = facet.substr(0, 1);
+                view_settings[key] = setting[facet];
                 params['feed_' + facet + '_setting'] = setting[facet];
             }
         });

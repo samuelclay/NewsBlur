@@ -1,7 +1,7 @@
-import http.client
 import base64
 import concurrent
 import datetime
+import http.client
 import random
 import re
 import socket
@@ -12,6 +12,7 @@ import urllib.parse
 import urllib.request
 import zlib
 
+import pytz
 import redis
 import requests
 from django.conf import settings
@@ -136,6 +137,87 @@ def get_subdomain(request):
         return host.split(".")[0]
     else:
         return None
+
+
+def adjust_read_filter_for_date_range(
+    read_filter, date_filter_start_utc, date_filter_end_start_utc, unread_cutoff
+):
+    """
+    Auto-switch from unread to all if date filter extends beyond unread cutoff.
+
+    If the read filter is set to unread only and the date range starts or ends
+    earlier than the user's unread cutoff, switch to all stories so we can show
+    stories that wouldn't otherwise be surfaced.
+    """
+    if read_filter != "unread":
+        return read_filter
+
+    should_switch_to_all = False
+    if unread_cutoff:
+        unread_cutoff_naive = unread_cutoff.replace(tzinfo=None) if unread_cutoff.tzinfo else unread_cutoff
+    else:
+        unread_cutoff_naive = None
+
+    if unread_cutoff_naive:
+        if date_filter_start_utc and date_filter_start_utc < unread_cutoff_naive:
+            should_switch_to_all = True
+
+        if date_filter_end_start_utc and date_filter_end_start_utc < unread_cutoff_naive:
+            should_switch_to_all = True
+
+    if should_switch_to_all:
+        return "all"
+
+    return read_filter
+
+
+def normalize_date_filters(date_filter_start, date_filter_end, user_timezone):
+    """
+    Convert date filter strings (YYYY-MM-DD) in the user's timezone into UTC datetimes.
+
+    Returns a tuple of:
+        (start_utc_inclusive, end_utc_exclusive, end_utc_start_of_day)
+    """
+    tz = user_timezone or pytz.UTC
+    if isinstance(tz, str):
+        try:
+            tz = pytz.timezone(tz)
+        except pytz.UnknownTimeZoneError:
+            tz = pytz.UTC
+
+    start_utc = None
+    end_utc_exclusive = None
+    end_utc_start_of_day = None
+
+    if date_filter_start and date_filter_start != "all":
+        try:
+            start_naive = datetime.datetime.strptime(date_filter_start, "%Y-%m-%d")
+            if hasattr(tz, "localize"):
+                start_local = tz.localize(start_naive, is_dst=None)
+            else:
+                start_local = start_naive.replace(tzinfo=tz)
+            start_utc = start_local.astimezone(pytz.UTC).replace(tzinfo=None)
+        except (ValueError, pytz.AmbiguousTimeError, pytz.NonExistentTimeError):
+            start_utc = None
+
+    if date_filter_end and date_filter_end != "all":
+        try:
+            end_start_naive = datetime.datetime.strptime(date_filter_end, "%Y-%m-%d")
+            if hasattr(tz, "localize"):
+                end_start_local = tz.localize(end_start_naive, is_dst=None)
+            else:
+                end_start_local = end_start_naive.replace(tzinfo=tz)
+            end_utc_start_of_day = end_start_local.astimezone(pytz.UTC).replace(tzinfo=None)
+
+            next_day_local = end_start_local + datetime.timedelta(days=1)
+            if hasattr(tz, "normalize"):
+                next_day_local = tz.normalize(next_day_local)
+            end_utc_exclusive = next_day_local.astimezone(pytz.UTC).replace(tzinfo=None)
+        except (ValueError, pytz.AmbiguousTimeError, pytz.NonExistentTimeError):
+            end_utc_exclusive = None
+            end_utc_start_of_day = None
+
+    return start_utc, end_utc_exclusive, end_utc_start_of_day
 
 
 @never_cache
@@ -523,6 +605,7 @@ def load_feeds_flat(request):
         categories = MCategory.serialize()
 
     saved_searches = MSavedSearch.user_searches(user.pk)
+    dashboard_rivers = MDashboardRiver.get_user_rivers(user.pk)
 
     logging.user(
         request,
@@ -555,6 +638,7 @@ def load_feeds_flat(request):
         "starred_count": starred_count,
         "starred_counts": starred_counts,
         "saved_searches": saved_searches,
+        "dashboard_rivers": dashboard_rivers,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -727,6 +811,13 @@ def load_single_feed(request, feed_id):
     offset = limit * (page - 1)
     order = request.GET.get("order", "newest")
     read_filter = request.GET.get("read_filter", "all")
+    date_filter_start = request.GET.get("date_filter_start")
+    date_filter_end = request.GET.get("date_filter_end")
+    # Sanitize date filters - JS sends "null" as a string
+    if date_filter_start in ("null", "None", "", None):
+        date_filter_start = None
+    if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
     query = request.GET.get("query", "").strip()
     include_story_content = is_true(request.GET.get("include_story_content", True))
     include_hidden = is_true(request.GET.get("include_hidden", False))
@@ -770,15 +861,38 @@ def load_single_feed(request, feed_id):
         else:
             stories = []
             message = "You must be a premium subscriber to search."
-    elif read_filter == "starred":
+
+    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+        date_filter_start, date_filter_end, user.profile.timezone
+    )
+
+    # Auto-switch from unread to all if date filter extends beyond unread cutoff
+    read_filter = adjust_read_filter_for_date_range(
+        read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
+    )
+
+    if read_filter == "starred":
         mstories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).order_by(
             "%sstarred_date" % ("-" if order == "newest" else "")
         )[offset : offset + limit]
         stories = Feed.format_stories(mstories)
     elif usersub and read_filter == "unread":
-        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
+        stories = usersub.get_stories(
+            order=order,
+            read_filter=read_filter,
+            offset=offset,
+            limit=limit,
+            date_filter_start=date_filter_start_utc,
+            date_filter_end=date_filter_end_utc,
+        )
     else:
-        stories = feed.get_stories(offset, limit, order=order)
+        stories = feed.get_stories(
+            offset,
+            limit,
+            order=order,
+            date_filter_start=date_filter_start_utc,
+            date_filter_end=date_filter_end_utc,
+        )
 
     checkpoint1 = time.time()
 
@@ -911,15 +1025,25 @@ def load_single_feed(request, feed_id):
         time_breakdown = "~SN~FR(~SB%.4s/%.4s/%.4s/%.4s~SN)" % (diff1, diff2, diff3, diff4)
 
     search_log = "~SN~FG(~SB%s~SN) " % query if query else ""
+    date_filter_log = ""
+    if date_filter_start and date_filter_start != "all":
+        date_filter_log = f"~SN~FG(dates: {date_filter_start}"
+        if date_filter_end and date_filter_end != "all":
+            date_filter_log += f" to {date_filter_end}"
+        date_filter_log += "~SN) "
+    elif date_filter_end and date_filter_end != "all":
+        date_filter_log = f"~SN~FG(dates: up to {date_filter_end}~SN) "
+
     logging.user(
         request,
-        "~FYLoading feed: ~SB%s%s (%s/%s) %s%s"
+        "~FYLoading feed: ~SB%s%s (%s/%s) %s%s%s"
         % (
             feed.feed_title[:22],
             ("~SN/p%s" % page) if page > 1 else "",
             order,
             read_filter,
             search_log,
+            date_filter_log,
             time_breakdown,
         ),
     )
@@ -1033,6 +1157,7 @@ def load_feed_page(request, feed_id):
     return HttpResponse(data, content_type="text/html; charset=utf-8")
 
 
+@ratelimit(minutes=5, requests=50, use_path=True)
 @json.json_view
 def load_starred_stories(request):
     user = get_user(request)
@@ -1041,6 +1166,14 @@ def load_starred_stories(request):
     page = int(request.GET.get("page", 0))
     query = request.GET.get("query", "").strip()
     order = request.GET.get("order", "newest")
+    read_filter = request.GET.get("read_filter", "all")
+    date_filter_start = request.GET.get("date_filter_start")
+    date_filter_end = request.GET.get("date_filter_end")
+    # Sanitize date filters - JS sends "null" as a string
+    if date_filter_start in ("null", "None", "", None):
+        date_filter_start = None
+    if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
     tag = request.GET.get("tag")
     highlights = is_true(request.GET.get("highlights", False))
     story_hashes = request.GET.getlist("h") or request.GET.getlist("h[]")
@@ -1052,44 +1185,75 @@ def load_starred_stories(request):
     if page:
         offset = limit * (page - 1)
 
+    # Normalize date filters from user timezone to UTC
+    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+        date_filter_start, date_filter_end, user.profile.timezone
+    )
+
+    # Auto-switch from unread to all if date filter extends beyond unread cutoff
+    read_filter = adjust_read_filter_for_date_range(
+        read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
+    )
+
     if query:
         # results = SearchStarredStory.query(user.pk, query)
         # story_ids = [result.db_id for result in results]
         if user.profile.is_premium:
             stories = MStarredStory.find_stories(
-                query, user.pk, tag=tag, offset=offset, limit=limit, order=order
+                query,
+                user.pk,
+                tag=tag,
+                offset=offset,
+                limit=limit,
+                order=order,
+                date_filter_start=date_filter_start_utc,
+                date_filter_end=date_filter_end_utc,
             )
         else:
             stories = []
             message = "You must be a premium subscriber to search."
     elif highlights:
         if user.profile.is_premium:
-            mstories = MStarredStory.objects(
+            mstories_query = MStarredStory.objects(
                 user_id=user.pk, highlights__exists=True, __raw__={"$where": "this.highlights.length > 0"}
-            ).order_by("%sstarred_date" % order_by)[offset : offset + limit]
+            )
+            if date_filter_start_utc:
+                mstories_query = mstories_query.filter(starred_date__gte=date_filter_start_utc)
+            if date_filter_end_utc:
+                mstories_query = mstories_query.filter(starred_date__lt=date_filter_end_utc)
+            mstories = mstories_query.order_by("%sstarred_date" % order_by)[offset : offset + limit]
             stories = Feed.format_stories(mstories)
         else:
             stories = []
             message = "You must be a premium subscriber to read through saved story highlights."
     elif tag:
         if user.profile.is_premium:
-            mstories = MStarredStory.objects(user_id=user.pk, user_tags__contains=tag).order_by(
-                "%sstarred_date" % order_by
-            )[offset : offset + limit]
+            mstories_query = MStarredStory.objects(user_id=user.pk, user_tags__contains=tag)
+            if date_filter_start_utc:
+                mstories_query = mstories_query.filter(starred_date__gte=date_filter_start_utc)
+            if date_filter_end_utc:
+                mstories_query = mstories_query.filter(starred_date__lt=date_filter_end_utc)
+            mstories = mstories_query.order_by("%sstarred_date" % order_by)[offset : offset + limit]
             stories = Feed.format_stories(mstories)
         else:
             stories = []
             message = "You must be a premium subscriber to read saved stories by tag."
     elif story_hashes:
         limit = 100
-        mstories = MStarredStory.objects(user_id=user.pk, story_hash__in=story_hashes).order_by(
-            "%sstarred_date" % order_by
-        )[offset : offset + limit]
+        mstories_query = MStarredStory.objects(user_id=user.pk, story_hash__in=story_hashes)
+        if date_filter_start_utc:
+            mstories_query = mstories_query.filter(starred_date__gte=date_filter_start_utc)
+        if date_filter_end_utc:
+            mstories_query = mstories_query.filter(starred_date__lt=date_filter_end_utc)
+        mstories = mstories_query.order_by("%sstarred_date" % order_by)[offset : offset + limit]
         stories = Feed.format_stories(mstories)
     else:
-        mstories = MStarredStory.objects(user_id=user.pk).order_by("%sstarred_date" % order_by)[
-            offset : offset + limit
-        ]
+        mstories_query = MStarredStory.objects(user_id=user.pk)
+        if date_filter_start_utc:
+            mstories_query = mstories_query.filter(starred_date__gte=date_filter_start_utc)
+        if date_filter_end_utc:
+            mstories_query = mstories_query.filter(starred_date__lt=date_filter_end_utc)
+        mstories = mstories_query.order_by("%sstarred_date" % order_by)[offset : offset + limit]
         stories = Feed.format_stories(mstories)
 
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
@@ -1446,11 +1610,30 @@ def load_read_stories(request):
     limit = int(request.GET.get("limit", 10))
     page = int(request.GET.get("page", 0))
     order = request.GET.get("order", "newest")
+    date_filter_start = request.GET.get("date_filter_start")
+    date_filter_end = request.GET.get("date_filter_end")
+    # Sanitize date filters - JS sends "null" as a string
+    if date_filter_start in ("null", "None", "", None):
+        date_filter_start = None
+    if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
     query = request.GET.get("query", "").strip()
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
     if page:
         offset = limit * (page - 1)
+
+    # Normalize date filters from user timezone to UTC
+    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+        date_filter_start, date_filter_end, user.profile.timezone
+    )
+
+    if date_filter_start or date_filter_end:
+        logging.user(
+            request,
+            "~FBDate filters for read stories: start=%s end=%s (UTC: start=%s end=%s)"
+            % (date_filter_start, date_filter_end, date_filter_start_utc, date_filter_end_utc),
+        )
 
     if query:
         stories = []
@@ -1461,7 +1644,14 @@ def load_read_stories(request):
         #     stories = []
         #     message = "You must be a premium subscriber to search."
     else:
-        story_hashes = RUserStory.get_read_stories(user.pk, offset=offset, limit=limit, order=order)
+        story_hashes = RUserStory.get_read_stories(
+            user.pk,
+            offset=offset,
+            limit=limit,
+            order=order,
+            date_filter_start=date_filter_start_utc,
+            date_filter_end=date_filter_end_utc,
+        )
         mstories = MStory.objects(story_hash__in=story_hashes)
         stories = Feed.format_stories(mstories)
         stories = sorted(
@@ -1553,6 +1743,13 @@ def load_river_stories__redis(request):
     page = int(get_post.get("page", 1))
     order = get_post.get("order", "newest")
     read_filter = get_post.get("read_filter", "unread")
+    date_filter_start = get_post.get("date_filter_start")
+    date_filter_end = get_post.get("date_filter_end")
+    # Sanitize date filters - JS sends "null" as a string
+    if date_filter_start in ("null", "None", "", None):
+        date_filter_start = None
+    if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
     query = get_post.get("query", "").strip()
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
@@ -1601,7 +1798,17 @@ def load_river_stories__redis(request):
             stories = []
             mstories = []
             message = "You must be a premium subscriber to search."
-    elif read_filter == "starred":
+
+    # Auto-switch from unread to all if date filter extends beyond unread cutoff
+    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+        date_filter_start, date_filter_end, user.profile.timezone
+    )
+
+    read_filter = adjust_read_filter_for_date_range(
+        read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
+    )
+
+    if read_filter == "starred":
         mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
             "%sstarred_date" % ("-" if order == "newest" else "")
         )[offset : offset + limit]
@@ -1624,6 +1831,8 @@ def load_river_stories__redis(request):
                 "usersubs": usersubs,
                 "cutoff_date": user.profile.unread_cutoff,
                 "cache_prefix": "dashboard:" if on_dashboard else "",
+                "date_filter_start": date_filter_start_utc,
+                "date_filter_end": date_filter_end_utc,
             }
             story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
         else:
@@ -1762,10 +1971,18 @@ def load_river_stories__redis(request):
             ),
         )
     else:
+        date_filter_str = ""
+        if date_filter_start and date_filter_start != "all":
+            date_filter_str = f", dates: {date_filter_start}"
+            if date_filter_end and date_filter_end != "all":
+                date_filter_str += f" to {date_filter_end}"
+        elif date_filter_end and date_filter_end != "all":
+            date_filter_str = f", dates: up to {date_filter_end}"
+
         logging.user(
             request,
             "~FY%sLoading ~FC%sriver stories~FY: ~SBp%s~SN (%s/%s "
-            "stories, ~SN%s/%s/%s feeds, %s/%s)"
+            "stories, ~SN%s/%s/%s feeds, %s/%s%s)"
             % (
                 "~FCAuto-" if on_dashboard else "",
                 "~FB~SBinfrequent~SN~FC " if infrequent else "",
@@ -1777,6 +1994,7 @@ def load_river_stories__redis(request):
                 len(original_feed_ids),
                 order,
                 read_filter,
+                date_filter_str,
             ),
         )
 
@@ -2860,6 +3078,7 @@ def _mark_story_as_starred(request):
                 datas.append(
                     {"code": -1, "message": "Could not save story due to: %s" % e, "story_hash": story_hash}
                 )
+                continue
 
             created = True
             MActivity.new_starred_story(
@@ -3191,6 +3410,75 @@ def remove_dashboard_river(request):
     )
 
     MDashboardRiver.remove_river(request.user.pk, river_side, river_order)
+    dashboard_rivers = MDashboardRiver.get_user_rivers(request.user.pk)
+
+    return {
+        "dashboard_rivers": dashboard_rivers,
+    }
+
+
+def print_story(request):
+    story_hash = request.GET["story_hash"]
+    text_view = request.GET.get("text", False)
+    timezone = request.user.profile.timezone
+    try:
+        story = MStory.objects.get(story_hash=story_hash)
+    except MStory.DoesNotExist:
+        raise Http404
+
+    story_date = story.story_date
+
+    if text_view:
+        original_text = story.fetch_original_text(request=request)
+        story = Feed.format_story(story, story.story_feed_id, text=text_view)
+        story["story_content"] = original_text.decode("utf-8")
+    else:
+        story = Feed.format_story(story, story.story_feed_id)
+    return render(
+        request,
+        "reader/print.xhtml",
+        {"story": story, "local_datetime": localtime_for_timezone(story_date, timezone)},
+    )
+
+
+@json.json_view
+def save_dashboard_rivers(request):
+    try:
+        data = json.decode(request.body)
+        dashboard_rivers = data["dashboard_rivers"]
+    except KeyError:
+        return {"code": -1, "message": "Invalid JSON data"}
+
+    if not isinstance(dashboard_rivers, list):
+        return {"code": -1, "message": "dashboard_rivers must be a list"}
+
+    # Validate all rivers first
+    for river_data in dashboard_rivers:
+        if not all(k in river_data for k in ["river_id", "river_side", "river_order"]):
+            return {"code": -1, "message": "Each river must have river_id, river_side, and river_order"}
+
+        try:
+            river_order = int(river_data["river_order"])
+            if river_order < 0:
+                return {"code": -1, "message": "river_order must be non-negative"}
+        except ValueError:
+            return {"code": -1, "message": "river_order must be an integer"}
+
+    logging.user(request, "~FCSaving dashboard rivers: ~SB%s~SN" % dashboard_rivers)
+
+    # Delete all existing rivers for this user
+    MDashboardRiver.objects(user_id=request.user.pk).delete()
+
+    # Save new rivers in order
+    for river_data in dashboard_rivers:
+        MDashboardRiver.objects.create(
+            user_id=request.user.pk,
+            river_id=river_data["river_id"],
+            river_side=river_data["river_side"],
+            river_order=int(river_data["river_order"]),
+        )
+
+    # Get updated rivers
     dashboard_rivers = MDashboardRiver.get_user_rivers(request.user.pk)
 
     return {

@@ -12,11 +12,11 @@ except NameError:
 if not __FEEDFINDER2_SETUP__:
     __all__ = ["find_feeds"]
 
-    import logging
-
     import requests
     from bs4 import BeautifulSoup
     from six.moves.urllib import parse as urlparse
+
+    from utils import log as logging
 
 
 def coerce_url(url):
@@ -30,6 +30,8 @@ def coerce_url(url):
 
 
 class FeedFinder(object):
+    text = None
+
     def __init__(self, user_agent=None):
         if user_agent is None:
             user_agent = "NewsBlur Feed Finder"
@@ -41,12 +43,13 @@ class FeedFinder(object):
                 url, headers={"User-Agent": self.user_agent if not skip_user_agent else None}, timeout=15
             )
         except Exception as e:
-            logging.warn("Error while getting '{0}'".format(url))
-            logging.warn("{0}".format(e))
+            logging.warning("Error while getting '{0}'".format(url))
+            logging.warning("{0}".format(e))
             return None
-        if not skip_user_agent and r.status_code == 403:
+        if not skip_user_agent and r.status_code in [403, 204]:
             return self.get_feed(url, skip_user_agent=True)
-        return r.text
+        self.text = r.text
+        return self.text
 
     def is_feed_data(self, text):
         data = text.lower()
@@ -133,8 +136,9 @@ def find_feeds(url, check_all=False, user_agent=None):
         return sort_urls(urls)
 
     # Guessing potential URLs.
-    fns = ["atom.xml", "index.atom", "index.rdf", "rss.xml", "index.xml", "index.rss", "index.json"]
-    urls += list(filter(finder.is_feed, [urlparse.urljoin(url, f) for f in fns]))
+    if not any(ignored_domain in url for ignored_domain in ["openrss", "feedburner"]):
+        fns = ["atom.xml", "index.atom", "index.rdf", "rss.xml", "index.xml", "index.rss", "index.json"]
+        urls += list(filter(finder.is_feed, [urlparse.urljoin(url, f) for f in fns]))
     return sort_urls(urls)
 
 

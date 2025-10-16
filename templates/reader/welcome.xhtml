@@ -59,13 +59,13 @@
                   </div>
               </div>
               <div class="NB-welcome-header-image NB-1 {% if not post_request %}NB-active{% endif %}">
-                  <img src="{{ MEDIA_URL }}img/welcome/header-web.png">
+                  <img src="{{ MEDIA_URL }}img/welcome/welcome-mac.png">
               </div>
               <div class="NB-welcome-header-image NB-2">
-                  <img src="{{ MEDIA_URL }}img/welcome/header-ios.png">
+                  <img src="{{ MEDIA_URL }}img/welcome/welcome-ios.png">
               </div>
               <div class="NB-welcome-header-image NB-3">
-                  <img src="{{ MEDIA_URL }}img/welcome/header-android.png">
+                  <img src="{{ MEDIA_URL }}img/welcome/welcome-android.png">
               </div>
 
           </div>
@@ -197,9 +197,9 @@
                 <div class="NB-feature-text">Regularly used searches are conveniently given their own feeds</div>
             </div>
             <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/header-ios.png">
-                <div class="NB-feature-caption">First-class iOS App</div>
-                <div class="NB-feature-text">The NewsBlur iOS app is free and is jam-packed with features</div>
+                <img src="{{ MEDIA_URL }}img/welcome/welcome-ios.png">
+                <div class="NB-feature-caption">Native iOS/macOS Apps</div>
+                <div class="NB-feature-text">The NewsBlur iOS and macOS apps are free and jam-packed with features</div>
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/subfeature_3.png">
@@ -207,7 +207,7 @@
                 <div class="NB-feature-text">The original story from truncated RSS feeds is seamlessly expanded</div>
             </div>
             <div class="NB-feature">
-                <img src="{{ MEDIA_URL }}img/welcome/header-android.png">
+                <img src="{{ MEDIA_URL }}img/welcome/welcome-android.png">
                 <div class="NB-feature-caption">First-class Android App</div>
                 <div class="NB-feature-text">The NewsBlur Android app is free and has it all</div>
             </div>
@@ -228,7 +228,7 @@
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/subfeature_8.png">
-                <div class="NB-feature-caption">Grid, List, Split</div>
+                <div class="NB-feature-caption">Grid, List, Split, Magazine</div>
                 <div class="NB-feature-text">Every site has its own story layout, so you can mix and match</div>
             </div>
             <div class="NB-feature">
@@ -238,7 +238,7 @@
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/subfeature_10.png">
-                <div class="NB-feature-caption">Twitter & YouTube</div>
+                <div class="NB-feature-caption">YouTube</div>
                 <div class="NB-feature-text">Even sites that don't publish RSS feeds can be followed</div>
             </div>
         </div>
@@ -262,7 +262,7 @@
                     </th>
                 </tr>
                 <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-1"></div> Number of Sites</td>
+                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-1"></div> Number of sites</td>
                     <td>Up to 64 sites</td>
                     <td>1,000 sites</td>
                     <td>Unlimited sites</td>
@@ -278,6 +278,12 @@
                     <td>-</td>
                     <td>Search for recent stories, your saved stories, and shared stories</td>
                     <td>Search the entire history of every site</td>
+                </tr>
+                <tr>
+                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-9"></div> Related stories</td>
+                    <td>Discover only related sites</td>
+                    <td>Peek into related stories and sites</td>
+                    <td>Entire archive of related stories and sites</td>
                 </tr>
                 <tr>
                     <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-7"></div> Custom RSS</td>
@@ -304,14 +310,14 @@
                     <td>Same as premium</td>
                 </tr>
                 <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-8"></div> Full Text</td>
+                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-8"></div> Full text</td>
                     <td>Only what's in the feed</td>
                     <td>Full text of each story</td>
                     <td>Same as premium</td>
                 </tr>
                 <tr>
                     <td class="NB-bold">
-                        <div class="NB-welcome-premium-bullet NB-9"></div>
+                        <div class="NB-welcome-premium-bullet NB-10"></div>
                         Feed poor Lyric
                     </td>
                     <td>She goes hungry</td>
@@ -361,12 +367,13 @@
     <footer class="NB-welcome-footer">
         <div class="NB-welcome-footer-content NB-inner">
             <div class="NB-footer-icons">
-                <a href="http://github.com/samuelclay" title="GitHub"><img src="{{ MEDIA_URL }}img/welcome/github_favicon.png"></a>
-                <a href="http://twitter.com/newsblur" title="Twitter"><img src="{{ MEDIA_URL }}img/welcome/twitter_favicon.png"></a>
+                <a href="https://github.com/samuelclay" title="GitHub"><img src="{{ MEDIA_URL }}img/welcome/github_favicon.png" style="width: 40px;height: auto;bottom: 0px;"></a>
+                <a href="https://x.com/newsblur" title="X/Twitter"><img src="{{ MEDIA_URL }}img/welcome/x_favicon.png"></a>
+                <a href="https://mastodon.social/@newsblur" title="Mastodon"><img src="{{ MEDIA_URL }}img/welcome/mastodon_logo.svg"></a>
             </div>
             <a href="{% url "index" %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px;" class="NB-footer-logo" title="NewsBlur" alt="NewsBlur" /></a>
-            is built in Cambridge, Massachusetts by 
-            <a href="http://twitter.com/samuelclay" class="NB-splash-link">
+            is built in San Francisco and Western Massachusetts by 
+            <a href="http://x.com/samuelclay" class="NB-splash-link">
                 <img src="{{ MEDIA_URL }}img/static/Samuel%20Clay.jpg" class="NB-twitter-avatar">
                 @samuelclay
             </a>

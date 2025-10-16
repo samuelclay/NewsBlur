@@ -2,7 +2,7 @@
 (function() {
   var Mercury, log, original_text;
 
-  Mercury = require('@postlight/mercury-parser');
+  Mercury = require('@postlight/parser');
 
   log = require('./log.js');
 

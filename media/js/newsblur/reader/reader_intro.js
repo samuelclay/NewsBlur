@@ -6,7 +6,7 @@ NEWSBLUR.ReaderIntro = function (options) {
 
     _.bindAll(this, 'close', 'post_connect');
     this.options = $.extend({
-        'page_number': intro_page && _.isNumber(intro_page) && intro_page <= 4 ? intro_page : 1
+        'page_number': intro_page && _.isNumber(intro_page) && intro_page <= 3 ? intro_page : 1
     }, defaults, options);
     this.services = {
         'twitter': {},
@@ -30,11 +30,11 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
 
     runner: function () {
         this.make_modal();
-        this.make_find_friends_and_services();
+        // this.make_find_friends_and_services();
         this.open_modal();
         this.page(this.page_number);
         this.fetch_categories();
-        this.fetch_friends();
+        // this.fetch_friends();
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
@@ -112,12 +112,12 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                     ])
                 ])
             ]),
+            // $.make('div', { className: 'NB-page NB-page-3' }, [
+            //     $.make('h4', { className: 'NB-page-3-started' }, "Connect with friends"),
+            //     $.make('div', { className: 'NB-intro-services' })
+            // ]),
             $.make('div', { className: 'NB-page NB-page-3' }, [
-                $.make('h4', { className: 'NB-page-3-started' }, "Connect with friends"),
-                $.make('div', { className: 'NB-intro-services' })
-            ]),
-            $.make('div', { className: 'NB-page NB-page-4' }, [
-                $.make('h4', { className: 'NB-page-4-started' }, "Keep up-to-date with NewsBlur"),
+                $.make('h4', { className: 'NB-page-3-started' }, "Keep up-to-date with NewsBlur"),
                 $.make('table', { className: 'NB-intro-follows', cellpadding: 0, cellspacing: 0 }, [
                     $.make('tr', [
                         $.make('td', { className: 'NB-intro-uptodate-follow NB-intro-uptodate-follow-twitter' }, [
@@ -445,12 +445,13 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         if (page_number == 2) {
             this.advance_import_carousel();
         }
+        // if (page_number == 3) {
+        //     this.submit_categories();
+        //     this.make_find_friends_and_services();
+        // }
         if (page_number == 3) {
-            this.submit_categories();
-            this.make_find_friends_and_services();
-        }
-        if (page_number == 4) {
             this.show_twitter_follow_buttons();
+            NEWSBLUR.assets.preference('has_found_friends', true);
         }
 
         clearTimeout(this.sync_interval);

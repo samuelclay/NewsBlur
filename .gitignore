@@ -3,6 +3,7 @@ logs/*.log.*
 logs/*.pid
 logs/celerybeat-schedule.db
 *.pyc
+backup.db
 __pycache__/
 static/*
 local_settings.py
@@ -70,3 +71,5 @@ media/safari/NewsBlur.safariextz
 .terraform*
 grafana.ini
 apps/api/ip_addresses.txt
+.ansible/
+.dev_session

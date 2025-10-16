@@ -5,7 +5,8 @@
         "fields": {            
             "feed_address": "%(NEWSBLUR_DIR)s/apps/rss_feeds/fixtures/gothamist_aug_2009_1.xml", 
             "days_to_trim": 90, 
-            "feed_link": "http://gothamist.com", 
+            "feed_link": "http://gothamist.com",
+            "hash_address_and_link": "gothamist_aug_2009_1", 
             "num_subscribers": 0, 
             "creation": "2009-01-12", 
             "feed_title": "Gothamist", 
