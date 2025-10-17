@@ -1808,25 +1808,26 @@ def load_river_stories__redis(request):
             stories = []
             mstories = []
             message = "You must be a premium subscriber to search."
-
-    # Auto-switch from unread to all if date filter extends beyond unread cutoff
-    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
-        date_filter_start, date_filter_end, user.profile.timezone
-    )
-
-    original_read_filter = read_filter
-    read_filter = adjust_read_filter_for_date_range(
-        read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
-    )
-
-    # Log if read_filter changed after adjust
-    if original_read_filter != read_filter:
-        logging.user(
-            request,
-            f"~FRload_river_stories read_filter changed: {original_read_filter} -> {read_filter} (after adjust)"
+    else:
+        # Only run feed aggregation if stories weren't already fetched via story_hashes or query
+        date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+            date_filter_start, date_filter_end, user.profile.timezone
         )
 
-    if read_filter == "starred":
+        # Auto-switch from unread to all if date filter extends beyond unread cutoff
+        original_read_filter = read_filter
+        read_filter = adjust_read_filter_for_date_range(
+            read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
+        )
+
+        # Log if read_filter changed after adjust
+        if original_read_filter != read_filter:
+            logging.user(
+                request,
+                f"~FRload_river_stories read_filter changed: {original_read_filter} -> {read_filter} (after adjust)"
+            )
+
+        if read_filter == "starred":
         mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
             "%sstarred_date" % ("-" if order == "newest" else "")
         )[offset : offset + limit]
