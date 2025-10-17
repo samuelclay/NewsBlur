@@ -34,8 +34,9 @@ class Test_RiverStories(TransactionTestCase):
     ]
 
     def setUp(self):
-        import redis
         from datetime import datetime, timezone
+
+        import redis
 
         # Clear Redis keys for test feeds (using db=10 for tests)
         redis_story_port = (
@@ -66,18 +67,24 @@ class Test_RiverStories(TransactionTestCase):
 
         # Create test stories dynamically (10+ stories across 5+ feeds)
         import time
+
         from django.utils import timezone as django_tz
 
         self.test_feeds = [1, 2, 3, 4, 5]
         self.test_story_hashes = []
 
-        # Ensure user has active subscriptions
+        # Ensure user has active subscriptions (update_or_create to override fixtures)
         for feed_id in self.test_feeds:
             feed = Feed.objects.get(pk=feed_id)
-            UserSubscription.objects.get_or_create(
+            UserSubscription.objects.update_or_create(
                 user=self.user,
                 feed=feed,
-                defaults={"active": True, "unread_count_neutral": 1},
+                defaults={
+                    "active": True,
+                    "unread_count_neutral": 5,
+                    "unread_count_positive": 0,
+                    "unread_count_negative": 0,
+                },
             )
 
         # Create 3 stories per feed (15 total)
@@ -190,7 +197,9 @@ class Test_RiverStories(TransactionTestCase):
         self.assertGreater(counts["total"], 0, "Should have some queries")
         self.assertLess(counts["sql"], 20, "SQL queries should be reasonable")
         self.assertLess(counts["mongo"], 15, "Mongo queries should be reasonable")
-        print(f">>> Normal aggregation used redis_story: {counts['redis_story']} queries (expected for multi-feed)")
+        print(
+            f">>> Normal aggregation used redis_story: {counts['redis_story']} queries (expected for multi-feed)"
+        )
 
     def test_river_stories__specific_story_hashes(self):
         """
@@ -253,7 +262,9 @@ class Test_RiverStories(TransactionTestCase):
 
         # Verify we got the stories back
         self.assertIn("stories", content)
-        print(f">>> ✓ Test passed - minimal Redis operations ({counts['redis_total']} redis, {counts['mongo']} mongo)")
+        print(
+            f">>> ✓ Test passed - minimal Redis operations ({counts['redis_total']} redis, {counts['mongo']} mongo)"
+        )
 
     def test_river_stories__specific_hashes_no_dashboard(self):
         """Test loading specific story hashes without dashboard flag."""
@@ -272,7 +283,9 @@ class Test_RiverStories(TransactionTestCase):
         connection.queriesx = []
 
         # Load without dashboard flag
-        response = self.client.post(reverse("load-river-stories"), {"h": test_stories, "feeds": self.test_feeds})
+        response = self.client.post(
+            reverse("load-river-stories"), {"h": test_stories, "feeds": self.test_feeds}
+        )
 
         content = json.decode(response.content)
         self.assertEqual(response.status_code, 200)
