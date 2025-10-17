@@ -97,6 +97,10 @@ ARGS ?= --noinput -v 1 --failfast
 test:
 	docker compose exec -T newsblur_web python3 manage.py test $(SCOPE) --noinput $(ARGS)
 
+# runs river stories tests with query profiling
+test-river:
+	docker compose exec -T newsblur_web python3 manage.py test apps.reader.test_river_stories --noinput -v 2
+
 keys:
 	mkdir -p config/certificates
 	openssl dhparam -out config/certificates/dhparam-2048.pem 2048

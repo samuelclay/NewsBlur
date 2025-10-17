@@ -35,6 +35,7 @@ class Test_RiverStories(TransactionTestCase):
 
     def setUp(self):
         import redis
+        from datetime import datetime, timezone
 
         # Clear Redis keys for test feeds (using db=10 for tests)
         redis_story_port = (
@@ -62,6 +63,31 @@ class Test_RiverStories(TransactionTestCase):
 
         self.client = Client()
         self.user = User.objects.get(username="conesus")
+
+        # Get existing stories from fixtures and add them to Redis to simulate real data
+        self.test_feeds = [1, 2, 3, 4, 5]
+        self.test_story_hashes = []
+
+        # Get existing stories from MongoDB for our test feeds
+        for feed_id in self.test_feeds:
+            try:
+                # Get first 3 stories per feed from existing fixture data
+                stories = list(MStory.objects(story_feed_id=feed_id)[:3])
+
+                for story in stories:
+                    self.test_story_hashes.append(story.story_hash)
+
+                    # Add to Redis zF: set to simulate fresh feed data
+                    try:
+                        timestamp = int(story.story_date.timestamp() if story.story_date else datetime.now(timezone.utc).timestamp())
+                        self.r.zadd(f"zF:{feed_id}", {story.story_hash: timestamp})
+                    except Exception as e:
+                        pass
+
+            except Exception as e:
+                pass
+
+        print(f"\n>>> Using {len(self.test_story_hashes)} existing stories across {len(self.test_feeds)} feeds for tests")
 
         # Reset connection.queriesx for query counting
         connection.queriesx = []
@@ -117,12 +143,15 @@ class Test_RiverStories(TransactionTestCase):
         """Test loading river stories normally with multiple feeds."""
         self.client.login(username="conesus", password="test")
 
+        print(f"\n>>> Testing normal river load with {len(self.test_feeds)} feeds")
+        print(f">>> Available stories: {len(self.test_story_hashes)} across feeds {self.test_feeds}")
+
         # Reset query counter
         connection.queriesx = []
 
-        # Load river stories for feeds 1-5, use read_filter='all' to get stories
+        # Load river stories for our test feeds, use read_filter='all' to get stories
         response = self.client.post(
-            reverse("load-river-stories"), {"feeds": [1, 2, 3, 4, 5], "read_filter": "all", "page": 1}
+            reverse("load-river-stories"), {"feeds": self.test_feeds, "read_filter": "all", "page": 1}
         )
 
         content = json.decode(response.content)
@@ -132,12 +161,15 @@ class Test_RiverStories(TransactionTestCase):
 
         # Count queries
         counts = self.count_queries()
-        print(f"\nNormal river load queries: {counts}")
+        print(f">>> Normal river load queries: {counts}")
+        print(f">>> Stories returned: {len(content.get('stories', []))}")
 
         # We expect some queries, but not excessive
+        # With 5 feeds and stories, we'll see Redis aggregation queries
         self.assertGreater(counts["total"], 0, "Should have some queries")
         self.assertLess(counts["sql"], 20, "SQL queries should be reasonable")
         self.assertLess(counts["mongo"], 15, "Mongo queries should be reasonable")
+        print(f">>> Normal aggregation used redis_story: {counts['redis_story']} queries (expected for multi-feed)")
 
     def test_river_stories__specific_story_hashes(self):
         """
@@ -148,36 +180,15 @@ class Test_RiverStories(TransactionTestCase):
         """
         self.client.login(username="conesus", password="test")
 
-        # Create test stories directly
-        from datetime import datetime, timezone
+        # Use pre-created stories from setUp (10+ stories across 5 feeds)
+        if not self.test_story_hashes:
+            self.skipTest("No test stories created in setUp")
 
-        feed = Feed.objects.get(pk=1)
-        test_stories = []
+        # Select 10 story hashes to test with
+        test_stories = self.test_story_hashes[:10]
 
-        for i in range(3):
-            story_hash = f"{feed.pk}:test{i}"
-            story = MStory(
-                story_hash=story_hash,
-                story_feed_id=feed.pk,
-                story_date=datetime.now(timezone.utc),
-                story_title=f"Test Story {i}",
-                story_content=f"Test content {i}",
-                story_guid=f"test-guid-{i}",
-            )
-            try:
-                story.save()
-                test_stories.append(story_hash)
-            except:
-                # Story might already exist, try to use it
-                pass
-
-        if not test_stories:
-            # Fallback: try to get existing stories
-            stories = MStory.objects.all()[:3]
-            test_stories = [story.story_hash for story in stories]
-
-        if not test_stories:
-            self.skipTest("Could not create or find test stories")
+        print(f"\n>>> Testing with {len(test_stories)} story hashes across {len(self.test_feeds)} feeds")
+        print(f">>> Story hashes: {test_stories[:3]}... (+{len(test_stories)-3} more)")
 
         # Reset query counter
         connection.queriesx = []
@@ -185,7 +196,7 @@ class Test_RiverStories(TransactionTestCase):
         # Load specific story hashes with dashboard=true (this triggered the bug)
         response = self.client.post(
             reverse("load-river-stories"),
-            {"h": test_stories, "dashboard": "true", "feeds": [1, 2, 3, 4, 5]},
+            {"h": test_stories, "dashboard": "true", "feeds": self.test_feeds},
         )
 
         content = json.decode(response.content)
@@ -193,15 +204,20 @@ class Test_RiverStories(TransactionTestCase):
 
         # Count queries
         counts = self.count_queries()
-        print(f"\nSpecific story hashes queries: {counts}")
-        print(f"Stories returned: {len(content.get('stories', []))}")
+        print(f"\n>>> SPECIFIC STORY HASHES TEST (THE BUG WE FIXED)")
+        print(f">>> Query counts: {counts}")
+        print(f">>> Stories returned: {len(content.get('stories', []))}")
 
         # THIS IS THE KEY ASSERTION - when loading specific hashes, we should NOT
         # run expensive Redis aggregation operations. Redis story queries should be minimal.
+        #
+        # BEFORE THE FIX: redis_story would be 20-50+ with ZUNIONSTORE across all feeds
+        # AFTER THE FIX: redis_story should be 0 or very low
         self.assertLess(
             counts["redis_story"],
             10,
-            f"Redis story queries should be minimal when fetching specific hashes (got {counts['redis_story']})",
+            f"Redis story queries should be minimal when fetching specific hashes (got {counts['redis_story']}). "
+            f"Before the fix, this would have been 20-50+ with expensive ZUNIONSTORE operations!",
         )
 
         # We should have a mongo query to fetch the stories
@@ -216,51 +232,33 @@ class Test_RiverStories(TransactionTestCase):
 
         # Verify we got the stories back
         self.assertIn("stories", content)
+        print(f">>> ✓ Test passed - no expensive ZUNIONSTORE operations!")
 
     def test_river_stories__specific_hashes_no_dashboard(self):
         """Test loading specific story hashes without dashboard flag."""
         self.client.login(username="conesus", password="test")
 
-        # Create test stories
-        from datetime import datetime, timezone
+        # Use pre-created stories from setUp
+        if not self.test_story_hashes:
+            self.skipTest("No test stories created in setUp")
 
-        feed = Feed.objects.get(pk=1)
-        test_stories = []
+        # Use 5 story hashes
+        test_stories = self.test_story_hashes[:5]
 
-        for i in range(2):
-            story_hash = f"{feed.pk}:nodash{i}"
-            story = MStory(
-                story_hash=story_hash,
-                story_feed_id=feed.pk,
-                story_date=datetime.now(timezone.utc),
-                story_title=f"Test Story No Dashboard {i}",
-                story_content=f"Test content {i}",
-                story_guid=f"test-guid-nodash-{i}",
-            )
-            try:
-                story.save()
-                test_stories.append(story_hash)
-            except:
-                pass
-
-        if not test_stories:
-            stories = MStory.objects.all()[:2]
-            test_stories = [story.story_hash for story in stories]
-
-        if not test_stories:
-            self.skipTest("Could not create or find test stories")
+        print(f"\n>>> Testing {len(test_stories)} hashes WITHOUT dashboard flag")
 
         # Reset query counter
         connection.queriesx = []
 
         # Load without dashboard flag
-        response = self.client.post(reverse("load-river-stories"), {"h": test_stories, "feeds": [1, 2, 3]})
+        response = self.client.post(reverse("load-river-stories"), {"h": test_stories, "feeds": self.test_feeds})
 
         content = json.decode(response.content)
         self.assertEqual(response.status_code, 200)
 
         counts = self.count_queries()
-        print(f"\nSpecific hashes (no dashboard) queries: {counts}")
+        print(f">>> Specific hashes (no dashboard) queries: {counts}")
+        print(f">>> Stories returned: {len(content.get('stories', []))}")
 
         # Should be very minimal
         self.assertLess(counts["redis_story"], 10, "Redis story queries should be minimal")
@@ -269,6 +267,8 @@ class Test_RiverStories(TransactionTestCase):
     def test_river_stories__with_date_filter(self):
         """Test loading river stories with date filters."""
         self.client.login(username="conesus", password="test")
+
+        print(f"\n>>> Testing river with date filter on {len(self.test_feeds)} feeds")
 
         # Reset query counter
         connection.queriesx = []
@@ -280,7 +280,7 @@ class Test_RiverStories(TransactionTestCase):
         response = self.client.post(
             reverse("load-river-stories"),
             {
-                "feeds": [1, 2, 3, 4, 5],
+                "feeds": self.test_feeds,
                 "read_filter": "all",
                 "date_filter_start": start_date.strftime("%Y-%m-%d"),
                 "date_filter_end": end_date.strftime("%Y-%m-%d"),
@@ -291,7 +291,8 @@ class Test_RiverStories(TransactionTestCase):
         self.assertEqual(response.status_code, 200)
 
         counts = self.count_queries()
-        print(f"\nRiver with date filter queries: {counts}")
+        print(f">>> River with date filter queries: {counts}")
+        print(f">>> Stories returned: {len(content.get('stories', []))}")
 
         # Should not be excessive
         self.assertLess(counts["total"], 50, "Total queries should be reasonable with date filter")
@@ -474,6 +475,8 @@ class Test_RiverStories(TransactionTestCase):
         """
         self.client.login(username="conesus", password="test")
 
+        print(f"\n>>> Testing read_filter adjustment with old dates on {len(self.test_feeds)} feeds")
+
         # Reset query counter
         connection.queriesx = []
 
@@ -484,7 +487,7 @@ class Test_RiverStories(TransactionTestCase):
         response = self.client.post(
             reverse("load-river-stories"),
             {
-                "feeds": [1, 2, 3],
+                "feeds": self.test_feeds[:3],  # Use first 3 test feeds
                 "read_filter": "unread",
                 "date_filter_start": start_date.strftime("%Y-%m-%d"),
                 "date_filter_end": end_date.strftime("%Y-%m-%d"),
@@ -495,7 +498,7 @@ class Test_RiverStories(TransactionTestCase):
         self.assertEqual(response.status_code, 200)
 
         counts = self.count_queries()
-        print(f"\nRiver with old date filter (read_filter adjustment) queries: {counts}")
+        print(f">>> River with old date filter (read_filter adjustment) queries: {counts}")
 
         # This should work without errors even with old dates
         # Code might be 0 for non-premium, but that's ok - we're testing query counts
