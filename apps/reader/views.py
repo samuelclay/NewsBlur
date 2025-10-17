@@ -1759,7 +1759,10 @@ def load_river_stories__redis(request):
 
     # Log when read_filter is "all" to understand why ZUNIONSTORE uses zF: keys
     if read_filter == "all":
-        logging.user(request, f"~FRload_river_stories read_filter=all (before adjust), page={page}, on_dashboard={on_dashboard}")
+        logging.user(
+            request,
+            f"~FRload_river_stories read_filter=all (before adjust), page={page}, on_dashboard={on_dashboard}",
+        )
     query = get_post.get("query", "").strip()
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
@@ -1773,11 +1776,6 @@ def load_river_stories__redis(request):
     user_search = None
     offset = (page - 1) * limit
     story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
-
-    if user.pk == 86178:
-        # Disable Michael_Novakhov account
-        logging.user(request, "~FCLoading ~FMMichael_Novakhov~SN's river, resource usage too high, ignoring.")
-        return HttpResponse("Resource usage too high", status=429)
 
     if infrequent:
         feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
@@ -1824,42 +1822,42 @@ def load_river_stories__redis(request):
         if original_read_filter != read_filter:
             logging.user(
                 request,
-                f"~FRload_river_stories read_filter changed: {original_read_filter} -> {read_filter} (after adjust)"
+                f"~FRload_river_stories read_filter changed: {original_read_filter} -> {read_filter} (after adjust)",
             )
 
         if read_filter == "starred":
-        mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
-            "%sstarred_date" % ("-" if order == "newest" else "")
-        )[offset : offset + limit]
-        stories = Feed.format_stories(mstories)
-    else:
-        usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
-        all_feed_ids = [f for f in feed_ids]
-        feed_ids = [sub.feed_id for sub in usersubs]
-        if infrequent:
-            feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
-        if feed_ids:
-            params = {
-                "user_id": user.pk,
-                "feed_ids": feed_ids,
-                "all_feed_ids": all_feed_ids,
-                "offset": offset,
-                "limit": limit,
-                "order": order,
-                "read_filter": read_filter,
-                "usersubs": usersubs,
-                "cutoff_date": user.profile.unread_cutoff,
-                "cache_prefix": "dashboard:" if on_dashboard else "",
-                "date_filter_start": date_filter_start_utc,
-                "date_filter_end": date_filter_end_utc,
-            }
-            story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
+            mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
+                "%sstarred_date" % ("-" if order == "newest" else "")
+            )[offset : offset + limit]
+            stories = Feed.format_stories(mstories)
         else:
-            story_hashes = []
-            unread_feed_story_hashes = []
+            usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
+            all_feed_ids = [f for f in feed_ids]
+            feed_ids = [sub.feed_id for sub in usersubs]
+            if infrequent:
+                feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
+            if feed_ids:
+                params = {
+                    "user_id": user.pk,
+                    "feed_ids": feed_ids,
+                    "all_feed_ids": all_feed_ids,
+                    "offset": offset,
+                    "limit": limit,
+                    "order": order,
+                    "read_filter": read_filter,
+                    "usersubs": usersubs,
+                    "cutoff_date": user.profile.unread_cutoff,
+                    "cache_prefix": "dashboard:" if on_dashboard else "",
+                    "date_filter_start": date_filter_start_utc,
+                    "date_filter_end": date_filter_end_utc,
+                }
+                story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
+            else:
+                story_hashes = []
+                unread_feed_story_hashes = []
 
-        mstories = MStory.objects(story_hash__in=story_hashes[:limit]).order_by(story_date_order)
-        stories = Feed.format_stories(mstories)
+            mstories = MStory.objects(story_hash__in=story_hashes[:limit]).order_by(story_date_order)
+            stories = Feed.format_stories(mstories)
 
     found_feed_ids = list(set([story["story_feed_id"] for story in stories]))
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
