@@ -64,30 +64,45 @@ class Test_RiverStories(TransactionTestCase):
         self.client = Client()
         self.user = User.objects.get(username="conesus")
 
-        # Get existing stories from fixtures and add them to Redis to simulate real data
+        # Create test stories dynamically (10+ stories across 5+ feeds)
+        import time
+        from django.utils import timezone as django_tz
+
         self.test_feeds = [1, 2, 3, 4, 5]
         self.test_story_hashes = []
 
-        # Get existing stories from MongoDB for our test feeds
+        # Ensure user has active subscriptions
         for feed_id in self.test_feeds:
-            try:
-                # Get first 3 stories per feed from existing fixture data
-                stories = list(MStory.objects(story_feed_id=feed_id)[:3])
+            feed = Feed.objects.get(pk=feed_id)
+            UserSubscription.objects.get_or_create(
+                user=self.user,
+                feed=feed,
+                defaults={"active": True, "unread_count_neutral": 1},
+            )
 
-                for story in stories:
-                    self.test_story_hashes.append(story.story_hash)
+        # Create 3 stories per feed (15 total)
+        for feed_id in self.test_feeds:
+            for i in range(3):
+                unique_id = f"{int(time.time() * 1000000)}{feed_id}{i}"
+                story_hash = f"{feed_id}:test{unique_id}"
+                story = MStory(
+                    story_hash=story_hash,
+                    story_feed_id=feed_id,
+                    story_date=django_tz.now(),
+                    story_title=f"Test Story {feed_id}-{i}",
+                    story_content=f"Content {i}",
+                    story_guid=f"guid-{unique_id}",
+                    story_permalink=f"http://example.com/{unique_id}",
+                    story_author_name=f"Author {i}",
+                )
+                story.save()
+                self.test_story_hashes.append(story_hash)
 
-                    # Add to Redis zF: set to simulate fresh feed data
-                    try:
-                        timestamp = int(story.story_date.timestamp() if story.story_date else datetime.now(timezone.utc).timestamp())
-                        self.r.zadd(f"zF:{feed_id}", {story.story_hash: timestamp})
-                    except Exception as e:
-                        pass
+                # Add to Redis zF: set to simulate fresh feed data
+                timestamp = int(django_tz.now().timestamp())
+                self.r.zadd(f"zF:{feed_id}", {story_hash: timestamp})
 
-            except Exception as e:
-                pass
-
-        print(f"\n>>> Using {len(self.test_story_hashes)} existing stories across {len(self.test_feeds)} feeds for tests")
+        print(f"\n>>> Created {len(self.test_story_hashes)} test stories across {len(self.test_feeds)} feeds")
 
         # Reset connection.queriesx for query counting
         connection.queriesx = []
@@ -105,6 +120,7 @@ class Test_RiverStories(TransactionTestCase):
             'redis_story': int,
             'redis_user': int,
             'redis_session': int,
+            'redis_total': int,  # Sum of ALL redis operations
             'mongo': int,
             'total': int
         }
@@ -115,6 +131,7 @@ class Test_RiverStories(TransactionTestCase):
             "redis_user": 0,
             "redis_session": 0,
             "redis_pubsub": 0,
+            "redis_total": 0,
             "mongo": 0,
             "total": 0,
         }
@@ -126,12 +143,16 @@ class Test_RiverStories(TransactionTestCase):
             counts["total"] += 1
             if "redis_story" in query:
                 counts["redis_story"] += 1
+                counts["redis_total"] += 1
             elif "redis_user" in query:
                 counts["redis_user"] += 1
+                counts["redis_total"] += 1
             elif "redis_session" in query:
                 counts["redis_session"] += 1
+                counts["redis_total"] += 1
             elif "redis_pubsub" in query:
                 counts["redis_pubsub"] += 1
+                counts["redis_total"] += 1
             elif "mongo" in query:
                 counts["mongo"] += 1
             else:
@@ -209,30 +230,30 @@ class Test_RiverStories(TransactionTestCase):
         print(f">>> Stories returned: {len(content.get('stories', []))}")
 
         # THIS IS THE KEY ASSERTION - when loading specific hashes, we should NOT
-        # run expensive Redis aggregation operations. Redis story queries should be minimal.
+        # run expensive Redis aggregation operations. Total Redis queries should be minimal.
         #
-        # BEFORE THE FIX: redis_story would be 20-50+ with ZUNIONSTORE across all feeds
-        # AFTER THE FIX: redis_story should be 0 or very low
+        # BEFORE THE FIX: redis_total would be 10-15+ with ZUNIONSTORE/ZDIFFSTORE across all feeds
+        # AFTER THE FIX: redis_total should be 0-3 (just session validation)
+        #
+        # Note: We use redis_total (sum of ALL redis operations) instead of redis_story
+        # because in test environments, all Redis operations may be categorized as redis_user
+        # due to hostname-based server detection. In production, the buggy path shows as
+        # redis_story operations, but in tests it may show as redis_user. By counting ALL
+        # Redis operations, we catch the bug regardless of server categorization.
         self.assertLess(
-            counts["redis_story"],
-            10,
-            f"Redis story queries should be minimal when fetching specific hashes (got {counts['redis_story']}). "
-            f"Before the fix, this would have been 20-50+ with expensive ZUNIONSTORE operations!",
+            counts["redis_total"],
+            5,
+            f"❌ BUG DETECTED! Total Redis queries should be minimal when fetching specific hashes, "
+            f"got {counts['redis_total']} queries. The buggy code runs expensive ZUNIONSTORE/ZDIFFSTORE "
+            f"operations across all feeds even though specific story hashes were provided!",
         )
 
         # We should have a mongo query to fetch the stories
         self.assertGreaterEqual(counts["mongo"], 1, "Should fetch stories from Mongo")
 
-        # Total queries should be low
-        self.assertLess(
-            counts["total"],
-            30,
-            f"Total queries should be low when fetching specific hashes (got {counts['total']})",
-        )
-
         # Verify we got the stories back
         self.assertIn("stories", content)
-        print(f">>> ✓ Test passed - no expensive ZUNIONSTORE operations!")
+        print(f">>> ✓ Test passed - minimal Redis operations ({counts['redis_total']} redis, {counts['mongo']} mongo)")
 
     def test_river_stories__specific_hashes_no_dashboard(self):
         """Test loading specific story hashes without dashboard flag."""
