@@ -4482,9 +4482,19 @@ body {
     margin: 0 0 0 auto;
 }
 
+.NB-pref-story-position-center .NB-story-content-expander {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.NB-pref-story-position-right .NB-story-content-expander {
+    margin-left: auto;
+}
+
 .NB-pref-story-position-stretch .NB-feed-story .NB-feed-story-content,
 .NB-pref-story-position-stretch .NB-feed-story .NB-feed-story-sideoptions-container,
-.NB-pref-story-position-stretch .NB-feed-story .NB-story-content-discover-wrapper {
+.NB-pref-story-position-stretch .NB-feed-story .NB-story-content-discover-wrapper,
+.NB-pref-story-position-stretch .NB-story-content-expander {
     max-width: none;
 }
 
@@ -4586,7 +4596,8 @@ body {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 110%;
+    right: 0;
+    max-width: 700px;
     cursor: pointer;
     color: #1a9fff;
     font-size: 12px;
