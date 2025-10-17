@@ -3,6 +3,8 @@
   when: "'app' in group_names or 'staging' in group_names"
 - import_playbook: playbooks/deploy_www.yml
   when: "'haproxy' in group_names"
+- import_playbook: playbooks/deploy_blog.yml
+  when: "'blogs' in group_names"
 - import_playbook: playbooks/deploy_node.yml
   when: "'node' in group_names"
 - import_playbook: playbooks/deploy_redis.yml
