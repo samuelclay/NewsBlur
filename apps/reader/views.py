@@ -1757,16 +1757,17 @@ def load_river_stories__redis(request):
     if date_filter_end in ("null", "None", "", None):
         date_filter_end = None
 
+    query = get_post.get("query", "").strip()
+    include_hidden = is_true(get_post.get("include_hidden", False))
+    include_feeds = is_true(get_post.get("include_feeds", False))
+    on_dashboard = is_true(get_post.get("dashboard", False)) or is_true(get_post.get("on_dashboard", False))
+
     # Log when read_filter is "all" to understand why ZUNIONSTORE uses zF: keys
     if read_filter == "all":
         logging.user(
             request,
             f"~FRload_river_stories read_filter=all (before adjust), page={page}, on_dashboard={on_dashboard}",
         )
-    query = get_post.get("query", "").strip()
-    include_hidden = is_true(get_post.get("include_hidden", False))
-    include_feeds = is_true(get_post.get("include_feeds", False))
-    on_dashboard = is_true(get_post.get("dashboard", False)) or is_true(get_post.get("on_dashboard", False))
     infrequent = is_true(get_post.get("infrequent", False))
     if infrequent:
         infrequent = get_post.get("infrequent")
