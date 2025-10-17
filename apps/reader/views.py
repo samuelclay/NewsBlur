@@ -2050,6 +2050,27 @@ def load_river_stories_widget(request):
     def load_url(url):
         original_url = url
         url = urllib.parse.urljoin(settings.NEWSBLUR_URL, url)
+
+        # Ensure URL is properly encoded for non-ASCII characters and spaces
+        parsed = urllib.parse.urlsplit(url)
+        if parsed.path:
+            needs_encoding = False
+            try:
+                # Check if path can be encoded as ASCII
+                parsed.path.encode("ascii")
+                # Also check for spaces which are valid ASCII but invalid in URLs
+                if " " in parsed.path:
+                    needs_encoding = True
+            except UnicodeEncodeError:
+                needs_encoding = True
+
+            if needs_encoding:
+                # Path contains characters that need encoding
+                encoded_path = urllib.parse.quote(parsed.path, safe="/:@!$&'()*+,;=")
+                url = urllib.parse.urlunsplit(
+                    (parsed.scheme, parsed.netloc, encoded_path, parsed.query, parsed.fragment)
+                )
+
         scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
         scontext.verify_mode = ssl.VerifyMode.CERT_NONE
         conn = None
