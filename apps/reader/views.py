@@ -1756,6 +1756,10 @@ def load_river_stories__redis(request):
         date_filter_start = None
     if date_filter_end in ("null", "None", "", None):
         date_filter_end = None
+
+    # Log when read_filter is "all" to understand why ZUNIONSTORE uses zF: keys
+    if read_filter == "all":
+        logging.user(request, f"~FRload_river_stories read_filter=all (before adjust), page={page}, on_dashboard={on_dashboard}")
     query = get_post.get("query", "").strip()
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
@@ -1810,9 +1814,17 @@ def load_river_stories__redis(request):
         date_filter_start, date_filter_end, user.profile.timezone
     )
 
+    original_read_filter = read_filter
     read_filter = adjust_read_filter_for_date_range(
         read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
     )
+
+    # Log if read_filter changed after adjust
+    if original_read_filter != read_filter:
+        logging.user(
+            request,
+            f"~FRload_river_stories read_filter changed: {original_read_filter} -> {read_filter} (after adjust)"
+        )
 
     if read_filter == "starred":
         mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
