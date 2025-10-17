@@ -166,6 +166,12 @@ def adjust_read_filter_for_date_range(
             should_switch_to_all = True
 
     if should_switch_to_all:
+        logging.user(
+            None,
+            f"~FRSwitching read_filter from unread to all: "
+            f"date_start={date_filter_start_utc}, date_end={date_filter_end_start_utc}, "
+            f"unread_cutoff={unread_cutoff}",
+        )
         return "all"
 
     return read_filter
