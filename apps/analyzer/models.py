@@ -354,13 +354,13 @@ class MPromptClassifier(mongo.Document):
             # Apply global prompts (feed_id=0)
             if 0 in feed_prompts:
                 for prompt in feed_prompts[0]:
-                    results = cls._apply_prompt_to_stories(prompt, feed_stories)
+                    results = classify_stories_with_ai(prompt, feed_stories)
                     cls._update_classifications(classifications, results, prompt.classifier_type)
 
             # Apply feed-specific prompts
             if feed_id in feed_prompts:
                 for prompt in feed_prompts[feed_id]:
-                    results = cls._apply_prompt_to_stories(prompt, feed_stories)
+                    results = classify_stories_with_ai(prompt, feed_stories)
                     cls._update_classifications(classifications, results, prompt.classifier_type)
 
         # Apply folder-specific prompts if we have folder_ids
@@ -377,25 +377,10 @@ class MPromptClassifier(mongo.Document):
 
                     # Apply folder prompts to eligible stories
                     for prompt in folder_prompts[folder_id]:
-                        results = cls._apply_prompt_to_stories(prompt, folder_stories)
+                        results = classify_stories_with_ai(prompt, folder_stories)
                         cls._update_classifications(classifications, results, prompt.classifier_type)
 
         return classifications
-
-    @classmethod
-    def _apply_prompt_to_stories(cls, prompt, stories):
-        """
-        Apply a single prompt to a list of stories using AI classification.
-
-        Args:
-            prompt: The MPromptClassifier instance
-            stories: List of story dictionaries
-
-        Returns:
-            Dictionary mapping story_ids to classifications (1, 0, or -1)
-        """
-        # Use the AI function to classify stories
-        return classify_stories_with_ai(prompt.prompt, stories)
 
     @classmethod
     def _update_classifications(cls, classifications, results, classifier_type):
