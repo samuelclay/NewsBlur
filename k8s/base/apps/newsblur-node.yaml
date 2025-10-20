@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: newsblur-node
+  namespace: newsblur
+  labels:
+    app: newsblur-node
+spec:
+  ports:
+    - port: 8008
+      targetPort: 8008
+      name: http
+  selector:
+    app: newsblur-node
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newsblur-node
+  namespace: newsblur
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: newsblur-node
+  template:
+    metadata:
+      labels:
+        app: newsblur-node
+    spec:
+      containers:
+      - name: newsblur-node
+        image: newsblur/newsblur_node:latest
+        ports:
+        - containerPort: 8008
+          name: http
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: newsblur-config
+              key: NODE_ENV
+        - name: MONGODB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: newsblur-config
+              key: MONGODB_PORT
+        command: ["node", "newsblur.js"]
+        volumeMounts:
+        - name: node-code
+          mountPath: /srv
+        - name: originals
+          mountPath: /srv/originals
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8008
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8008
+          initialDelaySeconds: 15
+          periodSeconds: 10
+      volumes:
+      - name: node-code
+        emptyDir: {}
+      - name: originals
+        emptyDir: {}
+      initContainers:
+      - name: init-mongo
+        image: busybox:latest
+        command: ['sh', '-c', 'until nc -z mongo 29019; do echo waiting for mongo; sleep 2; done;']
+      - name: init-postgres
+        image: busybox:latest
+        command: ['sh', '-c', 'until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done;']
+      - name: init-redis
+        image: busybox:latest
+        command: ['sh', '-c', 'until nc -z redis 6579; do echo waiting for redis; sleep 2; done;']

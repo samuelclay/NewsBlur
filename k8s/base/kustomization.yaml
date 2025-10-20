@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: newsblur
+
+resources:
+  - namespace.yaml
+  - config/configmap.yaml
+  - config/secrets.yaml
+  - databases/postgres.yaml
+  - databases/mongodb.yaml
+  - databases/redis.yaml
+  - databases/elasticsearch.yaml
+  - apps/newsblur-web.yaml
+  - apps/newsblur-node.yaml
+  - apps/celery.yaml
+  - apps/imageproxy.yaml
+  - apps/nginx.yaml
+  - ingress.yaml
+
+commonLabels:
+  app.kubernetes.io/name: newsblur
+  app.kubernetes.io/part-of: newsblur

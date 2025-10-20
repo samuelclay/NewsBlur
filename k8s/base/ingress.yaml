@@ -1,0 +1,87 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: newsblur-ingress
+  namespace: newsblur
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "10"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: localhost
+    http:
+      paths:
+      # Socket.io traffic to Node
+      - path: /v3/socket.io
+        pathType: Prefix
+        backend:
+          service:
+            name: newsblur-node
+            port:
+              number: 8008
+      # RSS feed icons to Node
+      - path: /rss_feeds/icon
+        pathType: Prefix
+        backend:
+          service:
+            name: newsblur-node
+            port:
+              number: 8008
+      # Original text fetcher to Node
+      - path: /rss_feeds/original_text_fetcher
+        pathType: Prefix
+        backend:
+          service:
+            name: newsblur-node
+            port:
+              number: 8008
+      # Original pages to Node
+      - path: /original_page
+        pathType: Prefix
+        backend:
+          service:
+            name: newsblur-node
+            port:
+              number: 8008
+      # Image proxy
+      - path: /imageproxy
+        pathType: Prefix
+        backend:
+          service:
+            name: imageproxy
+            port:
+              number: 8088
+      # Static files and media to nginx
+      - path: /media
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx
+            port:
+              number: 81
+      - path: /static
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx
+            port:
+              number: 81
+      - path: /favicon
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx
+            port:
+              number: 81
+      # Everything else to nginx (which proxies to newsblur-web)
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx
+            port:
+              number: 81

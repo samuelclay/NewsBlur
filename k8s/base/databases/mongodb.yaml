@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+  namespace: newsblur
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  namespace: newsblur
+  labels:
+    app: mongo
+spec:
+  ports:
+    - port: 29019
+      targetPort: 29019
+      name: mongo
+  selector:
+    app: mongo
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+  namespace: newsblur
+spec:
+  serviceName: mongo
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - name: mongo
+        image: mongo:4.0
+        ports:
+        - containerPort: 29019
+          name: mongo
+        command:
+        - mongod
+        - --port
+        - "29019"
+        - --wiredTigerEngineConfigString=file_manager=(close_idle_time=0)
+        volumeMounts:
+        - name: mongo-storage
+          mountPath: /data/db
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+      volumes:
+      - name: mongo-storage
+        persistentVolumeClaim:
+          claimName: mongodb-pvc

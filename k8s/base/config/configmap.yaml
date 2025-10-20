@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: newsblur-config
+  namespace: newsblur
+data:
+  # Database connection strings
+  POSTGRES_HOST: "postgres"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "newsblur"
+  POSTGRES_USER: "newsblur"
+  MONGO_HOST: "mongo:29019"
+  MONGO_DB: "newsblur"
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6579"
+  ELASTICSEARCH_HOST: "http://elasticsearch:9200"
+  
+  # Application settings
+  DOCKERBUILD: "True"
+  NEWSBLUR_URL: "https://localhost"
+  SESSION_COOKIE_DOMAIN: "localhost"
+  NODE_ENV: "docker"
+  MONGODB_PORT: "29019"

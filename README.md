@@ -51,8 +51,11 @@
 
     * Docker
     * Docker-compose
+    * Or: Kubernetes (see [k8s/README.md](k8s/README.md) for Kubernetes deployment)
 
 ## Installation Instructions
+
+### Docker Compose (Recommended for Development)
 
 1.  Clone this repo
 2.  Run `make nb` to build all of the NewsBlur containers. This will set up all necessary databases, front-end django apps, celery tasks, node apps, flask database monitor and metrics, nginx, and a haproxy load balancer.
@@ -61,6 +64,21 @@
          https://localhost
 
     Note: You will be warned that you are using a self signed certificate. In order to get around this warning you must type "thisisunsafe" as per [this blog post](https://dblazeski.medium.com/chrome-bypass-net-err-cert-invalid-for-development-daefae43eb12).
+
+### Kubernetes (Production-Ready Deployment)
+
+For running NewsBlur on Kubernetes, see the comprehensive guide in [k8s/README.md](k8s/README.md).
+
+Quick start:
+```bash
+cd k8s
+./deploy.sh development
+kubectl exec -n newsblur -it deployment/newsblur-web -- ./manage.py migrate
+kubectl exec -n newsblur -it deployment/newsblur-web -- ./manage.py loaddata config/fixtures/bootstrap.json
+kubectl port-forward -n newsblur service/nginx 8080:81
+```
+
+Then open http://localhost:8080
 
 ## Using a custom domain
 

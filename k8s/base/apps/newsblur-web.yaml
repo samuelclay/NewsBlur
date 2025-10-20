@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: newsblur-web
+  namespace: newsblur
+  labels:
+    app: newsblur-web
+spec:
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+  selector:
+    app: newsblur-web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newsblur-web
+  namespace: newsblur
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: newsblur-web
+  template:
+    metadata:
+      labels:
+        app: newsblur-web
+    spec:
+      containers:
+      - name: newsblur-web
+        image: newsblur/newsblur_python3:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: DOCKERBUILD
+          valueFrom:
+            configMapKeyRef:
+              name: newsblur-config
+              key: DOCKERBUILD
+        - name: NEWSBLUR_URL
+          valueFrom:
+            configMapKeyRef:
+              name: newsblur-config
+              key: NEWSBLUR_URL
+        - name: RUNWITHMAKEBUILD
+          value: "True"
+        stdin: true
+        tty: true
+        command: ["/bin/sh", "-c"]
+        args: ["newsblur_web/entrypoint.sh"]
+        volumeMounts:
+        - name: app-code
+          mountPath: /srv/newsblur
+          readOnly: true
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: app-code
+        emptyDir: {}
+      initContainers:
+      - name: init-db
+        image: busybox:latest
+        command: ['sh', '-c', 'until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done;']
+      - name: init-mongo
+        image: busybox:latest
+        command: ['sh', '-c', 'until nc -z mongo 29019; do echo waiting for mongo; sleep 2; done;']
+      - name: init-redis
+        image: busybox:latest
+        command: ['sh', '-c', 'until nc -z redis 6579; do echo waiting for redis; sleep 2; done;']
+      - name: init-elasticsearch
+        image: busybox:latest
+        command: ['sh', '-c', 'until nc -z elasticsearch 9200; do echo waiting for elasticsearch; sleep 2; done;']

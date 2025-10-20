@@ -1,0 +1,17 @@
+apiVersion: v2
+name: newsblur
+description: A Helm chart for deploying NewsBlur on Kubernetes
+type: application
+version: 1.0.0
+appVersion: "latest"
+keywords:
+  - newsblur
+  - rss
+  - feed-reader
+  - news
+home: https://github.com/samuelclay/NewsBlur
+sources:
+  - https://github.com/samuelclay/NewsBlur
+maintainers:
+  - name: NewsBlur Team
+    url: https://github.com/samuelclay/NewsBlur
