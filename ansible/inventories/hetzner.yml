@@ -26,6 +26,7 @@ groups:
   hpush: inventory_hostname.startswith('happ-push')
   hpush_a: inventory_hostname.startswith('happ-push') and inventory_hostname.split('-')[-1] | int % 2 == 1
   hpush_b: inventory_hostname.startswith('happ-push') and inventory_hostname.split('-')[-1] | int % 2 == 0
+  blog: inventory_hostname.startswith('hblog')
   blogs: inventory_hostname.startswith('hblog')
   forum: inventory_hostname.startswith('hforum')
 
@@ -50,7 +51,7 @@ groups:
   work: inventory_hostname.startswith('htask-work')
 
   staging: inventory_hostname.startswith('hstaging')
-  staging_a: inventory_hostname.startswith('hstaging-') and inventory_hostname.split('-')[-1] | int % 2 == 1
+  staging_a: inventory_hostname == 'hstaging' or (inventory_hostname.startswith('hstaging-') and inventory_hostname.split('-')[-1] | int % 2 == 1)
   staging_b: inventory_hostname.startswith('hstaging-') and inventory_hostname.split('-')[-1] | int % 2 == 0
 
   hdb: inventory_hostname.startswith('hdb')

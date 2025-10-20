@@ -11,9 +11,10 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         } else if (model && model.fake) {
             this.folders = model.folders;
             this.set('folder_title', this.fake_folder_title());
-        } else if (model) {
+        } else if (model && _.keys(model).length > 0) {
             var title = _.keys(model)[0];
             var children = model[title];
+
             this.set('is_folder', true);
             this.set('folder_title', title);
             this.folder_views = [];

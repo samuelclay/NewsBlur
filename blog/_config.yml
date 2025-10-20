@@ -44,11 +44,18 @@ timezone: America/New_York
 # Build settings
 theme: minima
 plugins:
-  - jekyll-feed
   - jekyll-redirect-from
   - jekyll-paginate
 paginate: 10
 paginate_path: "/page:num"
+
+# Enable paginated feeds with RFC 5005 archive links for NewsBlur backfill
+paginate_feeds: true
+
+# Disable jekyll-feed plugin since we use custom paginated feeds
+disable_disk_cache: true
+whitelist: []
+
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to

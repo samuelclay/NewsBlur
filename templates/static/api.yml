@@ -2,7 +2,7 @@
     - url: /api/login
       method: POST
       short_desc: "Login as an existing user."
-      long_desc: 
+      long_desc:
         - "Login as an existing user."
       tips:
         - >
@@ -20,12 +20,12 @@
     - url: /api/logout
       method: POST
       short_desc: "Logout the currently logged in user."
-      long_desc: 
+      long_desc:
         - "Logout the currently logged in user."
     - url: /api/signup
       method: POST
       short_desc: "Create a new user."
-      long_desc: 
+      long_desc:
         - "Create a new user."
       params:
         - key: username
@@ -40,27 +40,27 @@
           desc: "Email address"
           required: true
           example: "samuel@newsblur.com"
-        
+
 - feeds:
     - url: /rss_feeds/search_feed
       method: GET
       short_desc: "Information about a feed from its address."
-      long_desc: 
+      long_desc:
         - "Retrieve information about a feed from its website or RSS address."
       params:
         - key: address
           desc: "Searches the RSS and website address and returns a feed."
           required: true
-          example: 'techcrunch.com'
+          example: "techcrunch.com"
         - key: offset
           desc: "Try paging through feeds found by using the offset."
           optional: true
           example: 1
-          
+
     - url: /reader/feeds
       method: GET
       short_desc: "User's feeds, with unread counts, meta data, and optional favicons."
-      long_desc: 
+      long_desc:
         - "Retrieve a list of feeds to which a user is actively subscribed."
         - "Includes the 3 unread counts (positive, neutral, negative), as well as optional favicons."
       tips:
@@ -93,11 +93,11 @@
           optional: true
           default: "false"
           example: "true/false"
-        
+
     - url: /reader/favicons
       method: GET
       short_desc: "Favicons for each of a user's feeds."
-      long_desc: 
+      long_desc:
         - >
           Retrieve a list of favicons for a list of feeds. Used when combined 
           with <code>/reader/feeds</code> and <code>include_favicons=false</code>, 
@@ -112,24 +112,24 @@
           desc: " Array of feed ids. Leave empty to retrieve all active (enabled) feeds."
           optional: true
           example: "feed_ids=12&feed_ids=24"
-  
+
     - url: /reader/page/:id
       method: GET
       short_desc: "Original page from a single feed."
-      long_desc: 
+      long_desc:
         - "Retrieve the original page from a single feed."
 
     - url: /reader/refresh_feeds
       method: GET
       short_desc: "Get latest unread counts for active feeds."
-      long_desc: 
+      long_desc:
         - "Up-to-the-second unread counts for each active feed."
         - "Poll for these counts no more than once a minute."
-        
+
     - url: /reader/feeds_trainer
       method: GET
       short_desc: "Get all popular and known intelligence classifiers."
-      long_desc: 
+      long_desc:
         - "Retrieves all popular and known intelligence classifiers."
         - "Also includes user's own classifiers."
       tips:
@@ -141,21 +141,21 @@
             Only use a single feed. Omit this to get the classifiers for all feeds at once.
           optional: true
           example: "42"
-  
+
     - url: /rss_feeds/statistics/:id
       method: GET
       short_desc: "Get statistics and history for a feed."
-      long_desc: 
+      long_desc:
         - "Statistics and history for a feed."
         - >
           Includes feed update frequencies, frequency distribution of intelligence
           classifiers, average stories per month over the life of the feed, and 
           the last five feed and page fetches.
-  
+
     - url: /rss_feeds/feed_autocomplete
       method: GET
       short_desc: "Get a list of feeds that contain a phrase."
-      long_desc: 
+      long_desc:
         - "Get a list of feeds that contain a search phrase."
         - "Searches by feed address, feed url, and feed title, in that order."
         - "Will only show sites with 2+ subscribers."
@@ -165,12 +165,11 @@
           optional: true
           example: "tech"
 
-
 - stories:
     - url: /reader/feed/:id
       method: GET
       short_desc: "Stories from a single feed."
-      long_desc: 
+      long_desc:
         - "Retrieve stories from a single feed."
       params:
         - key: page
@@ -188,9 +187,17 @@
           optional: true
           default: all
           example: unread
+        - key: date_filter_start
+          desc: "Filter stories published on or after this date. Format: YYYY-MM-DD"
+          optional: true
+          example: "2025-01-15"
+        - key: date_filter_end
+          desc: "Filter stories published on or before this date. Format: YYYY-MM-DD"
+          optional: true
+          example: "2025-01-31"
         - key: include_hidden
           desc: >
-            Use this if you want to show hidden stories (provided you have a "Show Hidden 
+            Use this if you want to show hidden stories (provided you have a "Show Hidden
             Stories" button). All native NewsBlur apps (web, ios, android) use this.
           optional: true
           default: "false"
@@ -211,19 +218,19 @@
         - >
           The story score (red, neutral, green) can be computed by following 
           the function <a href="https://github.com/samuelclay/NewsBlur/blob/master/media/js/newsblur/reader/reader_utils.js"> <code>compute_story_score</code> in reader_utils.js on GitHub</a>. Alternatively, you can use the <code>score</code> parameter.
-        - > 
-            Counts are broken into three. Add them up for a total, but you shouldn't show or count the hidden stories:
-            <ul>
-            <li> <code>ps</code>: positive/focus count</li>
-            <li> <code>nt</code>: neutral/unread count</li>
-            <li> <code>ng</code>: negative/hidden count</li>
-            </ul>
         - >
-            If you aren't including hidden stories and a user has many stories that are hidden (which happens quite often as they might thumbs down the publisher but thumbs up a title or tag), then make sure to keep paging if the <code>hidden_stories_count</code> is non-zero. Don't rely on the <code>stories</code> list being empty to assume that's when to stop paging.
+          Counts are broken into three. Add them up for a total, but you shouldn't show or count the hidden stories:
+          <ul>
+          <li> <code>ps</code>: positive/focus count</li>
+          <li> <code>nt</code>: neutral/unread count</li>
+          <li> <code>ng</code>: negative/hidden count</li>
+          </ul>
+        - >
+          If you aren't including hidden stories and a user has many stories that are hidden (which happens quite often as they might thumbs down the publisher but thumbs up a title or tag), then make sure to keep paging if the <code>hidden_stories_count</code> is non-zero. Don't rely on the <code>stories</code> list being empty to assume that's when to stop paging.
     - url: /rss_feeds/original_text
       method: GET
       short_desc: "Original text from a story."
-      long_desc: 
+      long_desc:
         - "Retrieve the extracted full text for a story."
       params:
         - key: story_hash
@@ -234,7 +241,7 @@
     - url: /rss_feeds/original_story
       method: GET
       short_desc: "Proxied story from website."
-      long_desc: 
+      long_desc:
         - "Retrieve the original website for a story."
       params:
         - key: story_hash
@@ -245,7 +252,7 @@
     - url: /reader/starred_stories
       method: GET
       short_desc: "User's starred stories."
-      long_desc: 
+      long_desc:
         - "Retrieve a user's starred stories."
       params:
         - key: page
@@ -277,7 +284,7 @@
     - url: /reader/starred_story_hashes
       method: GET
       short_desc: "Story hashes of starred stories."
-      long_desc: 
+      long_desc:
         - "Retrieve the story hashes of a user's starred stories."
       params:
         - key: include_timestamps
@@ -286,11 +293,11 @@
           default: false
       tips:
         - "Use with /reader/starred_stories and pass up to 100 story_hashes as the <code>h</code> param."
-  
+
     - url: /reader/river_stories
       method: GET
       short_desc: "Stories from multiple feeds (River of News)."
-      long_desc: 
+      long_desc:
         - "Retrieve stories from a collection of feeds. This is known as the River of News."
         - "Stories are ordered in reverse chronological order."
       params:
@@ -313,9 +320,17 @@
           optional: true
           default: unread
           example: all
+        - key: date_filter_start
+          desc: "Filter stories published on or after this date. Format: YYYY-MM-DD"
+          optional: true
+          example: "2025-01-15"
+        - key: date_filter_end
+          desc: "Filter stories published on or before this date. Format: YYYY-MM-DD"
+          optional: true
+          example: "2025-01-31"
         - key: include_hidden
           desc: >
-            Use this if you want to show hidden stories (provided you have a "Show Hidden 
+            Use this if you want to show hidden stories (provided you have a "Show Hidden
             Stories" button). All native NewsBlur apps (web, ios, android) use this.
           optional: true
           default: "false"
@@ -331,21 +346,20 @@
           default: "false"
           example: 30
       tips:
-        - > 
-            Counts are broken into three. Add them up for a total, but you shouldn't show or count the hidden stories:
-            <ul>
-            <li> <code>ps</code>: positive/focus count</li>
-            <li> <code>nt</code>: neutral/unread count</li>
-            <li> <code>ng</code>: negative/hidden count</li>
-            </ul>
         - >
-            If you aren't including hidden stories and a user has many stories that are hidden (which happens quite often as they might thumbs down the publisher but thumbs up a title or tag), then make sure to keep paging if the <code>hidden_stories_count</code> is non-zero. Don't rely on the <code>stories</code> list being empty to assume that's when to stop paging.
-
+          Counts are broken into three. Add them up for a total, but you shouldn't show or count the hidden stories:
+          <ul>
+          <li> <code>ps</code>: positive/focus count</li>
+          <li> <code>nt</code>: neutral/unread count</li>
+          <li> <code>ng</code>: negative/hidden count</li>
+          </ul>
+        - >
+          If you aren't including hidden stories and a user has many stories that are hidden (which happens quite often as they might thumbs down the publisher but thumbs up a title or tag), then make sure to keep paging if the <code>hidden_stories_count</code> is non-zero. Don't rely on the <code>stories</code> list being empty to assume that's when to stop paging.
 
     - url: /reader/river_stories
       method: GET
       short_desc: "Stories by story_hash."
-      long_desc: 
+      long_desc:
         - "Retrieve up to 100 stories when specifying by story_hash."
         - "Used this in conjunction with <code>unread_story_hashes</code> to store stories for offline use."
       params:
@@ -357,7 +371,7 @@
     - url: /reader/unread_story_hashes
       method: GET
       short_desc: "The story_hashes of all unread stories."
-      long_desc: 
+      long_desc:
         - "The story_hashes of all unread stories."
         - "Useful for offline access of stories and quick unread syncing."
         - "Use include_timestamps to fetch stories in date order."
@@ -370,11 +384,11 @@
           desc: "Including timestamps for story_date"
           optional: true
           default: false
-          
+
     - url: /reader/read_stories
       method: GET
       short_desc: "Feed of previously read stories."
-      long_desc: 
+      long_desc:
         - "Feed of previously read stories."
       params:
         - key: page
@@ -387,11 +401,11 @@
           optional: true
           default: newest
           example: oldest
-          
+
     - url: /reader/mark_story_hashes_as_read
       method: POST
       short_desc: "Mark a story as read."
-      long_desc: 
+      long_desc:
         - "Mark stories as read using their unique story_hash."
         - "Multiple story hashes can be sent at once."
         - "Mix and match stories from different feeds and social subscriptions."
@@ -399,8 +413,8 @@
         - "Throttle requests to mark as read. You don't need to send one request per story."
         - "Queue up to 5 stories or once every 10 seconds before firing, whichever comes first."
         - >
-            This endpoint is newer than all of the other mark as read endpoints, so use this one.
-            The other endpoints are maintained for old clients to use.
+          This endpoint is newer than all of the other mark as read endpoints, so use this one.
+          The other endpoints are maintained for old clients to use.
       params:
         - key: story_hash
           desc: "List of story hashes to mark as read."
@@ -411,7 +425,7 @@
     - url: /reader/mark_story_as_read
       method: POST
       short_desc: "Mark a story as read (deprecated)."
-      long_desc: 
+      long_desc:
         - "<b>Deprecated! Just send the <code>story_hash</code> to <code>mark_story_hashes_as_read</code>.</b>"
         - "Mark stories as read (deprecated)."
         - "Multiple story ids can be sent at once."
@@ -429,11 +443,11 @@
           desc: "Feed id that each story is from."
           required: true
           example: "42"
-  
+
     - url: /reader/mark_feed_stories_as_read
       method: POST
       short_desc: "Mark stories from multiple feeds as read (deprecated)."
-      long_desc: 
+      long_desc:
         - "<b>Deprecated! Just send the <code>story_hash</code> to <code>mark_story_hashes_as_read</code>.</b>"
         - "Marks multiple stories as read."
         - "Multiple story ids can be sent at once."
@@ -446,11 +460,11 @@
           desc: "JSON serialized dictionary of feed_ids to an array of story_ids."
           required: true
           example: "{<br>12: ['story_id_1', 'story_id_2'],<br>24: ['story_id_3']<br>}"
-    
+
     - url: /reader/mark_social_stories_as_read
       method: POST
       short_desc: "Mark stories from a blurblog as read (deprecated)."
-      long_desc: 
+      long_desc:
         - "<b>Deprecated! Just send the <code>story_hash</code> to <code>mark_story_hashes_as_read</code>.</b>"
         - "Marks multiple stories as read."
         - "Multiple story ids can be sent at once."
@@ -467,17 +481,17 @@
     - url: /reader/mark_story_hash_as_unread
       method: POST
       short_desc: "Mark a story as unread."
-      long_desc: 
+      long_desc:
         - "Mark a single story or multiple stories as unread using its unique story_hash."
         - "Multiple story hashes can be sent at once."
         - "Premium users can mark up to 30 days as unread. Free users only have 15 days."
         - >
-            If a story is too old to mark as read, look for (and display to the user) the 
-            <code>message</code> parameter returned back to you.
+          If a story is too old to mark as read, look for (and display to the user) the 
+          <code>message</code> parameter returned back to you.
       tips:
         - >
-            This endpoint is newer than all of the other mark as read endpoints, so use this one.
-            The other endpoints are maintained for old clients to use.
+          This endpoint is newer than all of the other mark as read endpoints, so use this one.
+          The other endpoints are maintained for old clients to use.
       params:
         - key: story_hash
           desc: "A story hash to mark as unread."
@@ -488,7 +502,7 @@
     - url: /reader/mark_story_hash_as_starred
       method: POST
       short_desc: "Mark a story as starred (saved)."
-      long_desc: 
+      long_desc:
         - "Mark a story as starred (saved)."
       params:
         - key: story_hash
@@ -509,7 +523,7 @@
     - url: /reader/mark_story_hash_as_unstarred
       method: POST
       short_desc: "Mark a story as unstarred (unsaved)."
-      long_desc: 
+      long_desc:
         - "Mark a story as unstarred (unsaved)."
         - "Multiple story hashes can be sent at once."
       params:
@@ -521,7 +535,7 @@
     - url: /reader/mark_feed_as_read
       method: POST
       short_desc: "Mark a list of feeds as read."
-      long_desc: 
+      long_desc:
         - "Mark a list of feeds as read."
       params:
         - key: feed_id
@@ -538,11 +552,11 @@
           example: "older"
       tips:
         - "To mark a folder as read, send the ids of each feed inside the folder."
-    
+
     - url: /reader/mark_all_as_read
       method: POST
       short_desc: "Mark all stories from all feeds as read."
-      long_desc: 
+      long_desc:
         - "Mark all stories from all feeds as read."
       tips:
         - "Use <code>0</code> days back to mark everything as read."
@@ -557,7 +571,7 @@
     - url: /social/river_stories
       method: GET
       short_desc: "Stories from multiple users (River of News)."
-      long_desc: 
+      long_desc:
         - "Retrieve stories from a collection of social subscriptions. This is known as the River of News."
         - "Stories are ordered in reverse chronological order by default."
         - "Only unread stories are available."
@@ -579,7 +593,7 @@
     - url: /social/share_story
       method: POST
       short_desc: "Share a story with optional comments."
-      long_desc: 
+      long_desc:
         - "Share a story with optional comments. The story is shared on the user's blurblog."
       params:
         - key: feed_id
@@ -612,7 +626,7 @@
     - url: /social/unshare_story
       method: POST
       short_desc: "Remove a shared story from user's blurblog."
-      long_desc: 
+      long_desc:
         - >
           Removes a shared story from a user's blurblog. Unshares the story and
           removes the comments. Any replies will also be deleted. This may change.
@@ -633,13 +647,13 @@
     - url: /social/load_user_friends
       method: GET
       short_desc: "Lists of user profiles: followers, followings, etc."
-      long_desc: 
-        - This lists the user profiles of followers and followings of a user. 
+      long_desc:
+        - This lists the user profiles of followers and followings of a user.
         - Also returns information related to which sharing services a user is using.
     - url: /social/profile
       method: GET
       short_desc: "Public profile of a user."
-      long_desc: 
+      long_desc:
         - "Public profile of a user. Includes common followers and common followings."
       params:
         - key: user_id
@@ -649,12 +663,12 @@
     - url: /social/load_user_profile
       method: GET
       short_desc: "Private details of the current user's profile and connected services."
-      long_desc: 
+      long_desc:
         - "Private details of the current user's profile and connected services."
     - url: /social/save_user_profile
       method: POST
       short_desc: "Saves a user's profile details."
-      long_desc: 
+      long_desc:
         - "Saves a user's profile details."
       params:
         - key: location
@@ -676,7 +690,7 @@
     - url: /social/interactions
       method: GET
       short_desc: "Interactions between a user and other users."
-      long_desc: 
+      long_desc:
         - "Interactions between a user and other users."
       params:
         - key: user_id
@@ -695,9 +709,9 @@
     - url: /social/activities
       method: GET
       short_desc: "A user's activities."
-      long_desc: 
+      long_desc:
         - "A user's activities: follows, shared stories, and replies to comments."
-        - > 
+        - >
           Also includes starred stories and new site subscriptions if fetching the
           currently logged in user's activities.
       params:
@@ -717,7 +731,7 @@
     - url: /social/follow
       method: POST
       short_desc: "Follow a user and subscribe to their blurblog."
-      long_desc: 
+      long_desc:
         - "Follow a user and subscribe to their blurblog."
       params:
         - key: user_id
@@ -727,7 +741,7 @@
     - url: /social/unfollow
       method: POST
       short_desc: "Unfollow a user and unsubscribe from their blurblog."
-      long_desc: 
+      long_desc:
         - "Unfollow a user and unsubscribe from their blurblog."
       params:
         - key: user_id
@@ -737,7 +751,7 @@
     - url: /social/mute_user
       method: POST
       short_desc: "Mute a user to not see thier shares or replies."
-      long_desc: 
+      long_desc:
         - "Mute a user to not see thier shares or replies."
       params:
         - key: user_id
@@ -747,7 +761,7 @@
     - url: /social/unmute_user
       method: POST
       short_desc: "Un-mute a user"
-      long_desc: 
+      long_desc:
         - "Un-mute a user to see thier shares and replies."
       params:
         - key: user_id
@@ -757,7 +771,7 @@
     - url: /social/feed_trainer
       method: GET
       short_desc: "Get the intelligence classifiers for a blurblog."
-      long_desc: 
+      long_desc:
         - "Get the intelligence classifiers for a blurblog."
       params:
         - key: user_id
@@ -767,7 +781,7 @@
     - url: /social/public_comments
       method: GET
       short_desc: "Get all public comments on a shared story."
-      long_desc: 
+      long_desc:
         - "Get all public comments on a shared story."
         - >
           If you want comments from friends, they are already attached to the 
@@ -790,7 +804,7 @@
     - url: /social/save_comment_reply
       method: POST
       short_desc: "Saves a reply to a comment."
-      long_desc: 
+      long_desc:
         - "Saves a reply to a comment."
         - "Comments can have a number of replies, but they are all one-level deep."
         - >
@@ -827,7 +841,7 @@
     - url: /social/remove_comment_reply
       method: POST
       short_desc: "Deletes a reply."
-      long_desc: 
+      long_desc:
         - "Deletes a reply from a comment."
         - "Also deletes the interactions and activities associated with the reply."
       params:
@@ -855,7 +869,7 @@
     - url: /social/like_comment
       method: POST
       short_desc: "Favorites a comment."
-      long_desc: 
+      long_desc:
         - "Favorites a comment."
         - "Does not send an email to the recipient user, but they do see an interaction."
       params:
@@ -879,7 +893,7 @@
     - url: /social/remove_like_comment
       method: POST
       short_desc: "Un-favorites a comment."
-      long_desc: 
+      long_desc:
         - "Un-favorites a comment."
       params:
         - key: story_feed_id
@@ -902,7 +916,7 @@
     - url: /social/find_friends
       method: GET
       short_desc: "Search for a user by username, email, or blurblog title."
-      long_desc: 
+      long_desc:
         - "Search for a user by username, email, or blurblog title."
       params:
         - key: query
@@ -912,7 +926,7 @@
     - url: /social/rss/:user_id/:username
       method: GET
       short_desc: "RSS feed for a blurblog."
-      long_desc: 
+      long_desc:
         - "RSS feed for a blurblog."
       tips:
         - >
@@ -921,7 +935,7 @@
     - url: /social/stories/:user_id/:username
       method: GET
       short_desc: "Shared stories from a user's blurblog."
-      long_desc: 
+      long_desc:
         - "Shared stories from a user's blurblog."
         - "Comments, replies, and profiles from followed users are automatically included."
       params:
@@ -942,7 +956,7 @@
     - url: /social/page/:user_id/:username
       method: GET
       short_desc: "A user's shared stories blurblog in HTML."
-      long_desc: 
+      long_desc:
         - "A user's shared stories blurblog in HTML."
         - "This may also live at a custom URL, which is specified in the user's full profile."
       tips:
@@ -952,7 +966,7 @@
     - url: /social/settings/:user_id/:username
       method: GET
       short_desc: "A user's full profile."
-      long_desc: 
+      long_desc:
         - "A user's full profile."
       tips:
         - >
@@ -961,18 +975,18 @@
     - url: /social/statistics/:user_id/:username
       method: GET
       short_desc: "Get statistics and history for a blurblog."
-      long_desc: 
+      long_desc:
         - "Get statistics and history for a blurblog."
       tips:
         - >
           The <code>username</code> url parameter is optional. It's just recommended 
           if you have it.
-    
+
 - "feed management":
     - url: /reader/add_url
       method: POST
       short_desc: "Add a feed by its URL (RSS feed or website)."
-      long_desc: 
+      long_desc:
         - "Add a feed by its URL. Can be either the RSS feed or the website itself."
       params:
         - key: url
@@ -988,11 +1002,11 @@
         - >
           If you want to just show the Add Site dialog on the site, you can use this URL:
           <code>http://www.newsblur.com/?url=%u</code>
-  
+
     - url: /reader/add_folder
       method: POST
       short_desc: "Add a new folder."
-      long_desc: 
+      long_desc:
         - "Add a new folder."
       params:
         - key: folder
@@ -1004,11 +1018,11 @@
           optional: true
           default: "[Top Level]"
           example: "All Blogs"
-  
+
     - url: /reader/move_feed_to_folder
       method: POST
       short_desc: "Move a feed into a different folder."
-      long_desc: 
+      long_desc:
         - "Move a feed into a different folder."
       params:
         - key: feed_id
@@ -1031,7 +1045,7 @@
     - url: /reader/move_folder_to_folder
       method: POST
       short_desc: "Move a folder into a different folder."
-      long_desc: 
+      long_desc:
         - "Move a folder into a different folder."
       params:
         - key: folder_name
@@ -1054,7 +1068,7 @@
     - url: /reader/rename_feed
       method: POST
       short_desc: "Rename a feed title."
-      long_desc: 
+      long_desc:
         - "Rename a feed title. Only the current user will see the new title."
       params:
         - key: feed_title
@@ -1065,11 +1079,11 @@
           desc: "Feed id of the feed to be renamed."
           required: true
           example: "42"
-  
+
     - url: /reader/delete_feed
       method: POST
       short_desc: "Unsubscribe from a feed."
-      long_desc: 
+      long_desc:
         - "Unsubscribe from a feed. Removes it from the folder."
         - >
           Set the <code>in_folder</code> parameter to remove a feed from the correct
@@ -1084,11 +1098,10 @@
           optional: true
           example: "News"
 
-  
     - url: /reader/rename_folder
       method: POST
       short_desc: "Rename a folder."
-      long_desc: 
+      long_desc:
         - "Rename a folder."
       params:
         - key: folder_to_rename
@@ -1103,11 +1116,11 @@
           desc: "Name of parent folder, used to find the folder."
           required: true
           example: "Blogs"
-  
+
     - url: /reader/delete_folder
       method: POST
       short_desc: "Delete a folder and unsubscribe from all feeds inside."
-      long_desc: 
+      long_desc:
         - "Delete a folder and unsubscribe from all feeds inside."
       params:
         - key: folder_to_delete
@@ -1123,11 +1136,10 @@
           optional: true
           example: "feed_id=12&feed_id=24"
 
-  
     - url: /reader/save_feed_order
       method: POST
       short_desc: "Reorder feeds and move them around between folders."
-      long_desc: 
+      long_desc:
         - "Reorder feeds and move them around between folders."
         - "The entire folder structure needs to be serialized."
       params:
@@ -1139,7 +1151,7 @@
     - url: /reader/save_search
       method: POST
       short_desc: "Add a new saved search feed."
-      long_desc: 
+      long_desc:
         - "Add a new saved search feed, which is a shortcut to a search query on a specific feed."
       params:
         - key: feed_id
@@ -1151,11 +1163,11 @@
             Search for a keyword or phrase in the feed. Note that only premium users can search feeds.
           required: true
           example: "pizza"
-          
+
     - url: /reader/delete_search
       method: POST
       short_desc: "Removes a saved search feed."
-      long_desc: 
+      long_desc:
         - "Deletes a saved search feed."
       params:
         - key: feed_id
@@ -1167,13 +1179,12 @@
             The query originally used to save the search.
           required: true
           example: "pizza"
-          
-          
+
 - "intelligence classifiers":
     - url: /classifier/:id
       method: GET
       short_desc: "Get the intelligence classifiers for a user's site."
-      long_desc: 
+      long_desc:
         - "Get the intelligence classifiers for a user's site."
         - >
           Only includes the user's own classifiers. Use <code>/reader/feeds_trainer</code> 
@@ -1185,11 +1196,11 @@
         - >
           After loading a feed, there is no need to explicitly call this endpoint, 
           unless the feed has not yet been fetched.
-  
+
     - url: /classifier/save
       method: POST
       short_desc: "Save intelligence classifiers for a feed."
-      long_desc: 
+      long_desc:
         - "Save intelligence classifiers (tags, titles, authors, and the feed) for a feed."
       tips:
         - "The endpoint is far different from all other endpoints. It takes a variety of param keys."
@@ -1215,20 +1226,19 @@
           desc: "Functionally the same as <code>remove_like_[TYPE]</code>."
           optional: true
           example: "remove_dislike_title=<br />New York Yankees"
-          
-          
+
 - "import/export":
     - url: /import/opml_export
       method: GET
       short_desc: "Download backup of feeds as an OPML file."
-      long_desc: 
+      long_desc:
         - "Download a backup of feeds and folders as an OPML file."
         - "Contains folders and feeds in XML; useful for importing in another RSS reader."
 
     - url: /import/opml_upload
       method: POST
       short_desc: "Upload an OPML file."
-      long_desc: 
+      long_desc:
         - "Upload an OPML file."
       params:
         - key: file

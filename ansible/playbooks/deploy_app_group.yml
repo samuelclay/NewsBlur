@@ -2,19 +2,24 @@
 # Included task file for deploying one A/B group
 - name: Determine backend name for this server
   set_fact:
-    backend_name: >-
-      {% if inventory_hostname in groups.get('hcount', []) %}app_count
-      {% elif inventory_hostname in groups.get('hrefresh', []) %}app_refresh
-      {% elif inventory_hostname in groups.get('hpush', []) %}app_push
-      {% elif inventory_hostname in groups.get('hdjango', []) %}app_django
-      {% elif inventory_hostname in groups.get('staging', []) %}app_django
-      {% endif %}
+    backend_name: "{{ 'app_count' if inventory_hostname in groups.get('hcount', []) else 'app_refresh' if inventory_hostname in groups.get('hrefresh', []) else 'app_push' if inventory_hostname in groups.get('hpush', []) else 'app_django' if (inventory_hostname in groups.get('hdjango', []) or inventory_hostname in groups.get('staging', [])) else '' }}"
 
 - name: Disable servers in HAProxy (Group {{ group_name }})
   delegate_to: "{{ haproxy_host }}"
-  shell: |
-    echo "disable server {{ backend_name }}/{{ inventory_hostname }}" | \
-    docker exec -i haproxy socat stdio /var/run/haproxy.sock
+  shell: docker exec haproxy sh -c 'echo "set server {{ backend_name }}/{{ inventory_hostname }} state maint" | socat stdio /var/run/haproxy.sock'
+  register: haproxy_disable
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined
+
+- name: Show HAProxy disable result
+  debug:
+    msg: "HAProxy response for {{ inventory_hostname }}: {{ haproxy_disable.stdout }}"
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined and haproxy_disable is defined
+
+- name: Verify server is in MAINT mode
+  delegate_to: "{{ haproxy_host }}"
+  shell: docker exec haproxy sh -c 'echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock' | grep '{{ inventory_hostname }}' | awk '{print $7}'
+  register: server_state
+  failed_when: server_state.stdout != "1"
   when: backend_name is defined and disable_consul_services_ie_staging is not defined
 
 - name: Wait for connections to drain
@@ -47,14 +52,22 @@
     - never
     - static
 
+- name: Fix permissions on static files
+  file:
+    path: /srv/newsblur/static
+    mode: u=rwX,g=rX,o=rX
+    recurse: yes
+  when: jscss_updated is succeeded
+  tags:
+    - never
+    - static
+
 - name: Pull newsblur_web github
   git:
     repo: https://github.com/samuelclay/NewsBlur.git
     dest: /srv/newsblur/
-    version: master
+    version: "{{ git_branch }}"
   register: pulled
-  tags:
-    - static
 
 - name: Restart newsblur_web container
   docker_container:
@@ -93,9 +106,20 @@
 
 - name: Re-enable servers in HAProxy (Group {{ group_name }})
   delegate_to: "{{ haproxy_host }}"
-  shell: |
-    echo "enable server {{ backend_name }}/{{ inventory_hostname }}" | \
-    docker exec -i haproxy socat stdio /var/run/haproxy.sock
+  shell: docker exec haproxy sh -c 'echo "set server {{ backend_name }}/{{ inventory_hostname }} state ready" | socat stdio /var/run/haproxy.sock'
+  register: haproxy_enable
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined
+
+- name: Show HAProxy enable result
+  debug:
+    msg: "HAProxy response for {{ inventory_hostname }}: {{ haproxy_enable.stdout }}"
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined and haproxy_enable is defined
+
+- name: Verify server is enabled (not in MAINT)
+  delegate_to: "{{ haproxy_host }}"
+  shell: docker exec haproxy sh -c 'echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock' | grep '{{ inventory_hostname }}' | awk '{print $7}'
+  register: server_state_enabled
+  failed_when: server_state_enabled.stdout == "1"
   when: backend_name is defined and disable_consul_services_ie_staging is not defined
 
 - name: Start Consul

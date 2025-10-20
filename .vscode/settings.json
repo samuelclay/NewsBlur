@@ -1,6 +1,27 @@
+// VS Code workspace settings for NewsBlur
 {
+    // Reduce Pylance strictness to avoid many false positives in dynamic Django code
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.useLibraryCodeForTypes": true,
+    "python.analysis.diagnosticMode": "workspace",
+    "python.languageServer": "Pylance",
+    // Disable specific Pylance/pyright diagnostics that are noisy in this codebase
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportArgumentType": "none"
+    },
+    // Help Pylance resolve imports by adding project paths
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}",
+        "${workspaceFolder}/apps",
+        "${workspaceFolder}/api",
+        "${workspaceFolder}/archive",
+        "${workspaceFolder}/utils"
+    ],
+    // Default interpreter — adjust to your virtualenv or container Python executable
+    "python.defaultInterpreterPath": "/usr/bin/python3",
     "black-formatter.args": [
-        "--line-length 110"
+        "--line-length",
+        "110"
     ],
     "isort.args": [
         "--profile",
@@ -54,10 +75,6 @@
     },
     "ansible.python.interpreterPath": "/opt/homebrew/bin/python3",
     "editor.defaultFormatter": "ms-python.black-formatter",
-    "black-formatter.args": [
-        "--line-length=110"
-    ],
-    "python.analysis.typeCheckingMode": "basic",
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
@@ -65,4 +82,8 @@
     "cSpell.words": [
         "NEWSBLUR"
     ],
+    "idf.pythonInstallPath": "/usr/local/bin/python",
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    }
 }

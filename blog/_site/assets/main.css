@@ -232,6 +232,7 @@ table td {
   position: sticky;
   top: 0;
   background-color: #FDFCF3;
+  z-index: 100;
 }
 .site-header .wrapper {
   display: flex;
@@ -349,10 +350,12 @@ table td {
   .site-nav .page-link {
     display: block;
     padding: 5px 10px;
-    margin-left: 20px;
   }
   .site-nav .page-link:not(:last-child) {
     margin-right: 0;
+  }
+  .site-nav .page-link {
+    margin-left: 20px;
   }
 }
 
@@ -442,11 +445,24 @@ table td {
 }
 .post-list > li {
   margin-bottom: 30px;
+  position: relative;
+}
+
+.post-header-sticky {
+  position: sticky;
+  top: 62.95px;
+  background-color: #FDFCF3;
+  z-index: 10;
+  padding: 12px 0 6px 0;
+  margin: 0 0 20px 0;
+  border-bottom: 1px solid rgb(228.8188976378, 231.5748031496, 228.4251968504);
 }
 
 .post-meta {
   font-size: 14px;
   color: #7a8878;
+  margin-bottom: 4px;
+  display: block;
 }
 
 .post-link {

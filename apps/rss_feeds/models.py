@@ -730,6 +730,9 @@ class Feed(models.Model):
             self.save_popular_tags()
             self.save_feed_story_history_statistics()
 
+        if force or count_extra:
+            self.sync_redis()
+
         self.set_next_scheduled_update(delay_fetch_sec=delay_fetch_sec)
 
     def calculate_last_story_date(self):
@@ -1979,11 +1982,32 @@ class Feed(models.Model):
     #     for f, u in urls:
     #         print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
 
-    def get_stories(self, offset=0, limit=25, order="newest", force=False):
+    def get_stories(
+        self,
+        offset=0,
+        limit=25,
+        order="newest",
+        force=False,
+        date_filter_start=None,
+        date_filter_end=None,
+    ):
         if order == "newest":
-            stories_db = MStory.objects(story_feed_id=self.pk)[offset : offset + limit]
+            stories_db = MStory.objects(story_feed_id=self.pk)
         elif order == "oldest":
-            stories_db = MStory.objects(story_feed_id=self.pk).order_by("story_date")[offset : offset + limit]
+            stories_db = MStory.objects(story_feed_id=self.pk).order_by("story_date")
+
+        if date_filter_start:
+            stories_db = stories_db.filter(story_date__gte=date_filter_start)
+
+        if date_filter_end:
+            stories_db = stories_db.filter(story_date__lt=date_filter_end)
+
+        if date_filter_start or date_filter_end:
+            start_log = date_filter_start.isoformat() if date_filter_start else ""
+            end_log = date_filter_end.isoformat() if date_filter_end else ""
+            logging.debug(f" ---> ~FBDate filter: start={start_log} end_exclusive={end_log}")
+
+        stories_db = stories_db[offset : offset + limit]
         stories = self.format_stories(stories_db, self.pk)
 
         return stories
@@ -3580,19 +3604,41 @@ class MStory(mongo.Document):
             )
             return
 
-        # Don't delete redis keys because they take time to rebuild and subs can
-        # be counted incorrectly during that time.
-        # r.delete('F:%s' % story_feed_id)
-        # r.delete('zF:%s' % story_feed_id)
+        # Get all story hashes currently in Redis
+        set_key = "F:%s" % story_feed_id
+        zset_key = "zF:%s" % story_feed_id
+        redis_hashes = r.smembers(set_key)
+
+        # Get all story hashes that should be in Redis from MongoDB
+        mongo_stories = list(stories.only("story_hash", "story_date"))
+        mongo_hashes = set(story.story_hash for story in mongo_stories)
+
+        # Find differences
+        to_remove = redis_hashes - mongo_hashes
+        to_add = [story for story in mongo_stories if story.story_hash not in redis_hashes]
 
         logging.info(
-            "   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis"
-            % (feed and feed.log_title[:30] or story_feed_id, stories.count())
+            "   ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis (-%s/+%s)"
+            % (feed and feed.log_title[:30] or story_feed_id, len(mongo_hashes), len(to_remove), len(to_add))
         )
-        p = r.pipeline()
-        for story in stories:
-            story.sync_redis(r=p)
-        p.execute()
+
+        # Remove stories that don't exist in MongoDB
+        if to_remove:
+            p = r.pipeline()
+            for story_hash in to_remove:
+                p.srem(set_key, story_hash)
+                p.zrem(zset_key, story_hash)
+            p.execute()
+
+        # Add stories that are missing in Redis
+        if to_add:
+            p = r.pipeline()
+            for story in to_add:
+                p.sadd(set_key, story.story_hash)
+                p.zadd(zset_key, {story.story_hash: time.mktime(story.story_date.timetuple())})
+            p.expire(set_key, feed.days_of_story_hashes * 24 * 60 * 60)
+            p.expire(zset_key, feed.days_of_story_hashes * 24 * 60 * 60)
+            p.execute()
 
     def count_comments(self):
         from apps.social.models import MSharedStory
@@ -3833,7 +3879,17 @@ class MStarredStory(mongo.DynamicDocument):
         return super(MStarredStory, self).save(*args, **kwargs)
 
     @classmethod
-    def find_stories(cls, query, user_id, tag=None, offset=0, limit=25, order="newest"):
+    def find_stories(
+        cls,
+        query,
+        user_id,
+        tag=None,
+        offset=0,
+        limit=25,
+        order="newest",
+        date_filter_start=None,
+        date_filter_end=None,
+    ):
         stories_db = cls.objects(
             Q(user_id=user_id)
             & (
@@ -3844,6 +3900,16 @@ class MStarredStory(mongo.DynamicDocument):
         )
         if tag:
             stories_db = stories_db.filter(user_tags__contains=tag)
+
+        if date_filter_start:
+            stories_db = stories_db.filter(starred_date__gte=date_filter_start)
+        if date_filter_end:
+            stories_db = stories_db.filter(starred_date__lt=date_filter_end)
+
+        if date_filter_start or date_filter_end:
+            start_log = date_filter_start.isoformat() if date_filter_start else ""
+            end_log = date_filter_end.isoformat() if date_filter_end else ""
+            logging.debug(f" ---> ~FBDate filter: start={start_log} end_exclusive={end_log}")
 
         stories_db = stories_db.order_by("%sstarred_date" % ("-" if order == "newest" else ""))[
             offset : offset + limit
