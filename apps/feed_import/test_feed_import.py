@@ -26,17 +26,20 @@ class Test_Import(TransactionTestCase):
         # Reset Feed ID sequence to ensure predictable feed IDs starting at 1
         # This is necessary because TransactionTestCase doesn't reset sequences between tests
         from django.db import connection
+
         from apps.rss_feeds.models import Feed
 
         # Only reset sequence if the table exists (to avoid errors on first test)
         with connection.cursor() as cursor:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT EXISTS (
                     SELECT FROM information_schema.tables
                     WHERE table_schema = 'public'
                     AND table_name = 'feeds'
                 )
-            """)
+            """
+            )
             table_exists = cursor.fetchone()[0]
 
             if table_exists:
@@ -153,20 +156,26 @@ class Test_Duplicate_Feeds(TransactionTestCase):
 
         # Verify the merge worked by checking:
         # 1. The duplicate feed should be deleted
-        self.assertFalse(Feed.objects.filter(pk=user_2_feed_subscription).exists(),
-                        "Duplicate feed should be deleted after merge")
+        self.assertFalse(
+            Feed.objects.filter(pk=user_2_feed_subscription).exists(),
+            "Duplicate feed should be deleted after merge",
+        )
 
         # 2. The original feed should still exist
-        self.assertTrue(Feed.objects.filter(pk=original_feed_id).exists(),
-                       "Original feed should still exist after merge")
+        self.assertTrue(
+            Feed.objects.filter(pk=original_feed_id).exists(), "Original feed should still exist after merge"
+        )
 
         # 3. User 1's subscription should point to the original feed
         user_1_feed_id = user_1_subscriptions[0].feed_id
-        self.assertEqual(user_1_feed_id, original_feed_id,
-                        f"User 1 should be subscribed to the merged feed {original_feed_id}")
+        self.assertEqual(
+            user_1_feed_id,
+            original_feed_id,
+            f"User 1 should be subscribed to the merged feed {original_feed_id}",
+        )
 
         # 4. A DuplicateFeed record should be created
         from apps.rss_feeds.models import DuplicateFeed
+
         duplicate_record = DuplicateFeed.objects.filter(duplicate_feed_id=user_2_feed_subscription)
-        self.assertTrue(duplicate_record.exists(),
-                       "A DuplicateFeed record should track the merged feed")
+        self.assertTrue(duplicate_record.exists(), "A DuplicateFeed record should track the merged feed")

@@ -9,6 +9,7 @@ DURATION=120
 CONCURRENCY=5
 RATE=10
 TARGET=""
+STATIC=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -20,6 +21,10 @@ while [[ $# -gt 0 ]]; do
         --app)
             TARGET="app"
             URL="https://newsblur.com/_haproxychk"
+            shift
+            ;;
+        --static)
+            STATIC="_static"
             shift
             ;;
         --duration)
@@ -46,6 +51,17 @@ if [ -z "$TARGET" ]; then
     exit 1
 fi
 
+# Determine deploy target based on static flag
+if [ -n "$STATIC" ]; then
+    if [ "$TARGET" = "app" ]; then
+        DEPLOY_TARGET="static"
+    else
+        DEPLOY_TARGET="${TARGET}${STATIC}"
+    fi
+else
+    DEPLOY_TARGET="$TARGET"
+fi
+
 # Create temp files
 HEY_OUTPUT=$(mktemp)
 DEPLOY_OUTPUT=$(mktemp)
@@ -55,11 +71,22 @@ cleanup() {
 }
 trap cleanup EXIT
 
+STATS_URL="http://newsblur.com:1936/"
+if [ "$TARGET" = "staging" ]; then
+    STATS_URL="http://staging.newsblur.com:1936/"
+fi
+
 echo ""
-echo "🚀 Starting load test deployment to $TARGET..."
+echo "🚀 Starting load test deployment to $DEPLOY_TARGET..."
 echo ""
 echo "Starting load testing: $URL"
 echo "  Duration: ${DURATION}s, Concurrency: $CONCURRENCY, Rate: $RATE req/s/worker"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "📊 Watch HAProxy stats at: $STATS_URL"
+echo "    Look for servers in app_django, app_refresh, app_count, app_push backends"
+echo "    Disabled servers will show yellow/orange with 'MAINT' status"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
 # Start hey in background
@@ -70,15 +97,18 @@ HEY_PID=$!
 sleep 3
 
 # Trigger deployment
-echo "Triggering deployment: make $TARGET"
+echo "Triggering deployment: make $DEPLOY_TARGET"
 echo ""
 
 cd /Users/sclay/projects/newsblur
-make $TARGET > "$DEPLOY_OUTPUT" 2>&1
-DEPLOY_EXIT=$?
+ANSIBLE_FORCE_COLOR=1 make $DEPLOY_TARGET 2>&1 | tee "$DEPLOY_OUTPUT"
+DEPLOY_EXIT=${PIPESTATUS[0]}
 
-# Wait for hey to finish
-wait $HEY_PID
+# Stop hey gracefully so it outputs stats
+if kill -0 $HEY_PID 2>/dev/null; then
+    kill -INT $HEY_PID 2>/dev/null
+fi
+wait $HEY_PID 2>/dev/null
 
 # Display results
 echo ""

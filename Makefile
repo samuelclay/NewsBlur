@@ -3,11 +3,12 @@ SHELL := /bin/bash
 TIMEOUT_CMD := $(shell command -v gtimeout 2>/dev/null || command -v timeout 2>/dev/null || echo timeout)
 newsblur := $(shell $(TIMEOUT_CMD) 2s docker ps -qf "name=newsblur_web" 2>/dev/null || docker ps -qf "name=newsblur_web")
 
-.PHONY: node
+.PHONY: node api
 
-nb: pull bounce migrate bootstrap collectstatic
+rebuild: pull bounce migrate bootstrap collectstatic
 nb-fast: pull bounce-fast migrate bootstrap collectstatic
 nbfast: nb-fast
+nb: nbfast
 
 metrics:
 	docker compose -f docker-compose.yml -f docker-compose.metrics.yml up -d
@@ -95,6 +96,10 @@ SCOPE ?= apps
 ARGS ?= --noinput -v 1 --failfast
 test:
 	docker compose exec -T newsblur_web python3 manage.py test $(SCOPE) --noinput $(ARGS)
+
+# runs river stories tests with query profiling
+test-river:
+	docker compose exec -T newsblur_web python3 manage.py test apps.reader.test_river_stories --noinput -v 2
 
 keys:
 	mkdir -p config/certificates
@@ -209,8 +214,16 @@ staging_static:
 	ansible-playbook ansible/deploy.yml -l staging --tags static
 test_deploy_staging:
 	./utils/load_test_deploy.sh --staging
+test_deploy_staging_static:
+	./utils/load_test_deploy.sh --staging --static
 test_deploy_app:
 	./utils/load_test_deploy.sh --app
+test_deploy_app_static:
+	./utils/load_test_deploy.sh --app --static
+test_haproxy:
+	./utils/test_haproxy_toggle.sh
+test_haproxy_staging:
+	./utils/test_haproxy_toggle.sh --staging
 celery_stop:
 	ansible-playbook ansible/deploy.yml -l task --tags stop
 sentry:
@@ -261,6 +274,16 @@ perf-docker:
 clean:
 	find . -name \*.pyc -delete
 
+# API testing with authenticated curl
+# Usage: make api URL=/reader/feeds
+# Usage: make api URL=/reader/feeds ARGS="-X POST -d 'foo=bar'"
+api:
+	@if [ ! -f .dev_session ]; then \
+		echo "Generating dev session..."; \
+		docker exec -t newsblur_web ./manage.py generate_dev_session; \
+	fi
+	@SESSION_ID=$$(cat .dev_session); \
+	curl -k -H "Cookie: sessionid=$$SESSION_ID" https://localhost$(URL) $(ARGS)
 
 grafana-dashboards:
 	uv run python utils/grafana_backup.py

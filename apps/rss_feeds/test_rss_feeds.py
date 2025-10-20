@@ -23,6 +23,7 @@ class Test_Feed(TransactionTestCase):
     - google1.xml and google2.xml have different tracking parameters in URLs,
       causing story duplication instead of updates (see test_load_feeds__google)
     """
+
     fixtures = ["initial_data.json"]
 
     def setUp(self):

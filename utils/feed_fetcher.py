@@ -277,8 +277,7 @@ class FetchFeed:
                 forbidden_status, forbidden_feed = self.fetch_forbidden()
                 if forbidden_status == 304:
                     logging.debug(
-                        "   ---> [%-30s] ~FGForbidden feed not modified (304)"
-                        % (self.feed.log_title[:30])
+                        "   ---> [%-30s] ~FGForbidden feed not modified (304)" % (self.feed.log_title[:30])
                     )
                     self.feed = self.feed.save()
                     self.feed.save_feed_history(304, "Not modified")
@@ -521,8 +520,7 @@ class FetchFeed:
 
             if response.status_code == 304:
                 logging.debug(
-                    "   ***> [%-30s] ~FGScrapingBee returned 304 Not Modified"
-                    % (self.feed.log_title[:30],)
+                    "   ***> [%-30s] ~FGScrapingBee returned 304 Not Modified" % (self.feed.log_title[:30],)
                 )
                 return response.status_code, None
 
@@ -536,7 +534,8 @@ class FetchFeed:
             body = smart_str(response.content)
             if not body:
                 logging.debug(
-                    "   ***> [%-30s] ~FRScrapingBee fetch failed: empty response" % (self.feed.log_title[:30],)
+                    "   ***> [%-30s] ~FRScrapingBee fetch failed: empty response"
+                    % (self.feed.log_title[:30],)
                 )
                 return response.status_code, None
 
@@ -1436,7 +1435,7 @@ class FeedFetcherWorker:
         first_seen_feed = None
         original_starting_page = self.options["archive_page"]
 
-        for archive_page_key in ["page", "paged", "rfc5005"]:
+        for archive_page_key in ["rfc5005", "page", "paged"]:
             seen_story_hashes = set()
             failed_pages = 0
             self.options["archive_page_key"] = archive_page_key
@@ -1444,6 +1443,22 @@ class FeedFetcherWorker:
             if archive_page_key == "rfc5005":
                 self.options["archive_page"] = "rfc5005"
                 link_prev_archive = None
+
+                # If first_seen_feed not set, fetch the initial feed to get RFC 5005 links
+                if not first_seen_feed:
+                    ffeed = FetchFeed(feed_id, self.options)
+                    try:
+                        ret_feed, fetched_feed = ffeed.fetch()
+                        if fetched_feed and ret_feed == FEED_OK:
+                            pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=ffeed.raw_feed)
+                            if pfeed.fpf and pfeed.fpf.entries:
+                                first_seen_feed = pfeed.fpf
+                    except TimeoutError:
+                        logging.debug(
+                            "   ---> [%-30s] ~FRInitial feed fetch timed out..." % (feed.log_title[:30])
+                        )
+                        continue
+
                 if first_seen_feed:
                     for link in getattr(first_seen_feed.feed, "links", []):
                         if link["rel"] == "prev-archive" or link["rel"] == "next":
@@ -1475,9 +1490,12 @@ class FeedFetcherWorker:
                         pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=raw_feed)
                         if not pfeed.fpf or not pfeed.fpf.entries:
                             continue
+                        # Look for RFC 5005 links - only follow "next" to go forward through archive
+                        link_prev_archive = None
                         for link in getattr(pfeed.fpf.feed, "links", []):
-                            if link["rel"] == "prev-archive" or link["rel"] == "next":
+                            if link["rel"] == "next":
                                 link_prev_archive = link["href"]
+                                break
 
                 if not link_prev_archive:
                     continue
@@ -1512,30 +1530,36 @@ class FeedFetcherWorker:
                                 "   ---> [%-30s] ~FRFeed parse failed, no entries" % (feed.log_title[:30])
                             )
                             continue
-                        for link in getattr(pfeed.fpf.feed, "links", []):
-                            if link["rel"] == "prev-archive" or link["rel"] == "next":
-                                link_prev_archive = link["href"]
-                                logging.debug(
-                                    "   ---> [%-30s] ~FGFeed still has ~SBRFC5005~SN links, continuing filling out archive: %s"
-                                    % (feed.log_title[:30], link_prev_archive)
-                                )
-                                break
-                        else:
-                            logging.debug(
-                                "   ---> [%-30s] ~FBFeed has no more RFC5005 links..." % (feed.log_title[:30])
-                            )
-                            break
 
+                        # Process the feed BEFORE checking for more links
                         before_story_hashes = len(seen_story_hashes)
                         pfeed.process()
                         seen_story_hashes.update(pfeed.archive_seen_story_hashes)
                         after_story_hashes = len(seen_story_hashes)
 
+                        # Look for RFC 5005 links - only follow "next" to go forward through archive
+                        link_prev_archive = None
+                        for link in getattr(pfeed.fpf.feed, "links", []):
+                            if link["rel"] == "next":
+                                link_prev_archive = link["href"]
+                                break
+
                         if before_story_hashes == after_story_hashes:
                             logging.debug(
                                 "   ---> [%-30s] ~FRNo change in story hashes, but has archive link: %s"
+                                % (feed.log_title[:30], link_prev_archive if link_prev_archive else "None")
+                            )
+
+                        if link_prev_archive:
+                            logging.debug(
+                                "   ---> [%-30s] ~FGFeed still has ~SBRFC5005~SN links, continuing filling out archive: %s"
                                 % (feed.log_title[:30], link_prev_archive)
                             )
+                        else:
+                            logging.debug(
+                                "   ---> [%-30s] ~FBFeed has no more RFC5005 links..." % (feed.log_title[:30])
+                            )
+                            break
 
                 failed_color = "~FR" if not link_prev_archive else ""
                 logging.debug(

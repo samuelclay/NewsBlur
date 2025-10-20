@@ -16,9 +16,17 @@ def _normalize_improvmx_to_mailgun(improvmx_data):
     """
     params = {}
 
-    # Extract recipient from 'to' array
-    if improvmx_data.get("to") and len(improvmx_data["to"]) > 0:
-        params["recipient"] = improvmx_data["to"][0].get("email", "")
+    # Full logging of raw data
+    # logging.debug(" ---> Email newsletter raw ImprovMX data: %s" % json.dumps(improvmx_data))
+
+    # Extract recipient from envelope (the actual NewsBlur newsletter address)
+    envelope = improvmx_data.get("envelope", {})
+    headers = improvmx_data.get("headers", {})
+    if envelope.get("recipient"):
+        params["recipient"] = envelope["recipient"]
+    elif headers.get("Delivered-To"):
+        delivered_to = headers["Delivered-To"]
+        params["recipient"] = delivered_to.get("email") if isinstance(delivered_to, dict) else delivered_to
 
     # Convert 'from' object to "Name <email>" format
     from_data = improvmx_data.get("from", {})

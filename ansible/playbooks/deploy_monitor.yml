@@ -18,7 +18,7 @@
       git:
         repo: https://github.com/samuelclay/NewsBlur.git
         dest: /srv/newsblur/
-        version: master
+        version: main
       register: pulled
     
     - name: Reload monitor

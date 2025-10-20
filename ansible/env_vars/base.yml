@@ -2,6 +2,8 @@
 github_directory: github.com/samuelclay/newsblur
 git_web_repo: ssh://git@{{ github_directory }}
 git_secrets_repo: ssh://git@github.com/samuelclay/newsblur-secrets
+git_branch: main
+# git_branch: rollback-date-filter
 
 create_user: nb
 local_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
