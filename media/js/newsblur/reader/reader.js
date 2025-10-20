@@ -5522,7 +5522,10 @@
                     tipsy.disable();
                     tipsy.hide();
                 });
-                this.retry();
+                // Retry loading discover stories if the discover view is open
+                if (this.current_discover_stories_view && this.current_discover_stories_view.is_open) {
+                    this.current_discover_stories_view.retry_load_stories();
+                }
             } else if (_.string.startsWith(message, 'feeds:')) {
                 var feed_ids = message.replace('feeds:', '').split(',');
                 _.each(feed_ids, function (feed_id) {
