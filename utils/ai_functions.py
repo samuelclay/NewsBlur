@@ -1,6 +1,6 @@
+import json
 import logging
 import re
-import json
 from html import unescape
 
 import openai
@@ -19,34 +19,36 @@ def setup_openai_model(openai_model):
     return encoding
 
 
-def classify_stories_with_ai(prompt, stories, model="gpt-3.5-turbo"):
+def classify_stories_with_ai(prompt_classifier, stories, model="gpt-3.5-turbo"):
     """
     Classify a list of stories using OpenAI's function calling.
-    
+
     Args:
-        prompt: User-defined prompt for classification criteria
+        prompt_classifier: User-defined prompt (MPromptClassifier) for classification criteria
         stories: List of dictionaries containing story data with at least title and content
         model: OpenAI model to use
-        
+
     Returns:
         Dictionary mapping story_ids to classifications: 1 (focus), 0 (neutral), -1 (hidden)
     """
     if not settings.OPENAI_API_KEY:
         logging.error("OpenAI API key not configured")
         return {story["story_id"]: 0 for story in stories}
-    
+
     # Initialize OpenAI client
     client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-    
+
     # Prepare stories for classification
     story_items = []
     for story in stories:
-        story_items.append({
-            "id": story["story_id"],
-            "title": story["story_title"],
-            "excerpt": story.get("story_content", "")[:500]  # Limit content size
-        })
-    
+        story_items.append(
+            {
+                "id": story["story_id"],
+                "title": story["story_title"],
+                "excerpt": story.get("story_content", "")[:500],  # Limit content size
+            }
+        )
+
     # Define the function for classification
     function_definition = {
         "name": "classify_stories",
@@ -63,18 +65,21 @@ def classify_stories_with_ai(prompt, stories, model="gpt-3.5-turbo"):
                             "classification": {
                                 "type": "integer",
                                 "enum": [1, 0, -1],
-                                "description": "1 for focus (promote), 0 for neutral, -1 for hidden (demote)"
+                                "description": "1 for focus (promote), 0 for neutral, -1 for hidden (demote)",
                             },
-                            "explanation": {"type": "string", "description": "Brief explanation of classification"}
+                            "explanation": {
+                                "type": "string",
+                                "description": "Brief explanation of classification",
+                            },
                         },
-                        "required": ["id", "classification"]
-                    }
+                        "required": ["id", "classification"],
+                    },
                 }
             },
-            "required": ["classifications"]
-        }
+            "required": ["classifications"],
+        },
     }
-    
+
     # Create system message based on prompt type
     system_message = f"""
     You are a story classifier for a news reader application. Your task is to classify stories 
@@ -84,24 +89,24 @@ def classify_stories_with_ai(prompt, stories, model="gpt-3.5-turbo"):
     - Neutral (0): Stories that don't particularly match or contradict the user's criteria
     - Hidden (-1): Stories that the user wants to hide based on their prompt
     
-    The user's classification criteria is: {prompt}
+    The user's classification criteria is: {prompt_classifier.prompt}
     
     Classify each story independently. Most stories should remain neutral (0) by default.
     Only classify stories as Focus (1) or Hidden (-1) if they clearly match the user's criteria.
     """
-    
+
     try:
         # Call the OpenAI API
         response = client.chat.completions.create(
             model=model,
             messages=[
                 {"role": "system", "content": system_message},
-                {"role": "user", "content": f"Please classify these stories: {json.dumps(story_items)}"}
+                {"role": "user", "content": f"Please classify these stories: {json.dumps(story_items)}"},
             ],
             functions=[function_definition],
-            function_call={"name": "classify_stories"}
+            function_call={"name": "classify_stories"},
         )
-        
+
         # Parse the response
         function_call = response.choices[0].message.function_call
         if function_call and function_call.name == "classify_stories":
@@ -116,7 +121,7 @@ def classify_stories_with_ai(prompt, stories, model="gpt-3.5-turbo"):
         else:
             logging.error("AI did not return a valid function call")
             return {story["story_id"]: 0 for story in stories}
-    
+
     except Exception as e:
         logging.error(f"Error during AI classification: {e}")
         return {story["story_id"]: 0 for story in stories}
