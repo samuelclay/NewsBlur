@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2025-10-20T17:00:00-04:00</updated>
+  <updated>2025-10-20T17:03:00-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -23,11 +23,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Filter stories by date range</title>
-    <link href="https://blog.newsblur.com/2025/10/17/filter-stories-by-date/" rel="alternate" type="text/html" title="Filter stories by date range" />
-    <published>2025-10-17T00:00:00-04:00</published>
-    <updated>2025-10-17T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2025/10/17/filter-stories-by-date</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2025/10/17/filter-stories-by-date/">
+    <link href="https://blog.newsblur.com/2025/10/15/filter-stories-by-date/" rel="alternate" type="text/html" title="Filter stories by date range" />
+    <published>2025-10-15T00:00:00-04:00</published>
+    <updated>2025-10-15T00:00:00-04:00</updated>
+    <id>https://blog.newsblur.com/2025/10/15/filter-stories-by-date</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2025/10/15/filter-stories-by-date/">
       <![CDATA[<p>A few days ago was my five year wedding anniversary. I wanted to see the news from exactly five years ago, which I had clearly missed because I was not checking my phone that day. That’s where the new date filter feature comes in handy.</p>
 
 <p>You can now filter stories by date range, filtering stories down to only those newer or older than some date or between some timespan. This works on individual feeds and as well as on folders, saved stories, and read stories.</p>
