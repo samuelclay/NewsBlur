@@ -60,4 +60,4 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 echo ""
 
 # Follow logs
-docker compose -f ".conductor/docker-compose.${WORKSPACE_NAME}.yml" logs -f newsblur_web newsblur_node
+docker compose -p "${WORKSPACE_NAME}" -f ".conductor/docker-compose.${WORKSPACE_NAME}.yml" logs -f newsblur_web newsblur_node
