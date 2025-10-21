@@ -277,7 +277,7 @@ if [ "$NEEDS_SETUP" = true ]; then
     export COMPOSE_PROJECT_NAME="${WORKSPACE_NAME}"
 
     # Start workspace containers using the standalone compose file
-    docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d
+    docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d --remove-orphans
 
     # Wait for workspace web container
     echo -e "${YELLOW}Waiting for workspace web container...${NC}"
@@ -379,7 +379,7 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 echo ""
 
 # Start the containers
-docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d
+docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d --remove-orphans
 
 echo ""
 echo -e "${GREEN}✓ Workspace is running!${NC}"
