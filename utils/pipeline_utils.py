@@ -5,6 +5,31 @@ from pipeline.finders import AppDirectoriesFinder as PipelineAppDirectoriesFinde
 from pipeline.finders import FileSystemFinder as PipelineFileSystemFinder
 from pipeline.storage import GZIPMixin, PipelineManifestStorage
 
+# Debug glob expansion (commented out - uncomment to debug asset glob patterns)
+# from pipeline.packager import Package
+# from pipeline.glob import glob as pipeline_glob_func
+# from django.contrib.staticfiles.finders import find
+#
+# logger = logging.getLogger(__name__)
+#
+# _original_sources_fget = Package.sources.fget
+#
+# def debug_sources(self):
+#     """Wrapper around Package.sources that adds debugging."""
+#     if not self._sources:
+#         paths = []
+#         for pattern in self.config.get('source_filenames', []):
+#             print(f"[GLOB DEBUG] Processing pattern: {pattern}")
+#             matches = list(pipeline_glob_func(pattern))
+#             print(f"[GLOB DEBUG] Pattern '{pattern}' matched: {matches}")
+#             for path in matches:
+#                 if path not in paths and find(path):
+#                     paths.append(str(path))
+#         self._sources = paths
+#     return self._sources
+#
+# Package.sources = property(debug_sources)
+
 
 class PipelineStorage(PipelineManifestStorage):
     def url(self, *args, **kwargs):
