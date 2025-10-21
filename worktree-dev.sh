@@ -71,6 +71,10 @@ rendered = template.render(
     haproxy_stats_port=${HAPROXY_STATS_PORT}
 )
 
+# Ensure file ends with newline
+if not rendered.endswith('\n'):
+    rendered += '\n'
+
 with open(output_path, 'w') as f:
     f.write(rendered)
 
@@ -165,7 +169,7 @@ if [ "$NEEDS_SETUP" = true ]; then
         ".worktree/haproxy/haproxy.${WORKSPACE_NAME}.cfg"
 
     # Create SSL certificates if needed
-    if [ ! -d "config/certificates" ] || [ ! -f "config/certificates/localhost.pem" ]; then
+    if [ ! -f "config/certificates/localhost.pem" ]; then
         # Check if we can copy from parent repo (handle both regular repo and worktree)
         PARENT_CERTS=""
         if [ -d "../../../config/certificates" ] && [ -f "../../../config/certificates/localhost.pem" ]; then
@@ -180,17 +184,15 @@ if [ "$NEEDS_SETUP" = true ]; then
             cp "$PARENT_CERTS"/* config/certificates/
             echo -e "${GREEN}✓ SSL certificates copied${NC}"
         else
-            echo -e "${YELLOW}Creating SSL certificates...${NC}"
-            mkdir -p config/certificates
-            cd config/certificates
-            openssl dhparam -out dhparam-2048.pem 2048 2>&1 | grep -v "^\."
-            openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout RootCA.key -out RootCA.pem -subj "/C=US/CN=Example-Root-CA" 2>&1 | grep -v "^\."
-            openssl x509 -outform pem -in RootCA.pem -out RootCA.crt 2>&1 | grep -v "^\."
-            openssl req -new -nodes -newkey rsa:2048 -keyout localhost.key -out localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost" 2>&1 | grep -v "^\."
-            openssl x509 -req -sha256 -days 1024 -in localhost.csr -CA RootCA.pem -CAkey RootCA.key -CAcreateserial -out localhost.crt 2>&1 | grep -v "^\."
-            cat localhost.crt localhost.key > localhost.pem
-            cd ../..
-            echo -e "${GREEN}✓ SSL certificates created${NC}"
+            echo -e "${YELLOW}Creating SSL certificates (this may take a moment)...${NC}"
+            # Use make keys but suppress the sudo error at the end
+            make keys 2>&1 | grep -v "sudo:" || true
+            if [ -f "config/certificates/localhost.pem" ]; then
+                echo -e "${GREEN}✓ SSL certificates created${NC}"
+            else
+                echo -e "${RED}ERROR: Failed to create SSL certificates${NC}"
+                exit 1
+            fi
         fi
     else
         echo -e "${GREEN}✓ SSL certificates already exist${NC}"
