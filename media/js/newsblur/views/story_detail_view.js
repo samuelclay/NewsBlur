@@ -16,8 +16,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-title": "click_link_in_story",
         "mouseenter .NB-feed-story-manage-icon": "mouseenter_manage_icon",
         "mouseleave .NB-feed-story-manage-icon": "mouseleave_manage_icon",
-        "mouseenter .NB-sideoption-thirdparty": "mouseenter_thirdparty",
-        "mouseleave .NB-sideoption-thirdparty": "mouseleave_thirdparty",
+        "mouseenter .NB-feed-story-email": "mouseenter_sideoption_email",
+        "mouseleave .NB-feed-story-email": "mouseleave_sideoption_email",
+        "mouseenter .NB-feed-story-train": "mouseenter_sideoption_train",
+        "mouseleave .NB-feed-story-train": "mouseleave_sideoption_train",
         "contextmenu .NB-feed-story-header": "show_manage_menu_rightclick",
         "mouseup .NB-story-content-wrapper": "mouseup_check_selection",
         "click .NB-feed-story-manage-icon": "show_manage_menu",
@@ -25,7 +27,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-header-title": "open_feed",
         "click .NB-feed-story-tag": "save_classifier",
         "click .NB-feed-story-author": "save_classifier",
-        "click .NB-feed-story-prompt": "open_story_trainer",
+        "click .NB-feed-story-train": "open_story_trainer",
         "click .NB-feed-story-email": "maybe_open_email",
         "click .NB-feed-story-save": "toggle_starred",
         "click .NB-story-comments-label": "scroll_to_comments",
@@ -333,9 +335,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     </div>\
                 <% } %>\
                 <% if (show_sideoption_train) { %>\
-                    <div class="NB-sideoption NB-feed-story-prompt" role="button">\
-                        <div class="NB-sideoption-title">Filter</div>\
-                        <div class="NB-sideoption-icon">&nbsp;</div>\
+                    <div class="NB-sideoption NB-feed-story-train" role="button">\
+                        <div class="NB-sideoption-title">Train</div>\
+                        <div class="NB-sideoption-icon NB-sideoption-icon-train">&nbsp;</div>\
+                        <div class="NB-flex-break"></div>\
+                        <div class="NB-sideoption-writerules">\
+                            <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-writerules" data-action="write-rules" role="button">\
+                            </div>\
+                        </div>\
                     </div>\
                 <% } %>\
                 <% if (show_sideoption_save) { %>\
@@ -791,24 +798,58 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     },
 
-    mouseenter_thirdparty: function (event) {
-        var serviceName = $(event.currentTarget).data("service-label");
-        $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-title").text(serviceName);
-        $(event.currentTarget).addClass("NB-hover");
-        $(event.currentTarget).siblings(".NB-sideoption-icon").addClass("NB-dimmed");
-        if ($(event.currentTarget).closest(".NB-sideoption-thirdparty-services").length) {
-            $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-icon-email").addClass("NB-dimmed");
-        } else {
-            $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
-        }
+    mouseenter_sideoption_email: function (event) {
+        var $sideoption = $(event.currentTarget);
+        $sideoption.on('mousemove.email', _.bind(function(e) {
+            var $target = $(e.target);
+            var $thirdparty = $target.closest('.NB-sideoption-thirdparty');
+
+            if ($thirdparty.length) {
+                var serviceName = $thirdparty.data("service-label");
+                $sideoption.find(".NB-sideoption-title").text(serviceName);
+                $sideoption.find('.NB-sideoption-thirdparty').removeClass("NB-hover");
+                $thirdparty.addClass("NB-hover");
+                $sideoption.find(".NB-sideoption-icon-email").addClass("NB-dimmed");
+            } else {
+                $sideoption.find(".NB-sideoption-title").text("Email");
+                $sideoption.find('.NB-sideoption-thirdparty').removeClass("NB-hover");
+                $sideoption.find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
+            }
+        }, this));
     },
 
-    mouseleave_thirdparty: function (event) {
-        $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-title").text("Email");
+    mouseleave_sideoption_email: function (event) {
+        var $sideoption = $(event.currentTarget);
+        $sideoption.off('mousemove.email');
+        $sideoption.find(".NB-sideoption-title").text("Email");
+        $sideoption.find('.NB-sideoption-thirdparty').removeClass("NB-hover");
+        $sideoption.find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
+    },
 
-        $(event.currentTarget).siblings(".NB-sideoption-icon").removeClass("NB-dimmed");
-        $(event.currentTarget).removeClass("NB-hover");
-        $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
+    mouseenter_sideoption_train: function (event) {
+        var $sideoption = $(event.currentTarget);
+        $sideoption.on('mousemove.train', _.bind(function(e) {
+            var $target = $(e.target);
+            var $thirdparty = $target.closest('.NB-sideoption-thirdparty-writerules');
+
+            if ($thirdparty.length) {
+                $sideoption.find(".NB-sideoption-title").text("Write Rules");
+                $thirdparty.addClass("NB-hover");
+                $sideoption.find(".NB-sideoption-icon-train").addClass("NB-dimmed");
+            } else {
+                $sideoption.find(".NB-sideoption-title").text("Train");
+                $sideoption.find('.NB-sideoption-thirdparty-writerules').removeClass("NB-hover");
+                $sideoption.find(".NB-sideoption-icon-train").removeClass("NB-dimmed");
+            }
+        }, this));
+    },
+
+    mouseleave_sideoption_train: function (event) {
+        var $sideoption = $(event.currentTarget);
+        $sideoption.off('mousemove.train');
+        $sideoption.find(".NB-sideoption-title").text("Train");
+        $sideoption.find('.NB-sideoption-thirdparty-writerules').removeClass("NB-hover");
+        $sideoption.find(".NB-sideoption-icon-train").removeClass("NB-dimmed");
     },
 
     mouseup_check_selection: function (e) {
