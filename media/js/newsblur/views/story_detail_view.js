@@ -25,7 +25,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-header-title": "open_feed",
         "click .NB-feed-story-tag": "save_classifier",
         "click .NB-feed-story-author": "save_classifier",
-        "click .NB-feed-story-train": "open_story_trainer",
+        "click .NB-feed-story-prompt": "open_story_trainer",
         "click .NB-feed-story-email": "maybe_open_email",
         "click .NB-feed-story-save": "toggle_starred",
         "click .NB-story-comments-label": "scroll_to_comments",
