@@ -38,6 +38,14 @@ nbup:
 worktree:
 	./worktree-dev.sh
 
+worktree-log:
+	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
+	if [ -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" ]; then \
+		docker compose -p "$${WORKSPACE_NAME}" -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" logs -f --tail 20 newsblur_web newsblur_node; \
+	else \
+		echo "No worktree configuration found. Run 'make worktree' first."; \
+	fi
+
 worktree-close:
 	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
 	echo "Stopping workspace: $$WORKSPACE_NAME"; \

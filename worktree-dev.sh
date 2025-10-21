@@ -382,10 +382,7 @@ echo ""
 docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d
 
 echo ""
-echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}📋 Container Logs:${NC}"
-echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN}✓ Workspace is running!${NC}"
 echo ""
-
-# Follow logs
-docker compose -p "${WORKSPACE_NAME}" -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" logs -f newsblur_web newsblur_node
+echo -e "${YELLOW}View logs:${NC} make worktree-log"
+echo ""
