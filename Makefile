@@ -46,7 +46,7 @@ worktree-log:
 		echo "No worktree configuration found. Run 'make worktree' first."; \
 	fi
 
-worktree-close:
+worktree-stop:
 	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
 	echo "Stopping workspace: $$WORKSPACE_NAME"; \
 	if [ -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" ]; then \
@@ -54,8 +54,10 @@ worktree-close:
 		echo "✓ Stopped containers for workspace: $$WORKSPACE_NAME"; \
 	else \
 		echo "No worktree configuration found"; \
-	fi; \
-	if [ -f ".git" ]; then \
+	fi
+
+worktree-close: worktree-stop
+	@if [ -f ".git" ]; then \
 		echo "Detected git worktree"; \
 		if [ -z "$$(git status --porcelain)" ]; then \
 			WORKTREE_PATH=$$(pwd); \
