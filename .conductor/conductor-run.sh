@@ -3,6 +3,12 @@
 # Get workspace name
 WORKSPACE_NAME=$(basename "$(pwd)")
 
+# Check if setup has been run
+if [ ! -f ".conductor/docker-compose.${WORKSPACE_NAME}.yml" ]; then
+    echo "Docker compose file not found. Running setup first..."
+    ./.conductor/conductor-setup.sh
+fi
+
 # Calculate ports (same logic as setup script)
 HASH=$(echo -n "$WORKSPACE_NAME" | md5 | head -c 4)
 PORT_OFFSET=$((0x$HASH % 900 + 100))
@@ -38,6 +44,15 @@ echo "   • Node (direct):   http://localhost:${NODE_PORT}"
 echo "   • Nginx (direct):  http://localhost:${NGINX_PORT}"
 echo ""
 echo -e "${YELLOW}💡 Tip: Type 'thisisunsafe' in Chrome to bypass SSL certificate warning${NC}"
+echo ""
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}🚀 Starting containers...${NC}"
+echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+# Start the containers
+docker compose -f ".conductor/docker-compose.${WORKSPACE_NAME}.yml" up -d
+
 echo ""
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}📋 Container Logs:${NC}"
