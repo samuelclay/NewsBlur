@@ -1,4 +1,3 @@
-import logging
 import re
 
 from django.conf import settings
@@ -92,18 +91,11 @@ class AppDirectoriesFinder(PipelineAppDirectoriesFinder):
         """
         Override to properly handle wildcard patterns like 'underscore-*.js'
         """
-        import logging
-        logger = logging.getLogger(__name__)
-
         path = path or ""
-        logger.debug(f"[AppDirectoriesFinder] find_files called with path: {path}")
         for pattern in self.find_pattern_matches(path):
-            logger.debug(f"[AppDirectoriesFinder] Pattern match: {pattern}")
             for path in storage.listdir(pattern[0])[1]:
                 if self.is_ignored(path, pattern[0]):
-                    logger.debug(f"[AppDirectoriesFinder] Ignored: {path}")
                     continue
-                logger.debug(f"[AppDirectoriesFinder] Yielding: {path}")
                 yield path, storage
 
 
@@ -164,16 +156,9 @@ class FileSystemFinder(PipelineFileSystemFinder):
         """
         Override to properly handle wildcard patterns like 'underscore-*.js'
         """
-        import logging
-        logger = logging.getLogger(__name__)
-
         path = path or ""
-        logger.debug(f"[FileSystemFinder] find_files called with path: {path}")
         for pattern in self.find_pattern_matches(path):
-            logger.debug(f"[FileSystemFinder] Pattern match: {pattern}")
             for path in storage.listdir(pattern[0])[1]:
                 if self.is_ignored(path, pattern[0]):
-                    logger.debug(f"[FileSystemFinder] Ignored: {path}")
                     continue
-                logger.debug(f"[FileSystemFinder] Yielding: {path}")
                 yield path, storage
