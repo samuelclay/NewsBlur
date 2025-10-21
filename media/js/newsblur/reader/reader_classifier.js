@@ -508,6 +508,20 @@ var classifier_prototype = {
                         )
                     ])),
 
+                    (this.feed_authors && this.feed_authors.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
+                        $.make('h5', 'Feed Authors'),
+                        $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
+                            this.make_authors(this.feed_authors)
+                        )
+                    ])),
+
+                    (this.feed_tags && this.feed_tags.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
+                        $.make('h5', 'Feed Categories &amp; Tags'),
+                        $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
+                            this.make_tags(this.feed_tags)
+                        )
+                    ])),
+
                     (this.feed_publishers && this.feed_publishers.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-publishers' }, [
                         $.make('h5', 'Sharing Stories From These Sites'),
                         $.make('div', { className: 'NB-classifier-publishers NB-fieldset-fields NB-classifiers' },

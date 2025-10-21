@@ -6396,14 +6396,14 @@
                     self.flags['showing_confirm_input_on_manage_menu'] = false;
                 });
             });
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-train' }, function ($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-prompt' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
                     self.open_feed_intelligence_modal(1, feed_id, false);
                 }
             });
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-train' }, function ($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-prompt' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
