@@ -1,14 +1,11 @@
 # NewsBlur Development Guidelines
 
-## Conductor Workspace
-**IMPORTANT: Always start the workspace before browser testing**
-- Run `./.conductor/conductor-run.sh` in background first to start all services
-- Read the output to get the workspace URL (look for the https://localhost:XXXX url)
-- Wait for services to be ready before accessing the URL from the output
-- All services are managed via `conductor-run.sh`, not `make nb`
-- Do NOT run `make nb` - Conductor manages all background services
-- Manage services through Conductor's UI, not via make commands
-- If you need to restart services, use Conductor's controls
+## Git Worktree Development
+- **Use git worktrees for parallel development**: Run `make worktree` in a worktree to start workspace-specific services
+- Main repo uses standard ports (80/443), worktrees get unique ports based on directory name hash
+- Run `./worktree-dev.sh` to see your workspace's assigned ports (output shows all URLs)
+- Close worktree: `make worktree-close` stops containers and removes worktree if clean (no uncommitted changes)
+- All worktrees share the same database services (postgres, mongo, redis, elasticsearch)
 
 ## Build & Test Commands
 - `make nb` - Build and start all services (ONLY use for initial setup, not during development)

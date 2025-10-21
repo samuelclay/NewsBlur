@@ -33,6 +33,36 @@ bootstrap:
 
 nbup:
 	docker compose up -d --build --remove-orphans
+
+# Git worktree development workflow
+worktree:
+	./worktree-dev.sh
+
+worktree-close:
+	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
+	echo "Stopping workspace: $$WORKSPACE_NAME"; \
+	if [ -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" ]; then \
+		docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" down --remove-orphans; \
+		echo "✓ Stopped containers for workspace: $$WORKSPACE_NAME"; \
+	else \
+		echo "No worktree configuration found"; \
+	fi; \
+	if [ -f ".git" ]; then \
+		echo "Detected git worktree"; \
+		if [ -z "$$(git status --porcelain)" ]; then \
+			WORKTREE_PATH=$$(pwd); \
+			cd ..; \
+			echo "Removing worktree: $$WORKTREE_PATH"; \
+			git worktree remove "$$WORKTREE_PATH"; \
+			echo "✓ Removed worktree"; \
+		else \
+			echo "⚠ Worktree has uncommitted changes. Commit or stash changes before closing."; \
+			git status --short; \
+		fi; \
+	else \
+		echo "Not in a worktree, keeping directory"; \
+	fi
+
 coffee:
 	coffee -c -w **/*.coffee
 migrations:
