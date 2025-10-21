@@ -142,22 +142,26 @@ test-river:
 	docker compose exec -T newsblur_web python3 manage.py test apps.reader.test_river_stories --noinput -v 2
 
 keys:
-	mkdir -p config/certificates
-	openssl dhparam -out config/certificates/dhparam-2048.pem 2048
-	openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout config/certificates/RootCA.key -out config/certificates/RootCA.pem -subj "/C=US/CN=Example-Root-CA"
-	openssl x509 -outform pem -in config/certificates/RootCA.pem -out config/certificates/RootCA.crt
-	openssl req -new -nodes -newkey rsa:2048 -keyout config/certificates/localhost.key -out config/certificates/localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost"
-	openssl x509 -req -sha256 -days 1024 -in config/certificates/localhost.csr -CA config/certificates/RootCA.pem -CAkey config/certificates/RootCA.key -CAcreateserial -out config/certificates/localhost.crt
-	cat config/certificates/localhost.crt config/certificates/localhost.key > config/certificates/localhost.pem
-	@if [ "$$(uname)" = "Darwin" ]; then \
-		sudo /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./config/certificates/RootCA.crt; \
-	elif [ "$$(uname)" = "Linux" ]; then \
-		echo "Installing certificate for Linux..."; \
-		sudo cp ./config/certificates/RootCA.crt /usr/local/share/ca-certificates/newsblur-rootca.crt || true; \
-		sudo update-ca-certificates || true; \
-		echo "Certificate installation attempted. If this fails, you may need to manually trust the certificate."; \
+	@if [ -f "config/certificates/localhost.pem" ]; then \
+		echo "SSL certificates already exist"; \
 	else \
-		echo "Unknown OS. Please manually trust the certificate at ./config/certificates/RootCA.crt"; \
+		mkdir -p config/certificates; \
+		openssl dhparam -out config/certificates/dhparam-2048.pem 2048; \
+		openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout config/certificates/RootCA.key -out config/certificates/RootCA.pem -subj "/C=US/CN=Example-Root-CA"; \
+		openssl x509 -outform pem -in config/certificates/RootCA.pem -out config/certificates/RootCA.crt; \
+		openssl req -new -nodes -newkey rsa:2048 -keyout config/certificates/localhost.key -out config/certificates/localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost"; \
+		openssl x509 -req -sha256 -days 1024 -in config/certificates/localhost.csr -CA config/certificates/RootCA.pem -CAkey config/certificates/RootCA.key -CAcreateserial -out config/certificates/localhost.crt; \
+		cat config/certificates/localhost.crt config/certificates/localhost.key > config/certificates/localhost.pem; \
+		if [ "$$(uname)" = "Darwin" ]; then \
+			sudo /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./config/certificates/RootCA.crt; \
+		elif [ "$$(uname)" = "Linux" ]; then \
+			echo "Installing certificate for Linux..."; \
+			sudo cp ./config/certificates/RootCA.crt /usr/local/share/ca-certificates/newsblur-rootca.crt || true; \
+			sudo update-ca-certificates || true; \
+			echo "Certificate installation attempted. If this fails, you may need to manually trust the certificate."; \
+		else \
+			echo "Unknown OS. Please manually trust the certificate at ./config/certificates/RootCA.crt"; \
+		fi; \
 	fi
 
 # Doesn't work yet
