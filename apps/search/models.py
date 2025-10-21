@@ -1157,7 +1157,6 @@ class SearchFeed:
                             "match": {
                                 "address": {
                                     "query": text,
-                                    "cutoff_frequency": "0.0005",
                                     "minimum_should_match": "75%",
                                 }
                             }
