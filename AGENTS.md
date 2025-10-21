@@ -74,7 +74,7 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - Get feed with unread stories: `NEWSBLUR.assets.feeds.find(f => f.get('nt') > 0)`
 - Open feed: `NEWSBLUR.reader.open_feed(feed.get('id'))`
 - Select first story: `document.querySelector('.NB-feed-story').click()`
-- Open story intelligence trainer: `document.querySelector('.NB-feed-story-prompt').click()`
+- Open story intelligence trainer: `document.querySelector('.NB-feed-story-train').click()`
 - Open feed options popover: Click `.NB-feedbar-options` element (no API)
 - Get feed IDs: `NEWSBLUR.assets.feeds` is a Backbone.js collection with underscore.js operations
 - Open folder: Click `.folder .folder_title` element (no API)
