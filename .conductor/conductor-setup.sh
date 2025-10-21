@@ -297,17 +297,25 @@ echo -e "${GREEN}✓ Created haproxy.${WORKSPACE_NAME}.cfg${NC}"
 
 # Create SSL certificates if needed
 if [ ! -d "config/certificates" ] || [ ! -f "config/certificates/localhost.pem" ]; then
-    echo -e "${YELLOW}Creating SSL certificates...${NC}"
-    mkdir -p config/certificates
-    cd config/certificates
-    openssl dhparam -out dhparam-2048.pem 2048 2>&1 | grep -v "^\."
-    openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout RootCA.key -out RootCA.pem -subj "/C=US/CN=Example-Root-CA" 2>&1 | grep -v "^\."
-    openssl x509 -outform pem -in RootCA.pem -out RootCA.crt 2>&1 | grep -v "^\."
-    openssl req -new -nodes -newkey rsa:2048 -keyout localhost.key -out localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost" 2>&1 | grep -v "^\."
-    openssl x509 -req -sha256 -days 1024 -in localhost.csr -CA RootCA.pem -CAkey RootCA.key -CAcreateserial -out localhost.crt 2>&1 | grep -v "^\."
-    cat localhost.crt localhost.key > localhost.pem
-    cd ../..
-    echo -e "${GREEN}✓ SSL certificates created${NC}"
+    # Check if we can copy from parent repo
+    if [ -d "../../../config/certificates" ] && [ -f "../../../config/certificates/localhost.pem" ]; then
+        echo -e "${YELLOW}Copying SSL certificates from parent repo...${NC}"
+        mkdir -p config/certificates
+        cp ../../../config/certificates/* config/certificates/
+        echo -e "${GREEN}✓ SSL certificates copied${NC}"
+    else
+        echo -e "${YELLOW}Creating SSL certificates...${NC}"
+        mkdir -p config/certificates
+        cd config/certificates
+        openssl dhparam -out dhparam-2048.pem 2048 2>&1 | grep -v "^\."
+        openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout RootCA.key -out RootCA.pem -subj "/C=US/CN=Example-Root-CA" 2>&1 | grep -v "^\."
+        openssl x509 -outform pem -in RootCA.pem -out RootCA.crt 2>&1 | grep -v "^\."
+        openssl req -new -nodes -newkey rsa:2048 -keyout localhost.key -out localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost" 2>&1 | grep -v "^\."
+        openssl x509 -req -sha256 -days 1024 -in localhost.csr -CA RootCA.pem -CAkey RootCA.key -CAcreateserial -out localhost.crt 2>&1 | grep -v "^\."
+        cat localhost.crt localhost.key > localhost.pem
+        cd ../..
+        echo -e "${GREEN}✓ SSL certificates created${NC}"
+    fi
 else
     echo -e "${GREEN}✓ SSL certificates already exist${NC}"
 fi
