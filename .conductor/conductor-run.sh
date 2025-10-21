@@ -24,7 +24,7 @@ NC='\033[0m'
 echo ""
 echo -e "${GREEN}╔═══════════════════════════════════════════════════════════╗${NC}"
 echo -e "${GREEN}║                                                           ║${NC}"
-echo -e "${GREEN}          NewsBlur Workspace: ${WORKSPACE_NAME}${NC}
+echo -e "${GREEN}          NewsBlur Workspace: ${WORKSPACE_NAME}${NC}"
 echo -e "${GREEN}║                                                           ║${NC}"
 echo -e "${GREEN}╚═══════════════════════════════════════════════════════════╝${NC}"
 echo ""
