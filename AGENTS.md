@@ -1,7 +1,11 @@
 # NewsBlur Development Guidelines
 
 ## Conductor Workspace
-When working in Conductor, all services are already running via `conductor-run.sh`
+**IMPORTANT: Always start the workspace before browser testing**
+- Run `./.conductor/conductor-run.sh` in background first to start all services
+- Read the output to get the workspace URL (look for the https://localhost:XXXX url)
+- Wait for services to be ready before accessing the URL from the output
+- All services are managed via `conductor-run.sh`, not `make nb`
 - Do NOT run `make nb` - Conductor manages all background services
 - Manage services through Conductor's UI, not via make commands
 - If you need to restart services, use Conductor's controls
@@ -70,7 +74,7 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - With POST data: `make api URL=/reader/river_stories ARGS="-X POST -d 'feeds[]=1&feeds[]=2&feeds[]=3'"`
 
 ## Browser Testing with Chrome DevTools MCP
-- Local dev: `https://localhost`
+- Local dev: `https://localhost` (when using containers directly)
 - Open All Site Stories: `NEWSBLUR.reader.open_river_stories()`
 - Get feed with unread stories: `NEWSBLUR.assets.feeds.find(f => f.get('nt') > 0)`
 - Open feed: `NEWSBLUR.reader.open_feed(feed.get('id'))`
