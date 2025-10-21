@@ -1,5 +1,11 @@
 # NewsBlur Development Guidelines
 
+## Conductor Workspace
+When working in Conductor, all services are already running via `conductor-run.sh`
+- Do NOT run `make nb` - Conductor manages all background services
+- Manage services through Conductor's UI, not via make commands
+- If you need to restart services, use Conductor's controls
+
 ## Build & Test Commands
 - `make nb` - Build and start all services (ONLY use for initial setup, not during development)
 - `make bounce` - Restart all containers with new images
@@ -9,11 +15,6 @@
 - `make lint` - Run linting (isort, black, flake8)
 - `make test` - Run all tests (defaults: SCOPE=apps, ARGS="--noinput -v 1 --failfast")
 - `make test SCOPE=apps.rss_feeds ARGS="-v 2"`
-
-**IMPORTANT: Do NOT run `make nb` during development!**
-- Web and Node servers restart automatically when code changes
-- Task/Celery server must be manually restarted only when working on background tasks
-- Running `make nb` unnecessarily rebuilds everything and wastes time
 
 Note: All docker commands must use `-t` instead of `-it` to avoid interactive mode issues when running through Claude.
 
