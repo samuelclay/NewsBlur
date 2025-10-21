@@ -64,7 +64,8 @@ def newsletter_receive(request):
         try:
             body_data = json.loads(request.body)
             # Check if it looks like ImprovMX format
-            if "to" in body_data and "from" in body_data and isinstance(body_data.get("to"), list):
+            # ImprovMX sends: from (dict), envelope, headers, subject, html/text
+            if "from" in body_data and isinstance(body_data.get("from"), dict) and "envelope" in body_data:
                 params = _normalize_improvmx_to_mailgun(body_data)
                 provider = "improvmx"
                 logging.debug(" ---> Email newsletter from ImprovMX (normalized)")
