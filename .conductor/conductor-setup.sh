@@ -297,11 +297,18 @@ echo -e "${GREEN}✓ Created haproxy.${WORKSPACE_NAME}.cfg${NC}"
 
 # Create SSL certificates if needed
 if [ ! -d "config/certificates" ] || [ ! -f "config/certificates/localhost.pem" ]; then
-    # Check if we can copy from parent repo
+    # Check if we can copy from parent repo (handle both regular repo and worktree)
+    PARENT_CERTS=""
     if [ -d "../../../config/certificates" ] && [ -f "../../../config/certificates/localhost.pem" ]; then
+        PARENT_CERTS="../../../config/certificates"
+    elif [ -d "/srv/newsblur/config/certificates" ] && [ -f "/srv/newsblur/config/certificates/localhost.pem" ]; then
+        PARENT_CERTS="/srv/newsblur/config/certificates"
+    fi
+
+    if [ -n "$PARENT_CERTS" ]; then
         echo -e "${YELLOW}Copying SSL certificates from parent repo...${NC}"
         mkdir -p config/certificates
-        cp ../../../config/certificates/* config/certificates/
+        cp "$PARENT_CERTS"/* config/certificates/
         echo -e "${GREEN}✓ SSL certificates copied${NC}"
     else
         echo -e "${YELLOW}Creating SSL certificates...${NC}"
