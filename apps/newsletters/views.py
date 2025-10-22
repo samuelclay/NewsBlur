@@ -19,15 +19,35 @@ def _normalize_improvmx_to_mailgun(improvmx_data):
     # Extract recipient from envelope (the actual NewsBlur newsletter address)
     envelope = improvmx_data.get("envelope", {})
     headers = improvmx_data.get("headers", {})
+
+    # Debug logging to see what we're getting
+    # logging.debug(" ---> ImprovMX envelope: %s" % json.dumps(envelope))
+    logging.debug(" ---> ImprovMX Delivered-To header: %s" % headers.get("Delivered-To"))
+    logging.debug(" ---> ImprovMX X-Forwarded-To header: %s" % headers.get("X-Forwarded-To"))
+
     if envelope.get("recipient"):
         params["recipient"] = envelope["recipient"]
     elif headers.get("Delivered-To"):
         delivered_to = headers["Delivered-To"]
         params["recipient"] = delivered_to.get("email") if isinstance(delivered_to, dict) else delivered_to
 
-    # Full logging of raw data for samuel only
-    if "samuel" in params.get("recipient", ""):
-        logging.debug(" ---> Email newsletter raw ImprovMX data: %s" % json.dumps(improvmx_data))
+    # Debug: Check what recipient we extracted
+    extracted_recipient = params.get("recipient", "")
+    logging.debug(" ---> ImprovMX extracted recipient: %s" % extracted_recipient)
+
+    # Check multiple places for samuel
+    is_samuel = False
+    if "samuel" in str(extracted_recipient).lower():
+        is_samuel = True
+    elif "samuel" in str(envelope).lower():
+        is_samuel = True
+    elif "samuel" in str(headers.get("X-Forwarded-To", "")).lower():
+        is_samuel = True
+    elif "samuel" in str(headers.get("X-Forwarded-For", "")).lower():
+        is_samuel = True
+
+    if is_samuel:
+        logging.debug(" ---> Email newsletter raw ImprovMX data for samuel: %s" % json.dumps(improvmx_data))
 
     # Convert 'from' object to "Name <email>" format
     from_data = improvmx_data.get("from", {})
