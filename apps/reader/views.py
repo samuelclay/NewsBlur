@@ -1834,7 +1834,6 @@ def load_river_stories__redis(request):
             stories = Feed.format_stories(mstories)
         else:
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
-            all_feed_ids = [f for f in feed_ids]
             feed_ids = [sub.feed_id for sub in usersubs]
             if infrequent:
                 feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
@@ -1842,7 +1841,6 @@ def load_river_stories__redis(request):
                 params = {
                     "user_id": user.pk,
                     "feed_ids": feed_ids,
-                    "all_feed_ids": all_feed_ids,
                     "offset": offset,
                     "limit": limit,
                     "order": order,
@@ -2133,10 +2131,16 @@ def complete_river(request):
     feed_ids = [int(feed_id) for feed_id in feed_ids if feed_id and feed_id.isnumeric()]
     page = int(request.POST.get("page", 1))
     read_filter = request.POST.get("read_filter", "unread")
+    infrequent = is_true(request.POST.get("infrequent", False))
+    if infrequent:
+        infrequent = request.POST.get("infrequent")
     stories_truncated = 0
 
     usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
     feed_ids = [sub.feed_id for sub in usersubs]
+    # Apply infrequent filter to match load_river_stories() behavior
+    if infrequent:
+        feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
     if feed_ids:
         stories_truncated = UserSubscription.truncate_river(
             user.pk, feed_ids, read_filter, cache_prefix="dashboard:"
