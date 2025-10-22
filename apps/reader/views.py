@@ -867,38 +867,39 @@ def load_single_feed(request, feed_id):
         else:
             stories = []
             message = "You must be a premium subscriber to search."
-
-    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
-        date_filter_start, date_filter_end, user.profile.timezone
-    )
-
-    # Auto-switch from unread to all if date filter extends beyond unread cutoff
-    read_filter = adjust_read_filter_for_date_range(
-        read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
-    )
-
-    if read_filter == "starred":
-        mstories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).order_by(
-            "%sstarred_date" % ("-" if order == "newest" else "")
-        )[offset : offset + limit]
-        stories = Feed.format_stories(mstories)
-    elif usersub and read_filter == "unread":
-        stories = usersub.get_stories(
-            order=order,
-            read_filter=read_filter,
-            offset=offset,
-            limit=limit,
-            date_filter_start=date_filter_start_utc,
-            date_filter_end=date_filter_end_utc,
-        )
     else:
-        stories = feed.get_stories(
-            offset,
-            limit,
-            order=order,
-            date_filter_start=date_filter_start_utc,
-            date_filter_end=date_filter_end_utc,
+        # Only run feed aggregation if stories weren't already fetched via query
+        date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+            date_filter_start, date_filter_end, user.profile.timezone
         )
+
+        # Auto-switch from unread to all if date filter extends beyond unread cutoff
+        read_filter = adjust_read_filter_for_date_range(
+            read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
+        )
+
+        if read_filter == "starred":
+            mstories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).order_by(
+                "%sstarred_date" % ("-" if order == "newest" else "")
+            )[offset : offset + limit]
+            stories = Feed.format_stories(mstories)
+        elif usersub and read_filter == "unread":
+            stories = usersub.get_stories(
+                order=order,
+                read_filter=read_filter,
+                offset=offset,
+                limit=limit,
+                date_filter_start=date_filter_start_utc,
+                date_filter_end=date_filter_end_utc,
+            )
+        else:
+            stories = feed.get_stories(
+                offset,
+                limit,
+                order=order,
+                date_filter_start=date_filter_start_utc,
+                date_filter_end=date_filter_end_utc,
+            )
 
     checkpoint1 = time.time()
 
