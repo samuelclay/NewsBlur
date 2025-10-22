@@ -369,6 +369,25 @@ class UserSubscription(models.Model):
         return stories
 
     @classmethod
+    def get_river_cache_keys(cls, user_id, feed_ids, cache_prefix=""):
+        """Generate consistent cache key names for river stories.
+
+        This helper ensures cache creation and deletion use identical keys.
+
+        Args:
+            user_id: User ID
+            feed_ids: List of feed IDs (must be validated/filtered)
+            cache_prefix: Optional prefix for cache keys (e.g., "dashboard:")
+
+        Returns:
+            Tuple of (ranked_stories_key, unread_ranked_stories_key)
+        """
+        feeds_string = ",".join(str(f) for f in sorted(feed_ids))[:30]
+        ranked_stories_key = "%szU:%s:feeds:%s" % (cache_prefix, user_id, feeds_string)
+        unread_ranked_stories_key = "%szhU:%s:feeds:%s" % (cache_prefix, user_id, feeds_string)
+        return ranked_stories_key, unread_ranked_stories_key
+
+    @classmethod
     def feed_stories(
         cls,
         user_id,
@@ -395,13 +414,14 @@ class UserSubscription(models.Model):
         if feed_ids is None:
             across_all_feeds = True
             feed_ids = []
+        # Deprecated: all_feed_ids is no longer used, use feed_ids for cache keys
         if not all_feed_ids:
             all_feed_ids = [f for f in feed_ids]
 
-        # Truncate feed list to keep Redis key manageable
-        feeds_string = ",".join(str(f) for f in sorted(all_feed_ids))[:30]
-        ranked_stories_keys = "%szU:%s:feeds:%s" % (cache_prefix, user_id, feeds_string)
-        unread_ranked_stories_keys = "%szhU:%s:feeds:%s" % (cache_prefix, user_id, feeds_string)
+        # Use helper method to generate consistent cache keys
+        ranked_stories_keys, unread_ranked_stories_keys = cls.get_river_cache_keys(
+            user_id, feed_ids, cache_prefix
+        )
         stories_cached = rt.exists(ranked_stories_keys)
         unreads_cached = True if read_filter == "unread" else rt.exists(unread_ranked_stories_keys)
         if offset and stories_cached:
@@ -465,11 +485,12 @@ class UserSubscription(models.Model):
 
     @classmethod
     def truncate_river(cls, user_id, feed_ids, read_filter, cache_prefix=""):
-        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_TEMP_POOL)
+        rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
 
-        feeds_string = ",".join(str(f) for f in sorted(feed_ids))[:30]
-        ranked_stories_keys = "%szU:%s:feeds:%s" % (cache_prefix, user_id, feeds_string)
-        unread_ranked_stories_keys = "%szhU:%s:feeds:%s" % (cache_prefix, user_id, feeds_string)
+        # Use helper method to generate consistent cache keys
+        ranked_stories_keys, unread_ranked_stories_keys = cls.get_river_cache_keys(
+            user_id, feed_ids, cache_prefix
+        )
         stories_cached = rt.exists(ranked_stories_keys)
         unreads_cached = rt.exists(unread_ranked_stories_keys)
         truncated = 0
