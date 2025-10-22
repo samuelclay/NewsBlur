@@ -19,6 +19,7 @@ Note: All docker commands must use `-t` instead of `-it` to avoid interactive mo
 
 ## Python Environment
 - **Always run Python code and Django management commands inside the Docker container** - Use `docker exec newsblur_web bash -c "python <script>"`
+- **Run Django shell commands non-interactively**: `docker exec -t newsblur_web_newsblur python manage.py shell -c "<python code>"`
 - Do NOT use `uv run` or local Python environment - always use the Docker container
 
 ## Deployment Commands
