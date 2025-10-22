@@ -307,7 +307,7 @@ if [ "$NEEDS_SETUP" = true ]; then
 
     # Collect static files (without compression, just file collection)
     echo -e "${YELLOW}Collecting static files...${NC}"
-    docker exec "newsblur_web_${WORKSPACE_NAME}" python3 manage.py collectstatic --noinput || {
+    docker exec "newsblur_web_${WORKSPACE_NAME}" python3 manage.py collectstatic --noinput --no-post-process || {
         echo -e "${YELLOW}Note: Static files may have already been collected${NC}"
     }
 
