@@ -278,6 +278,9 @@ if [ "$NEEDS_SETUP" = true ]; then
     # Set environment variables for the workspace
     export COMPOSE_PROJECT_NAME="${WORKSPACE_NAME}"
 
+    # Stop any existing containers first to avoid name conflicts
+    docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" down 2>/dev/null || true
+
     # Start workspace containers using the standalone compose file
     docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d --remove-orphans
 
@@ -302,10 +305,9 @@ if [ "$NEEDS_SETUP" = true ]; then
         echo -e "${YELLOW}Note: Migrations may have already been run${NC}"
     }
 
-    # Collect static files (copy from media to static without post-processing)
-    # This ensures glob patterns in assets.yml can find all files
+    # Collect static files (without compression, just file collection)
     echo -e "${YELLOW}Collecting static files...${NC}"
-    docker exec "newsblur_web_${WORKSPACE_NAME}" python3 manage.py collectstatic --noinput --no-post-process || {
+    docker exec "newsblur_web_${WORKSPACE_NAME}" python3 manage.py collectstatic --noinput || {
         echo -e "${YELLOW}Note: Static files may have already been collected${NC}"
     }
 
@@ -379,6 +381,12 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 echo -e "${BLUE}🚀 Starting containers...${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
+
+# Set environment for docker compose
+export COMPOSE_PROJECT_NAME="${WORKSPACE_NAME}"
+
+# Stop any existing containers first to avoid name conflicts
+docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" down 2>/dev/null || true
 
 # Start the containers
 docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d --remove-orphans
