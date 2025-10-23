@@ -61,12 +61,10 @@ def save_classifier(request):
             usersub = UserSubscription.objects.get(user=request.user, feed=feed)
         except UserSubscription.DoesNotExist:
             pass
-        logging.user(request, f"Usersub: {usersub} {usersub.is_trained} {usersub.needs_unread_recalc}")
         if usersub and (not usersub.needs_unread_recalc or not usersub.is_trained):
             usersub.needs_unread_recalc = True
             usersub.is_trained = True
             usersub.save()
-        logging.user(request, f"Usersub after: {usersub} {usersub.is_trained} {usersub.needs_unread_recalc}")
 
     def _save_classifier(ClassifierCls, content_type):
         classifiers = {
