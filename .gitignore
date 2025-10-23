@@ -73,3 +73,5 @@ grafana.ini
 apps/api/ip_addresses.txt
 .ansible/
 .dev_session
+.conductor
+.worktree
