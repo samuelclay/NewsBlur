@@ -61,10 +61,12 @@ def save_classifier(request):
             usersub = UserSubscription.objects.get(user=request.user, feed=feed)
         except UserSubscription.DoesNotExist:
             pass
+        logging.user(request, f"Usersub: {usersub} {usersub.is_trained} {usersub.needs_unread_recalc}")
         if usersub and (not usersub.needs_unread_recalc or not usersub.is_trained):
             usersub.needs_unread_recalc = True
             usersub.is_trained = True
             usersub.save()
+        logging.user(request, f"Usersub after: {usersub} {usersub.is_trained} {usersub.needs_unread_recalc}")
 
     def _save_classifier(ClassifierCls, content_type):
         classifiers = {
@@ -84,12 +86,10 @@ def save_classifier(request):
                         "feed_id": feed_id or 0,
                         "social_user_id": social_user_id or 0,
                     }
-                    if content_type in ("author", "tag", "title"):
+                    if content_type in ("author", "tag", "title", "text"):
                         max_length = ClassifierCls._fields[content_type].max_length
                         classifier_dict.update({content_type: post_content[:max_length]})
-                    if content_type == "text":
-                        classifier_dict.update({content_type: post_content})
-                    if content_type == "feed":
+                    elif content_type == "feed":
                         if not post_content.startswith("social:"):
                             classifier_dict["feed_id"] = post_content
                     try:

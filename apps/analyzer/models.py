@@ -111,7 +111,7 @@ class MClassifierText(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField()
     social_user_id = mongo.IntField()
-    text = mongo.StringField()
+    text = mongo.StringField(max_length=255)
     score = mongo.IntField()
     creation_date = mongo.DateTimeField()
 
@@ -253,7 +253,6 @@ def apply_classifier_texts(classifiers, story):
         if classifier.feed_id != story["story_feed_id"]:
             continue
         if classifier.text.lower() in story_content_lower:
-            # print 'Texts: (%s) %s -- %s' % (classifier.text in story_content, classifier.text, story_content[:100])
             score = classifier.score
             if score > 0:
                 return score

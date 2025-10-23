@@ -801,7 +801,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     mouseenter_sideoption_email: function (event) {
         var $sideoption = $(event.currentTarget);
-        $sideoption.on('mousemove.email', _.bind(function(e) {
+        $sideoption.on('mousemove.email', _.bind(function (e) {
             var $target = $(e.target);
             var $thirdparty = $target.closest('.NB-sideoption-thirdparty');
 
@@ -829,12 +829,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     mouseenter_sideoption_train: function (event) {
         var $sideoption = $(event.currentTarget);
-        $sideoption.on('mousemove.train', _.bind(function(e) {
+        $sideoption.on('mousemove.train', _.bind(function (e) {
             var $target = $(e.target);
             var $thirdparty = $target.closest('.NB-sideoption-thirdparty-writerules');
 
             if ($thirdparty.length) {
-                $sideoption.find(".NB-sideoption-title").text("Write Rules");
+                $sideoption.find(".NB-sideoption-title").text("AI Filter");
                 $thirdparty.addClass("NB-hover");
                 $sideoption.find(".NB-sideoption-icon-train").addClass("NB-dimmed");
             } else {
@@ -1038,10 +1038,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $doc = this.$(".NB-feed-story-content");
 
         // Remove all temporary highlight marks
-        this.$(".NB-starred-story-selection-highlight").each(function() {
+        this.$(".NB-starred-story-selection-highlight").each(function () {
             $(this).contents().unwrap();
         });
-        this.$("[data-tippy]").each(function() {
+        this.$("[data-tippy]").each(function () {
             $(this).contents().unwrap();
         });
 
@@ -1073,12 +1073,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         $doc.unmark();
 
         $doc.attr('id', 'NB-highlighting');
-        _.each(highlights, _.bind(function(highlight, index) {
+        _.each(highlights, _.bind(function (highlight, index) {
             $doc.mark(highlight, {
                 "className": "NB-highlight",
                 "separateWordSearch": false,
                 "acrossElements": true,
-                "each": function(element) {
+                "each": function (element) {
                     $(element).attr('data-highlight-index', index);
                 }
             });
