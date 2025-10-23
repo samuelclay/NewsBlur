@@ -9,6 +9,7 @@ from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierText,
     MClassifierTitle,
     MPopularityQuery,
     get_classifiers_for_user,
@@ -86,6 +87,8 @@ def save_classifier(request):
                     if content_type in ("author", "tag", "title"):
                         max_length = ClassifierCls._fields[content_type].max_length
                         classifier_dict.update({content_type: post_content[:max_length]})
+                    if content_type == "text":
+                        classifier_dict.update({content_type: post_content})
                     if content_type == "feed":
                         if not post_content.startswith("social:"):
                             classifier_dict["feed_id"] = post_content
@@ -128,6 +131,7 @@ def save_classifier(request):
     _save_classifier(MClassifierAuthor, "author")
     _save_classifier(MClassifierTag, "tag")
     _save_classifier(MClassifierTitle, "title")
+    _save_classifier(MClassifierText, "text")
     _save_classifier(MClassifierFeed, "feed")
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
