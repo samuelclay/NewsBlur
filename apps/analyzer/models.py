@@ -107,6 +107,25 @@ class MClassifierTitle(mongo.Document):
         return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, self.title[:30])
 
 
+class MClassifierText(mongo.Document):
+    user_id = mongo.IntField()
+    feed_id = mongo.IntField()
+    social_user_id = mongo.IntField()
+    text = mongo.StringField()
+    score = mongo.IntField()
+    creation_date = mongo.DateTimeField()
+
+    meta = {
+        "collection": "classifier_text",
+        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
+        "allow_inheritance": False,
+    }
+
+    def __str__(self):
+        user = User.objects.get(pk=self.user_id)
+        return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, self.text[:30])
+
+
 class MClassifierAuthor(mongo.Document):
     user_id = mongo.IntField(unique_with=("feed_id", "social_user_id", "author"))
     feed_id = mongo.IntField()
@@ -168,13 +187,23 @@ class MClassifierFeed(mongo.Document):
 
 
 def compute_story_score(
-    story, classifier_titles, classifier_authors, classifier_tags, classifier_feeds, prompt_score=None
+    story,
+    classifier_titles,
+    classifier_authors,
+    classifier_tags,
+    classifier_feeds,
+    classifier_texts=None,
+    prompt_score=None,
 ):
+    if classifier_texts is None:
+        classifier_texts = []
+
     intelligence = {
         "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
         "author": apply_classifier_authors(classifier_authors, story),
         "tags": apply_classifier_tags(classifier_tags, story),
         "title": apply_classifier_titles(classifier_titles, story),
+        "text": apply_classifier_texts(classifier_texts, story),
     }
 
     # Include AI prompt classifier score if provided
@@ -188,8 +217,8 @@ def compute_story_score(
         return intelligence["prompt"]
 
     # Otherwise use the traditional classifier logic
-    score_max = max(intelligence["title"], intelligence["author"], intelligence["tags"])
-    score_min = min(intelligence["title"], intelligence["author"], intelligence["tags"])
+    score_max = max(intelligence["title"], intelligence["author"], intelligence["tags"], intelligence["text"])
+    score_min = min(intelligence["title"], intelligence["author"], intelligence["tags"], intelligence["text"])
     if score_max > 0:
         score = score_max
     elif score_min < 0:
@@ -208,6 +237,23 @@ def apply_classifier_titles(classifiers, story):
             continue
         if classifier.title.lower() in story["story_title"].lower():
             # print 'Titles: (%s) %s -- %s' % (classifier.title in story['story_title'], classifier.title, story['story_title'])
+            score = classifier.score
+            if score > 0:
+                return score
+    return score
+
+
+def apply_classifier_texts(classifiers, story):
+    score = 0
+    story_content = story.get("story_content", "")
+    if not story_content:
+        return score
+    story_content_lower = story_content.lower()
+    for classifier in classifiers:
+        if classifier.feed_id != story["story_feed_id"]:
+            continue
+        if classifier.text.lower() in story_content_lower:
+            # print 'Texts: (%s) %s -- %s' % (classifier.text in story_content, classifier.text, story_content[:100])
             score = classifier.score
             if score > 0:
                 return score
@@ -259,7 +305,7 @@ def apply_classifier_feeds(classifiers, feed, social_user_ids=None):
     return 0
 
 
-class MPromptClassifier(mongo.Document):
+class MClassifierPrompt(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField(default=0)  # 0 means applies to folder level
     folder_id = mongo.StringField(default="")  # Empty string means applies to feed level
@@ -416,6 +462,7 @@ def get_classifiers_for_user(
     classifier_authors=None,
     classifier_titles=None,
     classifier_tags=None,
+    classifier_texts=None,
 ):
     params = dict(user_id=user.pk)
     if isinstance(feed_id, list):
@@ -433,6 +480,8 @@ def get_classifiers_for_user(
         classifier_titles = list(MClassifierTitle.objects(**params))
     if classifier_tags is None:
         classifier_tags = list(MClassifierTag.objects(**params))
+    if classifier_texts is None:
+        classifier_texts = list(MClassifierText.objects(**params))
     if classifier_feeds is None:
         if not social_user_id and feed_id:
             params["social_user_id"] = 0
@@ -450,6 +499,7 @@ def get_classifiers_for_user(
         "authors": dict([(a.author, a.score) for a in classifier_authors]),
         "titles": dict([(t.title, t.score) for t in classifier_titles]),
         "tags": dict([(t.tag, t.score) for t in classifier_tags]),
+        "texts": dict([(t.text, t.score) for t in classifier_texts]),
     }
 
     return payload
@@ -462,6 +512,7 @@ def sort_classifiers_by_feed(
     classifier_authors=None,
     classifier_titles=None,
     classifier_tags=None,
+    classifier_texts=None,
 ):
     def sort_by_feed(classifiers):
         feed_classifiers = defaultdict(list)
@@ -476,6 +527,7 @@ def sort_classifiers_by_feed(
         classifier_authors = sort_by_feed(classifier_authors)
         classifier_titles = sort_by_feed(classifier_titles)
         classifier_tags = sort_by_feed(classifier_tags)
+        classifier_texts = sort_by_feed(classifier_texts)
 
         for feed_id in feed_ids:
             classifiers[feed_id] = get_classifiers_for_user(
@@ -485,6 +537,7 @@ def sort_classifiers_by_feed(
                 classifier_authors=classifier_authors[feed_id],
                 classifier_titles=classifier_titles[feed_id],
                 classifier_tags=classifier_tags[feed_id],
+                classifier_texts=classifier_texts[feed_id],
             )
 
     return classifiers

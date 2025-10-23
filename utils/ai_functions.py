@@ -24,7 +24,7 @@ def classify_stories_with_ai(prompt_classifier, stories, model="gpt-3.5-turbo"):
     Classify a list of stories using OpenAI's function calling.
 
     Args:
-        prompt_classifier: User-defined prompt (MPromptClassifier) for classification criteria
+        prompt_classifier: User-defined prompt (MClassifierPrompt) for classification criteria
         stories: List of dictionaries containing story data with at least title and content
         model: OpenAI model to use
 
