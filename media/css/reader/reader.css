@@ -5432,12 +5432,6 @@ body {
     order: 3;
 }
 
-.NB-wide-content .NB-flex-break {
-    flex-basis: 100%;
-    height: 0;
-    order: 3;
-}
-
 .NB-wide-content .NB-sideoption-thirdparty-services {
     display: flex;
     flex-direction: column;

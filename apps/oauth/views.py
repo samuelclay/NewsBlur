@@ -17,6 +17,7 @@ from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierText,
     MClassifierTitle,
     compute_story_score,
 )
@@ -408,6 +409,7 @@ def api_unread_story(request, trigger_slug=None):
             MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
         )
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+        classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
     feeds = dict(
         [
             (
@@ -434,6 +436,7 @@ def api_unread_story(request, trigger_slug=None):
                 classifier_titles=classifier_titles,
                 classifier_authors=classifier_authors,
                 classifier_tags=classifier_tags,
+                classifier_texts=classifier_texts,
                 classifier_feeds=classifier_feeds,
             )
             if score < 0:
@@ -582,6 +585,7 @@ def api_shared_story(request):
     classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, social_user_id__in=social_user_ids))
     classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, social_user_id__in=social_user_ids))
     classifier_tags = list(MClassifierTag.objects(user_id=user.pk, social_user_id__in=social_user_ids))
+    classifier_texts = list(MClassifierText.objects(user_id=user.pk, social_user_id__in=social_user_ids))
     # Merge with feed specific classifiers
     classifier_feeds = classifier_feeds + list(
         MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids)
@@ -595,6 +599,9 @@ def api_shared_story(request):
     classifier_tags = classifier_tags + list(
         MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids)
     )
+    classifier_texts = classifier_texts + list(
+        MClassifierText.objects(user_id=user.pk, feed_id__in=found_feed_ids)
+    )
 
     for story in stories:
         if before and int(story["shared_date"].strftime("%s")) > before:
@@ -606,6 +613,7 @@ def api_shared_story(request):
             classifier_titles=classifier_titles,
             classifier_authors=classifier_authors,
             classifier_tags=classifier_tags,
+            classifier_texts=classifier_texts,
             classifier_feeds=classifier_feeds,
         )
         if score < 0:

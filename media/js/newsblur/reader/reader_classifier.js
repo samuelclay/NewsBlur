@@ -471,6 +471,7 @@ var classifier_prototype = {
 
         // HTML entities decoding.
         var story_title = _.string.trim($('<div/>').html(story.get('story_title')).text());
+        var selected_text = this.options.selected_text || '';
 
         this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal' }, [
             $.make('div', { className: 'NB-modal-loading' }),
@@ -485,6 +486,16 @@ var classifier_prototype = {
             ]),
             (this.options['feed_loaded'] &&
                 $.make('form', { method: 'post' }, [
+                    $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+                        $.make('h5', 'Story Text'),
+                        $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                            $.make('input', { type: 'text', value: selected_text, className: 'NB-classifier-text-highlight' }),
+                            this.make_classifier('<span class="NB-classifier-text-placeholder">Highlight text to look for in future stories</span>', '', 'text'),
+                            $.make('span',
+                                this.make_user_texts(story.get('story_content'))
+                            )
+                        ])
+                    ]),
                     (story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                         $.make('h5', 'Story Title'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
@@ -584,6 +595,20 @@ var classifier_prototype = {
         }, this));
 
         return $titles;
+    },
+
+    make_user_texts: function (story_content) {
+        var $texts = [];
+        var texts = _.keys(this.user_classifiers.texts || {});
+
+        _.each(texts, _.bind(function (text) {
+            if (!story_content || story_content.toLowerCase().indexOf(text.toLowerCase()) != -1) {
+                var $text = this.make_classifier(text, text, 'text');
+                $texts.push($text);
+            }
+        }, this));
+
+        return $texts;
     },
 
     make_authors: function (authors) {
@@ -788,12 +813,43 @@ var classifier_prototype = {
 
     handle_text_highlight: function () {
         var self = this;
+
+        // Handle story text highlighting
+        var $text_highlight = $('.NB-classifier-text-highlight', this.$modal);
+        var $text_placeholder = $('.NB-classifier-text-placeholder', this.$modal);
+        var $text_classifier = $text_placeholder.parents('.NB-classifier').eq(0);
+        var $text_checkboxs = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $text_classifier);
+
+        var update_text = function () {
+            var text = $.trim($(this).getSelection().text);
+
+            if (text.length && $text_placeholder.text() != text) {
+                $text_placeholder.text(text);
+                $text_checkboxs.val(text);
+                if (!$text_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                    self.change_classifier($text_classifier, 'like');
+                }
+            }
+        };
+
+        $text_highlight
+            .keydown(update_text).keyup(update_text)
+            .mousedown(update_text).mouseup(update_text).mousemove(update_text);
+        $text_checkboxs.val($text_highlight.val());
+
+        $text_placeholder.parents('.NB-classifier').bind('click', function () {
+            if ($text_highlight.val() == $text_checkboxs.val()) {
+                $text_placeholder.text($text_highlight.val());
+            }
+        });
+
+        // Handle story title highlighting
         var $title_highlight = $('.NB-classifier-title-highlight', this.$modal);
         var $title_placeholder = $('.NB-classifier-title-placeholder', this.$modal);
         var $title_classifier = $title_placeholder.parents('.NB-classifier').eq(0);
         var $title_checkboxs = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $title_classifier);
 
-        var update = function () {
+        var update_title = function () {
             var text = $.trim($(this).getSelection().text);
 
             if (text.length && $title_placeholder.text() != text) {
@@ -806,8 +862,8 @@ var classifier_prototype = {
         };
 
         $title_highlight
-            .keydown(update).keyup(update)
-            .mousedown(update).mouseup(update).mousemove(update);
+            .keydown(update_title).keyup(update_title)
+            .mousedown(update_title).mouseup(update_title).mousemove(update_title);
         $title_checkboxs.val($title_highlight.val());
 
         $title_placeholder.parents('.NB-classifier').bind('click', function () {
@@ -947,6 +1003,11 @@ var classifier_prototype = {
                     self.model.classifiers[feed_id].tags[value] = score;
                 } else if (name == 'title') {
                     self.model.classifiers[feed_id].titles[value] = score;
+                } else if (name == 'text') {
+                    if (!self.model.classifiers[feed_id].texts) {
+                        self.model.classifiers[feed_id].texts = {};
+                    }
+                    self.model.classifiers[feed_id].texts[value] = score;
                 } else if (name == 'author') {
                     self.model.classifiers[feed_id].authors[value] = score;
                 } else if (name == 'feed') {
@@ -957,6 +1018,8 @@ var classifier_prototype = {
                     delete self.model.classifiers[feed_id].tags[value];
                 } else if (name == 'title' && self.model.classifiers[feed_id].titles[value] == score) {
                     delete self.model.classifiers[feed_id].titles[value];
+                } else if (name == 'text' && self.model.classifiers[feed_id].texts && self.model.classifiers[feed_id].texts[value] == score) {
+                    delete self.model.classifiers[feed_id].texts[value];
                 } else if (name == 'author' && self.model.classifiers[feed_id].authors[value] == score) {
                     delete self.model.classifiers[feed_id].authors[value];
                 } else if (name == 'feed' && self.model.classifiers[feed_id].feeds[feed_id] == score) {
