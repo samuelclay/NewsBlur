@@ -184,6 +184,7 @@ class Scrubber(object):
             "dir",
             "height",
             "href",
+            "id",
             "src",
             "style",
             "title",
