@@ -1346,6 +1346,7 @@ class Feed(models.Model):
             MClassifierAuthor,
             MClassifierFeed,
             MClassifierTag,
+            MClassifierText,
             MClassifierTitle,
         )
 
@@ -1384,6 +1385,7 @@ class Feed(models.Model):
         scores = {}
         for cls, facet in [
             (MClassifierTitle, "title"),
+            (MClassifierText, "text"),
             (MClassifierAuthor, "author"),
             (MClassifierTag, "tag"),
             (MClassifierFeed, "feed_id"),

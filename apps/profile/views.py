@@ -26,6 +26,7 @@ from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierText,
     MClassifierTitle,
 )
 from apps.profile.forms import (
@@ -827,6 +828,8 @@ def payment_history(request):
             "title_ng": MClassifierTitle.objects.filter(user_id=user.pk, score__lt=0).count(),
             "tag_ps": MClassifierTag.objects.filter(user_id=user.pk, score__gt=0).count(),
             "tag_ng": MClassifierTag.objects.filter(user_id=user.pk, score__lt=0).count(),
+            "text_ps": MClassifierText.objects.filter(user_id=user.pk, score__gt=0).count(),
+            "text_ng": MClassifierText.objects.filter(user_id=user.pk, score__lt=0).count(),
             "author_ps": MClassifierAuthor.objects.filter(user_id=user.pk, score__gt=0).count(),
             "author_ng": MClassifierAuthor.objects.filter(user_id=user.pk, score__lt=0).count(),
             "feed_ps": MClassifierFeed.objects.filter(user_id=user.pk, score__gt=0).count(),

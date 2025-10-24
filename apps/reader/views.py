@@ -45,10 +45,12 @@ from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierText,
     MClassifierTitle,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
+    apply_classifier_texts,
     apply_classifier_titles,
     get_classifiers_for_user,
     sort_classifiers_by_feed,
@@ -917,11 +919,13 @@ def load_single_feed(request, feed_id):
         classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
         classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
+        classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id=feed_id))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
+        classifier_texts = []
     classifiers = get_classifiers_for_user(
         user,
         feed_id=feed_id,
@@ -929,6 +933,7 @@ def load_single_feed(request, feed_id):
         classifier_authors=classifier_authors,
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
+        classifier_texts=classifier_texts,
     )
     checkpoint3 = time.time()
 
@@ -1506,11 +1511,13 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
         )
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+        classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
+        classifier_texts = []
 
     sort_classifiers_by_feed(
         user=user,
@@ -1519,6 +1526,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         classifier_authors=classifier_authors,
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
+        classifier_texts=classifier_texts,
     )
     for story in stories:
         story["intelligence"] = {
@@ -1526,6 +1534,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
+            "text": apply_classifier_texts(classifier_texts, story),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
         if unread_filter == "focus" and story["score"] >= 1:
@@ -1904,11 +1913,13 @@ def load_river_stories__redis(request):
             MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
         )
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+        classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
+        classifier_texts = []
     classifiers = sort_classifiers_by_feed(
         user=user,
         feed_ids=found_feed_ids,
@@ -1916,6 +1927,7 @@ def load_river_stories__redis(request):
         classifier_authors=classifier_authors,
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
+        classifier_texts=classifier_texts,
     )
 
     # Just need to format stories
@@ -1946,6 +1958,7 @@ def load_river_stories__redis(request):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
+            "text": apply_classifier_texts(classifier_texts, story),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
 

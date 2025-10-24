@@ -34,6 +34,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.defaults = {
             classifiers: {
                 titles: {},
+                texts: {},
                 tags: {},
                 authors: {},
                 feeds: {}

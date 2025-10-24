@@ -28,6 +28,7 @@ from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierText,
     MClassifierTitle,
     compute_story_score,
 )
@@ -227,6 +228,7 @@ class MUserFeedNotification(mongo.Document):
             )
             classifiers["titles"] = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
             classifiers["tags"] = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
+            classifiers["texts"] = list(MClassifierText.objects(user_id=self.user_id, feed_id=self.feed_id))
 
         return classifiers
 
@@ -493,6 +495,7 @@ class MUserFeedNotification(mongo.Document):
             classifier_titles=classifiers.get("titles", []),
             classifier_authors=classifiers.get("authors", []),
             classifier_tags=classifiers.get("tags", []),
+            classifier_texts=classifiers.get("texts", []),
             classifier_feeds=classifiers.get("feeds", []),
         )
 

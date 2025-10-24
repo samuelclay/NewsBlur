@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "setup": "./.conductor/conductor-setup.sh",
+    "run": "./.conductor/conductor-run.sh"
+  }
+}

@@ -20,10 +20,12 @@ from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierText,
     MClassifierTitle,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
+    apply_classifier_texts,
     apply_classifier_titles,
 )
 from apps.analyzer.tfidf import tfidf
@@ -817,7 +819,13 @@ class UserSubscription(models.Model):
             # Move classifiers
             if old_feed_id:
                 classifier_count = 0
-                for classifier_type in (MClassifierAuthor, MClassifierFeed, MClassifierTag, MClassifierTitle):
+                for classifier_type in (
+                    MClassifierAuthor,
+                    MClassifierFeed,
+                    MClassifierTag,
+                    MClassifierText,
+                    MClassifierTitle,
+                ):
                     classifiers = classifier_type.objects.filter(user_id=user_id, feed_id=old_feed_id)
                     classifier_count += classifiers.count()
                     for classifier in classifiers:
@@ -1104,13 +1112,16 @@ class UserSubscription(models.Model):
             classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id=self.feed_id))
             classifier_titles = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
             classifier_tags = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
+            classifier_texts = list(MClassifierText.objects(user_id=self.user_id, feed_id=self.feed_id))
 
             if (
                 not len(classifier_feeds)
                 and not len(classifier_authors)
                 and not len(classifier_titles)
                 and not len(classifier_tags)
+                and not len(classifier_texts)
             ):
+                logging.user(self.user, "~FB~BMTurning off is_trained, no classifiers")
                 self.is_trained = False
 
             # if not silent:
@@ -1126,6 +1137,7 @@ class UserSubscription(models.Model):
                         "author": apply_classifier_authors(classifier_authors, story),
                         "tags": apply_classifier_tags(classifier_tags, story),
                         "title": apply_classifier_titles(classifier_titles, story),
+                        "text": apply_classifier_texts(classifier_texts, story),
                     }
                 )
 
@@ -1256,6 +1268,7 @@ class UserSubscription(models.Model):
         switch_feed_for_classifier(MClassifierAuthor)
         switch_feed_for_classifier(MClassifierFeed)
         switch_feed_for_classifier(MClassifierTag)
+        switch_feed_for_classifier(MClassifierText)
 
         # Switch to original feed for the user subscription
         self.feed = new_feed
