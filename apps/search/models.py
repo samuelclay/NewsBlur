@@ -358,7 +358,11 @@ class SearchStory:
             except elasticsearch.exceptions.NotFoundError:
                 logging.debug(f" ---> ~FBCan't delete {cls.index_name()} index, doesn't exist...")
 
-        if cls.ES().indices.exists(cls.index_name()):
+        try:
+            if cls.ES().indices.exists(cls.index_name()):
+                return
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for index mapping check: {e}")
             return
 
         mapping = {
@@ -703,7 +707,11 @@ class DiscoverStory:
             except elasticsearch.exceptions.NotFoundError:
                 logging.debug(f" ---> ~FBCan't delete {cls.index_name()} index, doesn't exist...")
 
-        if cls.ES().indices.exists(cls.index_name()):
+        try:
+            if cls.ES().indices.exists(cls.index_name()):
+                return
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for index mapping check: {e}")
             return
 
         mapping = {
@@ -1048,7 +1056,11 @@ class SearchFeed:
             except elasticsearch.exceptions.NotFoundError:
                 logging.debug(f" ---> ~FBCan't delete {cls.index_name()} index, doesn't exist...")
 
-        if cls.ES().indices.exists(cls.index_name()):
+        try:
+            if cls.ES().indices.exists(cls.index_name()):
+                return
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for index mapping check: {e}")
             return
 
         index_settings = {
