@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: newsblur
+data:
+  nginx.conf: |
+    upstream newsblur {
+        server newsblur-web:8000;
+    }
+    
+    server {
+        listen 81;
+        server_name localhost;
+        
+        client_max_body_size 10M;
+        
+        location /media/ {
+            alias /srv/newsblur/media/;
+            expires max;
+        }
+        
+        location /static/ {
+            alias /srv/newsblur/static/;
+            expires max;
+        }
+        
+        location /favicon.ico {
+            alias /srv/newsblur/media/img/favicon.ico;
+        }
+        
+        location / {
+            proxy_pass http://newsblur;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: newsblur
+  labels:
+    app: nginx
+spec:
+  ports:
+    - port: 81
+      targetPort: 81
+      name: http
+  selector:
+    app: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: newsblur
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.19.6
+        ports:
+        - containerPort: 81
+          name: http
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d
+        - name: app-code
+          mountPath: /srv/newsblur
+          readOnly: true
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 81
+          initialDelaySeconds: 10
+          periodSeconds: 30
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+      - name: app-code
+        emptyDir: {}
+      initContainers:
+      - name: init-web
+        image: busybox:latest
+        command: ['sh', '-c', 'until nc -z newsblur-web 8000; do echo waiting for newsblur-web; sleep 2; done;']
