@@ -6,7 +6,8 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
 
     events: {
         "click .NB-search-header-save": "save_search",
-        "click .NB-search-header-clear": "clear_date_filter"
+        "click .NB-search-header-clear": "clear_date_filter",
+        "click .NB-feed-exception-button": "open_feed_exception_modal"
     },
 
     unload: function () {
@@ -22,14 +23,21 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         var date_filter_start = NEWSBLUR.reader.flags.date_filter_start;
         var date_filter_end = NEWSBLUR.reader.flags.date_filter_end;
         var has_date_filter = !!(date_filter_start || date_filter_end);
+        var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
+        var has_exception = feed && feed.get('has_exception') && !this.showing_fake_folder;
 
-        if (searching || has_date_filter) {
+        if (searching || has_date_filter || has_exception) {
             this.$el.removeClass("NB-hidden");
+
+            // Add appropriate class for styling the icon
+            this.$el.toggleClass("NB-exception", has_exception && !searching && !has_date_filter);
+            this.$el.toggleClass("NB-searching", searching);
+            this.$el.toggleClass("NB-date-filter", has_date_filter && !searching);
 
             var $title = this.make_title();
             this.$(".NB-search-header-title").html($title);
 
-            // Show "Save Search" button for searches, close icon for date filters
+            // Show "Save Search" button for searches, close icon for date filters, hide for exceptions
             if (searching) {
                 var saved = this.is_saved() ? 'Saved' : 'Save Search';
                 this.$(".NB-search-header-save").text(saved).removeClass('NB-search-header-clear').show();
@@ -39,6 +47,7 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
                 this.$(".NB-search-header-save").hide();
             }
         } else {
+            this.$el.removeClass("NB-exception NB-searching NB-date-filter");
             this.unload();
         }
     },
@@ -48,9 +57,22 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         var date_filter_start = NEWSBLUR.reader.flags.date_filter_start;
         var date_filter_end = NEWSBLUR.reader.flags.date_filter_end;
         var searching = NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length;
+        var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
+        var has_exception = feed && feed.get('has_exception') && !this.showing_fake_folder;
 
-        // Check if we're showing search results or date filters
-        if (searching) {
+        // Check if we're showing exception, search results, or date filters
+        if (has_exception && !searching && !date_filter_start && !date_filter_end) {
+            var $view = $('<div class="NB-feed-exception-header">\
+                <div class="NB-feed-exception-icon-large"></div>\
+                <div class="NB-feed-exception-message">\
+                    This site has not been fetched in <b>' + feed.get("updated") + '</b> and is throwing errors.\
+                </div>\
+                <div class="NB-feed-exception-button" role="button">\
+                    Fix misbehaving site\
+                </div>\
+            </div>');
+            return $view;
+        } else if (searching) {
             var $view = $(_.template('<div>\
                 Searching \
                 <b><%= feed_title %></b> for "<b><%= query %></b>"\
@@ -144,6 +166,13 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
 
         NEWSBLUR.reader.clear_active_feed_date_filters();
         NEWSBLUR.reader.reload_feed();
+    },
+
+    open_feed_exception_modal: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        NEWSBLUR.reader.open_feed_exception_modal(NEWSBLUR.reader.active_feed);
     }
 
 });
