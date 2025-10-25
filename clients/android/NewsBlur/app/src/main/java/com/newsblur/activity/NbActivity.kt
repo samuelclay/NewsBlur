@@ -17,10 +17,7 @@ import com.newsblur.util.Log
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -67,15 +64,10 @@ open class NbActivity : AppCompatActivity() {
 
         finishIfNotLoggedIn()
 
-        // Facilitates the db updates by the sync service on the UI
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    NbSyncManager.state.collectLatest {
-                        withContext(Dispatchers.Main) {
-                            handleSyncUpdate(it)
-                        }
-                    }
+                NbSyncManager.state.collect {
+                    handleSyncUpdate(it)
                 }
             }
         }

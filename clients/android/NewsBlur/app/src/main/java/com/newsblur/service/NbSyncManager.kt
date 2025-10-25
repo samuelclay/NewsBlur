@@ -1,10 +1,8 @@
 package com.newsblur.service
 
-import com.newsblur.util.NBScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
 
 object NbSyncManager {
     const val UPDATE_DB_READY = 1 shl 0
@@ -16,7 +14,12 @@ object NbSyncManager {
     const val UPDATE_TEXT = 1 shl 6
     const val UPDATE_REBUILD = 1 shl 7
 
-    private val _state = MutableSharedFlow<NBSync>()
+    private val _state =
+        MutableSharedFlow<NBSync>(
+            replay = 0,
+            extraBufferCapacity = 32,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
     val state = _state.asSharedFlow()
 
     @JvmStatic
@@ -26,9 +29,7 @@ object NbSyncManager {
     fun submitError(msg: String) = submit(NBSync.Error(msg))
 
     private fun submit(nbSync: NBSync) {
-        NBScope.launch(Dispatchers.IO) {
-            _state.emit(nbSync)
-        }
+        _state.tryEmit(nbSync)
     }
 }
 

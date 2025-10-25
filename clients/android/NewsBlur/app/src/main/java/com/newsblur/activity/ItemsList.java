@@ -200,6 +200,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         return contextMenuDelegate.onOptionsItemSelected(item, itemSetFragment, fs, binding.itemlistSearchQuery, getSaveSearchFeedId());
     }
 
+    // infix fun Int.has(flag: Int) = (this and flag) != 0
     @Override
     public void handleUpdate(int updateType) {
         if ((updateType & UPDATE_REBUILD) != 0) {
