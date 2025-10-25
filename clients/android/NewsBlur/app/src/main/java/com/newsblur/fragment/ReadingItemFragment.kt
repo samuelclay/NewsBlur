@@ -199,6 +199,7 @@ class ReadingItemFragment :
     // state into the webview so it behaves.
     override fun onPause() {
         binding.readingWebview.onPause()
+        contentHash = 0
         super.onPause()
     }
 
