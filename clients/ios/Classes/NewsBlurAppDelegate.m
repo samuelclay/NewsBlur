@@ -1198,23 +1198,23 @@
 - (void)prepareViewControllers {
     self.appDelegate = self;
     self.splitViewController = (SplitViewController *)self.window.rootViewController;
-    
+
     NSArray <UIViewController *> *splitChildren = self.splitViewController.viewControllers;
-    
+
     if (splitChildren.count < 3) {
         NSLog(@"Missing split view controllers: %@", splitChildren);  // log
         return;
     }
-    
+
     self.splitViewController.showsSecondaryOnlyButton = YES;
-    
+
     self.feedsNavigationController = (UINavigationController *)splitChildren[0];
     self.feedsViewController = self.feedsNavigationController.viewControllers.firstObject;
     self.feedDetailNavigationController = (UINavigationController *)splitChildren[1];
     self.feedDetailViewController = self.feedDetailNavigationController.viewControllers.firstObject;
     self.detailNavigationController = (UINavigationController *)splitChildren[2];
     self.detailViewController = self.detailNavigationController.viewControllers.firstObject;
-    
+
     self.dashboardViewController = [DashboardViewController new];
     self.friendsListViewController = [FriendsListViewController new];
     self.storyDetailViewController = [StoryDetailViewController new];
@@ -1232,15 +1232,29 @@
     self.firstTimeUserAddSitesViewController = [FirstTimeUserAddSitesViewController new];
     self.firstTimeUserAddFriendsViewController = [FirstTimeUserAddFriendsViewController new];
     self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
-    
+
     [self updateSplitBehavior:NO];
-    
+
     [window makeKeyAndVisible];
-    
+
     [[ThemeManager themeManager] prepareForWindow:self.window];
-    
+
     [feedsViewController view];
-    [feedsViewController loadOfflineFeeds:NO];
+
+    // Check if user is logged in before loading feeds
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    self.activeUsername = [userPreferences stringForKey:@"active_username"];
+
+    if (!self.activeUsername) {
+        // User is not logged in, show login screen immediately without loading feeds
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.loginViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+            [self.feedsNavigationController presentViewController:self.loginViewController animated:NO completion:nil];
+        });
+    } else {
+        // User is logged in, proceed with loading feeds
+        [feedsViewController loadOfflineFeeds:NO];
+    }
 }
 
 - (StoryPagesViewController *)storyPagesViewController {
