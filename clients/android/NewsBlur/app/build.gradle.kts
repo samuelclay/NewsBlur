@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.hilt.android)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.webkit)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.profileinstaller)
 

@@ -2,6 +2,9 @@ package com.newsblur.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.webkit.WebViewAssetLoader
+import androidx.webkit.WebViewAssetLoader.AssetsPathHandler
+import androidx.webkit.WebViewAssetLoader.ResourcesPathHandler
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -139,4 +142,15 @@ object NetworkModule {
         gson: Gson,
         networkClient: NetworkClient,
     ): FeedApi = FeedApiImpl(gson, networkClient)
+
+    @Singleton
+    @Provides
+    fun provideWebViewAssetLoader(
+        @ApplicationContext context: Context,
+    ): WebViewAssetLoader =
+        WebViewAssetLoader
+            .Builder()
+            .addPathHandler("/assets/", AssetsPathHandler(context))
+            .addPathHandler("/res/", ResourcesPathHandler(context))
+            .build()
 }

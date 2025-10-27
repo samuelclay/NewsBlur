@@ -442,6 +442,7 @@ abstract class Reading :
         val currentFragment = readingAdapter?.getExistingItem(currentPosition)
         currentFragment?.handleUpdate(updateType)
 
+        // TODO this might not be needed due to how text is fetched now
         // send the update to the previous and next fragments because the update could
         // be for one of them to load the on demand fetched content
         val prevFragment = readingAdapter?.getExistingItem(currentPosition - 1)

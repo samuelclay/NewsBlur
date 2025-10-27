@@ -42,6 +42,7 @@ junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 composeMaterial3 = "1.5.3"
+webkit = "1.14.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -85,6 +86,7 @@ androidx-preference = { module = "androidx.preference:preference-ktx", version.r
 ui-automator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiAutomator" }
 benchmark-macro-junit4 = { module = "androidx.benchmark:benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
 androidx-compose-material3 = { group = "androidx.wear.compose", name = "compose-material3", version.ref = "composeMaterial3" }
+androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "webkit" }
 
 #room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 #room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }

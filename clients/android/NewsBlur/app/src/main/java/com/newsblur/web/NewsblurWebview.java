@@ -11,12 +11,14 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.webkit.WebViewAssetLoader;
 
 import com.newsblur.R;
 import com.newsblur.activity.Reading;
@@ -35,7 +37,8 @@ public class NewsblurWebview extends WebView {
     // we need the less-abstract activity class in order to manipulate the overlay widgets
     public Reading activity;
 
-    public PrefsRepo prefsRepo;
+    private PrefsRepo prefsRepo;
+    private WebViewAssetLoader assetLoader;
 
     @Nullable
     private WebviewActionDelegate webviewActionDelegate;
@@ -119,7 +122,21 @@ public class NewsblurWebview extends WebView {
         this.prefsRepo = prefsRepo;
     }
 
+    public void setAssetLoader(WebViewAssetLoader assetLoader) {
+        this.assetLoader = assetLoader;
+    }
+
     class NewsblurWebViewClient extends WebViewClient {
+
+        @Nullable
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            return assetLoader.shouldInterceptRequest(request.getUrl());
+        }
+
+        /**
+         * @noinspection deprecation
+         */
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             UIUtils.handleUri(getContext(), prefsRepo, Uri.parse(url));
