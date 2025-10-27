@@ -81,6 +81,8 @@ public class AppConstants {
     // Shiloh photo
     public final static String LYRIC_PHOTO_URL = "https://newsblur.com/media//img/reader/lyric.jpg";
 
+    public final static String READING_BASE_URL = "https://appassets.androidplatform.net/assets/";
+
     // Subscription SKU
     public final static String PREMIUM_SUB_ID = "nb.premium.36";
     public final static String PREMIUM_ARCHIVE_SUB_ID = "nb.premium.archive.99";

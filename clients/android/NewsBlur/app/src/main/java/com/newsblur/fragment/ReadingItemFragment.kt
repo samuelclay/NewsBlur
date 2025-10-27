@@ -26,6 +26,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.webkit.WebViewAssetLoader
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
 import com.newsblur.R
@@ -47,6 +48,7 @@ import com.newsblur.service.NbSyncManager.UPDATE_INTEL
 import com.newsblur.service.NbSyncManager.UPDATE_SOCIAL
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.NbSyncManager.UPDATE_TEXT
+import com.newsblur.util.AppConstants.READING_BASE_URL
 import com.newsblur.util.DefaultFeedView
 import com.newsblur.util.EdgeToEdgeUtil.applyNavBarInsetBottomTo
 import com.newsblur.util.FeedSet
@@ -100,6 +102,9 @@ class ReadingItemFragment :
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
+
+    @Inject
+    lateinit var assetLoader: WebViewAssetLoader
 
     @JvmField
     var story: Story? = null
@@ -223,6 +228,7 @@ class ReadingItemFragment :
         selectedViewMode = prefsRepo.getDefaultViewModeForFeed(story!!.feedId)
 
         registerForContextMenu(binding.readingWebview)
+        binding.readingWebview.setAssetLoader(assetLoader)
         binding.readingWebview.setPrefsRepo(prefsRepo)
         binding.readingWebview.setCustomViewLayout(binding.customViewContainer)
         binding.readingWebview.setWebviewWrapperLayout(binding.readingContainer)
@@ -998,7 +1004,7 @@ class ReadingItemFragment :
                 this@ReadingItemFragment.contentHash = newHash
 
                 isWebLoadFinished.set(false)
-                binding.readingWebview.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "UTF-8", null)
+                binding.readingWebview.loadDataWithBaseURL(READING_BASE_URL, html, "text/html", "UTF-8", null)
                 onContentLoadFinished()
             }
         }
