@@ -898,7 +898,7 @@
     } else if (outOfBounds && pageController == self.currentPage) {
         [pageController clearStory];
         
-        [self.appDelegate showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"applyNewIndex"];
+        [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"applyNewIndex"];
     }
     
     if (!suppressRedraw) {
@@ -1803,7 +1803,7 @@
     self.circularProgressView.hidden = NO;
     id previousStoryId = [appDelegate.storiesCollection popReadStory];
     if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"story_hash"]) {
-        [self.appDelegate showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"doPreviousStory"];
+        [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"doPreviousStory"];
         [appDelegate hideStoryDetailView];
     } else {
         NSInteger previousLocation = [appDelegate.storiesCollection locationOfStoryId:previousStoryId];

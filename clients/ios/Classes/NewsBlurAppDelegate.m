@@ -95,7 +95,6 @@
 @synthesize detailViewController;
 @synthesize activitiesViewController;
 @synthesize feedsViewController;
-@synthesize feedDetailViewController;
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
@@ -861,9 +860,8 @@
 - (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo {
     NSLog(@"⚠️ show column for %@: split view controller: %@ split nav: %@; split controllers: %@; detail controller: %@; detail nav: %@; detail nav controllers: %@", debugInfo, self.splitViewController, self.splitViewController.navigationController, self.splitViewController.viewControllers, self.detailViewController, self.detailViewController.navigationController, self.detailViewController.navigationController.viewControllers);  // log
     
-    if (self.splitViewController.displayMode != UISplitViewControllerDisplayModeSecondaryOnly && (self.splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoBesideSecondary ||
-        self.splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoDisplaceSecondary ||
-        self.splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoOverSecondary)) {
+    if (self.splitViewController.displayMode != UISplitViewControllerDisplayModeSecondaryOnly && (self.splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeOneBesideSecondary ||
+        self.splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeOneOverSecondary)) {
         [self.splitViewController showColumn:column];
     }
     
@@ -890,13 +888,13 @@
     if (self.detailViewController.storyTitlesOnLeft) {
         if ([behavior isEqualToString:@"tile"]) {
             self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
         } else if ([behavior isEqualToString:@"displace"]) {
             self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
         } else if ([behavior isEqualToString:@"overlay"]) {
             self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoOverSecondary;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
         } else {
             self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
             self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
@@ -907,7 +905,7 @@
             self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
         } else {
             self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
         }
     }
     
@@ -1231,7 +1229,7 @@
     
     NSArray <UIViewController *> *splitChildren = self.splitViewController.viewControllers;
     
-    if (splitChildren.count < 3) {
+    if (splitChildren.count < 2) {
         NSLog(@"Missing split view controllers: %@", splitChildren);  // log
         return;
     }
@@ -1240,11 +1238,8 @@
     
     self.feedsNavigationController = (UINavigationController *)splitChildren[0];
     self.feedsViewController = self.feedsNavigationController.viewControllers.firstObject;
-    self.feedDetailNavigationController = (UINavigationController *)splitChildren[1];
-    self.feedDetailViewController = self.feedDetailNavigationController.viewControllers.firstObject;
-    self.detailNavigationController = (UINavigationController *)splitChildren[2];
+    self.detailNavigationController = (UINavigationController *)splitChildren[1];
     self.detailViewController = self.detailNavigationController.viewControllers.firstObject;
-    
     self.activitiesViewController = [ActivitiesViewController new];
     self.friendsListViewController = [FriendsListViewController new];
     self.storyDetailViewController = [StoryDetailViewController new];
@@ -1272,7 +1267,13 @@
     [feedsViewController view];
     [feedsViewController loadOfflineFeeds:NO];
     
+    [self.detailViewController view];
+    
     [[UIMenuSystem mainSystem] setNeedsRebuild];
+}
+
+- (FeedDetailViewController *)feedDetailViewController {
+    return self.detailViewController.feedDetailViewController;
 }
 
 - (StoryPagesViewController *)storyPagesViewController {
@@ -1701,8 +1702,8 @@
     self.inFeedDetail = YES;
     popoverHasFeedView = YES;
     
-    [feedDetailViewController resetFeedDetail];
-    feedDetailViewController.storiesCollection = storiesCollection;
+    [self.feedDetailViewController resetFeedDetail];
+    self.feedDetailViewController.storiesCollection = storiesCollection;
     
     if (transition) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
@@ -1722,9 +1723,7 @@
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController loadingFeed];
         
-        if (detailViewController.storyTitlesOnLeft || detailViewController.storyTitlesInGridView) {
-            [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
-        }
+        [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadFeedDetailView"];
     }
     
     [self flushQueuedReadStories:NO withCallback:^{
@@ -1888,7 +1887,7 @@
     self.tryFeedStoryId = contentId;
     storiesCollection.activeFolder = @"saved_stories";
     
-    [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"saved_stories"];
+    [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"saved_stories"];
     
     if (showHUD) {
         if (!self.isPhone) {
@@ -2048,7 +2047,7 @@
     
     self.inFeedDetail = YES;
     [feedDetailView resetFeedDetail];
-    if (feedDetailView == feedDetailViewController) {
+    if (feedDetailView == self.feedDetailViewController) {
         feedDetailView.storiesCollection = storiesCollection;
     }
     
@@ -2150,7 +2149,7 @@
     
     detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
     
-    if (self.isCompactWidth && feedDetailView == feedDetailViewController && feedDetailView.view.window == nil) {
+    if (self.isCompactWidth && feedDetailView == self.feedDetailViewController && feedDetailView.view.window == nil) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
                                                                           style: UIBarButtonItemStylePlain
                                                                          target: nil
@@ -2163,7 +2162,7 @@
         }
     }
     
-    [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadRiverFeedDetailView"];
+    [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadRiverFeedDetailView"];
     
     [self flushQueuedReadStories:NO withCallback:^{
         [self flushQueuedSavedStories:NO withCallback:^{
@@ -2258,7 +2257,7 @@
 }
 
 - (void)changeActiveFeedDetailRow {
-    [feedDetailViewController changeActiveFeedDetailRow];
+    [self.feedDetailViewController changeActiveFeedDetailRow];
 }
 
 - (void)loadStoryDetailView {
@@ -3181,36 +3180,36 @@
 
 - (void)failedMarkAsUnread:(NSDictionary *)params {
     if (![self.storyPagesViewController failedMarkAsUnread:params]) {
-        [feedDetailViewController failedMarkAsUnread:params];
+        [self.feedDetailViewController failedMarkAsUnread:params];
         [self.storyPagesViewController failedMarkAsUnread:params];
     }
-    [feedDetailViewController reloadWithSizing];
+    [self.feedDetailViewController reloadWithSizing];
 }
 
 - (void)finishMarkAsSaved:(NSDictionary *)params {
     [self.storyPagesViewController finishMarkAsSaved:params];
-    [feedDetailViewController finishMarkAsSaved:params];
+    [self.feedDetailViewController finishMarkAsSaved:params];
 }
 
 - (void)failedMarkAsSaved:(NSDictionary *)params {
     if (![self.storyPagesViewController failedMarkAsSaved:params]) {
-        [feedDetailViewController failedMarkAsSaved:params];
+        [self.feedDetailViewController failedMarkAsSaved:params];
         [self.storyPagesViewController failedMarkAsSaved:params];
     }
-    [feedDetailViewController reloadWithSizing];
+    [self.feedDetailViewController reloadWithSizing];
 }
 
 - (void)finishMarkAsUnsaved:(NSDictionary *)params {
     [self.storyPagesViewController finishMarkAsUnsaved:params];
-    [feedDetailViewController finishMarkAsUnsaved:params];
+    [self.feedDetailViewController finishMarkAsUnsaved:params];
 }
 
 - (void)failedMarkAsUnsaved:(NSDictionary *)params {
     if (![self.storyPagesViewController failedMarkAsUnsaved:params]) {
-        [feedDetailViewController failedMarkAsUnsaved:params];
+        [self.feedDetailViewController failedMarkAsUnsaved:params];
         [self.storyPagesViewController failedMarkAsUnsaved:params];
     }
-    [feedDetailViewController reloadWithSizing];
+    [self.feedDetailViewController reloadWithSizing];
 }
 
 
@@ -3413,17 +3412,17 @@
     popoverPresentationController.permittedArrowDirections = permittedArrowDirections;
     
 #if TARGET_OS_MACCATALYST
-    if (barButtonItem && barButtonItem == appDelegate.feedDetailViewController.settingsBarButton) {
-        UINavigationController *feedDetailNavController = appDelegate.feedDetailViewController.navigationController;
+    if (barButtonItem && barButtonItem == self.feedDetailViewController.settingsBarButton) {
+        UINavigationController *feedDetailNavController = self.feedDetailViewController.navigationController;
         barButtonItem = nil;
         sourceView = feedDetailNavController.view;
-        if (appDelegate.splitViewController.isFeedListHidden) {
+        if (self.splitViewController.isFeedListHidden) {
             sourceRect = CGRectMake(224, 0, 20, 20);
         } else {
             sourceRect = CGRectMake(152, 0, 20, 20);
         }
-    } else if (barButtonItem && barButtonItem == appDelegate.storyPagesViewController.fontSettingsButton) {
-        UINavigationController *storiesNavController = appDelegate.storyPagesViewController.navigationController;
+    } else if (barButtonItem && barButtonItem == self.storyPagesViewController.fontSettingsButton) {
+        UINavigationController *storiesNavController = self.storyPagesViewController.navigationController;
         barButtonItem = nil;
         sourceView = storiesNavController.view;
         sourceRect = CGRectMake(storiesNavController.view.frame.size.width - 59, 0, 20, 20);

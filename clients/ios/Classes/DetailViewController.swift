@@ -18,17 +18,20 @@ class DetailViewController: BaseViewController {
         /// Behavior of the split controller.
         static let behavior = "split_behavior"
         
-        /// Position of the divider between the views when in horizontal orientation. Only used for `.top` and `.bottom` layouts.
-        static let horizontalPosition = "story_titles_divider_horizontal"
+        /// Position of the vertical divider between the views when in landscape orientation. Only used for `.left`layout.
+        static let verticalDividerLandscapePosition = "story_titles_vertical_divider_landscape"
         
-        /// Position of the divider between the views when in vertical orientation. Only used for `.top` and `.bottom` layouts.
-        static let verticalPosition = "story_titles_divider_vertical"
+        /// Position of the vertical divider between the views when in portrait orientation. Only used for `.left` layout.
+        static let verticalDividerPortraitPosition = "story_titles_vertical_divider_portrait"
+        
+        /// Position of the horizontal divider between the views when in landscape orientation. Only used for `.top` and `.bottom` layouts.
+        static let horizontalDividerLandscapePosition = "story_titles_divider_horizontal"
+        
+        /// Position of the horizontal divider between the views when in portrait orientation. Only used for `.top` and `.bottom` layouts.
+        static let horizontalDividerPortraitPosition = "story_titles_divider_vertical"
         
         /// Width of the feeds view, i.e. the primary split column.
         static let feedsWidth = "split_primary_width"
-        
-        /// Width of the feed detail view, i.e. the supplementary split column.
-        static let feedDetailWidth = "split_supplementary_width"
     }
     
     /// Preference values.
@@ -228,10 +231,33 @@ class DetailViewController: BaseViewController {
         return UserDefaults.standard.string(forKey: Key.behavior) ?? BehaviorValue.auto
     }
     
-    /// Position of the divider between the views.
-    var dividerPosition: CGFloat {
+    /// Position of the vertical divider between the views.
+    var verticalDividerPosition: CGFloat {
         get {
-            let key = isPortrait ? Key.verticalPosition : Key.horizontalPosition
+            let key = isPortrait ? Key.verticalDividerPortraitPosition : Key.verticalDividerLandscapePosition
+            let value = CGFloat(UserDefaults.standard.float(forKey: key))
+            
+            if value == 0 {
+                return 400
+            } else {
+                return value
+            }
+        }
+        set {
+            guard newValue != verticalDividerPosition else {
+                return
+            }
+            
+            let key = isPortrait ? Key.verticalDividerPortraitPosition : Key.verticalDividerLandscapePosition
+            
+            UserDefaults.standard.set(Float(newValue), forKey: key)
+        }
+    }
+    
+    /// Position of the horizontal divider between the views.
+    var horizontalDividerPosition: CGFloat {
+        get {
+            let key = isPortrait ? Key.horizontalDividerPortraitPosition : Key.horizontalDividerLandscapePosition
             let value = CGFloat(UserDefaults.standard.float(forKey: key))
             
             if value == 0 {
@@ -241,11 +267,11 @@ class DetailViewController: BaseViewController {
             }
         }
         set {
-            guard newValue != dividerPosition else {
+            guard newValue != horizontalDividerPosition else {
                 return
             }
             
-            let key = isPortrait ? Key.verticalPosition : Key.horizontalPosition
+            let key = isPortrait ? Key.horizontalDividerPortraitPosition : Key.horizontalDividerLandscapePosition
             
             UserDefaults.standard.set(Float(newValue), forKey: key)
         }
@@ -271,25 +297,8 @@ class DetailViewController: BaseViewController {
         }
     }
     
-    /// Width of the feed detail view, i.e. the supplementary split column.
-    var feedDetailWidth: CGFloat {
-        get {
-            let value = CGFloat(UserDefaults.standard.float(forKey: Key.feedDetailWidth))
-            
-            if value == 0 {
-                return 400
-            } else {
-                return value
-            }
-        }
-        set {
-            guard newValue > 0, newValue != feedDetailWidth else {
-                return
-            }
-            
-            UserDefaults.standard.set(Float(newValue), forKey: Key.feedDetailWidth)
-        }
-    }
+    /// Left container view.
+    @IBOutlet weak var leftContainerView: UIView!
     
     /// Top container view.
     @IBOutlet weak var topContainerView: UIView!
@@ -297,17 +306,26 @@ class DetailViewController: BaseViewController {
     /// Bottom container view.
     @IBOutlet weak var bottomContainerView: UIView!
     
-    /// Draggable divider view.
-    @IBOutlet weak var dividerView: UIView!
+    /// Draggable vertical divider view.
+    @IBOutlet weak var verticalDividerView: UIView!
     
-    /// Indicator image in the divider view.
-    @IBOutlet weak var dividerImageView: UIImageView!
+    /// Indicator image in the vertical divider view.
+//    @IBOutlet weak var verticalDividerImageView: UIImageView!
+    
+    /// Draggable horizontal divider view.
+    @IBOutlet weak var horizontalDividerView: UIView!
+    
+    /// Indicator image in the horizontal divider view.
+//    @IBOutlet weak var horizontalDividerImageView: UIImageView!
+    
+    /// Vertical divider view leading constraint.
+    @IBOutlet weak var verticalDividerViewLeadingConstraint: NSLayoutConstraint!
     
     /// Top container view top constraint. May need to adjust this for fullscreen on iPhone.
     @IBOutlet weak var topContainerTopConstraint: NSLayoutConstraint!
     
-    /// Bottom constraint of the divider view.
-    @IBOutlet weak var dividerViewBottomConstraint: NSLayoutConstraint!
+    /// Horizontal divider view bottom constraint.
+    @IBOutlet weak var horizontalDividerViewBottomConstraint: NSLayoutConstraint!
     
     /// The navigation controller managed by the split view controller, that encloses the immediate navigation controller of the detail view when in compact layout.
     @objc var parentNavigationController: UINavigationController? {
@@ -315,13 +333,13 @@ class DetailViewController: BaseViewController {
     }
     
     /// The feed detail navigation controller in the supplementary pane, loaded from the storyboard.
-    var supplementaryFeedDetailNavigationController: UINavigationController?
+//    var supplementaryFeedDetailNavigationController: UINavigationController?
     
     /// The feed detail view controller in the supplementary pane, loaded from the storyboard.
-    var supplementaryFeedDetailViewController: FeedDetailViewController?
+//    var supplementaryFeedDetailViewController: FeedDetailViewController?
     
-    /// The feed detail view controller, if using `top`, `bottom`, `.list`, `.magazine`, or `grid` layout. `nil` if using `left` layout.
-    var feedDetailViewController: FeedDetailViewController?
+    /// The feed detail view controller.
+    @objc var feedDetailViewController: FeedDetailViewController?
     
     /// Whether or not a grid view-based layout was used the last time checking the view controllers.
     var wasGridView = false
@@ -363,7 +381,7 @@ class DetailViewController: BaseViewController {
         }
         
         if reload {
-            self.feedDetailViewController?.reload()
+            feedDetailViewController?.reload()
         }
     }
     
@@ -378,7 +396,7 @@ class DetailViewController: BaseViewController {
         manager.update(navigationController)
         manager.updateBackground(of: view)
         
-        dividerImageView.image = manager.themedImage(UIImage(named: "drag_icon.png"))
+//        horizontalDividerImageView.image = manager.themedImage(UIImage(named: "drag_icon.png"))
         view.backgroundColor = navigationController?.navigationBar.barTintColor
         navigationController?.navigationBar.barStyle = manager.isDarkTheme ? .black : .default
         
@@ -401,22 +419,6 @@ class DetailViewController: BaseViewController {
         
         storyPagesViewController.currentPage.webView.scrollView.isScrollEnabled = false
     }
-    
-    /// Moves the story pages controller to a Grid layout cell content (automatically removing it from the previous parent).
-//    @objc func moveStoriesToGridCell(_ cellContent: UIView) {
-//        #warning("hack disabled for SwiftUI experiment")
-////        guard let storyPagesViewController else {
-////            return
-////        }
-////
-////        NSLog("🎈 moveStoriesToGridCell: \(storyPagesViewController.currentPage.activeStory["story_title"] ?? "none")")
-////
-////        add(viewController: storyPagesViewController, to: cellContent, of: appDelegate.feedDetailViewController)
-////
-////        adjustForAutoscroll()
-////
-////        storyPagesViewController.currentPage.webView.scrollView.isScrollEnabled = false
-//    }
     
     /// Moves the story pages controller to the appropriate container in the detail controller (automatically removing it from the previous parent).
     @objc func moveStoriesToDetailContainer() {
@@ -457,9 +459,17 @@ class DetailViewController: BaseViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
-        if [.top, .bottom].contains(layout) {
+        if self.verticalDividerView == nil {
+            return
+        }
+        
+        if [.left].contains(layout) {
             coordinator.animate { context in
-                self.dividerViewBottomConstraint.constant = self.dividerPosition
+                self.verticalDividerViewLeadingConstraint.constant = self.verticalDividerPosition
+            }
+        } else if [.top, .bottom].contains(layout) {
+            coordinator.animate { context in
+                self.horizontalDividerViewBottomConstraint.constant = self.horizontalDividerPosition
             }
         }
         
@@ -475,12 +485,6 @@ class DetailViewController: BaseViewController {
         
         if currentFeedsWidth != feedsWidth {
             feedsWidth = currentFeedsWidth
-        }
-        
-        let currentFeedDetailWidth = splitViewController?.supplementaryColumnWidth ?? 400
-        
-        if currentFeedDetailWidth > 0, currentFeedDetailWidth != feedDetailWidth {
-            feedDetailWidth = currentFeedDetailWidth
         }
     }
     
@@ -505,7 +509,8 @@ class DetailViewController: BaseViewController {
         }
     }
     
-    private var isDraggingDivider = false
+    private var isDraggingVerticalDivider = false
+    private var isDraggingHorizontalDivider = false
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first
@@ -514,27 +519,40 @@ class DetailViewController: BaseViewController {
             return
         }
         
-        let isInside = dividerView.frame.contains(point)
+        let isInsideVertical = verticalDividerView.frame.contains(point)
+        let isInsideHorizontal = horizontalDividerView.frame.contains(point)
         
-        guard touch?.view == dividerView || isInside || isDraggingDivider else {
-            return
+        if touch?.view == verticalDividerView || isInsideVertical || isDraggingVerticalDivider {
+            isDraggingVerticalDivider = true
+            
+            let leftContainerOriginX = leftContainerView.frame.origin.x
+            let position = point.x - leftContainerOriginX
+            
+            guard position > 150, position < view.frame.width - leftContainerOriginX - 200 else {
+                return
+            }
+            
+            verticalDividerPosition = position
+            verticalDividerViewLeadingConstraint.constant = position
+        } else if touch?.view == horizontalDividerView || isInsideHorizontal || isDraggingHorizontalDivider {
+            isDraggingHorizontalDivider = true
+            
+            let position = view.frame.height - point.y
+            
+            guard position > 150, position < view.frame.height - 200 else {
+                return
+            }
+            
+            horizontalDividerPosition = position
+            horizontalDividerViewBottomConstraint.constant = position
         }
         
-        isDraggingDivider = true
-        
-        let position = view.frame.height - point.y - 6
-        
-        guard position > 150, position < view.frame.height - 200 else {
-            return
-        }
-        
-        dividerPosition = position
-        dividerViewBottomConstraint.constant = position
         view.setNeedsLayout()
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        isDraggingDivider = false
+        isDraggingVerticalDivider = false
+        isDraggingHorizontalDivider = false
     }
 }
 
@@ -546,10 +564,10 @@ private extension DetailViewController {
         splitViewController?.primaryBackgroundStyle = .sidebar
         splitViewController?.minimumPrimaryColumnWidth = 250
         splitViewController?.maximumPrimaryColumnWidth = 700
-        splitViewController?.minimumSupplementaryColumnWidth = storyTitlesOnLeft ? 250 : 0
-        splitViewController?.maximumSupplementaryColumnWidth = 700
+//        splitViewController?.minimumSupplementaryColumnWidth = storyTitlesOnLeft ? 250 : 0
+//        splitViewController?.maximumSupplementaryColumnWidth = 700
         splitViewController?.preferredPrimaryColumnWidth = feedsWidth
-        splitViewController?.preferredSupplementaryColumnWidth = storyTitlesOnLeft ? feedDetailWidth : 0
+//        splitViewController?.preferredSupplementaryColumnWidth = storyTitlesOnLeft ? feedDetailWidth : 0
 #endif
         
         if !storyTitlesInGridView || isPhone {
@@ -572,19 +590,19 @@ private extension DetailViewController {
                 
                 add(viewController: feedDetailViewController, top: true)
                 
-                if appDelegate.feedDetailNavigationController != nil {
-                    supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
-                }
+//                if appDelegate.feedDetailNavigationController != nil {
+//                    supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
+//                }
                 
-                supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
-                appDelegate.feedDetailNavigationController = nil
-                appDelegate.feedDetailViewController = feedDetailViewController
+//                supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
+//                appDelegate.feedDetailNavigationController = nil
+//                appDelegate.feedDetailViewController = feedDetailViewController
                 
-                if isOS26OrLater {
-                    showHideSupplementary(show: false)
-                }
+//                if isOS26OrLater {
+//                    showHideSupplementary(show: false)
+//                }
                 
-                appDelegate.splitViewController.setViewController(nil, for: .supplementary)
+//                appDelegate.splitViewController.setViewController(nil, for: .supplementary)
                 
                 if storyTitlesInDashboard, let feedDetailViewController, feedDetailViewController.storyCache.dashboardAll.isEmpty {
                     feedDetailViewController.storyCache.prepareDashboard()
@@ -594,36 +612,44 @@ private extension DetailViewController {
                     }
                 }
             } else {
-                if isOS26OrLater {
-                    showHideSupplementary(show: false)
-                }
+//                if isOS26OrLater {
+//                    showHideSupplementary(show: false)
+//                }
                 
                 add(viewController: feedDetailViewController, top: true)
             }
             
-            dividerViewBottomConstraint.constant = -13
+            verticalDividerViewLeadingConstraint.constant = -13
+            horizontalDividerViewBottomConstraint.constant = -13
             wasGridView = true
         } else if layout == .left || isPhone {
-            if feedDetailViewController != nil {
+            if feedDetailViewController == nil {
                 remove(viewController: feedDetailViewController)
                 
-                feedDetailViewController = nil
-                supplementaryFeedDetailViewController?.storiesCollection = appDelegate.storiesCollection
-                appDelegate.feedDetailNavigationController = supplementaryFeedDetailNavigationController
-                appDelegate.feedDetailViewController = supplementaryFeedDetailViewController
-                appDelegate.feedDetailViewController.resetFeedDetail()
-                appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
-                supplementaryFeedDetailNavigationController = nil
-                supplementaryFeedDetailViewController = nil
+                feedDetailViewController = Storyboards.shared.controller(withIdentifier: .feedDetail) as? FeedDetailViewController
+                feedDetailViewController?.resetFeedDetail()
+                feedDetailViewController?.storiesCollection = appDelegate.storiesCollection
+                
+                add(viewController: feedDetailViewController, to: leftContainerView)
+                
+//                supplementaryFeedDetailViewController?.storiesCollection = appDelegate.storiesCollection
+//                appDelegate.feedDetailNavigationController = supplementaryFeedDetailNavigationController
+//                appDelegate.feedDetailViewController = supplementaryFeedDetailViewController
+//                appDelegate.feedDetailViewController.resetFeedDetail()
+//                appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
+//                supplementaryFeedDetailNavigationController = nil
+//                supplementaryFeedDetailViewController = nil
+            } else if feedDetailViewController?.view.superview != leftContainerView {
+                add(viewController: feedDetailViewController, to: leftContainerView)
             }
             
-            if isOS26OrLater {
-                showHideSupplementary(show: true)
-            }
+//            if isOS26OrLater {
+//                showHideSupplementary(show: true)
+//            }
             
-            if !isPhone {
-                appDelegate.show(.supplementary, debugInfo: "checkViewControllers")
-            }
+//            if !isPhone {
+//                appDelegate.show(.supplementary, debugInfo: "checkViewControllers")
+//            }
             
             if wasGridView && !isPhone {
                 DispatchQueue.main.async {
@@ -631,7 +657,8 @@ private extension DetailViewController {
                 }
             }
             
-            dividerViewBottomConstraint.constant = -13
+            verticalDividerViewLeadingConstraint.constant = verticalDividerPosition
+            horizontalDividerViewBottomConstraint.constant = -13
             wasGridView = false
         } else {
             if feedDetailViewController == nil || wasGridView {
@@ -643,38 +670,39 @@ private extension DetailViewController {
                 
                 add(viewController: feedDetailViewController, top: isTop)
                 
-                if appDelegate.feedDetailNavigationController != nil {
-                    supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
-                }
+//                if appDelegate.feedDetailNavigationController != nil {
+//                    supplementaryFeedDetailNavigationController = appDelegate.feedDetailNavigationController
+//                }
+//                
+//                supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
+//                appDelegate.feedDetailNavigationController = nil
+//                appDelegate.feedDetailViewController = feedDetailViewController
                 
-                supplementaryFeedDetailViewController = appDelegate.feedDetailViewController
-                appDelegate.feedDetailNavigationController = nil
-                appDelegate.feedDetailViewController = feedDetailViewController
+//                if isOS26OrLater {
+//                    showHideSupplementary(show: false)
+//                }
                 
-                if isOS26OrLater {
-                    showHideSupplementary(show: false)
-                }
-                
-                appDelegate.splitViewController.setViewController(nil, for: .supplementary)
+//                appDelegate.splitViewController.setViewController(nil, for: .supplementary)
             } else {
-                if isOS26OrLater {
-                    showHideSupplementary(show: false)
-                }
+//                if isOS26OrLater {
+//                    showHideSupplementary(show: false)
+//                }
                 
-                let appropriateSuperview = isTop ? topContainerView : bottomContainerView
+                let appropriateSuperview: UIView = isTop ? topContainerView : bottomContainerView
                 
                 if feedDetailViewController?.view.superview != appropriateSuperview {
                     add(viewController: feedDetailViewController, top: isTop)
                 }
             }
             
-            dividerViewBottomConstraint.constant = dividerPosition
+            verticalDividerViewLeadingConstraint.constant = -13
+            horizontalDividerViewBottomConstraint.constant = horizontalDividerPosition
             
             appDelegate.updateSplitBehavior(true)
             wasGridView = false
         }
         
-        appDelegate.feedDetailViewController.changedLayout()
+        feedDetailViewController?.changedLayout()
     }
     
     func add(viewController: UIViewController?, top: Bool) {
@@ -715,35 +743,35 @@ private extension DetailViewController {
         viewController.view.removeFromSuperview()
     }
     
-    func showHideSupplementary(show: Bool) {
-//        guard let split = appDelegate.splitViewController else {
-//            return
-//        }
-        
-        if show {
-            splitViewController?.minimumSupplementaryColumnWidth = 250
-            splitViewController?.preferredSupplementaryColumnWidth = feedDetailWidth
-            
-//            split.preferredDisplayMode = .twoBesideSecondary   // primary + supplementary beside secondary
-//            split.show(.supplementary)
-        } else {
-            splitViewController?.minimumSupplementaryColumnWidth = 0
-            splitViewController?.preferredSupplementaryColumnWidth = 0
-            
-//            split.preferredDisplayMode = .oneBesideSecondary
+//    func showHideSupplementary(show: Bool) {
+////        guard let split = appDelegate.splitViewController else {
+////            return
+////        }
+//        
+//        if show {
+//            splitViewController?.minimumSupplementaryColumnWidth = 250
+//            splitViewController?.preferredSupplementaryColumnWidth = feedDetailWidth
 //            
-//            split.hide(.supplementary)
+////            split.preferredDisplayMode = .twoBesideSecondary   // primary + supplementary beside secondary
+////            split.show(.supplementary)
+//        } else {
+//            splitViewController?.minimumSupplementaryColumnWidth = 0
+//            splitViewController?.preferredSupplementaryColumnWidth = 0
+//            
+////            split.preferredDisplayMode = .oneBesideSecondary
+////            
+////            split.hide(.supplementary)
+////
+////            DispatchQueue.main.async {
+////                split.show(.primary)
+////                split.show(.secondary)
+////                
+////                split.view.setNeedsLayout()
+////                split.view.layoutIfNeeded()
+////            }
+//        }
 //
-//            DispatchQueue.main.async {
-//                split.show(.primary)
-//                split.show(.secondary)
-//                
-//                split.view.setNeedsLayout()
-//                split.view.layoutIfNeeded()
-//            }
-        }
-
-    }
+//    }
     
     /// The status bar portion of the navigation controller isn't the right color, due to a white subview bleeding through the visual effect view. This somewhat hacky function will correct that.
     func tidyNavigationController() {
