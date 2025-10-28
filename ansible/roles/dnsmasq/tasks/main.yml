@@ -19,9 +19,9 @@
 
 - name: Bind dnsmasq to localhost
   become: yes
-  lineinfile: 
-    dest: /etc/dnsmasq.conf 
-    state: present 
+  lineinfile:
+    dest: /etc/dnsmasq.conf
+    state: present
     line: 'listen-address=127.0.0.1'
 
 - name: Gather network facts
