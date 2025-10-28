@@ -226,7 +226,7 @@ test_haproxy_staging:
 	./utils/test_haproxy_toggle.sh --staging
 celery_stop:
 	ansible-playbook ansible/deploy.yml -l task --tags stop
-sentry:
+deploy_sentry:
 	ansible-playbook ansible/setup.yml -l sentry -t sentry
 maintenance_on:
 	ansible-playbook ansible/deploy.yml -l web --tags maintenance_on

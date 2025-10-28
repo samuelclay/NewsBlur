@@ -41,7 +41,14 @@ fi
 
 # Function to extract ansible_host value
 extract_host() {
-    grep "$1" "$INI_FILE" | awk '{print $2}' | cut -d'=' -f2
+    # Try exact match first (hostname at start of line followed by whitespace)
+    # Skip commented lines (starting with ; or #)
+    local host=$(grep "^$1[[:space:]]" "$INI_FILE" | grep -v "^[;#]" | awk '{print $2}' | cut -d'=' -f2)
+    # Fall back to substring match if exact match not found
+    if [ -z "$host" ]; then
+        host=$(grep "$1" "$INI_FILE" | grep -v "^[;#]" | awk '{print $2}' | cut -d'=' -f2)
+    fi
+    echo "$host"
 }
 
 # Extract the host for the given alias
