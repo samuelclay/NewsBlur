@@ -10,7 +10,7 @@
   "enable_syslog": true,
   "retry_join": [{{ consul_manager_ip.stdout|trim }}],
   {% if inventory_hostname.startswith("hdb") and inventory_hostname|regex_replace("\-?\d+", "") not in ["hdb-mongo-analytics", "hdb-sentry"] %}
-  "advertise_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^enp\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
+  "advertise_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^en(p|o)\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
   {% else %}
   "advertise_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^eth\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
   {% endif %}
