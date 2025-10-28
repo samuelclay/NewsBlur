@@ -22,6 +22,13 @@
     groups: docker
     append: yes
 
+- name: "Add nb user to docker group"
+  become: yes
+  user:
+    name: nb
+    groups: docker
+    append: yes
+
 - name: Turn off Docker iptables firewall exclusion
   become: yes
   template:
