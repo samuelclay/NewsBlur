@@ -331,7 +331,7 @@
         command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(toggleSidebar:)) {
         UISplitViewController *splitViewController = self.appDelegate.splitViewController;
-        if (splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoBesideSecondary) {
+        if (splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeOneBesideSecondary) {
             command.title = @"Show Sidebar";
         } else {
             command.title = @"Hide Sidebar";
@@ -459,7 +459,7 @@
 }
 
 - (IBAction)findInFeedDetail:(id)sender {
-    [self.appDelegate showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"findInFeedDetail"];
+    [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"findInFeedDetail"];
     [self.appDelegate.feedDetailViewController.searchBar becomeFirstResponder];
 }
 
@@ -582,31 +582,31 @@
     UISplitViewController *splitViewController = self.appDelegate.splitViewController;
     
     [UIView animateWithDuration:0.2 animations:^{
-        NSLog(@"toggleSidebar: displayMode: %@; preferredDisplayMode: %@; UISplitViewControllerDisplayModeSecondaryOnly: %@; UISplitViewControllerDisplayModeTwoBesideSecondary: %@, UISplitViewControllerDisplayModeOneBesideSecondary: %@; ", @(splitViewController.displayMode), @(splitViewController.preferredDisplayMode), @(UISplitViewControllerDisplayModeSecondaryOnly), @(UISplitViewControllerDisplayModeTwoBesideSecondary), @(UISplitViewControllerDisplayModeOneBesideSecondary));  // log
+        NSLog(@"toggleSidebar: displayMode: %@; preferredDisplayMode: %@; UISplitViewControllerDisplayModeSecondaryOnly: %@; UISplitViewControllerDisplayModeOneBesideSecondary: %@; ", @(splitViewController.displayMode), @(splitViewController.preferredDisplayMode), @(UISplitViewControllerDisplayModeSecondaryOnly), @(UISplitViewControllerDisplayModeOneBesideSecondary));  // log
         
         if (splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorOverlay) {
-            splitViewController.preferredDisplayMode = (splitViewController.displayMode != UISplitViewControllerDisplayModeTwoOverSecondary ? UISplitViewControllerDisplayModeTwoOverSecondary : UISplitViewControllerDisplayModeOneOverSecondary);
+            splitViewController.preferredDisplayMode = (splitViewController.displayMode != UISplitViewControllerDisplayModeOneOverSecondary ? UISplitViewControllerDisplayModeOneOverSecondary : UISplitViewControllerDisplayModeOneBesideSecondary);
         } else if (splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorDisplace) {
-            if (splitViewController.preferredDisplayMode == UISplitViewControllerDisplayModeTwoDisplaceSecondary &&
+            if (splitViewController.preferredDisplayMode == UISplitViewControllerDisplayModeOneOverSecondary &&
                 splitViewController.displayMode == UISplitViewControllerDisplayModeSecondaryOnly) {
                 splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
                 
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+                    splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
                 });
             } else {
-                splitViewController.preferredDisplayMode = (splitViewController.displayMode != UISplitViewControllerDisplayModeTwoDisplaceSecondary ? UISplitViewControllerDisplayModeTwoDisplaceSecondary : UISplitViewControllerDisplayModeOneBesideSecondary);
+                splitViewController.preferredDisplayMode = (splitViewController.displayMode != UISplitViewControllerDisplayModeOneOverSecondary ? UISplitViewControllerDisplayModeOneOverSecondary : UISplitViewControllerDisplayModeOneBesideSecondary);
             }
         } else {
-            if (splitViewController.preferredDisplayMode == UISplitViewControllerDisplayModeTwoBesideSecondary &&
+            if (splitViewController.preferredDisplayMode == UISplitViewControllerDisplayModeOneBesideSecondary &&
                 splitViewController.displayMode == UISplitViewControllerDisplayModeSecondaryOnly) {
                 splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
                 
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
+                    splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
                 });
             } else {
-                splitViewController.preferredDisplayMode = (splitViewController.displayMode != UISplitViewControllerDisplayModeTwoBesideSecondary ? UISplitViewControllerDisplayModeTwoBesideSecondary : UISplitViewControllerDisplayModeOneBesideSecondary);
+                splitViewController.preferredDisplayMode = (splitViewController.displayMode != UISplitViewControllerDisplayModeOneOverSecondary ? UISplitViewControllerDisplayModeOneOverSecondary : UISplitViewControllerDisplayModeOneBesideSecondary);
             }
         }
     }];

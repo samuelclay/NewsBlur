@@ -442,9 +442,9 @@ class AppMenuHelper: NSObject {
         ])
         
         if #available(iOS 16.0, *) {
-            builder.insertSibling(site, beforeMenu: .window)
+            builder.insertSibling(story, beforeMenu: .window)
         } else {
-            builder.insertSibling(site, beforeMenu: .help)
+            builder.insertSibling(story, beforeMenu: .help)
         }
         
         // ===== HELP =====
