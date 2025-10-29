@@ -94,9 +94,9 @@ debug:
 log:
 	docker compose logs -f --tail 20 newsblur_web newsblur_node
 logweb:
-	docker compose logs -f --tail 20 newsblur_web newsblur_node task_celery
+	docker compose logs -f --tail 20 newsblur_web newsblur_node newsblur_celery
 logcelery:
-	docker compose logs -f --tail 20 task_celery
+	docker compose logs -f --tail 20 newsblur_celery
 logtask: logcelery
 logmongo:
 	docker compose logs -f db_mongo
@@ -270,7 +270,7 @@ test_haproxy_staging:
 	./utils/test_haproxy_toggle.sh --staging
 celery_stop:
 	ansible-playbook ansible/deploy.yml -l task --tags stop
-sentry:
+deploy_sentry:
 	ansible-playbook ansible/setup.yml -l sentry -t sentry
 maintenance_on:
 	ansible-playbook ansible/deploy.yml -l web --tags maintenance_on

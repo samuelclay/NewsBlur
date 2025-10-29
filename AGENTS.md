@@ -21,6 +21,7 @@ Note: All docker commands must use `-t` instead of `-it` to avoid interactive mo
 
 ## Python Environment
 - **Always run Python code and Django management commands inside the Docker container** - Use `docker exec newsblur_web bash -c "python <script>"`
+- **Run Django shell commands non-interactively**: `docker exec -t newsblur_web_newsblur python manage.py shell -c "<python code>"`
 - Do NOT use `uv run` or local Python environment - always use the Docker container
 
 ## Deployment Commands
@@ -69,6 +70,12 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 ## API Testing
 - Test API endpoints: `make api URL=/reader/feeds`
 - With POST data: `make api URL=/reader/river_stories ARGS="-X POST -d 'feeds[]=1&feeds[]=2&feeds[]=3'"`
+
+## Sentry
+- **Projects**: `web`, `task`, `node`, `monitor` (auth token in `~/.sentryclirc`)
+- List issues: `sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --status unresolved`
+- Get stack trace from issue ID or URL: `curl -H "Authorization: Bearer $(grep token ~/.sentryclirc | cut -d= -f2)" "https://sentry.newsblur.com/api/0/issues/<ID>/events/latest/"`
+- Extract issue ID from web URL: `https://sentry.newsblur.com/organizations/newsblur/issues/<ID>/` → use `<ID>` in API
 
 ## Browser Testing with Chrome DevTools MCP
 - Local dev: `https://localhost` (when using containers directly)

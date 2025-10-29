@@ -66,6 +66,22 @@ from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import is_true, render_to, required_params
 from vendor.timezones.utilities import localtime_for_timezone
 
+# Pattern to match invalid XML 1.0 control characters
+# Valid: \x09 (tab), \x0A (newline), \x0D (carriage return)
+# Invalid: \x00-\x08, \x0B-\x0C, \x0E-\x1F, \x7F-\x9F
+INVALID_XML_CHARS = re.compile(r"[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x9F]")
+
+
+def sanitize_for_xml(text):
+    """
+    Remove control characters that are invalid in XML 1.0.
+    XML 1.0 allows: tab (0x09), newline (0x0A), carriage return (0x0D),
+    and characters >= 0x20 (except 0x7F-0x9F range).
+    """
+    if not text:
+        return text
+    return INVALID_XML_CHARS.sub("", text)
+
 
 @json.json_view
 def load_social_stories(request, user_id, username=None):
@@ -297,13 +313,19 @@ def load_social_stories(request, user_id, username=None):
 
 @json.json_view
 def load_river_blurblog(request):
-    limit = int(request.GET.get("limit", 10))
+    try:
+        limit = int(request.GET.get("limit", 10))
+    except (ValueError, TypeError):
+        limit = 10
     start = time.time()
     user = get_user(request)
     social_user_ids = request.GET.getlist("social_user_ids") or request.GET.getlist("social_user_ids[]")
     social_user_ids = [int(uid) for uid in social_user_ids if uid]
     original_user_ids = list(social_user_ids)
-    page = int(request.GET.get("page", 1))
+    try:
+        page = int(request.GET.get("page", 1))
+    except (ValueError, TypeError):
+        page = 1
     order = request.GET.get("order", "newest")
     read_filter = request.GET.get("read_filter", "unread")
     date_filter_start = request.GET.get("date_filter_start")
@@ -1723,13 +1745,13 @@ def shared_stories_rss_feed(request, user_id, username=None):
         return HttpResponseForbidden()
 
     data = {}
-    data["title"] = social_profile.title
-    data["link"] = social_profile.blurblog_url
-    data["description"] = "Stories shared by %s on NewsBlur." % user.username
+    data["title"] = sanitize_for_xml(social_profile.title)
+    data["link"] = sanitize_for_xml(social_profile.blurblog_url)
+    data["description"] = sanitize_for_xml("Stories shared by %s on NewsBlur." % user.username)
     data["lastBuildDate"] = datetime.datetime.utcnow()
     data["generator"] = "NewsBlur - %s" % settings.NEWSBLUR_URL
     data["docs"] = None
-    data["author_name"] = user.username
+    data["author_name"] = sanitize_for_xml(user.username)
     data["feed_url"] = "http://%s%s" % (
         current_site,
         reverse("shared-stories-rss-feed", kwargs=params),
@@ -1751,13 +1773,14 @@ def shared_stories_rss_feed(request, user_id, username=None):
                 "content": shared_story.story_content_str,
             },
         )
+        # Sanitize all text fields to remove invalid XML control characters
         story_data = {
-            "title": shared_story.story_title,
-            "link": shared_story.story_permalink,
-            "description": content,
-            "author_name": shared_story.story_author_name,
-            "categories": shared_story.story_tags,
-            "unique_id": shared_story.story_permalink,
+            "title": sanitize_for_xml(shared_story.story_title),
+            "link": sanitize_for_xml(shared_story.story_permalink),
+            "description": sanitize_for_xml(content),
+            "author_name": sanitize_for_xml(shared_story.story_author_name),
+            "categories": [sanitize_for_xml(tag) for tag in (shared_story.story_tags or [])],
+            "unique_id": sanitize_for_xml(shared_story.story_permalink),
             "pubdate": shared_story.shared_date,
         }
         rss.add_item(**story_data)
