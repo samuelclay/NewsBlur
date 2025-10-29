@@ -905,7 +905,7 @@
             self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
         } else {
             self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
         }
     }
     

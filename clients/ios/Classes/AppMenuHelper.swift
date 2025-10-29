@@ -113,13 +113,13 @@ class AppMenuHelper: NSObject {
                              propertyList: "auto", state: .off),
                 UIKeyCommand(title: "Three", action: #selector(BaseViewController.chooseColumns(_:)),
                              input: "3", modifierFlags: [.command, .alternate],
-                             propertyList: "overlay", state: .off),
+                             propertyList: "tile", state: .off),
                 UIKeyCommand(title: "Two", action: #selector(BaseViewController.chooseColumns(_:)),
                              input: "2", modifierFlags: [.command, .alternate],
                              propertyList: "displace", state: .off),
                 UIKeyCommand(title: "One", action: #selector(BaseViewController.chooseColumns(_:)),
                              input: "1", modifierFlags: [.command, .alternate],
-                             propertyList: "title", state: .off)
+                             propertyList: "overlay", state: .off)
             ]),
             // Submenu: Layout
             UIMenu(title: "Layout", children: [
