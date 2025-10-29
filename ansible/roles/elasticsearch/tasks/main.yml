@@ -1,14 +1,17 @@
 ---
-- name: Set facts for secondary elasticsearch servers
+- name: Set facts for elasticsearch servers
   set_fact:
     elasticsearch_secondary: no
+    elasticsearch_ports:
+      standard: 9200
+      v8: 9208
   tags:
     - always
 
 - name: Set facts for secondary elasticsearch servers
   set_fact:
     elasticsearch_secondary: yes
-  when: inventory_hostname not in ["hdb-elasticsearch-1"]
+  when: inventory_hostname not in ["hdb-elasticsearch-2"]
   tags:
     - always
 
@@ -49,7 +52,8 @@
     state: started
     hostname: "{{ inventory_hostname }}"
     ports:
-      - "9200:9200"
+      - "{{ elasticsearch_ports.standard }}:9200"
+      - "{{ elasticsearch_ports.v8 }}:9200"
       - "9300:9300"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
@@ -72,8 +76,6 @@
   template:
     src: consul_service.json.j2
     dest: /etc/consul.d/elasticsearch.json
-  vars:
-    consul_service_port: 9200
   notify:
     - reload consul
 
