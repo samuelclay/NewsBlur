@@ -44,6 +44,17 @@ class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
 //    }
     
     func splitViewController(_ svc: UISplitViewController, willChangeTo displayMode: UISplitViewController.DisplayMode) {
-        
+        switch displayMode {
+            case .automatic:
+                NSLog("split will change to automatic")
+            case .secondaryOnly:
+                NSLog("split will change to secondary only")
+            case .oneBesideSecondary:
+                NSLog("split will change to one beside secondary")
+            case .oneOverSecondary:
+                NSLog("split will change to one over secondary")
+            default:
+                NSLog("split will change to an unexpected mode")
+        }
     }
 }
