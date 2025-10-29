@@ -291,13 +291,19 @@ def load_social_stories(request, user_id, username=None):
 
 @json.json_view
 def load_river_blurblog(request):
-    limit = int(request.GET.get("limit", 10))
+    try:
+        limit = int(request.GET.get("limit", 10))
+    except (ValueError, TypeError):
+        limit = 10
     start = time.time()
     user = get_user(request)
     social_user_ids = request.GET.getlist("social_user_ids") or request.GET.getlist("social_user_ids[]")
     social_user_ids = [int(uid) for uid in social_user_ids if uid]
     original_user_ids = list(social_user_ids)
-    page = int(request.GET.get("page", 1))
+    try:
+        page = int(request.GET.get("page", 1))
+    except (ValueError, TypeError):
+        page = 1
     order = request.GET.get("order", "newest")
     read_filter = request.GET.get("read_filter", "unread")
     date_filter_start = request.GET.get("date_filter_start")
