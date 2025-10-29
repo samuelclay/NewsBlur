@@ -95,9 +95,12 @@ class EmailNewsletter:
         story_content = self._get_content(params)
         plain_story_content = self._get_content(params, force_plain=True)
         # apps/newsletters/models.py: Choose the longer content version if available
-        if len(plain_story_content) > len(story_content):
+        # Handle plain-text-only newsletters where body-html may be None
+        if story_content and plain_story_content and len(plain_story_content) > len(story_content):
             story_content = plain_story_content
-        story_content = self._clean_content(story_content)
+        elif plain_story_content and not story_content:
+            story_content = plain_story_content
+        story_content = self._clean_content(story_content or "")
         story_params = {
             "story_feed_id": feed.pk,
             "story_date": self._clean_story_date(params.get("timestamp")),
@@ -215,13 +218,15 @@ class EmailNewsletter:
             return datetime.datetime.now()
 
     def _get_content(self, params, force_plain=False):
-        if "body-enriched" in params and not force_plain:
+        # apps/newsletters/models.py: Check for enriched, html, and plain content
+        # Some newsletters only have plain text, so body-html may be None
+        if "body-enriched" in params and params["body-enriched"] and not force_plain:
             return params["body-enriched"]
-        if "body-html" in params and not force_plain:
+        if "body-html" in params and params["body-html"] and not force_plain:
             return params["body-html"]
-        if "stripped-html" in params and not force_plain:
+        if "stripped-html" in params and params["stripped-html"] and not force_plain:
             return params["stripped-html"]
-        if "body-plain" in params:
+        if "body-plain" in params and params["body-plain"]:
             return linkify(linebreaks(params["body-plain"]))
 
         if force_plain:
