@@ -100,7 +100,7 @@ class EmailNewsletter:
         story_content = self._clean_content(story_content)
         story_params = {
             "story_feed_id": feed.pk,
-            "story_date": datetime.datetime.fromtimestamp(int(params["timestamp"])),
+            "story_date": self._clean_story_date(params.get("timestamp")),
             "story_title": params["subject"],
             "story_content": story_content,
             "story_author_name": params["from"],
@@ -200,6 +200,19 @@ class EmailNewsletter:
         sender_name = sender_name.replace('"', "")
 
         return sender_name, sender_username, sender_domain
+
+    def _clean_story_date(self, timestamp):
+        """
+        apps/newsletters/models.py: Convert timestamp to datetime.
+        If timestamp is empty or invalid, use current date.
+        """
+        if timestamp and str(timestamp).strip():
+            try:
+                return datetime.datetime.fromtimestamp(int(timestamp))
+            except (ValueError, TypeError):
+                return datetime.datetime.now()
+        else:
+            return datetime.datetime.now()
 
     def _get_content(self, params, force_plain=False):
         if "body-enriched" in params and not force_plain:
