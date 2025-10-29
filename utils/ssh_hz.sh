@@ -67,7 +67,7 @@ if [ "$NONINTERACTIVE" = true ]; then
         echo "Error: Command required in non-interactive mode"
         exit 1
     fi
-    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /srv/secrets-newsblur/keys/docker.key "nb@$HOST" "$COMMAND"
+    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR -i /srv/secrets-newsblur/keys/docker.key "nb@$HOST" "$COMMAND"
 else
     # Interactive mode
     ssh -i /srv/secrets-newsblur/keys/docker.key "nb@$HOST"
