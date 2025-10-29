@@ -54,9 +54,9 @@ debug:
 log:
 	docker compose logs -f --tail 20 newsblur_web newsblur_node
 logweb:
-	docker compose logs -f --tail 20 newsblur_web newsblur_node task_celery
+	docker compose logs -f --tail 20 newsblur_web newsblur_node newsblur_celery
 logcelery:
-	docker compose logs -f --tail 20 task_celery
+	docker compose logs -f --tail 20 newsblur_celery
 logtask: logcelery
 logmongo:
 	docker compose logs -f db_mongo

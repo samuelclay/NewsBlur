@@ -69,6 +69,12 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - Test API endpoints: `make api URL=/reader/feeds`
 - With POST data: `make api URL=/reader/river_stories ARGS="-X POST -d 'feeds[]=1&feeds[]=2&feeds[]=3'"`
 
+## Sentry
+- **Projects**: `web`, `task`, `node`, `monitor` (auth token in `~/.sentryclirc`)
+- List issues: `sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --status unresolved`
+- Get stack trace from issue ID or URL: `curl -H "Authorization: Bearer $(grep token ~/.sentryclirc | cut -d= -f2)" "https://sentry.newsblur.com/api/0/issues/<ID>/events/latest/"`
+- Extract issue ID from web URL: `https://sentry.newsblur.com/organizations/newsblur/issues/<ID>/` → use `<ID>` in API
+
 ## Browser Testing with Chrome DevTools MCP
 - Local dev: `https://localhost`
 - Open All Site Stories: `NEWSBLUR.reader.open_river_stories()`
