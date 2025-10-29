@@ -71,29 +71,29 @@ backend node_images
 backend node_socket
     http-check expect rstatus 200|503
     balance roundrobin
-    server node_socket node_{{ workspace_name }}:8008 check inter 3000ms
+    server node_socket newsblur_node_{{ workspace_name }}:8008 check inter 3000ms
 
 backend node_favicon
     http-check expect rstatus 200|301|503
     balance roundrobin
-    server node_favicon node_{{ workspace_name }}:8008 check inter 3000ms
+    server node_favicon newsblur_node_{{ workspace_name }}:8008 check inter 3000ms
 
 backend node_text
     http-check expect rstatus 200|503
     option httpchk GET /rss_feeds/original_text_fetcher?test=1
     balance roundrobin
-    server node_text node_{{ workspace_name }}:8008 check inter 3000ms
+    server node_text newsblur_node_{{ workspace_name }}:8008 check inter 3000ms
 
 backend node_page
     http-check expect rstatus 200|503
     option httpchk GET /rss_feeds/original_text_fetcher?test=1
     balance roundrobin
-    server node_page node_{{ workspace_name }}:8008 check inter 3000ms
+    server node_page newsblur_node_{{ workspace_name }}:8008 check inter 3000ms
 
 backend nginx
     balance roundrobin
     http-check expect rstatus 200|503
-    server nginx nginx_{{ workspace_name }}:81 check inter 60000ms
+    server nginx newsblur_nginx_{{ workspace_name }}:81 check inter 60000ms
 
 backend gunicorn
     balance roundrobin

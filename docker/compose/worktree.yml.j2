@@ -28,7 +28,7 @@ services:
       - newsblur_default
 
   newsblur_node:
-    container_name: node_{{ workspace_name }}
+    container_name: newsblur_node_{{ workspace_name }}
     image: newsblur/newsblur_node:latest
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     environment:
@@ -47,7 +47,7 @@ services:
       - newsblur_default
 
   nginx:
-    container_name: nginx_{{ workspace_name }}
+    container_name: newsblur_nginx_{{ workspace_name }}
     image: nginx:1.19.6
     restart: unless-stopped
     ports:
@@ -62,7 +62,7 @@ services:
       - ${PWD}:/srv/newsblur
 
   haproxy:
-    container_name: haproxy_{{ workspace_name }}
+    container_name: newsblur_haproxy_{{ workspace_name }}
     image: haproxy:latest
     restart: unless-stopped
     depends_on:
@@ -81,7 +81,7 @@ services:
       - newsblur_default
 
   task_celery:
-    container_name: task_celery_{{ workspace_name }}
+    container_name: newsblur_celery_{{ workspace_name }}
     image: newsblur/newsblur_python3
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     command: "celery worker -A newsblur_web -B --loglevel=INFO"
