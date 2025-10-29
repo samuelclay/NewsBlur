@@ -14,10 +14,10 @@ services:
     tty: true
     restart: unless-stopped
     depends_on:
-      - db_mongo
-      - db_postgres
-      - db_redis
-      - db_elasticsearch
+      - newsblur_db_mongo
+      - newsblur_db_postgres
+      - newsblur_db_redis
+      - newsblur_db_elasticsearch
     ulimits:
       nproc: 10000
       nofile:
@@ -41,9 +41,9 @@ services:
     restart: unless-stopped
     stop_signal: HUP
     depends_on:
-      - db_mongo
-      - db_postgres
-      - db_redis
+      - newsblur_db_mongo
+      - newsblur_db_postgres
+      - newsblur_db_redis
     ports:
       - 8008:8008
     volumes:
@@ -51,7 +51,7 @@ services:
       - ${PWD}/node/originals:/srv/originals
 
   imageproxy:
-    container_name: imageproxy
+    container_name: newsblur_imageproxy
     # image: ghcr.io/willnorris/imageproxy:latest # Enable if you don't need arm64 and want the original imageproxy
     image: yusukeito/imageproxy:v0.11.2 # Enable if you want arm64
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
@@ -71,18 +71,18 @@ services:
     depends_on:
       - newsblur_web
       - newsblur_node
-      - db_postgres
-      - db_redis
-      - db_mongo
-      - db_elasticsearch
+      - newsblur_db_postgres
+      - newsblur_db_redis
+      - newsblur_db_mongo
+      - newsblur_db_elasticsearch
     environment:
       - DOCKERBUILD=True
     volumes:
       - ./docker/nginx/nginx.local.conf:/etc/nginx/conf.d/nginx.conf
       - ${PWD}:/srv/newsblur
 
-  db_postgres:
-    container_name: db_postgres
+  newsblur_db_postgres:
+    container_name: newsblur_db_postgres
     image: postgres:13.1
     restart: unless-stopped
     environment:
@@ -98,8 +98,8 @@ services:
     volumes:
       - ./docker/volumes/postgres:/var/lib/postgresql/data
 
-  db_redis:
-    container_name: db_redis
+  newsblur_db_redis:
+    container_name: newsblur_db_redis
     image: redis:latest
     ports:
       - 6579:6579
@@ -123,8 +123,8 @@ services:
   #     - ./docker/volumes/redis_prod:/data
   #   command: redis-server /etc/redis/redis.conf --port 6579
 
-  db_elasticsearch:
-    container_name: db_elasticsearch
+  newsblur_db_elasticsearch:
+    container_name: newsblur_db_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
     mem_limit: 1200m
     mem_reservation: 512m
@@ -146,14 +146,14 @@ services:
 
   # Dejavu is a web UI for Elasticsearch
   dejavu:
-    container_name: dejavu
+    container_name: newsblur_dejavu
     image: appbaseio/dejavu:3.6.0
     restart: unless-stopped
     ports:
       - 1358:1358
 
-  db_mongo:
-    container_name: db_mongo
+  newsblur_db_mongo:
+    container_name: newsblur_db_mongo
     image: mongo:4.0
     restart: unless-stopped
     ports:
@@ -184,10 +184,10 @@ services:
       - newsblur_web
       - newsblur_node
       - imageproxy
-      - db_redis
-      - db_postgres
-      - db_elasticsearch
-      - db_mongo
+      - newsblur_db_redis
+      - newsblur_db_postgres
+      - newsblur_db_elasticsearch
+      - newsblur_db_mongo
     ports:
       - 80:80
       - 443:443
