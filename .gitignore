@@ -42,6 +42,7 @@ media/css/circular/sass/.sass-cache
 media/css/circular
 config/settings
 config/secrets
+ansible/roles/sentry/vars/secrets.yml
 templates/maintenance_on.html
 apps/social/spam.py
 venv*
@@ -81,3 +82,5 @@ grafana.ini
 apps/api/ip_addresses.txt
 .ansible/
 .dev_session
+.conductor
+.worktree

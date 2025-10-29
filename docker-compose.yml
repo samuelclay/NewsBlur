@@ -31,7 +31,7 @@ services:
       - ${PWD}:/srv/newsblur
 
   newsblur_node:
-    container_name: node
+    container_name: newsblur_node
     image: newsblur/newsblur_node:latest
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     environment:
@@ -63,7 +63,7 @@ services:
       - /tmp:/tmp/imageproxy
 
   nginx:
-    container_name: nginx
+    container_name: newsblur_nginx
     image: nginx:1.19.6
     restart: unless-stopped
     ports:
@@ -165,7 +165,7 @@ services:
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
 
   task_celery:
-    container_name: task_celery
+    container_name: newsblur_celery
     image: newsblur/newsblur_python3
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     command: "celery worker -A newsblur_web -B --loglevel=INFO"
@@ -176,7 +176,7 @@ services:
       - DOCKERBUILD=True
 
   haproxy:
-    container_name: haproxy
+    container_name: newsblur_haproxy
     image: haproxy:latest
     restart: unless-stopped
     depends_on:

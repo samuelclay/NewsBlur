@@ -41,7 +41,14 @@ fi
 
 # Function to extract ansible_host value
 extract_host() {
-    grep "$1" "$INI_FILE" | awk '{print $2}' | cut -d'=' -f2
+    # Try exact match first (hostname at start of line followed by whitespace)
+    # Skip commented lines (starting with ; or #)
+    local host=$(grep "^$1[[:space:]]" "$INI_FILE" | grep -v "^[;#]" | awk '{print $2}' | cut -d'=' -f2)
+    # Fall back to substring match if exact match not found
+    if [ -z "$host" ]; then
+        host=$(grep "$1" "$INI_FILE" | grep -v "^[;#]" | awk '{print $2}' | cut -d'=' -f2)
+    fi
+    echo "$host"
 }
 
 # Extract the host for the given alias
@@ -60,7 +67,7 @@ if [ "$NONINTERACTIVE" = true ]; then
         echo "Error: Command required in non-interactive mode"
         exit 1
     fi
-    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /srv/secrets-newsblur/keys/docker.key "nb@$HOST" "$COMMAND"
+    ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR -i /srv/secrets-newsblur/keys/docker.key "nb@$HOST" "$COMMAND"
 else
     # Interactive mode
     ssh -i /srv/secrets-newsblur/keys/docker.key "nb@$HOST"

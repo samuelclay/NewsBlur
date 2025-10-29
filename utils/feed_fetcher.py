@@ -297,7 +297,7 @@ class FetchFeed:
                     )
                 self.fpf = feedparser.parse(processed_forbidden_feed)
 
-        if not self.fpf and "json" in address:
+        if not self.fpf:
             try:
                 headers = self.feed.fetch_headers()
                 if etag:
@@ -376,9 +376,19 @@ class FetchFeed:
                         )
                     self.fpf = feedparser.parse(processed_json_feed)
                 elif raw_feed.content and raw_feed.status_code < 400:
-                    response_headers = raw_feed.headers
+                    response_headers = raw_feed.headers.copy()
                     response_headers["Content-Location"] = raw_feed.url
+
+                    # Fix encoding detection: if Content-Type doesn't specify charset, default to UTF-8
+                    # This prevents feedparser from incorrectly guessing Windows-1252
+                    content_type = response_headers.get("Content-Type", "")
+                    if content_type and "charset" not in content_type.lower():
+                        # Add UTF-8 charset to help feedparser detect encoding correctly
+                        response_headers["Content-Type"] = f"{content_type}; charset=utf-8"
+
+                    # Decode the raw bytes as UTF-8 (smart_str defaults to UTF-8 for bytes)
                     self.raw_feed = smart_str(raw_feed.content)
+
                     # Preprocess feed to fix encoding issues before parsing with feedparser
                     processed_feed = preprocess_feed_encoding(self.raw_feed)
                     if processed_feed != self.raw_feed:

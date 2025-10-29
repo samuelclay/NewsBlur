@@ -30,6 +30,11 @@ jobs:
           mkdir -p config/certificates
           openssl dhparam -out config/certificates/dhparam-2048.pem 2048
 
+      - name: Create elasticsearch config
+        run: |
+          mkdir -p config/elasticsearch
+          cp docker/elasticsearch/elasticsearch.yml.j2 config/elasticsearch/elasticsearch.yml
+
       - name: Create docker volumes with proper permissions
         run: |
           mkdir -p docker/volumes/db_mongo
