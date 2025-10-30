@@ -757,6 +757,16 @@ class DiscoverStory:
     ):
         cls.create_elasticsearch_mapping()
 
+        # Check if already indexed to avoid expensive vector generation
+        try:
+            if cls.ES().exists(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type()):
+                if verbose:
+                    logging.debug(f" ---> ~FBStory already indexed: {story_hash}")
+                return
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for checking discover story: {e}")
+            return
+
         if not story_content_vector:
             story_content_vector = cls.generate_story_content_vector(story_hash)
 
