@@ -287,7 +287,11 @@ def load_social_stories(request, user_id, username=None):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
-            "text": apply_classifier_texts(classifier_texts, story),
+            "text": (
+                apply_classifier_texts(classifier_texts, story)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
         }
 
     classifiers = sort_classifiers_by_feed(
@@ -484,7 +488,11 @@ def load_river_blurblog(request):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
-            "text": apply_classifier_texts(classifier_texts, story),
+            "text": (
+                apply_classifier_texts(classifier_texts, story)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True
