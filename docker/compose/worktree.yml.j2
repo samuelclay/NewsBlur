@@ -1,0 +1,100 @@
+# Auto-generated workspace-specific docker-compose file
+# Workspace: {{ workspace_name }}
+# Standalone compose file for workspace services only
+
+services:
+  newsblur_web:
+    container_name: newsblur_web_{{ workspace_name }}
+    hostname: nb-{{ workspace_name }}.com
+    image: newsblur/newsblur_python3:latest
+    environment:
+      - DOCKERBUILD=True
+      - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD:-True}
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    ulimits:
+      nproc: 10000
+      nofile:
+        soft: 10000
+        hard: 10000
+    ports:
+      - {{ web_port }}:8000
+    entrypoint: /bin/sh -c newsblur_web/entrypoint.sh
+    volumes:
+      - ${PWD}:/srv/newsblur
+    networks:
+      - default
+      - newsblur_default
+
+  newsblur_node:
+    container_name: newsblur_node_{{ workspace_name }}
+    image: newsblur/newsblur_node:latest
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
+    environment:
+      - NODE_ENV=docker
+      - MONGODB_PORT=29019
+    command: node newsblur.js
+    restart: unless-stopped
+    stop_signal: HUP
+    ports:
+      - {{ node_port }}:8008
+    volumes:
+      - ${PWD}/node:/srv
+      - ${PWD}/node/originals:/srv/originals
+    networks:
+      - default
+      - newsblur_default
+
+  nginx:
+    container_name: newsblur_nginx_{{ workspace_name }}
+    image: nginx:1.19.6
+    restart: unless-stopped
+    ports:
+      - {{ nginx_port }}:81
+    depends_on:
+      - newsblur_web
+      - newsblur_node
+    environment:
+      - DOCKERBUILD=True
+    volumes:
+      - ${PWD}/docker/nginx/nginx.local.conf:/etc/nginx/conf.d/nginx.conf
+      - ${PWD}:/srv/newsblur
+
+  haproxy:
+    container_name: newsblur_haproxy_{{ workspace_name }}
+    image: haproxy:latest
+    restart: unless-stopped
+    depends_on:
+      - nginx
+      - newsblur_web
+      - newsblur_node
+    ports:
+      - {{ haproxy_http_port }}:80
+      - {{ haproxy_https_port }}:443
+      - {{ haproxy_stats_port }}:1936
+    volumes:
+      - ${PWD}/.worktree/haproxy/haproxy.{{ workspace_name }}.cfg:/usr/local/etc/haproxy/haproxy.cfg
+      - ${PWD}:/srv/newsblur
+    networks:
+      - default
+      - newsblur_default
+
+  task_celery:
+    container_name: newsblur_celery_{{ workspace_name }}
+    image: newsblur/newsblur_python3
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
+    command: "celery worker -A newsblur_web -B --loglevel=INFO"
+    restart: unless-stopped
+    volumes:
+      - ${PWD}:/srv/newsblur
+    environment:
+      - DOCKERBUILD=True
+    networks:
+      - default
+      - newsblur_default
+
+networks:
+  newsblur_default:
+    external: true
+    name: newsblur_default

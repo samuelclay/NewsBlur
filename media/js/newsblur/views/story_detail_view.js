@@ -16,8 +16,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-title": "click_link_in_story",
         "mouseenter .NB-feed-story-manage-icon": "mouseenter_manage_icon",
         "mouseleave .NB-feed-story-manage-icon": "mouseleave_manage_icon",
-        "mouseenter .NB-sideoption-thirdparty": "mouseenter_thirdparty",
-        "mouseleave .NB-sideoption-thirdparty": "mouseleave_thirdparty",
+        "mouseenter .NB-feed-story-email": "mouseenter_sideoption_email",
+        "mouseleave .NB-feed-story-email": "mouseleave_sideoption_email",
+        "mouseenter .NB-feed-story-train": "mouseenter_sideoption_train",
+        "mouseleave .NB-feed-story-train": "mouseleave_sideoption_train",
         "contextmenu .NB-feed-story-header": "show_manage_menu_rightclick",
         "mouseup .NB-story-content-wrapper": "mouseup_check_selection",
         "click .NB-feed-story-manage-icon": "show_manage_menu",
@@ -32,6 +34,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-story-content-expander": "expand_story",
         "click .NB-highlight-selection": "highlight_selected_text",
         "click .NB-unhighlight-selection": "unhighlight_selected_text",
+        "click .NB-train-selection": "train_selected_text",
+        "click .NB-classifier-highlight-positive": "show_classifier_highlight_menu",
+        "click .NB-classifier-highlight-negative": "show_classifier_highlight_menu",
         "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog"
     },
 
@@ -335,7 +340,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <% if (show_sideoption_train) { %>\
                     <div class="NB-sideoption NB-feed-story-train" role="button">\
                         <div class="NB-sideoption-title">Train</div>\
-                        <div class="NB-sideoption-icon">&nbsp;</div>\
+                        <div class="NB-sideoption-icon NB-sideoption-icon-train">&nbsp;</div>\
+                        <div class="NB-flex-break"></div>\
+                        <div class="NB-sideoption-writerules">\
+                            <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-writerules" data-action="write-rules" role="button">\
+                            </div>\
+                        </div>\
                     </div>\
                 <% } %>\
                 <% if (show_sideoption_save) { %>\
@@ -453,6 +463,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.$el.addClass('NB-hidden');
             this.model.set('visible', false);
         }
+
+        // Refresh classifiers reference and reapply highlights when classifiers change
+        this.classifiers = NEWSBLUR.assets.classifiers[this.model.get('story_feed_id')];
+        this.apply_starred_story_selections(true);
     },
 
     // ============
@@ -791,24 +805,58 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     },
 
-    mouseenter_thirdparty: function (event) {
-        var serviceName = $(event.currentTarget).data("service-label");
-        $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-title").text(serviceName);
-        $(event.currentTarget).addClass("NB-hover");
-        $(event.currentTarget).siblings(".NB-sideoption-icon").addClass("NB-dimmed");
-        if ($(event.currentTarget).closest(".NB-sideoption-thirdparty-services").length) {
-            $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-icon-email").addClass("NB-dimmed");
-        } else {
-            $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
-        }
+    mouseenter_sideoption_email: function (event) {
+        var $sideoption = $(event.currentTarget);
+        $sideoption.on('mousemove.email', _.bind(function (e) {
+            var $target = $(e.target);
+            var $thirdparty = $target.closest('.NB-sideoption-thirdparty');
+
+            if ($thirdparty.length) {
+                var serviceName = $thirdparty.data("service-label");
+                $sideoption.find(".NB-sideoption-title").text(serviceName);
+                $sideoption.find('.NB-sideoption-thirdparty').removeClass("NB-hover");
+                $thirdparty.addClass("NB-hover");
+                $sideoption.find(".NB-sideoption-icon-email").addClass("NB-dimmed");
+            } else {
+                $sideoption.find(".NB-sideoption-title").text("Email");
+                $sideoption.find('.NB-sideoption-thirdparty').removeClass("NB-hover");
+                $sideoption.find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
+            }
+        }, this));
     },
 
-    mouseleave_thirdparty: function (event) {
-        $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-title").text("Email");
+    mouseleave_sideoption_email: function (event) {
+        var $sideoption = $(event.currentTarget);
+        $sideoption.off('mousemove.email');
+        $sideoption.find(".NB-sideoption-title").text("Email");
+        $sideoption.find('.NB-sideoption-thirdparty').removeClass("NB-hover");
+        $sideoption.find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
+    },
 
-        $(event.currentTarget).siblings(".NB-sideoption-icon").removeClass("NB-dimmed");
-        $(event.currentTarget).removeClass("NB-hover");
-        $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
+    mouseenter_sideoption_train: function (event) {
+        var $sideoption = $(event.currentTarget);
+        $sideoption.on('mousemove.train', _.bind(function (e) {
+            var $target = $(e.target);
+            var $thirdparty = $target.closest('.NB-sideoption-thirdparty-writerules');
+
+            if ($thirdparty.length) {
+                $sideoption.find(".NB-sideoption-title").text("AI Filter");
+                $thirdparty.addClass("NB-hover");
+                $sideoption.find(".NB-sideoption-icon-train").addClass("NB-dimmed");
+            } else {
+                $sideoption.find(".NB-sideoption-title").text("Train");
+                $sideoption.find('.NB-sideoption-thirdparty-writerules').removeClass("NB-hover");
+                $sideoption.find(".NB-sideoption-icon-train").removeClass("NB-dimmed");
+            }
+        }, this));
+    },
+
+    mouseleave_sideoption_train: function (event) {
+        var $sideoption = $(event.currentTarget);
+        $sideoption.off('mousemove.train');
+        $sideoption.find(".NB-sideoption-title").text("Train");
+        $sideoption.find('.NB-sideoption-thirdparty-writerules').removeClass("NB-hover");
+        $sideoption.find(".NB-sideoption-icon-train").removeClass("NB-dimmed");
     },
 
     mouseup_check_selection: function (e) {
@@ -820,6 +868,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
         if ($(e.target).hasClass("NB-highlight")) {
             this.show_unhighlight_tooltip($(e.target));
+            return;
+        }
+        if ($(e.target).hasClass("NB-classifier-highlight-positive") ||
+            $(e.target).hasClass("NB-classifier-highlight-negative")) {
+            // Let the click handler deal with classifier highlights
             return;
         }
 
@@ -864,7 +917,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             "done": _.bind(function () {
                 var $selection = $(".NB-starred-story-selection-highlight", $doc);
                 console.log(['$selection', $selection, $selection.first().get(0), $selection.last().get(0)]);
-                $selection.attr('title', "<div class='NB-highlight-selection'>Highlight</div>");
+                $selection.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span>");
                 var $t = tippy($selection.get(0), {
                     // delay: 100,
                     appendTo: this.el,
@@ -931,6 +984,44 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     },
 
+    show_classifier_highlight_menu: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $mark = $(e.currentTarget);
+        var text = $mark.text();
+        console.log(['show_classifier_highlight_menu', text, $mark]);
+
+        // Set the serialized_highlight to the text from the mark
+        this.serialized_highlight = _.string.trim(text);
+
+        // Close any existing tooltip
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+
+        // Show the highlight/train menu
+        $mark.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span>");
+        var $t = tippy($mark.get(0), {
+            appendTo: this.el,
+            arrow: true,
+            arrowType: 'round',
+            size: 'large',
+            duration: 350,
+            animation: 'scale',
+            trigger: 'click',
+            interactive: true,
+            performance: true,
+            onHide: _.bind(function () {
+                // Cleanup if needed
+            }, this)
+        });
+        this.tooltip = $t;
+        _.defer(function () {
+            if ($t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
+        });
+    },
+
     highlight_selected_text: function () {
         var highlights = this.model.get('highlights');
         if (!highlights || !$.isArray(highlights)) highlights = [];
@@ -949,14 +1040,24 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     unhighlight_selected_text: function (el) {
-        var remove_highlight = this.$highlight.text();
+        var highlight_index = this.$highlight.attr('data-highlight-index');
         var highlights = this.model.get('highlights');
         if (!highlights || !$.isArray(highlights)) highlights = [];
-        highlights = _.filter(highlights, function (value) { return !_.string.contains(value, remove_highlight); });
+
+        if (highlight_index !== undefined) {
+            // Remove the highlight at the specific index
+            var remove_highlight = highlights[parseInt(highlight_index)];
+            highlights = _.filter(highlights, function (value) { return value !== remove_highlight; });
+            console.log(['Unhighlighting by index', highlight_index, remove_highlight, highlights]);
+        } else {
+            // Fallback to old method if no index found
+            var remove_highlight = this.$highlight.text();
+            highlights = _.filter(highlights, function (value) { return !_.string.contains(value, remove_highlight); });
+            console.log(['Unhighlighting by text', remove_highlight, highlights]);
+        }
 
         this.model.set('highlights', highlights, { silent: true });
         this.model.trigger('change:highlights');
-        console.log(['UNhighlighting', remove_highlight, highlights]);
 
         if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
             this.tooltip.tooltips[0].hide();
@@ -967,22 +1068,86 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return true;
     },
 
+    train_selected_text: function () {
+        var feed_id = this.model.get('story_feed_id');
+        var options = {};
+        if (NEWSBLUR.reader.flags['social_view']) {
+            options['social_feed'] = true;
+            options['feed_loaded'] = true;
+        }
+        if (this.serialized_highlight) {
+            options['selected_text'] = this.serialized_highlight;
+        }
+
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+
+        // Clear the temporary selection highlight
+        var $doc = this.$(".NB-feed-story-content");
+
+        // Remove all temporary highlight marks
+        this.$(".NB-starred-story-selection-highlight").each(function () {
+            $(this).contents().unwrap();
+        });
+        this.$("[data-tippy]").each(function () {
+            $(this).contents().unwrap();
+        });
+
+        $doc.removeAttr('id');
+
+        // Restore permanent highlights
+        this.apply_starred_story_selections();
+
+        // Clear the window selection
+        if (window.getSelection) {
+            window.getSelection().removeAllRanges();
+        } else if (document.selection) {
+            document.selection.empty();
+        }
+
+        NEWSBLUR.reader.open_story_trainer(this.model.id, feed_id, options);
+
+        return true;
+    },
+
     apply_starred_story_selections: function (force) {
         var highlights = this.model.user_highlights();
+        var text_classifiers = this.classifiers && this.classifiers.texts ? _.keys(this.classifiers.texts) : [];
+
         if (!force) {
-            if (!highlights || !highlights.length) return;
+            if ((!highlights || !highlights.length) && !text_classifiers.length) return;
         }
-        console.log(['Applying highlights', highlights]);
+        console.log(['Applying highlights', highlights, 'text_classifiers', text_classifiers]);
 
         var $doc = this.$(".NB-feed-story-content");
         $doc.unmark();
 
         $doc.attr('id', 'NB-highlighting');
-        $doc.mark(highlights, {
-            "className": "NB-highlight",
-            "separateWordSearch": false,
-            "acrossElements": true
-        });
+
+        // Apply user saved highlights
+        _.each(highlights, _.bind(function (highlight, index) {
+            $doc.mark(highlight, {
+                "className": "NB-highlight",
+                "separateWordSearch": false,
+                "acrossElements": true,
+                "each": function (element) {
+                    $(element).attr('data-highlight-index', index);
+                }
+            });
+        }, this));
+
+        // Apply text classifier highlights
+        _.each(text_classifiers, _.bind(function (classifier_text) {
+            var classifier_score = this.classifiers.texts[classifier_text];
+            var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+            $doc.mark(classifier_text, {
+                "className": className,
+                "separateWordSearch": false,
+                "acrossElements": true
+            });
+        }, this));
+
         $doc.removeAttr('id');
     },
 
