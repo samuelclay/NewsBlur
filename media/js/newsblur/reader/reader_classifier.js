@@ -837,6 +837,18 @@ var classifier_prototype = {
             .mousedown(update_text).mouseup(update_text).mousemove(update_text);
         $text_checkboxs.val($text_highlight.val());
 
+        // Auto-select text classifier as positive when selected_text is provided
+        var selected_text = this.options.selected_text || '';
+        if (selected_text && selected_text.length) {
+            // Only auto-select if this text is not already in the user's classifiers
+            var text_already_exists = this.user_classifiers.texts && (selected_text in this.user_classifiers.texts);
+            if (!text_already_exists) {
+                $text_placeholder.text(selected_text);
+                $text_checkboxs.val(selected_text);
+                self.change_classifier($text_classifier, 'like');
+            }
+        }
+
         $text_placeholder.parents('.NB-classifier').bind('click', function () {
             if ($text_highlight.val() == $text_checkboxs.val()) {
                 $text_placeholder.text($text_highlight.val());
