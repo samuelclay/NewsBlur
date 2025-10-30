@@ -1640,8 +1640,8 @@ class MSocialSubscription(mongo.Document):
                 "title": apply_classifier_titles(classifier_titles, story),
             }
 
-            max_score = max(scores["author"], scores["tags"], scores["title"])
-            min_score = min(scores["author"], scores["tags"], scores["title"])
+            max_score = max(scores["author"], scores["tags"], scores["title"], scores["text"])
+            min_score = min(scores["author"], scores["tags"], scores["title"], scores["text"])
 
             if max_score > 0:
                 feed_scores["positive"] += 1

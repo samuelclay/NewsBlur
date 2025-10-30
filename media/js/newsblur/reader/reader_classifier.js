@@ -850,8 +850,10 @@ var classifier_prototype = {
         }
 
         $text_placeholder.parents('.NB-classifier').bind('click', function () {
-            if ($text_highlight.val() == $text_checkboxs.val()) {
-                $text_placeholder.text($text_highlight.val());
+            var input_text = $.trim($text_highlight.val());
+            if (input_text.length) {
+                $text_placeholder.text(input_text);
+                $text_checkboxs.val(input_text);
             }
         });
 
@@ -879,8 +881,10 @@ var classifier_prototype = {
         $title_checkboxs.val($title_highlight.val());
 
         $title_placeholder.parents('.NB-classifier').bind('click', function () {
-            if ($title_highlight.val() == $title_checkboxs.val()) {
-                $title_placeholder.text($title_highlight.val());
+            var input_text = $.trim($title_highlight.val());
+            if (input_text.length) {
+                $title_placeholder.text(input_text);
+                $title_checkboxs.val(input_text);
             }
         });
     },
