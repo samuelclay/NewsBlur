@@ -435,11 +435,11 @@ class SearchStory:
             "date": story_date,
         }
         try:
-            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
+            cls.ES().create(
+                index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type(), ignore=409
+            )
         except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for story indexing: {e}")
-        except elasticsearch.exceptions.ConflictError as e:
-            logging.debug(f" ***> ~FBAlready indexed story: {e}")
         # if settings.DEBUG:
         #     logging.debug(f" ***> ~FBIndexed {story_hash}")
 
@@ -757,18 +757,6 @@ class DiscoverStory:
     ):
         cls.create_elasticsearch_mapping()
 
-        try:
-            record = cls.ES().get(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type())
-            if verbose:
-                logging.debug(f" ---> ~FBStory already indexed: {story_hash}")
-            return
-        except elasticsearch.exceptions.NotFoundError:
-            record = None
-        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
-            logging.debug(f" ***> ~FRNo search server available for discover story indexing: {e}")
-        except elasticsearch.exceptions.ConflictError as e:
-            logging.debug(f" ***> ~FBAlready indexed discover story when getting: {e}")
-
         if not story_content_vector:
             story_content_vector = cls.generate_story_content_vector(story_hash)
 
@@ -782,17 +770,11 @@ class DiscoverStory:
             "content_vector": story_content_vector,
         }
         try:
-            if not record:
-                if verbose:
-                    logging.debug(f" ---> ~SN~FCIndexing discover story: ~SB~FC{story_hash}")
-                cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
-        except elasticsearch.exceptions.NotFoundError:
-            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
-            logging.debug(f" ---> ~FCIndexing discover story: {story_hash}")
+            if verbose:
+                logging.debug(f" ---> ~SN~FCIndexing discover story: ~SB~FC{story_hash}")
+            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type(), ignore=409)
         except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for discover story indexing: {e}")
-        except elasticsearch.exceptions.ConflictError as e:
-            logging.debug(f" ***> ~FBAlready indexed discover story when creating: {e}")
         # if settings.DEBUG:
         #     logging.debug(f" ***> ~FBIndexed {story_hash}")
 
@@ -1139,7 +1121,7 @@ class SearchFeed:
             "content_vector": content_vector,
         }
         try:
-            cls.ES().create(index=cls.index_name(), id=feed_id, body=doc, doc_type=cls.doc_type())
+            cls.ES().create(index=cls.index_name(), id=feed_id, body=doc, doc_type=cls.doc_type(), ignore=409)
         except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for feed indexing: {e}")
 
