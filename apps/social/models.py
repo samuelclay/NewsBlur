@@ -1637,7 +1637,11 @@ class MSocialSubscription(mongo.Document):
                 "author": apply_classifier_authors(classifier_authors, story),
                 "tags": apply_classifier_tags(classifier_tags, story),
                 "text": apply_classifier_texts(classifier_texts, story),
-                "title": apply_classifier_titles(classifier_titles, story),
+                "title": (
+                    apply_classifier_titles(classifier_titles, story)
+                    if user_profile.premium_available_text_classifiers
+                    else 0
+                ),
             }
 
             max_score = max(scores["author"], scores["tags"], scores["title"], scores["text"])
