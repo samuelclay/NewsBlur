@@ -76,7 +76,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             this.show_indexing_tooltip(false);
             var indexed = NEWSBLUR.assets.feeds.search_indexed();
             var total = NEWSBLUR.assets.feeds.length;
-            progress = Math.ceil(indexed / total * 100);
+            var progress = Math.ceil(indexed / total * 100);
             NEWSBLUR.utils.attach_loading_gradient($input, progress);
         }
     },
