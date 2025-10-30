@@ -79,6 +79,46 @@ bootstrap:
 
 nbup:
 	docker compose up -d --build --remove-orphans
+
+# Git worktree development workflow
+worktree:
+	./worktree-dev.sh
+
+worktree-log:
+	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
+	if [ -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" ]; then \
+		COMPOSE_PROJECT_NAME="$$WORKSPACE_NAME" docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" logs -f --tail 20 newsblur_web newsblur_node; \
+	else \
+		echo "No worktree configuration found. Run 'make worktree' first."; \
+	fi
+
+worktree-stop:
+	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
+	echo "Stopping workspace: $$WORKSPACE_NAME"; \
+	if [ -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" ]; then \
+		docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" down --remove-orphans; \
+		echo "✓ Stopped containers for workspace: $$WORKSPACE_NAME"; \
+	else \
+		echo "No worktree configuration found"; \
+	fi
+
+worktree-close: worktree-stop
+	@if [ -f ".git" ]; then \
+		echo "Detected git worktree"; \
+		if [ -z "$$(git status --porcelain)" ]; then \
+			WORKTREE_PATH=$$(pwd); \
+			cd ..; \
+			echo "Removing worktree: $$WORKTREE_PATH"; \
+			git worktree remove "$$WORKTREE_PATH"; \
+			echo "✓ Removed worktree"; \
+		else \
+			echo "⚠ Worktree has uncommitted changes. Commit or stash changes before closing."; \
+			git status --short; \
+		fi; \
+	else \
+		echo "Not in a worktree, keeping directory"; \
+	fi
+
 coffee:
 	coffee -c -w **/*.coffee
 migrations:
@@ -148,22 +188,26 @@ test-river:
 	docker compose exec -T newsblur_web python3 manage.py test apps.reader.test_river_stories --noinput -v 2
 
 keys:
-	mkdir -p config/certificates
-	openssl dhparam -out config/certificates/dhparam-2048.pem 2048
-	openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout config/certificates/RootCA.key -out config/certificates/RootCA.pem -subj "/C=US/CN=Example-Root-CA"
-	openssl x509 -outform pem -in config/certificates/RootCA.pem -out config/certificates/RootCA.crt
-	openssl req -new -nodes -newkey rsa:2048 -keyout config/certificates/localhost.key -out config/certificates/localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost"
-	openssl x509 -req -sha256 -days 1024 -in config/certificates/localhost.csr -CA config/certificates/RootCA.pem -CAkey config/certificates/RootCA.key -CAcreateserial -out config/certificates/localhost.crt
-	cat config/certificates/localhost.crt config/certificates/localhost.key > config/certificates/localhost.pem
-	@if [ "$$(uname)" = "Darwin" ]; then \
-		sudo /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./config/certificates/RootCA.crt; \
-	elif [ "$$(uname)" = "Linux" ]; then \
-		$(call log,~FYInstalling certificate for Linux...~ST); \
-		sudo cp ./config/certificates/RootCA.crt /usr/local/share/ca-certificates/newsblur-rootca.crt || true; \
-		sudo update-ca-certificates || true; \
-		$(call log,~FYCertificate installation attempted. If this fails~FB~SB you may need to manually trust the certificate.~ST); \
+	@if [ -f "config/certificates/localhost.pem" ]; then \
+		$(call log,~FG✓ SSL certificates already exist~ST); \
 	else \
-		$(call log,~FRUnknown OS. Please manually trust the certificate at ~SB~FW./config/certificates/RootCA.crt~ST); \
+		mkdir -p config/certificates; \
+		openssl dhparam -out config/certificates/dhparam-2048.pem 2048; \
+		openssl req -x509 -nodes -new -sha256 -days 1024 -newkey rsa:2048 -keyout config/certificates/RootCA.key -out config/certificates/RootCA.pem -subj "/C=US/CN=Example-Root-CA"; \
+		openssl x509 -outform pem -in config/certificates/RootCA.pem -out config/certificates/RootCA.crt; \
+		openssl req -new -nodes -newkey rsa:2048 -keyout config/certificates/localhost.key -out config/certificates/localhost.csr -subj "/C=US/ST=YourState/L=YourCity/O=Example-Certificates/CN=localhost"; \
+		openssl x509 -req -sha256 -days 1024 -in config/certificates/localhost.csr -CA config/certificates/RootCA.pem -CAkey config/certificates/RootCA.key -CAcreateserial -out config/certificates/localhost.crt; \
+		cat config/certificates/localhost.crt config/certificates/localhost.key > config/certificates/localhost.pem; \
+		if [ "$$(uname)" = "Darwin" ]; then \
+			sudo /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./config/certificates/RootCA.crt; \
+		elif [ "$$(uname)" = "Linux" ]; then \
+			$(call log,~FYInstalling certificate for Linux...~ST); \
+			sudo cp ./config/certificates/RootCA.crt /usr/local/share/ca-certificates/newsblur-rootca.crt || true; \
+			sudo update-ca-certificates || true; \
+			$(call log,~FYCertificate installation attempted. If this fails~FB~SB you may need to manually trust the certificate.~ST); \
+		else \
+			$(call log,~FRUnknown OS. Please manually trust the certificate at ~SB~FW./config/certificates/RootCA.crt~ST); \
+		fi; \
 	fi
 
 # Doesn't work yet
