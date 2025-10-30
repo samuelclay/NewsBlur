@@ -493,7 +493,16 @@ var classifier_prototype = {
                             this.make_classifier('<span class="NB-classifier-text-placeholder">Highlight text to look for in future stories</span>', '', 'text'),
                             $.make('span',
                                 this.make_user_texts(story.get('story_content'))
-                            )
+                            ),
+                            (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && $.make('div', { className: 'NB-classifier-text-premium-notice' }, [
+                                $.make('div', { className: 'NB-classifier-text-premium-notice-text' }, [
+                                    'Text classifiers will be saved but not applied.',
+                                    $.make('br'),
+                                    'Upgrade to ',
+                                    $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive or Premium Pro'),
+                                    ' to use text classifiers.'
+                                ])
+                            ]))
                         ])
                     ]),
                     (story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
@@ -900,6 +909,13 @@ var classifier_prototype = {
 
     handle_clicks: function (elem, e) {
         var self = this;
+
+        $.targetIs(e, { tagSelector: '.NB-classifier-premium-link' }, function ($t, $p) {
+            e.preventDefault();
+            self.close(function () {
+                NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
+            });
+        });
 
         if (this.options['training']) {
             $.targetIs(e, { tagSelector: '.NB-modal-submit-begin' }, function ($t, $p) {

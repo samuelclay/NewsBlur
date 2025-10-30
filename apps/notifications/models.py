@@ -228,7 +228,11 @@ class MUserFeedNotification(mongo.Document):
             )
             classifiers["titles"] = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
             classifiers["tags"] = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
-            classifiers["texts"] = list(MClassifierText.objects(user_id=self.user_id, feed_id=self.feed_id))
+            user = User.objects.get(pk=self.user_id)
+            if user.profile.is_archive or user.profile.is_pro:
+                classifiers["texts"] = list(MClassifierText.objects(user_id=self.user_id, feed_id=self.feed_id))
+            else:
+                classifiers["texts"] = []
 
         return classifiers
 
