@@ -1225,8 +1225,8 @@ class UserSubscription(models.Model):
 
     @staticmethod
     def score_story(scores):
-        max_score = max(scores["author"], scores["tags"], scores["title"])
-        min_score = min(scores["author"], scores["tags"], scores["title"])
+        max_score = max(scores["author"], scores["tags"], scores["title"], scores.get("text", 0))
+        min_score = min(scores["author"], scores["tags"], scores["title"], scores.get("text", 0))
 
         if max_score > 0:
             return 1

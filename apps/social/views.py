@@ -281,6 +281,7 @@ def load_social_stories(request, user_id, username=None):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
+            "text": apply_classifier_texts(classifier_texts, story),
         }
 
     classifiers = sort_classifiers_by_feed(

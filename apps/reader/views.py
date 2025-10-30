@@ -1007,6 +1007,7 @@ def load_single_feed(request, feed_id):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
+            "text": apply_classifier_texts(classifier_texts, story),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
@@ -1332,6 +1333,7 @@ def load_starred_stories(request):
             "author": 0,
             "tags": 0,
             "title": 0,
+            "text": 0,
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True
@@ -1715,6 +1717,7 @@ def load_read_stories(request):
             "author": 0,
             "tags": 0,
             "title": 0,
+            "text": 0,
         }
         if story["story_hash"] in starred_stories:
             story["starred"] = True
