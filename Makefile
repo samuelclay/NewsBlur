@@ -320,14 +320,26 @@ clean:
 
 # API testing with authenticated curl
 # Usage: make api URL=/reader/feeds
-# Usage: make api URL=/reader/feeds ARGS="-X POST -d 'foo=bar'"
+# Usage: make api URL=/reader/feeds CURL_ARGS="-X POST -d 'foo=bar'"
 api:
-	@if [ ! -f .dev_session ]; then \
+	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
+	if [ -d ".git" ]; then \
+		CONTAINER_NAME="newsblur_web"; \
+		API_BASE_URL="https://localhost"; \
+	else \
+		CONTAINER_NAME="newsblur_web_$$WORKSPACE_NAME"; \
+		HASH=$$(echo -n "$$WORKSPACE_NAME" | md5 | head -c 4); \
+		PORT_OFFSET=$$((0x$$HASH % 900 + 100)); \
+		HTTPS_PORT=$$((8443 + $$PORT_OFFSET)); \
+		API_BASE_URL="https://localhost:$$HTTPS_PORT"; \
+	fi; \
+	if [ ! -f .dev_session ]; then \
 		echo "Generating dev session..."; \
-		docker exec -t newsblur_web ./manage.py generate_dev_session; \
-	fi
-	@SESSION_ID=$$(cat .dev_session); \
-	curl -k -H "Cookie: sessionid=$$SESSION_ID" https://localhost$(URL) $(ARGS)
+		docker exec -t $$CONTAINER_NAME ./manage.py generate_dev_session; \
+	fi; \
+	SESSION_ID=$$(cat .dev_session); \
+	echo "Using container: $$CONTAINER_NAME, URL: $$API_BASE_URL$(URL)"; \
+	curl -sk -H "Cookie: newsblur_sessionid=$$SESSION_ID" $$API_BASE_URL$(URL) $(CURL_ARGS)
 
 grafana-dashboards:
 	uv run python utils/grafana_backup.py
