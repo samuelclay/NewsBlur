@@ -376,6 +376,10 @@ class Test_Classifiers(TransactionTestCase):
         self.assertEqual(score, 1)
 
     def test_get_classifiers_for_user(self):
+        # Make user Pro to enable text classifiers
+        self.user.profile.is_pro = True
+        self.user.profile.save()
+
         MClassifierTitle.objects.create(
             user_id=self.user.pk,
             feed_id=self.feed.pk,
@@ -412,6 +416,56 @@ class Test_Classifiers(TransactionTestCase):
         self.assertEqual(classifiers["titles"]["important"], 1)
         self.assertEqual(classifiers["texts"]["exclusive"], 1)
         self.assertEqual(classifiers["authors"]["Good Author"], 1)
+
+    def test_text_classifiers_premium_tiers(self):
+        # Create text classifier for testing
+        MClassifierText.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            text="exclusive",
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+        MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            title="important",
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+
+        # Regular user should not have text classifiers
+        self.user.profile.is_premium = False
+        self.user.profile.is_archive = False
+        self.user.profile.is_pro = False
+        self.user.profile.save()
+
+        classifiers = get_classifiers_for_user(self.user, feed_id=self.feed.pk)
+        self.assertEqual(len(classifiers["texts"]), 0)
+        self.assertEqual(len(classifiers["titles"]), 1)
+
+        # Regular premium user should not have text classifiers
+        self.user.profile.is_premium = True
+        self.user.profile.is_archive = False
+        self.user.profile.is_pro = False
+        self.user.profile.save()
+
+        classifiers = get_classifiers_for_user(self.user, feed_id=self.feed.pk)
+        self.assertEqual(len(classifiers["texts"]), 0)
+        self.assertEqual(len(classifiers["titles"]), 1)
+
+        # Premium archive user should have text classifiers
+        self.user.profile.is_premium = True
+        self.user.profile.is_archive = True
+        self.user.profile.is_pro = False
+        self.user.profile.save()
+
+        classifiers = get_classifiers_for_user(self.user, feed_id=self.feed.pk)
+        self.assertEqual(len(classifiers["texts"]), 1)
+        self.assertEqual(classifiers["texts"]["exclusive"], 1)
+        self.assertEqual(len(classifiers["titles"]), 1)
 
     def test_save_classifier_title_endpoint(self):
         self.client.login(username="testuser", password="testpass")
