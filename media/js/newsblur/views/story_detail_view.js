@@ -35,6 +35,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-highlight-selection": "highlight_selected_text",
         "click .NB-unhighlight-selection": "unhighlight_selected_text",
         "click .NB-train-selection": "train_selected_text",
+        "click .NB-classifier-highlight-positive": "show_classifier_highlight_menu",
+        "click .NB-classifier-highlight-negative": "show_classifier_highlight_menu",
         "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog"
     },
 
@@ -461,6 +463,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.$el.addClass('NB-hidden');
             this.model.set('visible', false);
         }
+
+        // Refresh classifiers reference and reapply highlights when classifiers change
+        this.classifiers = NEWSBLUR.assets.classifiers[this.model.get('story_feed_id')];
+        this.apply_starred_story_selections(true);
     },
 
     // ============
@@ -864,6 +870,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.show_unhighlight_tooltip($(e.target));
             return;
         }
+        if ($(e.target).hasClass("NB-classifier-highlight-positive") ||
+            $(e.target).hasClass("NB-classifier-highlight-negative")) {
+            // Let the click handler deal with classifier highlights
+            return;
+        }
 
         if (!NEWSBLUR.assets.preference('highlights')) return;
 
@@ -973,6 +984,44 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     },
 
+    show_classifier_highlight_menu: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $mark = $(e.currentTarget);
+        var text = $mark.text();
+        console.log(['show_classifier_highlight_menu', text, $mark]);
+
+        // Set the serialized_highlight to the text from the mark
+        this.serialized_highlight = _.string.trim(text);
+
+        // Close any existing tooltip
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+
+        // Show the highlight/train menu
+        $mark.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span>");
+        var $t = tippy($mark.get(0), {
+            appendTo: this.el,
+            arrow: true,
+            arrowType: 'round',
+            size: 'large',
+            duration: 350,
+            animation: 'scale',
+            trigger: 'click',
+            interactive: true,
+            performance: true,
+            onHide: _.bind(function () {
+                // Cleanup if needed
+            }, this)
+        });
+        this.tooltip = $t;
+        _.defer(function () {
+            if ($t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
+        });
+    },
+
     highlight_selected_text: function () {
         var highlights = this.model.get('highlights');
         if (!highlights || !$.isArray(highlights)) highlights = [];
@@ -1064,15 +1113,19 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     apply_starred_story_selections: function (force) {
         var highlights = this.model.user_highlights();
+        var text_classifiers = this.classifiers && this.classifiers.texts ? _.keys(this.classifiers.texts) : [];
+
         if (!force) {
-            if (!highlights || !highlights.length) return;
+            if ((!highlights || !highlights.length) && !text_classifiers.length) return;
         }
-        console.log(['Applying highlights', highlights]);
+        console.log(['Applying highlights', highlights, 'text_classifiers', text_classifiers]);
 
         var $doc = this.$(".NB-feed-story-content");
         $doc.unmark();
 
         $doc.attr('id', 'NB-highlighting');
+
+        // Apply user saved highlights
         _.each(highlights, _.bind(function (highlight, index) {
             $doc.mark(highlight, {
                 "className": "NB-highlight",
@@ -1083,6 +1136,18 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 }
             });
         }, this));
+
+        // Apply text classifier highlights
+        _.each(text_classifiers, _.bind(function (classifier_text) {
+            var classifier_score = this.classifiers.texts[classifier_text];
+            var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+            $doc.mark(classifier_text, {
+                "className": className,
+                "separateWordSearch": false,
+                "acrossElements": true
+            });
+        }, this));
+
         $doc.removeAttr('id');
     },
 
