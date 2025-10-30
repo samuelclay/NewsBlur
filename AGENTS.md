@@ -1,7 +1,9 @@
 # NewsBlur Development Guidelines
 
 ## Build & Test Commands
-- `make nb` - Build and start all services (ONLY use for initial setup, not during development)
+- `make` - Smart default: starts/updates NewsBlur, applies migrations (safe to run after git pull)
+- `make rebuild` - Full rebuild with all images (for Docker config changes)
+- `make nb` - Fast startup without rebuild (legacy, use `make` instead)
 - `make bounce` - Restart all containers with new images
 - `make shell` - Django shell inside container
 - `make debug` - Debug mode for pdb
@@ -10,10 +12,11 @@
 - `make test` - Run all tests (defaults: SCOPE=apps, ARGS="--noinput -v 1 --failfast")
 - `make test SCOPE=apps.rss_feeds ARGS="-v 2"`
 
-**IMPORTANT: Do NOT run `make nb` during development!**
+**IMPORTANT: Do NOT run `make rebuild` or `make nb` during development!**
 - Web and Node servers restart automatically when code changes
 - Task/Celery server must be manually restarted only when working on background tasks
-- Running `make nb` unnecessarily rebuilds everything and wastes time
+- Use `make` to apply migrations after git pull
+- Running `make rebuild` unnecessarily rebuilds everything and wastes time
 
 Note: All docker commands must use `-t` instead of `-it` to avoid interactive mode issues when running through Claude.
 
