@@ -970,6 +970,16 @@ def load_single_feed(request, feed_id):
     checkpoint4 = time.time()
 
     for story in stories:
+        # Calculate intelligence BEFORE deleting story content (text classifier needs it)
+        story["intelligence"] = {
+            "feed": apply_classifier_feeds(classifier_feeds, feed),
+            "author": apply_classifier_authors(classifier_authors, story),
+            "tags": apply_classifier_tags(classifier_tags, story),
+            "title": apply_classifier_titles(classifier_titles, story),
+            "text": apply_classifier_texts(classifier_texts, story),
+        }
+        story["score"] = UserSubscription.score_story(story["intelligence"])
+
         if not include_story_content:
             del story["story_content"]
         story_date = localtime_for_timezone(story["story_date"], user.profile.timezone)
@@ -1002,14 +1012,6 @@ def load_single_feed(request, feed_id):
                 story["shared_comments"] = strip_tags(shared_stories[story["story_hash"]]["comments"])
         else:
             story["read_status"] = 1
-        story["intelligence"] = {
-            "feed": apply_classifier_feeds(classifier_feeds, feed),
-            "author": apply_classifier_authors(classifier_authors, story),
-            "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story),
-            "text": apply_classifier_texts(classifier_texts, story),
-        }
-        story["score"] = UserSubscription.score_story(story["intelligence"])
 
     # Intelligence
     feed_tags = json.decode(feed.data.popular_tags) if feed.data.popular_tags else []

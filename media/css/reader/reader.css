@@ -4579,6 +4579,18 @@ body {
     background-color: #FFEE8E;
 }
 
+.NB-feed-story-content .NB-classifier-highlight-positive {
+    background-color: #d6f0d5;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+
+.NB-feed-story-content .NB-classifier-highlight-negative {
+    background-color: #FFCCCC;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+
 .NB-feed-story-content .NB-starred-story-selection-highlight-popover {
     background-color: #FEFFB5;
 }
