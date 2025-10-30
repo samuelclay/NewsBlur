@@ -5455,10 +5455,11 @@ body {
 
 .NB-sideoption-writerules {
     order: 3;
+    display: none;
 }
 
 .NB-wide-content .NB-sideoption-writerules {
-    display: flex;
+    display: none;
     flex-direction: column;
 }
 
