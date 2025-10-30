@@ -199,10 +199,7 @@ def load_social_stories(request, user_id, username=None):
     classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, social_user_id=social_user_id))
     classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, social_user_id=social_user_id))
     classifier_tags = list(MClassifierTag.objects(user_id=user.pk, social_user_id=social_user_id))
-    if user.profile.premium_available_text_classifiers:
-        classifier_texts = list(MClassifierText.objects(user_id=user.pk, social_user_id=social_user_id))
-    else:
-        classifier_texts = []
+    classifier_texts = list(MClassifierText.objects(user_id=user.pk, social_user_id=social_user_id))
     # Merge with feed specific classifiers
     classifier_feeds = classifier_feeds + list(
         MClassifierFeed.objects(user_id=user.pk, feed_id__in=story_feed_ids)
@@ -216,12 +213,9 @@ def load_social_stories(request, user_id, username=None):
     classifier_tags = classifier_tags + list(
         MClassifierTag.objects(user_id=user.pk, feed_id__in=story_feed_ids)
     )
-    if user.profile.premium_available_text_classifiers:
-        classifier_texts = classifier_texts + list(
-            MClassifierText.objects(user_id=user.pk, feed_id__in=story_feed_ids)
-        )
-    else:
-        classifier_texts = []
+    classifier_texts = classifier_texts + list(
+        MClassifierText.objects(user_id=user.pk, feed_id__in=story_feed_ids)
+    )
 
     unread_story_hashes = []
     if (read_filter == "all" or query) and socialsub:
@@ -454,10 +448,7 @@ def load_river_blurblog(request):
         classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=story_feed_ids))
         classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, feed_id__in=story_feed_ids))
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=story_feed_ids))
-        if user.profile.premium_available_text_classifiers:
-            classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=story_feed_ids))
-        else:
-            classifier_texts = []
+        classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=story_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
