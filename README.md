@@ -17,6 +17,8 @@
 <a href="https://play.google.com/store/apps/details?id=com.newsblur" target="_blank">
 <img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" alt="Get it on Google Play" height="60"/></a>
 
+<br/>
+
 <a href="https://apps.apple.com/us/app/newsblur/id463981119">
 <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the Apple App Store" height="60"></a>
 
@@ -73,7 +75,7 @@ make
 
 Visit `https://localhost` (type `thisisunsafe` to bypass the self-signed certificate warning).
 
-**Daily commands:**
+**Common commands:**
 - `make` - Start/update and apply migrations (run after `git pull`)
 - `make log` - View web and node logs
 - `make logall` - View all container logs
@@ -94,20 +96,25 @@ See `AGENTS.md` for detailed development guidelines.
 
 To customize your NewsBlur installation, create `newsblur_web/local_settings.py` to override settings from [`docker_local_settings.py`](newsblur_web/docker_local_settings.py).
 
-**Common settings to configure:**
+**Settings for self-hosted installations:**
 
 - `NEWSBLUR_URL` - Your domain (default: `https://localhost`)
 - `SESSION_COOKIE_DOMAIN` - Cookie domain for authentication
-- `SECRET_KEY` - Django secret key (change for production)
 - `AUTO_PREMIUM` - Give new users premium features (default: `True`)
 - `AUTO_ENABLE_NEW_USERS` - Auto-activate new accounts (default: `True`)
 - `ENFORCE_SIGNUP_CAPTCHA` - Require captcha on signup (default: `False`)
+- `OPENAI_API_KEY` - AI features and Discover for related stories
+- `DAYS_OF_UNREAD` - Story retention for premium users in days (default: `30`)
+- `DAYS_OF_UNREAD_FREE` - Story retention for free users in days (default: `14`)
+- `HOMEPAGE_USERNAME` - Username shown on homepage to unauthenticated users (default: `"popular"`)
+
+**Uncommon settings (for running full newsblur.com):**
+
 - `EMAIL_BACKEND` - Email delivery method
-- `STRIPE_SECRET` / `STRIPE_PUBLISHABLE` - Payment processing
+- `STRIPE_SECRET` / `STRIPE_PUBLISHABLE` - Stripe payment processing
+- `PAYPAL_API_CLIENTID` / `PAYPAL_API_SECRET` - PayPal payment processing
 - `S3_*` settings - AWS S3 bucket configuration for backups, icons, avatars
 - `FACEBOOK_APP_ID` / `TWITTER_CONSUMER_KEY` / `YOUTUBE_API_KEY` - Social API keys
-- `OPENAI_API_KEY` - AI features
-- `ELASTICSEARCH_*` - Search configuration
 
 See the full list in [`docker_local_settings.py`](https://github.com/samuelclay/NewsBlur/blob/master/newsblur_web/docker_local_settings.py) and [`settings.py`](https://github.com/samuelclay/NewsBlur/blob/master/newsblur_web/settings.py).
 

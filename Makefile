@@ -170,6 +170,7 @@ stripe:
 	stripe listen --forward-to localhost/zebra/webhooks/v2/
 down:
 	docker compose -f docker-compose.yml -f docker-compose.metrics.yml down
+stop: down
 nbdown: down
 jekyll:
 	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --config _config.yml
