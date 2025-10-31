@@ -527,11 +527,11 @@ if DOCKERBUILD:
 else:
     MONGO_PORT = 27017
 MONGO_DB = {
-    "host": f"db_mongo:{MONGO_PORT}",
+    "host": f"newsblur_db_mongo:{MONGO_PORT}",
     "name": "newsblur",
 }
 MONGO_ANALYTICS_DB = {
-    "host": f"db_mongo_analytics:{MONGO_PORT}",
+    "host": f"newsblur_db_mongo_analytics:{MONGO_PORT}",
     "name": "nbanalytics",
 }
 
@@ -742,7 +742,7 @@ monitoring.register(MONGO_COMMAND_LOGGER)
 
 MONGO_DB_DEFAULTS = {
     "name": "newsblur",
-    "host": f"db_mongo:{MONGO_PORT}",
+    "host": f"newsblur_db_mongo:{MONGO_PORT}",
     "alias": "default",
     "unicode_decode_error_handler": "ignore",
     "connect": False,
@@ -763,7 +763,7 @@ MONGODB = connect(MONGO_DB_NAME, **MONGO_DB)
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     "name": "nbanalytics",
-    "host": f"db_mongo_analytics:{MONGO_PORT}",
+    "host": f"newsblur_db_mongo_analytics:{MONGO_PORT}",
     "alias": "nbanalytics",
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)

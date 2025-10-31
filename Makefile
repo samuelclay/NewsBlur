@@ -59,16 +59,16 @@ logcelery:
 	docker compose logs -f --tail 20 newsblur_celery
 logtask: logcelery
 logmongo:
-	docker compose logs -f db_mongo
+	docker compose logs -f newsblur_db_mongo
 alllogs: 
 	docker compose logs -f --tail 20
 logall: alllogs
 mongo:
-	docker exec -it db_mongo mongo --port 29019
+	docker exec -it newsblur_db_mongo mongo --port 29019
 redis:
-	docker exec -it db_redis redis-cli -p 6579
+	docker exec -it newsblur_db_redis redis-cli -p 6579
 postgres:
-	docker exec -it db_postgres psql -U newsblur
+	docker exec -it newsblur_db_postgres psql -U newsblur
 stripe:
 	stripe listen --forward-to localhost/zebra/webhooks/v2/
 down:
@@ -243,18 +243,18 @@ oldfirewall:
 repairmongo:
 	sudo docker run -v "/srv/newsblur/docker/volumes/db_mongo:/data/db" mongo:4.0 mongod --repair --dbpath /data/db
 mongodump:
-	docker exec -it db_mongo mongodump --port 29019 -d newsblur -o /data/mongodump
+	docker exec -it newsblur_db_mongo mongodump --port 29019 -d newsblur -o /data/mongodump
 	cp -fr docker/volumes/db_mongo/mongodump docker/volumes/mongodump
-# docker exec -it db_mongo cp -fr /data/db/mongodump /data/mongodump
-# docker exec -it db_mongo rm -fr /data/db/
+# docker exec -it newsblur_db_mongo cp -fr /data/db/mongodump /data/mongodump
+# docker exec -it newsblur_db_mongo rm -fr /data/db/
 mongorestore:
 	cp -fr docker/volumes/mongodump docker/volumes/db_mongo/
-	docker exec -it db_mongo mongorestore --port 29019 -d newsblur /data/db/mongodump/newsblur
+	docker exec -it newsblur_db_mongo mongorestore --port 29019 -d newsblur /data/db/mongodump/newsblur
 pgrestore:
-	docker exec -it db_postgres bash -c "psql -U newsblur -c 'CREATE DATABASE newsblur_prod;'; pg_restore -U newsblur --role=newsblur --dbname=newsblur_prod /var/lib/postgresql/data/backup_postgresql_2023-10-10-04-00.sql.sql"
+	docker exec -it newsblur_db_postgres bash -c "psql -U newsblur -c 'CREATE DATABASE newsblur_prod;'; pg_restore -U newsblur --role=newsblur --dbname=newsblur_prod /var/lib/postgresql/data/backup_postgresql_2023-10-10-04-00.sql.sql"
 redisrestore:
-	docker exec -it db_redis bash -c "redis-cli -p 6579 --pipe < /data/backup_db_redis_user_2023-10-21-04-00.rdb.gz"
-	docker exec -it db_redis bash -c "redis-cli -p 6579 --pipe < /data/backup_db_redis_story2_2023-10-21-04-00.rdb.gz"
+	docker exec -it newsblur_db_redis bash -c "redis-cli -p 6579 --pipe < /data/backup_db_redis_user_2023-10-21-04-00.rdb.gz"
+	docker exec -it newsblur_db_redis bash -c "redis-cli -p 6579 --pipe < /data/backup_db_redis_story2_2023-10-21-04-00.rdb.gz"
 index_feeds:
 	docker exec -it newsblur_web ./manage.py index_feeds
 index_stories:
