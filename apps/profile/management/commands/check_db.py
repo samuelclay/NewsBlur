@@ -15,5 +15,5 @@ class Command(BaseCommand):
                 connected = True
                 # print("Connected to postgres")
             except OperationalError as e:
-                print(f" ---> Waiting for db_postgres: {e}")
+                print(f" ---> Waiting for newsblur_db_postgres: {e}")
                 time.sleep(5)

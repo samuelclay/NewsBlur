@@ -53,16 +53,16 @@ jobs:
           echo "Checking container status..."
           docker ps -a
           echo "MongoDB logs:"
-          docker logs db_mongo || true
+          docker logs newsblur_db_mongo || true
 
       - name: Wait for services to be ready
         run: |
           echo "Waiting for PostgreSQL..."
-          timeout 60 bash -c 'until docker exec db_postgres pg_isready -U newsblur; do sleep 2; done'
+          timeout 60 bash -c 'until docker exec newsblur_db_postgres pg_isready -U newsblur; do sleep 2; done'
           echo "Waiting for MongoDB..."
-          timeout 60 bash -c 'until docker exec db_mongo mongo --port 29019 --eval "db.adminCommand({ping: 1})" --quiet; do sleep 2; done'
+          timeout 60 bash -c 'until docker exec newsblur_db_mongo mongo --port 29019 --eval "db.adminCommand({ping: 1})" --quiet; do sleep 2; done'
           echo "Waiting for Redis..."
-          timeout 60 bash -c 'until docker exec db_redis redis-cli -p 6579 ping; do sleep 2; done'
+          timeout 60 bash -c 'until docker exec newsblur_db_redis redis-cli -p 6579 ping; do sleep 2; done'
           echo "All services ready"
 
       - name: Run migrations
