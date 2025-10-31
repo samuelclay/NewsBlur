@@ -10,7 +10,7 @@
   
   
 
-  <updated>2025-10-20T17:03:00-04:00</updated>
+  <updated>2025-10-31T12:45:57-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,52 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">New mobile app for NewsBlur: Web Feeds for Nokia MeeGo</title>
+    <link href="https://blog.newsblur.com/2012/03/14/mobile-app-web-feeds-nokia-meego/" rel="alternate" type="text/html" title="New mobile app for NewsBlur: Web Feeds for Nokia MeeGo" />
+    <published>2012-03-14T13:14:00-04:00</published>
+    <updated>2012-03-14T13:14:00-04:00</updated>
+    <id>https://blog.newsblur.com/2012/03/14/mobile-app-web-feeds-nokia-meego</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2012/03/14/mobile-app-web-feeds-nokia-meego/">
+      <![CDATA[<p>And what a gorgeous mobile app it is. App developer Róbert Márki just released <a href="http://store.ovi.com/content/261063">Web Feeds</a>, the first NewsBlur app for Nokia MeeGo. Take a look at these screenshots:</p>
+
+<style>
+.nokia td img {
+width: 280px;
+margin-right: 24px;
+}
+</style>
+<p>&lt;table class=”nokia”&gt;&lt;tr&gt;&lt;td&gt;</p>
+<h3 id="feed-list">Feed list</h3>
+<p><img src="http://projects.developer.nokia.com/feed_reader/files/newsblur_view.png" alt="" />&lt;/td&gt; &lt;td&gt;</p>
+<h3 id="story-list">Story list</h3>
+<p><img src="http://projects.developer.nokia.com/feed_reader/files/feed_view.png" alt="" />&lt;/td&gt; &lt;/tr&gt;&lt;tr&gt;&lt;td&gt;</p>
+<h3 id="story-view">Story view</h3>
+<p><img src="http://projects.developer.nokia.com/feed_reader/files/story_view_large_image2.png" alt="" />&lt;/td&gt; &lt;td&gt;</p>
+<h3 id="intelligence-training">Intelligence training</h3>
+<p><img src="http://projects.developer.nokia.com/feed_reader/files/inteligence_trainer_feed_view.png" alt="" />&lt;/td&gt; &lt;/tr&gt;&lt;tr&gt;&lt;td&gt;</p>
+<h3 id="adding-a-site">Adding a site</h3>
+<p><img src="http://projects.developer.nokia.com/feed_reader/files/add_feed_sheet.png" alt="" />&lt;/td&gt; &lt;td&gt;</p>
+<h3 id="intelligence-control">Intelligence control</h3>
+<p><img src="http://projects.developer.nokia.com/feed_reader/files/filter_dialog.png" alt="" />&lt;/td&gt; &lt;/tr&gt;&lt;/table&gt;</p>
+
+<p>Just stellar work and it has all the features of the website. Web Feeds is free and <a href="http://store.ovi.com/content/261063">available from the Nokia Store</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="mobile" />
+    
+    
+    <summary type="html">
+      <![CDATA[And what a gorgeous mobile app it is. App developer Róbert Márki just released Web Feeds, the first NewsBlur app for Nokia MeeGo. Take a look at these screenshots:
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">From project to profession: going indie on NewsBlur</title>

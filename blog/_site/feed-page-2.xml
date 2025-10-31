@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2025-10-20T17:03:00-04:00</updated>
+  <updated>2025-10-31T12:45:57-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,52 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Infrequent Site Stories is the blog reader we need</title>
+    <link href="https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need/" rel="alternate" type="text/html" title="Infrequent Site Stories is the blog reader we need" />
+    <published>2017-12-11T06:00:15-05:00</published>
+    <updated>2017-12-11T06:00:15-05:00</updated>
+    <id>https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need/">
+      <![CDATA[<p>Launching today on all three platforms—web, iOS, and Android—is the new Infrequent Site Stories view. This configurable river of news offers a view of stories only from the blogs that publish less often than 1 story per day.</p>
+
+<p>Most of what you see in your day-to-day feed is news that’s up to the minute and is probably stale within a day. Even 8 hour old news can be a problem. But sometimes what you want is an overview of the news that isn’t exactly news. It’s stories from the blogs who have individual authors, or blogs that publish only a few times a month. And missing out on those stories is a tragedy because it is those blogs that pushed you to invest in an RSS reader in the first place.</p>
+
+<p>Today I’m happy to introduce a new feature that you won’t find anywhere else. It’s called Infrequent Site Stories and you can find it at the top of your feed list on the web, on iOS, and on Android.</p>
+
+<figure class="tmblr-full" data-orig-height="1131" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-ios-android.png"><img width="600" style="margin: 24px auto;" data-orig-height="1131" data-orig-width="1200" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-ios-android.png" /></figure>
+
+<p>Infrequent Site Stories is the river that captures stories from those authors who aren’t pulling from the firehose. These are the stories that are more thoughtful and more relevant days, weeks, months, or even years down the line. These stories are not to be missed. And the best thing about these stories is that there are far fewer of them than there are of your normal full river from All Site Stories.</p>
+
+<p>You can also configure the Infrequent river to be more or less inclusive of content that is more or less frequently published by changing the filter anywhere from 5 to 90 stories per month.</p>
+
+<figure class="tmblr-full" data-orig-height="570" data-orig-width="1100" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-options.png"><img width="650" style="margin: 24px auto; border: 1px solid #606060;" data-orig-height="570" data-orig-width="1100" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-options.png" /></figure>
+
+<p>These options are also available on all three official NewsBlur platforms and will let you perform a filter similar to how Focus mode reduces your number of unreads. It’s great to dip into Infrequent Site Stories and get stories you would ordinarily miss out on.</p>
+
+<figure class="tmblr-full" data-orig-height="866" data-orig-width="1400" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-web.png"><img width="650" style="margin: 24px auto;" data-orig-height="866" data-orig-width="1400" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-web.png" /></figure>
+
+<p>Try out the new Infrequent Site Stories feed, available only to premium subscribers. If your experience is anything like mine, it’ll be one of the new must read feeds in your reader.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[Launching today on all three platforms—web, iOS, and Android—is the new Infrequent Site Stories view. This configurable river of news offers a view of stories only from the blogs that publish less often than 1 story per day.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Improved Text view story extraction</title>
@@ -1049,48 +1095,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[If you like living on the bleeding edge, you should join the NewsBlur iOS beta program. You’ll get access to the latest releases a few weeks before they go out publicly.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Let’s all upgrade to version 4.5.0 of the NewsBlur Android app</title>
-    <link href="https://blog.newsblur.com/2015/10/01/lets-all-upgrade-to-version-450-of-the-newsblur/" rel="alternate" type="text/html" title="Let’s all upgrade to version 4.5.0 of the NewsBlur Android app" />
-    <published>2015-10-01T18:54:51-04:00</published>
-    <updated>2015-10-01T18:54:51-04:00</updated>
-    <id>https://blog.newsblur.com/2015/10/01/lets-all-upgrade-to-version-450-of-the-newsblur</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2015/10/01/lets-all-upgrade-to-version-450-of-the-newsblur/">
-      <![CDATA[<p>Here we are today with version 4.5.0 of the NewsBlur Android App. This is a great release because we took our time to update and improve a number of things about the app.</p>
-
-<p>The app now has the common header shared between all of NewsBlur’s first-class clients (web, iOS, and Android).</p>
-
-<p><img src="http://www.newsblur.com/media/img/android/v4%20-%206%20large.png" alt="" /></p>
-
-<p>Here’s the full changelog for version 4.5.0 (October 2015):</p>
-
-<ul>
-  <li>Reduced CPU and battery usage</li>
-  <li>New activities/interactions list</li>
-  <li>Updated feed list UI</li>
-  <li>Explainers for empty lists</li>
-  <li>Support for more types of alt/title text on images</li>
-  <li>Better error messaging</li>
-  <li>Tons of bug fixes, especially around offline usage</li>
-</ul>
-
-<p>It’s a <a href="http://www.newsblur.com/android">free download</a> and continues to get faster and more reliable. If you want to vote on which features you’d like to see next, <a href="https://github.com/samuelclay/NewsBlur/issues?q=is%3Aopen+is%3Aissue+label%3Aandroid">comment here on NewsBlur’s GitHub repo</a>.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[Here we are today with version 4.5.0 of the NewsBlur Android App. This is a great release because we took our time to update and improve a number of things about the app.
 ]]>
     </summary>
     

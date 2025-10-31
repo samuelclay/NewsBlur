@@ -15,10 +15,12 @@ NEWSBLUR.utils = {
         if (!intelligence) return score;
         var score_max = Math.max(intelligence['title'],
             intelligence['author'],
-            intelligence['tags']);
+            intelligence['tags'],
+            intelligence['text'] || 0);
         var score_min = Math.min(intelligence['title'],
             intelligence['author'],
-            intelligence['tags']);
+            intelligence['tags'],
+            intelligence['text'] || 0);
         if (score_max > 0) score = score_max;
         else if (score_min < 0) score = score_min;
 

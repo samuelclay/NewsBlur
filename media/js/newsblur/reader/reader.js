@@ -3911,7 +3911,7 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Train &amp; filter'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
@@ -3995,7 +3995,7 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Train &amp; filter'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
@@ -4150,7 +4150,7 @@
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story-train', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Train &amp; filter'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
@@ -5522,7 +5522,10 @@
                     tipsy.disable();
                     tipsy.hide();
                 });
-                this.retry();
+                // Retry loading discover stories if the discover view is open
+                if (this.current_discover_stories_view && this.current_discover_stories_view.is_open) {
+                    this.current_discover_stories_view.retry_load_stories();
+                }
             } else if (_.string.startsWith(message, 'feeds:')) {
                 var feed_ids = message.replace('feeds:', '').split(',');
                 _.each(feed_ids, function (feed_id) {

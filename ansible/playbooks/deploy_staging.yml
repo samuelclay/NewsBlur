@@ -10,7 +10,7 @@
       git:
         repo: https://github.com/samuelclay/NewsBlur.git
         dest: /srv/newsblur/
-        version: main
+        version: "{{ git_branch }}"
       register: pulled
 
     - name: Reload gunicorn
