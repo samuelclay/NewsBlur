@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: imageproxy
+  namespace: newsblur
+  labels:
+    app: imageproxy
+spec:
+  ports:
+    - port: 8088
+      targetPort: 8088
+      name: http
+  selector:
+    app: imageproxy
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imageproxy
+  namespace: newsblur
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: imageproxy
+  template:
+    metadata:
+      labels:
+        app: imageproxy
+    spec:
+      containers:
+      - name: imageproxy
+        image: yusukeito/imageproxy:v0.11.2
+        ports:
+        - containerPort: 8088
+          name: http
+        command: ["/app/imageproxy"]
+        args:
+        - "-addr"
+        - "0.0.0.0:8088"
+        - "-cache"
+        - "/tmp/imageproxy"
+        - "-verbose"
+        volumeMounts:
+        - name: cache
+          mountPath: /tmp/imageproxy
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8088
+          initialDelaySeconds: 10
+          periodSeconds: 30
+      volumes:
+      - name: cache
+        emptyDir: {}
