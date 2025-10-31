@@ -73,7 +73,7 @@
       - name: mongorestore
         become: yes
         command: |
-          docker exec -i db_mongo bash -c 
+          docker exec -i newsblur_db_mongo bash -c
           "mongorestore --port 29019 --drop /data/db/{{ mongo_filename|regex_replace('.tgz$', '') }}/"
     tags: never, restore_mongo
 
