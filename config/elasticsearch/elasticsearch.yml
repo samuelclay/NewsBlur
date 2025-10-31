@@ -1,0 +1,32 @@
+# Elasticsearch configuration for NewsBlur local development
+
+cluster.name: "newsblur-local"
+node.name: newsblur-node-1
+
+# Network settings
+network.host: 0.0.0.0
+http.port: 9200
+transport.port: 9300
+
+# CORS settings (for Dejavu UI)
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+
+# Discovery settings (single-node mode for local dev)
+discovery.type: single-node
+
+# Security settings (disabled for local dev)
+xpack.security.enabled: false
+xpack.security.enrollment.enabled: false
+xpack.security.http.ssl.enabled: false
+xpack.security.transport.ssl.enabled: false
+
+# Memory and performance settings
+bootstrap.memory_lock: false
+indices.breaker.total.use_real_memory: false
+
+# Disk allocation settings
+cluster.routing.allocation.disk.threshold_enabled: false
+
+# Logging
+logger.level: INFO
