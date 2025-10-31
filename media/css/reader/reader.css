@@ -5488,6 +5488,7 @@ body {
     transition: background 0.36s ease-out, opacity 0.16s ease-in-out;
     order: 3;
     opacity: 0.25;
+    filter: grayscale(100%);
 }
 
 .NB-sideoption-thirdparty:last-child {

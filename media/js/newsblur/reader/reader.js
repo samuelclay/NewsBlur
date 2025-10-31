@@ -3911,7 +3911,7 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Train &amp; Filter'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Train &amp; filter'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
