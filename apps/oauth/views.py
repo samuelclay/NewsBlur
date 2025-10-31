@@ -665,6 +665,9 @@ def api_share_new_story(request):
     story_author = fields.get("story_author", "")
     comments = fields.get("comments", None)
 
+    if not story_url:
+        return {"errors": [{"message": "Invalid story URL"}]}
+
     logging.user(request.user, "~FBFinding feed (api_share_new_story): %s" % story_url)
     original_feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
     story_hash = MStory.guid_hash_unsaved(story_url)
@@ -777,6 +780,9 @@ def api_save_new_story(request):
     user_tags = fields.get("user_tags", "")
     story = None
 
+    if not story_url:
+        return {"errors": [{"message": "Invalid story URL"}]}
+
     logging.user(request.user, "~FBFinding feed (api_save_new_story): %s" % story_url)
     original_feed = Feed.get_feed_from_url(story_url)
     if not story_content or not story_title:
@@ -823,6 +829,9 @@ def api_save_new_subscription(request):
     fields = body.get("actionFields")
     url = urlnorm.normalize(fields["url"])
     folder = fields["folder"]
+
+    if not url:
+        return {"errors": [{"message": "Invalid URL"}]}
 
     if folder == "Top Level":
         folder = " "
