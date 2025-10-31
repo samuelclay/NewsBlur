@@ -1,12 +1,16 @@
 # Elasticsearch configuration for NewsBlur local development
 
-cluster.name: newsblur-local
+cluster.name: "newsblur-local"
 node.name: newsblur-node-1
 
 # Network settings
 network.host: 0.0.0.0
 http.port: 9200
 transport.port: 9300
+
+# CORS settings (for Dejavu UI)
+http.cors.enabled: true
+http.cors.allow-origin: "*"
 
 # Discovery settings (single-node mode for local dev)
 discovery.type: single-node
