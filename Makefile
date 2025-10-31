@@ -37,19 +37,30 @@ endef
 # Default target - smart setup that checks if first-time install or update
 .DEFAULT_GOAL := default
 default:
-	@if [ ! -d "docker/volumes/postgres" ] || [ ! -d "docker/volumes/db_mongo" ]; then \
+	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
+	if [ -d ".git" ]; then \
+		CONTAINER_NAME="newsblur_web"; \
+		URL="https://localhost"; \
+	else \
+		CONTAINER_NAME="newsblur_web_$$WORKSPACE_NAME"; \
+		HASH=$$(echo -n "$$WORKSPACE_NAME" | md5 | head -c 4); \
+		PORT_OFFSET=$$((0x$$HASH % 900 + 100)); \
+		HTTPS_PORT=$$((8443 + $$PORT_OFFSET)); \
+		URL="https://localhost:$$HTTPS_PORT"; \
+	fi; \
+	if [ -d ".git" ] && ([ ! -d "docker/volumes/postgres" ] || [ ! -d "docker/volumes/db_mongo" ]); then \
 		$(call log,~FYFirst-time setup detected. Running full installation...~ST); \
 		$(MAKE) rebuild; \
-	elif [ -z "$$(docker ps -q -f name=newsblur_web)" ]; then \
+	elif [ -z "$$(docker ps -q -f name=$$CONTAINER_NAME)" ]; then \
 		$(call log,~FYContainers not running. Starting NewsBlur...~ST); \
 		$(MAKE) nb-fast; \
 	else \
 		$(call log,~FGNewsBlur is already running. Applying any new migrations...~ST); \
-		$(MAKE) migrate; \
-	fi
-	@echo ""
-	@$(call log,~SB~FG✓ NewsBlur is ready! Visit ~FC~SBhttps://localhost~ST)
-	@$(call log,~FCNote: You may need to type '~SB~FWthisisunsafe~SN~FC' to bypass the self-signed certificate warning.~ST)
+		docker exec -t $$CONTAINER_NAME ./manage.py migrate; \
+	fi; \
+	echo ""; \
+	$(call log,~SB~FG✓ NewsBlur is ready! Visit ~FC~SB$$URL~ST); \
+	$(call log,~FCNote: You may need to type '~SB~FWthisisunsafe~SN~FC' to bypass the self-signed certificate warning.~ST)
 
 rebuild: pull bounce migrate bootstrap collectstatic
 nb-fast: pull bounce-fast migrate bootstrap collectstatic
@@ -189,7 +200,7 @@ test-river:
 
 keys:
 	@if [ -f "config/certificates/localhost.pem" ]; then \
-		$(call log,~FG✓ SSL certificates already exist~ST); \
+		$(call log,~SB~FG✓ SSL certificates already exist~ST); \
 	else \
 		mkdir -p config/certificates; \
 		openssl dhparam -out config/certificates/dhparam-2048.pem 2048; \
