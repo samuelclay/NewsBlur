@@ -7,12 +7,18 @@
 
 [www.newsblur.com](https://www.newsblur.com)
 
-<img src="media/img/welcome/welcome-mac.png" width="30%" alt="NewsBlur Web" /> <img src="media/img/welcome/welcome-ios.png" width="30%" alt="NewsBlur iOS" /> <img src="media/img/welcome/welcome-android.png" width="30%" alt="NewsBlur Android" />
+<img src="media/img/welcome/welcome-mac.png" width="60%" alt="NewsBlur Web" />
+
+<img src="media/img/welcome/welcome-ios.png" width="60%" alt="NewsBlur iOS" />
+
+<img src="media/img/welcome/welcome-android.png" width="60%" alt="NewsBlur Android" />
 
 <a href="https://f-droid.org/repository/browse/?fdid=com.newsblur" target="_blank">
 <img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="60"/></a>
+
 <a href="https://play.google.com/store/apps/details?id=com.newsblur" target="_blank">
 <img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" alt="Get it on Google Play" height="60"/></a>
+
 <a href="https://apps.apple.com/us/app/newsblur/id463981119">
 <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the Apple App Store" height="60"></a>
 
