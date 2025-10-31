@@ -24,7 +24,7 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         var date_filter_end = NEWSBLUR.reader.flags.date_filter_end;
         var has_date_filter = !!(date_filter_start || date_filter_end);
         var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
-        var has_exception = feed && feed.get('has_exception') && !this.showing_fake_folder;
+        var has_exception = feed && feed.get('has_exception') && feed.get('exception_type') == 'feed' && !this.showing_fake_folder;
 
         if (searching || has_date_filter || has_exception) {
             this.$el.removeClass("NB-hidden");
@@ -58,7 +58,7 @@ NEWSBLUR.Views.FeedSearchHeader = Backbone.View.extend({
         var date_filter_end = NEWSBLUR.reader.flags.date_filter_end;
         var searching = NEWSBLUR.reader.flags.search && NEWSBLUR.reader.flags.searching && NEWSBLUR.reader.flags.search.length;
         var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
-        var has_exception = feed && feed.get('has_exception') && !this.showing_fake_folder;
+        var has_exception = feed && feed.get('has_exception') && feed.get('exception_type') == 'feed' && !this.showing_fake_folder;
 
         // Check if we're showing exception, search results, or date filters
         if (has_exception && !searching && !date_filter_start && !date_filter_end) {
