@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2025-10-20T17:03:00-04:00</updated>
+  <updated>2025-10-31T12:45:57-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,48 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Let’s all upgrade to version 4.5.0 of the NewsBlur Android app</title>
+    <link href="https://blog.newsblur.com/2015/10/01/lets-all-upgrade-to-version-450-of-the-newsblur/" rel="alternate" type="text/html" title="Let’s all upgrade to version 4.5.0 of the NewsBlur Android app" />
+    <published>2015-10-01T18:54:51-04:00</published>
+    <updated>2015-10-01T18:54:51-04:00</updated>
+    <id>https://blog.newsblur.com/2015/10/01/lets-all-upgrade-to-version-450-of-the-newsblur</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2015/10/01/lets-all-upgrade-to-version-450-of-the-newsblur/">
+      <![CDATA[<p>Here we are today with version 4.5.0 of the NewsBlur Android App. This is a great release because we took our time to update and improve a number of things about the app.</p>
+
+<p>The app now has the common header shared between all of NewsBlur’s first-class clients (web, iOS, and Android).</p>
+
+<p><img src="http://www.newsblur.com/media/img/android/v4%20-%206%20large.png" alt="" /></p>
+
+<p>Here’s the full changelog for version 4.5.0 (October 2015):</p>
+
+<ul>
+  <li>Reduced CPU and battery usage</li>
+  <li>New activities/interactions list</li>
+  <li>Updated feed list UI</li>
+  <li>Explainers for empty lists</li>
+  <li>Support for more types of alt/title text on images</li>
+  <li>Better error messaging</li>
+  <li>Tons of bug fixes, especially around offline usage</li>
+</ul>
+
+<p>It’s a <a href="http://www.newsblur.com/android">free download</a> and continues to get faster and more reliable. If you want to vote on which features you’d like to see next, <a href="https://github.com/samuelclay/NewsBlur/issues?q=is%3Aopen+is%3Aissue+label%3Aandroid">comment here on NewsBlur’s GitHub repo</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[Here we are today with version 4.5.0 of the NewsBlur Android App. This is a great release because we took our time to update and improve a number of things about the app.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Even the folders have RSS feeds</title>
@@ -1006,52 +1048,6 @@ color: #606060;
     
     <summary type="html">
       <![CDATA[It’s one thing to follow a handful of sites and use NewsBlur’s training to only read the stories you want to read. But sometimes you want to come back to stories long after you’ve read them. You could save the story, but then you would have to either scroll down...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Three new features for the web: syntax highlighting for source code, adjustable video widths, and footnotes</title>
-    <link href="https://blog.newsblur.com/2014/01/06/three-new-features-for-the-web-syntax/" rel="alternate" type="text/html" title="Three new features for the web: syntax highlighting for source code, adjustable video widths, and footnotes" />
-    <published>2014-01-06T12:46:00-05:00</published>
-    <updated>2014-01-06T12:46:00-05:00</updated>
-    <id>https://blog.newsblur.com/2014/01/06/three-new-features-for-the-web-syntax</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/01/06/three-new-features-for-the-web-syntax/">
-      <![CDATA[<p>A few small new features to get your first full week of the new year started off right.</p>
-
-<h3 id="syntax-highlight-for-source-code">Syntax highlight for source code</h3>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/syntax%20highlighting.png" alt="" /></p>
-
-<p>A common feature request has been automatic syntax highlighting in blog posts. This feature uses auto-detection to highlight code. For short snippets of code, this means that they could have inaccurate highlighting, although in testing it’s not so bad to have a few words in various colors. But for any substantial amount of code, you’ll have an easier time following along with syntax highlighting.</p>
-
-<h3 id="video-fitting">Video fitting</h3>
-
-<p>Videos from Youtube and Vimeo (and a few others) are now stretched to fit the window, resulting in bigger video previews.</p>
-
-<h3 id="footnotes">Footnotes</h3>
-
-<p>Previously, if you clicked the little footnote reference<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>, you would be taken to a new window. The Feed view now smoothly scrolls you to the footnote, where you can then return back to the footnote. Easy!</p>
-
-<hr />
-
-<ol>
-  <li></li>
-</ol>
-
-<p>Like this. <a href="#fnref:1">↩︎</a></p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[A few small new features to get your first full week of the new year started off right.
-]]>
     </summary>
     
   </entry>

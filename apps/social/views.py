@@ -199,10 +199,7 @@ def load_social_stories(request, user_id, username=None):
     classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, social_user_id=social_user_id))
     classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, social_user_id=social_user_id))
     classifier_tags = list(MClassifierTag.objects(user_id=user.pk, social_user_id=social_user_id))
-    if user.profile.is_archive or user.profile.is_pro:
-        classifier_texts = list(MClassifierText.objects(user_id=user.pk, social_user_id=social_user_id))
-    else:
-        classifier_texts = []
+    classifier_texts = list(MClassifierText.objects(user_id=user.pk, social_user_id=social_user_id))
     # Merge with feed specific classifiers
     classifier_feeds = classifier_feeds + list(
         MClassifierFeed.objects(user_id=user.pk, feed_id__in=story_feed_ids)
@@ -216,12 +213,9 @@ def load_social_stories(request, user_id, username=None):
     classifier_tags = classifier_tags + list(
         MClassifierTag.objects(user_id=user.pk, feed_id__in=story_feed_ids)
     )
-    if user.profile.is_archive or user.profile.is_pro:
-        classifier_texts = classifier_texts + list(
-            MClassifierText.objects(user_id=user.pk, feed_id__in=story_feed_ids)
-        )
-    else:
-        classifier_texts = []
+    classifier_texts = classifier_texts + list(
+        MClassifierText.objects(user_id=user.pk, feed_id__in=story_feed_ids)
+    )
 
     unread_story_hashes = []
     if (read_filter == "all" or query) and socialsub:
@@ -287,7 +281,11 @@ def load_social_stories(request, user_id, username=None):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
-            "text": apply_classifier_texts(classifier_texts, story),
+            "text": (
+                apply_classifier_texts(classifier_texts, story)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
         }
 
     classifiers = sort_classifiers_by_feed(
@@ -450,10 +448,7 @@ def load_river_blurblog(request):
         classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=story_feed_ids))
         classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, feed_id__in=story_feed_ids))
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=story_feed_ids))
-        if user.profile.is_archive or user.profile.is_pro:
-            classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=story_feed_ids))
-        else:
-            classifier_texts = []
+        classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=story_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
@@ -484,7 +479,11 @@ def load_river_blurblog(request):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
-            "text": apply_classifier_texts(classifier_texts, story),
+            "text": (
+                apply_classifier_texts(classifier_texts, story)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True

@@ -409,8 +409,10 @@ def api_unread_story(request, trigger_slug=None):
             MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
         )
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
-        if user.profile.is_archive or user.profile.is_pro:
-            classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+        if user.profile.premium_available_text_classifiers:
+            classifier_texts = list(
+                MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
         else:
             classifier_texts = []
     feeds = dict(
@@ -588,7 +590,7 @@ def api_shared_story(request):
     classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, social_user_id__in=social_user_ids))
     classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, social_user_id__in=social_user_ids))
     classifier_tags = list(MClassifierTag.objects(user_id=user.pk, social_user_id__in=social_user_ids))
-    if user.profile.is_archive or user.profile.is_pro:
+    if user.profile.premium_available_text_classifiers:
         classifier_texts = list(MClassifierText.objects(user_id=user.pk, social_user_id__in=social_user_ids))
     else:
         classifier_texts = []
@@ -605,7 +607,7 @@ def api_shared_story(request):
     classifier_tags = classifier_tags + list(
         MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids)
     )
-    if user.profile.is_archive or user.profile.is_pro:
+    if user.profile.premium_available_text_classifiers:
         classifier_texts = classifier_texts + list(
             MClassifierText.objects(user_id=user.pk, feed_id__in=found_feed_ids)
         )

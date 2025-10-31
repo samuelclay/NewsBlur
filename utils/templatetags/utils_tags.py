@@ -312,10 +312,25 @@ def smooth_timedelta(timedeltaobj):
     return timetot
 
 
+class DebugAssetsAwareJavascriptNode(JavascriptNode):
+    """JavascriptNode that respects DEBUG_ASSETS instead of DEBUG."""
+
+    def render(self, context):
+        # Temporarily override DEBUG setting for Pipeline to respect DEBUG_ASSETS
+        original_debug = settings.DEBUG
+        try:
+            if hasattr(settings, 'DEBUG_ASSETS'):
+                settings.DEBUG = settings.DEBUG_ASSETS
+            return super().render(context)
+        finally:
+            settings.DEBUG = original_debug
+
+
 @register.tag
 def include_javascripts(parser, token):
     """Prints out a template of <script> tags based on an asset package name."""
-    return javascript(parser, token)
+    tag_name, name = token.split_contents()
+    return DebugAssetsAwareJavascriptNode(name)
     # asset_type = 'javascripts'
     # return mark_safe(settings.JAMMIT.render_tags(asset_type, asset_package))
 
@@ -362,9 +377,24 @@ def include_stylesheets_raw(parser, token):
     return scripts
 
 
+class DebugAssetsAwareStylesheetNode(StylesheetNode):
+    """StylesheetNode that respects DEBUG_ASSETS instead of DEBUG."""
+
+    def render(self, context):
+        # Temporarily override DEBUG setting for Pipeline to respect DEBUG_ASSETS
+        original_debug = settings.DEBUG
+        try:
+            if hasattr(settings, 'DEBUG_ASSETS'):
+                settings.DEBUG = settings.DEBUG_ASSETS
+            return super().render(context)
+        finally:
+            settings.DEBUG = original_debug
+
+
 @register.tag
 def include_stylesheets(parser, token):
     """Prints out a template of <link> tags based on an asset package name."""
-    return stylesheet(parser, token)
+    tag_name, name = token.split_contents()
+    return DebugAssetsAwareStylesheetNode(name)
     # asset_type = 'stylesheets'
     # return mark_safe(settings.JAMMIT.render_tags(asset_type, asset_package))

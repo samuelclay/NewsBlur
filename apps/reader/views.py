@@ -976,7 +976,11 @@ def load_single_feed(request, feed_id):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
-            "text": apply_classifier_texts(classifier_texts, story),
+            "text": (
+                apply_classifier_texts(classifier_texts, story)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
@@ -1538,7 +1542,11 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
-            "text": apply_classifier_texts(classifier_texts, story),
+            "text": (
+                apply_classifier_texts(classifier_texts, story)
+                if request.user.profile.premium_available_text_classifiers
+                else 0
+            ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
         if unread_filter == "focus" and story["score"] >= 1:
@@ -1963,7 +1971,11 @@ def load_river_stories__redis(request):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
-            "text": apply_classifier_texts(classifier_texts, story),
+            "text": (
+                apply_classifier_texts(classifier_texts, story)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
 

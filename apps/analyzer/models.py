@@ -462,7 +462,6 @@ def get_classifiers_for_user(
     classifier_titles=None,
     classifier_tags=None,
     classifier_texts=None,
-    apply_text_classifiers=True,
 ):
     params = dict(user_id=user.pk)
     if isinstance(feed_id, list):
@@ -481,12 +480,7 @@ def get_classifiers_for_user(
     if classifier_tags is None:
         classifier_tags = list(MClassifierTag.objects(**params))
     if classifier_texts is None:
-        if not apply_text_classifiers:
-            classifier_texts = list(MClassifierText.objects(**params))
-        elif user.profile.is_archive or user.profile.is_pro:
-            classifier_texts = list(MClassifierText.objects(**params))
-        else:
-            classifier_texts = []
+        classifier_texts = list(MClassifierText.objects(**params))
     if classifier_feeds is None:
         if not social_user_id and feed_id:
             params["social_user_id"] = 0
