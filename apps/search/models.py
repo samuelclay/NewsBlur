@@ -1169,7 +1169,6 @@ class SearchFeed:
                             "match": {
                                 "title": {
                                     "query": text,
-                                    "cutoff_frequency": "0.0005",
                                     "minimum_should_match": "75%",
                                 }
                             }
@@ -1178,7 +1177,6 @@ class SearchFeed:
                             "match": {
                                 "link": {
                                     "query": text,
-                                    "cutoff_frequency": "0.0005",
                                     "minimum_should_match": "75%",
                                 }
                             }
