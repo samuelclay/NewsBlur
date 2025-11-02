@@ -295,6 +295,7 @@ def load_social_stories(request, user_id, username=None):
         classifier_authors=classifier_authors,
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
+        classifier_texts=classifier_texts,
     )
     if socialsub:
         socialsub.feed_opens += 1
@@ -505,6 +506,7 @@ def load_river_blurblog(request):
         classifier_authors=classifier_authors,
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
+        classifier_texts=classifier_texts,
     )
 
     diff = time.time() - start

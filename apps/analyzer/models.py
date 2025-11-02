@@ -515,8 +515,9 @@ def sort_classifiers_by_feed(
 ):
     def sort_by_feed(classifiers):
         feed_classifiers = defaultdict(list)
-        for classifier in classifiers:
-            feed_classifiers[classifier.feed_id].append(classifier)
+        if classifiers is not None:
+            for classifier in classifiers:
+                feed_classifiers[classifier.feed_id].append(classifier)
         return feed_classifiers
 
     classifiers = {}
