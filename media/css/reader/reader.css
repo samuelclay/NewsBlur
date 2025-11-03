@@ -5440,6 +5440,7 @@ body {
     order: 2;
     display: flex;
     align-items: center;
+    opacity: .25;
 }
 
 .NB-sideoption.NB-feed-story-train .NB-sideoption-icon-train {
