@@ -7642,8 +7642,7 @@ form.opml_import_form input {
 
 .NB-modal-classifiers .NB-classifier-container {
     white-space: nowrap;
-    float: left;
-    display: block;
+    display: inline-block;
     margin: 2px 6px 6px 0;
 }
 

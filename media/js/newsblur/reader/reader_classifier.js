@@ -829,10 +829,13 @@ var classifier_prototype = {
         var $text_classifier = $text_placeholder.parents('.NB-classifier').eq(0);
         var $text_checkboxs = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $text_classifier);
 
-        var update_text = function () {
+        var last_text_selection = '';
+        var update_text = function (e) {
             var text = $.trim($(this).getSelection().text);
 
-            if (text.length && $text_placeholder.text() != text) {
+            // Only update when selection has actually changed (not on every mousemove/hover)
+            if (text.length && text != last_text_selection && $text_placeholder.text() != text) {
+                last_text_selection = text;
                 $text_placeholder.text(text);
                 $text_checkboxs.val(text);
                 if (!$text_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
@@ -842,8 +845,7 @@ var classifier_prototype = {
         };
 
         $text_highlight
-            .keydown(update_text).keyup(update_text)
-            .mousedown(update_text).mouseup(update_text).mousemove(update_text);
+            .on('select keyup mouseup', update_text);
         $text_checkboxs.val($text_highlight.val());
 
         // Auto-select text classifier as positive when selected_text is provided
@@ -859,10 +861,17 @@ var classifier_prototype = {
         }
 
         $text_placeholder.parents('.NB-classifier').bind('click', function () {
-            var input_text = $.trim($text_highlight.val());
-            if (input_text.length) {
-                $text_placeholder.text(input_text);
-                $text_checkboxs.val(input_text);
+            var selected_text = $.trim($text_highlight.getSelection().text);
+            if (!selected_text.length) {
+                // No selection, so auto-select the classifier with full text if not already set
+                var input_text = $.trim($text_highlight.val());
+                if (input_text.length) {
+                    $text_placeholder.text(input_text);
+                    $text_checkboxs.val(input_text);
+                    if (!$text_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                        self.change_classifier($text_classifier, 'like');
+                    }
+                }
             }
         });
 
@@ -872,10 +881,13 @@ var classifier_prototype = {
         var $title_classifier = $title_placeholder.parents('.NB-classifier').eq(0);
         var $title_checkboxs = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $title_classifier);
 
-        var update_title = function () {
+        var last_title_selection = '';
+        var update_title = function (e) {
             var text = $.trim($(this).getSelection().text);
 
-            if (text.length && $title_placeholder.text() != text) {
+            // Only update when selection has actually changed (not on every mousemove/hover)
+            if (text.length && text != last_title_selection && $title_placeholder.text() != text) {
+                last_title_selection = text;
                 $title_placeholder.text(text);
                 $title_checkboxs.val(text);
                 if (!$title_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
@@ -885,15 +897,21 @@ var classifier_prototype = {
         };
 
         $title_highlight
-            .keydown(update_title).keyup(update_title)
-            .mousedown(update_title).mouseup(update_title).mousemove(update_title);
+            .on('select keyup mouseup', update_title);
         $title_checkboxs.val($title_highlight.val());
 
         $title_placeholder.parents('.NB-classifier').bind('click', function () {
-            var input_text = $.trim($title_highlight.val());
-            if (input_text.length) {
-                $title_placeholder.text(input_text);
-                $title_checkboxs.val(input_text);
+            var selected_text = $.trim($title_highlight.getSelection().text);
+            if (!selected_text.length) {
+                // No selection, so auto-select the classifier with full title if not already set
+                var input_text = $.trim($title_highlight.val());
+                if (input_text.length) {
+                    $title_placeholder.text(input_text);
+                    $title_checkboxs.val(input_text);
+                    if (!$title_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                        self.change_classifier($title_classifier, 'like');
+                    }
+                }
             }
         });
     },
