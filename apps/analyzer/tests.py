@@ -501,7 +501,9 @@ class Test_Classifiers(TransactionTestCase):
     def test_save_classifier_dislike_text_endpoint(self):
         self.client.login(username="testuser", password="testpass")
 
-        response = self.client.post("/classifier/save/", {"feed_id": self.feed.pk, "dislike_text": ["spam content"]})
+        response = self.client.post(
+            "/classifier/save/", {"feed_id": self.feed.pk, "dislike_text": ["spam content"]}
+        )
 
         content = json.decode(response.content)
         self.assertEqual(content["code"], 0)
@@ -541,7 +543,9 @@ class Test_Classifiers(TransactionTestCase):
         usersub = UserSubscription.objects.get(user=self.user, feed=self.feed)
         self.assertFalse(usersub.is_trained)
 
-        response = self.client.post("/classifier/save/", {"feed_id": self.feed.pk, "like_text": ["important"]})
+        response = self.client.post(
+            "/classifier/save/", {"feed_id": self.feed.pk, "like_text": ["important"]}
+        )
 
         content = json.decode(response.content)
         self.assertEqual(content["code"], 0)
