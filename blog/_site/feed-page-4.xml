@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2025-10-20T17:03:00-04:00</updated>
+  <updated>2025-10-31T12:45:57-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,52 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Three new features for the web: syntax highlighting for source code, adjustable video widths, and footnotes</title>
+    <link href="https://blog.newsblur.com/2014/01/06/three-new-features-for-the-web-syntax/" rel="alternate" type="text/html" title="Three new features for the web: syntax highlighting for source code, adjustable video widths, and footnotes" />
+    <published>2014-01-06T12:46:00-05:00</published>
+    <updated>2014-01-06T12:46:00-05:00</updated>
+    <id>https://blog.newsblur.com/2014/01/06/three-new-features-for-the-web-syntax</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/01/06/three-new-features-for-the-web-syntax/">
+      <![CDATA[<p>A few small new features to get your first full week of the new year started off right.</p>
+
+<h3 id="syntax-highlight-for-source-code">Syntax highlight for source code</h3>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/syntax%20highlighting.png" alt="" /></p>
+
+<p>A common feature request has been automatic syntax highlighting in blog posts. This feature uses auto-detection to highlight code. For short snippets of code, this means that they could have inaccurate highlighting, although in testing it’s not so bad to have a few words in various colors. But for any substantial amount of code, you’ll have an easier time following along with syntax highlighting.</p>
+
+<h3 id="video-fitting">Video fitting</h3>
+
+<p>Videos from Youtube and Vimeo (and a few others) are now stretched to fit the window, resulting in bigger video previews.</p>
+
+<h3 id="footnotes">Footnotes</h3>
+
+<p>Previously, if you clicked the little footnote reference<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>, you would be taken to a new window. The Feed view now smoothly scrolls you to the footnote, where you can then return back to the footnote. Easy!</p>
+
+<hr />
+
+<ol>
+  <li></li>
+</ol>
+
+<p>Like this. <a href="#fnref:1">↩︎</a></p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[A few small new features to get your first full week of the new year started off right.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Faster parallel network requests for version 3.5 of the NewsBlur Android app</title>
@@ -1145,52 +1191,6 @@ Expected amount of time required to complete project: 1 year</p>
     
     <summary type="html">
       <![CDATA[Knight News Challenge: NewsBlur
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">New mobile app for NewsBlur: Web Feeds for Nokia MeeGo</title>
-    <link href="https://blog.newsblur.com/2012/03/14/mobile-app-web-feeds-nokia-meego/" rel="alternate" type="text/html" title="New mobile app for NewsBlur: Web Feeds for Nokia MeeGo" />
-    <published>2012-03-14T13:14:00-04:00</published>
-    <updated>2012-03-14T13:14:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/03/14/mobile-app-web-feeds-nokia-meego</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/03/14/mobile-app-web-feeds-nokia-meego/">
-      <![CDATA[<p>And what a gorgeous mobile app it is. App developer Róbert Márki just released <a href="http://store.ovi.com/content/261063">Web Feeds</a>, the first NewsBlur app for Nokia MeeGo. Take a look at these screenshots:</p>
-
-<style>
-.nokia td img {
-width: 280px;
-margin-right: 24px;
-}
-</style>
-<p>&lt;table class=”nokia”&gt;&lt;tr&gt;&lt;td&gt;</p>
-<h3 id="feed-list">Feed list</h3>
-<p><img src="http://projects.developer.nokia.com/feed_reader/files/newsblur_view.png" alt="" />&lt;/td&gt; &lt;td&gt;</p>
-<h3 id="story-list">Story list</h3>
-<p><img src="http://projects.developer.nokia.com/feed_reader/files/feed_view.png" alt="" />&lt;/td&gt; &lt;/tr&gt;&lt;tr&gt;&lt;td&gt;</p>
-<h3 id="story-view">Story view</h3>
-<p><img src="http://projects.developer.nokia.com/feed_reader/files/story_view_large_image2.png" alt="" />&lt;/td&gt; &lt;td&gt;</p>
-<h3 id="intelligence-training">Intelligence training</h3>
-<p><img src="http://projects.developer.nokia.com/feed_reader/files/inteligence_trainer_feed_view.png" alt="" />&lt;/td&gt; &lt;/tr&gt;&lt;tr&gt;&lt;td&gt;</p>
-<h3 id="adding-a-site">Adding a site</h3>
-<p><img src="http://projects.developer.nokia.com/feed_reader/files/add_feed_sheet.png" alt="" />&lt;/td&gt; &lt;td&gt;</p>
-<h3 id="intelligence-control">Intelligence control</h3>
-<p><img src="http://projects.developer.nokia.com/feed_reader/files/filter_dialog.png" alt="" />&lt;/td&gt; &lt;/tr&gt;&lt;/table&gt;</p>
-
-<p>Just stellar work and it has all the features of the website. Web Feeds is free and <a href="http://store.ovi.com/content/261063">available from the Nokia Store</a>.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="mobile" />
-    
-    
-    <summary type="html">
-      <![CDATA[And what a gorgeous mobile app it is. App developer Róbert Márki just released Web Feeds, the first NewsBlur app for Nokia MeeGo. Take a look at these screenshots:
 ]]>
     </summary>
     

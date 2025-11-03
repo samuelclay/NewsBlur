@@ -1,158 +1,177 @@
 # NewsBlur
 
-- NewsBlur is a personal news reader bringing people together
-  to talk about the world. A new sound of an old instrument.
-- [www.newsblur.com](https://www.newsblur.com).
-- Created by [Samuel Clay](https://www.samuelclay.com).
-- X/Twitter: [@samuelclay](https://x.com/samuelclay) and
-  [@newsblur](https://x.com/newsblur).
+<div align="center">
+
+**A personal news reader bringing people together to talk about the world.**
+*A new sound of an old instrument.*
+
+[www.newsblur.com](https://www.newsblur.com)
+
+<img src="media/img/welcome/welcome-mac.png" width="100%" alt="NewsBlur Web" />
+
+<img src="media/img/welcome/welcome-ios.png" width="60%" alt="NewsBlur iOS" /> <img src="media/img/welcome/welcome-android.png" width="35%" alt="NewsBlur Android" />
 
 <a href="https://f-droid.org/repository/browse/?fdid=com.newsblur" target="_blank">
-<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80"/></a>
-<a href="https://play.google.com/store/apps/details?id=com.newsblur" target="_blank">
-<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" alt="Get it on Google Play" height="80"/></a>
+<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="60"/></a>
 
-&nbsp;&nbsp;&nbsp;<a href="https://apps.apple.com/us/app/newsblur/id463981119"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the Apple App Store" height="55"></a>
+<a href="https://play.google.com/store/apps/details?id=com.newsblur" target="_blank">
+<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" alt="Get it on Google Play" height="60"/></a>
+
+<br/>
+
+<a href="https://apps.apple.com/us/app/newsblur/id463981119">
+<img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the Apple App Store" height="60"></a>
+
+</div>
+
+## About
+
+NewsBlur is a personal news reader with intelligence. It's an RSS feed reader and social news network that shows the original site while giving you powerful filtering tools. Train NewsBlur to learn what you like and dislike, and it will automatically highlight and hide stories.
+
+NewsBlur is free to use at [newsblur.com](https://www.newsblur.com) (up to 64 sites) with premium plans available, or you can self-host your own instance using this repository.
 
 ## Features
 
-1.  Shows the original site (you have to see it to believe it).
-2.  Hides stories you don't want to read based on tags, keywords, authors, etc.
-3.  Highlights stories you want to read, based on the same criteria.
+- **Real-time RSS** - Stories are pushed directly to you, so you can read news as it comes in
+- **Original Site View** - Read the content in context, the way it was meant to be seen
+- **Training** - Hide the stories you don't like and highlight the stories you do
+- **Shared Stories** - Reading news is better with friends. Share stories on your public blurblog
+- **Full Text Search** - Quickly find stories across all of your subscriptions
+- **Story Tagging** - Save stories with custom tags for fast references
+- **Blurblog Privacy** - Share stories with the world or only with your friends
+- **Saved Searches** - Regularly used searches are conveniently given their own feeds
+- **Read the Full Story** - The original story from truncated RSS feeds is seamlessly expanded
+- **Track Changes** - See how a story evolved since it was first published
+- **Email Newsletters** - Read your email newsletters where they belong, in a news reader
+- **Multiple Layouts** - Grid, List, Split, or Magazine view for each site
+- **Dark Mode** - Easy on the eyes and built into the web, iOS, and Android
+- **YouTube Channels** - Even sites that don't publish RSS feeds can be followed
+- **Third-party Apps** - Supports Reeder, ReadKit, Unread, and many more
+- **IFTTT Integration** - Hook NewsBlur up to nearly every service on the web
+- **Native Mobile Apps** - Free iOS, macOS, and Android apps jam-packed with features
 
-## Technologies
+## Technology
 
-### Server-side
+NewsBlur is a Django application (Python 3.7+) with a Backbone.js frontend. It uses:
 
-- [Python 3.7+](http://www.python.org): The language of choice.
-- [Django](http://www.djangoproject.com): Web framework written in Python, used
-  to serve all pages.
-- [Celery](http://ask.github.com/celery) & [RabbitMQ](http://www.rabbitmq.com):
-  Asynchronous queueing server, used to fetch and parse RSS feeds.
-- [MongoDB](http://www.mongodb.com), [Pymongo](https://pypi.python.org/pypi/pymongo), &
-  [Mongoengine](http://www.github.com/hmarr/mongoengine): Non-relational database,
-  used to store stories, read stories, feed/page fetch histories, and proxied sites.
-- [PostgreSQL](http://www.postgresql.com): Relational database, used to store feeds,
-  subscriptions, and user accounts.
-- [Redis](http://redis.io): Programmer's database, used to assemble stories for the river, store story ids, manage feed fetching schedules, and the minuscule bit of caching that NewsBlur uses.
-- [Elasticsearch](http://elasticsearch.org): Search database, used for searching stories. Optional.
+- PostgreSQL for relational data (feeds, subscriptions, accounts)
+- MongoDB for stories and read states
+- Redis for story assembly and caching
+- Elasticsearch for search (optional)
+- Celery for background tasks (feed fetching)
+- Node.js services for text extraction and image processing
 
-### Client-side and design
+## Self-Hosted Installation
 
-- [jQuery](http://www.jquery.com): Cross-browser compliant JavaScript code. IE works without effort.
-- [Underscore.js](http://underscorejs.org/): Functional programming for JavaScript.
-  Indispensable.
-- [Backbone.js](http://backbonejs.org/): Framework for the web app. Also indispensable.
-- Miscellaneous jQuery Plugins: Everything from resizable layouts, to progress
-  bars, sortables, date handling, colors, corners, JSON, animations.
-  [See the complete list](https://github.com/samuelclay/NewsBlur/tree/master/media/js).
+This repository contains everything you need to run your own NewsBlur instance with complete control over your data.
 
-### Prerequisites
+**Prerequisites**: Docker and Docker Compose
 
-    * Docker
-    * Docker-compose
+```bash
+git clone https://github.com/samuelclay/NewsBlur.git
+cd NewsBlur
+make
+```
 
-## Installation Instructions
+Visit `https://localhost` (type `thisisunsafe` to bypass the self-signed certificate warning).
 
-1.  Clone this repo
-2.  Run `make nb` to build all of the NewsBlur containers. This will set up all necessary databases, front-end django apps, celery tasks, node apps, flask database monitor and metrics, nginx, and a haproxy load balancer.
-3.  Navigate to:
+**Common commands:**
+- `make` - Start/update and apply migrations (run after `git pull`)
+- `make log` - View web and node logs
+- `make logall` - View all container logs
+- `make shell` - Django shell with auto-imported models
+- `make bash` - Bash shell in web container
+- `make test` - Run tests
+- `make lint` - Format code (isort, black, flake8)
+- `make down` - Stop containers
 
-         https://localhost
+**Database access:**
+- `make mongo` - MongoDB shell
+- `make redis` - Redis CLI
+- `make postgres` - PostgreSQL shell
 
-    Note: You will be warned that you are using a self signed certificate. In order to get around this warning you must type "thisisunsafe" as per [this blog post](https://dblazeski.medium.com/chrome-bypass-net-err-cert-invalid-for-development-daefae43eb12).
+See `AGENTS.md` for detailed development guidelines.
 
-## Using a custom domain
+### Configuration
 
-1.  Run the custom domain script
+To customize your NewsBlur installation, create `newsblur_web/local_settings.py` to override settings from [`docker_local_settings.py`](newsblur_web/docker_local_settings.py).
 
-    ```
-    bash ./utils/custom_domain.sh <domain name>
-    ```
+**Settings for self-hosted installations:**
 
-    This script will do the following:
+- `NEWSBLUR_URL` - Your domain (default: `https://localhost`)
+- `SESSION_COOKIE_DOMAIN` - Cookie domain for authentication
+- `AUTO_PREMIUM` - Give new users premium features (default: `True`)
+- `AUTO_ENABLE_NEW_USERS` - Auto-activate new accounts (default: `True`)
+- `ENFORCE_SIGNUP_CAPTCHA` - Require captcha on signup (default: `False`)
+- `OPENAI_API_KEY` - AI features and Discover for related stories
+- `DAYS_OF_UNREAD` - Story retention for premium users in days (default: `30`)
+- `DAYS_OF_UNREAD_FREE` - Story retention for free users in days (default: `14`)
+- `HOMEPAGE_USERNAME` - Username shown on homepage to unauthenticated users (default: `"popular"`)
 
-    - Change `NEWSBLUR_URL` and `SESSION_COOKIE_DOMAIN` in `newsblur_web/docker_local_settings.py`
-    - Change the domain in `config/fixtures/bootstrap.json`
+**Uncommon settings (for running full newsblur.com):**
 
-You can also change domains: `bash ./utils/custom_domain.sh <old domain> <new domain>`
+- `EMAIL_BACKEND` - Email delivery method
+- `STRIPE_SECRET` / `STRIPE_PUBLISHABLE` - Stripe payment processing
+- `PAYPAL_API_CLIENTID` / `PAYPAL_API_SECRET` - PayPal payment processing
+- `S3_*` settings - AWS S3 bucket configuration for backups, icons, avatars
+- `FACEBOOK_APP_ID` / `TWITTER_CONSUMER_KEY` / `YOUTUBE_API_KEY` - Social API keys
 
-2.  If you're using a custom subdomain, you'll also want to add it to `ALLOWED_SUBDOMAINS` in `apps/reader/views.py`
+See the full list in [`docker_local_settings.py`](https://github.com/samuelclay/NewsBlur/blob/master/newsblur_web/docker_local_settings.py) and [`settings.py`](https://github.com/samuelclay/NewsBlur/blob/master/newsblur_web/settings.py).
 
-3.  A way to make sure you updated all the correct places:
+## Development with Worktrees
 
-    - Go to the website address in your browser
-    - Open developer tools and look at the network tab
-    - Try to login
-    - Look again at the developer tools, there should be a POST call to /login
-    - Observe the Response headers for that call
-    - The value of the "set-cookie" header should contain a "Domain=" string
+NewsBlur supports Git worktrees for working on multiple features simultaneously, with each worktree running on its own set of ports. This is ideal when working with AI coding assistants like Claude Code.
 
-    If the string after `Domain=` is not the domain you are using to access the website, then your configuration still needs your custom domain.
+**Create and start a worktree:**
 
-    You can also confirm that there is a domain name mismatch in the database by running `make shell` & typing `Site.objects.all()[0]` to show the domain that NewsBlur is expecting.
+```bash
+git worktree add .worktree/feature-name
+cd .worktree/feature-name
+make worktree
+```
 
-## Making docker-compose work with your existing database
+Each worktree automatically gets unique ports based on its directory name:
+- Main repo: `https://localhost` (ports 80/443)
+- Worktree: `https://localhost:XXXX` (unique ports)
 
-To make docker-compose work with your database, upgrade your local database to the docker-compose version and then volumize the database data path by changing the `./docker/volumes/` part of the volume directive in the service to point to your local database's data directory.
+**View your worktree's URLs:**
 
-To make docker-compose work with an older database version, change the image version for the database service in the docker-compose file.
+```bash
+make worktree
+```
 
-## Contribution Instructions
+**Follow the worktree logs:**
 
-- Making Changes:
+```bash
+make worktree-log
+```
 
-  - To apply changes to the Python or JavaScript code, use the `make` command.
-  - To apply changes to the docker-compose.yml file, use the `make rebuild` command.
-  - To apply changes to the docker/haproxy/haproxy.conf file, node packages, or any new database migrations you will need to use the `make nb` command.
+**Close a worktree:**
 
-- Adding Python packages:
-  Currently, the docker-compose.yml file uses the newsblur/newsblur_python3 image. It is built using the Dockerfile found in `docker/newsblur_base_image.Dockerfile`. Because of how the docker image is set up, you will need to create your own image and direct your docker-compose.yml file to use it. Please follow the following steps to do so.
+```bash
+make worktree-close  # Stops containers and removes worktree if no uncommitted changes
+```
 
-  1. Add your new site-packages to config/requirements.txt.
-  2. Add the following lines of code to your docker-compose.yml file to replace anywhere where it says `image: newsblur/newsblur_python3`
+All worktrees share the same database services (PostgreSQL, MongoDB, Redis, Elasticsearch), so you can test multiple features without duplicating data.
 
-    <code>
-        build:
-          context: .
-          dockerfile: docker/newsblur_base_image.Dockerfile
-    </code>
+## Contributing
 
-  3. Run the `make nb` command to rebuild your docker-compose containers
+NewsBlur welcomes contributions! The development workflow:
 
-- Debugging Python
+- Web and Node servers restart automatically when code changes
+- Run `make` after `git pull` to apply migrations
+- See `AGENTS.md` for code style and development conventions
 
-  - To debug your code, drop `import pdb; pdb.set_trace()` into the Python code where you would like to start debugging
-    and run `make` and then `make debug`.
+## Support
 
-- Using Django shell within Docker
-  - Make sure your docker containers are up and run `make shell` to open
-    the Django shell within the newsblur_web container.
-
-### Running unit and integration tests
-
-NewsBlur comes complete with a test suite that tests the functionality of the rss_feeds,
-reader, and feed importer. To run the test suite:
-
-    `make test`
-
-### Running a performance test
-
-Performance tests use the locust performance testing tool. To run performance tests via CLI, use
-`make perf-cli users=1 rate=1 host=https://localhost`. Feel free to change the users, rate, and host
-variables in the command to meet you needs.
-
-You can also run locust performance tests using a UI by running `make perf-ui` and then navigating to
-http://127.0.0.1:8089. This allows you to chart and export your performance data.
-
-To run locust using docker, just run `make perf-docker` and navigate to http://127.0.0.1:8089
+- **Hosted service**: [newsblur.com](https://www.newsblur.com) (recommended)
+- **Questions, suggestions, and bugs**: [forum.newsblur.com](https://forum.newsblur.com)
+- **Development questions**: Check `AGENTS.md` first
 
 ## Author
 
-- Created by [Samuel Clay](https://www.samuelclay.com).
-- Email address: <samuel@newsblur.com>
-- [@samuelclay](https://x.com/samuelclay) on X/Twitter.
+Created by [Samuel Clay](https://www.samuelclay.com) • <samuel@newsblur.com> • [@samuelclay](https://x.com/samuelclay)
 
 ## License
 
-NewsBlur is licensed under the MIT License. (See LICENSE)
+MIT License - see [LICENSE](LICENSE) file for details

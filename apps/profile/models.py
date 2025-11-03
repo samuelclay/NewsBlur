@@ -113,6 +113,10 @@ class Profile(models.Model):
         return price
 
     @property
+    def premium_available_text_classifiers(self):
+        return self.is_archive or self.is_pro
+
+    @property
     def unread_cutoff(self, force_premium=False, force_archive=False):
         if self.is_archive or force_archive:
             days_of_unread = self.days_of_unread or settings.DAYS_OF_UNREAD
@@ -525,9 +529,9 @@ class Profile(models.Model):
             if settings.DEBUG:
                 application_context["return_url"] = f"https://a6d3-161-77-224-226.ngrok.io{paypal_return}"
             else:
-                application_context[
-                    "return_url"
-                ] = f"https://{Site.objects.get_current().domain}{paypal_return}"
+                application_context["return_url"] = (
+                    f"https://{Site.objects.get_current().domain}{paypal_return}"
+                )
             paypal_subscription = paypal_api.post(
                 f"/v1/billing/subscriptions",
                 {
