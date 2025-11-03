@@ -489,8 +489,9 @@ var classifier_prototype = {
                     $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                         $.make('h5', 'Story Text'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                            $.make('div', { className: 'NB-classifier-help-text' }, 'Highlight text in the field below to train on specific phrases'),
                             $.make('input', { type: 'text', value: selected_text, className: 'NB-classifier-text-highlight' }),
-                            this.make_classifier('<span class="NB-classifier-text-placeholder">Highlight text to look for in future stories</span>', '', 'text'),
+                            this.make_classifier('<span class="NB-classifier-text-placeholder">Select text above</span>', '', 'text'),
                             $.make('span',
                                 this.make_user_texts(story.get('story_content'))
                             ),
@@ -508,8 +509,9 @@ var classifier_prototype = {
                     (story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                         $.make('h5', 'Story Title'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                            $.make('div', { className: 'NB-classifier-help-text' }, 'Highlight phrases in the title below to train on specific words'),
                             $.make('input', { type: 'text', value: story_title, className: 'NB-classifier-title-highlight' }),
-                            this.make_classifier('<span class="NB-classifier-title-placeholder">Highlight phrases to look for in future stories</span>', '', 'title'),
+                            this.make_classifier('<span class="NB-classifier-title-placeholder">Select phrase above</span>', '', 'title'),
                             $.make('span',
                                 this.make_user_titles(story_title)
                             )
@@ -837,6 +839,7 @@ var classifier_prototype = {
             if (text.length && text != last_text_selection && $text_placeholder.text() != text) {
                 last_text_selection = text;
                 $text_placeholder.text(text);
+                $text_placeholder.css('font-style', 'normal');
                 $text_checkboxs.val(text);
                 if (!$text_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
                     self.change_classifier($text_classifier, 'like');
@@ -860,18 +863,12 @@ var classifier_prototype = {
             }
         }
 
-        $text_placeholder.parents('.NB-classifier').bind('click', function () {
-            var selected_text = $.trim($text_highlight.getSelection().text);
-            if (!selected_text.length) {
-                // No selection, so auto-select the classifier with full text if not already set
-                var input_text = $.trim($text_highlight.val());
-                if (input_text.length) {
-                    $text_placeholder.text(input_text);
-                    $text_checkboxs.val(input_text);
-                    if (!$text_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
-                        self.change_classifier($text_classifier, 'like');
-                    }
-                }
+        // Clicking the placeholder does nothing - user must select text first
+        $text_placeholder.parents('.NB-classifier').bind('click', function (e) {
+            // Prevent default classifier toggle behavior if placeholder text is showing
+            if ($text_placeholder.text() === 'Select text above') {
+                e.preventDefault();
+                return false;
             }
         });
 
@@ -889,6 +886,7 @@ var classifier_prototype = {
             if (text.length && text != last_title_selection && $title_placeholder.text() != text) {
                 last_title_selection = text;
                 $title_placeholder.text(text);
+                $title_placeholder.css('font-style', 'normal');
                 $title_checkboxs.val(text);
                 if (!$title_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
                     self.change_classifier($title_classifier, 'like');
@@ -900,18 +898,12 @@ var classifier_prototype = {
             .on('select keyup mouseup', update_title);
         $title_checkboxs.val($title_highlight.val());
 
-        $title_placeholder.parents('.NB-classifier').bind('click', function () {
-            var selected_text = $.trim($title_highlight.getSelection().text);
-            if (!selected_text.length) {
-                // No selection, so auto-select the classifier with full title if not already set
-                var input_text = $.trim($title_highlight.val());
-                if (input_text.length) {
-                    $title_placeholder.text(input_text);
-                    $title_checkboxs.val(input_text);
-                    if (!$title_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
-                        self.change_classifier($title_classifier, 'like');
-                    }
-                }
+        // Clicking the placeholder does nothing - user must select text first
+        $title_placeholder.parents('.NB-classifier').bind('click', function (e) {
+            // Prevent default classifier toggle behavior if placeholder text is showing
+            if ($title_placeholder.text() === 'Select phrase above') {
+                e.preventDefault();
+                return false;
             }
         });
     },
