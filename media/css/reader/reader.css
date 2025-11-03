@@ -7631,6 +7631,24 @@ form.opml_import_form input {
     margin-bottom: 6px;
 }
 
+.NB-classifier-help-text {
+    color: #5a5a5a;
+    font-size: 12px;
+    margin: 0 0 10px 0;
+    clear: both;
+    line-height: 1.4;
+    padding: 8px;
+    background-color: rgba(100, 150, 200, 0.08);
+    border-radius: 3px;
+    text-align: center;
+}
+
+.NB-classifier-title-placeholder,
+.NB-classifier-text-placeholder {
+    color: #B0B0B0;
+    font-style: italic;
+}
+
 .NB-classifier-title-display {
     margin: 6px 0 0 0;
 }
