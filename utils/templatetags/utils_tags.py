@@ -149,10 +149,11 @@ def render_premium_archive_module(context):
         "Stories can stay unread for however long you choose",
         "Every story from every site is archived and searchable forever",
         "Feeds that support paging are back-filled in for a complete archive",
+        "Train stories on full text content, not just titles and tags",
         "Export trained stories from folders as RSS feeds",
         "Choose when stories are automatically marked as read",
     ]
-    rand_int = (datetime.datetime.now().timetuple().tm_yday) % len(reasons)
+    rand_int = (datetime.datetime.now().timetuple().tm_sec) % len(reasons)
 
     return {
         "user": user,
@@ -319,7 +320,7 @@ class DebugAssetsAwareJavascriptNode(JavascriptNode):
         # Temporarily override DEBUG setting for Pipeline to respect DEBUG_ASSETS
         original_debug = settings.DEBUG
         try:
-            if hasattr(settings, 'DEBUG_ASSETS'):
+            if hasattr(settings, "DEBUG_ASSETS"):
                 settings.DEBUG = settings.DEBUG_ASSETS
             return super().render(context)
         finally:
@@ -384,7 +385,7 @@ class DebugAssetsAwareStylesheetNode(StylesheetNode):
         # Temporarily override DEBUG setting for Pipeline to respect DEBUG_ASSETS
         original_debug = settings.DEBUG
         try:
-            if hasattr(settings, 'DEBUG_ASSETS'):
+            if hasattr(settings, "DEBUG_ASSETS"):
                 settings.DEBUG = settings.DEBUG_ASSETS
             return super().render(context)
         finally:
