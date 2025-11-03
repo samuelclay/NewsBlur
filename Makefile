@@ -65,6 +65,20 @@ alllogs:
 logall: alllogs
 mongo:
 	docker exec -it newsblur_db_mongo mongo --port 29019
+mongo-repair:
+	@echo "Repairing MongoDB database (fixes boot loop on Apple Silicon)..."
+	docker compose stop newsblur_db_mongo
+	@echo "Cleaning journal and lock files..."
+	rm -rf docker/volumes/db_mongo/journal/ docker/volumes/db_mongo/WiredTiger.lock docker/volumes/db_mongo/mongod.lock docker/volumes/db_mongo/WiredTigerLAS.wt
+	@echo "Running MongoDB repair..."
+	docker run --rm -v $(shell pwd)/docker/volumes/db_mongo:/data/db mongo:4.0 mongod --repair --dbpath /data/db --nojournal
+	@echo "Fixing permissions..."
+	chmod -R 755 docker/volumes/db_mongo
+	@echo "Starting MongoDB..."
+	docker compose up -d newsblur_db_mongo
+	@echo "MongoDB repair complete! Waiting for startup..."
+	@sleep 5
+	@docker ps | grep newsblur_db_mongo
 redis:
 	docker exec -it newsblur_db_redis redis-cli -p 6579
 postgres:
