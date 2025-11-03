@@ -29,7 +29,7 @@ def fix_newsletter_encoding(params):
     # â€" = — (em dash, U+2014)
     # â€œ = " (left double quotation mark, U+201C)
     # â€ = " (right double quotation mark, U+201D)
-    utf8_as_win1252_patterns = ['â€™', 'â€"', 'â€"', 'â€œ', 'â€', 'â€˜', 'â€¦']
+    utf8_as_win1252_patterns = ["â€™", 'â€"', 'â€"', "â€œ", "â€", "â€˜", "â€¦"]
 
     def needs_fixing(text):
         if not text or not isinstance(text, str):
@@ -43,12 +43,12 @@ def fix_newsletter_encoding(params):
             return s
         try:
             # Re-encode as Windows-1252 to get the original bytes, then decode as UTF-8
-            return s.encode('windows-1252', errors='ignore').decode('utf-8', errors='replace')
+            return s.encode("windows-1252", errors="ignore").decode("utf-8", errors="replace")
         except (UnicodeDecodeError, UnicodeEncodeError):
             return s
 
     # Fix all text fields in params
-    fields_to_fix = ['subject', 'body-html', 'body-plain', 'body-enriched', 'stripped-html', 'from']
+    fields_to_fix = ["subject", "body-html", "body-plain", "body-enriched", "stripped-html", "from"]
     fixed = False
     for field in fields_to_fix:
         if field in params and needs_fixing(params[field]):
