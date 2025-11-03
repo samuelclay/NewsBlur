@@ -528,7 +528,7 @@ class ReadingItemFragment :
                 if (story!!.starred) {
                     feedUtils.setStorySaved(story!!, false, requireContext(), emptyList(), emptyList())
                 } else {
-                    feedUtils.setStorySaved(story!!.storyHash, true, requireContext(), emptyList())
+                    feedUtils.setStorySaved(story!!, true, requireContext(), emptyList(), emptyList())
                 }
                 true
             }
@@ -623,10 +623,10 @@ class ReadingItemFragment :
         story?.let {
             val msg =
                 if (it.starred) {
-                    feedUtils.setStorySaved(it.storyHash, false, requireContext(), emptyList()) // TODO
+                    feedUtils.setStorySaved(it, false, requireContext(), emptyList(), emptyList())
                     getString(R.string.story_saved)
                 } else {
-                    feedUtils.setStorySaved(it.storyHash, true, requireContext(), emptyList()) // TODO
+                    feedUtils.setStorySaved(it, true, requireContext(), emptyList(),emptyList())
                     getString(R.string.story_unsaved)
                 }
             if (notifyUser) UIUtils.showSnackBar(binding.root, msg)

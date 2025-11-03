@@ -229,6 +229,6 @@ class StoryUserTagsFragment :
     private fun saveTags() {
         val savedTagList = getSavedTagsList()
         syncServiceState.forceFeedsFolders()
-        feedUtils.setStorySaved(story.storyHash, true, requireContext(), savedTagList)
+        feedUtils.setStorySaved(story, true, requireContext(), story.highlights.toList(), savedTagList)
     }
 }
