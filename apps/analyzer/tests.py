@@ -436,24 +436,26 @@ class Test_Classifiers(TransactionTestCase):
             creation_date=datetime.datetime.now(),
         )
 
-        # Regular user should not have text classifiers
+        # Regular user should have text classifiers but they won't be applied to stories
         self.user.profile.is_premium = False
         self.user.profile.is_archive = False
         self.user.profile.is_pro = False
         self.user.profile.save()
 
         classifiers = get_classifiers_for_user(self.user, feed_id=self.feed.pk)
-        self.assertEqual(len(classifiers["texts"]), 0)
+        self.assertEqual(len(classifiers["texts"]), 1)
+        self.assertEqual(classifiers["texts"]["exclusive"], 1)
         self.assertEqual(len(classifiers["titles"]), 1)
 
-        # Regular premium user should not have text classifiers
+        # Regular premium user should have text classifiers but they won't be applied to stories
         self.user.profile.is_premium = True
         self.user.profile.is_archive = False
         self.user.profile.is_pro = False
         self.user.profile.save()
 
         classifiers = get_classifiers_for_user(self.user, feed_id=self.feed.pk)
-        self.assertEqual(len(classifiers["texts"]), 0)
+        self.assertEqual(len(classifiers["texts"]), 1)
+        self.assertEqual(classifiers["texts"]["exclusive"], 1)
         self.assertEqual(len(classifiers["titles"]), 1)
 
         # Premium archive user should have text classifiers

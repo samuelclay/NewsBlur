@@ -1,16 +1,16 @@
-import re
-
-from django.conf import settings
-from pipeline.finders import AppDirectoriesFinder as PipelineAppDirectoriesFinder
-from pipeline.finders import FileSystemFinder as PipelineFileSystemFinder
-from pipeline.storage import GZIPMixin, PipelineManifestStorage
+import glob as python_glob
 
 # Debug glob expansion - enables glob expansion in DEBUG_ASSETS mode
 import logging
-import glob as python_glob
 import os
-from pipeline.packager import Package
+import re
+
+from django.conf import settings
 from django.contrib.staticfiles.finders import find
+from pipeline.finders import AppDirectoriesFinder as PipelineAppDirectoriesFinder
+from pipeline.finders import FileSystemFinder as PipelineFileSystemFinder
+from pipeline.packager import Package
+from pipeline.storage import GZIPMixin, PipelineManifestStorage
 
 logger = logging.getLogger(__name__)
 
