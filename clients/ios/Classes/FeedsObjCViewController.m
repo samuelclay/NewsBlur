@@ -1545,6 +1545,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
 
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
+    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+
+    if ([folderName isEqual:@"river_global"] &&
+        ![prefs boolForKey:@"show_global_shared_stories"]) {
+        return 0;
+    }
 
     NSInteger count = [[appDelegate.dictFolders objectForKey:folderName] count];
     NSInteger limit = 5000;
