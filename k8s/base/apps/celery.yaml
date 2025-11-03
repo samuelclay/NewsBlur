@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-celery
+  namespace: newsblur
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-celery
+  template:
+    metadata:
+      labels:
+        app: task-celery
+    spec:
+      containers:
+      - name: task-celery
+        image: newsblur/newsblur_python3:latest
+        command: ["celery", "worker", "-A", "newsblur_web", "-B", "--loglevel=INFO"]
+        env:
+        - name: DOCKERBUILD
+          valueFrom:
+            configMapKeyRef:
+              name: newsblur-config
+              key: DOCKERBUILD
+        volumeMounts:
+        - name: app-code
+          mountPath: /srv/newsblur
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+      volumes:
+      - name: app-code
+        emptyDir: {}
+      initContainers:
+      - name: init-db
+        image: busybox:latest
+        command: ['sh', '-c', 'until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done;']
+      - name: init-mongo
+        image: busybox:latest
+        command: ['sh', '-c', 'until nc -z mongo 29019; do echo waiting for mongo; sleep 2; done;']
+      - name: init-redis
+        image: busybox:latest
+        command: ['sh', '-c', 'until nc -z redis 6579; do echo waiting for redis; sleep 2; done;']

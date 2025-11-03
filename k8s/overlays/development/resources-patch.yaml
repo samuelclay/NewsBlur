@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newsblur-web
+  namespace: newsblur
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: newsblur-web
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newsblur-node
+  namespace: newsblur
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: newsblur-node
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
