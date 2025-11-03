@@ -2876,7 +2876,7 @@ class Feed(models.Model):
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False, delay_fetch_sec=None):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
 
-        # Use Cache-Control max-age if provided
+        # Use Cache-Control max-age or Retry-After if provided
         if delay_fetch_sec is not None:
             minutes_until_next_fetch = delay_fetch_sec / 60
             base_total = minutes_until_next_fetch
@@ -2925,7 +2925,15 @@ class Feed(models.Model):
             base_total = minutes_until_next_fetch
             error_count = self.error_count
 
-            if error_count:
+            # Handle 429 rate limiting - enforce minimum 60 minute backoff
+            if self.exception_code == 429:
+                minutes_until_next_fetch = max(minutes_until_next_fetch, 60)
+                if verbose:
+                    logging.debug(
+                        "   ---> [%-30s] ~FY429 Rate Limited - enforcing minimum 60 min backoff"
+                        % (self.log_title[:30])
+                    )
+            elif error_count:
                 original_total = minutes_until_next_fetch
                 minutes_until_next_fetch = minutes_until_next_fetch * error_count
                 minutes_until_next_fetch = min(minutes_until_next_fetch, 60 * 24 * 7)

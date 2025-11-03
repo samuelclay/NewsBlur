@@ -339,21 +339,34 @@ class FetchFeed:
                 except (requests.adapters.ConnectionError, TimeoutError):
                     raw_feed = None
                 if not raw_feed or raw_feed.status_code >= 400:
-                    if raw_feed:
+                    # Handle 429 rate limiting specially - don't retry immediately
+                    if raw_feed and raw_feed.status_code == 429:
+                        logging.debug(
+                            "   ***> [%-30s] ~FRFeed fetch was 429 rate limited, respecting backoff: %s"
+                            % (self.feed.log_title[:30], raw_feed.headers)
+                        )
+                        # Don't retry with fake user agent for 429 - respect the rate limit
+                        # The Retry-After header will be processed below if present
+                    elif raw_feed:
                         logging.debug(
                             "   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s"
                             % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers)
+                        )
+                        raw_feed = requests.get(
+                            self.feed.feed_address,
+                            headers=self.feed.fetch_headers(fake=True),
+                            timeout=15,
                         )
                     else:
                         logging.debug(
                             "   ***> [%-30s] ~FRJson feed fetch timed out, trying fake headers: %s"
                             % (self.feed.log_title[:30], address)
                         )
-                    raw_feed = requests.get(
-                        self.feed.feed_address,
-                        headers=self.feed.fetch_headers(fake=True),
-                        timeout=15,
-                    )
+                        raw_feed = requests.get(
+                            self.feed.feed_address,
+                            headers=self.feed.fetch_headers(fake=True),
+                            timeout=15,
+                        )
 
                 json_feed_content_type = any(
                     json_feed in raw_feed.headers.get("Content-Type", "")
@@ -929,6 +942,15 @@ class ProcessFeed:
                     "   ---> [%-30s] ~SB~FRHTTP Status code: %s. Checking address..."
                     % (self.feed.log_title[:30], self.fpf.status)
                 )
+                # Handle 429 rate limiting specially - don't check address, just backoff
+                if self.fpf.status == 429:
+                    logging.debug(
+                        "   ---> [%-30s] ~FY429 Rate Limited - applying exponential backoff"
+                        % (self.feed.log_title[:30])
+                    )
+                    self.feed.save_feed_history(self.fpf.status, "Rate Limited (429)")
+                    self.feed = self.feed.save()
+                    return FEED_ERRHTTP, ret_values
                 if self.fpf.status in [403] and not self.feed.is_forbidden:
                     self.feed = self.feed.set_is_forbidden()
                 fixed_feed = None

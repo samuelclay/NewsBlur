@@ -51,6 +51,7 @@ def normalize(url):
         # Handle malformed URLs with invalid domain labels (empty or >63 chars)
         # IDNA encoding fails for these, so we can't normalize them
         import logging
+
         logging.debug(f" ---> ~FRFailed to normalize URL due to UnicodeError: {e} - URL: {url}")
         return url if url else None
 

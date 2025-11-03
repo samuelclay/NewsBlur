@@ -782,7 +782,9 @@ class DiscoverStory:
         try:
             if verbose:
                 logging.debug(f" ---> ~SN~FCIndexing discover story: ~SB~FC{story_hash}")
-            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type(), ignore=409)
+            cls.ES().create(
+                index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type(), ignore=409
+            )
         except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for discover story indexing: {e}")
         # if settings.DEBUG:
