@@ -16,15 +16,16 @@ logger = logging.getLogger(__name__)
 
 _original_sources_fget = Package.sources.fget
 
+
 def debug_sources(self):
     """Wrapper around Package.sources that expands globs using filesystem when in DEBUG mode."""
     if not self._sources:
         paths = []
-        for pattern in self.config.get('source_filenames', []):
-            if '*' in pattern:
+        for pattern in self.config.get("source_filenames", []):
+            if "*" in pattern:
                 # Use filesystem glob since collectstatic hasn't been run
                 # Try to find files in STATICFILES_DIRS (media directory)
-                media_root = getattr(settings, 'MEDIA_ROOT', '/srv/newsblur/media')
+                media_root = getattr(settings, "MEDIA_ROOT", "/srv/newsblur/media")
                 full_pattern = os.path.join(media_root, pattern)
                 matches = python_glob.glob(full_pattern)
                 # Convert back to relative paths
@@ -33,13 +34,16 @@ def debug_sources(self):
                     if rel_path not in paths:
                         paths.append(rel_path)
                 if settings.DEBUG_ASSETS and matches:
-                    logger.debug(f"[GLOB] Pattern '{pattern}' matched {len(matches)} files: {[os.path.relpath(m, media_root) for m in matches]}")
+                    logger.debug(
+                        f"[GLOB] Pattern '{pattern}' matched {len(matches)} files: {[os.path.relpath(m, media_root) for m in matches]}"
+                    )
             else:
                 # Not a glob pattern, add as-is if it exists
                 if pattern not in paths and find(pattern):
                     paths.append(str(pattern))
         self._sources = paths
     return self._sources
+
 
 if settings.DEBUG_ASSETS:
     Package.sources = property(debug_sources)

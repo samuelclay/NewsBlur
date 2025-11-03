@@ -1544,7 +1544,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             "title": apply_classifier_titles(classifier_titles, story),
             "text": (
                 apply_classifier_texts(classifier_texts, story)
-                if request.user.profile.premium_available_text_classifiers
+                if user.profile.premium_available_text_classifiers
                 else 0
             ),
         }
