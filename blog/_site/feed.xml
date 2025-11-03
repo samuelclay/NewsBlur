@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2025-10-20T17:03:00-04:00</updated>
+  <updated>2025-10-31T12:45:57-04:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,76 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Full-text filtering lets you train on any phrase</title>
+    <link href="https://blog.newsblur.com/2025/11/03/text-based-intelligence-classifiers/" rel="alternate" type="text/html" title="Full-text filtering lets you train on any phrase" />
+    <published>2025-11-03T00:00:00-05:00</published>
+    <updated>2025-11-03T00:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2025/11/03/text-based-intelligence-classifiers</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2025/11/03/text-based-intelligence-classifiers/">
+      <![CDATA[<p>Today we’re launching text-based intelligence classifiers, a powerful new way to train NewsBlur to show you exactly what you want to read. You’ve always been able to train NewsBlur’s intelligence using story titles, authors, tags, and publishers. Now you can train on any phrase that appears in the full text of a story. This feature is available exclusively to NewsBlur Premium Archive subscribers.</p>
+
+<p>Text-based classifiers work just like the intelligence training you’re already familiar with. Find a phrase you care about, mark it as something you like or dislike, and NewsBlur will automatically highlight or hide future stories containing that phrase. Stories with phrases you like are marked with a green focus indicator, while stories with phrases you dislike are hidden unless you choose to view them.</p>
+
+<h3 id="how-to-use-text-based-classifiers">How to use text-based classifiers</h3>
+
+<p>Reading a story and spot a phrase you want to see more of? Simply select the text with your mouse or trackpad, then click the “Train” button that appears.</p>
+
+<p><img src="/assets/text-classifier-vegan.png" style="width: 90%;border: 1px solid #A6A6A6;margin: 24px auto;display: block;" /></p>
+
+<p>This opens the intelligence trainer where you can mark the selected text as something you like (thumbs up) or dislike (thumbs down). The text classifier appears at the top of the trainer dialog, ready for you to train.</p>
+
+<p><img src="/assets/text-classifier-dialog.png" style="width: 90%;border: 1px solid #A6A6A6;margin: 24px auto;display: block;" /></p>
+
+<p>Once you’ve trained a text phrase, NewsBlur will automatically scan the full text of every story from that feed. Stories containing your phrase will be highlighted with a green focus indicator in your story list, making them easy to spot. You can also see the phrase highlighted throughout the story content itself.</p>
+
+<p><img src="/assets/text-classifier-gaussian.png" style="width: 90%;border: 1px solid #A6A6A6;margin: 24px auto;display: block;" /></p>
+
+<h3 id="real-world-examples">Real-world examples</h3>
+
+<p>Text-based classifiers shine when you subscribe to broad-interest feeds but only care about specific topics. Here are some examples:</p>
+
+<ul>
+  <li>Subscribe to a food blog that covers everything, but only want to read about vegan recipes? Train on “vegan” and similar terms.</li>
+  <li>Reading a tech blog that writes about many frameworks, but you only want stories about your favorite language? Train on that language name.</li>
+  <li>Following a news site with mixed content, but only interested in stories about a specific region or topic? Train on location names or topic keywords.</li>
+</ul>
+
+<p>Since text classifiers work on the full article text and not just titles, they catch stories that might not mention your interest in the headline but discuss it in depth within the article.</p>
+
+<h3 id="green-always-wins">Green always wins</h3>
+
+<p>Just like with other intelligence classifiers, green (focus) always wins. If a story matches both a phrase you like and a phrase you dislike, NewsBlur will mark it as focus and show it in your unread count. This ensures you never miss a story about something you care about, even if it also contains topics you’re less interested in.</p>
+
+<p>You can view your focus stories by choosing between Unread and Focus at the bottom of the feed list. Set it to Focus to show only green stories and see everything NewsBlur knows you want to read.</p>
+
+<h3 id="why-premium-archive-only">Why Premium Archive only?</h3>
+
+<p>Text-based classifiers require scanning the full article content of every story, not just the RSS feed excerpt. The Premium Archive subscription ensures every story is fetched, archived, and available for full-text search and classification. This means your text classifiers work on every story from every feed you subscribe to, with no gaps in coverage.</p>
+
+<p>The Premium Archive subscription also includes unlimited story archiving, the ability to mark any story as unread forever, full-text search across your entire archive, and the discover stories feature for finding related content across all your feeds.</p>
+
+<h3 id="available-now-on-the-web">Available now on the web</h3>
+
+<p>Text-based classifiers are available now to all Premium Archive subscribers on the web. Simply highlight any phrase in a story, click the “Train” button, and start training. iOS and Android support is coming soon.</p>
+
+<p>If you’re not yet a Premium Archive subscriber and want to unlock text-based intelligence training along with unlimited archiving and advanced search, you can <a href="https://www.newsblur.com/?next=premium">upgrade directly on the web</a>.</p>
+
+<p>As always, we’d love to hear your feedback on the <a href="https://forum.newsblur.com">NewsBlur forum</a>. For every person who shares their thoughts, there are a dozen others thinking the same thing, so your input helps shape where NewsBlur goes next.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Today we’re launching text-based intelligence classifiers, a powerful new way to train NewsBlur to show you exactly what you want to read. You’ve always been able to train NewsBlur’s intelligence using story titles, authors, tags, and publishers. Now you can train on any phrase that appears in the full text...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Filter stories by date range</title>
@@ -1261,52 +1331,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     
     <summary type="html">
       <![CDATA[I’m proud to announce the launch of version 7.0 of the NewsBlur iOS app, complete with iPhone X support. There’s a lot that’s new and improved in this release.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Infrequent Site Stories is the blog reader we need</title>
-    <link href="https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need/" rel="alternate" type="text/html" title="Infrequent Site Stories is the blog reader we need" />
-    <published>2017-12-11T06:00:15-05:00</published>
-    <updated>2017-12-11T06:00:15-05:00</updated>
-    <id>https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need/">
-      <![CDATA[<p>Launching today on all three platforms—web, iOS, and Android—is the new Infrequent Site Stories view. This configurable river of news offers a view of stories only from the blogs that publish less often than 1 story per day.</p>
-
-<p>Most of what you see in your day-to-day feed is news that’s up to the minute and is probably stale within a day. Even 8 hour old news can be a problem. But sometimes what you want is an overview of the news that isn’t exactly news. It’s stories from the blogs who have individual authors, or blogs that publish only a few times a month. And missing out on those stories is a tragedy because it is those blogs that pushed you to invest in an RSS reader in the first place.</p>
-
-<p>Today I’m happy to introduce a new feature that you won’t find anywhere else. It’s called Infrequent Site Stories and you can find it at the top of your feed list on the web, on iOS, and on Android.</p>
-
-<figure class="tmblr-full" data-orig-height="1131" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-ios-android.png"><img width="600" style="margin: 24px auto;" data-orig-height="1131" data-orig-width="1200" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-ios-android.png" /></figure>
-
-<p>Infrequent Site Stories is the river that captures stories from those authors who aren’t pulling from the firehose. These are the stories that are more thoughtful and more relevant days, weeks, months, or even years down the line. These stories are not to be missed. And the best thing about these stories is that there are far fewer of them than there are of your normal full river from All Site Stories.</p>
-
-<p>You can also configure the Infrequent river to be more or less inclusive of content that is more or less frequently published by changing the filter anywhere from 5 to 90 stories per month.</p>
-
-<figure class="tmblr-full" data-orig-height="570" data-orig-width="1100" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-options.png"><img width="650" style="margin: 24px auto; border: 1px solid #606060;" data-orig-height="570" data-orig-width="1100" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-options.png" /></figure>
-
-<p>These options are also available on all three official NewsBlur platforms and will let you perform a filter similar to how Focus mode reduces your number of unreads. It’s great to dip into Infrequent Site Stories and get stories you would ordinarily miss out on.</p>
-
-<figure class="tmblr-full" data-orig-height="866" data-orig-width="1400" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-web.png"><img width="650" style="margin: 24px auto;" data-orig-height="866" data-orig-width="1400" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-web.png" /></figure>
-
-<p>Try out the new Infrequent Site Stories feed, available only to premium subscribers. If your experience is anything like mine, it’ll be one of the new must read feeds in your reader.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    <category term="ios" />
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[Launching today on all three platforms—web, iOS, and Android—is the new Infrequent Site Stories view. This configurable river of news offers a view of stories only from the blogs that publish less often than 1 story per day.
 ]]>
     </summary>
     

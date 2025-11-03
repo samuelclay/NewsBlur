@@ -1,7 +1,16 @@
 # NewsBlur Development Guidelines
 
+## Git Worktree Development
+- **Use git worktrees for parallel development**: Run `make worktree` in a worktree to start workspace-specific services
+- Main repo uses standard ports (80/443), worktrees get unique ports based on directory name hash
+- Run `./worktree-dev.sh` to see your workspace's assigned ports (output shows all URLs)
+- Close worktree: `make worktree-close` stops containers and removes worktree if clean (no uncommitted changes)
+- All worktrees share the same database services (postgres, mongo, redis, elasticsearch)
+
 ## Build & Test Commands
-- `make nb` - Build and start all services (ONLY use for initial setup, not during development)
+- `make` - Smart default: starts/updates NewsBlur, applies migrations (safe to run after git pull)
+- `make rebuild` - Full rebuild with all images (for Docker config changes)
+- `make nb` - Fast startup without rebuild (legacy, use `make` instead)
 - `make bounce` - Restart all containers with new images
 - `make shell` - Django shell inside container
 - `make debug` - Debug mode for pdb
@@ -10,10 +19,11 @@
 - `make test` - Run all tests (defaults: SCOPE=apps, ARGS="--noinput -v 1 --failfast")
 - `make test SCOPE=apps.rss_feeds ARGS="-v 2"`
 
-**IMPORTANT: Do NOT run `make nb` during development!**
+**IMPORTANT: Do NOT run `make rebuild` or `make nb` during development!**
 - Web and Node servers restart automatically when code changes
 - Task/Celery server must be manually restarted only when working on background tasks
-- Running `make nb` unnecessarily rebuilds everything and wastes time
+- Use `make` to apply migrations after git pull
+- Running `make rebuild` unnecessarily rebuilds everything and wastes time
 
 Note: All docker commands must use `-t` instead of `-it` to avoid interactive mode issues when running through Claude.
 
@@ -76,10 +86,13 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - Extract issue ID from web URL: `https://sentry.newsblur.com/organizations/newsblur/issues/<ID>/` → use `<ID>` in API
 
 ## Browser Testing with Chrome DevTools MCP
-- Local dev: `https://localhost`
+- Local dev: `https://localhost` (when using containers directly)
 - Open All Site Stories: `NEWSBLUR.reader.open_river_stories()`
-- Open feed: `NEWSBLUR.reader.open_feed(feedId)`
+- Get feed with unread stories: `NEWSBLUR.assets.feeds.find(f => f.get('nt') > 0)`
+- Open feed: `NEWSBLUR.reader.open_feed(feed.get('id'))`
+- Select first story: `document.querySelector('.NB-feed-story').click()`
+- Open story intelligence trainer: `document.querySelector('.NB-feed-story-train').click()`
 - Open feed options popover: Click `.NB-feedbar-options` element (no API)
-- Get feed IDs: `NEWSBLUR.assets.feeds` is a Backbone.js collection with underscore.js operations. E.g. `var feedId = NEWSBLUR.assets.feeds.find((e) => e.get('nt') > 0).get('id')` for first feed with neutral unread stories
+- Get feed IDs: `NEWSBLUR.assets.feeds` is a Backbone.js collection with underscore.js operations
 - Open folder: Click `.folder .folder_title` element (no API)
 - **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts

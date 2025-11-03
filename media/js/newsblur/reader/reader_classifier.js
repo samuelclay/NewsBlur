@@ -471,6 +471,7 @@ var classifier_prototype = {
 
         // HTML entities decoding.
         var story_title = _.string.trim($('<div/>').html(story.get('story_title')).text());
+        var selected_text = this.options.selected_text || '';
 
         this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal' }, [
             $.make('div', { className: 'NB-modal-loading' }),
@@ -485,11 +486,32 @@ var classifier_prototype = {
             ]),
             (this.options['feed_loaded'] &&
                 $.make('form', { method: 'post' }, [
+                    $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+                        $.make('h5', 'Story Text'),
+                        $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                            $.make('div', { className: 'NB-classifier-help-text' }, 'Highlight text in the field below to train on specific phrases'),
+                            $.make('input', { type: 'text', value: selected_text, className: 'NB-classifier-text-highlight' }),
+                            this.make_classifier('<span class="NB-classifier-text-placeholder">Select text above</span>', '', 'text'),
+                            $.make('span',
+                                this.make_user_texts(story.get('story_content'))
+                            ),
+                            (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && $.make('div', { className: 'NB-classifier-text-premium-notice' }, [
+                                $.make('div', { className: 'NB-classifier-text-premium-notice-text' }, [
+                                    'Text classifiers will be saved but not applied.',
+                                    $.make('br'),
+                                    'Upgrade to ',
+                                    $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive or Premium Pro'),
+                                    ' to use text classifiers.'
+                                ])
+                            ]))
+                        ])
+                    ]),
                     (story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                         $.make('h5', 'Story Title'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                            $.make('div', { className: 'NB-classifier-help-text' }, 'Highlight phrases in the title below to train on specific words'),
                             $.make('input', { type: 'text', value: story_title, className: 'NB-classifier-title-highlight' }),
-                            this.make_classifier('<span class="NB-classifier-title-placeholder">Highlight phrases to look for in future stories</span>', '', 'title'),
+                            this.make_classifier('<span class="NB-classifier-title-placeholder">Select phrase above</span>', '', 'title'),
                             $.make('span',
                                 this.make_user_titles(story_title)
                             )
@@ -505,6 +527,20 @@ var classifier_prototype = {
                         $.make('h5', 'Story Categories &amp; Tags'),
                         $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
                             this.make_tags(story.get('story_tags'))
+                        )
+                    ])),
+
+                    (this.feed_authors && this.feed_authors.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
+                        $.make('h5', 'Feed Authors'),
+                        $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
+                            this.make_authors(this.feed_authors)
+                        )
+                    ])),
+
+                    (this.feed_tags && this.feed_tags.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
+                        $.make('h5', 'Feed Categories &amp; Tags'),
+                        $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
+                            this.make_tags(this.feed_tags)
                         )
                     ])),
 
@@ -570,6 +606,20 @@ var classifier_prototype = {
         }, this));
 
         return $titles;
+    },
+
+    make_user_texts: function (story_content) {
+        var $texts = [];
+        var texts = _.keys(this.user_classifiers.texts || {});
+
+        _.each(texts, _.bind(function (text) {
+            if (!story_content || story_content.toLowerCase().indexOf(text.toLowerCase()) != -1) {
+                var $text = this.make_classifier(text, text, 'text');
+                $texts.push($text);
+            }
+        }, this));
+
+        return $texts;
     },
 
     make_authors: function (authors) {
@@ -774,16 +824,69 @@ var classifier_prototype = {
 
     handle_text_highlight: function () {
         var self = this;
+
+        // Handle story text highlighting
+        var $text_highlight = $('.NB-classifier-text-highlight', this.$modal);
+        var $text_placeholder = $('.NB-classifier-text-placeholder', this.$modal);
+        var $text_classifier = $text_placeholder.parents('.NB-classifier').eq(0);
+        var $text_checkboxs = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $text_classifier);
+
+        var last_text_selection = '';
+        var update_text = function (e) {
+            var text = $.trim($(this).getSelection().text);
+
+            // Only update when selection has actually changed (not on every mousemove/hover)
+            if (text.length && text != last_text_selection && $text_placeholder.text() != text) {
+                last_text_selection = text;
+                $text_placeholder.text(text);
+                $text_placeholder.css('font-style', 'normal');
+                $text_checkboxs.val(text);
+                if (!$text_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                    self.change_classifier($text_classifier, 'like');
+                }
+            }
+        };
+
+        $text_highlight
+            .on('select keyup mouseup', update_text);
+        $text_checkboxs.val($text_highlight.val());
+
+        // Auto-select text classifier as positive when selected_text is provided
+        var selected_text = this.options.selected_text || '';
+        if (selected_text && selected_text.length) {
+            // Only auto-select if this text is not already in the user's classifiers
+            var text_already_exists = this.user_classifiers.texts && (selected_text in this.user_classifiers.texts);
+            if (!text_already_exists) {
+                $text_placeholder.text(selected_text);
+                $text_checkboxs.val(selected_text);
+                self.change_classifier($text_classifier, 'like');
+            }
+        }
+
+        // Clicking the placeholder does nothing - user must select text first
+        $text_placeholder.parents('.NB-classifier').bind('click', function (e) {
+            // Prevent default classifier toggle behavior if placeholder text is showing
+            if ($text_placeholder.text() === 'Select text above') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Handle story title highlighting
         var $title_highlight = $('.NB-classifier-title-highlight', this.$modal);
         var $title_placeholder = $('.NB-classifier-title-placeholder', this.$modal);
         var $title_classifier = $title_placeholder.parents('.NB-classifier').eq(0);
         var $title_checkboxs = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $title_classifier);
 
-        var update = function () {
+        var last_title_selection = '';
+        var update_title = function (e) {
             var text = $.trim($(this).getSelection().text);
 
-            if (text.length && $title_placeholder.text() != text) {
+            // Only update when selection has actually changed (not on every mousemove/hover)
+            if (text.length && text != last_title_selection && $title_placeholder.text() != text) {
+                last_title_selection = text;
                 $title_placeholder.text(text);
+                $title_placeholder.css('font-style', 'normal');
                 $title_checkboxs.val(text);
                 if (!$title_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
                     self.change_classifier($title_classifier, 'like');
@@ -792,13 +895,15 @@ var classifier_prototype = {
         };
 
         $title_highlight
-            .keydown(update).keyup(update)
-            .mousedown(update).mouseup(update).mousemove(update);
+            .on('select keyup mouseup', update_title);
         $title_checkboxs.val($title_highlight.val());
 
-        $title_placeholder.parents('.NB-classifier').bind('click', function () {
-            if ($title_highlight.val() == $title_checkboxs.val()) {
-                $title_placeholder.text($title_highlight.val());
+        // Clicking the placeholder does nothing - user must select text first
+        $title_placeholder.parents('.NB-classifier').bind('click', function (e) {
+            // Prevent default classifier toggle behavior if placeholder text is showing
+            if ($title_placeholder.text() === 'Select phrase above') {
+                e.preventDefault();
+                return false;
             }
         });
     },
@@ -814,6 +919,13 @@ var classifier_prototype = {
 
     handle_clicks: function (elem, e) {
         var self = this;
+
+        $.targetIs(e, { tagSelector: '.NB-classifier-premium-link' }, function ($t, $p) {
+            e.preventDefault();
+            self.close(function () {
+                NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
+            });
+        });
 
         if (this.options['training']) {
             $.targetIs(e, { tagSelector: '.NB-modal-submit-begin' }, function ($t, $p) {
@@ -933,6 +1045,11 @@ var classifier_prototype = {
                     self.model.classifiers[feed_id].tags[value] = score;
                 } else if (name == 'title') {
                     self.model.classifiers[feed_id].titles[value] = score;
+                } else if (name == 'text') {
+                    if (!self.model.classifiers[feed_id].texts) {
+                        self.model.classifiers[feed_id].texts = {};
+                    }
+                    self.model.classifiers[feed_id].texts[value] = score;
                 } else if (name == 'author') {
                     self.model.classifiers[feed_id].authors[value] = score;
                 } else if (name == 'feed') {
@@ -943,6 +1060,8 @@ var classifier_prototype = {
                     delete self.model.classifiers[feed_id].tags[value];
                 } else if (name == 'title' && self.model.classifiers[feed_id].titles[value] == score) {
                     delete self.model.classifiers[feed_id].titles[value];
+                } else if (name == 'text' && self.model.classifiers[feed_id].texts && self.model.classifiers[feed_id].texts[value] == score) {
+                    delete self.model.classifiers[feed_id].texts[value];
                 } else if (name == 'author' && self.model.classifiers[feed_id].authors[value] == score) {
                     delete self.model.classifiers[feed_id].authors[value];
                 } else if (name == 'feed' && self.model.classifiers[feed_id].feeds[feed_id] == score) {
