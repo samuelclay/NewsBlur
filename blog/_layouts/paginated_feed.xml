@@ -1,0 +1,57 @@
+---
+---
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <generator uri="https://jekyllrb.com/" version="{{ jekyll.version }}">Jekyll</generator>
+  <link href="{{ site.baseurl }}/{% unless page.page_num %}feed.xml{% else %}{% if page.page_num == 1 %}feed.xml{% else %}feed-page-{{ page.page_num }}.xml{% endif %}{% endunless %}" rel="self" type="application/atom+xml" />
+  <link href="{{ site.baseurl }}/" rel="alternate" type="text/html" />
+
+  {% comment %}RFC 5005 archive navigation links - use relative URLs{% endcomment %}
+  {% if page.has_previous %}
+  <link href="{{ site.baseurl }}/{{ page.previous_page_url }}" rel="prev-archive" type="application/atom+xml" />
+  {% endif %}
+  {% if page.has_next %}
+  <link href="{{ site.baseurl }}/{{ page.next_page_url }}" rel="next" type="application/atom+xml" />
+  {% endif %}
+
+  <updated>{{ site.time | date_to_xmlschema }}</updated>
+  <id>{{ site.url }}{{ site.baseurl }}/feed.xml</id>
+  <title type="html">{{ site.title | xml_escape }}</title>
+  {% if site.description %}
+  <subtitle>{{ site.description | xml_escape }}</subtitle>
+  {% endif %}
+  {% if site.author %}
+  <author>
+    <name>{{ site.author | xml_escape }}</name>
+  </author>
+  {% endif %}
+
+  {% for post in page.posts %}
+  <entry>
+    <title type="html">{{ post.title | xml_escape }}</title>
+    <link href="{{ site.url }}{{ site.baseurl }}{{ post.url }}" rel="alternate" type="text/html" title="{{ post.title | xml_escape }}" />
+    <published>{{ post.date | date_to_xmlschema }}</published>
+    <updated>{% if post.last_modified_at %}{{ post.last_modified_at | date_to_xmlschema }}{% else %}{{ post.date | date_to_xmlschema }}{% endif %}</updated>
+    <id>{{ site.url }}{{ site.baseurl }}{{ post.id }}</id>
+    <content type="html" xml:base="{{ site.url }}{{ site.baseurl }}{{ post.url }}">
+      <![CDATA[{{ post.content }}]]>
+    </content>
+    {% if post.author %}
+    <author>
+      <name>{{ post.author | xml_escape }}</name>
+    </author>
+    {% endif %}
+    {% for category in post.categories %}
+    <category term="{{ category | xml_escape }}" />
+    {% endfor %}
+    {% for tag in post.tags %}
+    <category term="{{ tag | xml_escape }}" />
+    {% endfor %}
+    {% if post.excerpt %}
+    <summary type="html">
+      <![CDATA[{{ post.excerpt | strip_html | truncatewords: 50 }}]]>
+    </summary>
+    {% endif %}
+  </entry>
+  {% endfor %}
+</feed>

@@ -1,23 +1,38 @@
 {
-    "service": {
-        {% if elasticsearch_version == 7 %}
+    "services": [
+        {
             {% if not elasticsearch_secondary %}
             "name": "db-elasticsearch",
             {% else %}
             "name": "db-elasticsearch-staging",
             {% endif %}
-        {% elif elasticsearch_version == 8 %}
+            "tags": [
+                "db"
+            ],
+            "port": {{ elasticsearch_ports.standard }},
+            "checks": [{
+                "id": "es-ping",
+                "http": "http://{{ ansible_host }}:5579/db_check/elasticsearch?consul=1",
+                "interval": "15s",
+                "failures_before_critical": 4
+            }]
+        },
+        {
+            {% if not elasticsearch_secondary %}
             "name": "db-elasticsearch-v8",
-        {% endif %}
-        "tags": [
-            "db"
-        ],
-        "port": {{ consul_service_port }},
-        "checks": [{
-            "id": "es-ping",
-            "http": "http://{{ ansible_host }}:5579/db_check/elasticsearch?consul=1",
-            "interval": "15s",
-            "failures_before_critical": 4
-        }]
-    }
+            {% else %}
+            "name": "db-elasticsearch-v8-staging",
+            {% endif %}
+            "tags": [
+                "db"
+            ],
+            "port": {{ elasticsearch_ports.v8 }},
+            "checks": [{
+                "id": "es-v8-ping",
+                "http": "http://{{ ansible_host }}:5579/db_check/elasticsearch?consul=1",
+                "interval": "15s",
+                "failures_before_critical": 4
+            }]
+        }
+    ]
 }  

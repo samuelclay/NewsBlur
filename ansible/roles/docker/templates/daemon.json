@@ -1,4 +1,3 @@
-{    
-    "dns": ["127.0.0.1"],
+{
     "dns-search": ["node.consul", "service.consul"]
 }
