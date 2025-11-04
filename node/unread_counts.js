@@ -13,7 +13,7 @@
     ENV_DEV = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'debug';
     ENV_PROD = process.env.NODE_ENV === 'production';
     ENV_DOCKER = process.env.NODE_ENV === 'docker';
-    REDIS_SERVER = "db_redis";
+    REDIS_SERVER = "newsblur_db_redis";
     if (ENV_DEV) {
       REDIS_SERVER = 'localhost';
     } else if (ENV_PROD) {

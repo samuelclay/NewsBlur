@@ -113,6 +113,10 @@ class Profile(models.Model):
         return price
 
     @property
+    def premium_available_text_classifiers(self):
+        return self.is_archive or self.is_pro
+
+    @property
     def unread_cutoff(self, force_premium=False, force_archive=False):
         if self.is_archive or force_archive:
             days_of_unread = self.days_of_unread or settings.DAYS_OF_UNREAD

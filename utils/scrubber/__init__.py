@@ -172,6 +172,17 @@ class Scrubber(object):
             "blink",
             "body",
             "html",
+            # HTML5 semantic tags - strip the tags but keep their content
+            # utils/scrubber/__init__.py
+            "header",
+            "main",
+            "footer",
+            "section",
+            "article",
+            "nav",
+            "aside",
+            "figure",
+            "figcaption",
         )
     )
     allowed_attributes = set(

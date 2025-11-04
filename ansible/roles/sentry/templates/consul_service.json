@@ -1,10 +1,10 @@
 {
     "service": {
-        "name": "{{ inventory_hostname|regex_replace('\-?\d+', '')|regex_replace("hdb-", "db-") }}",
+        "name": "{% if inventory_hostname == 'hdb-sentry' %}db-sentry{% else %}db-sentry-staging{% endif %}",
         "id": "{{ inventory_hostname }}",
         "tags": [
             "sentry"
         ],
         "port": 9000
     }
-}  
+}

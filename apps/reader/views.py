@@ -45,10 +45,12 @@ from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierText,
     MClassifierTitle,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
+    apply_classifier_texts,
     apply_classifier_titles,
     get_classifiers_for_user,
     sort_classifiers_by_feed,
@@ -166,6 +168,12 @@ def adjust_read_filter_for_date_range(
             should_switch_to_all = True
 
     if should_switch_to_all:
+        logging.user(
+            None,
+            f"~FRSwitching read_filter from unread to all: "
+            f"date_start={date_filter_start_utc}, date_end={date_filter_end_start_utc}, "
+            f"unread_cutoff={unread_cutoff}",
+        )
         return "all"
 
     return read_filter
@@ -861,38 +869,39 @@ def load_single_feed(request, feed_id):
         else:
             stories = []
             message = "You must be a premium subscriber to search."
-
-    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
-        date_filter_start, date_filter_end, user.profile.timezone
-    )
-
-    # Auto-switch from unread to all if date filter extends beyond unread cutoff
-    read_filter = adjust_read_filter_for_date_range(
-        read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
-    )
-
-    if read_filter == "starred":
-        mstories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).order_by(
-            "%sstarred_date" % ("-" if order == "newest" else "")
-        )[offset : offset + limit]
-        stories = Feed.format_stories(mstories)
-    elif usersub and read_filter == "unread":
-        stories = usersub.get_stories(
-            order=order,
-            read_filter=read_filter,
-            offset=offset,
-            limit=limit,
-            date_filter_start=date_filter_start_utc,
-            date_filter_end=date_filter_end_utc,
-        )
     else:
-        stories = feed.get_stories(
-            offset,
-            limit,
-            order=order,
-            date_filter_start=date_filter_start_utc,
-            date_filter_end=date_filter_end_utc,
+        # Only run feed aggregation if stories weren't already fetched via query
+        date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+            date_filter_start, date_filter_end, user.profile.timezone
         )
+
+        # Auto-switch from unread to all if date filter extends beyond unread cutoff
+        read_filter = adjust_read_filter_for_date_range(
+            read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
+        )
+
+        if read_filter == "starred":
+            mstories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).order_by(
+                "%sstarred_date" % ("-" if order == "newest" else "")
+            )[offset : offset + limit]
+            stories = Feed.format_stories(mstories)
+        elif usersub and read_filter == "unread":
+            stories = usersub.get_stories(
+                order=order,
+                read_filter=read_filter,
+                offset=offset,
+                limit=limit,
+                date_filter_start=date_filter_start_utc,
+                date_filter_end=date_filter_end_utc,
+            )
+        else:
+            stories = feed.get_stories(
+                offset,
+                limit,
+                order=order,
+                date_filter_start=date_filter_start_utc,
+                date_filter_end=date_filter_end_utc,
+            )
 
     checkpoint1 = time.time()
 
@@ -910,11 +919,13 @@ def load_single_feed(request, feed_id):
         classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
         classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
+        classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id=feed_id))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
+        classifier_texts = []
     classifiers = get_classifiers_for_user(
         user,
         feed_id=feed_id,
@@ -922,6 +933,7 @@ def load_single_feed(request, feed_id):
         classifier_authors=classifier_authors,
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
+        classifier_texts=classifier_texts,
     )
     checkpoint3 = time.time()
 
@@ -958,6 +970,20 @@ def load_single_feed(request, feed_id):
     checkpoint4 = time.time()
 
     for story in stories:
+        # Calculate intelligence BEFORE deleting story content (text classifier needs it)
+        story["intelligence"] = {
+            "feed": apply_classifier_feeds(classifier_feeds, feed),
+            "author": apply_classifier_authors(classifier_authors, story),
+            "tags": apply_classifier_tags(classifier_tags, story),
+            "title": apply_classifier_titles(classifier_titles, story),
+            "text": (
+                apply_classifier_texts(classifier_texts, story)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
+        }
+        story["score"] = UserSubscription.score_story(story["intelligence"])
+
         if not include_story_content:
             del story["story_content"]
         story_date = localtime_for_timezone(story["story_date"], user.profile.timezone)
@@ -990,13 +1016,6 @@ def load_single_feed(request, feed_id):
                 story["shared_comments"] = strip_tags(shared_stories[story["story_hash"]]["comments"])
         else:
             story["read_status"] = 1
-        story["intelligence"] = {
-            "feed": apply_classifier_feeds(classifier_feeds, feed),
-            "author": apply_classifier_authors(classifier_authors, story),
-            "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story),
-        }
-        story["score"] = UserSubscription.score_story(story["intelligence"])
 
     # Intelligence
     feed_tags = json.decode(feed.data.popular_tags) if feed.data.popular_tags else []
@@ -1320,6 +1339,7 @@ def load_starred_stories(request):
             "author": 0,
             "tags": 0,
             "title": 0,
+            "text": 0,
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True
@@ -1499,11 +1519,13 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
         )
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+        classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
+        classifier_texts = []
 
     sort_classifiers_by_feed(
         user=user,
@@ -1512,6 +1534,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         classifier_authors=classifier_authors,
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
+        classifier_texts=classifier_texts,
     )
     for story in stories:
         story["intelligence"] = {
@@ -1519,6 +1542,11 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
+            "text": (
+                apply_classifier_texts(classifier_texts, story)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
         if unread_filter == "focus" and story["score"] >= 1:
@@ -1699,6 +1727,7 @@ def load_read_stories(request):
             "author": 0,
             "tags": 0,
             "title": 0,
+            "text": 0,
         }
         if story["story_hash"] in starred_stories:
             story["starred"] = True
@@ -1750,10 +1779,18 @@ def load_river_stories__redis(request):
         date_filter_start = None
     if date_filter_end in ("null", "None", "", None):
         date_filter_end = None
+
     query = get_post.get("query", "").strip()
     include_hidden = is_true(get_post.get("include_hidden", False))
     include_feeds = is_true(get_post.get("include_feeds", False))
     on_dashboard = is_true(get_post.get("dashboard", False)) or is_true(get_post.get("on_dashboard", False))
+
+    # Log when read_filter is "all" to understand why ZUNIONSTORE uses zF: keys
+    if read_filter == "all":
+        logging.user(
+            request,
+            f"~FRload_river_stories read_filter=all (before adjust), page={page}, on_dashboard={on_dashboard}",
+        )
     infrequent = is_true(get_post.get("infrequent", False))
     if infrequent:
         infrequent = get_post.get("infrequent")
@@ -1763,11 +1800,6 @@ def load_river_stories__redis(request):
     user_search = None
     offset = (page - 1) * limit
     story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
-
-    if user.pk == 86178:
-        # Disable Michael_Novakhov account
-        logging.user(request, "~FCLoading ~FMMichael_Novakhov~SN's river, resource usage too high, ignoring.")
-        return HttpResponse("Resource usage too high", status=429)
 
     if infrequent:
         feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
@@ -1798,49 +1830,56 @@ def load_river_stories__redis(request):
             stories = []
             mstories = []
             message = "You must be a premium subscriber to search."
-
-    # Auto-switch from unread to all if date filter extends beyond unread cutoff
-    date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
-        date_filter_start, date_filter_end, user.profile.timezone
-    )
-
-    read_filter = adjust_read_filter_for_date_range(
-        read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
-    )
-
-    if read_filter == "starred":
-        mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
-            "%sstarred_date" % ("-" if order == "newest" else "")
-        )[offset : offset + limit]
-        stories = Feed.format_stories(mstories)
     else:
-        usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
-        all_feed_ids = [f for f in feed_ids]
-        feed_ids = [sub.feed_id for sub in usersubs]
-        if infrequent:
-            feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
-        if feed_ids:
-            params = {
-                "user_id": user.pk,
-                "feed_ids": feed_ids,
-                "all_feed_ids": all_feed_ids,
-                "offset": offset,
-                "limit": limit,
-                "order": order,
-                "read_filter": read_filter,
-                "usersubs": usersubs,
-                "cutoff_date": user.profile.unread_cutoff,
-                "cache_prefix": "dashboard:" if on_dashboard else "",
-                "date_filter_start": date_filter_start_utc,
-                "date_filter_end": date_filter_end_utc,
-            }
-            story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
-        else:
-            story_hashes = []
-            unread_feed_story_hashes = []
+        # Only run feed aggregation if stories weren't already fetched via story_hashes or query
+        date_filter_start_utc, date_filter_end_utc, date_filter_end_start_utc = normalize_date_filters(
+            date_filter_start, date_filter_end, user.profile.timezone
+        )
 
-        mstories = MStory.objects(story_hash__in=story_hashes[:limit]).order_by(story_date_order)
-        stories = Feed.format_stories(mstories)
+        # Auto-switch from unread to all if date filter extends beyond unread cutoff
+        original_read_filter = read_filter
+        read_filter = adjust_read_filter_for_date_range(
+            read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
+        )
+
+        # Log if read_filter changed after adjust
+        if original_read_filter != read_filter:
+            logging.user(
+                request,
+                f"~FRload_river_stories read_filter changed: {original_read_filter} -> {read_filter} (after adjust)",
+            )
+
+        if read_filter == "starred":
+            mstories = MStarredStory.objects(user_id=user.pk, story_feed_id__in=feed_ids).order_by(
+                "%sstarred_date" % ("-" if order == "newest" else "")
+            )[offset : offset + limit]
+            stories = Feed.format_stories(mstories)
+        else:
+            usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
+            feed_ids = [sub.feed_id for sub in usersubs]
+            if infrequent:
+                feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
+            if feed_ids:
+                params = {
+                    "user_id": user.pk,
+                    "feed_ids": feed_ids,
+                    "offset": offset,
+                    "limit": limit,
+                    "order": order,
+                    "read_filter": read_filter,
+                    "usersubs": usersubs,
+                    "cutoff_date": user.profile.unread_cutoff,
+                    "cache_prefix": "dashboard:" if on_dashboard else "",
+                    "date_filter_start": date_filter_start_utc,
+                    "date_filter_end": date_filter_end_utc,
+                }
+                story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
+            else:
+                story_hashes = []
+                unread_feed_story_hashes = []
+
+            mstories = MStory.objects(story_hash__in=story_hashes[:limit]).order_by(story_date_order)
+            stories = Feed.format_stories(mstories)
 
     found_feed_ids = list(set([story["story_feed_id"] for story in stories]))
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
@@ -1887,11 +1926,13 @@ def load_river_stories__redis(request):
             MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
         )
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+        classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
+        classifier_texts = []
     classifiers = sort_classifiers_by_feed(
         user=user,
         feed_ids=found_feed_ids,
@@ -1899,6 +1940,7 @@ def load_river_stories__redis(request):
         classifier_authors=classifier_authors,
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
+        classifier_texts=classifier_texts,
     )
 
     # Just need to format stories
@@ -1929,6 +1971,11 @@ def load_river_stories__redis(request):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
+            "text": (
+                apply_classifier_texts(classifier_texts, story)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
@@ -2032,6 +2079,27 @@ def load_river_stories_widget(request):
     def load_url(url):
         original_url = url
         url = urllib.parse.urljoin(settings.NEWSBLUR_URL, url)
+
+        # Ensure URL is properly encoded for non-ASCII characters and spaces
+        parsed = urllib.parse.urlsplit(url)
+        if parsed.path:
+            needs_encoding = False
+            try:
+                # Check if path can be encoded as ASCII
+                parsed.path.encode("ascii")
+                # Also check for spaces which are valid ASCII but invalid in URLs
+                if " " in parsed.path:
+                    needs_encoding = True
+            except UnicodeEncodeError:
+                needs_encoding = True
+
+            if needs_encoding:
+                # Path contains characters that need encoding
+                encoded_path = urllib.parse.quote(parsed.path, safe="/:@!$&'()*+,;=")
+                url = urllib.parse.urlunsplit(
+                    (parsed.scheme, parsed.netloc, encoded_path, parsed.query, parsed.fragment)
+                )
+
         scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
         scontext.verify_mode = ssl.VerifyMode.CERT_NONE
         conn = None
@@ -2093,10 +2161,16 @@ def complete_river(request):
     feed_ids = [int(feed_id) for feed_id in feed_ids if feed_id and feed_id.isnumeric()]
     page = int(request.POST.get("page", 1))
     read_filter = request.POST.get("read_filter", "unread")
+    infrequent = is_true(request.POST.get("infrequent", False))
+    if infrequent:
+        infrequent = request.POST.get("infrequent")
     stories_truncated = 0
 
     usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
     feed_ids = [sub.feed_id for sub in usersubs]
+    # Apply infrequent filter to match load_river_stories() behavior
+    if infrequent:
+        feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
     if feed_ids:
         stories_truncated = UserSubscription.truncate_river(
             user.pk, feed_ids, read_filter, cache_prefix="dashboard:"
