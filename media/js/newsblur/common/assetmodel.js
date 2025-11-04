@@ -34,6 +34,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.defaults = {
             classifiers: {
                 titles: {},
+                texts: {},
                 tags: {},
                 authors: {},
                 feeds: {}
@@ -2083,7 +2084,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 author: 0,
                 feed: 0,
                 tags: 0,
-                title: 0
+                title: 0,
+                text: 0
             };
 
             _.each(this.classifiers[feed_id].titles, function (classifier_score, classifier_title) {
@@ -2111,6 +2113,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 if (intelligence.feed <= 0 &&
                     story.get('story_feed_id') == classifier_feed_id) {
                     intelligence.feed = classifier_score;
+                }
+            });
+
+            _.each(this.classifiers[feed_id].texts, function (classifier_score, classifier_text) {
+                if (intelligence.text <= 0 &&
+                    story.get('story_content', '').toLowerCase().indexOf(classifier_text.toLowerCase()) != -1) {
+                    intelligence.text = classifier_score;
                 }
             });
 

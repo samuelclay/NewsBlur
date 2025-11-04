@@ -12,7 +12,7 @@ class TestRunner(DiscoverRunner):
 
         # Use Docker MongoDB settings when in Docker environment
         if os.getenv("DOCKERBUILD"):
-            connect(db_name, host="db_mongo", port=29019, connect=False)
+            connect(db_name, host="newsblur_db_mongo", port=29019, connect=False)
         else:
             connect(db_name, host="127.0.0.1", port=27017, connect=False)
 
@@ -35,7 +35,7 @@ class TestRunner(DiscoverRunner):
 
         # Use Docker MongoDB settings when in Docker environment
         if os.getenv("DOCKERBUILD"):
-            conn = pymongo.MongoClient("db_mongo", 29019)
+            conn = pymongo.MongoClient("newsblur_db_mongo", 29019)
         else:
             conn = pymongo.MongoClient("127.0.0.1", 27017)
 
