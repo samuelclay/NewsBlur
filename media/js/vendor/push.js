@@ -335,7 +335,7 @@
             }
 
             /* Default callback */
-            callback = function (result) {
+            var callback = function (result) {
 
                 switch (result) {
 

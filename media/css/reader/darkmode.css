@@ -1393,6 +1393,20 @@ background-color: #5d8392;
     color: #f3f3f3;
 }
 
+.NB-dark .NB-feed-story-content .NB-classifier-highlight-positive {
+    background-color: #2d5f2a;
+    color: #f3f3f3;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+
+.NB-dark .NB-feed-story-content .NB-classifier-highlight-negative {
+    background-color: #6b2c2c;
+    color: #f3f3f3;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+
 /* Link color */
 .NB-dark .NB-feed-story a {
     color: #83b4e0;

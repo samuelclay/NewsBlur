@@ -1,0 +1,109 @@
+# Auto-generated workspace-specific HAProxy config
+# Workspace: {{ workspace_name }}
+
+global
+    maxconn 100000
+    daemon
+    ca-base /srv/newsblur/config/certificates
+    crt-base /srv/newsblur/config/certificates
+    tune.bufsize 32000
+    tune.maxrewrite 8196
+    tune.ssl.default-dh-param 2048
+    log 127.0.0.1 local0 notice
+
+defaults
+    log global
+    maxconn 100000
+    mode http
+    option forwardfor
+    option http-server-close
+    option httpclose
+    option log-health-checks
+    option log-separate-errors
+    option httplog
+    option redispatch
+    option abortonclose
+    timeout connect 10s
+    timeout client 10s
+    timeout server 30s
+    timeout tunnel 1h
+    retries 3
+    errorfile 502 /srv/newsblur/templates/502.http
+    errorfile 503 /srv/newsblur/templates/502.http
+    errorfile 504 /srv/newsblur/templates/502.http
+
+frontend public
+    bind :80
+    bind :443 ssl crt /srv/newsblur/config/certificates/localhost.pem
+    http-response add-header Strict-Transport-Security max-age=0;\ includeSubDomains
+    option http-server-close
+
+    acl is_root path /
+    redirect scheme https if is_root !{ ssl_fc }
+
+    acl gunicorn_dead nbsrv(gunicorn) lt 1
+    acl nginx_dead nbsrv(nginx) lt 1
+
+    monitor-uri /status
+    monitor fail if gunicorn_dead
+    monitor fail if nginx_dead
+
+    use_backend node_socket if { path_beg /v3/socket.io/ }
+    use_backend node_favicon if { path_beg /rss_feeds/icon/ }
+    use_backend node_text if { path_beg /rss_feeds/original_text_fetcher }
+    use_backend node_page if { path_beg /original_page/ }
+    use_backend node_images if { path_beg /imageproxy/ }
+    use_backend nginx if { path_beg /media/ }
+    use_backend nginx if { path_beg /static/ }
+    use_backend nginx if { path_beg /favicon }
+    use_backend nginx if { path_beg /crossdomain/ }
+    use_backend nginx if { path_beg /robots }
+    use_backend nginx if { hdr_sub(host) -i blog.localhost }
+
+    use_backend gunicorn unless gunicorn_dead || nginx_dead
+
+backend node_images
+    option httpchk HEAD /sc,seLJDaKBog3LLEMDe8cjBefMhnVSibO4RA5boZhWcVZ0=/https://samuelclay.com/static/images/2019%20-%20Cuba.jpg
+    http-check expect rstatus 200|301
+    http-request replace-path /imageproxy(.*)     \1
+    server node_images imageproxy:8088 check inter 600000ms
+
+backend node_socket
+    http-check expect rstatus 200|503
+    balance roundrobin
+    server node_socket newsblur_node_{{ workspace_name }}:8008 check inter 3000ms
+
+backend node_favicon
+    http-check expect rstatus 200|301|503
+    balance roundrobin
+    server node_favicon newsblur_node_{{ workspace_name }}:8008 check inter 3000ms
+
+backend node_text
+    http-check expect rstatus 200|503
+    option httpchk GET /rss_feeds/original_text_fetcher?test=1
+    balance roundrobin
+    server node_text newsblur_node_{{ workspace_name }}:8008 check inter 3000ms
+
+backend node_page
+    http-check expect rstatus 200|503
+    option httpchk GET /rss_feeds/original_text_fetcher?test=1
+    balance roundrobin
+    server node_page newsblur_node_{{ workspace_name }}:8008 check inter 3000ms
+
+backend nginx
+    balance roundrobin
+    http-check expect rstatus 200|503
+    server nginx newsblur_nginx_{{ workspace_name }}:81 check inter 60000ms
+
+backend gunicorn
+    balance roundrobin
+    server app_django nb-{{ workspace_name }}.com:8000 check inter 3000ms
+
+listen stats
+    bind :1936 ssl crt /srv/newsblur/config/certificates/localhost.pem
+    stats enable
+    stats hide-version
+    stats realm Haproxy\ Statistics
+    stats uri /
+    stats auth gimmiestats:StatsGiver
+    stats refresh 15s

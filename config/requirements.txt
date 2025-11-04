@@ -22,10 +22,10 @@ django-compress==1.0.1
 django-cors-middleware==1.3.1
 django-extensions==3.1.0
 django-nose==1.4.7
-django-oauth-toolkit==1.3.3
+django-oauth-toolkit==2.3.0
 django-paypal==1.1.2
 django-qurl==0.1.1
-django-pipeline>=2,<3
+django-pipeline==3.0.0
 django-prometheus==2.2.0
 django-redis==5.2.0
 django-redis-sessions==0.6.1

@@ -1346,6 +1346,7 @@ class Feed(models.Model):
             MClassifierAuthor,
             MClassifierFeed,
             MClassifierTag,
+            MClassifierText,
             MClassifierTitle,
         )
 
@@ -1384,6 +1385,7 @@ class Feed(models.Model):
         scores = {}
         for cls, facet in [
             (MClassifierTitle, "title"),
+            (MClassifierText, "text"),
             (MClassifierAuthor, "author"),
             (MClassifierTag, "tag"),
             (MClassifierFeed, "feed_id"),
@@ -1947,29 +1949,6 @@ class Feed(models.Model):
         self.save()
 
         return sum_bytes
-
-    def purge_feed_stories(self, update=True):
-        MStory.purge_feed_stories(feed=self, cutoff=self.story_cutoff)
-        if update:
-            self.update()
-
-    def purge_author(self, author):
-        all_stories = MStory.objects.filter(story_feed_id=self.pk)
-        author_stories = MStory.objects.filter(story_feed_id=self.pk, story_author_name__iexact=author)
-        logging.debug(
-            " ---> Deleting %s of %s stories in %s by '%s'."
-            % (author_stories.count(), all_stories.count(), self, author)
-        )
-        author_stories.delete()
-
-    def purge_tag(self, tag):
-        all_stories = MStory.objects.filter(story_feed_id=self.pk)
-        tagged_stories = MStory.objects.filter(story_feed_id=self.pk, story_tags__icontains=tag)
-        logging.debug(
-            " ---> Deleting %s of %s stories in %s by '%s'."
-            % (tagged_stories.count(), all_stories.count(), self, tag)
-        )
-        tagged_stories.delete()
 
     # @staticmethod
     # def clean_invalid_ids():
@@ -2897,7 +2876,7 @@ class Feed(models.Model):
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False, delay_fetch_sec=None):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
 
-        # Use Cache-Control max-age if provided
+        # Use Cache-Control max-age or Retry-After if provided
         if delay_fetch_sec is not None:
             minutes_until_next_fetch = delay_fetch_sec / 60
             base_total = minutes_until_next_fetch
@@ -2946,7 +2925,15 @@ class Feed(models.Model):
             base_total = minutes_until_next_fetch
             error_count = self.error_count
 
-            if error_count:
+            # Handle 429 rate limiting - enforce minimum 60 minute backoff
+            if self.exception_code == 429:
+                minutes_until_next_fetch = max(minutes_until_next_fetch, 60)
+                if verbose:
+                    logging.debug(
+                        "   ---> [%-30s] ~FY429 Rate Limited - enforcing minimum 60 min backoff"
+                        % (self.log_title[:30])
+                    )
+            elif error_count:
                 original_total = minutes_until_next_fetch
                 minutes_until_next_fetch = minutes_until_next_fetch * error_count
                 minutes_until_next_fetch = min(minutes_until_next_fetch, 60 * 24 * 7)
@@ -3338,15 +3325,6 @@ class MStory(mongo.Document):
                 "   ***> [%-30s] ~BMRedis is unavailable for real-time."
                 % (Feed.get_by_id(self.story_feed_id).title[:30],)
             )
-
-    @classmethod
-    def purge_feed_stories(cls, feed, cutoff, verbose=True):
-        stories = cls.objects(story_feed_id=feed.pk)
-        logging.debug(" ---> Deleting %s stories from %s" % (stories.count(), feed))
-        if stories.count() > cutoff * 1.25:
-            logging.debug(" ***> ~FRToo many stories in %s, not purging..." % (feed))
-            return
-        stories.delete()
 
     @classmethod
     def index_all_for_search(cls, offset=0, search=False, discover=False):
@@ -3905,6 +3883,11 @@ class MStarredStory(mongo.DynamicDocument):
             stories_db = stories_db.filter(starred_date__gte=date_filter_start)
         if date_filter_end:
             stories_db = stories_db.filter(starred_date__lt=date_filter_end)
+
+        if date_filter_start or date_filter_end:
+            start_log = date_filter_start.isoformat() if date_filter_start else ""
+            end_log = date_filter_end.isoformat() if date_filter_end else ""
+            logging.debug(f" ---> ~FBDate filter: start={start_log} end_exclusive={end_log}")
 
         stories_db = stories_db.order_by("%sstarred_date" % ("-" if order == "newest" else ""))[
             offset : offset + limit

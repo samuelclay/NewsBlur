@@ -297,7 +297,7 @@ class FetchFeed:
                     )
                 self.fpf = feedparser.parse(processed_forbidden_feed)
 
-        if not self.fpf and "json" in address:
+        if not self.fpf:
             try:
                 headers = self.feed.fetch_headers()
                 if etag:
@@ -339,21 +339,34 @@ class FetchFeed:
                 except (requests.adapters.ConnectionError, TimeoutError):
                     raw_feed = None
                 if not raw_feed or raw_feed.status_code >= 400:
-                    if raw_feed:
+                    # Handle 429 rate limiting specially - don't retry immediately
+                    if raw_feed and raw_feed.status_code == 429:
+                        logging.debug(
+                            "   ***> [%-30s] ~FRFeed fetch was 429 rate limited, respecting backoff: %s"
+                            % (self.feed.log_title[:30], raw_feed.headers)
+                        )
+                        # Don't retry with fake user agent for 429 - respect the rate limit
+                        # The Retry-After header will be processed below if present
+                    elif raw_feed:
                         logging.debug(
                             "   ***> [%-30s] ~FRFeed fetch was %s status code, trying fake user agent: %s"
                             % (self.feed.log_title[:30], raw_feed.status_code, raw_feed.headers)
+                        )
+                        raw_feed = requests.get(
+                            self.feed.feed_address,
+                            headers=self.feed.fetch_headers(fake=True),
+                            timeout=15,
                         )
                     else:
                         logging.debug(
                             "   ***> [%-30s] ~FRJson feed fetch timed out, trying fake headers: %s"
                             % (self.feed.log_title[:30], address)
                         )
-                    raw_feed = requests.get(
-                        self.feed.feed_address,
-                        headers=self.feed.fetch_headers(fake=True),
-                        timeout=15,
-                    )
+                        raw_feed = requests.get(
+                            self.feed.feed_address,
+                            headers=self.feed.fetch_headers(fake=True),
+                            timeout=15,
+                        )
 
                 json_feed_content_type = any(
                     json_feed in raw_feed.headers.get("Content-Type", "")
@@ -376,9 +389,19 @@ class FetchFeed:
                         )
                     self.fpf = feedparser.parse(processed_json_feed)
                 elif raw_feed.content and raw_feed.status_code < 400:
-                    response_headers = raw_feed.headers
+                    response_headers = raw_feed.headers.copy()
                     response_headers["Content-Location"] = raw_feed.url
+
+                    # Fix encoding detection: if Content-Type doesn't specify charset, default to UTF-8
+                    # This prevents feedparser from incorrectly guessing Windows-1252
+                    content_type = response_headers.get("Content-Type", "")
+                    if content_type and "charset" not in content_type.lower():
+                        # Add UTF-8 charset to help feedparser detect encoding correctly
+                        response_headers["Content-Type"] = f"{content_type}; charset=utf-8"
+
+                    # Decode the raw bytes as UTF-8 (smart_str defaults to UTF-8 for bytes)
                     self.raw_feed = smart_str(raw_feed.content)
+
                     # Preprocess feed to fix encoding issues before parsing with feedparser
                     processed_feed = preprocess_feed_encoding(self.raw_feed)
                     if processed_feed != self.raw_feed:
@@ -919,6 +942,15 @@ class ProcessFeed:
                     "   ---> [%-30s] ~SB~FRHTTP Status code: %s. Checking address..."
                     % (self.feed.log_title[:30], self.fpf.status)
                 )
+                # Handle 429 rate limiting specially - don't check address, just backoff
+                if self.fpf.status == 429:
+                    logging.debug(
+                        "   ---> [%-30s] ~FY429 Rate Limited - applying exponential backoff"
+                        % (self.feed.log_title[:30])
+                    )
+                    self.feed.save_feed_history(self.fpf.status, "Rate Limited (429)")
+                    self.feed = self.feed.save()
+                    return FEED_ERRHTTP, ret_values
                 if self.fpf.status in [403] and not self.feed.is_forbidden:
                     self.feed = self.feed.set_is_forbidden()
                 fixed_feed = None
@@ -1435,7 +1467,7 @@ class FeedFetcherWorker:
         first_seen_feed = None
         original_starting_page = self.options["archive_page"]
 
-        for archive_page_key in ["page", "paged", "rfc5005"]:
+        for archive_page_key in ["rfc5005", "page", "paged"]:
             seen_story_hashes = set()
             failed_pages = 0
             self.options["archive_page_key"] = archive_page_key
@@ -1443,6 +1475,22 @@ class FeedFetcherWorker:
             if archive_page_key == "rfc5005":
                 self.options["archive_page"] = "rfc5005"
                 link_prev_archive = None
+
+                # If first_seen_feed not set, fetch the initial feed to get RFC 5005 links
+                if not first_seen_feed:
+                    ffeed = FetchFeed(feed_id, self.options)
+                    try:
+                        ret_feed, fetched_feed = ffeed.fetch()
+                        if fetched_feed and ret_feed == FEED_OK:
+                            pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=ffeed.raw_feed)
+                            if pfeed.fpf and pfeed.fpf.entries:
+                                first_seen_feed = pfeed.fpf
+                    except TimeoutError:
+                        logging.debug(
+                            "   ---> [%-30s] ~FRInitial feed fetch timed out..." % (feed.log_title[:30])
+                        )
+                        continue
+
                 if first_seen_feed:
                     for link in getattr(first_seen_feed.feed, "links", []):
                         if link["rel"] == "prev-archive" or link["rel"] == "next":
@@ -1474,9 +1522,12 @@ class FeedFetcherWorker:
                         pfeed = ProcessFeed(feed_id, fetched_feed, self.options, raw_feed=raw_feed)
                         if not pfeed.fpf or not pfeed.fpf.entries:
                             continue
+                        # Look for RFC 5005 links - only follow "next" to go forward through archive
+                        link_prev_archive = None
                         for link in getattr(pfeed.fpf.feed, "links", []):
-                            if link["rel"] == "prev-archive" or link["rel"] == "next":
+                            if link["rel"] == "next":
                                 link_prev_archive = link["href"]
+                                break
 
                 if not link_prev_archive:
                     continue
@@ -1511,30 +1562,36 @@ class FeedFetcherWorker:
                                 "   ---> [%-30s] ~FRFeed parse failed, no entries" % (feed.log_title[:30])
                             )
                             continue
-                        for link in getattr(pfeed.fpf.feed, "links", []):
-                            if link["rel"] == "prev-archive" or link["rel"] == "next":
-                                link_prev_archive = link["href"]
-                                logging.debug(
-                                    "   ---> [%-30s] ~FGFeed still has ~SBRFC5005~SN links, continuing filling out archive: %s"
-                                    % (feed.log_title[:30], link_prev_archive)
-                                )
-                                break
-                        else:
-                            logging.debug(
-                                "   ---> [%-30s] ~FBFeed has no more RFC5005 links..." % (feed.log_title[:30])
-                            )
-                            break
 
+                        # Process the feed BEFORE checking for more links
                         before_story_hashes = len(seen_story_hashes)
                         pfeed.process()
                         seen_story_hashes.update(pfeed.archive_seen_story_hashes)
                         after_story_hashes = len(seen_story_hashes)
 
+                        # Look for RFC 5005 links - only follow "next" to go forward through archive
+                        link_prev_archive = None
+                        for link in getattr(pfeed.fpf.feed, "links", []):
+                            if link["rel"] == "next":
+                                link_prev_archive = link["href"]
+                                break
+
                         if before_story_hashes == after_story_hashes:
                             logging.debug(
                                 "   ---> [%-30s] ~FRNo change in story hashes, but has archive link: %s"
+                                % (feed.log_title[:30], link_prev_archive if link_prev_archive else "None")
+                            )
+
+                        if link_prev_archive:
+                            logging.debug(
+                                "   ---> [%-30s] ~FGFeed still has ~SBRFC5005~SN links, continuing filling out archive: %s"
                                 % (feed.log_title[:30], link_prev_archive)
                             )
+                        else:
+                            logging.debug(
+                                "   ---> [%-30s] ~FBFeed has no more RFC5005 links..." % (feed.log_title[:30])
+                            )
+                            break
 
                 failed_color = "~FR" if not link_prev_archive else ""
                 logging.debug(

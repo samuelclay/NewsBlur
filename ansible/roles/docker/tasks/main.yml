@@ -21,6 +21,18 @@
     name: "{{ ansible_ssh_user }}"
     groups: docker
     append: yes
+  register: docker_group_added
+
+- name: Reset SSH connection to pick up docker group membership
+  meta: reset_connection
+  when: docker_group_added is changed
+
+- name: "Add nb user to docker group"
+  become: yes
+  user:
+    name: nb
+    groups: docker
+    append: yes
 
 - name: Turn off Docker iptables firewall exclusion
   become: yes

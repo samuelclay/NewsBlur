@@ -5,6 +5,8 @@
   gather_facts: false
   vars_files:
     - ../env_vars/base.yml
+  vars:
+    newsblur_repo_path: "{{ playbook_dir }}/../.."
 
   tasks:
     - name: Update Sentry release
@@ -21,7 +23,7 @@
       connection: local
       file:
         state: absent
-        path: /srv/newsblur/static
+        path: "{{ newsblur_repo_path }}/static"
       tags:
         - never
         - static
@@ -29,7 +31,7 @@
     - name: Updating NewsBlur Deploy container
       run_once: yes
       connection: local
-      command: chdir=/srv/newsblur docker pull newsblur/newsblur_deploy
+      command: chdir={{ newsblur_repo_path }} docker pull newsblur/newsblur_deploy
       tags:
         - never
         - static
@@ -37,7 +39,7 @@
     - name: Compressing JS/CSS assets
       run_once: yes
       connection: local
-      command: chdir=/srv/newsblur docker run --rm -v /srv/newsblur:/srv/newsblur newsblur/newsblur_deploy
+      command: chdir={{ newsblur_repo_path }} docker run --rm -v {{ newsblur_repo_path }}:/srv/newsblur newsblur/newsblur_deploy
       tags:
         - never
         - static
@@ -46,8 +48,8 @@
       run_once: yes
       connection: local
       archive:
-        path: /srv/newsblur/static/
-        dest: /srv/newsblur/static.tgz
+        path: "{{ newsblur_repo_path }}/static/"
+        dest: "{{ newsblur_repo_path }}/static.tgz"
       tags:
         - never
         - static
@@ -71,7 +73,7 @@
       amazon.aws.aws_s3:
         bucket: newsblur-backups
         object: static_py3.tgz
-        src: /srv/newsblur/static.tgz
+        src: "{{ newsblur_repo_path }}/static.tgz"
         mode: put
         overwrite: different
         aws_access_key: "{{ lookup('ini', 'aws_access_key_id section=default file=/srv/secrets-newsblur/keys/aws.s3.token') }}"

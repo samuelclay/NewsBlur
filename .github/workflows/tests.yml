@@ -30,6 +30,11 @@ jobs:
           mkdir -p config/certificates
           openssl dhparam -out config/certificates/dhparam-2048.pem 2048
 
+      - name: Create elasticsearch config
+        run: |
+          mkdir -p config/elasticsearch
+          cp docker/elasticsearch/elasticsearch.yml.j2 config/elasticsearch/elasticsearch.yml
+
       - name: Create docker volumes with proper permissions
         run: |
           mkdir -p docker/volumes/db_mongo
@@ -48,16 +53,16 @@ jobs:
           echo "Checking container status..."
           docker ps -a
           echo "MongoDB logs:"
-          docker logs db_mongo || true
+          docker logs newsblur_db_mongo || true
 
       - name: Wait for services to be ready
         run: |
           echo "Waiting for PostgreSQL..."
-          timeout 60 bash -c 'until docker exec db_postgres pg_isready -U newsblur; do sleep 2; done'
+          timeout 60 bash -c 'until docker exec newsblur_db_postgres pg_isready -U newsblur; do sleep 2; done'
           echo "Waiting for MongoDB..."
-          timeout 60 bash -c 'until docker exec db_mongo mongo --port 29019 --eval "db.adminCommand({ping: 1})" --quiet; do sleep 2; done'
+          timeout 60 bash -c 'until docker exec newsblur_db_mongo mongo --port 29019 --eval "db.adminCommand({ping: 1})" --quiet; do sleep 2; done'
           echo "Waiting for Redis..."
-          timeout 60 bash -c 'until docker exec db_redis redis-cli -p 6579 ping; do sleep 2; done'
+          timeout 60 bash -c 'until docker exec newsblur_db_redis redis-cli -p 6579 ping; do sleep 2; done'
           echo "All services ready"
 
       - name: Run migrations
@@ -67,8 +72,8 @@ jobs:
         run: docker exec newsblur_web python3 manage.py loaddata config/fixtures/bootstrap.json
 
       - name: Run tests
-        run: docker compose exec -T newsblur_web python3 manage.py test apps.rss_feeds.test_rss_feeds --noinput -v 2
-        timeout-minutes: 2
+        run: docker compose exec -T newsblur_web python3 manage.py test apps --noinput -v 1 --failfast
+        timeout-minutes: 5
 
       - name: Show logs on failure
         if: failure()
