@@ -8,30 +8,25 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.newsblur.R
 import com.newsblur.databinding.DialogStoryUserTagsBinding
 import com.newsblur.databinding.RowSavedTagBinding
 import com.newsblur.domain.StarredCount
 import com.newsblur.domain.Story
-import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedSet
-import com.newsblur.util.FeedUtils
 import com.newsblur.util.TagsAdapter
 import com.newsblur.viewModel.StoryUserTagsViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class StoryUserTagsFragment :
     DialogFragment(),
     TagsAdapter.OnTagClickListener {
-    @Inject
-    lateinit var feedUtils: FeedUtils
-
-    @Inject
-    lateinit var syncServiceState: SyncServiceState
-
     private lateinit var story: Story
     private lateinit var fs: FeedSet
     private lateinit var binding: DialogStoryUserTagsBinding
@@ -76,10 +71,6 @@ class StoryUserTagsFragment :
         story = requireArguments().getSerializable("story") as Story
         fs = requireArguments().getSerializable("feed_set") as FeedSet
 
-        storyUserTagsViewModel.savedStoryCountsLiveData.observe(this) {
-            setStarredCount(it)
-        }
-
         binding.textAddNewTag.setOnClickListener {
             if (binding.containerAddTag.isVisible) {
                 val fadeOutAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out)
@@ -123,13 +114,16 @@ class StoryUserTagsFragment :
             binding.containerStoryTags.visibility = View.GONE
         }
 
-        storyUserTagsViewModel.getSavedStoryCounts()
-
         return builder.create()
     }
 
-    private fun setStarredCount(starredCount: List<StarredCount>) {
-        setTags(starredCount)
+    override fun onStart() {
+        super.onStart()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                storyUserTagsViewModel.storyCounts.collect { setTags(it) }
+            }
+        }
     }
 
     private fun processNewTag(newTag: StarredCount) {
@@ -220,15 +214,8 @@ class StoryUserTagsFragment :
         }
     }
 
-    private fun getSavedTagsList(): ArrayList<String> {
-        val tagList = ArrayList<String>(savedTags.size)
-        savedTags.forEach { tagList.add(it.tag) }
-        return tagList
-    }
-
     private fun saveTags() {
-        val savedTagList = getSavedTagsList()
-        syncServiceState.forceFeedsFolders()
-        feedUtils.setStorySaved(story, true, requireContext(), story.highlights.toList(), savedTagList)
+        val savedTagList = savedTags.map { it.tag }
+        storyUserTagsViewModel.saveTags(story, savedTagList)
     }
 }
