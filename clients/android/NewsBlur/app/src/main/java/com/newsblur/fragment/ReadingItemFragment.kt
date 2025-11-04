@@ -626,7 +626,7 @@ class ReadingItemFragment :
                     feedUtils.setStorySaved(it, false, requireContext(), emptyList(), emptyList())
                     getString(R.string.story_saved)
                 } else {
-                    feedUtils.setStorySaved(it, true, requireContext(), emptyList(),emptyList())
+                    feedUtils.setStorySaved(it, true, requireContext(), emptyList(), emptyList())
                     getString(R.string.story_unsaved)
                 }
             if (notifyUser) UIUtils.showSnackBar(binding.root, msg)
