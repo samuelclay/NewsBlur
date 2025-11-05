@@ -1,2 +1,1 @@
-- Fix for feeds list on macOS 26 when using a dark theme in light mode or vice versa.
-- Now colors the titlebar above the feeds list based on the theme on macOS (the bar above the story list and story can not be changed).
+- Fixed the All Shared Stories section appearing when not following anyone.
