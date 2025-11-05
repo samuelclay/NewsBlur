@@ -1,1 +1,2 @@
 - Fixed the All Shared Stories section appearing when not following anyone.
+- Fixed site contextual menu icons being too large.
