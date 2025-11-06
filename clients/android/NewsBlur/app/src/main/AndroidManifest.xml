@@ -46,15 +46,6 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".activity.LoginProgress"
-            android:noHistory="true" />
-
-        <activity
-            android:name=".activity.RegisterProgress"
-            android:label="@string/get_started"
-            android:noHistory="true" />
-
-        <activity
             android:name=".activity.Main"
             android:alwaysRetainTaskState="true"
             android:launchMode="singleTask" />
