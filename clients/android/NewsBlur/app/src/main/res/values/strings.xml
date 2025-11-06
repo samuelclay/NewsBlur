@@ -255,7 +255,6 @@
     <string name="login_registration_reset_url"><u>Reset</u></string>
     <string name="login_registration_register">Register</string>
     <string name="register_message_error">There was problem registering for NewsBlur.</string>
-    <string name="get_started">Let\'s get started</string>
     <string name="need_to_login"><u>I need to log in!</u></string>
     <string name="need_to_register"><u>I need to register</u></string>
     <string name="public_comment_count">%d public comments</string>
