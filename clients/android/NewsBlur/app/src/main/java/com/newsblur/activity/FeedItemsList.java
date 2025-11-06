@@ -3,12 +3,13 @@ package com.newsblur.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.play.core.review.ReviewInfo;
@@ -44,10 +45,10 @@ public class FeedItemsList extends ItemsList {
 
     public static final String EXTRA_FEED = "feed";
     public static final String EXTRA_FOLDER_NAME = "folderName";
-	private Feed feed;
-	private String folderName;
-	private ReviewManager reviewManager;
-	private ReviewInfo reviewInfo;
+    private Feed feed;
+    private String folderName;
+    private ReviewManager reviewManager;
+    private ReviewInfo reviewInfo;
 
     public static void startActivity(Context context, FeedSet feedSet,
                                      Feed feed, String folderName,
@@ -60,36 +61,41 @@ public class FeedItemsList extends ItemsList {
         context.startActivity(intent);
     }
 
-	@Override
-	protected void onCreate(Bundle bundle) {
-		super.onCreate(bundle);
+    @Override
+    protected void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
         setupFeedItems(getIntent());
         viewModel.getNextSession().observe(this, this::setupFeedItems);
         checkInAppReview();
-    }
 
-    @Override
-    public void onBackPressed() {
-        // see checkInAppReview()
-        if (reviewInfo != null) {
-            Task<Void> flow = reviewManager.launchReviewFlow(this, reviewInfo);
-            flow.addOnCompleteListener(task -> {
-                prefsRepo.setInAppReviewed();
-                super.onBackPressed();
-            });
-        } else {
-            super.onBackPressed();
-        }
+        OnBackPressedCallback backCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (reviewInfo != null) {
+                    Task<Void> flow = reviewManager.launchReviewFlow(FeedItemsList.this, reviewInfo);
+                    flow.addOnCompleteListener(task -> {
+                        prefsRepo.setInAppReviewed();
+                        finish();
+                    });
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                    setEnabled(true);
+                }
+            }
+        };
+
+        getOnBackPressedDispatcher().addCallback(this, backCallback);
     }
 
     public void deleteFeed() {
-		DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(feed, folderName);
-		deleteFeedFragment.show(getSupportFragmentManager(), "dialog");
-	}
+        DialogFragment deleteFeedFragment = DeleteFeedFragment.newInstance(feed, folderName);
+        deleteFeedFragment.show(getSupportFragmentManager(), "dialog");
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (super.onOptionsItemSelected(item)) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (super.onOptionsItemSelected(item)) {
             return true;
         }
         if (item.getItemId() == R.id.menu_delete_feed) {
@@ -130,11 +136,11 @@ public class FeedItemsList extends ItemsList {
             return true;
         }
         return false;
-	}
+    }
 
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		super.onPrepareOptionsMenu(menu);
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
         if (FeedExt.isAndroidNotifyUnread(feed)) {
             menu.findItem(R.id.menu_notifications_disable).setChecked(false);
             menu.findItem(R.id.menu_notifications_unread).setChecked(true);
@@ -148,8 +154,8 @@ public class FeedItemsList extends ItemsList {
             menu.findItem(R.id.menu_notifications_unread).setChecked(false);
             menu.findItem(R.id.menu_notifications_focus).setChecked(false);
         }
-		return true;
-	}
+        return true;
+    }
 
     @Override
     String getSaveSearchFeedId() {
