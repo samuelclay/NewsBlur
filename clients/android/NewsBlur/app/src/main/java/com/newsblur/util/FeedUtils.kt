@@ -127,24 +127,6 @@ class FeedUtils(
         )
     }
 
-    fun deleteFolder(
-        folderName: String?,
-        inFolder: String,
-        context: Context,
-    ) {
-        NBScope.executeAsyncTask(
-            doInBackground = {
-                folderApi.deleteFolder(folderName, inFolder)
-            },
-            onPostExecute = { result ->
-                if (!result.isError) {
-                    syncServiceState.forceFeedsFolders()
-                    triggerSync(context)
-                }
-            },
-        )
-    }
-
     fun renameFolder(
         folderName: String?,
         newFolderName: String,

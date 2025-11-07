@@ -378,7 +378,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		} else if (item.getItemId() == R.id.menu_delete_folder) {
 		    Folder folder = adapter.getGroupFolder(groupPosition);
 		    String folderParentName = folder.getFirstParentName();
-		    DeleteFolderFragment deleteFolderFragment = DeleteFolderFragment.newInstance(folder.name, folderParentName);
+            DeleteFolderDialogFragment deleteFolderFragment = DeleteFolderDialogFragment.newInstance(folder.name, folderParentName);
 		    deleteFolderFragment.show(getParentFragmentManager(), deleteFolderFragment.getTag());
         } else if (item.getItemId() == R.id.menu_rename_folder) {
 		    Folder folder = adapter.getGroupFolder(groupPosition);
