@@ -125,7 +125,7 @@ public class FeedItemsList extends ItemsList {
             return true;
         }
         if (item.getItemId() == R.id.menu_rename_feed) {
-            RenameDialogFragment frag = RenameDialogFragment.newInstance(feed);
+            RenameDialogFragment frag = RenameDialogFragment.newFeedInstance(feed.feedId, feed.title);
             frag.show(getSupportFragmentManager(), RenameDialogFragment.class.getName());
             return true;
             // TODO: since this activity uses a feed object passed as an extra and doesn't query the DB,
