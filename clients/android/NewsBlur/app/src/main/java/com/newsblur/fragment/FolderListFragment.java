@@ -349,7 +349,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         } else if (item.getItemId() == R.id.menu_rename_feed) {
             Feed feed = adapter.getFeed(groupPosition, childPosition);
             if (feed != null) {
-                DialogFragment renameFeedFragment = RenameDialogFragment.newInstance(feed);
+                DialogFragment renameFeedFragment = RenameDialogFragment.newFeedInstance(feed.feedId, feed.title);
                 renameFeedFragment.show(getParentFragmentManager(), "dialog");
             }
         } else if (item.getItemId() == R.id.menu_mute_feed) {
@@ -383,7 +383,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
         } else if (item.getItemId() == R.id.menu_rename_folder) {
 		    Folder folder = adapter.getGroupFolder(groupPosition);
             String folderParentName = folder.getFirstParentName();
-            RenameDialogFragment renameDialogFragment = RenameDialogFragment.newInstance(folder.name, folderParentName);
+            RenameDialogFragment renameDialogFragment = RenameDialogFragment.newFolderInstance(folder.name, folderParentName);
             renameDialogFragment.show(getParentFragmentManager(), renameDialogFragment.getTag());
         }
 

@@ -59,8 +59,7 @@
     <string name="share_this_story">Share</string>
     <string name="unshare">Delete share</string>
     <string name="update_shared">Update comment</string>
-    <string name="feed_name_save">Rename feed</string>
-    <string name="folder_name_save">Rename folder</string>
+    <string name="rename">Rename</string>
 
     <string name="save_this">Save</string>
     <string name="unsave_this">Unsave</string>
@@ -806,5 +805,7 @@
     <string name="short_add_site">Add Site</string>
     <string name="short_add_site_key">\u2325 A</string>
     <string name="registering">Registering...</string>
+    <string name="renaming_feed_message">Renaming feed %s</string>
+    <string name="renaming_folder_message">Renaming folder %s</string>
 
 </resources>
