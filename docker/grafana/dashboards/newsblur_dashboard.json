@@ -2429,6 +2429,97 @@
       "type": "state-timeline"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 70,
+            "lineWidth": 0,
+            "spanNulls": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "super-light-red",
+                  "index": 0,
+                  "text": "UNK"
+                },
+                "2": {
+                  "color": "semi-dark-red",
+                  "index": 2,
+                  "text": "CRITICAL"
+                },
+                "8": {
+                  "color": "semi-dark-yellow",
+                  "index": 8,
+                  "text": "WARNING"
+                },
+                "9": {
+                  "color": "dark-green",
+                  "index": 9,
+                  "text": "PASSING"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 83
+      },
+      "id": 85,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom"
+        },
+        "mergeValues": true,
+        "rowHeight": 0.9,
+        "showValue": "never",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "consul_service_state",
+          "interval": "",
+          "legendFormat": "{{ service }}",
+          "refId": "A"
+        }
+      ],
+      "title": "Consul service health states",
+      "type": "state-timeline"
+    },
+    {
       "collapsed": false,
       "datasource": {
         "type": "datasource",
@@ -2438,7 +2529,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 83
+        "y": 91
       },
       "id": 4,
       "panels": [],
