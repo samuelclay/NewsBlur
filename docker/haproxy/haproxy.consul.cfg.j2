@@ -87,6 +87,7 @@ frontend public
     use_backend metrics if { path_beg /metrics }
     #use_backend self if { path_beg /munin/ }
     use_backend db_metrics if { hdr_end(host) -i metrics.newsblur.com }
+    use_backend db_metrics_staging if { hdr_end(host) -i metrics-staging.newsblur.com }
     use_backend consul_manager if { hdr_end(host) -i consul.newsblur.com }
     use_backend nginx if mx_mode
 
@@ -228,6 +229,12 @@ backend db_metrics
     # option httpchk GET /_haproxychk
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
     server db-grafana grafana.service.nyc1.consul:3000
+
+backend db_metrics_staging
+    balance roundrobin
+    # option httpchk GET /_haproxychk
+    default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
+    server db-grafana-staging grafana-staging.service.nyc1.consul:3000
 
 backend metrics
     option httpchk GET /_haproxychk
