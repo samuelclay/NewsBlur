@@ -16,7 +16,7 @@
     image: prometheuscommunity/elasticsearch-exporter:latest
     pull: yes
     state: started
-    command: '--es.uri=http://elasticsearch:9200'
+    command: '--es.uri=http://elasticsearch:9200 --es.indices'
     hostname: "{{ inventory_hostname }}"
     restart_policy: unless-stopped
     container_default_behavior: no_defaults
