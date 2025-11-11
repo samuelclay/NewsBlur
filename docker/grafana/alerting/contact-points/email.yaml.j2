@@ -1,0 +1,11 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: email-alerts
+    receivers:
+      - uid: email-alerts
+        type: email
+        settings:
+          addresses: {{ alert_receiver_email }}
+        disableResolveMessage: false

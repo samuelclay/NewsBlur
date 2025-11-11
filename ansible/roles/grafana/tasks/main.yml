@@ -5,6 +5,14 @@
     dest: /srv/newsblur/docker/grafana/grafana.ini
   notify: restart grafana
 
+- name: Template grafana alert contact points
+  template:
+    src: /srv/newsblur/docker/grafana/alerting/contact-points/email.yaml.j2
+    dest: /srv/newsblur/docker/grafana/alerting/contact-points/email.yaml
+  notify: restart grafana
+  tags:
+    - grafana-alerts
+
 - name: Register grafana in consul
   tags: consul
   become: yes
@@ -34,6 +42,7 @@
       - /srv/newsblur/docker/volumes/grafana_data:/var/lib/grafana
       - /srv/newsblur/docker/grafana/datasources/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
       - /srv/newsblur/docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
+      - /srv/newsblur/docker/grafana/alerting/:/etc/grafana/provisioning/alerting/
 
 - name: Install sentry pluging
   shell: >
