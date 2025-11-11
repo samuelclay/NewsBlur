@@ -96,3 +96,16 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - Get feed IDs: `NEWSBLUR.assets.feeds` is a Backbone.js collection with underscore.js operations
 - Open folder: Click `.folder .folder_title` element (no API)
 - **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts
+
+## Server Maintenance
+- **DNS/Service Discovery**: Docker containers resolve services via dnsmasq → Consul (e.g., `redis-story.service.consul`)
+- **Container Names by Server Type**:
+  - Web (`happ-web-*`): `newsblur_web`, `haproxy`
+  - Task (`htask-celery-*`): `task-celery`, `autoheal`
+  - Task (`htask-work-*`): `task-work`, `autoheal`
+  - Node (`hnode-page/text/socket/favicons-*`): `node`
+  - Node (`hnode-images-*`): `imageproxy`
+  - Redis (`hdb-redis-{story,user,session,pubsub}-*`): `redis-story`, `redis-user`, `redis-session`, `redis-pubsub`
+  - Mongo (`hdb-mongo-*`): `mongo`
+  - Postgres (`hdb-postgres-*`): `postgres`
+  - Nginx (`hwww`): `nginx`, `haproxy`
