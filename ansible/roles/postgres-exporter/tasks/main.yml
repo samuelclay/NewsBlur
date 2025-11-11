@@ -1,8 +1,28 @@
+- name: Copy common secrets
+  become: yes
+  copy:
+    src: /srv/secrets-newsblur/settings/common_settings.py
+    dest: /srv/newsblur/newsblur_web/local_settings.py
+
+- name: Ensure postgres-exporter tasks directory exists
+  become: yes
+  file:
+    path: /srv/newsblur/ansible/roles/postgres-exporter/tasks
+    state: directory
+
+- name: Copy get_credentials script
+  become: yes
+  copy:
+    src: get_credentials.py
+    dest: /srv/newsblur/ansible/roles/postgres-exporter/tasks/get_credentials.py
+    mode: '0755'
+
 - name: Register Postgres user and password
-  become: no
+  become: yes
   run_once: yes
   register: postgres_credentials
-  local_action: command /srv/newsblur/ansible/roles/postgres-exporter/tasks/get_credentials.py postgres_credentials
+  command: docker run --rm -v /srv/newsblur:/srv/newsblur newsblur/newsblur_python3 python3 /srv/newsblur/ansible/roles/postgres-exporter/tasks/get_credentials.py postgres_credentials
+  changed_when: false
 
 - name: Start postgres-exporter container
   become: yes
