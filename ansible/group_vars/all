@@ -2,3 +2,10 @@
 ansible_cache_dir: /var/cache # Need to update references to ansible cache to use this variable
 software_install_dir: /usr/local/share
 user_binaries: /usr/local/bin
+
+# Cloud-based hdb servers (Hetzner Cloud) that use eth0 interface instead of enp/eno
+# These servers need different network interface patterns in consul configuration
+hdb_cloud_servers:
+  - hdb-metrics
+  - hdb-sentry
+  - hdb-mongo-analytics
