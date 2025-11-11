@@ -20,6 +20,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "mouseleave .NB-feed-story-email": "mouseleave_sideoption_email",
         "mouseenter .NB-feed-story-train": "mouseenter_sideoption_train",
         "mouseleave .NB-feed-story-train": "mouseleave_sideoption_train",
+        "mouseenter .NB-feed-story-ask-ai": "mouseenter_sideoption_ask_ai",
+        "mouseleave .NB-feed-story-ask-ai": "mouseleave_sideoption_ask_ai",
         "contextmenu .NB-feed-story-header": "show_manage_menu_rightclick",
         "mouseup .NB-story-content-wrapper": "mouseup_check_selection",
         "click .NB-feed-story-manage-icon": "show_manage_menu",
@@ -37,7 +39,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-train-selection": "train_selected_text",
         "click .NB-classifier-highlight-positive": "show_classifier_highlight_menu",
         "click .NB-classifier-highlight-negative": "show_classifier_highlight_menu",
-        "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog"
+        "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog",
+        "click .NB-feed-story-ask-ai": "show_ask_ai_menu"
     },
 
     initialize: function () {
@@ -238,6 +241,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_save: NEWSBLUR.assets.preference("show_sideoption_save"),
             show_sideoption_share: NEWSBLUR.assets.preference("show_sideoption_share"),
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
+            show_sideoption_ask_ai: true,
         };
     },
 
@@ -366,6 +370,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-sideoption NB-feed-story-discover" role="button">\
                         <div class="NB-sideoption-title">Related</div>\
                         <div class="NB-sideoption-icon">&nbsp;</div>\
+                    </div>\
+                <% } %>\
+                <% if (show_sideoption_ask_ai) { %>\
+                    <div class="NB-sideoption NB-feed-story-ask-ai" role="button">\
+                        <div class="NB-sideoption-title">Ask AI</div>\
+                        <div class="NB-sideoption-icon NB-sideoption-icon-ask-ai">&nbsp;</div>\
                     </div>\
                 <% } %>\
             </div>\
@@ -1269,6 +1279,113 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
 
         this.discover_view.toggle_feed_story_discover_dialog(options);
+    },
+
+    mouseenter_sideoption_ask_ai: function () {
+        var menu_height = 400;
+        if (this.$('.NB-feed-story-ask-ai').offset().top > $(window).height() - menu_height) {
+            this.$('.NB-feed-story-ask-ai').addClass('NB-hover-inverse');
+        }
+    },
+
+    mouseleave_sideoption_ask_ai: function () {
+        this.$('.NB-feed-story-ask-ai').removeClass('NB-hover-inverse');
+    },
+
+    show_ask_ai_menu: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $button = this.$('.NB-feed-story-ask-ai');
+        var $menu = $('.NB-menu-ask-ai-container');
+
+        if ($menu.length && $menu.is(':visible') && $menu.data('story_id') == this.model.id) {
+            console.log(['Ask AI menu already open', this.model.id]);
+            this.hide_ask_ai_menu();
+            return;
+        }
+
+        this.hide_ask_ai_menu();
+
+        var questions = [
+            { id: 'sentence', text: 'Summarize in one sentence' },
+            { id: 'bullets', text: 'Summarize in bullet points' },
+            { id: 'paragraph', text: 'Summarize in a paragraph' },
+            { id: 'context', text: "What's the context and background?" },
+            { id: 'people', text: 'Identify key people and relationships' },
+            { id: 'arguments', text: 'What are the main arguments?' },
+            { id: 'factcheck', text: 'Fact check this story' },
+            { id: 'custom', text: 'Ask a custom question...' }
+        ];
+
+        var menu_template = _.template('\
+            <div class="NB-menu-ask-ai-container <% if (inverse) { %>NB-inverse<% } %>">\
+                <div class="NB-menu-ask-ai">\
+                    <ul class="NB-menu-ask-ai-options">\
+                        <% _.each(questions, function(q) { %>\
+                            <li class="NB-menu-ask-ai-option" data-question-id="<%= q.id %>">\
+                                <%= q.text %>\
+                            </li>\
+                        <% }) %>\
+                    </ul>\
+                </div>\
+            </div>\
+        ');
+
+        var inverse = $button.hasClass('NB-hover-inverse');
+        $menu = $(menu_template({
+            questions: questions,
+            inverse: inverse
+        }));
+
+        $menu.data('story_id', this.model.id);
+        $menu.data('story_view', this);
+        $('body').append($menu);
+
+        var button_offset = $button.offset();
+        var button_height = $button.outerHeight();
+        var button_width = $button.outerWidth();
+        var menu_height = $menu.outerHeight();
+
+        if (inverse) {
+            $menu.css({
+                'top': button_offset.top - menu_height,
+                'left': button_offset.left + button_width + 10
+            });
+        } else {
+            $menu.css({
+                'top': button_offset.top,
+                'left': button_offset.left + button_width + 10
+            });
+        }
+
+        $menu.fadeIn(200);
+
+        $menu.find('.NB-menu-ask-ai-option').on('click', _.bind(function (ev) {
+            var question_id = $(ev.currentTarget).data('question-id');
+            this.handle_ask_ai_question(question_id);
+            this.hide_ask_ai_menu();
+        }, this));
+
+        $(document).on('click.ask_ai_menu', _.bind(function (ev) {
+            if (!$(ev.target).closest('.NB-menu-ask-ai-container, .NB-feed-story-ask-ai').length) {
+                this.hide_ask_ai_menu();
+            }
+        }, this));
+
+        return false;
+    },
+
+    hide_ask_ai_menu: function () {
+        $('.NB-menu-ask-ai-container').fadeOut(100, function () {
+            $(this).remove();
+        });
+        $(document).off('click.ask_ai_menu');
+    },
+
+    handle_ask_ai_question: function (question_id) {
+        console.log(['Ask AI question', question_id, this.model.get('story_title')]);
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, question_id);
     }
 
 

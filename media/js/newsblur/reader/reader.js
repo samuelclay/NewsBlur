@@ -400,6 +400,11 @@
                 contentLayoutOptions[story_anchor + '__onresize_end'] = $.rescope(this.save_story_titles_pane_size, this);
                 contentLayoutOptions[story_anchor + '__onclose_start'] = $.rescope(this.toggle_story_titles_pane, this);
                 contentLayoutOptions[story_anchor + '__onopen_start'] = $.rescope(this.toggle_story_titles_pane, this);
+                contentLayoutOptions['east__paneSelector'] = '.right-east';
+                contentLayoutOptions['east__size'] = 400;
+                contentLayoutOptions['east__minSize'] = 300;
+                contentLayoutOptions['east__initClosed'] = true;
+                contentLayoutOptions['east__spacing_open'] = 1;
                 this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions);
             } else if (_.contains(['list', 'grid', 'magazine'],
                 NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
@@ -426,7 +431,12 @@
                     spacing_open: 0,
                     resizerDragOpacity: 0.6,
                     enableCursorHotkey: false,
-                    togglerLength_open: 0
+                    togglerLength_open: 0,
+                    east__paneSelector: '.right-east',
+                    east__size: 400,
+                    east__minSize: 300,
+                    east__initClosed: true,
+                    east__spacing_open: 1
                 };
                 this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions);
                 this.flags['story_titles_closed'] = false;
@@ -3564,6 +3574,33 @@
             feed_id = feed_id || this.active_feed;
 
             NEWSBLUR.statistics = new NEWSBLUR.ReaderStatistics(feed_id);
+        },
+
+        open_ask_ai_pane: function (story, question_id) {
+            if (this.ask_ai_pane) {
+                this.ask_ai_pane.remove();
+            }
+
+            this.ask_ai_pane = new NEWSBLUR.Views.StoryAskAiView({
+                story: story,
+                question_id: question_id
+            });
+
+            $('.NB-story-ask-ai-pane-content').html(this.ask_ai_pane.render().$el);
+
+            if (this.layout.contentLayout) {
+                this.layout.contentLayout.open('east');
+            }
+        },
+
+        close_ask_ai_pane: function () {
+            if (this.layout.contentLayout) {
+                this.layout.contentLayout.close('east');
+            }
+            if (this.ask_ai_pane) {
+                this.ask_ai_pane.remove();
+                this.ask_ai_pane = null;
+            }
         },
 
         open_social_profile_modal: function (user_id) {
