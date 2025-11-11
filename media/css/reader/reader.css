@@ -5367,7 +5367,7 @@ body {
     box-sizing: border-box;
     transition: padding 0.36s ease-out,
         color 0.36s ease-out;
-    min-width: 80px;
+    min-width: 60px;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -5465,6 +5465,11 @@ body {
 
 .NB-sideoption.NB-feed-story-email .NB-sideoption-icon {
     background-image: url("/media/embed/icons/nouns/email.svg");
+    background-size: 16px;
+}
+
+.NB-sideoption.NB-feed-story-ask-ai .NB-sideoption-icon-ask-ai {
+    background-image: url("/media/embed/icons/nouns/prompt.svg");
     background-size: 16px;
 }
 
@@ -10706,6 +10711,199 @@ form.opml_import_form input {
     clear: none;
     padding: 1px 12px 0;
     font-size: 10px;
+}
+
+/* =================== */
+/* = Ask AI Menu     = */
+/* =================== */
+
+.NB-menu-ask-ai-container {
+    z-index: 10;
+    position: absolute;
+    display: none;
+    width: 280px;
+    padding: 0;
+    margin: 0;
+    background-color: #EAECE6;
+    border: 1px solid #90928B;
+    -webkit-box-shadow: 2px 2px 5px rgba(94, 98, 103, 0.5);
+    -moz-box-shadow: 2px 2px 5px rgba(94, 98, 103, 0.5);
+    box-shadow: 2px 2px 5px rgba(94, 98, 103, 0.5);
+    border-radius: 4px;
+}
+
+.NB-menu-ask-ai-container.NB-inverse {
+    background-color: #F1F3EC;
+}
+
+.NB-menu-ask-ai-options {
+    list-style: none;
+    font-size: 13px;
+    margin: 0;
+    padding: 8px 0;
+    position: relative;
+}
+
+.NB-menu-ask-ai-option {
+    margin: 0;
+    padding: 10px 16px;
+    cursor: pointer;
+    clear: both;
+    position: relative;
+    background-color: white;
+    transition: background-color 0.1s ease;
+}
+
+.NB-menu-ask-ai-option:hover {
+    background-color: #ECEEEA;
+}
+
+.NB-menu-ask-ai-option:active {
+    background-color: #ACB2A6;
+}
+
+.NB-menu-ask-ai-option:first-child {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.NB-menu-ask-ai-option:last-child {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+/* =================== */
+/* = Ask AI Pane     = */
+/* =================== */
+
+.right-east {
+    background-color: #F4F6F3;
+    overflow-y: auto;
+}
+
+.NB-story-ask-ai-pane-content {
+    height: 100%;
+}
+
+.NB-story-ask-ai-pane {
+    height: 100%;
+    background-color: #F4F6F3;
+    display: flex;
+    flex-direction: column;
+}
+
+.NB-story-ask-ai-header {
+    background: linear-gradient(to bottom, #FFFFFF 0%, #F1F3EC 100%);
+    border-bottom: 1px solid #D0D2CC;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.NB-story-ask-ai-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.NB-story-ask-ai-close {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    transition: background-color 0.1s ease;
+}
+
+.NB-story-ask-ai-close:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.NB-story-ask-ai-close .NB-icon {
+    width: 16px;
+    height: 16px;
+    background: url('/media/embed/icons/nouns/close.svg') no-repeat center center;
+    background-size: 12px;
+}
+
+.NB-story-ask-ai-content {
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.NB-story-ask-ai-question {
+    margin-bottom: 16px;
+    padding: 12px;
+    background-color: #FFFFFF;
+    border: 1px solid #E0E2DC;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.NB-story-ask-ai-custom-input-wrapper {
+    margin-bottom: 16px;
+    display: flex;
+    gap: 8px;
+}
+
+.NB-story-ask-ai-custom-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #D0D2CC;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+.NB-story-ask-ai-submit {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.NB-story-ask-ai-response {
+    min-height: 200px;
+}
+
+.NB-story-ask-ai-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.NB-story-ask-ai-loading .NB-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #E0E2DC;
+    border-top-color: #90928B;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.NB-story-ask-ai-loading .NB-loading-text {
+    margin-top: 12px;
+    color: #666;
+    font-size: 13px;
+}
+
+.NB-story-ask-ai-answer {
+    padding: 12px;
+    background-color: #FFFFFF;
+    border: 1px solid #E0E2DC;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.6;
 }
 
 /* ==================== */
