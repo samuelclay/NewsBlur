@@ -262,3 +262,13 @@ scrape_configs:
         target_label: instance
       metrics_path: /state/
       scrape_interval: 5s
+
+    - job_name: 'consul services'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_haproxy']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /consul/
+      scrape_interval: 30s
