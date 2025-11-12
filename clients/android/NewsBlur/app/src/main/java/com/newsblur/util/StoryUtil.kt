@@ -24,13 +24,10 @@ object StoryUtil {
         return String(charBuffer.array(), 0, charBuffer.position())
     }
 
-    @JvmStatic
     fun getStoryHashes(stories: List<Story>): Set<String> = stories.map { it.storyHash }.toSet()
 
-    @JvmStatic
     fun getOldestStoryTimestamp(stories: List<Story>): Long = stories.minByOrNull { it.timestamp }?.timestamp ?: System.currentTimeMillis()
 
-    @JvmStatic
     fun getNewestStoryTimestamp(stories: MutableList<Story>): Long = stories.maxByOrNull { it.timestamp }?.timestamp ?: 0L
 
     @JvmStatic
