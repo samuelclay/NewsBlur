@@ -400,11 +400,6 @@
                 contentLayoutOptions[story_anchor + '__onresize_end'] = $.rescope(this.save_story_titles_pane_size, this);
                 contentLayoutOptions[story_anchor + '__onclose_start'] = $.rescope(this.toggle_story_titles_pane, this);
                 contentLayoutOptions[story_anchor + '__onopen_start'] = $.rescope(this.toggle_story_titles_pane, this);
-                contentLayoutOptions['east__paneSelector'] = '.right-east';
-                contentLayoutOptions['east__size'] = 400;
-                contentLayoutOptions['east__minSize'] = 300;
-                contentLayoutOptions['east__initClosed'] = true;
-                contentLayoutOptions['east__spacing_open'] = 1;
                 this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions);
             } else if (_.contains(['list', 'grid', 'magazine'],
                 NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout'))) {
@@ -431,12 +426,7 @@
                     spacing_open: 0,
                     resizerDragOpacity: 0.6,
                     enableCursorHotkey: false,
-                    togglerLength_open: 0,
-                    east__paneSelector: '.right-east',
-                    east__size: 400,
-                    east__minSize: 300,
-                    east__initClosed: true,
-                    east__spacing_open: 1
+                    togglerLength_open: 0
                 };
                 this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions);
                 this.flags['story_titles_closed'] = false;
