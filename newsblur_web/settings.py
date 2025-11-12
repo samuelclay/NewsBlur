@@ -357,6 +357,7 @@ INSTALLED_APPS = (
     "apps.oauth",
     "apps.search",
     "apps.categories",
+    "apps.ask_ai",
     "utils",  # missing models so no migrations
     "vendor",
     "typogrify",
@@ -435,6 +436,11 @@ CELERY_TASK_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "discover_indexer",
     },
+    "ask_ai": {
+        "exchange": "ask_ai",
+        "exchange_type": "direct",
+        "binding_key": "ask_ai",
+    },
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"
 
@@ -447,6 +453,7 @@ CELERY_IMPORTS = (
     "apps.feed_import.tasks",
     "apps.search.tasks",
     "apps.statistics.tasks",
+    "apps.ask_ai.tasks",
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails

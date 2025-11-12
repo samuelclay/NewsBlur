@@ -10933,6 +10933,7 @@ form.opml_import_form input {
     border-radius: 4px;
     font-size: 13px;
     line-height: 1.6;
+    white-space: pre-wrap;  /* Preserve line breaks and formatting */
 }
 
 /* ======================== */
@@ -11254,6 +11255,7 @@ form.opml_import_form input {
     font-size: 14px;
     line-height: 1.7;
     color: #333;
+    white-space: pre-wrap;  /* Preserve line breaks and formatting */
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-error {

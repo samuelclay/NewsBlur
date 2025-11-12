@@ -1128,7 +1128,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (!force) {
             if ((!highlights || !highlights.length) && !text_classifiers.length) return;
         }
-        console.log(['Applying highlights', highlights, 'text_classifiers', text_classifiers]);
+        // console.log(['Applying highlights', highlights, 'text_classifiers', text_classifiers]);
 
         var $doc = this.$(".NB-feed-story-content");
         $doc.unmark();

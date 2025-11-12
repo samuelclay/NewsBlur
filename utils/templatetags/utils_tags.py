@@ -15,6 +15,7 @@ from pipeline.templatetags.pipeline import (
     stylesheet,
 )
 
+from apps.ask_ai.prompts import get_prompts_for_frontend
 from apps.reader.forms import FeatureForm
 from apps.reader.models import Feature
 from apps.social.models import MSocialProfile
@@ -45,12 +46,16 @@ def localdatetime(context, date, date_format):
 
 @register.inclusion_tag("reader/feeds_skeleton.xhtml", takes_context=True)
 def render_feeds_skeleton(context):
+    import json
+
     user = get_user(context["user"])
     social_profile = MSocialProfile.get_user(user.pk)
+    ask_ai_prompts = get_prompts_for_frontend()
 
     return {
         "user": user,
         "social_profile": social_profile,
+        "ask_ai_prompts_json": json.dumps(ask_ai_prompts),
         "MEDIA_URL": settings.MEDIA_URL,
     }
 
