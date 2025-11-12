@@ -1376,6 +1376,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         $menu.fadeIn(200);
 
+        // Keep button highlighted while menu is open
+        $button.addClass('NB-active');
+
         $menu.find('.NB-menu-ask-ai-option').on('click', _.bind(function (ev) {
             var question_id = $(ev.currentTarget).data('question-id');
             this.handle_ask_ai_question(question_id);
@@ -1392,6 +1395,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     hide_ask_ai_menu: function () {
+        $('.NB-feed-story-ask-ai').removeClass('NB-active');
         $('.NB-menu-ask-ai-container').fadeOut(100, function () {
             $(this).remove();
         });

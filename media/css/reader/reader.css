@@ -10955,10 +10955,24 @@ form.opml_import_form input {
     transform: translateY(-10px) scale(0.98);
     animation: askAiUnfurl 3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     overflow: hidden;
+    max-width: 700px;
 }
 
 .NB-narrow-content .NB-story-ask-ai-inline {
     margin-right: 28px;
+}
+
+.NB-pref-story-position-center .NB-story-ask-ai-inline {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.NB-pref-story-position-right .NB-story-ask-ai-inline {
+    margin-left: auto;
+}
+
+.NB-pref-story-position-stretch .NB-story-ask-ai-inline {
+    max-width: none;
 }
 
 @keyframes askAiUnfurl {
@@ -11252,10 +11266,24 @@ form.opml_import_form input {
     line-height: 1.6;
     color: #8B4513;
     display: none;
+    opacity: 0;
+    transform: scale(0.95);
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-error.NB-active {
     display: block;
+    animation: errorFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes errorFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* Dark mode styles */
