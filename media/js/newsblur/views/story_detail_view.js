@@ -1322,8 +1322,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             { id: 'context', text: "What's the context and background?", icon: 'world' },
             { id: 'people', text: 'Identify key people and relationships', icon: 'subscribers' },
             { id: 'arguments', text: 'What are the main arguments?', icon: 'venn' },
-            { id: 'factcheck', text: 'Fact check this story', icon: 'search' },
-            { id: 'custom', text: 'Ask a custom question...', icon: 'prompt' }
+            { id: 'factcheck', text: 'Fact check this story', icon: 'search' }
         ];
 
         var menu_template = _.template('\
@@ -1357,6 +1356,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <% } %>\
                         <% }) %>\
                     </ul>\
+                    <div class="NB-menu-ask-ai-custom-input-wrapper">\
+                        <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="Ask a question..." />\
+                        <div class="NB-button NB-modal-submit-green NB-menu-ask-ai-custom-submit NB-disabled">Ask</div>\
+                    </div>\
                 </div>\
             </div>\
         ');
@@ -1408,10 +1411,48 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // Keep button highlighted while menu is open
         $button.addClass('NB-active');
 
+        // Auto-focus the custom question input
+        _.delay(function () {
+            $menu.find('.NB-menu-ask-ai-custom-input').focus();
+        }, 250);
+
+        // Enable/disable Ask button based on input content
+        $menu.find('.NB-menu-ask-ai-custom-input').on('input', _.bind(function (ev) {
+            var $input = $(ev.currentTarget);
+            var $submit_button = $menu.find('.NB-menu-ask-ai-custom-submit');
+            var has_text = $input.val().trim().length > 0;
+
+            if (has_text) {
+                $submit_button.removeClass('NB-disabled');
+            } else {
+                $submit_button.addClass('NB-disabled');
+            }
+        }, this));
+
         $menu.find('.NB-menu-ask-ai-option, .NB-menu-ask-ai-segment').on('click', _.bind(function (ev) {
             var question_id = $(ev.currentTarget).data('question-id');
             this.handle_ask_ai_question(question_id);
             this.hide_ask_ai_menu();
+        }, this));
+
+        // Custom question input handlers
+        $menu.find('.NB-menu-ask-ai-custom-input').on('keypress', _.bind(function (ev) {
+            if (ev.which === 13) {  // Enter key
+                ev.preventDefault();
+                this.submit_custom_question_from_menu($menu);
+            }
+        }, this));
+
+        $menu.find('.NB-menu-ask-ai-custom-input').on('keydown', _.bind(function (ev) {
+            if (ev.which === 27) {  // Escape key
+                ev.preventDefault();
+                this.hide_ask_ai_menu();
+            }
+        }, this));
+
+        $menu.find('.NB-menu-ask-ai-custom-submit').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            this.submit_custom_question_from_menu($menu);
         }, this));
 
         $(document).on('click.ask_ai_menu', _.bind(function (ev) {
@@ -1429,6 +1470,17 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             $(this).remove();
         });
         $(document).off('click.ask_ai_menu');
+    },
+
+    submit_custom_question_from_menu: function ($menu) {
+        var custom_question = $menu.find('.NB-menu-ask-ai-custom-input').val();
+        if (!custom_question || !custom_question.trim()) {
+            return;
+        }
+
+        console.log(['Ask AI custom question', custom_question, this.model.get('story_title')]);
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question);
+        this.hide_ask_ai_menu();
     },
 
     handle_ask_ai_question: function (question_id) {

@@ -6,7 +6,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
     events: {
         "click .NB-story-ask-ai-close": "close_pane",
-        "click .NB-story-ask-ai-submit": "submit_custom_question",
         "click .NB-story-ask-ai-followup-submit": "submit_followup_question",
         "keypress .NB-story-ask-ai-followup-input": "handle_followup_keypress"
     },
@@ -14,16 +13,17 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     initialize: function (options) {
         this.story = options.story;
         this.question_id = options.question_id;
-        this.question_text = this.get_question_text(this.question_id);
+        this.custom_question = options.custom_question;
+        this.question_text = this.custom_question || this.get_question_text(this.question_id);
         this.inline = options.inline || false;
         this.story_hash = this.story.get('story_hash');
         this.streaming_started = false;
         this.response_text = '';  // Accumulate response for final formatting
         this.conversation_history = [];  // Track conversation for follow-ups
 
-        // Send request immediately for non-custom questions
-        if (this.question_id !== 'custom') {
-            this.send_question();
+        // Send request immediately if we have a question (either preset or custom)
+        if (this.question_id !== 'custom' || this.custom_question) {
+            this.send_question(this.custom_question);
         }
     },
 
@@ -75,12 +75,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                     <div class="NB-story-ask-ai-question-text"><%= question_text %></div>\
                 </div>\
             </div>\
-            <% if (question_id === "custom") { %>\
-                <div class="NB-story-ask-ai-custom-input-wrapper">\
-                    <input type="text" class="NB-story-ask-ai-custom-input" placeholder="Enter your question..." />\
-                    <div class="NB-button NB-story-ask-ai-submit">Ask</div>\
-                </div>\
-            <% } %>\
             <div class="NB-story-ask-ai-response">\
                 <div class="NB-story-ask-ai-loading">\
                     <div class="NB-spinner"></div>\
@@ -129,30 +123,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         _.delay(_.bind(function () {
             this.remove();
         }, this), 600);
-    },
-
-    submit_custom_question: function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        var custom_question = this.$('.NB-story-ask-ai-custom-input').val();
-        if (!custom_question || !custom_question.trim()) {
-            return;
-        }
-
-        this.custom_question = custom_question;
-        this.streaming_started = false;
-
-        // Set up initial timeout for custom question
-        this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
-
-        this.send_question(custom_question);
-
-        // Update UI to show processing
-        this.$('.NB-story-ask-ai-custom-input').prop('disabled', true);
-        this.$('.NB-story-ask-ai-submit').addClass('NB-disabled');
-        this.$el.addClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').show();
     },
 
     send_question: function (custom_question, conversation_history) {

@@ -3576,7 +3576,29 @@
             NEWSBLUR.statistics = new NEWSBLUR.ReaderStatistics(feed_id);
         },
 
-        open_ask_ai_pane: function (story, question_id) {
+        open_ask_ai_menu: function (story_id) {
+            story_id = story_id || this.active_story && this.active_story.id;
+            if (!story_id) return;
+
+            var story = this.model.get_story(story_id);
+            if (!story) return;
+
+            var story_view = story.latest_story_detail_view;
+            if (!story_view) {
+                console.log(['No story view found for Ask AI menu', story]);
+                return;
+            }
+
+            // Call show_ask_ai_menu on the story view
+            // Create a fake event object since the function expects one
+            var fake_event = {
+                preventDefault: function () { },
+                stopPropagation: function () { }
+            };
+            story_view.show_ask_ai_menu(fake_event);
+        },
+
+        open_ask_ai_pane: function (story, question_id, custom_question) {
             var story_view = story.latest_story_detail_view;
             if (!story_view) {
                 console.log(['No story view found for Ask AI', story]);
@@ -3593,7 +3615,8 @@
 
             var ask_ai_pane = new NEWSBLUR.Views.StoryAskAiView({
                 story: story,
-                question_id: question_id,
+                question_id: question_id || 'custom',
+                custom_question: custom_question,
                 inline: true
             });
 
@@ -7664,6 +7687,10 @@
             $document.bind('keypress', 'shift+t', function (e) {
                 e.preventDefault();
                 self.open_feed_intelligence_modal(1);
+            });
+            $document.bind('keypress', 'i', function (e) {
+                e.preventDefault();
+                self.open_ask_ai_menu();
             });
             $document.bind('keypress', 'a', function (e) {
                 e.preventDefault();
