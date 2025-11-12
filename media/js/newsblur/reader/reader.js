@@ -5477,6 +5477,9 @@
                 this.socket.removeAllListeners('ask_ai:error');
                 this.socket.on('ask_ai:error', _.bind(this.handle_ask_ai_error, this));
 
+                this.socket.removeAllListeners('ask_ai:usage');
+                this.socket.on('ask_ai:usage', _.bind(this.handle_ask_ai_usage, this));
+
                 this.socket.on('disconnect', _.bind(function (reason) {
                     NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);
                     this.flags.feed_refreshing_in_realtime = false;
@@ -5632,6 +5635,14 @@
             var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id);
             if (view) {
                 view.show_error(data.error);
+            }
+        },
+
+        handle_ask_ai_usage: function (data) {
+            NEWSBLUR.log(['Ask AI usage message', data.story_hash, data.question_id, data.message]);
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id);
+            if (view) {
+                view.show_usage_message(data.message);
             }
         },
 

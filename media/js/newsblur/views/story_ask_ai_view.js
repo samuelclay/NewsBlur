@@ -7,7 +7,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     events: {
         "click .NB-story-ask-ai-close": "close_pane",
         "click .NB-story-ask-ai-followup-submit": "submit_followup_question",
-        "keypress .NB-story-ask-ai-followup-input": "handle_followup_keypress"
+        "keypress .NB-story-ask-ai-followup-input": "handle_followup_keypress",
+        "click .NB-story-ask-ai-usage-message a": "open_premium_modal"
     },
 
     initialize: function (options) {
@@ -84,6 +85,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                     <strong>Request timed out.</strong> The AI service took too long to respond. Please try again.\
                 </div>\
                 <div class="NB-story-ask-ai-answer" style="display: none;"></div>\
+                <div class="NB-story-ask-ai-usage-message" style="display: none;"></div>\
             </div>\
             <div class="NB-story-ask-ai-followup-wrapper" style="display: none;">\
                 <input type="text" class="NB-story-ask-ai-followup-input" placeholder="Continue the discussion..." />\
@@ -161,7 +163,37 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         console.log(['Ask AI request error', error]);
         this.$el.removeClass('NB-thinking');
         this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
-        this.$('.NB-story-ask-ai-error').addClass('NB-active');
+
+        // Extract error message from various error formats
+        var error_message = error;
+        if (typeof error === 'object') {
+            if (error.message) {
+                error_message = error.message;
+            } else if (error.statusText) {
+                // jQuery XHR object
+                error_message = 'Server error: ' + error.statusText;
+            } else if (error.responseText) {
+                error_message = 'Server error';
+            }
+        }
+
+        // Ensure error_message is a string
+        if (typeof error_message !== 'string') {
+            error_message = 'An error occurred. Please try again.';
+        }
+
+        // Check if this is a usage limit error
+        var is_usage_limit = error_message.includes('limit') || error_message.includes('used all');
+
+        if (is_usage_limit) {
+            // Show as usage message instead of error
+            this.show_usage_message(error_message);
+            this.$('.NB-story-ask-ai-error').removeClass('NB-active');
+        } else {
+            // Show as error
+            this.$('.NB-story-ask-ai-error').text(error_message).addClass('NB-active');
+        }
+
         if (this.initial_timeout) {
             clearTimeout(this.initial_timeout);
             this.initial_timeout = null;
@@ -322,6 +354,35 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             clearTimeout(this.debounce_timeout);
             this.debounce_timeout = null;
         }
+    },
+
+    show_usage_message: function (message) {
+        // Display usage message below the answer
+        // Convert "Upgrade to Premium/Premium Archive" text to a clickable link
+        var html_message = _.escape(message);
+
+        // Replace "Upgrade to Premium Archive" with a link (do this first, more specific)
+        html_message = html_message.replace(
+            /Upgrade to Premium Archive/g,
+            '<a href="#" class="NB-story-ask-ai-upgrade-link">Upgrade to Premium Archive</a>'
+        );
+
+        // Replace "Upgrade to Premium" with a link (for free users)
+        // Use negative lookahead to not match "Upgrade to Premium Archive"
+        html_message = html_message.replace(
+            /Upgrade to Premium(?! Archive)/g,
+            '<a href="#" class="NB-story-ask-ai-upgrade-link">Upgrade to Premium</a>'
+        );
+
+        // Convert newlines to <br> tags
+        html_message = html_message.replace(/\n/g, '<br>');
+
+        this.$('.NB-story-ask-ai-usage-message').html(html_message).show();
+    },
+
+    open_premium_modal: function (e) {
+        e.preventDefault();
+        NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
     },
 
     handle_followup_keypress: function (e) {
