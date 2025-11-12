@@ -67,7 +67,7 @@ Title: {story_title}
 Content:
 {story_content}
 
-Provide the context and background explanation.""",
+Provide only the context and background explanation, without any preamble or introductory phrases.""",
         order=4,
     ),
     "people": AskAIPrompt(
@@ -81,7 +81,7 @@ Title: {story_title}
 Content:
 {story_content}
 
-Provide the analysis of key people and their relationships.""",
+Provide only the analysis of key people and their relationships, without any preamble or introductory phrases.""",
         order=5,
     ),
     "arguments": AskAIPrompt(
@@ -95,7 +95,7 @@ Title: {story_title}
 Content:
 {story_content}
 
-Provide the analysis of the main arguments.""",
+Provide only the analysis of the main arguments, without any preamble or introductory phrases.""",
         order=6,
     ),
     "factcheck": AskAIPrompt(
@@ -110,7 +110,7 @@ Title: {story_title}
 Content:
 {story_content}
 
-Provide your fact-checking analysis.""",
+Provide only your fact-checking analysis, without any preamble or introductory phrases.""",
         order=7,
     ),
 }
@@ -144,7 +144,7 @@ Title: {story_title}
 Content:
 {story_content}
 
-Provide your answer to the question."""
+Provide only your answer to the question, without any preamble or introductory phrases."""
 
     prompt_template = get_prompt(prompt_id)
     if not prompt_template:

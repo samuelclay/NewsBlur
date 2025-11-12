@@ -45,8 +45,8 @@ def ask_ai_question(request):
     if not story:
         return {"code": -1, "message": "Story not found"}
 
-    # Validate custom question if question_id is "custom"
-    if question_id == "custom" and not custom_question:
+    # Validate custom question if question_id is "custom" and this is not a follow-up
+    if question_id == "custom" and not custom_question and not conversation_history:
         return {"code": -1, "message": "Custom question is required"}
 
     # Generate unique request ID for tracking

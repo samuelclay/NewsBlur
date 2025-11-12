@@ -51,26 +51,33 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
             return {"code": -1, "message": error_msg}
 
         # Check for cached response (optional optimization)
-        cached = MAskAIResponse.get_cached_response(
-            user_id=user_id, story_hash=story_hash, question_id=question_id, custom_question=custom_question
-        )
-        if cached and not custom_question:
-            # Stream cached response in chunks
-            response_text = cached.response_text
-            chunk_size = 50  # Characters per chunk
-            for i in range(0, len(response_text), chunk_size):
-                chunk = response_text[i : i + chunk_size]
-                r.publish(username, f"ask_ai:chunk:{story_hash}:{question_id}:{chunk}")
-                time.sleep(0.05)  # Small delay to simulate streaming
+        # Skip cache entirely for follow-ups (conversation_history) and custom questions
+        if not conversation_history and not custom_question:
+            cached = MAskAIResponse.get_cached_response(
+                user_id=user_id, story_hash=story_hash, question_id=question_id, custom_question=custom_question
+            )
+            if cached:
+                # Stream cached response in chunks
+                response_text = cached.response_text
+                chunk_size = 50  # Characters per chunk
+                for i in range(0, len(response_text), chunk_size):
+                    chunk = response_text[i : i + chunk_size]
+                    r.publish(username, f"ask_ai:chunk:{story_hash}:{question_id}:{chunk}")
+                    time.sleep(0.05)  # Small delay to simulate streaming
 
-            r.publish(username, f"ask_ai:complete:{story_hash}:{question_id}")
-            logging.user(user, f"~FGAsk AI: Served cached response for story {story_hash}")
-            return {"code": 1, "message": "Cached response served", "cached": True}
+                r.publish(username, f"ask_ai:complete:{story_hash}:{question_id}")
+                logging.user(user, f"~FGAsk AI: Served cached response for story {story_hash}")
+                return {"code": 1, "message": "Cached response served", "cached": True}
 
         # Build messages for OpenAI API
         if conversation_history:
             # Follow-up: use existing conversation history
-            messages = [{"role": "system", "content": "You are a helpful assistant analyzing news articles."}]
+            messages = [
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant analyzing news articles. Be direct and succinct. Do not use preambles, introductory phrases like 'Certainly!' or 'Here is the analysis', or other conversational niceties. Start directly with your analysis.",
+                }
+            ]
             messages.extend(conversation_history)
             logging.user(
                 user,
@@ -91,7 +98,10 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
                 return {"code": -1, "message": error_msg}
 
             messages = [
-                {"role": "system", "content": "You are a helpful assistant analyzing news articles."},
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant analyzing news articles. Be direct and succinct. Do not use preambles, introductory phrases like 'Certainly!' or 'Here is the analysis', or other conversational niceties. Start directly with your analysis.",
+                },
                 {"role": "user", "content": full_prompt},
             ]
 
@@ -138,22 +148,25 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
             f"~FBPublished {chunk_count} chunks total, complete message subscribers: {complete_result}",
         )
 
-        # Save response to cache
-        metadata = {
-            "model": "gpt-4.1",
-            "question_id": question_id,
-            "duration_seconds": time.time() - start_time,
-            "response_length": len(full_response_text),
-        }
+        # Save response to cache (only for initial questions, not follow-ups or custom questions)
+        # Follow-ups should never be cached because they depend on conversation context
+        # Custom questions should never be cached because they vary too much
+        if not conversation_history and not custom_question:
+            metadata = {
+                "model": "gpt-4.1",
+                "question_id": question_id,
+                "duration_seconds": time.time() - start_time,
+                "response_length": len(full_response_text),
+            }
 
-        MAskAIResponse.create_response(
-            user_id=user_id,
-            story_hash=story_hash,
-            question_id=question_id,
-            response_text=full_response_text,
-            custom_question=custom_question,
-            metadata=metadata,
-        )
+            MAskAIResponse.create_response(
+                user_id=user_id,
+                story_hash=story_hash,
+                question_id=question_id,
+                response_text=full_response_text,
+                custom_question=custom_question,
+                metadata=metadata,
+            )
 
         logging.user(
             user,
