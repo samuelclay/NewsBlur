@@ -5383,7 +5383,7 @@ body {
 
 .NB-sideoption.NB-feed-story-email {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
 }
 
 .NB-sideoption.NB-feed-story-email .NB-sideoption-title {
@@ -11148,9 +11148,9 @@ form.opml_import_form input {
     background-color: #FFFFFF;
     border: 1px solid #E0E2DC;
     border-radius: 4px;
-    font-size: 13px;
     line-height: 1.6;
     counter-reset: ordered-list;
+    font-size: inherit;
 }
 
 .NB-story-ask-ai-answer p {
@@ -11207,7 +11207,7 @@ form.opml_import_form input {
     margin-top: 24px;
     margin-left: 28px;
     margin-right: 236px;
-    margin-bottom: 0;
+    margin-bottom: 24px;
     padding: 20px;
     background: linear-gradient(135deg, #F0F4FF 0%, #FFF5F0 100%);
     border: 1px solid #D4E0F7;
@@ -11219,6 +11219,157 @@ form.opml_import_form input {
     transform: translateY(-10px) scale(0.98);
     animation: askAiUnfurl 3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     max-width: 700px;
+}
+
+/* Story font themes */
+.NB-theme-sans-serif .NB-story-ask-ai-inline {
+    font-family: "DejaVu Sans", "Bitstream Vera Sans", "Verdana", "Tahoma", "Geneva", sans-serif;
+}
+
+.NB-theme-serif .NB-story-ask-ai-inline {
+    font-family: "Palatino Linotype", "Palatino", "URW Palladio L", "Nimbus Roman No9 L", Georgia, serif;
+}
+
+.NB-theme-gotham .NB-story-ask-ai-inline {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B';
+}
+
+.NB-theme-sentinel .NB-story-ask-ai-inline {
+    font-family: 'Sentinel A', 'Sentinel B';
+}
+
+.NB-theme-whitney .NB-story-ask-ai-inline {
+    font-family: 'Whitney A', 'Whitney B';
+}
+
+.NB-theme-chronicle .NB-story-ask-ai-inline {
+    font-family: 'Chronicle A', 'Chronicle B';
+}
+
+/* Story font sizes - sans-serif */
+.NB-theme-sans-serif.NB-theme-size-xs .NB-story-ask-ai-inline {
+    font-size: 11px;
+}
+
+.NB-theme-sans-serif.NB-theme-size-s .NB-story-ask-ai-inline {
+    font-size: 12px;
+}
+
+.NB-theme-sans-serif.NB-theme-size-m .NB-story-ask-ai-inline {
+    font-size: 13px;
+}
+
+.NB-theme-sans-serif.NB-theme-size-l .NB-story-ask-ai-inline {
+    font-size: 15px;
+}
+
+.NB-theme-sans-serif.NB-theme-size-xl .NB-story-ask-ai-inline {
+    font-size: 18px;
+}
+
+/* Story font sizes - gotham */
+.NB-theme-gotham.NB-theme-size-xs .NB-story-ask-ai-inline {
+    font-size: 13px;
+}
+
+.NB-theme-gotham.NB-theme-size-s .NB-story-ask-ai-inline {
+    font-size: 14px;
+}
+
+.NB-theme-gotham.NB-theme-size-m .NB-story-ask-ai-inline {
+    font-size: 15px;
+}
+
+.NB-theme-gotham.NB-theme-size-l .NB-story-ask-ai-inline {
+    font-size: 16px;
+}
+
+.NB-theme-gotham.NB-theme-size-xl .NB-story-ask-ai-inline {
+    font-size: 19px;
+}
+
+/* Story font sizes - sentinel */
+.NB-theme-sentinel.NB-theme-size-xs .NB-story-ask-ai-inline {
+    font-size: 13px;
+}
+
+.NB-theme-sentinel.NB-theme-size-s .NB-story-ask-ai-inline {
+    font-size: 14px;
+}
+
+.NB-theme-sentinel.NB-theme-size-m .NB-story-ask-ai-inline {
+    font-size: 15px;
+}
+
+.NB-theme-sentinel.NB-theme-size-l .NB-story-ask-ai-inline {
+    font-size: 16px;
+}
+
+.NB-theme-sentinel.NB-theme-size-xl .NB-story-ask-ai-inline {
+    font-size: 19px;
+}
+
+/* Story font sizes - whitney */
+.NB-theme-whitney.NB-theme-size-xs .NB-story-ask-ai-inline {
+    font-size: 13px;
+}
+
+.NB-theme-whitney.NB-theme-size-s .NB-story-ask-ai-inline {
+    font-size: 14px;
+}
+
+.NB-theme-whitney.NB-theme-size-m .NB-story-ask-ai-inline {
+    font-size: 15px;
+}
+
+.NB-theme-whitney.NB-theme-size-l .NB-story-ask-ai-inline {
+    font-size: 16px;
+}
+
+.NB-theme-whitney.NB-theme-size-xl .NB-story-ask-ai-inline {
+    font-size: 19px;
+}
+
+/* Story font sizes - chronicle */
+.NB-theme-chronicle.NB-theme-size-xs .NB-story-ask-ai-inline {
+    font-size: 13px;
+}
+
+.NB-theme-chronicle.NB-theme-size-s .NB-story-ask-ai-inline {
+    font-size: 14px;
+}
+
+.NB-theme-chronicle.NB-theme-size-m .NB-story-ask-ai-inline {
+    font-size: 15px;
+}
+
+.NB-theme-chronicle.NB-theme-size-l .NB-story-ask-ai-inline {
+    font-size: 16px;
+}
+
+.NB-theme-chronicle.NB-theme-size-xl .NB-story-ask-ai-inline {
+    font-size: 19px;
+}
+
+/* Story font sizes - serif */
+.NB-theme-serif.NB-theme-size-xs .NB-story-ask-ai-inline {
+    font-size: 13px;
+}
+
+.NB-theme-serif.NB-theme-size-s .NB-story-ask-ai-inline {
+    font-size: 14px;
+}
+
+.NB-theme-serif.NB-theme-size-m .NB-story-ask-ai-inline {
+    font-size: 15px;
+}
+
+.NB-theme-serif.NB-theme-size-l .NB-story-ask-ai-inline {
+    font-size: 16px;
+}
+
+.NB-theme-serif.NB-theme-size-xl .NB-story-ask-ai-inline {
+    font-size: 19px;
 }
 
 .NB-narrow-content .NB-story-ask-ai-inline {
@@ -11243,10 +11394,12 @@ form.opml_import_form input {
         opacity: 0;
         transform: translateY(-10px) scale(0.98);
     }
+
     15% {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -11262,10 +11415,12 @@ form.opml_import_form input {
         margin-bottom: 0;
         border-width: 1px;
     }
+
     70% {
         opacity: 0.3;
         transform: translateY(-5px) scale(0.99);
     }
+
     100% {
         opacity: 0;
         transform: translateY(-10px) scale(0.98);
@@ -11296,6 +11451,7 @@ form.opml_import_form input {
         opacity: 0;
         transform: translateX(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -11325,6 +11481,7 @@ form.opml_import_form input {
     color: #6B7A92;
     font-weight: 400;
     padding-top: 1px;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-close:hover {
@@ -11372,9 +11529,11 @@ form.opml_import_form input {
     0% {
         border-color: #E1EBFF;
     }
+
     38% {
         border-color: #5C89C9;
     }
+
     100% {
         border-color: #E1EBFF;
     }
@@ -11384,6 +11543,7 @@ form.opml_import_form input {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -11394,6 +11554,7 @@ form.opml_import_form input {
         opacity: 0;
         transform: translateY(-8px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -11405,6 +11566,7 @@ form.opml_import_form input {
         opacity: 1;
         transform: translateY(0);
     }
+
     to {
         opacity: 0;
         transform: translateY(-8px);
@@ -11473,6 +11635,7 @@ form.opml_import_form input {
         opacity: 0;
         transform: scale(0.9);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -11484,6 +11647,7 @@ form.opml_import_form input {
         opacity: 1;
         transform: scale(1);
     }
+
     to {
         opacity: 0;
         transform: scale(0.9);
@@ -11505,12 +11669,20 @@ form.opml_import_form input {
     font-style: italic;
 }
 
+.NB-story-ask-ai-inline .NB-story-ask-ai-loading.NB-followup {
+    padding: 0;
+    min-height: 0;
+}
+
+.NB-story-ask-ai-inline .NB-story-ask-ai-loading.NB-followup .NB-loading-text {
+    display: none;
+}
+
 .NB-story-ask-ai-inline .NB-story-ask-ai-answer {
     padding: 16px;
     background-color: rgba(255, 255, 255, 0.9);
     border: 1px solid #D4E0F7;
     border-radius: 8px;
-    font-size: 14px;
     line-height: 1.7;
     color: #333;
 }
@@ -11555,6 +11727,7 @@ form.opml_import_form input {
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-error {
+    margin-top: 16px;
     padding: 16px;
     background-color: rgba(255, 255, 255, 0.9);
     border: 1px solid #E2A04A;
@@ -11573,11 +11746,17 @@ form.opml_import_form input {
     animation: errorFadeIn 0.3s ease-out forwards;
 }
 
+.NB-story-ask-ai-inline .NB-story-ask-ai-error strong {
+    font-weight: 600;
+    color: #B8651B;
+}
+
 @keyframes errorFadeIn {
     from {
         opacity: 0;
         transform: scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -11608,9 +11787,11 @@ form.opml_import_form input {
     0% {
         border-color: rgba(92, 137, 201, 0.4);
     }
+
     38% {
         border-color: rgba(92, 137, 201, 0.8);
     }
+
     100% {
         border-color: rgba(92, 137, 201, 0.4);
     }
@@ -11645,6 +11826,10 @@ form.opml_import_form input {
     border-color: rgba(139, 90, 43, 0.4);
     border-left-color: rgba(226, 144, 74, 0.6);
     color: #FFB870;
+}
+
+.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-error strong {
+    color: #FFC890;
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-answer {

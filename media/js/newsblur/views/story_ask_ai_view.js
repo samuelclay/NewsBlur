@@ -49,7 +49,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     handle_initial_timeout: function () {
         // No response received within 15 seconds
         this.$el.removeClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').hide();
+        this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
         this.$('.NB-story-ask-ai-error')
             .text('Request timed out. The AI service took too long to respond. Please try again.')
             .addClass('NB-active');
@@ -58,7 +58,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     handle_streaming_timeout: function () {
         // No chunk received for 10 seconds during streaming
         this.$el.removeClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').hide();
+        this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
         this.$('.NB-story-ask-ai-error')
             .text('Stream interrupted. No response received for 10 seconds.')
             .addClass('NB-active');
@@ -160,7 +160,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     handle_response_error: function (error) {
         console.log(['Ask AI request error', error]);
         this.$el.removeClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').hide();
+        this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
         this.$('.NB-story-ask-ai-error').addClass('NB-active');
         if (this.initial_timeout) {
             clearTimeout(this.initial_timeout);
@@ -267,7 +267,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 this.initial_timeout = null;
             }
             this.$el.removeClass('NB-thinking');
-            this.$('.NB-story-ask-ai-loading').hide();
+            this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
             this.$('.NB-story-ask-ai-error').removeClass('NB-active');
             $answer.show();
         }
@@ -306,13 +306,13 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
         // Show and re-enable follow-up input
         this.$('.NB-story-ask-ai-followup-wrapper').show();
-        this.$('.NB-story-ask-ai-followup-input').prop('disabled', false).focus();
+        this.$('.NB-story-ask-ai-followup-input').prop('disabled', false);
     },
 
     show_error: function (error_message) {
         // Show error, clear all timeouts
         this.$el.removeClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').hide();
+        this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
         this.$('.NB-story-ask-ai-error').text(error_message).addClass('NB-active');
         if (this.initial_timeout) {
             clearTimeout(this.initial_timeout);
@@ -359,11 +359,11 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Don't reset response_text - we want to keep the conversation history
         this.streaming_started = false;
 
-        // Hide follow-up input, show loading
+        // Hide follow-up input, show loading (without "Thinking..." text for follow-ups)
         this.$('.NB-story-ask-ai-followup-wrapper').hide();
         this.$('.NB-story-ask-ai-followup-input').val('').prop('disabled', true);
         this.$el.addClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').show();
+        this.$('.NB-story-ask-ai-loading').show().addClass('NB-followup');
 
         // Set up initial timeout
         this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
