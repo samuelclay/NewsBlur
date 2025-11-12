@@ -133,6 +133,7 @@ def render_account_module(context):
         "Custom RSS feeds for saved stories",
         "Text view conveniently recreates the full story",
         "Discover related stories and sites",
+        "Ask AI questions about stories",
         f"You feed Lyric, NewsBlur's hungry hound, for 6 days<img class='NB-feedchooser-premium-poor-hungry-dog' src='{settings.MEDIA_URL}img/reader/lyric.jpg'>",
     ]
     rand_int = (datetime.datetime.now().timetuple().tm_yday) % len(reasons)
@@ -157,6 +158,7 @@ def render_premium_archive_module(context):
         "Train stories on full text content, not just titles and tags",
         "Export trained stories from folders as RSS feeds",
         "Choose when stories are automatically marked as read",
+        "Ask AI questions about stories",
     ]
     rand_int = (datetime.datetime.now().timetuple().tm_sec) % len(reasons)
 

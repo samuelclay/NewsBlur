@@ -11199,6 +11199,29 @@ form.opml_import_form input {
     margin: 16px 0;
 }
 
+.NB-story-ask-ai-usage-message {
+    padding: 12px;
+    margin-top: 16px;
+    background-color: #F7F9FC;
+    border: 1px solid #D4E0F7;
+    border-left: 3px solid #4A90E2;
+    border-radius: 6px;
+    color: #2C5282;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.NB-story-ask-ai-usage-message a {
+    color: #4A90E2;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.NB-story-ask-ai-usage-message a:hover {
+    text-decoration: underline;
+    color: #2E5F8F;
+}
+
 /* ======================== */
 /* = Ask AI Inline Styles = */
 /* ======================== */
@@ -11830,6 +11853,21 @@ form.opml_import_form input {
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-error strong {
     color: #FFC890;
+}
+
+.NB-dark .NB-story-ask-ai-usage-message {
+    background-color: rgba(74, 144, 226, 0.15);
+    border-color: rgba(74, 144, 226, 0.3);
+    border-left-color: rgba(74, 144, 226, 0.6);
+    color: #6BA3E0;
+}
+
+.NB-dark .NB-story-ask-ai-usage-message a {
+    color: #8BC5FF;
+}
+
+.NB-dark .NB-story-ask-ai-usage-message a:hover {
+    color: #A8D4FF;
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-answer {
@@ -14100,6 +14138,13 @@ form.opml_import_form input {
 .NB-welcome-premium-archive-bullet.NB-8 {
     background: transparent url('/media/embed/icons/icons8/icons8-calendar-100.png') no-repeat 0 0;
     background-size: 16px;
+}
+
+.NB-feedchooser-premium-archive-bullets li.NB-9 .NB-feedchooser-premium-bullet-image,
+.NB-welcome-premium-archive-bullet.NB-9 {
+    background: transparent url('/media/embed/icons/nouns/prompt.svg') no-repeat 0 0;
+    background-size: 16px;
+    filter: grayscale(1) brightness(0.5);
 }
 
 .NB-modal-feedchooser .NB-payment-providers {

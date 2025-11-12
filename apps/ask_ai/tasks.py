@@ -65,7 +65,15 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
                     r.publish(username, f"ask_ai:chunk:{story_hash}:{question_id}:{chunk}")
                     time.sleep(0.05)  # Small delay to simulate streaming
 
+                # Increment usage counter for cached responses too
+                user.profile.increment_ask_ai_usage()
+
+                # Get usage message
+                usage_message = user.profile.get_ask_ai_usage_message()
+
                 r.publish(username, f"ask_ai:complete:{story_hash}:{question_id}")
+                if usage_message:
+                    r.publish(username, f"ask_ai:usage:{story_hash}:{question_id}:{usage_message}")
                 logging.user(user, f"~FGAsk AI: Served cached response for story {story_hash}")
                 return {"code": 1, "message": "Cached response served", "cached": True}
 
@@ -142,7 +150,16 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
 
         # Complete response
         full_response_text = "".join(full_response)
+
+        # Increment usage counter (only for non-cached responses)
+        user.profile.increment_ask_ai_usage()
+
+        # Get usage message
+        usage_message = user.profile.get_ask_ai_usage_message()
+
         complete_result = r.publish(username, f"ask_ai:complete:{story_hash}:{question_id}")
+        if usage_message:
+            r.publish(username, f"ask_ai:usage:{story_hash}:{question_id}:{usage_message}")
         logging.user(
             user,
             f"~FBPublished {chunk_count} chunks total, complete message subscribers: {complete_result}",

@@ -60,6 +60,14 @@
         });
         log.debug(`Ask AI completed for story ${story_hash}`);
         break;
+      case 'usage':
+        log.info(`Emitting ask_ai:usage event to client for story ${story_hash}, question ${question_id}: ${payload}`);
+        socket.emit('ask_ai:usage', {
+          story_hash: story_hash,
+          question_id: question_id,
+          message: payload
+        });
+        break;
       case 'error':
         socket.emit('ask_ai:error', {
           story_hash: story_hash,

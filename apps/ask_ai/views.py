@@ -40,6 +40,11 @@ def ask_ai_question(request):
         except (json.JSONDecodeError, ValueError):
             return {"code": -1, "message": "Invalid conversation history format"}
 
+    # Check usage limits
+    can_use, limit_message = request.user.profile.can_use_ask_ai()
+    if not can_use:
+        return {"code": -1, "message": limit_message}
+
     # Validate story exists
     story, _ = MStory.find_story(story_hash=story_hash)
     if not story:

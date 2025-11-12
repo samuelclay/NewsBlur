@@ -8,6 +8,7 @@ from wsgiref.util import application_uri
 import dateutil
 import mongoengine as mongo
 import paypalrestsdk
+import pytz
 import redis
 import stripe
 from django.conf import settings
@@ -70,6 +71,11 @@ class Profile(models.Model):
     # paypal_payer_id   = models.CharField(max_length=24, blank=True, null=True)
     premium_renewal = models.BooleanField(default=False, blank=True, null=True)
     active_provider = models.CharField(max_length=24, blank=True, null=True)
+    ask_ai_uses_count = models.IntegerField(default=0)
+    ask_ai_daily_count = models.IntegerField(default=0)
+    ask_ai_weekly_count = models.IntegerField(default=0)
+    ask_ai_last_daily_reset = models.DateTimeField(blank=True, null=True)
+    ask_ai_last_weekly_reset = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return "%s <%s>%s%s%s" % (
@@ -135,6 +141,88 @@ class Profile(models.Model):
         if self.is_archive:
             return settings.DAYS_OF_STORY_HASHES_ARCHIVE
         return settings.DAYS_OF_STORY_HASHES
+
+    def can_use_ask_ai(self):
+        """Check if user can use Ask AI feature based on their plan and usage limits."""
+        # Pro users have unlimited access
+        if self.is_pro:
+            return True, None
+
+        # Premium users have daily and weekly limits
+        if self.is_premium:
+            # Reset daily counter if needed
+            now = datetime.datetime.utcnow()
+            if not self.ask_ai_last_daily_reset or (now - self.ask_ai_last_daily_reset).days >= 1:
+                self.ask_ai_daily_count = 0
+                self.ask_ai_last_daily_reset = now
+                self.save()
+
+            # Reset weekly counter if needed
+            if not self.ask_ai_last_weekly_reset or (now - self.ask_ai_last_weekly_reset).days >= 7:
+                self.ask_ai_weekly_count = 0
+                self.ask_ai_last_weekly_reset = now
+                self.save()
+
+            # Check daily limit (3 per day)
+            if self.ask_ai_daily_count >= 3:
+                return (
+                    False,
+                    "You've reached your daily limit of 3 Ask AI requests. Upgrade to Premium Archive for unlimited access.",
+                )
+
+            # Check weekly limit (5 per week)
+            if self.ask_ai_weekly_count >= 5:
+                return (
+                    False,
+                    "You've reached your weekly limit of 5 Ask AI requests. Upgrade to Premium Archive for unlimited access.",
+                )
+
+            return True, None
+
+        # Free users have 10 lifetime uses
+        if self.ask_ai_uses_count >= 10:
+            return False, "You've used all 10 free Ask AI requests. Upgrade to Premium for continued access."
+
+        return True, None
+
+    def increment_ask_ai_usage(self):
+        """Increment Ask AI usage counters based on user's plan."""
+        if self.is_pro:
+            # Pro users don't have limits, no need to track
+            return
+
+        if self.is_premium:
+            self.ask_ai_daily_count += 1
+            self.ask_ai_weekly_count += 1
+        else:
+            # Free users
+            self.ask_ai_uses_count += 1
+
+        self.save()
+
+    def get_ask_ai_usage_message(self):
+        """Get message to display about remaining Ask AI usage."""
+        if self.is_pro:
+            return None
+
+        if self.is_premium:
+            daily_remaining = max(0, 3 - self.ask_ai_daily_count)
+            weekly_remaining = max(0, 5 - self.ask_ai_weekly_count)
+            remaining = min(daily_remaining, weekly_remaining)
+
+            if daily_remaining == 0:
+                return "You've used all 3 Ask AI requests today. Your daily limit resets tomorrow.\n\nUpgrade to Premium Archive for unlimited access."
+            elif weekly_remaining == 0:
+                return "You've used all 5 Ask AI requests this week. Your weekly limit resets in a few days.\n\nUpgrade to Premium Archive for unlimited access."
+            else:
+                return f"You have {remaining} Ask AI request{'s' if remaining != 1 else ''} remaining this {'day' if daily_remaining < weekly_remaining else 'week'}.\n\nUpgrade to Premium Archive for unlimited access."
+
+        # Free users
+        remaining = max(0, 10 - self.ask_ai_uses_count)
+        if remaining == 0:
+            return "You've used all 10 free Ask AI requests.\n\nUpgrade to Premium for continued access."
+        else:
+            return f"You have {remaining} out of 10 free Ask AI request{'s' if remaining != 1 else ''} remaining.\n\nUpgrade to Premium for continued access."
 
     def canonical(self):
         return {
