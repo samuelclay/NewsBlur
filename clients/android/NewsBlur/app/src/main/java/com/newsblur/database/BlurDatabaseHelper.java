@@ -1217,18 +1217,12 @@ public class BlurDatabaseHelper {
         Cursor result = getActiveStoriesCursorNoPrep(fs, cursorFilters.getStoryOrder(), cancellationSignal);
         // if the result is blank, try to prime the session table with existing stories, in case we
         // are offline, but if a session is started, just use what was there so offsets don't change.
-        boolean empty;
-        try (Cursor probe = result) {
-            empty = !probe.moveToFirst();
-        }
-
-        if (empty) {
-            if (AppConstants.VERBOSE_LOG)
-                Log.d(this.getClass().getName(), "priming reading session");
+        if (!result.moveToFirst()) {
+            result.close();
+            if (AppConstants.VERBOSE_LOG) Log.d(getClass().getName(), "priming reading session");
             prepareReadingSession(fs, cursorFilters.getStateFilter(), cursorFilters.getReadFilter());
             result = getActiveStoriesCursorNoPrep(fs, cursorFilters.getStoryOrder(), cancellationSignal);
         }
-
         return result;
     }
 
