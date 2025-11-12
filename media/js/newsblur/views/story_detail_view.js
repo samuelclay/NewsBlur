@@ -1308,14 +1308,22 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.hide_ask_ai_menu();
 
         var questions = [
-            { id: 'sentence', text: 'Summarize in one sentence' },
-            { id: 'bullets', text: 'Summarize in bullet points' },
-            { id: 'paragraph', text: 'Summarize in a paragraph' },
-            { id: 'context', text: "What's the context and background?" },
-            { id: 'people', text: 'Identify key people and relationships' },
-            { id: 'arguments', text: 'What are the main arguments?' },
-            { id: 'factcheck', text: 'Fact check this story' },
-            { id: 'custom', text: 'Ask a custom question...' }
+            {
+                id: 'summarize-group',
+                text: 'Summarize',
+                isGroup: true,
+                icon: 'paragraph',
+                children: [
+                    { id: 'sentence', text: 'Brief', detail: 'One sentence', icon: 'content-preview-s', level: 'low' },
+                    { id: 'bullets', text: 'Medium', detail: 'Bullet points', icon: 'content-preview-m', level: 'medium' },
+                    { id: 'paragraph', text: 'Detailed', detail: 'Full paragraph', icon: 'content-preview-l', level: 'high' }
+                ]
+            },
+            { id: 'context', text: "What's the context and background?", icon: 'world' },
+            { id: 'people', text: 'Identify key people and relationships', icon: 'subscribers' },
+            { id: 'arguments', text: 'What are the main arguments?', icon: 'venn' },
+            { id: 'factcheck', text: 'Fact check this story', icon: 'search' },
+            { id: 'custom', text: 'Ask a custom question...', icon: 'prompt' }
         ];
 
         var menu_template = _.template('\
@@ -1323,9 +1331,30 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <div class="NB-menu-ask-ai">\
                     <ul class="NB-menu-ask-ai-options">\
                         <% _.each(questions, function(q) { %>\
-                            <li class="NB-menu-ask-ai-option" data-question-id="<%= q.id %>">\
-                                <%= q.text %>\
-                            </li>\
+                            <% if (q.isGroup) { %>\
+                                <li class="NB-menu-ask-ai-group">\
+                                    <div class="NB-menu-ask-ai-group-header">\
+                                        <img src="/media/img/icons/nouns/<%= q.icon %>.svg" class="NB-menu-ask-ai-icon" />\
+                                        <span class="NB-menu-ask-ai-text"><%= q.text %></span>\
+                                    </div>\
+                                    <div class="NB-menu-ask-ai-segmented-control">\
+                                        <% _.each(q.children, function(child) { %>\
+                                            <div class="NB-menu-ask-ai-segment NB-menu-ask-ai-level-<%= child.level %>" data-question-id="<%= child.id %>">\
+                                                <img src="/media/img/icons/nouns/<%= child.icon %>.svg" class="NB-menu-ask-ai-segment-icon" />\
+                                                <div class="NB-menu-ask-ai-segment-content">\
+                                                    <span class="NB-menu-ask-ai-segment-text"><%= child.text %></span>\
+                                                    <span class="NB-menu-ask-ai-segment-detail"><%= child.detail %></span>\
+                                                </div>\
+                                            </div>\
+                                        <% }) %>\
+                                    </div>\
+                                </li>\
+                            <% } else { %>\
+                                <li class="NB-menu-ask-ai-option" data-question-id="<%= q.id %>">\
+                                    <img src="/media/img/icons/nouns/<%= q.icon %>.svg" class="NB-menu-ask-ai-icon" />\
+                                    <span class="NB-menu-ask-ai-text"><%= q.text %></span>\
+                                </li>\
+                            <% } %>\
                         <% }) %>\
                     </ul>\
                 </div>\
@@ -1379,7 +1408,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // Keep button highlighted while menu is open
         $button.addClass('NB-active');
 
-        $menu.find('.NB-menu-ask-ai-option').on('click', _.bind(function (ev) {
+        $menu.find('.NB-menu-ask-ai-option, .NB-menu-ask-ai-segment').on('click', _.bind(function (ev) {
             var question_id = $(ev.currentTarget).data('question-id');
             this.handle_ask_ai_question(question_id);
             this.hide_ask_ai_menu();
