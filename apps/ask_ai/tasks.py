@@ -15,7 +15,7 @@ from .prompts import get_full_prompt
 
 
 @app.task(name="ask-ai-question", queue="ask_ai", time_limit=120, soft_time_limit=110)
-def AskAIQuestion(user_id, story_hash, question_id, custom_question=None):
+def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conversation_history=None):
     """
     Process an Ask AI question and stream the response via Redis PubSub.
 
@@ -24,6 +24,7 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None):
         story_hash: Story hash
         question_id: Question ID (e.g., "sentence", "bullets", "custom")
         custom_question: Optional custom question text
+        conversation_history: Optional list of previous conversation messages for follow-ups
 
     Returns:
         Dict with response metadata
@@ -66,17 +67,33 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None):
             logging.user(user, f"~FGAsk AI: Served cached response for story {story_hash}")
             return {"code": 1, "message": "Cached response served", "cached": True}
 
-        # Build full prompt
-        story_title = story.story_title
-        story_content = story.story_content_str  # Use property to decompress content_z
+        # Build messages for OpenAI API
+        if conversation_history:
+            # Follow-up: use existing conversation history
+            messages = [{"role": "system", "content": "You are a helpful assistant analyzing news articles."}]
+            messages.extend(conversation_history)
+            logging.user(
+                user,
+                f"~FBAsk AI: Follow-up question for story {story_hash}, "
+                f"{len(conversation_history)} messages in history",
+            )
+        else:
+            # Initial question: build prompt with story content
+            story_title = story.story_title
+            story_content = story.story_content_str  # Use property to decompress content_z
 
-        try:
-            full_prompt = get_full_prompt(question_id, story_title, story_content, custom_question)
-        except ValueError as e:
-            error_msg = str(e)
-            r.publish(username, f"ask_ai:error:{story_hash}:{question_id}:{error_msg}")
-            logging.user(user, f"~FRAsk AI error: {error_msg}")
-            return {"code": -1, "message": error_msg}
+            try:
+                full_prompt = get_full_prompt(question_id, story_title, story_content, custom_question)
+            except ValueError as e:
+                error_msg = str(e)
+                r.publish(username, f"ask_ai:error:{story_hash}:{question_id}:{error_msg}")
+                logging.user(user, f"~FRAsk AI error: {error_msg}")
+                return {"code": -1, "message": error_msg}
+
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant analyzing news articles."},
+                {"role": "user", "content": full_prompt},
+            ]
 
         # Initialize OpenAI client
         if not settings.OPENAI_API_KEY:
@@ -88,17 +105,14 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None):
         client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
 
         # Call OpenAI API with streaming
-        logging.user(user, f"~FBAsk AI: Starting streaming response for story {story_hash}, question {question_id}")
+        logging.user(
+            user, f"~FBAsk AI: Starting streaming response for story {story_hash}, question {question_id}"
+        )
 
         response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant analyzing news articles."},
-                {"role": "user", "content": full_prompt},
-            ],
+            model="gpt-5",
+            messages=messages,
             stream=True,
-            temperature=0.7,
-            max_tokens=1000,
         )
 
         # Stream chunks to Redis PubSub
@@ -112,7 +126,9 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None):
                 result = r.publish(username, f"ask_ai:chunk:{story_hash}:{question_id}:{chunk_text}")
                 chunk_count += 1
                 if chunk_count == 1:
-                    logging.user(user, f"~FBPublished first chunk to Redis channel '{username}', subscribers: {result}")
+                    logging.user(
+                        user, f"~FBPublished first chunk to Redis channel '{username}', subscribers: {result}"
+                    )
 
         # Complete response
         full_response_text = "".join(full_response)
@@ -124,7 +140,7 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None):
 
         # Save response to cache
         metadata = {
-            "model": "gpt-4",
+            "model": "gpt-5",
             "question_id": question_id,
             "duration_seconds": time.time() - start_time,
             "response_length": len(full_response_text),

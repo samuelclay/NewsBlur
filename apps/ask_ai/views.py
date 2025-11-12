@@ -22,6 +22,7 @@ def ask_ai_question(request):
         story_hash: Hash of the story to analyze
         question_id: ID of the question template (e.g., "sentence", "bullets", "custom")
         custom_question: Optional custom question text (required if question_id is "custom")
+        conversation_history: Optional JSON string of conversation history for follow-ups
 
     Returns:
         JSON response with request_id and status
@@ -29,6 +30,15 @@ def ask_ai_question(request):
     story_hash = request.POST.get("story_hash")
     question_id = request.POST.get("question_id")
     custom_question = request.POST.get("custom_question", "")
+    conversation_history_json = request.POST.get("conversation_history", "")
+
+    # Parse conversation history if provided
+    conversation_history = None
+    if conversation_history_json:
+        try:
+            conversation_history = json.decode(conversation_history_json)
+        except (json.JSONDecodeError, ValueError):
+            return {"code": -1, "message": "Invalid conversation history format"}
 
     # Validate story exists
     story, _ = MStory.find_story(story_hash=story_hash)
@@ -49,6 +59,7 @@ def ask_ai_question(request):
             "story_hash": story_hash,
             "question_id": question_id,
             "custom_question": custom_question if custom_question else None,
+            "conversation_history": conversation_history,
         },
         queue="ask_ai",
     )

@@ -6,7 +6,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
     events: {
         "click .NB-story-ask-ai-close": "close_pane",
-        "click .NB-story-ask-ai-submit": "submit_custom_question"
+        "click .NB-story-ask-ai-submit": "submit_custom_question",
+        "click .NB-story-ask-ai-followup-submit": "submit_followup_question",
+        "keypress .NB-story-ask-ai-followup-input": "handle_followup_keypress"
     },
 
     initialize: function (options) {
@@ -17,6 +19,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.story_hash = this.story.get('story_hash');
         this.streaming_started = false;
         this.response_text = '';  // Accumulate response for final formatting
+        this.conversation_history = [];  // Track conversation for follow-ups
 
         // Send request immediately for non-custom questions
         if (this.question_id !== 'custom') {
@@ -88,6 +91,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 </div>\
                 <div class="NB-story-ask-ai-answer" style="display: none;"></div>\
             </div>\
+            <div class="NB-story-ask-ai-followup-wrapper" style="display: none;">\
+                <input type="text" class="NB-story-ask-ai-followup-input" placeholder="Continue the discussion..." />\
+                <div class="NB-button NB-story-ask-ai-followup-submit">Send</div>\
+            </div>\
         </div>\
     '),
 
@@ -148,7 +155,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.$('.NB-story-ask-ai-loading').show();
     },
 
-    send_question: function (custom_question) {
+    send_question: function (custom_question, conversation_history) {
         var params = {
             story_hash: this.story_hash,
             question_id: this.question_id
@@ -156,6 +163,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
         if (custom_question) {
             params.custom_question = custom_question;
+        }
+
+        if (conversation_history && conversation_history.length > 0) {
+            params.conversation_history = JSON.stringify(conversation_history);
         }
 
         NEWSBLUR.assets.make_request(
@@ -232,6 +243,16 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             clearTimeout(this.initial_timeout);
             this.initial_timeout = null;
         }
+
+        // Add assistant's response to conversation history
+        this.conversation_history.push({
+            role: 'assistant',
+            content: this.response_text
+        });
+
+        // Show and re-enable follow-up input
+        this.$('.NB-story-ask-ai-followup-wrapper').show();
+        this.$('.NB-story-ask-ai-followup-input').prop('disabled', false).focus();
     },
 
     show_error: function (error_message) {
@@ -247,6 +268,52 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             clearTimeout(this.debounce_timeout);
             this.debounce_timeout = null;
         }
+    },
+
+    handle_followup_keypress: function (e) {
+        if (e.which === 13) {  // Enter key
+            e.preventDefault();
+            this.submit_followup_question();
+        }
+    },
+
+    submit_followup_question: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        var followup_text = this.$('.NB-story-ask-ai-followup-input').val();
+        if (!followup_text || !followup_text.trim()) {
+            return;
+        }
+
+        // Add user's follow-up to conversation history
+        this.conversation_history.push({
+            role: 'user',
+            content: followup_text
+        });
+
+        // Add a visual separator for the follow-up
+        var $answer = this.$('.NB-story-ask-ai-answer');
+        $answer.append(document.createTextNode('\n\n---\n\n'));
+        $answer.append(document.createTextNode('You: ' + followup_text + '\n\n'));
+
+        // Reset for new response
+        this.response_text = '';
+        this.streaming_started = false;
+
+        // Hide follow-up input, show loading
+        this.$('.NB-story-ask-ai-followup-wrapper').hide();
+        this.$('.NB-story-ask-ai-followup-input').val('').prop('disabled', true);
+        this.$el.addClass('NB-thinking');
+        this.$('.NB-story-ask-ai-loading').show();
+
+        // Set up initial timeout
+        this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
+
+        // Send follow-up with conversation history
+        this.send_question(null, this.conversation_history);
     }
 
 });
