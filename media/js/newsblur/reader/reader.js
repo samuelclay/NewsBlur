@@ -5365,7 +5365,8 @@
                 var local = false && _.any(['nb.local.com'], function (hostname) {
                     return _.string.contains(window.location.host, hostname);
                 });
-                var port = https ? 443 : 80;
+                // Use the actual port from the URL to support worktrees
+                var port = window.location.port || (https ? 443 : 80);
                 if (local) {
                     port = https ? 8889 : 8888;
                 }
@@ -5450,6 +5451,18 @@
                 this.socket.removeAllListeners("user:update");
                 this.socket.on('user:update', _.bind(this.handle_realtime_update, this));
 
+                // Ask AI streaming event listeners
+                this.socket.removeAllListeners('ask_ai:start');
+                this.socket.on('ask_ai:start', _.bind(this.handle_ask_ai_start, this));
+
+                this.socket.removeAllListeners('ask_ai:chunk');
+                this.socket.on('ask_ai:chunk', _.bind(this.handle_ask_ai_chunk, this));
+
+                this.socket.removeAllListeners('ask_ai:complete');
+                this.socket.on('ask_ai:complete', _.bind(this.handle_ask_ai_complete, this));
+
+                this.socket.removeAllListeners('ask_ai:error');
+                this.socket.on('ask_ai:error', _.bind(this.handle_ask_ai_error, this));
 
                 this.socket.on('disconnect', _.bind(function (reason) {
                     NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);
@@ -5570,6 +5583,66 @@
                     }
                 }
             }
+        },
+
+        handle_ask_ai_start: function (data) {
+            NEWSBLUR.log(['Ask AI started', data.story_hash]);
+            // Could show additional UI feedback if needed
+        },
+
+        handle_ask_ai_chunk: function (data) {
+            NEWSBLUR.log(['Ask AI chunk received', data.story_hash, data.question_id, data.chunk]);
+            var story_hash = data.story_hash;
+            var question_id = data.question_id;
+            var chunk = data.chunk;
+
+            // Find the active Ask AI view for this story and question
+            var view = this.find_ask_ai_view_for_story(story_hash, question_id);
+            NEWSBLUR.log(['Found Ask AI view:', view ? 'yes' : 'no']);
+            if (view) {
+                view.append_chunk(chunk);
+            } else {
+                NEWSBLUR.log(['No Ask AI view found for story', story_hash, 'question', question_id]);
+            }
+        },
+
+        handle_ask_ai_complete: function (data) {
+            NEWSBLUR.log(['Ask AI complete', data.story_hash, data.question_id]);
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id);
+            if (view) {
+                view.complete_response();
+            }
+        },
+
+        handle_ask_ai_error: function (data) {
+            NEWSBLUR.log(['Ask AI error', data.story_hash, data.question_id, data.error]);
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id);
+            if (view) {
+                view.show_error(data.error);
+            }
+        },
+
+        find_ask_ai_view_for_story: function (story_hash, question_id) {
+            // Find the Ask AI view instance for this story and question
+            // Look for Ask AI view elements in the page
+            var $ask_ai_elements = $('.NB-story-ask-ai-inline, .NB-story-ask-ai-pane');
+            NEWSBLUR.log(['Looking for Ask AI view with story_hash:', story_hash, 'question_id:', question_id, 'Found elements:', $ask_ai_elements.length]);
+
+            // Check each element to find the one with matching story_hash AND question_id
+            for (var i = 0; i < $ask_ai_elements.length; i++) {
+                var $el = $($ask_ai_elements[i]);
+                var view = $el.data('view');
+                if (view) {
+                    NEWSBLUR.log(['Checking view - story_hash:', view.story_hash, 'question_id:', view.question_id]);
+                    if (view.story_hash === story_hash && view.question_id === question_id) {
+                        NEWSBLUR.log(['Found matching Ask AI view!']);
+                        return view;
+                    }
+                }
+            }
+
+            NEWSBLUR.log(['No matching Ask AI view found for story:', story_hash, 'question:', question_id]);
+            return null;
         },
 
         update_discover_indexing_progress: function (message) {
