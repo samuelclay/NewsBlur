@@ -172,6 +172,89 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         }
     },
 
+    markdown_to_html: function (text) {
+        // Simple markdown to HTML converter for common patterns
+        var html = text;
+
+        // Escape HTML to prevent XSS
+        html = html.replace(/&/g, '&amp;')
+                   .replace(/</g, '&lt;')
+                   .replace(/>/g, '&gt;');
+
+        // Bold: **text** or __text__ (do bold first, before italic)
+        html = html.replace(/\*\*([^\n]+?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/__([^\n]+?)__/g, '<strong>$1</strong>');
+
+        // Italic: *text* or _text_ (avoid matching already-converted bold)
+        html = html.replace(/\*([^\n*]+?)\*/g, '<em>$1</em>');
+        html = html.replace(/_([^\n_]+?)_/g, '<em>$1</em>');
+
+        // Horizontal rule: ---
+        html = html.replace(/^---$/gm, '<hr>');
+
+        // Split into lines for list and paragraph processing
+        var lines = html.split('\n');
+        var result = [];
+        var in_list = false;
+        var list_type = null;
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            var trimmed = line.trim();
+
+            // Skip if it's an HR (already converted)
+            if (trimmed === '<hr>') {
+                if (in_list) {
+                    result.push('</' + list_type + '>');
+                    in_list = false;
+                    list_type = null;
+                }
+                result.push('<hr>');
+                continue;
+            }
+
+            // Numbered list: 1. item, 2. item, etc.
+            if (/^\d+\.\s/.test(trimmed)) {
+                if (!in_list || list_type !== 'ol') {
+                    if (in_list) result.push('</' + list_type + '>');
+                    result.push('<ol>');
+                    in_list = true;
+                    list_type = 'ol';
+                }
+                result.push('<li>' + trimmed.replace(/^\d+\.\s/, '') + '</li>');
+            }
+            // Bullet list: - item (but not if it's part of converted markdown)
+            else if (/^[-]\s/.test(trimmed) && trimmed.indexOf('<') === -1) {
+                if (!in_list || list_type !== 'ul') {
+                    if (in_list) result.push('</' + list_type + '>');
+                    result.push('<ul>');
+                    in_list = true;
+                    list_type = 'ul';
+                }
+                result.push('<li>' + trimmed.replace(/^[-]\s/, '') + '</li>');
+            }
+            // Regular line
+            else {
+                if (in_list) {
+                    result.push('</' + list_type + '>');
+                    in_list = false;
+                    list_type = null;
+                }
+                if (trimmed) {
+                    result.push('<p>' + line + '</p>');
+                }
+                // Skip empty lines
+            }
+        }
+
+        // Close any open list
+        if (in_list) {
+            result.push('</' + list_type + '>');
+        }
+
+        return result.join('\n');
+    },
+
     append_chunk: function (chunk) {
         // Append streaming chunk to answer
         var $answer = this.$('.NB-story-ask-ai-answer');
@@ -192,8 +275,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Accumulate full response text
         this.response_text += chunk;
 
-        // Append the chunk (line breaks will be preserved by CSS white-space: pre-wrap)
-        $answer.append(document.createTextNode(chunk));
+        // Convert markdown to HTML and update the answer
+        var html = this.markdown_to_html(this.response_text);
+        $answer.html(html);
 
         // Reset debounce timeout - if no chunk for 10s, show timeout error
         if (this.debounce_timeout) {
@@ -264,13 +348,15 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             content: followup_text
         });
 
-        // Add a visual separator for the follow-up
-        var $answer = this.$('.NB-story-ask-ai-answer');
-        $answer.append(document.createTextNode('\n\n---\n\n'));
-        $answer.append(document.createTextNode('You: ' + followup_text + '\n\n'));
+        // Add a visual separator for the follow-up to response_text
+        this.response_text += '\n\n---\n\n**You:** ' + followup_text + '\n\n';
 
-        // Reset for new response
-        this.response_text = '';
+        // Render the updated text with markdown
+        var $answer = this.$('.NB-story-ask-ai-answer');
+        var html = this.markdown_to_html(this.response_text);
+        $answer.html(html);
+
+        // Don't reset response_text - we want to keep the conversation history
         this.streaming_started = false;
 
         // Hide follow-up input, show loading

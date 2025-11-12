@@ -110,7 +110,7 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
         )
 
         response = client.chat.completions.create(
-            model="gpt-5",
+            model="gpt-4.1",
             messages=messages,
             stream=True,
         )
@@ -140,7 +140,7 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
 
         # Save response to cache
         metadata = {
-            "model": "gpt-5",
+            "model": "gpt-4.1",
             "question_id": question_id,
             "duration_seconds": time.time() - start_time,
             "response_length": len(full_response_text),
