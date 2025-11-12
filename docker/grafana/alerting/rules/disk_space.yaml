@@ -14,7 +14,7 @@ groups:
             relativeTimeRange:
               from: 300
               to: 0
-            datasourceUid: prometheus
+            datasourceUid: U1-fPO3Mk
             model:
               expr: '(node_filesystem_size_bytes{fstype!~"tmpfs|devtmpfs|overlay|squashfs|iso9660"} - node_filesystem_avail_bytes{fstype!~"tmpfs|devtmpfs|overlay|squashfs|iso9660"}) / node_filesystem_size_bytes{fstype!~"tmpfs|devtmpfs|overlay|squashfs|iso9660"} * 100'
               refId: A
@@ -28,7 +28,7 @@ groups:
             model:
               type: threshold
               refId: B
-              expr: A
+              expression: A
               conditions:
                 - evaluator:
                     params:
