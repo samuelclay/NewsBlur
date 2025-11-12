@@ -14,7 +14,6 @@ import com.newsblur.domain.Story
 import com.newsblur.fragment.ReadingActionConfirmationFragment
 import com.newsblur.network.APIConstants
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
-import com.newsblur.network.FeedApi
 import com.newsblur.network.FolderApi
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NbSyncManager
@@ -30,7 +29,6 @@ import com.newsblur.util.FeedExt.setNotifyUnread
 
 class FeedUtils(
     private val dbHelper: BlurDatabaseHelper,
-    private val feedApi: FeedApi,
     private val folderApi: FolderApi,
     private val prefsRepo: PrefsRepo,
     private val syncServiceState: SyncServiceState,
@@ -123,25 +121,6 @@ class FeedUtils(
             onPostExecute = {
                 syncUpdateStatus(UPDATE_STORY)
                 triggerSync(context)
-            },
-        )
-    }
-
-    fun renameFolder(
-        folderName: String?,
-        newFolderName: String,
-        inFolder: String,
-        context: Context,
-    ) {
-        NBScope.executeAsyncTask(
-            doInBackground = {
-                folderApi.renameFolder(folderName, newFolderName, inFolder)
-            },
-            onPostExecute = { result ->
-                if (!result.isError) {
-                    syncServiceState.forceFeedsFolders()
-                    triggerSync(context)
-                }
             },
         )
     }
@@ -377,18 +356,6 @@ class FeedUtils(
             String.format(context.resources.getString(R.string.send_full), story.title, story.permalink, UIUtils.fromHtml(body)),
         )
         context.startActivity(Intent.createChooser(intent, "Send using"))
-    }
-
-    fun renameFeed(
-        context: Context,
-        feedId: String?,
-        newFeedName: String?,
-    ) {
-        val ra = ReadingAction.RenameFeed(feedId, newFeedName)
-        dbHelper.enqueueAction(ra)
-        val impact = ra.doLocal(dbHelper, prefsRepo)
-        syncUpdateStatus(impact)
-        triggerSync(context)
     }
 
     fun replyToComment(

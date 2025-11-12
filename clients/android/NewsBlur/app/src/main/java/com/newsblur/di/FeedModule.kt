@@ -22,11 +22,10 @@ class FeedModule {
     @Provides
     fun provideFeedUtils(
         dbHelper: BlurDatabaseHelper,
-        feedApi: FeedApi,
         folderApi: FolderApi,
         prefsRepo: PrefsRepo,
         syncServiceState: SyncServiceState,
-    ) = FeedUtils(dbHelper, feedApi, folderApi, prefsRepo, syncServiceState)
+    ) = FeedUtils(dbHelper, folderApi, prefsRepo, syncServiceState)
 
     @Singleton
     @Provides
