@@ -1346,16 +1346,31 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var button_height = $button.outerHeight();
         var button_width = $button.outerWidth();
         var menu_height = $menu.outerHeight();
+        var menu_width = $menu.outerWidth();
+
+        // Calculate centered position relative to button
+        var center_left = button_offset.left + (button_width / 2) - (menu_width / 2);
+
+        // Check if menu would go off the right edge of the screen
+        var window_width = $(window).width();
+        if (center_left + menu_width > window_width) {
+            center_left = window_width - menu_width - 10; // 10px padding from edge
+        }
+
+        // Check if menu would go off the left edge of the screen
+        if (center_left < 10) {
+            center_left = 10; // 10px padding from edge
+        }
 
         if (inverse) {
             $menu.css({
                 'top': button_offset.top - menu_height,
-                'left': button_offset.left + button_width + 10
+                'left': center_left
             });
         } else {
             $menu.css({
-                'top': button_offset.top,
-                'left': button_offset.left + button_width + 10
+                'top': button_offset.top + button_height + 5,
+                'left': center_left
             });
         }
 

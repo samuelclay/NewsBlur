@@ -3577,26 +3577,51 @@
         },
 
         open_ask_ai_pane: function (story, question_id) {
-            if (this.ask_ai_pane) {
-                this.ask_ai_pane.remove();
+            var story_view = story.latest_story_detail_view;
+            if (!story_view) {
+                console.log(['No story view found for Ask AI', story]);
+                return;
             }
 
-            this.ask_ai_pane = new NEWSBLUR.Views.StoryAskAiView({
+            var $story_el = story_view.$el;
+            var $content_wrapper = $story_el.find('.NB-story-content-wrapper');
+
+            if (!$content_wrapper.length) {
+                console.log(['No content wrapper found for Ask AI', story]);
+                return;
+            }
+
+            var ask_ai_pane = new NEWSBLUR.Views.StoryAskAiView({
                 story: story,
-                question_id: question_id
+                question_id: question_id,
+                inline: true
             });
 
-            $('.NB-story-ask-ai-pane-content').html(this.ask_ai_pane.render().$el);
-
-            if (this.layout.contentLayout) {
-                this.layout.contentLayout.open('east');
+            // Find the last Ask AI section in this story, or append after content wrapper
+            var $existing_ask_ai = $story_el.find('.NB-story-ask-ai-inline').last();
+            if ($existing_ask_ai.length) {
+                $existing_ask_ai.after(ask_ai_pane.render().$el);
+            } else {
+                $content_wrapper.after(ask_ai_pane.render().$el);
             }
+
+            // Smooth scroll to bring the new Ask AI section into view
+            _.delay(function () {
+                var $new_ask_ai_el = $story_el.find('.NB-story-ask-ai-inline').last();
+                if ($new_ask_ai_el.length) {
+                    $new_ask_ai_el[0].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest',
+                        inline: 'nearest'
+                    });
+                }
+            }, 100);
         },
 
         close_ask_ai_pane: function () {
-            if (this.layout.contentLayout) {
-                this.layout.contentLayout.close('east');
-            }
+            $('.NB-story-ask-ai-inline').fadeOut(200, function () {
+                $(this).remove();
+            });
             if (this.ask_ai_pane) {
                 this.ask_ai_pane.remove();
                 this.ask_ai_pane = null;

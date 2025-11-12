@@ -1,6 +1,8 @@
 NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
-    className: 'NB-story-ask-ai-pane',
+    className: function () {
+        return this.options.inline ? 'NB-story-ask-ai-inline' : 'NB-story-ask-ai-pane';
+    },
 
     events: {
         "click .NB-story-ask-ai-close": "close_pane",
@@ -11,6 +13,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.story = options.story;
         this.question_id = options.question_id;
         this.question_text = this.get_question_text(this.question_id);
+        this.inline = options.inline || false;
     },
 
     render: function () {
@@ -20,19 +23,31 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             question_id: this.question_id
         }));
 
+        // Add thinking class and set up timeout
+        if (this.inline) {
+            this.$el.addClass('NB-thinking');
+            this.timeout = setTimeout(_.bind(this.handle_timeout, this), 5000);
+        }
+
         return this;
     },
 
+    handle_timeout: function () {
+        this.$el.removeClass('NB-thinking');
+        this.$('.NB-story-ask-ai-loading').hide();
+        this.$('.NB-story-ask-ai-error').addClass('NB-active');
+    },
+
     template: _.template('\
-        <div class="NB-story-ask-ai-header">\
-            <div class="NB-story-ask-ai-title">Ask AI</div>\
-            <div class="NB-story-ask-ai-close" role="button">\
-                <div class="NB-icon"></div>\
-            </div>\
-        </div>\
         <div class="NB-story-ask-ai-content">\
-            <div class="NB-story-ask-ai-question">\
-                <strong>Question:</strong> <%= question_text %>\
+            <div class="NB-story-ask-ai-question-wrapper">\
+                <div class="NB-story-ask-ai-question-border"></div>\
+                <div class="NB-story-ask-ai-question">\
+                    <div class="NB-story-ask-ai-close" role="button">\
+                        <div class="NB-icon"></div>\
+                    </div>\
+                    <div class="NB-story-ask-ai-question-text"><%= question_text %></div>\
+                </div>\
             </div>\
             <% if (question_id === "custom") { %>\
                 <div class="NB-story-ask-ai-custom-input-wrapper">\
@@ -44,6 +59,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 <div class="NB-story-ask-ai-loading">\
                     <div class="NB-spinner"></div>\
                     <div class="NB-loading-text">Thinking...</div>\
+                </div>\
+                <div class="NB-story-ask-ai-error">\
+                    <strong>Request timed out.</strong> The AI service took too long to respond. Please try again.\
                 </div>\
                 <div class="NB-story-ask-ai-answer" style="display: none;"></div>\
             </div>\
@@ -69,7 +87,15 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             e.preventDefault();
             e.stopPropagation();
         }
-        NEWSBLUR.reader.close_ask_ai_pane();
+        // Clear timeout if exists
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+        // Close with reverse animation
+        this.$el.addClass('NB-closing');
+        _.delay(_.bind(function () {
+            this.remove();
+        }, this), 600);
     },
 
     submit_custom_question: function (e) {
