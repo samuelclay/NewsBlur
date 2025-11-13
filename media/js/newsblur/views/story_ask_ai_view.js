@@ -141,6 +141,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             params.conversation_history = JSON.stringify(conversation_history);
         }
 
+        // Hide usage message from previous request when starting a new request
+        this.$('.NB-story-ask-ai-usage-message').hide();
+
         NEWSBLUR.assets.make_request(
             '/ask-ai/question',
             params,
@@ -190,8 +193,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             this.show_usage_message(error_message);
             this.$('.NB-story-ask-ai-error').removeClass('NB-active');
         } else {
-            // Show as error
+            // Show as error, hide usage message
             this.$('.NB-story-ask-ai-error').text(error_message).addClass('NB-active');
+            this.$('.NB-story-ask-ai-usage-message').hide();
         }
 
         if (this.initial_timeout) {
@@ -342,10 +346,11 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     },
 
     show_error: function (error_message) {
-        // Show error, clear all timeouts
+        // Show error, clear all timeouts, hide usage message
         this.$el.removeClass('NB-thinking');
         this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
         this.$('.NB-story-ask-ai-error').text(error_message).addClass('NB-active');
+        this.$('.NB-story-ask-ai-usage-message').hide();
         if (this.initial_timeout) {
             clearTimeout(this.initial_timeout);
             this.initial_timeout = null;
