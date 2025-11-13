@@ -2439,7 +2439,14 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisPlacement": "auto",
             "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineWidth": 0,
             "spanNulls": false
           },
@@ -2475,7 +2482,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           }
@@ -2483,26 +2490,29 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 16,
         "w": 24,
         "x": 0,
-        "y": 83
+        "y": 81
       },
       "id": 85,
       "options": {
         "alignValue": "left",
         "legend": {
-          "displayMode": "hidden",
-          "placement": "bottom"
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
         },
         "mergeValues": true,
         "rowHeight": 0.9,
         "showValue": "never",
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.2.1",
       "targets": [
         {
           "datasource": {
