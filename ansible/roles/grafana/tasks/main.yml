@@ -43,15 +43,6 @@
   tags:
     - grafana-alerts
 
-- name: Copy grafana alert rules
-  become: yes
-  copy:
-    src: /srv/newsblur/docker/grafana/alerting/rules/disk_space.yaml
-    dest: /srv/newsblur/docker/grafana/alerting/rules/disk_space.yaml
-  notify: restart grafana
-  tags:
-    - grafana-alerts
-
 - name: Register grafana in consul
   tags: consul
   become: yes
