@@ -136,9 +136,9 @@ if [ "$NEEDS_SETUP" = true ]; then
     echo -e "${GREEN}✓ Docker and Docker Compose are available${NC}"
 
     # Copy local_settings.py from parent repo if it exists and we don't have it
-    if [ ! -f "newsblur_web/local_settings.py" ] && [ -f "../../../newsblur_web/local_settings.py" ]; then
+    if [ ! -f "newsblur_web/local_settings.py" ] && [ -f "../../newsblur_web/local_settings.py" ]; then
         echo -e "${YELLOW}Copying local_settings.py from parent repo...${NC}"
-        cp ../../../newsblur_web/local_settings.py newsblur_web/local_settings.py
+        cp ../../newsblur_web/local_settings.py newsblur_web/local_settings.py
         echo -e "${GREEN}✓ Copied local_settings.py${NC}"
     elif [ -f "newsblur_web/local_settings.py" ]; then
         echo -e "${GREEN}✓ local_settings.py already exists${NC}"
