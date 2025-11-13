@@ -328,7 +328,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-sideoption NB-feed-story-email" role="button">\
                         <div class="NB-sideoption-title">Email</div>\
                         <div class="NB-sideoption-thirdparty NB-sideoption-icon NB-sideoption-icon-email">&nbsp;</div>\
-                        <div class="NB-flex-break"></div>\
                         <div class="NB-sideoption-thirdparty-services">\
                             <div class="NB-sideoption-icons">\
                                 <% _.each(NEWSBLUR.assets.third_party_sharing_services, function(label, key) { %>\
@@ -345,7 +344,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-sideoption NB-feed-story-train" role="button">\
                         <div class="NB-sideoption-title">Train</div>\
                         <div class="NB-sideoption-icon NB-sideoption-icon-train">&nbsp;</div>\
-                        <div class="NB-flex-break"></div>\
                         <div class="NB-sideoption-writerules">\
                             <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-writerules" data-action="write-rules" role="button">\
                             </div>\
