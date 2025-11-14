@@ -379,6 +379,14 @@ _.extend(NEWSBLUR.ReaderKeyboard.prototype, {
               'c'
             ])
           ])
+        ]),
+        $.make('div', { className: 'NB-keyboard-group' }, [
+          $.make('div', { className: 'NB-keyboard-shortcut' }, [
+            $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Ask AI about story'),
+            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+              'i'
+            ])
+          ])
         ])
       ])
     ]);

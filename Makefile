@@ -98,7 +98,7 @@ worktree:
 worktree-log:
 	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
 	if [ -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" ]; then \
-		COMPOSE_PROJECT_NAME="$$WORKSPACE_NAME" docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" logs -f --tail 20 newsblur_web newsblur_node; \
+		COMPOSE_PROJECT_NAME="$$WORKSPACE_NAME" docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" logs -f --tail 20 newsblur_web newsblur_node task_celery; \
 	else \
 		echo "No worktree configuration found. Run 'make worktree' first."; \
 	fi

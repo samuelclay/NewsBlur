@@ -8,6 +8,7 @@ from wsgiref.util import application_uri
 import dateutil
 import mongoengine as mongo
 import paypalrestsdk
+import pytz
 import redis
 import stripe
 from django.conf import settings
@@ -70,6 +71,11 @@ class Profile(models.Model):
     # paypal_payer_id   = models.CharField(max_length=24, blank=True, null=True)
     premium_renewal = models.BooleanField(default=False, blank=True, null=True)
     active_provider = models.CharField(max_length=24, blank=True, null=True)
+    ask_ai_uses_count = models.IntegerField(default=0)
+    ask_ai_daily_count = models.IntegerField(default=0)
+    ask_ai_weekly_count = models.IntegerField(default=0)
+    ask_ai_last_daily_reset = models.DateTimeField(blank=True, null=True)
+    ask_ai_last_weekly_reset = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return "%s <%s>%s%s%s" % (
@@ -135,6 +141,128 @@ class Profile(models.Model):
         if self.is_archive:
             return settings.DAYS_OF_STORY_HASHES_ARCHIVE
         return settings.DAYS_OF_STORY_HASHES
+
+    def _format_time_until_reset(self, hours):
+        """Format time until reset as hours or minutes."""
+        if hours >= 1:
+            rounded_hours = round(hours)
+            return f"{rounded_hours} hour{'s' if rounded_hours != 1 else ''}"
+        else:
+            minutes = round(hours * 60)
+            return f"{minutes} minute{'s' if minutes != 1 else ''}"
+
+    def can_use_ask_ai(self):
+        """Check if user can use Ask AI feature based on their plan and usage limits."""
+        # Premium and Premium Archive users have daily limits
+        if self.is_premium or self.is_archive or self.is_pro:
+            # Get current time in user's timezone
+            user_tz = pytz.timezone(str(self.timezone))
+            now_utc = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+            now_local = now_utc.astimezone(user_tz)
+
+            # Check if we need to reset the daily counter (new day in user's timezone)
+            needs_reset = False
+            if not self.ask_ai_last_daily_reset:
+                needs_reset = True
+            else:
+                last_reset_local = self.ask_ai_last_daily_reset.replace(tzinfo=pytz.UTC).astimezone(user_tz)
+                # Compare dates (not datetime) to see if it's a new day
+                if now_local.date() > last_reset_local.date():
+                    needs_reset = True
+
+            if needs_reset:
+                self.ask_ai_daily_count = 0
+                self.ask_ai_last_daily_reset = now_utc
+                self.save()
+
+            # Determine daily limit based on subscription level
+            if self.is_archive or self.is_pro:
+                daily_limit = 50
+            else:  # is_premium but not archive
+                daily_limit = 3
+
+            # Check daily limit
+            if self.ask_ai_daily_count >= daily_limit:
+                # Calculate time until midnight in user's timezone
+                midnight_tonight = (now_local + datetime.timedelta(days=1)).replace(
+                    hour=0, minute=0, second=0, microsecond=0
+                )
+                time_until_reset = midnight_tonight - now_local
+                hours_until_reset = time_until_reset.total_seconds() / 3600
+                time_formatted = self._format_time_until_reset(hours_until_reset)
+
+                if self.is_archive or self.is_pro:
+                    return (
+                        False,
+                        f"You've reached your daily limit of {daily_limit} Ask AI requests. Your limit resets at midnight tonight, in {time_formatted}.",
+                    )
+                else:
+                    return (
+                        False,
+                        f"You've reached your daily limit of {daily_limit} Ask AI requests. Your limit resets at midnight tonight, in {time_formatted}.\n\nUpgrade to Premium Archive for 50 requests per day.",
+                    )
+
+            return True, None
+
+        # Free users have 10 lifetime uses
+        if self.ask_ai_uses_count >= 10:
+            return False, "You've used all 10 free Ask AI requests. Upgrade to Premium for continued access."
+
+        return True, None
+
+    def increment_ask_ai_usage(self):
+        """Increment Ask AI usage counters based on user's plan."""
+        if self.is_premium or self.is_archive or self.is_pro:
+            self.ask_ai_daily_count += 1
+        else:
+            # Free users
+            self.ask_ai_uses_count += 1
+
+        self.save()
+
+    def get_ask_ai_usage_message(self):
+        """Get message to display about remaining Ask AI usage."""
+        if self.is_premium or self.is_archive or self.is_pro:
+            # Determine daily limit based on subscription level
+            if self.is_archive or self.is_pro:
+                daily_limit = 50
+                upgrade_message = ""
+                # Premium Archive/Pro users only see message when 3 or fewer remaining
+                show_message_threshold = 3
+            else:  # is_premium but not archive
+                daily_limit = 3
+                upgrade_message = "\n\nUpgrade to Premium Archive for 50 requests per day."
+                # Premium users always see their usage
+                show_message_threshold = daily_limit  # Always show (3 or less is always true)
+
+            remaining = max(0, daily_limit - self.ask_ai_daily_count)
+
+            # Premium Archive/Pro users only see message when remaining <= 3
+            if remaining > show_message_threshold:
+                return None
+
+            # Calculate time until midnight in user's timezone
+            user_tz = pytz.timezone(str(self.timezone))
+            now_utc = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+            now_local = now_utc.astimezone(user_tz)
+            midnight_tonight = (now_local + datetime.timedelta(days=1)).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+            time_until_reset = midnight_tonight - now_local
+            hours_until_reset = time_until_reset.total_seconds() / 3600
+            time_formatted = self._format_time_until_reset(hours_until_reset)
+
+            if remaining == 0:
+                return f"You've used all {daily_limit} Ask AI requests today. Your limit resets at midnight tonight, in {time_formatted}.{upgrade_message}"
+            else:
+                return f"You have {remaining} Ask AI request{'s' if remaining != 1 else ''} remaining today (resets in {time_formatted}).{upgrade_message}"
+
+        # Free users
+        remaining = max(0, 10 - self.ask_ai_uses_count)
+        if remaining == 0:
+            return "You've used all 10 free Ask AI requests.\n\nUpgrade to Premium for continued access."
+        else:
+            return f"You have {remaining} out of 10 free Ask AI request{'s' if remaining != 1 else ''} remaining.\n\nUpgrade to Premium for continued access."
 
     def canonical(self):
         return {

@@ -133,6 +133,7 @@ javascripts:
     - js/newsblur/social_page/*.js
     - js/newsblur/models/comments.js
     - js/newsblur/views/story_share_view.js
+    - js/newsblur/views/story_ask_ai_view.js
     - js/newsblur/views/story_comment_view.js
     - js/vendor/jquery.easing.js
     - js/vendor/jquery.newsblur.js

@@ -224,6 +224,10 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         $.make('li', { className: 'NB-8' }, [
                             $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
                             'Stories can stay unread forever'
+                        ]),
+                        $.make('li', { className: 'NB-9' }, [
+                            $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
+                            'Ask AI questions about stories'
                         ])
                     ]),
                     $.make('div', { className: 'NB-payment-providers' }, [

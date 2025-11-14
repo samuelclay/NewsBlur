@@ -4,6 +4,7 @@ from django.urls import path
 from apps.monitor.views import (
     AppServers,
     AppTimes,
+    AskAI,
     Classifiers,
     DbTimes,
     Errors,
@@ -24,6 +25,7 @@ from apps.monitor.views import (
 urlpatterns = [
     url(r"^app-servers?$", AppServers.as_view(), name="app_servers"),
     url(r"^app-times?$", AppTimes.as_view(), name="app_times"),
+    url(r"^ask-ai?$", AskAI.as_view(), name="ask_ai"),
     url(r"^classifiers?$", Classifiers.as_view(), name="classifiers"),
     url(r"^db-times?$", DbTimes.as_view(), name="db_times"),
     url(r"^errors?$", Errors.as_view(), name="errors"),

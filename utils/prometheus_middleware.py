@@ -14,6 +14,22 @@ from prometheus_client import values
 logger = logging.getLogger(__name__)
 
 
+def ensure_prometheus_directory():
+    """Ensure the Prometheus multiproc directory exists"""
+    prom_dir = os.environ.get("PROMETHEUS_MULTIPROC_DIR", "/srv/newsblur/.prom_cache")
+    if not os.path.exists(prom_dir):
+        try:
+            os.makedirs(prom_dir, mode=0o777, exist_ok=True)
+            logger.info(f"Created Prometheus multiproc directory: {prom_dir}")
+        except Exception as e:
+            logger.error(f"Failed to create Prometheus directory {prom_dir}: {e}")
+    return prom_dir
+
+
+# Ensure directory exists when module is loaded
+ensure_prometheus_directory()
+
+
 class PrometheusBeforeMiddlewareWrapper(PrometheusBeforeMiddleware):
     """Wrapper for PrometheusBeforeMiddleware that handles mmap errors"""
 
@@ -44,9 +60,8 @@ class PrometheusBeforeMiddlewareWrapper(PrometheusBeforeMiddleware):
 
     def _cleanup_old_files(self):
         """Clean up old prometheus files from dead processes"""
-        prom_dir = os.environ.get("PROMETHEUS_MULTIPROC_DIR", "/srv/newsblur/.prom_cache")
-        if not os.path.exists(prom_dir):
-            return
+        # Ensure directory exists (in case it was deleted during runtime)
+        prom_dir = ensure_prometheus_directory()
 
         cleaned = 0
         current_time = time.time()
