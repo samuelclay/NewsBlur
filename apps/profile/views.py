@@ -335,6 +335,38 @@ def set_collapsed_folders(request):
 def paypal_ipn(request):
     try:
         return paypal_standard_ipn(request)
+    except UnicodeDecodeError as e:
+        # PayPal may have returned an error page with non-ASCII characters instead of a proper IPN response
+        # Log comprehensive debugging info to diagnose the encoding issue
+        body = request.body
+        content_type = request.META.get("CONTENT_TYPE", "unknown")
+
+        # Try various encodings to see what works
+        encodings_tried = {}
+        for encoding in ["utf-8", "latin-1", "iso-8859-1", "windows-1252"]:
+            try:
+                decoded = body.decode(encoding)
+                encodings_tried[encoding] = f"SUCCESS (len={len(decoded)})"
+            except Exception as decode_error:
+                encodings_tried[encoding] = f"FAILED: {decode_error}"
+
+        # Get context around the problematic byte
+        error_pos = e.start if hasattr(e, "start") else 0
+        context_start = max(0, error_pos - 50)
+        context_end = min(len(body), error_pos + 50)
+        context_bytes = body[context_start:context_end]
+
+        logging.error(
+            f"PayPal IPN UnicodeDecodeError: {e}\n"
+            f"Content-Type: {content_type}\n"
+            f"Body length: {len(body)} bytes\n"
+            f"Error position: {error_pos}\n"
+            f"Context bytes (pos {context_start}-{context_end}): {context_bytes!r}\n"
+            f"Hex dump: {context_bytes.hex()}\n"
+            f"Encoding attempts: {encodings_tried}\n"
+            f"Full body (latin-1): {body.decode('latin-1', errors='replace')!r}"
+        )
+        return HttpResponse("Invalid PayPal IPN response encoding", status=400)
     except AssertionError:
         # Paypal may have sent webhooks to ipn, so redirect
         logging.user(request, f" ---> Paypal IPN to webhooks redirect: {request.body}")
