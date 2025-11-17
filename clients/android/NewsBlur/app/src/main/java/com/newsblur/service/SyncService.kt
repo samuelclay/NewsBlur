@@ -392,9 +392,6 @@ open class SyncService :
             UnreadsSubService.clear()
             syncServiceState.clearRecountCandidates()
 
-            syncServiceState.lastFFConnMillis = feedResponse.connTime
-            syncServiceState.lastFFReadMillis = feedResponse.readTime
-            syncServiceState.lastFFParseMillis = feedResponse.parseTime
             val startTime = System.currentTimeMillis()
 
             prefsRepo.setPremium(feedResponse.isPremium, feedResponse.premiumExpire)
@@ -474,10 +471,7 @@ open class SyncService :
 
             dbHelper.setFeedsFolders(folderValues, feedValues, socialFeedValues, starredCountValues, savedSearchesValues)
 
-            syncServiceState.lastFFWriteMillis = System.currentTimeMillis() - startTime
-            syncServiceState.lastFeedCount = feedValues.size.toLong()
-
-            Log.i(this.javaClass.name, "got feed list: " + syncServiceState.getSpeedInfo())
+            Log.i(this.javaClass.name, "got feed list")
 
             unreadsSubService.doMetadata()
             unreadsSubService.launchIn(scope).also { trackSubSync(it) }
