@@ -2,7 +2,6 @@ package com.newsblur.activity
 
 import android.content.Intent
 import android.content.res.Configuration
-import android.database.Cursor
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -46,7 +45,7 @@ import com.newsblur.util.ViewUtils
 import com.newsblur.util.VolumeKeyNavigation
 import com.newsblur.util.executeAsyncTask
 import com.newsblur.view.ReadingScrollView.ScrollChangeListener
-import com.newsblur.viewModel.StoriesViewModel
+import com.newsblur.viewModel.ReadingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -71,8 +70,6 @@ abstract class Reading :
 
     @JvmField
     var fs: FeedSet? = null
-
-    private var storyCounts: Int? = null
 
     // Activities navigate to a particular story by hash.
     // We can find it once we have the cursor.
@@ -107,7 +104,10 @@ abstract class Reading :
     private lateinit var volumeKeyNavigation: VolumeKeyNavigation
     private lateinit var intelState: StateFilter
     private lateinit var binding: ActivityReadingBinding
-    private lateinit var storiesViewModel: StoriesViewModel
+    private lateinit var readingViewModel: ReadingViewModel
+
+    private var lastBatchFirstUnreadIndex: Int = -1
+    private var storyCounts: Int? = null
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -116,7 +116,7 @@ abstract class Reading :
 
     override fun onCreate(savedInstanceBundle: Bundle?) {
         super.onCreate(savedInstanceBundle)
-        storiesViewModel = ViewModelProvider(this)[StoriesViewModel::class.java]
+        readingViewModel = ViewModelProvider(this)[ReadingViewModel::class.java]
         binding = ActivityReadingBinding.inflate(layoutInflater)
         applyView(binding)
 
@@ -159,7 +159,7 @@ abstract class Reading :
         setupListeners()
         setupObservers()
         setupOnBackPressed()
-        getActiveStoriesCursor(true)
+        loadActiveStories(true)
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -241,8 +241,8 @@ abstract class Reading :
     }
 
     private fun setupObservers() {
-        storiesViewModel.activeStoriesLiveData.observe(this) {
-            setCursorData(it)
+        readingViewModel.activeStories.observe(this) {
+            setStoryData(it)
         }
     }
 
@@ -260,10 +260,10 @@ abstract class Reading :
         )
     }
 
-    private fun getActiveStoriesCursor(finishOnInvalidFs: Boolean = false) {
+    private fun loadActiveStories(finishOnInvalidFs: Boolean = false) {
         fs?.let {
             val cursorFilters = CursorFilters(prefsRepo, it)
-            storiesViewModel.getActiveStories(it, cursorFilters)
+            readingViewModel.loadStories(it, cursorFilters)
         } ?: run {
             if (finishOnInvalidFs) {
                 Log.e(this.javaClass.name, "can't create activity, no feedset ready")
@@ -273,31 +273,28 @@ abstract class Reading :
         }
     }
 
-    private fun setCursorData(cursor: Cursor) {
+    private fun setStoryData(batch: ReadingViewModel.StoryBatch) {
         if (!dbHelper.isFeedSetReady(fs)) {
             com.newsblur.util.Log
                 .i(this.javaClass.name, "stale load")
             // the system can and will re-use activities, so during the initial mismatch of
             // data, don't show the old stories
-            pager!!.visibility = View.INVISIBLE
+            pager?.visibility = View.INVISIBLE
             binding.readingEmptyViewText.visibility = View.VISIBLE
             storyCounts = null
             triggerRefresh(AppConstants.READING_STORY_PRELOAD)
             return
         }
 
-        // swapCursor() will asynch process the new cursor and fully update the pager,
-        // update child fragments, and then call pagerUpdated()
-        readingAdapter?.swapCursor(lifecycleScope, cursor)
+        readingAdapter?.submitBatch(batch.stories, batch.classifiers)
 
-        storyCounts = cursor.count
+        lastBatchFirstUnreadIndex = batch.indexOfLastUnread
+        storyCounts = batch.stories.size
 
         com.newsblur.util.Log
-            .d(this.javaClass.name, "loaded cursor with count: $storyCounts")
-        storyCounts?.let { count ->
-            if (count < 1) {
-                triggerRefresh(AppConstants.READING_STORY_PRELOAD)
-            }
+            .d(this.javaClass.name, "loaded stories count: ${batch.stories.size}")
+        if (batch.stories.isEmpty()) {
+            triggerRefresh(AppConstants.READING_STORY_PRELOAD)
         }
     }
 
@@ -325,9 +322,14 @@ abstract class Reading :
             binding.readingEmptyViewText.visibility = View.INVISIBLE
             return
         }
+
         val position: Int =
             if (storyHash == FIND_FIRST_UNREAD) {
-                readingAdapter!!.findFirstUnread()
+                if (lastBatchFirstUnreadIndex >= 0) {
+                    lastBatchFirstUnreadIndex
+                } else {
+                    readingAdapter!!.findFirstUnread()
+                }
             } else {
                 readingAdapter!!.findHash(storyHash!!)
             }
@@ -381,7 +383,7 @@ abstract class Reading :
         if (fs!!.isSingleNormal) showFeedMetadata = false
         var sourceUserId: String? = null
         if (fs!!.singleSocialFeed != null) sourceUserId = fs!!.singleSocialFeed.key
-        readingAdapter = ReadingAdapter(childFragmentManager, sourceUserId, showFeedMetadata, this, dbHelper)
+        readingAdapter = ReadingAdapter(childFragmentManager, sourceUserId, showFeedMetadata, this)
 
         pager.adapter = readingAdapter
 
@@ -433,7 +435,7 @@ abstract class Reading :
             }
         }
         if (updateType and UPDATE_STORY != 0) {
-            getActiveStoriesCursor()
+            loadActiveStories()
             updateOverlayNav()
         }
 
@@ -458,7 +460,8 @@ abstract class Reading :
         arg0: Int,
         arg1: Float,
         arg2: Int,
-    ) {}
+    ) {
+    }
 
     override fun onPageSelected(position: Int) {
         lifecycleScope.executeAsyncTask(
@@ -854,7 +857,7 @@ abstract class Reading :
         if (nextPosition < readingAdapter!!.count) {
             try {
                 pager!!.currentItem = nextPosition
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Just in case cursor changes.
             }
         }
