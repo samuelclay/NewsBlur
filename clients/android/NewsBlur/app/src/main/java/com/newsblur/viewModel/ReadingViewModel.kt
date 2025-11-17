@@ -1,11 +1,13 @@
 package com.newsblur.viewModel
 
 import android.os.CancellationSignal
+import android.os.OperationCanceledException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.util.CursorFilters
 import com.newsblur.util.FeedSet
@@ -17,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 
 @HiltViewModel
-class StoriesViewModel
+class ReadingViewModel
     @Inject
     constructor(
         private val dbHelper: BlurDatabaseHelper,
@@ -29,32 +31,45 @@ class StoriesViewModel
 
         private val loadSeq = AtomicLong(0)
 
-        fun loadActiveStories(
+        fun loadStories(
             fs: FeedSet,
             cursorFilters: CursorFilters,
         ) {
             viewModelScope.launch(Dispatchers.IO) {
                 val currentLoadId = loadSeq.incrementAndGet()
                 try {
-                    dbHelper.getActiveStoriesCursor(fs, cursorFilters, cancellationSignal).use { cursor ->
+                    dbHelper.getActiveStoriesCursor(fs, cursorFilters, cancellationSignal).use { c ->
                         val stories = mutableListOf<Story>()
                         var indexOfLastUnread = -1
-                        if (cursor.moveToFirst()) {
+                        if (c.moveToFirst()) {
                             var pos = 0
                             do {
-                                val s = Story.fromCursor(cursor)
-                                s.bindExternValues(cursor)
+                                val s = Story.fromCursor(c)
+                                s.bindExternValues(c)
                                 stories.add(s)
-                                if (!s.read) indexOfLastUnread = pos
+                                if (indexOfLastUnread == -1 && !s.read) indexOfLastUnread = pos
                                 pos++
-                            } while (cursor.moveToNext())
+                            } while (c.moveToNext())
                         }
 
-                        val storyBatch = StoryBatch(stories = stories, indexOfLastUnread = indexOfLastUnread, loadId = currentLoadId)
-                        _activeStories.postValue(storyBatch)
+                        val classifiers =
+                            stories
+                                .map { it.feedId }
+                                .associateWith { id -> dbHelper.getClassifierForFeed(id) }
+
+                        _activeStories.postValue(
+                            StoryBatch(
+                                stories = stories,
+                                indexOfLastUnread = indexOfLastUnread,
+                                loadId = currentLoadId,
+                                classifiers = classifiers,
+                            ),
+                        )
                     }
+                } catch (e: OperationCanceledException) {
+                    Log.d(this.javaClass.name, "Load canceled.")
                 } catch (e: Exception) {
-                    Log.e(this.javaClass.name, "Caught ${e.javaClass.name} in loadActiveStories.")
+                    Log.e(this.javaClass.name, "Caught ${e.javaClass.name} in loadActiveStories.", e)
                 }
             }
         }
@@ -68,5 +83,6 @@ class StoriesViewModel
             val stories: List<Story>,
             val indexOfLastUnread: Int,
             val loadId: Long,
+            val classifiers: Map<String, Classifier>,
         )
     }
