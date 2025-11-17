@@ -89,21 +89,6 @@ public class BlurDatabaseHelper {
         com.newsblur.util.Log.i(this.getClass().getName(), ". . . tables recreated.");
     }
 
-    @Nullable
-    public String getEngineVersion() {
-        String engineVersion = "";
-        try {
-            Cursor c = dbRO.rawQuery("SELECT sqlite_version() AS sqlite_version", null);
-            if (c.moveToFirst()) {
-                engineVersion = c.getString(0);
-            }
-            c.close();
-        } catch (Exception e) {
-            // this is only debug code, do not rais a failure
-        }
-        return engineVersion;
-    }
-
     @NonNull
     public Set<String> getAllFeeds() {
         return getAllFeeds(false);

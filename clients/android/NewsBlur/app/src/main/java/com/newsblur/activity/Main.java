@@ -72,7 +72,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        contextMenuDelegate = new MainContextMenuDelegateImpl(this, dbHelper, prefsRepo);
+        contextMenuDelegate = new MainContextMenuDelegateImpl(this, prefsRepo);
         keyboardManager = new KeyboardManager();
         EdgeToEdgeUtil.applyView(this, binding);
 

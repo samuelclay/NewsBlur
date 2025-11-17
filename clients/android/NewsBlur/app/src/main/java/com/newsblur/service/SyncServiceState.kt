@@ -65,12 +65,6 @@ interface SyncServiceState {
      */
     var lastFeedSet: FeedSet?
 
-    var lastFeedCount: Long
-    var lastFFConnMillis: Long
-    var lastFFReadMillis: Long
-    var lastFFParseMillis: Long
-    var lastFFWriteMillis: Long
-
     var workaroundReadStoryTimestamp: Long
     var workaroundGlobalSharedStoryTimestamp: Long
 
@@ -94,8 +88,6 @@ interface SyncServiceState {
     fun isFeedSetSyncing(fs: FeedSet?): Boolean
 
     fun isFeedSetStoriesFresh(fs: FeedSet?): Boolean
-
-    fun getSpeedInfo(): String
 
     fun getPendingInfo(): String
 
@@ -191,11 +183,6 @@ class DefaultSyncServiceState
         override val followupActions: List<ReadingAction> get() = _followupActions
 
         override var lastFeedSet: FeedSet? = null
-        override var lastFeedCount: Long = 0L
-        override var lastFFConnMillis: Long = 0L
-        override var lastFFReadMillis: Long = 0L
-        override var lastFFParseMillis: Long = 0L
-        override var lastFFWriteMillis: Long = 0L
 
         override var workaroundReadStoryTimestamp: Long = 0L
         override var workaroundGlobalSharedStoryTimestamp: Long = 0L
@@ -248,16 +235,6 @@ class DefaultSyncServiceState
 
         override fun isFeedSetStoriesFresh(fs: FeedSet?) = (_feedStoriesSeen[fs] ?: 0) >= 1
 
-        override fun getSpeedInfo(): String =
-            StringBuilder()
-                .apply {
-                    append(lastFeedCount).append(" feeds in")
-                    append(" conn:").append(lastFFConnMillis)
-                    append(" read:").append(lastFFReadMillis)
-                    append(" parse:").append(lastFFParseMillis)
-                    append(" write:").append(lastFFWriteMillis)
-                }.toString()
-
         override fun getPendingInfo(): String =
             StringBuilder()
                 .apply {
@@ -284,6 +261,7 @@ class DefaultSyncServiceState
                                     context.resources.getString(R.string.sync_status_actions),
                                     lastActionCount,
                                 )
+
                             is ServiceState.RecountsSync -> context.resources.getString(R.string.sync_status_recounts)
                             is ServiceState.StorySync -> context.resources.getString(R.string.sync_status_stories)
                             is ServiceState.UnreadsSync ->
