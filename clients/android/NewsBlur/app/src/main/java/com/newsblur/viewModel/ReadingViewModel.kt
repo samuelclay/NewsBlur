@@ -40,6 +40,7 @@ class ReadingViewModel
                 try {
                     dbHelper.getActiveStoriesCursor(fs, cursorFilters, cancellationSignal).use { c ->
                         val stories = mutableListOf<Story>()
+                        val feedIds = mutableSetOf<String>()
                         var indexOfLastUnread = -1
                         if (c.moveToFirst()) {
                             var pos = 0
@@ -47,15 +48,13 @@ class ReadingViewModel
                                 val s = Story.fromCursor(c)
                                 s.bindExternValues(c)
                                 stories.add(s)
+                                feedIds.add(s.feedId)
                                 if (indexOfLastUnread == -1 && !s.read) indexOfLastUnread = pos
                                 pos++
                             } while (c.moveToNext())
                         }
 
-                        val classifiers =
-                            stories
-                                .map { it.feedId }
-                                .associateWith { id -> dbHelper.getClassifierForFeed(id) }
+                        val classifiers = feedIds.associateWith { id -> dbHelper.getClassifierForFeed(id) }
 
                         _activeStories.postValue(
                             StoryBatch(
