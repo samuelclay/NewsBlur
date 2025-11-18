@@ -1,6 +1,7 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.newsblur.database
 
-import android.database.Cursor
 import android.graphics.Color
 import android.os.Parcelable
 import android.text.TextUtils
@@ -26,8 +27,6 @@ import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.NbActivity
 import com.newsblur.domain.Story
-import com.newsblur.domain.UserDetails
-import com.newsblur.fragment.ItemSetFragment
 import com.newsblur.fragment.StoryIntelTrainerFragment
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FeedSet
@@ -47,8 +46,14 @@ import com.newsblur.util.StoryUtils
 import com.newsblur.util.ThumbnailStyle
 import com.newsblur.util.UIUtils
 import com.newsblur.view.StoryThumbnailView
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -57,7 +62,6 @@ import kotlin.math.min
  */
 class StoryViewAdapter(
     private val context: NbActivity,
-    private val fragment: ItemSetFragment,
     fs: FeedSet,
     listStyle: StoryListStyle,
     iconLoader: ImageLoader,
@@ -68,18 +72,14 @@ class StoryViewAdapter(
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val footerViews = mutableListOf<View>()
 
-    // the cursor from which we pull story objects. should not be used except by the thaw/diff worker
-    private var cursor: Cursor? = null
-
-    // the live list of stories being used by the adapter
     private val stories = mutableListOf<Story>()
 
     private var oldScrollState: Parcelable? = null
+    private val userId: String?
 
     private val iconLoader: ImageLoader
     private val thumbnailLoader: ImageLoader
     private val feedUtils: FeedUtils
-    private val executorService: ExecutorService
     private val listener: OnStoryClickListener
     private var fs: FeedSet?
     private var listStyle: StoryListStyle
@@ -87,11 +87,16 @@ class StoryViewAdapter(
     private var ignoreIntel = false
     private var singleFeed = false
     private var textSize: Float
-    private val user: UserDetails
     private var thumbnailStyle: ThumbnailStyle
     private var spacingStyle: SpacingStyle
     private val storyOrder: StoryOrder
     private val prefsRepo: PrefsRepo
+
+    @Volatile
+    private var lastLoadId: Long = -1L
+
+    private val adapterScope = CoroutineScope(SupervisorJob() + Dispatchers.Default.limitedParallelism(1))
+    private var diffJob: Job? = null
 
     init {
         this.fs = fs
@@ -154,12 +159,10 @@ class StoryViewAdapter(
         }
 
         textSize = prefsRepo.getListTextSize()
-        user = prefsRepo.getUserDetails()
+        userId = prefsRepo.getUserDetails().id
         thumbnailStyle = prefsRepo.getThumbnailStyle()
         spacingStyle = prefsRepo.getSpacingStyle()
         storyOrder = prefsRepo.getStoryOrder(fs)
-
-        executorService = Executors.newFixedThreadPool(1)
 
         setHasStableIds(true)
     }
@@ -195,23 +198,7 @@ class StoryViewAdapter(
             }
 
     val rawStoryCount: Int
-        /**
-         * get the number of stories we very likely have, even if they haven't
-         * been thawed yet, for callers that absolutely must know the size
-         * of our dataset (such as for calculating when to fetch more stories)
-         */
-        get() {
-            if (cursor == null) return 0
-            if (cursor!!.isClosed) return 0
-            var count = 0
-            try {
-                count = cursor!!.count
-            } catch (e: Exception) {
-                // rather than worry about sync locking for cursor changes, just fail. a
-                // closing cursor may as well not be loaded.
-            }
-            return count
-        }
+        get() = stories.size
 
     override fun getItemViewType(position: Int): Int {
         if (position >= storyCount) return VIEW_TYPE_FOOTER
@@ -231,117 +218,73 @@ class StoryViewAdapter(
         return stories[position].storyHash.hashCode().toLong()
     }
 
-    fun swapCursor(
-        c: Cursor?,
+    fun submitStories(
+        stories: List<Story>,
+        loadId: Long,
         rv: RecyclerView,
         oldScrollState: Parcelable?,
         skipBackFillingStories: Boolean,
     ) {
-        // cache the identity of the most recent cursor so async batches can check to
-        // see if they are stale
-        cursor = c
-        // if the caller wants to restore a scroll state, hold onto it for when we update
-        // the dataset and use that state at the right moment
-        if (oldScrollState != null) {
-            this.oldScrollState = oldScrollState
-        }
-        // process the cursor into objects and update the View async
-        val r = Runnable { thawDiffUpdate(c, rv, skipBackFillingStories) }
-        executorService.submit(r)
-    }
+        lastLoadId = loadId
 
-    /**
-     * Attempt to thaw a new set of stories from the cursor most recently
-     * seen when the that cycle started.
-     */
-    private fun thawDiffUpdate(
-        c: Cursor?,
-        rv: RecyclerView,
-        skipBackFillingStories: Boolean,
-    ) {
-        if (c !== cursor) return
+        oldScrollState?.let { this.oldScrollState = it }
 
-        // thawed stories
-        val newStories: MutableList<Story>
-        var indexOfLastUnread = -1
-        // attempt to thaw as gracefully as possible despite the fact that the loader
-        // framework could close our cursor at any moment.  if this happens, it is fine,
-        // as a new one will be provided and another cycle will start.  just return.
-        try {
-            if (c == null) {
-                newStories = ArrayList()
-            } else {
-                if (c.isClosed) return
-                newStories = ArrayList(c.count)
-                c.moveToPosition(-1)
+        diffJob?.cancel()
+        diffJob =
+            adapterScope.launch {
+                val filtered = applySkipBackfill(incoming = stories, skip = skipBackFillingStories)
 
-                // The 'skipBackFillingStories' flag is used to ensure that when the adapter resumes,
-                // it omits any new stories that would disrupt the current order and cause the list to
-                // unexpectedly jump, thereby preserving the scroll position. This flag specifically helps
-                // manage the insertion of new stories that have been backfilled according to their timestamps.
-                val currentStoryHashes = if (skipBackFillingStories) getStoryHashes(stories) else emptySet()
-                val storyTimestampThreshold: Long? =
-                    if (skipBackFillingStories && storyOrder == StoryOrder.NEWEST) {
-                        getOldestStoryTimestamp(stories)
-                    } else if (skipBackFillingStories && storyOrder == StoryOrder.OLDEST) {
-                        getNewestStoryTimestamp(stories)
-                    } else {
-                        null
+                val diff =
+                    try {
+                        DiffUtil.calculateDiff(StoryListDiffer(filtered), false)
+                    } catch (e: Exception) {
+                        Log.e(this@StoryViewAdapter, "error diffing: ${e.message}", e)
+                        return@launch
                     }
 
-                while (c.moveToNext()) {
-                    if (c.isClosed) return
-                    val s = Story.fromCursor(c)
-                    if (skipBackFillingStories && !currentStoryHashes.contains(s.storyHash)) {
-                        if (storyOrder == StoryOrder.NEWEST && storyTimestampThreshold != null && s.timestamp >= storyTimestampThreshold) {
-                            continue
-                        } else if (storyOrder == StoryOrder.OLDEST &&
-                            storyTimestampThreshold != null &&
-                            s.timestamp <= storyTimestampThreshold
-                        ) {
-                            continue
+                if (loadId != lastLoadId) return@launch
+
+                withContext(Dispatchers.Main) {
+                    if (loadId != lastLoadId) return@withContext
+                    val scrollState = rv.layoutManager?.onSaveInstanceState()
+                    synchronized(this@StoryViewAdapter) {
+                        this@StoryViewAdapter.stories.clear()
+                        this@StoryViewAdapter.stories.addAll(filtered)
+                        diff.dispatchUpdatesTo(this@StoryViewAdapter)
+                        val lm = rv.layoutManager
+                        if (lm != null) {
+                            if (oldScrollState != null) {
+                                lm.onRestoreInstanceState(oldScrollState)
+                                this@StoryViewAdapter.oldScrollState = null
+                            } else {
+                                lm.onRestoreInstanceState(scrollState)
+                            }
                         }
                     }
-
-                    s.bindExternValues(c)
-                    newStories.add(s)
-                    if (!s.read) indexOfLastUnread = c.position
                 }
             }
-        } catch (e: Exception) {
-            Log.e(this, "error thawing story list: " + e.message, e)
-            return
+    }
+
+    private fun applySkipBackfill(
+        incoming: List<Story>,
+        skip: Boolean,
+    ): List<Story> {
+        if (!skip) return incoming
+
+        val currentHashes = getStoryHashes(stories)
+        val threshold: Long =
+            when (storyOrder) {
+                StoryOrder.NEWEST -> getOldestStoryTimestamp(stories)
+                StoryOrder.OLDEST -> getNewestStoryTimestamp(stories)
+            }
+
+        return incoming.filter { s ->
+            if (s.storyHash in currentHashes) return@filter true
+            when (storyOrder) {
+                StoryOrder.NEWEST -> s.timestamp < threshold
+                StoryOrder.OLDEST -> s.timestamp > threshold
+            }
         }
-
-        // generate the RecyclerView diff
-        val diff = DiffUtil.calculateDiff(StoryListDiffer(newStories), false)
-
-        if (c !== cursor) return
-
-        fragment.storyThawCompleted(indexOfLastUnread)
-
-        rv.post(
-            Runnable {
-                if (c !== cursor) return@Runnable
-                // many versions of RecyclerView like to auto-scroll to inserted elements which is
-                // not at all what we want.  the current scroll position is one of the things frozen
-                // in instance state, so keep it and re-apply after deltas to preserve position
-                val scrollState = rv.layoutManager!!.onSaveInstanceState()
-                synchronized(this@StoryViewAdapter) {
-                    stories.clear()
-                    stories.addAll(newStories)
-                    diff.dispatchUpdatesTo(this@StoryViewAdapter)
-                    // the one exception to restoring state is if we were passed an old state to restore
-                    // along with the cursor
-                    if (oldScrollState != null) {
-                        rv.layoutManager!!.onRestoreInstanceState(oldScrollState)
-                        oldScrollState = null
-                    } else {
-                        rv.layoutManager!!.onRestoreInstanceState(scrollState)
-                    }
-                }
-            },
-        )
     }
 
     private inner class StoryListDiffer(
@@ -393,6 +336,12 @@ class StoryViewAdapter(
             val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.view_footer_tile, viewGroup, false)
             return FooterViewHolder(v)
         }
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        diffJob?.cancel()
+        adapterScope.cancel()
     }
 
     open inner class StoryViewHolder(
@@ -638,7 +587,7 @@ class StoryViewAdapter(
 
         var shared = false
         findShareLoop@ for (userId in story.sharedUserIds) {
-            if (TextUtils.equals(userId, user.id)) {
+            if (userId == this.userId) {
                 shared = true
                 break@findShareLoop
             }

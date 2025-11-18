@@ -1,6 +1,5 @@
 package com.newsblur.database
 
-import android.database.Cursor
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
@@ -8,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.newsblur.activity.Reading
@@ -18,11 +16,6 @@ import com.newsblur.fragment.LoadingFragment
 import com.newsblur.fragment.ReadingItemFragment
 import com.newsblur.fragment.ReadingItemFragment.Companion.newInstance
 import com.newsblur.service.NbSyncManager
-import com.newsblur.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * An adapter to display stories in a ViewPager. Loosely based upon FragmentStatePagerAdapter, but
@@ -34,7 +27,6 @@ class ReadingAdapter(
     private val sourceUserId: String?,
     private val showFeedMetadata: Boolean,
     private val activity: Reading,
-    private val dbHelper: BlurDatabaseHelper,
 ) : PagerAdapter() {
     private val maxSavedStates = 3
     private val states =
@@ -42,8 +34,6 @@ class ReadingAdapter(
             override fun removeEldestEntry(eldest: Map.Entry<String, Fragment.SavedState?>): Boolean = size > maxSavedStates
         }
 
-    // the cursor from which we pull story objects. should not be used except by the thaw coro
-    private var mostRecentCursor: Cursor? = null
     private var curTransaction: FragmentTransaction? = null
     private var lastActiveFragment: Fragment? = null
 
@@ -55,78 +45,25 @@ class ReadingAdapter(
     // classifiers for each feed seen in the story list
     private val classifiers = mutableMapOf<String, Classifier>()
 
-    fun swapCursor(
-        lifecycleScope: LifecycleCoroutineScope,
-        cursor: Cursor,
+    fun submitBatch(
+        stories: List<Story>,
+        classifiers: Map<String, Classifier>,
     ) {
-        // cache the identity of the most recent cursor so async batches can check to
-        // see if they are stale
-        mostRecentCursor = cursor
-        // process the cursor into objects and update the View async
-        lifecycleScope.launch(Dispatchers.IO) {
-            thaw(cursor)
-        }
+        val validHashes = stories.map { it.storyHash }.toSet()
+
+        this.stories.clear()
+        this.stories.addAll(stories)
+
+        this.classifiers.clear()
+        this.classifiers.putAll(classifiers)
+
+        states.keys.retainAll(validHashes)
+
+        notifyDataSetChanged()
+        activity.pagerUpdated()
     }
 
-    /**
-     * Attempt to thaw a new set of stories from the cursor most recently
-     * seen when the that cycle started.
-     */
-    private suspend fun thaw(c: Cursor?) =
-        coroutineScope {
-            if (c !== mostRecentCursor) return@coroutineScope
-
-            // thawed stories
-            val newStories: MutableList<Story>
-            // attempt to thaw as gracefully as possible despite the fact that the loader
-            // framework could close our cursor at any moment.  if this happens, it is fine,
-            // as a new one will be provided and another cycle will start.  just return.
-            try {
-                if (c == null) {
-                    newStories = ArrayList(0)
-                } else {
-                    if (c.isClosed) return@coroutineScope
-                    newStories = ArrayList(c.count)
-                    // keep track of which feeds are in this story set so we can also fetch Classifiers
-                    val feedIdsSeen: MutableSet<String> = HashSet()
-                    c.moveToPosition(-1)
-                    while (c.moveToNext()) {
-                        if (c.isClosed) return@coroutineScope
-                        val s = Story.fromCursor(c)
-                        s.bindExternValues(c)
-                        newStories.add(s)
-                        feedIdsSeen.add(s.feedId)
-                    }
-                    for (feedId in feedIdsSeen) {
-                        classifiers[feedId] = dbHelper.getClassifierForFeed(feedId)
-                    }
-                }
-            } catch (e: Exception) {
-                // because we use interruptable loaders that auto-close cursors, it is expected
-                // that cursors will sometimes go bad. this is a useful signal to stop the thaw
-                // thread and let it start on a fresh cursor.
-                Log.e(this, "error thawing story list: " + e.message, e)
-                return@coroutineScope
-            }
-            if (c !== mostRecentCursor) return@coroutineScope
-            withContext(Dispatchers.Main) {
-                stories.clear()
-                stories.addAll(newStories)
-
-                val valid = stories.map { it.storyHash }
-                states.keys.retainAll(valid)
-
-                notifyDataSetChanged()
-                activity.pagerUpdated()
-            }
-        }
-
-    fun getStory(position: Int): Story? =
-        if (position >= stories.size || position < 0) {
-            null
-        } else {
-            stories[position]
-        }
+    fun getStory(position: Int): Story? = if (position in stories.indices) stories[position] else null
 
     override fun getCount(): Int = stories.size
 
@@ -221,17 +158,6 @@ class ReadingAdapter(
         view: View,
         `object`: Any,
     ): Boolean = (`object` as Fragment).view === view
-
-    /**
-     * get the number of stories we very likely have, even if they haven't
-     * been thawed yet, for callers that absolutely must know the size
-     * of our dataset (such as for calculating when to fetch more stories)
-     */
-    val rawStoryCount: Int
-        get() =
-            mostRecentCursor?.let {
-                if (it.isClosed) 0 else it.count
-            } ?: 0
 
     fun getPosition(story: Story): Int {
         var pos = 0

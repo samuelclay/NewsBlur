@@ -15,7 +15,6 @@ import com.newsblur.activity.NotificationsActivity
 import com.newsblur.activity.Settings
 import com.newsblur.activity.SubscriptionActivity
 import com.newsblur.activity.WidgetConfig
-import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.fragment.FeedsShortcutFragment
 import com.newsblur.fragment.FolderListFragment
 import com.newsblur.fragment.LoginAsDialogFragment
@@ -44,7 +43,6 @@ interface MainContextMenuDelegate {
 
 class MainContextMenuDelegateImpl(
     private val activity: Main,
-    private val dbHelper: BlurDatabaseHelper,
     private val prefsRepo: PrefsRepo,
 ) : MainContextMenuDelegate {
     override fun onMenuClick(
@@ -118,14 +116,14 @@ class MainContextMenuDelegateImpl(
             }
 
             R.id.menu_feedback_email -> {
-                prefsRepo.sendLogEmail(activity, dbHelper)
+                prefsRepo.sendLogEmail(activity)
                 true
             }
 
             R.id.menu_feedback_post -> {
                 try {
                     val i = Intent(Intent.ACTION_VIEW)
-                    i.data = Uri.parse(prefsRepo.createFeedbackLink(activity, dbHelper))
+                    i.data = Uri.parse(prefsRepo.createFeedbackLink(activity))
                     activity.startActivity(i)
                 } catch (e: Exception) {
                     Log.wtf(this.javaClass.name, "device cannot even open URLs to report feedback")

@@ -105,21 +105,15 @@ class PrefsRepo(
         }
     }
 
-    fun createFeedbackLink(
-        context: Context,
-        dbHelper: BlurDatabaseHelper,
-    ): String {
+    fun createFeedbackLink(context: Context): String {
         val s = StringBuilder(AppConstants.FEEDBACK_URL)
         s.append("<give us some feedback!>%0A%0A%0A")
-        val info = getDebugInfo(context, dbHelper)
+        val info = getDebugInfo(context)
         s.append(info.replace("\n", "%0A"))
         return s.toString()
     }
 
-    fun sendLogEmail(
-        context: Context,
-        dbHelper: BlurDatabaseHelper,
-    ) {
+    fun sendLogEmail(context: Context) {
         val f =
             com.newsblur.util.Log
                 .getLogfile() ?: return
@@ -129,7 +123,7 @@ class PrefsRepo(
             
             
             
-            ${getDebugInfo(context, dbHelper)}
+            ${getDebugInfo(context)}
             """.trimIndent()
         val localPath = FileProvider.getUriForFile(context, "com.newsblur.fileprovider", f)
         val i = Intent(Intent.ACTION_SEND)
@@ -143,10 +137,7 @@ class PrefsRepo(
         }
     }
 
-    private fun getDebugInfo(
-        context: Context,
-        dbHelper: BlurDatabaseHelper,
-    ): String {
+    private fun getDebugInfo(context: Context): String {
         val s = StringBuilder()
         s.append("app version: ").append(NbApplication.getVersion(context)).append(" (${BuildConfig.VERSION_CODE})")
         s.append("\n")
@@ -166,13 +157,9 @@ class PrefsRepo(
             .append(Build.BOARD)
             .append(")")
         s.append("\n")
-        s.append("sqlite version: ").append(dbHelper.engineVersion)
-        s.append("\n")
         s.append("username: ").append(getUserName())
         s.append("\n")
         s.append("server: ").append(if (APIConstants.isCustomServer()) "custom" else "default")
-        s.append("\n")
-        s.append("speed: ").append(syncServiceState.getSpeedInfo())
         s.append("\n")
         s.append("pending actions: ").append(syncServiceState.getPendingInfo())
         s.append("\n")
