@@ -292,10 +292,12 @@ class ReadingItemFragment :
             // if the long-pressed item was an image, see if we can pop up a little dialogue
             // that presents the alt text.  Note that images wrapped in links tend to get detected
             // as anchors, not images, and may not point to the corresponding image URL.
-            var imageURL = result.extra
-            imageURL = imageURL!!.replace("file://", "")
-            val mappedURL = imageUrlRemaps[imageURL]
-            val finalURL: String = mappedURL ?: imageURL
+            val imageURL = result.extra
+            val uri = Uri.parse(imageURL)
+            val normalized = uri.path ?: imageURL
+
+            val mappedURL = imageUrlRemaps[normalized] ?: imageUrlRemaps[imageURL]
+            val finalURL: String = mappedURL ?: imageURL.orEmpty()
             val altText = imageAltTexts[finalURL]
             val builder = AlertDialog.Builder(requireActivity())
             builder.setTitle(finalURL)
@@ -1052,7 +1054,7 @@ class ReadingItemFragment :
         val imageTagMatcher = imgSniff.matcher(html)
         while (imageTagMatcher.find()) {
             val url = imageTagMatcher.group(2)
-            val localPath = storyImageCache.getCachedLocation(url) ?: continue
+            val localPath = storyImageCache.getWebViewImageCache(url) ?: continue
             html = html.replace(imageTagMatcher.group(1) + "\"" + url + "\"", "src=\"$localPath\"")
             imageUrlRemaps[localPath] = url
         }

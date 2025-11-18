@@ -82,6 +82,9 @@ public class AppConstants {
     public final static String LYRIC_PHOTO_URL = "https://newsblur.com/media//img/reader/lyric.jpg";
 
     public final static String READING_BASE_URL = "https://appassets.androidplatform.net/assets/";
+    public final static String READING_IMAGES_PATH = "/images/";
+    public final static String READING_ASSETS_PATH = "/assets/";
+    public final static String READING_RES_PATH = "/res/";
 
     // Subscription SKU
     public final static String PREMIUM_SUB_ID = "nb.premium.36";

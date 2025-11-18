@@ -29,7 +29,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class FeedItemsList : ItemsList() {
-
     @Inject
     @IconLoader
     lateinit var iconLoader: ImageLoader
@@ -50,21 +49,22 @@ class FeedItemsList : ItemsList() {
 
         checkInAppReview()
 
-        val backCallback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (reviewInfo != null) {
-                    val flow = reviewManager!!.launchReviewFlow(this@FeedItemsList, reviewInfo!!)
-                    flow.addOnCompleteListener { task: Task<Void?>? ->
-                        prefsRepo.setInAppReviewed()
-                        finish()
+        val backCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (reviewInfo != null) {
+                        val flow = reviewManager!!.launchReviewFlow(this@FeedItemsList, reviewInfo!!)
+                        flow.addOnCompleteListener { task: Task<Void?>? ->
+                            prefsRepo.setInAppReviewed()
+                            finish()
+                        }
+                    } else {
+                        isEnabled = false
+                        onBackPressedDispatcher.onBackPressed()
+                        isEnabled = true
                     }
-                } else {
-                    isEnabled = false
-                    onBackPressedDispatcher.onBackPressed()
-                    isEnabled = true
                 }
             }
-        }
 
         onBackPressedDispatcher.addCallback(this, backCallback)
     }
@@ -81,19 +81,23 @@ class FeedItemsList : ItemsList() {
 
         return when (item.itemId) {
             R.id.menu_delete_feed -> {
-                showDeleteFeedDialog(); true
+                showDeleteFeedDialog()
+                true
             }
 
             R.id.menu_notifications_disable -> {
-                feedUtils.disableNotifications(this, feed); true
+                feedUtils.disableNotifications(this, feed)
+                true
             }
 
             R.id.menu_notifications_focus -> {
-                feedUtils.enableFocusNotifications(this, feed); true
+                feedUtils.enableFocusNotifications(this, feed)
+                true
             }
 
             R.id.menu_notifications_unread -> {
-                feedUtils.enableUnreadNotifications(this, feed); true
+                feedUtils.enableUnreadNotifications(this, feed)
+                true
             }
 
             R.id.menu_instafetch_feed -> {
@@ -116,7 +120,8 @@ class FeedItemsList : ItemsList() {
             }
 
             R.id.menu_statistics -> {
-                feedUtils.openStatistics(this, prefsRepo, feed.feedId); true
+                feedUtils.openStatistics(this, prefsRepo, feed.feedId)
+                true
             }
 
             else -> false
@@ -169,7 +174,10 @@ class FeedItemsList : ItemsList() {
         }
     }
 
-    private fun setupFeedItems(feed: Feed, folderName: String) {
+    private fun setupFeedItems(
+        feed: Feed,
+        folderName: String,
+    ) {
         this.feed = feed
         this.folderName = folderName
         UIUtils.setupToolbar(this, feed.faviconUrl, feed.title, iconLoader, false)
@@ -179,12 +187,12 @@ class FeedItemsList : ItemsList() {
         if (!prefsRepo.hasInAppReviewed()) {
             reviewManager = ReviewManagerFactory.create(this)
             reviewManager
-                    ?.requestReviewFlow()
-                    ?.addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            reviewInfo = task.getResult()
-                        }
+                ?.requestReviewFlow()
+                ?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        reviewInfo = task.getResult()
                     }
+                }
         }
     }
 
@@ -194,20 +202,21 @@ class FeedItemsList : ItemsList() {
 
         @JvmStatic
         fun startActivity(
-                context: Context,
-                feedSet: FeedSet,
-                feed: Feed?,
-                folderName: String?,
-                sessionDataSource: SessionDataSource?,
+            context: Context,
+            feedSet: FeedSet,
+            feed: Feed?,
+            folderName: String?,
+            sessionDataSource: SessionDataSource?,
         ) {
-            Intent(context, FeedItemsList::class.java).apply {
-                putExtra(EXTRA_FEED, feed)
-                putExtra(EXTRA_FOLDER_NAME, folderName)
-                putExtra(EXTRA_FEED_SET, feedSet)
-                putExtra(EXTRA_SESSION_DATA, sessionDataSource)
-            }.also { intent ->
-                context.startActivity(intent)
-            }
+            Intent(context, FeedItemsList::class.java)
+                .apply {
+                    putExtra(EXTRA_FEED, feed)
+                    putExtra(EXTRA_FOLDER_NAME, folderName)
+                    putExtra(EXTRA_FEED_SET, feedSet)
+                    putExtra(EXTRA_SESSION_DATA, sessionDataSource)
+                }.also { intent ->
+                    context.startActivity(intent)
+                }
         }
     }
 }
