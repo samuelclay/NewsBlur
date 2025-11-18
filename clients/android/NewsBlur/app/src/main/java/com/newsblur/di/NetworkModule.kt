@@ -30,7 +30,12 @@ import com.newsblur.serialization.DateStringTypeAdapter
 import com.newsblur.serialization.StoriesResponseTypeAdapter
 import com.newsblur.serialization.StoryTypeAdapter
 import com.newsblur.util.AppConstants
+import com.newsblur.util.AppConstants.READING_ASSETS_PATH
+import com.newsblur.util.AppConstants.READING_IMAGES_PATH
+import com.newsblur.util.AppConstants.READING_RES_PATH
+import com.newsblur.util.FileCache
 import com.newsblur.util.NetworkUtils
+import com.newsblur.web.WebImagesPathHandler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -147,10 +152,12 @@ object NetworkModule {
     @Provides
     fun provideWebViewAssetLoader(
         @ApplicationContext context: Context,
+        @StoryImageCache fileCache: FileCache,
     ): WebViewAssetLoader =
         WebViewAssetLoader
             .Builder()
-            .addPathHandler("/assets/", AssetsPathHandler(context))
-            .addPathHandler("/res/", ResourcesPathHandler(context))
+            .addPathHandler(READING_ASSETS_PATH, AssetsPathHandler(context))
+            .addPathHandler(READING_RES_PATH, ResourcesPathHandler(context))
+            .addPathHandler(READING_IMAGES_PATH, WebImagesPathHandler(fileCache.cacheDir))
             .build()
 }
