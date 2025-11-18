@@ -24,8 +24,8 @@ android {
             libs.versions.targetSdk
                 .get()
                 .toInt()
-        versionCode = 252
-        versionName = "13.11.2"
+        versionCode = 253
+        versionName = "13.11.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
