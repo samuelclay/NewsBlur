@@ -1,6 +1,11 @@
 {
     "service": {
-        "name": "grafana",
+        {% if inventory_hostname.startswith('hdb-') %}
+            "name": "grafana-staging",
+        {% else %}
+            "name": "grafana",
+        {% endif %}
+        "id": "{{ inventory_hostname }}",
         "tags": [
             "db"
         ],
@@ -12,4 +17,4 @@
           }],
         "port": 3000
     }
-}  
+}
