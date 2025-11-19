@@ -1,9 +1,47 @@
 ---
 - name: Template grafana config
+  become: yes
   template:
     src: /srv/newsblur/docker/grafana/grafana.ini.j2
     dest: /srv/newsblur/docker/grafana/grafana.ini
   notify: restart grafana
+
+- name: Copy grafana datasource config
+  become: yes
+  copy:
+    src: /srv/newsblur/docker/grafana/datasources/datasource.yaml
+    dest: /srv/newsblur/docker/grafana/datasources/datasource.yaml
+  notify: restart grafana
+
+- name: Create grafana directories
+  become: yes
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - /srv/newsblur/docker/grafana/datasources
+    - /srv/newsblur/docker/grafana/alerting
+    - /srv/newsblur/docker/grafana/alerting/contact-points
+    - /srv/newsblur/docker/grafana/alerting/rules
+
+- name: Template grafana alert contact points
+  become: yes
+  template:
+    src: /srv/newsblur/docker/grafana/alerting/contact-points/email.yaml.j2
+    dest: /srv/newsblur/docker/grafana/alerting/contact-points/email.yaml
+  notify: restart grafana
+  tags:
+    - grafana-alerts
+
+- name: Copy grafana notification policy
+  become: yes
+  copy:
+    src: /srv/newsblur/docker/grafana/alerting/notification-policy.yaml
+    dest: /srv/newsblur/docker/grafana/alerting/notification-policy.yaml
+  notify: restart grafana
+  tags:
+    - grafana-alerts
 
 - name: Register grafana in consul
   tags: consul
@@ -19,14 +57,12 @@
   docker_container:
     pull: true
     name: grafana
-    image: grafana/grafana:9.0.2
+    image: grafana/grafana:12.2.1
     restart_policy: unless-stopped
     hostname: "{{ inventory_hostname }}"
     user: root
     networks_cli_compatible: yes
-    network_mode: default
-    networks:
-      - name: newsblurnet
+    network_mode: host
     ports:
       - "3000:3000"
     volumes:
@@ -34,13 +70,14 @@
       - /srv/newsblur/docker/volumes/grafana_data:/var/lib/grafana
       - /srv/newsblur/docker/grafana/datasources/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
       - /srv/newsblur/docker/grafana/dashboards/:/etc/grafana/provisioning/dashboards/
+      - /srv/newsblur/docker/grafana/alerting/:/etc/grafana/provisioning/alerting/
 
 - name: Install sentry pluging
   shell: >
     docker exec grafana grafana-cli plugins install grafana-sentry-datasource
-  
+
 - name: Restart grafana
-  debug: 
+  debug:
     msg: Restarting grafana
   changed_when: yes
   notify:

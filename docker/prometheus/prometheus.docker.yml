@@ -260,8 +260,17 @@ scrape_configs:
 
     - job_name: 'haproxy state'
       static_configs:
-        - targets: ['flask_metrics_haproxy:5599']
+        - targets: ['flask_metrics_haproxy:5569']
       metrics_path: /state/
+      scheme: http
+      tls_config:
+        insecure_skip_verify: true
+      scrape_interval: 30s
+
+    - job_name: 'consul services'
+      static_configs:
+        - targets: ['flask_metrics_haproxy:5569']
+      metrics_path: /consul/
       scheme: http
       tls_config:
         insecure_skip_verify: true

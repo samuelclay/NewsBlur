@@ -9,12 +9,13 @@
   "log_file": "/var/log/consul/consul.log",
   "enable_syslog": true,
   "retry_join": [{{ consul_manager_ip.stdout|trim }}],
-  {% if inventory_hostname.startswith("hdb") and inventory_hostname|regex_replace("\-?\d+", "") not in ["hdb-mongo-analytics", "hdb-sentry"] %}
+  {% if inventory_hostname.startswith("hdb") and inventory_hostname|regex_replace("\-?\d+", "") not in hdb_cloud_servers %}
   "advertise_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^en(p|o)\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
+  "bind_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^en(p|o)\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
   {% else %}
   "advertise_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^eth\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
+  "bind_addr": "{% raw %}{{ GetAllInterfaces | include \"name\" \"^eth\" | include \"flags\" \"forwardable|up\" | attr \"address\" }}{% endraw %}",
   {% endif %}
-  "bind_addr": "0.0.0.0",
   "ui_config": {"enabled": true},
   "dns_config": {
     "service_ttl": {
