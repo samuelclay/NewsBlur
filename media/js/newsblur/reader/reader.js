@@ -5602,70 +5602,47 @@
         },
 
         handle_ask_ai_start: function (data) {
-            NEWSBLUR.log(['Ask AI started', data.story_hash]);
-            // Could show additional UI feedback if needed
+            this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
         },
 
         handle_ask_ai_chunk: function (data) {
-            NEWSBLUR.log(['Ask AI chunk received', data.story_hash, data.question_id, data.chunk]);
-            var story_hash = data.story_hash;
-            var question_id = data.question_id;
-            var chunk = data.chunk;
-
-            // Find the active Ask AI view for this story and question
-            var view = this.find_ask_ai_view_for_story(story_hash, question_id);
-            NEWSBLUR.log(['Found Ask AI view:', view ? 'yes' : 'no']);
-            if (view) {
-                view.append_chunk(chunk);
-            } else {
-                NEWSBLUR.log(['No Ask AI view found for story', story_hash, 'question', question_id]);
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
+            if (view && data.chunk) {
+                view.append_chunk(data.chunk);
             }
         },
 
         handle_ask_ai_complete: function (data) {
-            NEWSBLUR.log(['Ask AI complete', data.story_hash, data.question_id]);
-            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id);
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
             if (view) {
                 view.complete_response();
             }
         },
 
         handle_ask_ai_error: function (data) {
-            NEWSBLUR.log(['Ask AI error', data.story_hash, data.question_id, data.error]);
-            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id);
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
             if (view) {
                 view.show_error(data.error);
             }
         },
 
         handle_ask_ai_usage: function (data) {
-            NEWSBLUR.log(['Ask AI usage message', data.story_hash, data.question_id, data.message]);
-            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id);
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
             if (view) {
                 view.show_usage_message(data.message);
             }
         },
 
-        find_ask_ai_view_for_story: function (story_hash, question_id) {
-            // Find the Ask AI view instance for this story and question
-            // Look for Ask AI view elements in the page
+        find_ask_ai_view_for_story: function (story_hash, question_id, request_id) {
             var $ask_ai_elements = $('.NB-story-ask-ai-inline, .NB-story-ask-ai-pane');
-            NEWSBLUR.log(['Looking for Ask AI view with story_hash:', story_hash, 'question_id:', question_id, 'Found elements:', $ask_ai_elements.length]);
-
-            // Check each element to find the one with matching story_hash AND question_id
             for (var i = 0; i < $ask_ai_elements.length; i++) {
-                var $el = $($ask_ai_elements[i]);
-                var view = $el.data('view');
-                if (view) {
-                    NEWSBLUR.log(['Checking view - story_hash:', view.story_hash, 'question_id:', view.question_id]);
-                    if (view.story_hash === story_hash && view.question_id === question_id) {
-                        NEWSBLUR.log(['Found matching Ask AI view!']);
-                        return view;
-                    }
-                }
+                var view = $($ask_ai_elements[i]).data('view');
+                if (!view) continue;
+                if (view.story_hash !== story_hash) continue;
+                if (view.question_id !== question_id) continue;
+                if (request_id && view.active_request_id && view.active_request_id !== request_id) continue;
+                return view;
             }
-
-            NEWSBLUR.log(['No matching Ask AI view found for story:', story_hash, 'question:', question_id]);
             return null;
         },
 
@@ -7591,6 +7568,10 @@
                     scroll_to_comments: true,
                     scroll_offset: -50
                 });
+            });
+            $document.bind('keydown', 'i', function (e) {
+                e.preventDefault();
+                self.open_ask_ai_menu();
             });
             $document.bind('keydown', 'x', function (e) {
                 e.preventDefault();

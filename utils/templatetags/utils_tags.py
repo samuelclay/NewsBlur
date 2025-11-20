@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 import random
 import re
@@ -46,8 +47,6 @@ def localdatetime(context, date, date_format):
 
 @register.inclusion_tag("reader/feeds_skeleton.xhtml", takes_context=True)
 def render_feeds_skeleton(context):
-    import json
-
     user = get_user(context["user"])
     social_profile = MSocialProfile.get_user(user.pk)
     ask_ai_prompts = get_prompts_for_frontend()

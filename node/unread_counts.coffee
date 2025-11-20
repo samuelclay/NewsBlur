@@ -162,18 +162,18 @@ unread_counts = (server) =>
                 # Debug ask_ai message routing
                 is_ask_ai = typeof message == 'string' and message.indexOf('ask_ai:') >= 0
                 if is_ask_ai
-                    log.info username, "Received ask_ai message on channel #{channel}: #{message.substring(0, 60)}..."
-                    log.info username, "Message type: #{typeof message}, has startsWith: #{message.startsWith?}"
+                    log.debug username, "Received ask_ai message on channel #{channel}: #{message.substring(0, 60)}..."
+                    log.debug username, "Message type: #{typeof message}, has startsWith: #{message.startsWith?}"
 
                 # Route ask_ai messages to dedicated handler
                 if message.startsWith?('ask_ai:')
-                    log.info username, "Routing to ask_ai handler"
+                    log.debug username, "Routing to ask_ai handler"
                     handled = ask_ai.handle_ask_ai_message(socket, channel, message)
                     if handled
-                        log.info username, "Ask AI handler processed message"
+                        log.debug username, "Ask AI handler processed message"
                         return
                     else
-                        log.info username, "Ask AI handler returned false"
+                        log.debug username, "Ask AI handler returned false"
 
                 # Handle standard feed/user update messages
                 event_name = 'feed:update'
@@ -182,7 +182,7 @@ unread_counts = (server) =>
                 else if channel.indexOf(':story') >= 0
                     event_name = 'feed:story:new'
                 if is_ask_ai
-                    log.info username, "Ask AI message falling through to #{event_name}"
+                    log.debug username, "Ask AI message falling through to #{event_name}"
                 else
                     log.info username, "Update on #{channel}: #{event_name} - #{message}"
                 socket.emit event_name, channel, message

@@ -1,11 +1,11 @@
 import datetime
 
 import pytz
-from django.db.models import Count, Q
 from django.shortcuts import render
 from django.views import View
 
 from apps.ask_ai.models import MAskAIResponse
+from apps.ask_ai.usage import AskAIUsageTracker
 from apps.profile.models import Profile
 
 
@@ -28,6 +28,9 @@ class AskAI(View):
 
         data = {}
 
+        def distinct_user_count(queryset):
+            return len([uid for uid in queryset if uid is not None])
+
         # ===== Total Request Counts =====
         # Count total AI responses by question type
         question_counts = {}
@@ -44,157 +47,94 @@ class AskAI(View):
             data[f"requests_{question_id}"] = count
 
         # ===== Active Users by Time Period =====
-        # Users who have used AI in the last day/week/month
-        # We check both ask_ai_uses_count > 0 (free users) and ask_ai_daily_count > 0 (premium)
-        active_users_daily = Profile.objects.filter(
-            Q(ask_ai_last_daily_reset__gte=last_day) | Q(ask_ai_uses_count__gt=0)
-        ).count()
-
-        active_users_weekly = Profile.objects.filter(
-            Q(ask_ai_last_daily_reset__gte=last_week) | Q(ask_ai_uses_count__gt=0)
-        ).count()
-
-        # For monthly, we look at MAskAIResponse creation dates
-        users_with_responses_monthly = MAskAIResponse.objects(created_at__gte=last_month).distinct("user_id")
-        active_users_monthly = len(users_with_responses_monthly)
+        active_users_daily = distinct_user_count(
+            MAskAIResponse.objects(created_at__gte=last_day).distinct("user_id")
+        )
+        active_users_weekly = distinct_user_count(
+            MAskAIResponse.objects(created_at__gte=last_week).distinct("user_id")
+        )
+        active_users_monthly = distinct_user_count(
+            MAskAIResponse.objects(created_at__gte=last_month).distinct("user_id")
+        )
 
         data["active_users_daily"] = active_users_daily
         data["active_users_weekly"] = active_users_weekly
         data["active_users_monthly"] = active_users_monthly
 
         # ===== Usage by Subscription Tier =====
-        # Free users (not premium, not archive, not pro)
-        free_users_with_usage = Profile.objects.filter(
-            is_premium=False,
-            is_archive=False,
-            is_pro=False,
-            ask_ai_uses_count__gt=0
-        ).count()
+        # Get weekly counts for free users, daily counts for premium users
+        usage_snapshot = AskAIUsageTracker.get_usage_snapshot()
+        daily_counts = usage_snapshot.get("daily", {})
+        weekly_counts = usage_snapshot.get("weekly", {})
 
-        free_users_at_limit = Profile.objects.filter(
-            is_premium=False,
-            is_archive=False,
-            is_pro=False,
-            ask_ai_uses_count__gte=10  # Free limit is 10
-        ).count()
+        user_ids = set(daily_counts.keys()) | set(weekly_counts.keys())
+        profiles_by_user = {}
+        if user_ids:
+            for profile in Profile.objects.filter(user__id__in=list(user_ids)):
+                profiles_by_user[profile.user_id] = profile
 
-        # Premium users (premium but not archive/pro)
-        premium_users_with_usage = Profile.objects.filter(
-            is_premium=True,
-            is_archive=False,
-            is_pro=False,
-            ask_ai_daily_count__gt=0
-        ).count()
-
-        premium_users_at_limit = Profile.objects.filter(
-            is_premium=True,
-            is_archive=False,
-            is_pro=False,
-            ask_ai_daily_count__gte=3  # Premium daily limit is 3
-        ).count()
-
-        # Archive/Pro users
-        archive_users_with_usage = Profile.objects.filter(
-            Q(is_archive=True) | Q(is_pro=True),
-            ask_ai_daily_count__gt=0
-        ).count()
-
-        archive_users_at_limit = Profile.objects.filter(
-            Q(is_archive=True) | Q(is_pro=True),
-            ask_ai_daily_count__gte=50  # Archive/Pro daily limit is 50
-        ).count()
-
-        data["tier_free_using"] = free_users_with_usage
-        data["tier_free_at_limit"] = free_users_at_limit
-        data["tier_premium_using"] = premium_users_with_usage
-        data["tier_premium_at_limit"] = premium_users_at_limit
-        data["tier_archive_using"] = archive_users_with_usage
-        data["tier_archive_at_limit"] = archive_users_at_limit
-
-        # ===== Limit Proximity Distribution =====
-        # Free users: 0-20%, 20-40%, 40-60%, 60-80%, 80-100% of 10 limit
-        free_limit = 10
-        free_buckets = {
-            "0-20": Profile.objects.filter(
-                is_premium=False, is_archive=False, is_pro=False,
-                ask_ai_uses_count__gt=0, ask_ai_uses_count__lt=free_limit * 0.2
-            ).count(),
-            "20-40": Profile.objects.filter(
-                is_premium=False, is_archive=False, is_pro=False,
-                ask_ai_uses_count__gte=free_limit * 0.2, ask_ai_uses_count__lt=free_limit * 0.4
-            ).count(),
-            "40-60": Profile.objects.filter(
-                is_premium=False, is_archive=False, is_pro=False,
-                ask_ai_uses_count__gte=free_limit * 0.4, ask_ai_uses_count__lt=free_limit * 0.6
-            ).count(),
-            "60-80": Profile.objects.filter(
-                is_premium=False, is_archive=False, is_pro=False,
-                ask_ai_uses_count__gte=free_limit * 0.6, ask_ai_uses_count__lt=free_limit * 0.8
-            ).count(),
-            "80-100": Profile.objects.filter(
-                is_premium=False, is_archive=False, is_pro=False,
-                ask_ai_uses_count__gte=free_limit * 0.8
-            ).count(),
+        bucket_names = ["0-20", "20-40", "40-60", "60-80", "80-100"]
+        buckets = {tier: {bucket: 0 for bucket in bucket_names} for tier in ["free", "premium", "archive"]}
+        tier_stats = {
+            "free": {"using": 0, "at_limit": 0},
+            "premium": {"using": 0, "at_limit": 0},
+            "archive": {"using": 0, "at_limit": 0},
         }
 
-        for bucket, count in free_buckets.items():
-            data[f"limit_free_{bucket}"] = count
+        def add_bucket(tier, count, limit):
+            if count <= 0 or limit <= 0:
+                return
+            ratio = float(count) / float(limit)
+            if ratio < 0.2:
+                buckets[tier]["0-20"] += 1
+            elif ratio < 0.4:
+                buckets[tier]["20-40"] += 1
+            elif ratio < 0.6:
+                buckets[tier]["40-60"] += 1
+            elif ratio < 0.8:
+                buckets[tier]["60-80"] += 1
+            else:
+                buckets[tier]["80-100"] += 1
 
-        # Premium users: 0-20%, 20-40%, 40-60%, 60-80%, 80-100% of 3 daily limit
-        premium_limit = 3
-        premium_buckets = {
-            "0-20": Profile.objects.filter(
-                is_premium=True, is_archive=False, is_pro=False,
-                ask_ai_daily_count__gt=0, ask_ai_daily_count__lt=premium_limit * 0.2
-            ).count(),
-            "20-40": Profile.objects.filter(
-                is_premium=True, is_archive=False, is_pro=False,
-                ask_ai_daily_count__gte=premium_limit * 0.2, ask_ai_daily_count__lt=premium_limit * 0.4
-            ).count(),
-            "40-60": Profile.objects.filter(
-                is_premium=True, is_archive=False, is_pro=False,
-                ask_ai_daily_count__gte=premium_limit * 0.4, ask_ai_daily_count__lt=premium_limit * 0.6
-            ).count(),
-            "60-80": Profile.objects.filter(
-                is_premium=True, is_archive=False, is_pro=False,
-                ask_ai_daily_count__gte=premium_limit * 0.6, ask_ai_daily_count__lt=premium_limit * 0.8
-            ).count(),
-            "80-100": Profile.objects.filter(
-                is_premium=True, is_archive=False, is_pro=False,
-                ask_ai_daily_count__gte=premium_limit * 0.8
-            ).count(),
-        }
+        # Process weekly counts for free users
+        for user_id, count in weekly_counts.items():
+            profile = profiles_by_user.get(user_id)
+            if not profile or profile.is_premium or profile.is_archive or profile.is_pro:
+                continue
+            if count > 0:
+                tier_stats["free"]["using"] += 1
+            if count >= AskAIUsageTracker.WEEKLY_LIMIT_FREE:
+                tier_stats["free"]["at_limit"] += 1
+            add_bucket("free", count, AskAIUsageTracker.WEEKLY_LIMIT_FREE)
 
-        for bucket, count in premium_buckets.items():
-            data[f"limit_premium_{bucket}"] = count
+        # Process daily counts for premium users
+        for user_id, count in daily_counts.items():
+            profile = profiles_by_user.get(user_id)
+            if not profile:
+                continue
+            if profile.is_archive or profile.is_pro:
+                if count > 0:
+                    tier_stats["archive"]["using"] += 1
+                if count >= AskAIUsageTracker.DAILY_LIMIT_ARCHIVE:
+                    tier_stats["archive"]["at_limit"] += 1
+                add_bucket("archive", count, AskAIUsageTracker.DAILY_LIMIT_ARCHIVE)
+            elif profile.is_premium:
+                if count > 0:
+                    tier_stats["premium"]["using"] += 1
+                if count >= AskAIUsageTracker.DAILY_LIMIT_PREMIUM:
+                    tier_stats["premium"]["at_limit"] += 1
+                add_bucket("premium", count, AskAIUsageTracker.DAILY_LIMIT_PREMIUM)
 
-        # Archive/Pro users: 0-20%, 20-40%, 40-60%, 60-80%, 80-100% of 50 daily limit
-        archive_limit = 50
-        archive_buckets = {
-            "0-20": Profile.objects.filter(
-                Q(is_archive=True) | Q(is_pro=True),
-                ask_ai_daily_count__gt=0, ask_ai_daily_count__lt=archive_limit * 0.2
-            ).count(),
-            "20-40": Profile.objects.filter(
-                Q(is_archive=True) | Q(is_pro=True),
-                ask_ai_daily_count__gte=archive_limit * 0.2, ask_ai_daily_count__lt=archive_limit * 0.4
-            ).count(),
-            "40-60": Profile.objects.filter(
-                Q(is_archive=True) | Q(is_pro=True),
-                ask_ai_daily_count__gte=archive_limit * 0.4, ask_ai_daily_count__lt=archive_limit * 0.6
-            ).count(),
-            "60-80": Profile.objects.filter(
-                Q(is_archive=True) | Q(is_pro=True),
-                ask_ai_daily_count__gte=archive_limit * 0.6, ask_ai_daily_count__lt=archive_limit * 0.8
-            ).count(),
-            "80-100": Profile.objects.filter(
-                Q(is_archive=True) | Q(is_pro=True),
-                ask_ai_daily_count__gte=archive_limit * 0.8
-            ).count(),
-        }
+        data["tier_free_using"] = tier_stats["free"]["using"]
+        data["tier_free_at_limit"] = tier_stats["free"]["at_limit"]
+        data["tier_premium_using"] = tier_stats["premium"]["using"]
+        data["tier_premium_at_limit"] = tier_stats["premium"]["at_limit"]
+        data["tier_archive_using"] = tier_stats["archive"]["using"]
+        data["tier_archive_at_limit"] = tier_stats["archive"]["at_limit"]
 
-        for bucket, count in archive_buckets.items():
-            data[f"limit_archive_{bucket}"] = count
+        for tier in ["free", "premium", "archive"]:
+            for bucket in bucket_names:
+                data[f"limit_{tier}_{bucket}"] = buckets[tier][bucket]
 
         # ===== Request Rate Metrics (from MAskAIResponse) =====
         # Count requests in the last day/week/month
