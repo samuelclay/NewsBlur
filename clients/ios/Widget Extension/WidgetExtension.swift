@@ -112,11 +112,15 @@ struct WidgetEntryView : View {
                 }
             } else {
                 VStack(alignment: .leading, spacing: 0, content: {
-                    ForEach(entry.cache.stories(count: isCompact ? 3 : 6)) { story in
+                    let stories = entry.cache.stories(count: isCompact ? 3 : 6)
+                    
+                    ForEach(Array(stories.enumerated()), id: \.element.id) { index, story in
                         Link(destination: URL(string: entry.isPlaceholder ? "newsblurwidget://open" : "newsblurwidget://?feedId=\(story.feed)&storyHash=\(story.id)")!) {
                             WidgetStoryView(cache: entry.cache, story: story)
                         }
-                        Divider()
+                        if index < stories.count - 1 {
+                            Divider()
+                        }
                     }
                 })
                 .padding(.top, 5)

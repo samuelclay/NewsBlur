@@ -667,41 +667,61 @@ global_api_key = -1
 # global limit on number of logged in users.
 global_session = -1
 
-#################################### Alerting ############################
-[alerting]
-# Disable alerting engine & UI features
+#################################### Unified Alerting ####################
+[unified_alerting]
+# Enable or disable unified alerting. Default is enabled.
 enabled = true
-# Makes it possible to turn off alert rule execution but alerting UI is visible
+
+# Comma-separated list of organization IDs for which to disable unified alerting.
+# Only supported if unified alerting is enabled.
+disabled_orgs =
+
+# Specify the frequency of polling for admin config changes.
+# The interval string is a possibly signed sequence of decimal numbers, followed by a unit suffix (ms, s, m, h, d), e.g. 30s or 1m.
+admin_config_poll_interval = 60s
+
+# Specify the frequency of polling for alerting config changes.
+# The interval string is a possibly signed sequence of decimal numbers, followed by a unit suffix (ms, s, m, h, d), e.g. 30s or 1m.
+alertmanager_config_poll_interval = 60s
+
+# Listen address/hostname and port to receive unified alerting messages for other Grafana instances. The port is used for both TCP and UDP. It is assumed other Grafana instances are also running on the same port.
+ha_listen_address = "0.0.0.0:9094"
+
+# Listen address/hostname and port to receive unified alerting messages for other Grafana instances. The port is used for both TCP and UDP. It is assumed other Grafana instances are also running on the same port. (DEPRECATED: use ha_listen_address instead)
+ha_advertise_address = ""
+
+# Comma-separated list of initial instances (in a format of host:port) that will form the HA cluster. Configuring this setting will enable High Availability mode for alerting.
+ha_peers = ""
+
+# Time to wait for an instance to send a notification via the Alertmanager. In HA mode, each Grafana instance will
+# be assigned a position (e.g. 0, 1). We then multiply this position with the timeout to indicate how long a given instance
+# should wait before sending the notification to take into account replication lag.
+# The interval string is a possibly signed sequence of decimal numbers, followed by a unit suffix (ms, s, m, h, d), e.g. 30s or 1m.
+ha_peer_timeout = "15s"
+
+# The interval between sending gossip messages. By lowering this value (more frequent) gossip messages are propagated
+# across cluster more quickly at the expense of increased bandwidth usage.
+# The interval string is a possibly signed sequence of decimal numbers, followed by a unit suffix (ms, s, m, h, d), e.g. 30s or 1m.
+ha_gossip_interval = "200ms"
+
+# The interval between gossip full state syncs. Setting this interval lower (more frequent) will increase convergence speeds
+# across larger clusters at the expense of increased bandwidth usage.
+# The interval string is a possibly signed sequence of decimal numbers, followed by a unit suffix (ms, s, m, h, d), e.g. 30s or 1m.
+ha_push_pull_interval = "60s"
+
+# Enable or disable alerting rule execution. Default is enabled.
 execute_alerts = true
 
-# Default setting for new alert rules. Defaults to categorize error and timeouts as alerting. (alerting, keep_state)
-error_or_timeout = alerting
+# Alert evaluation timeout when fetching data from the datasource. Default is 30s.
+# The timeout string is a possibly signed sequence of decimal numbers, followed by a unit suffix (ms, s, m, h, d), e.g. 30s or 1m.
+evaluation_timeout = 30s
 
-# Default setting for how Grafana handles nodata or null values in alerting. (alerting, no_data, keep_state, ok)
-nodata_or_nullvalues = no_data
-
-# Alert notifications can include images, but rendering many images at the same time can overload the server
-# This limit will protect the server from render overloading and make sure notifications are sent out quickly
-concurrent_render_limit = 5
-
-# Default setting for alert calculation timeout. Default value is 30
-evaluation_timeout_seconds = 30
-
-# Default setting for alert notification timeout. Default value is 30
-notification_timeout_seconds = 30
-
-# Default setting for max attempts to sending alert notifications. Default value is 3
+# Number of times we'll attempt to evaluate an alert rule before giving up on that evaluation. Default is 1.
 max_attempts = 3
 
-# Makes it possible to enforce a minimal interval between evaluations, to reduce load on the backend
-min_interval_seconds = 1
-
-# Configures for how long alert annotations are stored. Default is 0, which keeps them forever.
-# This setting should be expressed as an duration. Ex 6h (hours), 10d (days), 2w (weeks), 1M (month).
-max_annotation_age =
-
-# Configures max number of alert annotations that Grafana stores. Default value is 0, which keeps all alert annotations.
-max_annotations_to_keep =
+# Minimum interval to enforce between rule evaluations. Rules will be adjusted if they are less than this value or if they are not multiple of the scheduler interval (10s). Higher values can help with resource management as we'll schedule fewer evaluations over time. Default is 10s.
+# The interval string is a possibly signed sequence of decimal numbers, followed by a unit suffix (ms, s, m, h, d), e.g. 30s or 1m.
+min_interval = 10s
 
 #################################### Annotations #########################
 [annotations]
