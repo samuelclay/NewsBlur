@@ -24,13 +24,6 @@ scrape_configs:
       scheme: https
       tls_config:
         insecure_skip_verify: true
-    - job_name: 'user_searches'
-      static_configs:
-        - targets: ['haproxy']
-      metrics_path: /monitor/user-searches
-      scheme: https
-      tls_config:
-        insecure_skip_verify: true
     - job_name: 'app_times'
       static_configs:
         - targets: ['haproxy']
@@ -42,6 +35,13 @@ scrape_configs:
       static_configs:
         - targets: ['haproxy']
       metrics_path: /monitor/classifiers
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'ask_ai'
+      static_configs:
+        - targets: ['haproxy']
+      metrics_path: /monitor/ask-ai
       scheme: https
       tls_config:
         insecure_skip_verify: true

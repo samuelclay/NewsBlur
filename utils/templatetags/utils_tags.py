@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 import random
 import re
@@ -15,6 +16,7 @@ from pipeline.templatetags.pipeline import (
     stylesheet,
 )
 
+from apps.ask_ai.prompts import get_prompts_for_frontend
 from apps.reader.forms import FeatureForm
 from apps.reader.models import Feature
 from apps.social.models import MSocialProfile
@@ -47,10 +49,12 @@ def localdatetime(context, date, date_format):
 def render_feeds_skeleton(context):
     user = get_user(context["user"])
     social_profile = MSocialProfile.get_user(user.pk)
+    ask_ai_prompts = get_prompts_for_frontend()
 
     return {
         "user": user,
         "social_profile": social_profile,
+        "ask_ai_prompts_json": json.dumps(ask_ai_prompts),
         "MEDIA_URL": settings.MEDIA_URL,
     }
 
@@ -128,6 +132,7 @@ def render_account_module(context):
         "Custom RSS feeds for saved stories",
         "Text view conveniently recreates the full story",
         "Discover related stories and sites",
+        "Ask AI questions about stories",
         f"You feed Lyric, NewsBlur's hungry hound, for 6 days<img class='NB-feedchooser-premium-poor-hungry-dog' src='{settings.MEDIA_URL}img/reader/lyric.jpg'>",
     ]
     rand_int = (datetime.datetime.now().timetuple().tm_yday) % len(reasons)
@@ -152,6 +157,7 @@ def render_premium_archive_module(context):
         "Train stories on full text content, not just titles and tags",
         "Export trained stories from folders as RSS feeds",
         "Choose when stories are automatically marked as read",
+        "Ask AI questions about stories",
     ]
     rand_int = (datetime.datetime.now().timetuple().tm_sec) % len(reasons)
 
