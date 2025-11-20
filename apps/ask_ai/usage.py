@@ -30,7 +30,7 @@ class AskAIUsageTracker:
             time_remaining = self._format_time_until_weekly_reset()
             return (
                 False,
-                f"You've used all 3 free Ask AI requests this week. Your limit resets in {time_remaining}.\n\nUpgrade to Premium Archive for additional questions.",
+                f"You've used all {self.WEEKLY_LIMIT_FREE} free Ask AI requests this week. Your limit resets in {time_remaining}.\n\nUpgrade to Premium Archive for additional questions.",
             )
         return True, None
 
