@@ -21,6 +21,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.streaming_started = false;
         this.response_text = '';  // Accumulate response for final formatting
         this.conversation_history = [];  // Track conversation for follow-ups
+        this.active_request_id = null;
 
         // Send request immediately if we have a question (either preset or custom)
         if (this.question_id !== 'custom' || this.custom_question) {
@@ -94,6 +95,14 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         </div>\
     '),
 
+    get_prompt_short_text: function (question_id, fallback) {
+        var prompts = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_prompts) || [];
+        var match = _.find(prompts, function (prompt) {
+            return prompt.id === question_id;
+        });
+        return (match && match.short_text) || fallback;
+    },
+
     get_question_text: function (question_id) {
         var questions = {
             'sentence': 'Summarize in one sentence',
@@ -105,7 +114,14 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             'factcheck': 'Fact check this story',
             'custom': 'Ask a custom question...'
         };
-        return questions[question_id] || 'Unknown question';
+        return this.get_prompt_short_text(question_id, questions[question_id] || 'Unknown question');
+    },
+
+    generate_request_id: function () {
+        if (window.crypto && window.crypto.randomUUID) {
+            return window.crypto.randomUUID();
+        }
+        return 'askai-' + (Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
     },
 
     close_pane: function (e) {
@@ -133,6 +149,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             question_id: this.question_id
         };
 
+        var request_id = this.generate_request_id();
+        this.active_request_id = request_id;
+        params.request_id = request_id;
+
         if (custom_question) {
             params.custom_question = custom_question;
         }
@@ -155,15 +175,15 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
     handle_response_success: function (data) {
         if (data.code === 1) {
-            console.log(['Ask AI request sent successfully', data]);
-            // Response will come via Socket.IO
-        } else {
-            this.handle_response_error(data.message || 'Unknown error');
+            if (data.request_id && data.request_id !== this.active_request_id) {
+                this.active_request_id = data.request_id;
+            }
+            return;
         }
+        this.handle_response_error(data.message || 'Unknown error');
     },
 
     handle_response_error: function (error) {
-        console.log(['Ask AI request error', error]);
         this.$el.removeClass('NB-thinking');
         this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
 
@@ -324,7 +344,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
     complete_response: function () {
         // Mark as complete, clear debounce timeout
-        console.log(['Ask AI response complete']);
         if (this.debounce_timeout) {
             clearTimeout(this.debounce_timeout);
             this.debounce_timeout = null;

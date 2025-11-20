@@ -1279,6 +1279,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.discover_view.toggle_feed_story_discover_dialog(options);
     },
 
+    get_ask_ai_prompt_text: function (question_id, fallback) {
+        var prompts = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_prompts) || [];
+        var match = _.find(prompts, function (prompt) {
+            return prompt.id === question_id;
+        });
+        return (match && match.short_text) || fallback;
+    },
+
     mouseenter_sideoption_ask_ai: function () {
         var menu_height = 400;
         if (this.$('.NB-feed-story-ask-ai').offset().top > $(window).height() - menu_height) {
@@ -1298,7 +1306,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $menu = $('.NB-menu-ask-ai-container');
 
         if ($menu.length && $menu.is(':visible') && $menu.data('story_id') == this.model.id) {
-            console.log(['Ask AI menu already open', this.model.id]);
             this.hide_ask_ai_menu();
             return;
         }
@@ -1317,10 +1324,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     { id: 'paragraph', text: 'Detailed', detail: 'Full paragraph', icon: 'content-preview-l', level: 'high' }
                 ]
             },
-            { id: 'context', text: "What's the context and background?", icon: 'world' },
-            { id: 'people', text: 'Identify key people and relationships', icon: 'subscribers' },
-            { id: 'arguments', text: 'What are the main arguments?', icon: 'venn' },
-            { id: 'factcheck', text: 'Fact check this story', icon: 'search' }
+            { id: 'context', text: this.get_ask_ai_prompt_text('context', "What's the context and background?"), icon: 'world' },
+            { id: 'people', text: this.get_ask_ai_prompt_text('people', 'Identify key people and relationships'), icon: 'subscribers' },
+            { id: 'arguments', text: this.get_ask_ai_prompt_text('arguments', 'What are the main arguments?'), icon: 'venn' },
+            { id: 'factcheck', text: this.get_ask_ai_prompt_text('factcheck', 'Fact check this story'), icon: 'search' }
         ];
 
         var menu_template = _.template('\
@@ -1476,13 +1483,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             return;
         }
 
-        console.log(['Ask AI custom question', custom_question, this.model.get('story_title')]);
         NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question);
         this.hide_ask_ai_menu();
     },
 
     handle_ask_ai_question: function (question_id) {
-        console.log(['Ask AI question', question_id, this.model.get('story_title')]);
         NEWSBLUR.reader.open_ask_ai_pane(this.model, question_id);
     }
 

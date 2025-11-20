@@ -1,5 +1,6 @@
-import logging
+import json
 import time
+import uuid
 
 import openai
 import redis
@@ -12,74 +13,78 @@ from utils import log as logging
 
 from .models import MAskAIResponse
 from .prompts import get_full_prompt
+from .usage import AskAIUsageTracker
 
 
 @app.task(name="ask-ai-question", queue="ask_ai", time_limit=120, soft_time_limit=110)
-def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conversation_history=None):
+def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conversation_history=None, request_id=None):
     """
     Process an Ask AI question and stream the response via Redis PubSub.
-
-    Args:
-        user_id: User ID
-        story_hash: Story hash
-        question_id: Question ID (e.g., "sentence", "bullets", "custom")
-        custom_question: Optional custom question text
-        conversation_history: Optional list of previous conversation messages for follow-ups
-
-    Returns:
-        Dict with response metadata
     """
+
     start_time = time.time()
+    publish_event = None
+    user = None
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
 
     try:
-        # Get user
         user = User.objects.get(pk=user_id)
         username = user.username
+        request_token = request_id or str(uuid.uuid4())
 
-        # Get Redis PubSub client
-        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        def publish(event_type, extra=None):
+            payload = {
+                "type": event_type,
+                "story_hash": story_hash,
+                "question_id": question_id,
+                "request_id": request_token,
+            }
+            if extra:
+                payload.update(extra)
+            try:
+                r.publish(username, f"ask_ai:{json.dumps(payload, ensure_ascii=False)}")
+            except redis.RedisError:
+                logging.user(user, f"~FRAsk AI publish failure for event {event_type}")
 
-        # Publish start event (include question_id to differentiate multiple requests for same story)
-        r.publish(username, f"ask_ai:start:{story_hash}:{question_id}")
+        publish_event = publish
+        publish_event("start")
 
-        # Get story
         story, _ = MStory.find_story(story_hash=story_hash)
         if not story:
             error_msg = "Story not found"
-            r.publish(username, f"ask_ai:error:{story_hash}:{question_id}:{error_msg}")
+            publish_event("error", {"error": error_msg})
             logging.user(user, f"~FRAsk AI error: {error_msg} for story {story_hash}")
             return {"code": -1, "message": error_msg}
 
-        # Check for cached response (optional optimization)
-        # Skip cache entirely for follow-ups (conversation_history) and custom questions
         if not conversation_history and not custom_question:
             cached = MAskAIResponse.get_cached_response(
                 user_id=user_id, story_hash=story_hash, question_id=question_id, custom_question=custom_question
             )
             if cached:
-                # Stream cached response in chunks
                 response_text = cached.response_text
-                chunk_size = 50  # Characters per chunk
+                chunk_size = 50
                 for i in range(0, len(response_text), chunk_size):
                     chunk = response_text[i : i + chunk_size]
-                    r.publish(username, f"ask_ai:chunk:{story_hash}:{question_id}:{chunk}")
-                    time.sleep(0.05)  # Small delay to simulate streaming
+                    publish_event("chunk", {"chunk": chunk})
+                    time.sleep(0.05)
 
-                # Increment usage counter for cached responses too
-                user.profile.increment_ask_ai_usage()
+                # Record usage for cached responses
+                tracker = AskAIUsageTracker(user)
+                tracker.record_usage(
+                    question_id=question_id,
+                    story_hash=story_hash,
+                    request_id=request_token,
+                    cached=True,
+                )
+                usage_message = tracker.get_usage_message()
 
-                # Get usage message
-                usage_message = user.profile.get_ask_ai_usage_message()
-
-                r.publish(username, f"ask_ai:complete:{story_hash}:{question_id}")
+                publish_event("complete")
                 if usage_message:
-                    r.publish(username, f"ask_ai:usage:{story_hash}:{question_id}:{usage_message}")
+                    publish_event("usage", {"message": usage_message})
                 logging.user(user, f"~FGAsk AI: Served cached response for story {story_hash}")
                 return {"code": 1, "message": "Cached response served", "cached": True}
 
-        # Build messages for OpenAI API
         if conversation_history:
-            # Follow-up: use existing conversation history
             messages = [
                 {
                     "role": "system",
@@ -89,19 +94,17 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
             messages.extend(conversation_history)
             logging.user(
                 user,
-                f"~FBAsk AI: Follow-up question for story {story_hash}, "
-                f"{len(conversation_history)} messages in history",
+                f"~FBAsk AI: Follow-up question for story {story_hash}, {len(conversation_history)} messages in history",
             )
         else:
-            # Initial question: build prompt with story content
             story_title = story.story_title
-            story_content = story.story_content_str  # Use property to decompress content_z
+            story_content = story.story_content_str
 
             try:
                 full_prompt = get_full_prompt(question_id, story_title, story_content, custom_question)
             except ValueError as e:
                 error_msg = str(e)
-                r.publish(username, f"ask_ai:error:{story_hash}:{question_id}:{error_msg}")
+                publish_event("error", {"error": error_msg})
                 logging.user(user, f"~FRAsk AI error: {error_msg}")
                 return {"code": -1, "message": error_msg}
 
@@ -113,67 +116,57 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
                 {"role": "user", "content": full_prompt},
             ]
 
-        # Initialize OpenAI client
         if not settings.OPENAI_API_KEY:
             error_msg = "OpenAI API key not configured"
-            r.publish(username, f"ask_ai:error:{story_hash}:{question_id}:{error_msg}")
+            publish_event("error", {"error": error_msg})
             logging.user(user, f"~FRAsk AI error: {error_msg}")
             return {"code": -1, "message": error_msg}
 
         client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+        logging.user(user, f"~FBAsk AI: Starting streaming response for story {story_hash}, question {question_id}")
 
-        # Call OpenAI API with streaming
-        logging.user(
-            user, f"~FBAsk AI: Starting streaming response for story {story_hash}, question {question_id}"
-        )
+        response = client.chat.completions.create(model="gpt-4.1", messages=messages, stream=True)
 
-        response = client.chat.completions.create(
-            model="gpt-4.1",
-            messages=messages,
-            stream=True,
-        )
-
-        # Stream chunks to Redis PubSub
         full_response = []
         chunk_count = 0
         for chunk in response:
             if chunk.choices[0].delta.content:
                 chunk_text = chunk.choices[0].delta.content
                 full_response.append(chunk_text)
-                # Publish each chunk (include question_id to route to correct view)
-                result = r.publish(username, f"ask_ai:chunk:{story_hash}:{question_id}:{chunk_text}")
+                publish_event("chunk", {"chunk": chunk_text})
                 chunk_count += 1
                 if chunk_count == 1:
-                    logging.user(
-                        user, f"~FBPublished first chunk to Redis channel '{username}', subscribers: {result}"
-                    )
+                    logging.user(user, f"~FBAsk AI: Published first chunk to Redis channel '{username}'")
 
-        # Complete response
         full_response_text = "".join(full_response)
 
-        # Increment usage counter (only for non-cached responses)
-        user.profile.increment_ask_ai_usage()
+        # Record usage for live responses
+        tracker = AskAIUsageTracker(user)
+        tracker.record_usage(
+            question_id=question_id,
+            story_hash=story_hash,
+            request_id=request_token,
+            cached=False,
+        )
+        usage_message = tracker.get_usage_message()
 
-        # Get usage message
-        usage_message = user.profile.get_ask_ai_usage_message()
-
-        complete_result = r.publish(username, f"ask_ai:complete:{story_hash}:{question_id}")
+        publish_event("complete")
         if usage_message:
-            r.publish(username, f"ask_ai:usage:{story_hash}:{question_id}:{usage_message}")
+            publish_event("usage", {"message": usage_message})
+
         logging.user(
             user,
-            f"~FBPublished {chunk_count} chunks total, complete message subscribers: {complete_result}",
+            f"~FGAsk AI: Completed streaming response for story {story_hash}, "
+            f"{len(full_response_text)} chars in {time.time() - start_time:.2f}s",
         )
 
-        # Save response to cache (only for initial questions, not follow-ups or custom questions)
-        # Follow-ups should never be cached because they depend on conversation context
-        # Custom questions should never be cached because they vary too much
         if not conversation_history and not custom_question:
             metadata = {
                 "model": "gpt-4.1",
                 "question_id": question_id,
                 "duration_seconds": time.time() - start_time,
                 "response_length": len(full_response_text),
+                "request_id": request_token,
             }
 
             MAskAIResponse.create_response(
@@ -185,12 +178,6 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
                 metadata=metadata,
             )
 
-        logging.user(
-            user,
-            f"~FGAsk AI: Completed streaming response for story {story_hash}, "
-            f"{len(full_response_text)} chars in {time.time() - start_time:.2f}s",
-        )
-
         return {
             "code": 1,
             "message": "Response completed",
@@ -200,18 +187,24 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
 
     except openai.APITimeoutError as e:
         error_msg = "OpenAI API timeout"
-        r.publish(username, f"ask_ai:error:{story_hash}:{question_id}:{error_msg}")
-        logging.user(user, f"~FRAsk AI timeout: {e}")
+        if publish_event:
+            publish_event("error", {"error": error_msg})
+        if user:
+            logging.user(user, f"~FRAsk AI timeout: {e}")
         return {"code": -1, "message": error_msg}
 
     except openai.APIError as e:
         error_msg = f"OpenAI API error: {str(e)}"
-        r.publish(username, f"ask_ai:error:{story_hash}:{question_id}:{error_msg}")
-        logging.user(user, f"~FRAsk AI error: {e}")
+        if publish_event:
+            publish_event("error", {"error": error_msg})
+        if user:
+            logging.user(user, f"~FRAsk AI error: {e}")
         return {"code": -1, "message": error_msg}
 
     except Exception as e:
         error_msg = f"Unexpected error: {str(e)}"
-        r.publish(username, f"ask_ai:error:{story_hash}:{question_id}:{error_msg}")
-        logging.user(user, f"~FRAsk AI unexpected error: {e}")
+        if publish_event:
+            publish_event("error", {"error": error_msg})
+        if user:
+            logging.user(user, f"~FRAsk AI unexpected error: {e}")
         return {"code": -1, "message": error_msg}

@@ -2,6 +2,7 @@ import datetime
 import zlib
 
 import mongoengine as mongo
+import pytz
 from django.utils.encoding import smart_bytes, smart_str
 
 
@@ -23,7 +24,6 @@ class MAskAIResponse(mongo.Document):
                 "fields": ["user_id", "story_hash", "question_id"],
                 "unique": False,
             },
-            {"fields": ["created_at"], "expireAfterSeconds": 60 * 60 * 24 * 30},  # Expire after 30 days
         ],
         "allow_inheritance": False,
     }
@@ -75,7 +75,9 @@ class MAskAIResponse(mongo.Document):
             return None
 
     @classmethod
-    def create_response(cls, user_id, story_hash, question_id, response_text, custom_question=None, metadata=None):
+    def create_response(
+        cls, user_id, story_hash, question_id, response_text, custom_question=None, metadata=None
+    ):
         """
         Create a new Ask AI response.
 
@@ -100,3 +102,28 @@ class MAskAIResponse(mongo.Document):
         response.response_text = response_text
         response.save()
         return response
+
+
+class MAskAIUsage(mongo.Document):
+    """
+    History of Ask AI usage per request.
+
+    Tracks each question asked for rate limiting and analytics.
+    Use AskAIUsageTracker class for rate limiting logic.
+    """
+
+    user_id = mongo.IntField(required=True)
+    question_id = mongo.StringField()
+    story_hash = mongo.StringField()
+    request_id = mongo.StringField()
+    plan_tier = mongo.StringField()  # free, premium, archive, pro
+    source = mongo.StringField(default="live")  # live or cache
+    created_at = mongo.DateTimeField(default=datetime.datetime.utcnow)
+
+    meta = {
+        "collection": "ask_ai_usage",
+        "indexes": [
+            {"fields": ["user_id", "-created_at"]},
+        ],
+        "allow_inheritance": False,
+    }
