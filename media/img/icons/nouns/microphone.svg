@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>microphone</title>
+    <g id="microphone" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="noun-microphone" transform="translate(35, 10)" fill="#95968E" fill-rule="nonzero">
+            <!-- Microphone body (rounded rectangle) -->
+            <path d="M40,0 C49.9411255,0 58,8.05887451 58,18 L58,50 C58,59.9411255 49.9411255,68 40,68 C30.0588745,68 22,59.9411255 22,50 L22,18 C22,8.05887451 30.0588745,0 40,0 Z" id="mic-body"></path>
+
+            <!-- Mic stand arc (left) -->
+            <path d="M10,40 C10,23.4314575 23.4314575,10 40,10" id="arc-left" stroke="#95968E" stroke-width="8" fill="none" stroke-linecap="round"></path>
+
+            <!-- Mic stand arc (right) -->
+            <path d="M70,40 C70,23.4314575 56.5685425,10 40,10" id="arc-right" stroke="#95968E" stroke-width="8" fill="none" stroke-linecap="round"></path>
+
+            <!-- Bottom line to base -->
+            <rect x="36" y="68" width="8" height="35" rx="2" id="stand"></rect>
+
+            <!-- Base -->
+            <rect x="20" y="103" width="40" height="8" rx="4" id="base"></rect>
+        </g>
+    </g>
+</svg>

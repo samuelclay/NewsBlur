@@ -142,8 +142,12 @@ def transcribe_audio(request):
         )
 
         # Transcribe using OpenAI Whisper API
-        # The API expects a file-like object with a name attribute
-        transcript = client.audio.transcriptions.create(model="whisper-1", file=audio_file, language="en")
+        # OpenAI SDK expects a tuple of (filename, file_content, content_type) for uploaded files
+        # Read the file content from Django's InMemoryUploadedFile
+        audio_file.seek(0)  # Ensure we're at the start of the file
+        file_tuple = (audio_file.name, audio_file.read(), audio_file.content_type)
+
+        transcript = client.audio.transcriptions.create(model="whisper-1", file=file_tuple, language="en")
 
         transcribed_text = transcript.text.strip()
 

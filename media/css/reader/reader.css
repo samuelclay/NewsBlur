@@ -10900,8 +10900,8 @@ form.opml_import_form input {
 }
 
 .NB-menu-ask-ai-voice-button {
-    width: 36px;
-    height: 36px;
+    min-width: 36px;
+    padding: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -10910,6 +10910,7 @@ form.opml_import_form input {
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
 .NB-menu-ask-ai-voice-button:hover {
@@ -10929,13 +10930,62 @@ form.opml_import_form input {
 }
 
 .NB-menu-ask-ai-voice-icon {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    display: block;
 }
 
 .NB-menu-ask-ai-voice-button.NB-recording .NB-menu-ask-ai-voice-icon,
 .NB-menu-ask-ai-voice-button.NB-transcribing .NB-menu-ask-ai-voice-icon {
     filter: brightness(0) invert(1);
+}
+
+/* Recording Indicator */
+.NB-menu-ask-ai-recording-indicator {
+    display: none;
+    align-items: flex-end;
+    gap: 2px;
+    height: 20px;
+}
+
+.NB-menu-ask-ai-voice-button.NB-recording .NB-menu-ask-ai-recording-indicator {
+    display: flex;
+}
+
+.NB-menu-ask-ai-voice-button.NB-recording .NB-menu-ask-ai-voice-icon {
+    display: none;
+}
+
+.NB-recording-bar {
+    width: 3px;
+    background-color: white;
+    border-radius: 2px;
+    animation: recording-wave 0.8s ease-in-out infinite;
+}
+
+.NB-recording-bar:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.NB-recording-bar:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.NB-recording-bar:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.NB-recording-bar:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+@keyframes recording-wave {
+    0%, 100% {
+        height: 5px;
+    }
+    50% {
+        height: 18px;
+    }
 }
 
 .NB-menu-ask-ai-option:first-child {
@@ -11178,8 +11228,8 @@ form.opml_import_form input {
 }
 
 .NB-story-ask-ai-voice-button {
-    width: 36px;
-    height: 36px;
+    min-width: 36px;
+    padding: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -11188,6 +11238,7 @@ form.opml_import_form input {
     border-radius: 3px;
     cursor: pointer;
     transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
 .NB-story-ask-ai-voice-button:hover {
@@ -11207,8 +11258,9 @@ form.opml_import_form input {
 }
 
 .NB-story-ask-ai-voice-icon {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    display: block;
 }
 
 .NB-story-ask-ai-voice-button.NB-recording .NB-story-ask-ai-voice-icon,
@@ -11859,6 +11911,11 @@ form.opml_import_form input {
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.NB-story-ask-ai-inline .NB-story-ask-ai-voice-button {
+    padding: 10px;
+    border-radius: 6px;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-followup-submit:hover {
