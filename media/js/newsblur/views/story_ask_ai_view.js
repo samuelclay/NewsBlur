@@ -90,10 +90,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 <div class="NB-story-ask-ai-usage-message" style="display: none;"></div>\
             </div>\
             <div class="NB-story-ask-ai-followup-wrapper" style="display: none;">\
-                <input type="text" class="NB-story-ask-ai-followup-input" placeholder="Continue the discussion..." />\
                 <div class="NB-story-ask-ai-voice-button" title="Record voice question">\
                     <img src="/media/img/icons/nouns/microphone.svg" class="NB-story-ask-ai-voice-icon" />\
                 </div>\
+                <input type="text" class="NB-story-ask-ai-followup-input" placeholder="Continue the discussion..." />\
                 <div class="NB-button NB-story-ask-ai-followup-submit">Send</div>\
             </div>\
         </div>\
@@ -238,8 +238,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
         // Escape HTML to prevent XSS
         html = html.replace(/&/g, '&amp;')
-                   .replace(/</g, '&lt;')
-                   .replace(/>/g, '&gt;');
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
 
         // Bold: **text** or __text__ (do bold first, before italic)
         html = html.replace(/\*\*([^\n]+?)\*\*/g, '<strong>$1</strong>');
@@ -476,7 +476,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             this.voice_recorder = new NEWSBLUR.VoiceRecorder({
                 on_recording_start: function () {
                     $voice_button.addClass('NB-recording');
-                    $input.attr('placeholder', 'Recording... Click microphone to stop');
+                    $input.attr('placeholder', 'Recording...');
                     $voice_button.attr('title', 'Stop recording');
                 },
                 on_recording_stop: function () {
