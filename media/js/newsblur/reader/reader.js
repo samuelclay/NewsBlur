@@ -101,6 +101,7 @@
             // ==================
 
             $(window).bind('resize.reader', _.throttle($.rescope(this.resize_window, this), 1000));
+            $(window).bind('beforeunload.reader', _.bind(this.cleanup_before_unload, this));
             this.$s.$body.bind('click.reader', $.rescope(this.handle_clicks, this));
             this.$s.$body.bind('keyup.reader', $.rescope(this.handle_keyup, this));
             this.handle_keystrokes();
@@ -1320,6 +1321,21 @@
 
         reset_feed: function (options) {
             options = options || {};
+
+            // Clean up any active voice recordings from Ask AI menu
+            var $menu = $('.NB-menu-ask-ai-container');
+            var menu_recorder = $menu.data('voice_recorder');
+            if (menu_recorder) {
+                menu_recorder.cleanup();
+            }
+
+            // Clean up any active voice recordings from Ask AI panes
+            $('.NB-story-ask-ai-pane, .NB-story-ask-ai-inline').each(function () {
+                var view = $(this).data('view');
+                if (view && view.voice_recorder) {
+                    view.voice_recorder.cleanup();
+                }
+            });
 
             $.extend(this.flags, {
                 'scrolling_by_selecting_story_title': false,
@@ -6479,6 +6495,26 @@
         // ==========
         // = Events =
         // ==========
+
+        cleanup_before_unload: function () {
+            // Clean up voice recordings when page is about to unload (refresh, navigate away, etc.)
+            // This ensures microphone is released even if user refreshes the page
+
+            // Clean up Ask AI menu recorder
+            var $menu = $('.NB-menu-ask-ai-container');
+            var menu_recorder = $menu.data('voice_recorder');
+            if (menu_recorder) {
+                menu_recorder.cleanup();
+            }
+
+            // Clean up all Ask AI pane recorders
+            $('.NB-story-ask-ai-pane, .NB-story-ask-ai-inline').each(function () {
+                var view = $(this).data('view');
+                if (view && view.voice_recorder) {
+                    view.voice_recorder.cleanup();
+                }
+            });
+        },
 
         handle_clicks: function (elem, e) {
             var self = this;
