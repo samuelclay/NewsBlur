@@ -4,7 +4,7 @@ import pytz
 from django.shortcuts import render
 from django.views import View
 
-from apps.ask_ai.models import MAskAIResponse
+from apps.ask_ai.models import MAskAIResponse, MAskAIUsage
 from apps.ask_ai.usage import AskAIUsageTracker
 from apps.profile.models import Profile
 
@@ -152,6 +152,55 @@ class AskAI(View):
         custom_requests_total = question_counts.get("custom", 0)
         data["requests_custom_total"] = custom_requests_total
 
+        # ===== Over Quota (Denied Requests) Metrics =====
+        # Count total denied requests (all time)
+        denied_total = MAskAIUsage.objects(over_quota=True).count()
+        data["denied_total"] = denied_total
+
+        # Count denied requests in recent periods
+        denied_daily = MAskAIUsage.objects(over_quota=True, created_at__gte=last_day).count()
+        denied_weekly = MAskAIUsage.objects(over_quota=True, created_at__gte=last_week).count()
+        denied_monthly = MAskAIUsage.objects(over_quota=True, created_at__gte=last_month).count()
+
+        data["denied_daily"] = denied_daily
+        data["denied_weekly"] = denied_weekly
+        data["denied_monthly"] = denied_monthly
+
+        # Count unique users who hit limits (all time)
+        unique_denied_users = len(MAskAIUsage.objects(over_quota=True).distinct("user_id"))
+        data["denied_unique_users"] = unique_denied_users
+
+        # Count denied requests by tier (recent periods for better accuracy)
+        # Get all denied requests from last month to categorize by tier
+        denied_entries = MAskAIUsage.objects(over_quota=True, created_at__gte=last_month).only("user_id", "plan_tier")
+
+        # Count by plan tier (using the recorded plan_tier field)
+        denied_by_tier = {"free": 0, "premium": 0, "archive": 0}
+        denied_users_by_tier = {"free": set(), "premium": set(), "archive": set()}
+
+        for entry in denied_entries:
+            tier = entry.plan_tier or "free"
+            # Normalize tier names
+            if tier in ["archive", "pro"]:
+                tier = "archive"
+            elif tier == "premium":
+                tier = "premium"
+            else:
+                tier = "free"
+
+            denied_by_tier[tier] += 1
+            denied_users_by_tier[tier].add(entry.user_id)
+
+        # Store tier-specific counts
+        data["denied_free"] = denied_by_tier["free"]
+        data["denied_premium"] = denied_by_tier["premium"]
+        data["denied_archive"] = denied_by_tier["archive"]
+
+        # Store unique user counts by tier
+        data["denied_unique_free"] = len(denied_users_by_tier["free"])
+        data["denied_unique_premium"] = len(denied_users_by_tier["premium"])
+        data["denied_unique_archive"] = len(denied_users_by_tier["archive"])
+
         # Format data for Prometheus
         chart_name = "ask_ai"
         chart_type = "counter"
@@ -186,6 +235,20 @@ class AskAI(View):
         formatted_data["requests_daily"] = f'{chart_name}{{metric="requests_rate",period="daily"}} {data["requests_daily"]}'
         formatted_data["requests_weekly"] = f'{chart_name}{{metric="requests_rate",period="weekly"}} {data["requests_weekly"]}'
         formatted_data["requests_monthly"] = f'{chart_name}{{metric="requests_rate",period="monthly"}} {data["requests_monthly"]}'
+
+        # Over quota (denied) metrics
+        formatted_data["denied_total"] = f'{chart_name}{{metric="denied_total"}} {data["denied_total"]}'
+        formatted_data["denied_daily"] = f'{chart_name}{{metric="denied",period="daily"}} {data["denied_daily"]}'
+        formatted_data["denied_weekly"] = f'{chart_name}{{metric="denied",period="weekly"}} {data["denied_weekly"]}'
+        formatted_data["denied_monthly"] = f'{chart_name}{{metric="denied",period="monthly"}} {data["denied_monthly"]}'
+
+        # Unique users hitting limits
+        formatted_data["denied_unique_users"] = f'{chart_name}{{metric="denied_unique_users"}} {data["denied_unique_users"]}'
+
+        # Denied by tier (monthly window)
+        for tier in ["free", "premium", "archive"]:
+            formatted_data[f"denied_{tier}"] = f'{chart_name}{{metric="denied_by_tier",tier="{tier}"}} {data[f"denied_{tier}"]}'
+            formatted_data[f"denied_unique_{tier}"] = f'{chart_name}{{metric="denied_unique_by_tier",tier="{tier}"}} {data[f"denied_unique_{tier}"]}'
 
         context = {
             "data": formatted_data,

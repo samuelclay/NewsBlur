@@ -46,6 +46,20 @@ class AskAIUsageTracker:
         entry.save()
         return entry
 
+    def record_denied(self, question_id=None, story_hash=None, request_id=None):
+        """Record a usage attempt that was denied due to rate limits."""
+        entry = MAskAIUsage(
+            user_id=self.user.pk,
+            question_id=question_id or "",
+            story_hash=story_hash or "",
+            request_id=request_id or "",
+            plan_tier=self._plan_tier,
+            source="denied",
+            over_quota=True,
+        )
+        entry.save()
+        return entry
+
     def get_usage_message(self):
         if self._is_premium_tier:
             limit = self._daily_limit
@@ -153,7 +167,7 @@ class AskAIUsageTracker:
     def _daily_count(self):
         start_utc, end_utc = self._daily_window()
         return MAskAIUsage.objects(
-            user_id=self.user.pk, created_at__gte=start_utc, created_at__lt=end_utc
+            user_id=self.user.pk, created_at__gte=start_utc, created_at__lt=end_utc, over_quota=False
         ).count()
 
     def _weekly_window(self):
@@ -192,7 +206,7 @@ class AskAIUsageTracker:
         """Count questions asked this week for free users."""
         start_utc, end_utc = self._weekly_window()
         return MAskAIUsage.objects(
-            user_id=self.user.pk, created_at__gte=start_utc, created_at__lt=end_utc
+            user_id=self.user.pk, created_at__gte=start_utc, created_at__lt=end_utc, over_quota=False
         ).count()
 
     def _lifetime_count(self):

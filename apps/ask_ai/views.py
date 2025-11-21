@@ -65,8 +65,11 @@ def ask_ai_question(request):
         custom_question = custom_question.strip()
 
     # Check usage limits
-    can_use, limit_message = AskAIUsageTracker(request.user).can_use()
+    tracker = AskAIUsageTracker(request.user)
+    can_use, limit_message = tracker.can_use()
     if not can_use:
+        # Record this denied attempt for analytics
+        tracker.record_denied(question_id=question_id, story_hash=story_hash, request_id=request_id)
         return {"code": -1, "message": limit_message}
 
     # Validate story exists

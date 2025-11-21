@@ -118,6 +118,7 @@ class MAskAIUsage(mongo.Document):
     request_id = mongo.StringField()
     plan_tier = mongo.StringField()  # free, premium, archive, pro
     source = mongo.StringField(default="live")  # live or cache
+    over_quota = mongo.BooleanField(default=False)  # True when request denied due to rate limits
     created_at = mongo.DateTimeField(default=datetime.datetime.utcnow)
 
     meta = {
