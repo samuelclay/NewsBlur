@@ -241,7 +241,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_save: NEWSBLUR.assets.preference("show_sideoption_save"),
             show_sideoption_share: NEWSBLUR.assets.preference("show_sideoption_share"),
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
-            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai") && NEWSBLUR.Globals.is_staff,
+            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai"),
         };
     },
 
@@ -1365,6 +1365,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="Ask a question..." />\
                         <div class="NB-menu-ask-ai-voice-button" title="Record voice question">\
                             <img src="/media/img/icons/nouns/microphone.svg" class="NB-menu-ask-ai-voice-icon" />\
+                            <div class="NB-menu-ask-ai-recording-indicator">\
+                                <div class="NB-recording-bar"></div>\
+                                <div class="NB-recording-bar"></div>\
+                                <div class="NB-recording-bar"></div>\
+                                <div class="NB-recording-bar"></div>\
+                            </div>\
                         </div>\
                         <div class="NB-button NB-modal-submit-green NB-menu-ask-ai-custom-submit NB-disabled">Ask</div>\
                     </div>\
@@ -1541,8 +1547,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 on_transcription_error: function (error) {
                     $voice_button.removeClass('NB-recording NB-transcribing');
                     $voice_button.attr('title', 'Record voice question');
-                    $input.attr('placeholder', 'Ask a question...');
-                    NEWSBLUR.reader.show_feed_hidden_story_title_indicator(error, false);
+                    $input.attr('placeholder', error || 'Error - please try again');
+                    console.error('Voice transcription error:', error);
                 }
             });
             $menu.data('voice_recorder', recorder);
