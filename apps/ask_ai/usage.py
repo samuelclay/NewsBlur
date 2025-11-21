@@ -2,7 +2,7 @@ import datetime
 
 import pytz
 
-from .models import MAskAIUsage
+from .models import MAITranscriptionUsage, MAskAIUsage
 
 
 class AskAIUsageTracker:
@@ -285,3 +285,162 @@ class AskAIUsageTracker:
             f"Your limit resets at midnight tonight, in {time_remaining}.\n\n"
             "Upgrade to Premium Archive for 50 requests per day."
         )
+
+
+class TranscriptionUsageTracker:
+    """
+    Track transcription usage with separate quotas (5x Ask AI quotas).
+    Quotas are enforced but transcriptions still succeed when over quota.
+    """
+
+    DAILY_LIMIT_PREMIUM = 15  # 5x Ask AI limit
+    DAILY_LIMIT_ARCHIVE = 250  # 5x Ask AI limit
+    WEEKLY_LIMIT_FREE = 15  # 5x Ask AI limit
+
+    def __init__(self, user):
+        self.user = user
+        self.profile = user.profile
+
+    # Public API -------------------------------------------------------------
+    def is_over_quota(self):
+        """Check if user is over their transcription quota. Returns True if over quota."""
+        if self._is_premium_tier:
+            limit = self._daily_limit
+            used = self._daily_count()
+            return used >= limit
+
+        # Free users have weekly limit
+        weekly_usage = self._weekly_count()
+        return weekly_usage >= self.WEEKLY_LIMIT_FREE
+
+    def record_usage(
+        self,
+        transcription_text,
+        duration_seconds=0.0,
+        question_id=None,
+        story_hash=None,
+        request_id=None,
+    ):
+        """Record a transcription usage."""
+        over_quota = self.is_over_quota()
+        entry = MAITranscriptionUsage(
+            user_id=self.user.pk,
+            transcription_text=transcription_text or "",
+            duration_seconds=duration_seconds,
+            question_id=question_id or "",
+            story_hash=story_hash or "",
+            request_id=request_id or "",
+            plan_tier=self._plan_tier,
+            source="live",
+            over_quota=over_quota,
+        )
+        entry.save()
+        return entry
+
+    @classmethod
+    def get_usage_snapshot(cls):
+        """Return daily (for premium) and weekly (for free) usage counts keyed by user ID."""
+        collection = MAITranscriptionUsage._get_collection()
+        now = datetime.datetime.utcnow()
+        last_day = now - datetime.timedelta(days=1)
+        last_week = now - datetime.timedelta(days=7)
+
+        # Daily counts for premium users
+        daily_counts = {}
+        for doc in collection.aggregate(
+            [
+                {"$match": {"created_at": {"$gte": last_day}}},
+                {"$group": {"_id": "$user_id", "count": {"$sum": 1}}},
+            ]
+        ):
+            daily_counts[doc["_id"]] = doc["count"]
+
+        # Weekly counts for free users
+        weekly_counts = {}
+        for doc in collection.aggregate(
+            [
+                {"$match": {"created_at": {"$gte": last_week}}},
+                {"$group": {"_id": "$user_id", "count": {"$sum": 1}}},
+            ]
+        ):
+            weekly_counts[doc["_id"]] = doc["count"]
+
+        return {"daily": daily_counts, "weekly": weekly_counts}
+
+    # Internal helpers -------------------------------------------------------
+    @property
+    def _is_premium_tier(self):
+        return self.profile.is_premium or self.profile.is_archive or self.profile.is_pro
+
+    @property
+    def _daily_limit(self):
+        if self.profile.is_archive or self.profile.is_pro:
+            return self.DAILY_LIMIT_ARCHIVE
+        return self.DAILY_LIMIT_PREMIUM
+
+    @property
+    def _plan_tier(self):
+        if self.profile.is_archive or self.profile.is_pro:
+            return "archive"
+        if self.profile.is_premium:
+            return "premium"
+        return "free"
+
+    def _daily_window(self):
+        tz_name = str(self.profile.timezone or "UTC")
+        try:
+            user_tz = pytz.timezone(tz_name)
+        except pytz.UnknownTimeZoneError:
+            user_tz = pytz.UTC
+
+        now_local = datetime.datetime.now(pytz.UTC).astimezone(user_tz)
+        start_local = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_local = start_local + datetime.timedelta(days=1)
+        start_utc = start_local.astimezone(pytz.UTC).replace(tzinfo=None)
+        end_utc = end_local.astimezone(pytz.UTC).replace(tzinfo=None)
+        return start_utc, end_utc
+
+    def _daily_count(self):
+        start_utc, end_utc = self._daily_window()
+        return MAITranscriptionUsage.objects(
+            user_id=self.user.pk, created_at__gte=start_utc, created_at__lt=end_utc
+        ).count()
+
+    def _weekly_window(self):
+        """
+        Calculate weekly window for free users.
+        Resets Sunday night at midnight (Saturday night into Sunday morning) in user's timezone.
+        Week runs from Sunday 00:00 to next Sunday 00:00.
+        """
+        tz_name = str(self.profile.timezone or "UTC")
+        try:
+            user_tz = pytz.timezone(tz_name)
+        except pytz.UnknownTimeZoneError:
+            user_tz = pytz.UTC
+
+        now_local = datetime.datetime.now(pytz.UTC).astimezone(user_tz)
+
+        # Find the most recent Sunday at midnight (start of week)
+        # weekday(): Monday=0, Tuesday=1, ..., Saturday=5, Sunday=6
+        days_since_sunday = (now_local.weekday() + 1) % 7  # 0 if Sunday, 1 if Monday, etc.
+
+        if days_since_sunday == 0:
+            # Today is Sunday - use today's midnight
+            start_local = now_local.replace(hour=0, minute=0, second=0, microsecond=0)
+        else:
+            # Go back to most recent Sunday midnight
+            start_local = (now_local - datetime.timedelta(days=days_since_sunday)).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+
+        end_local = start_local + datetime.timedelta(days=7)
+        start_utc = start_local.astimezone(pytz.UTC).replace(tzinfo=None)
+        end_utc = end_local.astimezone(pytz.UTC).replace(tzinfo=None)
+        return start_utc, end_utc
+
+    def _weekly_count(self):
+        """Count transcriptions this week for free users."""
+        start_utc, end_utc = self._weekly_window()
+        return MAITranscriptionUsage.objects(
+            user_id=self.user.pk, created_at__gte=start_utc, created_at__lt=end_utc
+        ).count()

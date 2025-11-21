@@ -20,10 +20,9 @@ class MAskAIResponse(mongo.Document):
     meta = {
         "collection": "ask_ai_responses",
         "indexes": [
-            {
-                "fields": ["user_id", "story_hash", "question_id"],
-                "unique": False,
-            },
+            {"fields": ["user_id", "story_hash", "question_id"], "unique": False},
+            {"fields": ["-created_at"]},  # Monitor time-based queries
+            {"fields": ["question_id"]},  # Question type counting
         ],
         "allow_inheritance": False,
     }
@@ -124,7 +123,39 @@ class MAskAIUsage(mongo.Document):
     meta = {
         "collection": "ask_ai_usage",
         "indexes": [
-            {"fields": ["user_id", "-created_at"]},
+            {"fields": ["user_id", "-created_at"]},  # Usage tracker queries
+            {"fields": ["-created_at"]},  # get_usage_snapshot() aggregation queries
+            {"fields": ["over_quota", "-created_at"]},  # Denied metrics in monitor
+        ],
+        "allow_inheritance": False,
+    }
+
+
+class MAITranscriptionUsage(mongo.Document):
+    """
+    History of Ask AI transcription usage per request.
+
+    Tracks each audio transcription for rate limiting and analytics.
+    Use TranscriptionUsageTracker class for rate limiting logic.
+    """
+
+    user_id = mongo.IntField(required=True)
+    transcription_text = mongo.StringField()  # The transcribed text
+    duration_seconds = mongo.FloatField()  # Duration of audio in seconds
+    question_id = mongo.StringField()  # Question ID if transcription was used for a question
+    story_hash = mongo.StringField()
+    request_id = mongo.StringField()
+    plan_tier = mongo.StringField()  # free, premium, archive, pro
+    source = mongo.StringField(default="live")  # live or denied
+    over_quota = mongo.BooleanField(default=False)  # True when over quota (but still transcribed)
+    created_at = mongo.DateTimeField(default=datetime.datetime.utcnow)
+
+    meta = {
+        "collection": "ai_transcription_usage",
+        "indexes": [
+            {"fields": ["user_id", "-created_at"]},  # Usage tracker queries
+            {"fields": ["-created_at"]},  # Monitor time-based queries
+            {"fields": ["over_quota", "-created_at"]},  # Over-quota metrics in monitor
         ],
         "allow_inheritance": False,
     }
