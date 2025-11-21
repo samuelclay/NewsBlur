@@ -1363,6 +1363,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     </ul>\
                     <div class="NB-menu-ask-ai-custom-input-wrapper">\
                         <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="Ask a question..." />\
+                        <div class="NB-menu-ask-ai-voice-button" title="Record voice question">\
+                            <img src="/media/img/icons/nouns/microphone.svg" class="NB-menu-ask-ai-voice-icon" />\
+                        </div>\
                         <div class="NB-button NB-modal-submit-green NB-menu-ask-ai-custom-submit NB-disabled">Ask</div>\
                     </div>\
                 </div>\
@@ -1460,6 +1463,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.submit_custom_question_from_menu($menu);
         }, this));
 
+        // Voice recording button handler
+        $menu.find('.NB-menu-ask-ai-voice-button').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            this.start_voice_recording_for_menu($menu);
+        }, this));
+
         $(document).on('click.ask_ai_menu', _.bind(function (ev) {
             if (!$(ev.target).closest('.NB-menu-ask-ai-container, .NB-feed-story-ask-ai').length) {
                 this.hide_ask_ai_menu();
@@ -1489,6 +1498,62 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     handle_ask_ai_question: function (question_id) {
         NEWSBLUR.reader.open_ask_ai_pane(this.model, question_id);
+    },
+
+    start_voice_recording_for_menu: function ($menu) {
+        var self = this;
+        var $voice_button = $menu.find('.NB-menu-ask-ai-voice-button');
+        var $input = $menu.find('.NB-menu-ask-ai-custom-input');
+        var $submit_button = $menu.find('.NB-menu-ask-ai-custom-submit');
+
+        // Get or create recorder instance for this menu
+        var recorder = $menu.data('voice_recorder');
+        if (!recorder) {
+            recorder = new NEWSBLUR.VoiceRecorder({
+                on_recording_start: function () {
+                    $voice_button.addClass('NB-recording');
+                    $input.attr('placeholder', 'Recording... Click microphone to stop');
+                    $voice_button.attr('title', 'Stop recording');
+                },
+                on_recording_stop: function () {
+                    $voice_button.removeClass('NB-recording');
+                    $voice_button.addClass('NB-transcribing');
+                    $input.attr('placeholder', 'Transcribing...');
+                    $voice_button.attr('title', 'Transcribing audio');
+                },
+                on_transcription_start: function () {
+                    // Already showing transcribing state
+                },
+                on_transcription_complete: function (text) {
+                    $voice_button.removeClass('NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+                    $input.attr('placeholder', 'Ask a question...');
+
+                    // Set the transcribed text and submit the question automatically
+                    $input.val(text);
+                    $submit_button.removeClass('NB-disabled');
+
+                    // Auto-submit the question
+                    _.delay(function () {
+                        self.submit_custom_question_from_menu($menu);
+                    }, 100);
+                },
+                on_transcription_error: function (error) {
+                    $voice_button.removeClass('NB-recording NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+                    $input.attr('placeholder', 'Ask a question...');
+                    NEWSBLUR.reader.show_feed_hidden_story_title_indicator(error, false);
+                }
+            });
+            $menu.data('voice_recorder', recorder);
+        }
+
+        // Toggle recording
+        if (recorder.is_recording) {
+            recorder.stop_recording();
+        } else {
+            recorder.start_recording();
+        }
     }
 
 

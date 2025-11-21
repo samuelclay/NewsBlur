@@ -7,6 +7,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     events: {
         "click .NB-story-ask-ai-close": "close_pane",
         "click .NB-story-ask-ai-followup-submit": "submit_followup_question",
+        "click .NB-story-ask-ai-voice-button": "start_voice_recording",
         "keypress .NB-story-ask-ai-followup-input": "handle_followup_keypress",
         "click .NB-story-ask-ai-usage-message a": "open_premium_modal"
     },
@@ -90,6 +91,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             </div>\
             <div class="NB-story-ask-ai-followup-wrapper" style="display: none;">\
                 <input type="text" class="NB-story-ask-ai-followup-input" placeholder="Continue the discussion..." />\
+                <div class="NB-story-ask-ai-voice-button" title="Record voice question">\
+                    <img src="/media/img/icons/nouns/microphone.svg" class="NB-story-ask-ai-voice-icon" />\
+                </div>\
                 <div class="NB-button NB-story-ask-ai-followup-submit">Send</div>\
             </div>\
         </div>\
@@ -455,6 +459,63 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
         // Send follow-up with conversation history
         this.send_question(null, this.conversation_history);
+    },
+
+    start_voice_recording: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        var self = this;
+        var $voice_button = this.$('.NB-story-ask-ai-voice-button');
+        var $input = this.$('.NB-story-ask-ai-followup-input');
+
+        // Get or create recorder instance for this view
+        if (!this.voice_recorder) {
+            this.voice_recorder = new NEWSBLUR.VoiceRecorder({
+                on_recording_start: function () {
+                    $voice_button.addClass('NB-recording');
+                    $input.attr('placeholder', 'Recording... Click microphone to stop');
+                    $voice_button.attr('title', 'Stop recording');
+                },
+                on_recording_stop: function () {
+                    $voice_button.removeClass('NB-recording');
+                    $voice_button.addClass('NB-transcribing');
+                    $input.attr('placeholder', 'Transcribing...');
+                    $voice_button.attr('title', 'Transcribing audio');
+                },
+                on_transcription_start: function () {
+                    // Already showing transcribing state
+                },
+                on_transcription_complete: function (text) {
+                    $voice_button.removeClass('NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+                    $input.attr('placeholder', 'Continue the discussion...');
+
+                    // Set the transcribed text and submit the question automatically
+                    $input.val(text);
+
+                    // Auto-submit the question
+                    _.delay(function () {
+                        self.submit_followup_question();
+                    }, 100);
+                },
+                on_transcription_error: function (error) {
+                    $voice_button.removeClass('NB-recording NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+                    $input.attr('placeholder', 'Continue the discussion...');
+                    NEWSBLUR.reader.show_feed_hidden_story_title_indicator(error, false);
+                }
+            });
+        }
+
+        // Toggle recording
+        if (this.voice_recorder.is_recording) {
+            this.voice_recorder.stop_recording();
+        } else {
+            this.voice_recorder.start_recording();
+        }
     }
 
 });
