@@ -1485,8 +1485,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     hide_ask_ai_menu: function () {
+        // Stop any active voice recording before closing
+        var $menu = $('.NB-menu-ask-ai-container');
+        var recorder = $menu.data('voice_recorder');
+        if (recorder) {
+            recorder.cleanup();
+        }
+
         $('.NB-feed-story-ask-ai').removeClass('NB-active');
-        $('.NB-menu-ask-ai-container').fadeOut(100, function () {
+        $menu.fadeOut(100, function () {
             $(this).remove();
         });
         $(document).off('click.ask_ai_menu');

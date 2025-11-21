@@ -93,6 +93,35 @@ NEWSBLUR.VoiceRecorder.prototype = {
         }
     },
 
+    cleanup: function() {
+        // Forcefully stop recording and release all resources
+        // This is a defensive cleanup method that ensures recording stops even if something fails
+        try {
+            if (this.media_recorder && this.is_recording) {
+                this.media_recorder.stop();
+            }
+        } catch (e) {
+            console.error('Error stopping media recorder:', e);
+        }
+
+        // Stop all tracks to release microphone
+        try {
+            if (this.stream) {
+                this.stream.getTracks().forEach(function(track) {
+                    track.stop();
+                });
+                this.stream = null;
+            }
+        } catch (e) {
+            console.error('Error stopping stream tracks:', e);
+        }
+
+        // Reset state
+        this.is_recording = false;
+        this.audio_chunks = [];
+        this.media_recorder = null;
+    },
+
     transcribe_audio: function(audio_blob) {
         var self = this;
 

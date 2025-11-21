@@ -128,10 +128,28 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         return 'askai-' + (Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
     },
 
+    remove: function () {
+        // Override Backbone's remove to ensure cleanup
+        if (this.voice_recorder) {
+            this.voice_recorder.cleanup();
+        }
+        if (this.initial_timeout) {
+            clearTimeout(this.initial_timeout);
+        }
+        if (this.debounce_timeout) {
+            clearTimeout(this.debounce_timeout);
+        }
+        Backbone.View.prototype.remove.call(this);
+    },
+
     close_pane: function (e) {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
+        }
+        // Stop any active voice recording before closing
+        if (this.voice_recorder) {
+            this.voice_recorder.cleanup();
         }
         // Clear all timeouts
         if (this.initial_timeout) {
