@@ -1,10 +1,13 @@
 import re
 import uuid
 
+import openai
+from django.conf import settings
 from django.views.decorators.http import require_http_methods
 
 from apps.rss_feeds.models import MStory
 from utils import json_functions as json
+from utils import log as logging
 from utils.user_functions import ajax_login_required
 from utils.view_functions import required_params
 
@@ -13,6 +16,7 @@ from .tasks import AskAIQuestion
 from .usage import AskAIUsageTracker
 
 MAX_CUSTOM_QUESTION_LENGTH = 5000
+MAX_AUDIO_SIZE_MB = 25  # OpenAI Whisper API limit
 REQUEST_ID_RE = re.compile(r"^[A-Za-z0-9_\-]{8,64}$")
 
 
@@ -102,3 +106,64 @@ def ask_ai_question(request):
         "story_hash": story_hash,
         "question_id": question_id,
     }
+
+
+@ajax_login_required
+@require_http_methods(["POST"])
+@json.json_view
+def transcribe_audio(request):
+    """
+    API endpoint to transcribe audio using OpenAI Whisper.
+
+    POST Parameters:
+        audio: Audio file (webm, mp3, wav, etc.)
+
+    Returns:
+        JSON response with transcribed text
+    """
+    if "audio" not in request.FILES:
+        return {"code": -1, "message": "No audio file provided"}
+
+    audio_file = request.FILES["audio"]
+
+    # Check file size (OpenAI Whisper API has 25MB limit)
+    if audio_file.size > MAX_AUDIO_SIZE_MB * 1024 * 1024:
+        return {"code": -1, "message": f"Audio file too large. Maximum size is {MAX_AUDIO_SIZE_MB}MB"}
+
+    # Check OpenAI API key is configured
+    if not settings.OPENAI_API_KEY:
+        return {"code": -1, "message": "OpenAI API key not configured"}
+
+    try:
+        client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+
+        logging.user(
+            request.user, f"~FBAsk AI: Transcribing audio file {audio_file.name} ({audio_file.size} bytes)"
+        )
+
+        # Transcribe using OpenAI Whisper API
+        # The API expects a file-like object with a name attribute
+        transcript = client.audio.transcriptions.create(model="whisper-1", file=audio_file, language="en")
+
+        transcribed_text = transcript.text.strip()
+
+        logging.user(
+            request.user, f"~FGAsk AI: Successfully transcribed audio to {len(transcribed_text)} characters"
+        )
+
+        return {"code": 1, "text": transcribed_text}
+
+    except openai.APITimeoutError as e:
+        error_msg = "OpenAI API timeout during transcription"
+        logging.user(request.user, f"~FRAsk AI transcription timeout: {e}")
+        return {"code": -1, "message": error_msg}
+
+    except openai.APIError as e:
+        error_msg = f"OpenAI API error during transcription: {str(e)}"
+        logging.user(request.user, f"~FRAsk AI transcription error: {e}")
+        return {"code": -1, "message": error_msg}
+
+    except Exception as e:
+        error_msg = f"Unexpected error during transcription: {str(e)}"
+        logging.user(request.user, f"~FRAsk AI transcription unexpected error: {e}")
+        return {"code": -1, "message": error_msg}

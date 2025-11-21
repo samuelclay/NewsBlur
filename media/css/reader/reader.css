@@ -10899,6 +10899,45 @@ form.opml_import_form input {
     transition: all 0.25s ease;
 }
 
+.NB-menu-ask-ai-voice-button {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border: 1px solid #D0D2CC;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.NB-menu-ask-ai-voice-button:hover {
+    background-color: #F4F6F3;
+    border-color: #90928B;
+}
+
+.NB-menu-ask-ai-voice-button.NB-recording {
+    background-color: #FF6B6B;
+    border-color: #FF6B6B;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.NB-menu-ask-ai-voice-button.NB-transcribing {
+    background-color: #4ECDC4;
+    border-color: #4ECDC4;
+}
+
+.NB-menu-ask-ai-voice-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.NB-menu-ask-ai-voice-button.NB-recording .NB-menu-ask-ai-voice-icon,
+.NB-menu-ask-ai-voice-button.NB-transcribing .NB-menu-ask-ai-voice-icon {
+    filter: brightness(0) invert(1);
+}
+
 .NB-menu-ask-ai-option:first-child {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -10995,6 +11034,34 @@ form.opml_import_form input {
 
 .NB-dark .NB-menu-ask-ai-custom-input::placeholder {
     color: #70788B;
+}
+
+.NB-dark .NB-menu-ask-ai-voice-button {
+    background-color: rgba(30, 35, 48, 0.8);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-menu-ask-ai-voice-button:hover {
+    background-color: rgba(40, 45, 60, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.NB-dark .NB-menu-ask-ai-voice-button.NB-recording {
+    background-color: #FF6B6B;
+    border-color: #FF6B6B;
+}
+
+.NB-dark .NB-menu-ask-ai-voice-button.NB-transcribing {
+    background-color: #4ECDC4;
+    border-color: #4ECDC4;
+}
+
+.NB-dark .NB-menu-ask-ai-voice-icon {
+    filter: grayscale(100%) brightness(0.8);
+}
+
+.NB-dark .NB-menu-ask-ai-voice-button:hover .NB-menu-ask-ai-voice-icon {
+    filter: grayscale(0%) brightness(1.1);
 }
 
 /* =================== */
@@ -11108,6 +11175,56 @@ form.opml_import_form input {
 .NB-story-ask-ai-followup-submit {
     padding: 8px 16px;
     font-size: 13px;
+}
+
+.NB-story-ask-ai-voice-button {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border: 1px solid #D0D2CC;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.NB-story-ask-ai-voice-button:hover {
+    background-color: #F4F6F3;
+    border-color: #90928B;
+}
+
+.NB-story-ask-ai-voice-button.NB-recording {
+    background-color: #FF6B6B;
+    border-color: #FF6B6B;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.NB-story-ask-ai-voice-button.NB-transcribing {
+    background-color: #4ECDC4;
+    border-color: #4ECDC4;
+}
+
+.NB-story-ask-ai-voice-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.NB-story-ask-ai-voice-button.NB-recording .NB-story-ask-ai-voice-icon,
+.NB-story-ask-ai-voice-button.NB-transcribing .NB-story-ask-ai-voice-icon {
+    filter: brightness(0) invert(1);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
 }
 
 .NB-story-ask-ai-response {
@@ -11889,6 +12006,34 @@ form.opml_import_form input {
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input::placeholder {
     color: #6B7A92;
+}
+
+.NB-dark .NB-story-ask-ai-voice-button {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-story-ask-ai-voice-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.NB-dark .NB-story-ask-ai-voice-button.NB-recording {
+    background-color: #FF6B6B;
+    border-color: #FF6B6B;
+}
+
+.NB-dark .NB-story-ask-ai-voice-button.NB-transcribing {
+    background-color: #4ECDC4;
+    border-color: #4ECDC4;
+}
+
+.NB-dark .NB-story-ask-ai-voice-icon {
+    filter: grayscale(100%) brightness(0.8);
+}
+
+.NB-dark .NB-story-ask-ai-voice-button:hover .NB-story-ask-ai-voice-icon {
+    filter: grayscale(0%) brightness(1.1);
 }
 
 /* ==================== */
