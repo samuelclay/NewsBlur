@@ -1362,7 +1362,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <% }) %>\
                     </ul>\
                     <div class="NB-menu-ask-ai-custom-input-wrapper">\
-                        <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="Ask a question..." />\
                         <div class="NB-menu-ask-ai-voice-button" title="Record voice question">\
                             <img src="/media/img/icons/nouns/microphone.svg" class="NB-menu-ask-ai-voice-icon" />\
                             <div class="NB-menu-ask-ai-recording-indicator">\
@@ -1372,6 +1371,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                                 <div class="NB-recording-bar"></div>\
                             </div>\
                         </div>\
+                        <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="Ask a question..." />\
                         <div class="NB-button NB-modal-submit-green NB-menu-ask-ai-custom-submit NB-disabled">Ask</div>\
                     </div>\
                 </div>\
@@ -1518,7 +1518,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             recorder = new NEWSBLUR.VoiceRecorder({
                 on_recording_start: function () {
                     $voice_button.addClass('NB-recording');
-                    $input.attr('placeholder', 'Recording... Click microphone to stop');
+                    $input.attr('placeholder', 'Recording...');
                     $voice_button.attr('title', 'Stop recording');
                 },
                 on_recording_stop: function () {
