@@ -92,7 +92,7 @@ def ask_ai_question(request):
             "conversation_history": conversation_history,
             "request_id": request_id,
         },
-        queue="ask_ai",
+        queue="work_queue",
     )
 
     return {

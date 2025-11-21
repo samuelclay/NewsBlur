@@ -16,7 +16,7 @@ from .prompts import get_full_prompt
 from .usage import AskAIUsageTracker
 
 
-@app.task(name="ask-ai-question", queue="ask_ai", time_limit=120, soft_time_limit=110)
+@app.task(name="ask-ai-question", queue="work_queue", time_limit=120, soft_time_limit=110)
 def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conversation_history=None, request_id=None):
     """
     Process an Ask AI question and stream the response via Redis PubSub.
