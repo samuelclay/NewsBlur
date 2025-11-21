@@ -13,7 +13,7 @@ from utils.view_functions import required_params
 
 from .prompts import get_prompt
 from .tasks import AskAIQuestion
-from .usage import AskAIUsageTracker
+from .usage import AskAIUsageTracker, TranscriptionUsageTracker
 
 MAX_CUSTOM_QUESTION_LENGTH = 5000
 MAX_AUDIO_SIZE_MB = 25  # OpenAI Whisper API limit
@@ -153,6 +153,18 @@ def transcribe_audio(request):
         transcript = client.audio.transcriptions.create(model="whisper-1", file=file_tuple, language="en")
 
         transcribed_text = transcript.text.strip()
+
+        # Record transcription usage
+        # Duration is not easily available from the audio file without additional processing
+        # We'll estimate based on file size (rough approximation: webm is ~12.5KB/sec for speech)
+        estimated_duration = audio_file.size / (12.5 * 1024)
+        transcription_tracker = TranscriptionUsageTracker(request.user)
+        transcription_tracker.record_usage(
+            transcription_text=transcribed_text,
+            duration_seconds=estimated_duration,
+            story_hash=request.POST.get("story_hash", ""),
+            request_id=request.POST.get("request_id", ""),
+        )
 
         logging.user(
             request.user, f"~FGAsk AI: Successfully transcribed audio to {len(transcribed_text)} characters"

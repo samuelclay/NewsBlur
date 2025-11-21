@@ -4,8 +4,8 @@ import pytz
 from django.shortcuts import render
 from django.views import View
 
-from apps.ask_ai.models import MAskAIResponse, MAskAIUsage
-from apps.ask_ai.usage import AskAIUsageTracker
+from apps.ask_ai.models import MAITranscriptionUsage, MAskAIResponse, MAskAIUsage
+from apps.ask_ai.usage import AskAIUsageTracker, TranscriptionUsageTracker
 from apps.profile.models import Profile
 
 
@@ -201,6 +201,106 @@ class AskAI(View):
         data["denied_unique_premium"] = len(denied_users_by_tier["premium"])
         data["denied_unique_archive"] = len(denied_users_by_tier["archive"])
 
+        # ===== Transcription Metrics =====
+        # Count total transcriptions (all time)
+        transcriptions_total = MAITranscriptionUsage.objects.count()
+        data["transcriptions_total"] = transcriptions_total
+
+        # Count transcriptions in recent periods
+        transcriptions_daily = MAITranscriptionUsage.objects(created_at__gte=last_day).count()
+        transcriptions_weekly = MAITranscriptionUsage.objects(created_at__gte=last_week).count()
+        transcriptions_monthly = MAITranscriptionUsage.objects(created_at__gte=last_month).count()
+
+        data["transcriptions_daily"] = transcriptions_daily
+        data["transcriptions_weekly"] = transcriptions_weekly
+        data["transcriptions_monthly"] = transcriptions_monthly
+
+        # Count transcriptions over quota
+        transcriptions_overquota_total = MAITranscriptionUsage.objects(over_quota=True).count()
+        transcriptions_overquota_daily = MAITranscriptionUsage.objects(
+            over_quota=True, created_at__gte=last_day
+        ).count()
+        transcriptions_overquota_weekly = MAITranscriptionUsage.objects(
+            over_quota=True, created_at__gte=last_week
+        ).count()
+        transcriptions_overquota_monthly = MAITranscriptionUsage.objects(
+            over_quota=True, created_at__gte=last_month
+        ).count()
+
+        data["transcriptions_overquota_total"] = transcriptions_overquota_total
+        data["transcriptions_overquota_daily"] = transcriptions_overquota_daily
+        data["transcriptions_overquota_weekly"] = transcriptions_overquota_weekly
+        data["transcriptions_overquota_monthly"] = transcriptions_overquota_monthly
+
+        # Count unique users using transcriptions (all time and recent)
+        unique_transcription_users = len(MAITranscriptionUsage.objects.distinct("user_id"))
+        unique_transcription_users_daily = len(
+            MAITranscriptionUsage.objects(created_at__gte=last_day).distinct("user_id")
+        )
+        unique_transcription_users_weekly = len(
+            MAITranscriptionUsage.objects(created_at__gte=last_week).distinct("user_id")
+        )
+        unique_transcription_users_monthly = len(
+            MAITranscriptionUsage.objects(created_at__gte=last_month).distinct("user_id")
+        )
+
+        data["transcriptions_unique_users"] = unique_transcription_users
+        data["transcriptions_unique_users_daily"] = unique_transcription_users_daily
+        data["transcriptions_unique_users_weekly"] = unique_transcription_users_weekly
+        data["transcriptions_unique_users_monthly"] = unique_transcription_users_monthly
+
+        # Count transcriptions by tier (recent month for better accuracy)
+        transcription_entries = MAITranscriptionUsage.objects(created_at__gte=last_month).only(
+            "user_id", "plan_tier", "over_quota"
+        )
+
+        transcriptions_by_tier = {"free": 0, "premium": 0, "archive": 0}
+        transcriptions_overquota_by_tier = {"free": 0, "premium": 0, "archive": 0}
+        transcription_users_by_tier = {"free": set(), "premium": set(), "archive": set()}
+
+        for entry in transcription_entries:
+            tier = entry.plan_tier or "free"
+            # Normalize tier names
+            if tier in ["archive", "pro"]:
+                tier = "archive"
+            elif tier == "premium":
+                tier = "premium"
+            else:
+                tier = "free"
+
+            transcriptions_by_tier[tier] += 1
+            transcription_users_by_tier[tier].add(entry.user_id)
+
+            if entry.over_quota:
+                transcriptions_overquota_by_tier[tier] += 1
+
+        # Store tier-specific counts
+        data["transcriptions_free"] = transcriptions_by_tier["free"]
+        data["transcriptions_premium"] = transcriptions_by_tier["premium"]
+        data["transcriptions_archive"] = transcriptions_by_tier["archive"]
+
+        data["transcriptions_overquota_free"] = transcriptions_overquota_by_tier["free"]
+        data["transcriptions_overquota_premium"] = transcriptions_overquota_by_tier["premium"]
+        data["transcriptions_overquota_archive"] = transcriptions_overquota_by_tier["archive"]
+
+        # Store unique user counts by tier
+        data["transcriptions_unique_free"] = len(transcription_users_by_tier["free"])
+        data["transcriptions_unique_premium"] = len(transcription_users_by_tier["premium"])
+        data["transcriptions_unique_archive"] = len(transcription_users_by_tier["archive"])
+
+        # Calculate average transcription length (characters)
+        transcription_lengths = []
+        for entry in MAITranscriptionUsage.objects(created_at__gte=last_month).only("transcription_text"):
+            if entry.transcription_text:
+                transcription_lengths.append(len(entry.transcription_text))
+
+        if transcription_lengths:
+            avg_transcription_length = sum(transcription_lengths) / len(transcription_lengths)
+        else:
+            avg_transcription_length = 0
+
+        data["transcriptions_avg_length"] = int(avg_transcription_length)
+
         # Format data for Prometheus
         chart_name = "ask_ai"
         chart_type = "counter"
@@ -249,6 +349,65 @@ class AskAI(View):
         for tier in ["free", "premium", "archive"]:
             formatted_data[f"denied_{tier}"] = f'{chart_name}{{metric="denied_by_tier",tier="{tier}"}} {data[f"denied_{tier}"]}'
             formatted_data[f"denied_unique_{tier}"] = f'{chart_name}{{metric="denied_unique_by_tier",tier="{tier}"}} {data[f"denied_unique_{tier}"]}'
+
+        # Transcription metrics
+        formatted_data["transcriptions_total"] = (
+            f'{chart_name}{{metric="transcriptions_total"}} {data["transcriptions_total"]}'
+        )
+        formatted_data["transcriptions_daily"] = (
+            f'{chart_name}{{metric="transcriptions",period="daily"}} {data["transcriptions_daily"]}'
+        )
+        formatted_data["transcriptions_weekly"] = (
+            f'{chart_name}{{metric="transcriptions",period="weekly"}} {data["transcriptions_weekly"]}'
+        )
+        formatted_data["transcriptions_monthly"] = (
+            f'{chart_name}{{metric="transcriptions",period="monthly"}} {data["transcriptions_monthly"]}'
+        )
+
+        # Transcriptions over quota
+        formatted_data["transcriptions_overquota_total"] = (
+            f'{chart_name}{{metric="transcriptions_overquota_total"}} {data["transcriptions_overquota_total"]}'
+        )
+        formatted_data["transcriptions_overquota_daily"] = (
+            f'{chart_name}{{metric="transcriptions_overquota",period="daily"}} {data["transcriptions_overquota_daily"]}'
+        )
+        formatted_data["transcriptions_overquota_weekly"] = (
+            f'{chart_name}{{metric="transcriptions_overquota",period="weekly"}} {data["transcriptions_overquota_weekly"]}'
+        )
+        formatted_data["transcriptions_overquota_monthly"] = (
+            f'{chart_name}{{metric="transcriptions_overquota",period="monthly"}} {data["transcriptions_overquota_monthly"]}'
+        )
+
+        # Unique transcription users
+        formatted_data["transcriptions_unique_users"] = (
+            f'{chart_name}{{metric="transcriptions_unique_users"}} {data["transcriptions_unique_users"]}'
+        )
+        formatted_data["transcriptions_unique_users_daily"] = (
+            f'{chart_name}{{metric="transcriptions_unique_users",period="daily"}} {data["transcriptions_unique_users_daily"]}'
+        )
+        formatted_data["transcriptions_unique_users_weekly"] = (
+            f'{chart_name}{{metric="transcriptions_unique_users",period="weekly"}} {data["transcriptions_unique_users_weekly"]}'
+        )
+        formatted_data["transcriptions_unique_users_monthly"] = (
+            f'{chart_name}{{metric="transcriptions_unique_users",period="monthly"}} {data["transcriptions_unique_users_monthly"]}'
+        )
+
+        # Transcriptions by tier
+        for tier in ["free", "premium", "archive"]:
+            formatted_data[f"transcriptions_{tier}"] = (
+                f'{chart_name}{{metric="transcriptions_by_tier",tier="{tier}"}} {data[f"transcriptions_{tier}"]}'
+            )
+            formatted_data[f"transcriptions_overquota_{tier}"] = (
+                f'{chart_name}{{metric="transcriptions_overquota_by_tier",tier="{tier}"}} {data[f"transcriptions_overquota_{tier}"]}'
+            )
+            formatted_data[f"transcriptions_unique_{tier}"] = (
+                f'{chart_name}{{metric="transcriptions_unique_by_tier",tier="{tier}"}} {data[f"transcriptions_unique_{tier}"]}'
+            )
+
+        # Average transcription length
+        formatted_data["transcriptions_avg_length"] = (
+            f'{chart_name}{{metric="transcriptions_avg_length"}} {data["transcriptions_avg_length"]}'
+        )
 
         context = {
             "data": formatted_data,
