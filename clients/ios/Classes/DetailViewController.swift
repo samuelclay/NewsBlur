@@ -148,6 +148,9 @@ class DetailViewController: BaseViewController {
     /// Whether or not showing the feed list when tapped a story in the dashboard.
     @objc var storyTitlesFromDashboardStory = false
     
+    /// Whether or not we are using compact size class, instead of regular size class. (A local property, instead of asking the OS, so it is updated when the split delegate handles the change.)
+    @objc var isCompact = false
+    
     /// Preference values.
     enum StyleValue {
         static let standard = "standard"
@@ -361,6 +364,20 @@ class DetailViewController: BaseViewController {
         return storyPagesViewController?.currentPage
     }
     
+    /// Moves the feed detail and story pages (as appropriate) onto the feeds navigation stack. Called when collapsing to a compact size class.
+    func collapseToSingleColumn() {
+        isCompact = true
+        
+        checkViewControllers()
+    }
+    
+    /// Moves the feed detail and story pages (as appropriate) to the detail view. Called when expanding to a regular size class.
+    func expandToTwoColumns() {
+        isCompact = false
+        
+        checkViewControllers()
+    }
+    
     /// Prepare the views.
     @objc func checkLayout() {
         checkViewControllers()
@@ -429,7 +446,7 @@ class DetailViewController: BaseViewController {
         let isTop = layout == .top
         let appropriateSuperview = isTop ? bottomContainerView : topContainerView
         
-        if storyPagesViewController.view.superview != appropriateSuperview {
+        if isCompact || storyPagesViewController.view.superview != appropriateSuperview {
             add(viewController: storyPagesViewController, top: !isTop)
             
             adjustForAutoscroll()
@@ -570,17 +587,30 @@ private extension DetailViewController {
 //        splitViewController?.preferredSupplementaryColumnWidth = storyTitlesOnLeft ? feedDetailWidth : 0
 #endif
         
-        if !storyTitlesInGridView || isPhone {
+        if isCompact, let feedDetailViewController {
+            if !feedDetailViewController.isStoryShown {
+                remove(viewController: storyPagesViewController)
+            }
+            
+            if !feedDetailViewController.isFeedShown {
+                remove(viewController: feedDetailViewController)
+                return
+            }
+        }
+        
+        if !storyTitlesInGridView {
             storyPagesViewController = listStoryPagesViewController
             _ = storyPagesViewController?.view
             
-            moveStoriesToDetailContainer()
+            if !isCompact {
+                moveStoriesToDetailContainer()
+            }
         } else {
             storyPagesViewController = gridStoryPagesViewController
             _ = storyPagesViewController?.view
         }
         
-        if storyTitlesInGridView && !isPhone {
+        if storyTitlesInGridView {
             if feedDetailViewController == nil || !wasGridView {
                 remove(viewController: feedDetailViewController)
                 
@@ -622,7 +652,7 @@ private extension DetailViewController {
             verticalDividerViewLeadingConstraint.constant = -13
             horizontalDividerViewBottomConstraint.constant = -13
             wasGridView = true
-        } else if layout == .left || isPhone {
+        } else if layout == .left {
             if feedDetailViewController == nil {
                 remove(viewController: feedDetailViewController)
                 
@@ -639,7 +669,7 @@ private extension DetailViewController {
 //                appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
 //                supplementaryFeedDetailNavigationController = nil
 //                supplementaryFeedDetailViewController = nil
-            } else if feedDetailViewController?.view.superview != leftContainerView {
+            } else if isCompact || feedDetailViewController?.view.superview != leftContainerView {
                 add(viewController: feedDetailViewController, to: leftContainerView)
             }
             
@@ -690,7 +720,7 @@ private extension DetailViewController {
                 
                 let appropriateSuperview: UIView = isTop ? topContainerView : bottomContainerView
                 
-                if feedDetailViewController?.view.superview != appropriateSuperview {
+                if isCompact || feedDetailViewController?.view.superview != appropriateSuperview {
                     add(viewController: feedDetailViewController, top: isTop)
                 }
             }
@@ -700,6 +730,10 @@ private extension DetailViewController {
             
             appDelegate.updateSplitBehavior(true)
             wasGridView = false
+        }
+        
+        if !storyTitlesInGridView, isCompact, let feedDetailViewController, feedDetailViewController.isStoryShown {
+            moveStoriesToDetailContainer()
         }
         
         feedDetailViewController?.changedLayout()
@@ -715,6 +749,13 @@ private extension DetailViewController {
     
     func add(viewController: UIViewController?, to containerView: UIView, of containerController: UIViewController? = nil) {
         guard let viewController else {
+            return
+        }
+        
+        if isCompact {
+            remove(viewController: viewController)
+            appDelegate.feedsNavigationController.pushViewController(viewController, animated: false)
+            
             return
         }
         
@@ -738,9 +779,24 @@ private extension DetailViewController {
             return
         }
         
+        removeFromFeedsNavigation(viewController: viewController)
+        
         viewController.willMove(toParent: nil)
         viewController.removeFromParent()
         viewController.view.removeFromSuperview()
+    }
+    
+    func removeFromFeedsNavigation(viewController: UIViewController?) {
+        guard let viewController, let nav = appDelegate.feedsNavigationController else {
+            return
+        }
+        
+        var controllers = nav.viewControllers
+        
+        if let idx = controllers.firstIndex(where: { $0 === viewController }) {
+            controllers.remove(at: idx)
+            nav.setViewControllers(controllers, animated: false)
+        }
     }
     
 //    func showHideSupplementary(show: Bool) {
