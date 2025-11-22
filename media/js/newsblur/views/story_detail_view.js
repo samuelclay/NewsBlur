@@ -241,7 +241,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_save: NEWSBLUR.assets.preference("show_sideoption_save"),
             show_sideoption_share: NEWSBLUR.assets.preference("show_sideoption_share"),
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
-            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai") && NEWSBLUR.Globals.is_staff,
+            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai") && (NEWSBLUR.Globals.is_staff),
         };
     },
 
@@ -1362,6 +1362,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <% }) %>\
                     </ul>\
                     <div class="NB-menu-ask-ai-custom-input-wrapper">\
+                        <div class="NB-menu-ask-ai-voice-button" title="Record voice question">\
+                            <img src="/media/img/icons/nouns/microphone.svg" class="NB-menu-ask-ai-voice-icon" />\
+                            <div class="NB-menu-ask-ai-recording-indicator">\
+                                <div class="NB-recording-bar"></div>\
+                                <div class="NB-recording-bar"></div>\
+                                <div class="NB-recording-bar"></div>\
+                                <div class="NB-recording-bar"></div>\
+                            </div>\
+                        </div>\
                         <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="Ask a question..." />\
                         <div class="NB-button NB-modal-submit-green NB-menu-ask-ai-custom-submit NB-disabled">Ask</div>\
                     </div>\
@@ -1460,6 +1469,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.submit_custom_question_from_menu($menu);
         }, this));
 
+        // Voice recording button handler
+        $menu.find('.NB-menu-ask-ai-voice-button').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            this.start_voice_recording_for_menu($menu);
+        }, this));
+
         $(document).on('click.ask_ai_menu', _.bind(function (ev) {
             if (!$(ev.target).closest('.NB-menu-ask-ai-container, .NB-feed-story-ask-ai').length) {
                 this.hide_ask_ai_menu();
@@ -1470,8 +1485,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     hide_ask_ai_menu: function () {
+        // Stop any active voice recording before closing
+        var $menu = $('.NB-menu-ask-ai-container');
+        var recorder = $menu.data('voice_recorder');
+        if (recorder) {
+            recorder.cleanup();
+        }
+
         $('.NB-feed-story-ask-ai').removeClass('NB-active');
-        $('.NB-menu-ask-ai-container').fadeOut(100, function () {
+        $menu.fadeOut(100, function () {
             $(this).remove();
         });
         $(document).off('click.ask_ai_menu');
@@ -1479,16 +1501,94 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     submit_custom_question_from_menu: function ($menu) {
         var custom_question = $menu.find('.NB-menu-ask-ai-custom-input').val();
-        if (!custom_question || !custom_question.trim()) {
+        var transcription_error = $menu.data('transcription_error');
+
+        // Allow opening with empty question if there's a transcription error to display
+        if ((!custom_question || !custom_question.trim()) && !transcription_error) {
             return;
         }
 
-        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question);
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question, transcription_error);
         this.hide_ask_ai_menu();
+
+        // Clear the stored error
+        $menu.removeData('transcription_error');
     },
 
     handle_ask_ai_question: function (question_id) {
         NEWSBLUR.reader.open_ask_ai_pane(this.model, question_id);
+    },
+
+    start_voice_recording_for_menu: function ($menu) {
+        var self = this;
+        var $voice_button = $menu.find('.NB-menu-ask-ai-voice-button');
+        var $input = $menu.find('.NB-menu-ask-ai-custom-input');
+        var $submit_button = $menu.find('.NB-menu-ask-ai-custom-submit');
+
+        // Get or create recorder instance for this menu
+        var recorder = $menu.data('voice_recorder');
+        if (!recorder) {
+            recorder = new NEWSBLUR.VoiceRecorder({
+                on_recording_start: function () {
+                    $voice_button.addClass('NB-recording');
+                    $input.attr('placeholder', 'Recording...');
+                    $voice_button.attr('title', 'Stop recording');
+                },
+                on_recording_stop: function () {
+                    $voice_button.removeClass('NB-recording');
+                    $voice_button.addClass('NB-transcribing');
+                    $input.attr('placeholder', 'Transcribing...');
+                    $voice_button.attr('title', 'Transcribing audio');
+                },
+                on_transcription_start: function () {
+                    // Already showing transcribing state
+                },
+                on_transcription_complete: function (text) {
+                    $voice_button.removeClass('NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+                    $input.attr('placeholder', 'Ask a question...');
+
+                    // Set the transcribed text and submit the question automatically
+                    $input.val(text);
+                    $submit_button.removeClass('NB-disabled');
+
+                    // Auto-submit the question
+                    _.delay(function () {
+                        self.submit_custom_question_from_menu($menu);
+                    }, 100);
+                },
+                on_transcription_error: function (error) {
+                    $voice_button.removeClass('NB-recording NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+
+                    // Check if this is a quota/limit error
+                    var is_quota_error = error && (error.includes('limit') || error.includes('used all') || error.includes('reached'));
+
+                    if (is_quota_error) {
+                        // Store the error and open Ask AI view to display it
+                        $menu.data('transcription_error', error);
+                        $input.attr('placeholder', 'Quota exceeded');
+                        // Auto-submit to open Ask AI view which will show the full error
+                        _.delay(function () {
+                            self.submit_custom_question_from_menu($menu);
+                        }, 100);
+                    } else {
+                        // For other errors, show in placeholder
+                        $input.attr('placeholder', error || 'Error - please try again');
+                    }
+
+                    console.error('Voice transcription error:', error);
+                }
+            });
+            $menu.data('voice_recorder', recorder);
+        }
+
+        // Toggle recording
+        if (recorder.is_recording) {
+            recorder.stop_recording();
+        } else {
+            recorder.start_recording();
+        }
     }
 
 

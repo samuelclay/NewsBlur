@@ -7,6 +7,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     events: {
         "click .NB-story-ask-ai-close": "close_pane",
         "click .NB-story-ask-ai-followup-submit": "submit_followup_question",
+        "click .NB-story-ask-ai-voice-button": "start_voice_recording",
         "keypress .NB-story-ask-ai-followup-input": "handle_followup_keypress",
         "click .NB-story-ask-ai-usage-message a": "open_premium_modal"
     },
@@ -15,7 +16,15 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.story = options.story;
         this.question_id = options.question_id;
         this.custom_question = options.custom_question;
-        this.question_text = this.custom_question || this.get_question_text(this.question_id);
+        this.transcription_error = options.transcription_error;
+
+        // If there's a transcription error, show "Audio not transcribed" as the question text
+        if (this.transcription_error) {
+            this.question_text = '<em>Audio not transcribed</em>';
+        } else {
+            this.question_text = this.custom_question || this.get_question_text(this.question_id);
+        }
+
         this.inline = options.inline || false;
         this.story_hash = this.story.get('story_hash');
         this.streaming_started = false;
@@ -23,8 +32,11 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.conversation_history = [];  // Track conversation for follow-ups
         this.active_request_id = null;
 
-        // Send request immediately if we have a question (either preset or custom)
-        if (this.question_id !== 'custom' || this.custom_question) {
+        // If there's a transcription error, don't send a question - we'll display the error instead
+        if (this.transcription_error) {
+            // Don't send question, we'll show the error after render
+        } else if (this.question_id !== 'custom' || this.custom_question) {
+            // Send request immediately if we have a question (either preset or custom)
             this.send_question(this.custom_question);
         }
     },
@@ -39,8 +51,13 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Store view instance on DOM element for Socket.IO handler access
         this.$el.data('view', this);
 
-        // Add thinking class and set up initial timeout (15s to wait for first response)
-        if (this.inline) {
+        // If there's a transcription error, display it instead of sending a question
+        if (this.transcription_error) {
+            this.$el.removeClass('NB-thinking');
+            this.$('.NB-story-ask-ai-loading').hide();
+            this.show_usage_message(this.transcription_error);
+        } else if (this.inline) {
+            // Add thinking class and set up initial timeout (15s to wait for first response)
             this.$el.addClass('NB-thinking');
             this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
         }
@@ -89,6 +106,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 <div class="NB-story-ask-ai-usage-message" style="display: none;"></div>\
             </div>\
             <div class="NB-story-ask-ai-followup-wrapper" style="display: none;">\
+                <div class="NB-story-ask-ai-voice-button" title="Record voice question">\
+                    <img src="/media/img/icons/nouns/microphone.svg" class="NB-story-ask-ai-voice-icon" />\
+                </div>\
                 <input type="text" class="NB-story-ask-ai-followup-input" placeholder="Continue the discussion..." />\
                 <div class="NB-button NB-story-ask-ai-followup-submit">Send</div>\
             </div>\
@@ -124,10 +144,28 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         return 'askai-' + (Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
     },
 
+    remove: function () {
+        // Override Backbone's remove to ensure cleanup
+        if (this.voice_recorder) {
+            this.voice_recorder.cleanup();
+        }
+        if (this.initial_timeout) {
+            clearTimeout(this.initial_timeout);
+        }
+        if (this.debounce_timeout) {
+            clearTimeout(this.debounce_timeout);
+        }
+        Backbone.View.prototype.remove.call(this);
+    },
+
     close_pane: function (e) {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
+        }
+        // Stop any active voice recording before closing
+        if (this.voice_recorder) {
+            this.voice_recorder.cleanup();
         }
         // Clear all timeouts
         if (this.initial_timeout) {
@@ -234,8 +272,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
         // Escape HTML to prevent XSS
         html = html.replace(/&/g, '&amp;')
-                   .replace(/</g, '&lt;')
-                   .replace(/>/g, '&gt;');
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
 
         // Bold: **text** or __text__ (do bold first, before italic)
         html = html.replace(/\*\*([^\n]+?)\*\*/g, '<strong>$1</strong>');
@@ -455,6 +493,75 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
         // Send follow-up with conversation history
         this.send_question(null, this.conversation_history);
+    },
+
+    start_voice_recording: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        var self = this;
+        var $voice_button = this.$('.NB-story-ask-ai-voice-button');
+        var $input = this.$('.NB-story-ask-ai-followup-input');
+
+        // Get or create recorder instance for this view
+        if (!this.voice_recorder) {
+            this.voice_recorder = new NEWSBLUR.VoiceRecorder({
+                on_recording_start: function () {
+                    $voice_button.addClass('NB-recording');
+                    $input.attr('placeholder', 'Recording...');
+                    $voice_button.attr('title', 'Stop recording');
+                },
+                on_recording_stop: function () {
+                    $voice_button.removeClass('NB-recording');
+                    $voice_button.addClass('NB-transcribing');
+                    $input.attr('placeholder', 'Transcribing...');
+                    $voice_button.attr('title', 'Transcribing audio');
+                },
+                on_transcription_start: function () {
+                    // Already showing transcribing state
+                },
+                on_transcription_complete: function (text) {
+                    $voice_button.removeClass('NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+                    $input.attr('placeholder', 'Continue the discussion...');
+
+                    // Set the transcribed text and submit the question automatically
+                    $input.val(text);
+
+                    // Auto-submit the question
+                    _.delay(function () {
+                        self.submit_followup_question();
+                    }, 100);
+                },
+                on_transcription_error: function (error) {
+                    $voice_button.removeClass('NB-recording NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+
+                    // Check if this is a quota/limit error
+                    var is_quota_error = error && (error.includes('limit') || error.includes('used all') || error.includes('reached'));
+
+                    if (is_quota_error) {
+                        // Show quota error in the usage message box (blue box)
+                        self.show_usage_message(error);
+                        // Put a subtle placeholder in the input
+                        $input.attr('placeholder', 'Quota exceeded');
+                    } else {
+                        // Show other errors as notifications
+                        $input.attr('placeholder', 'Continue the discussion...');
+                        NEWSBLUR.reader.show_feed_hidden_story_title_indicator(error, false);
+                    }
+                }
+            });
+        }
+
+        // Toggle recording
+        if (this.voice_recorder.is_recording) {
+            this.voice_recorder.stop_recording();
+        } else {
+            this.voice_recorder.start_recording();
+        }
     }
 
 });
