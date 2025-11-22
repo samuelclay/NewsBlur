@@ -8,7 +8,7 @@ favicons = (app) =>
     ENV_DOCKER = process.env.NODE_ENV == 'docker'
     MONGODB_USERNAME = process.env.MONGODB_USERNAME
     MONGODB_PASSWORD = process.env.MONGODB_PASSWORD
-    MONGODB_SERVER = "db_mongo"
+    MONGODB_SERVER = "newsblur_db_mongo"
     if ENV_DEV
         MONGODB_SERVER = 'localhost'
     else if ENV_PROD
