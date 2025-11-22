@@ -3,7 +3,7 @@ import datetime
 import pytz
 from django.core.management.base import BaseCommand
 
-from apps.ask_ai.models import MAskAIUsage
+from apps.ask_ai.models import MAITranscriptionUsage, MAskAIUsage
 
 
 class Command(BaseCommand):
@@ -55,11 +55,14 @@ class Command(BaseCommand):
         if user_id:
             query["user_id"] = user_id
 
-        # Get count before deletion
+        # Get count before deletion for both usage types
         usage_entries = MAskAIUsage.objects(**query)
+        transcription_entries = MAITranscriptionUsage.objects(**query)
         count = usage_entries.count()
+        transcription_count = transcription_entries.count()
+        total_count = count + transcription_count
 
-        if count == 0:
+        if total_count == 0:
             self.stdout.write(
                 self.style.WARNING(
                     f"No usage entries found within the last {hours} hour(s)"
@@ -75,7 +78,8 @@ class Command(BaseCommand):
         if dry_run:
             self.stdout.write(
                 self.style.WARNING(
-                    f"[DRY RUN] Would delete {count} usage record(s){user_msg} {time_msg}"
+                    f"[DRY RUN] Would delete {count} Ask AI usage record(s) "
+                    f"and {transcription_count} transcription record(s){user_msg} {time_msg}"
                 )
             )
             self._show_sample_entries(usage_entries)
@@ -83,10 +87,12 @@ class Command(BaseCommand):
 
         # Delete entries
         deleted = usage_entries.delete()
+        transcription_deleted = transcription_entries.delete()
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Successfully deleted {deleted} usage record(s){user_msg} {time_msg}"
+                f"Successfully deleted {deleted} Ask AI usage record(s) "
+                f"and {transcription_deleted} transcription record(s){user_msg} {time_msg}"
             )
         )
 

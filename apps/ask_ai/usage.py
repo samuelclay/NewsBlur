@@ -289,19 +289,45 @@ class AskAIUsageTracker:
 
 class TranscriptionUsageTracker:
     """
-    Track transcription usage with separate quotas (5x Ask AI quotas).
-    Quotas are enforced but transcriptions still succeed when over quota.
+    Track transcription usage with separate quotas (3x Ask AI quota).
+    These higher quotas prevent abuse while allowing legitimate voice usage.
     """
 
-    DAILY_LIMIT_PREMIUM = 15  # 5x Ask AI limit
-    DAILY_LIMIT_ARCHIVE = 250  # 5x Ask AI limit
-    WEEKLY_LIMIT_FREE = 15  # 5x Ask AI limit
+    DAILY_LIMIT_PREMIUM = 9  # 3x Ask AI limit (3)
+    DAILY_LIMIT_ARCHIVE = 150  # 3x Ask AI limit (50)
+    WEEKLY_LIMIT_FREE = 9  # 3x Ask AI limit (3)
 
     def __init__(self, user):
         self.user = user
         self.profile = user.profile
 
     # Public API -------------------------------------------------------------
+    def can_use(self):
+        """
+        Check if user can transcribe audio. Returns (bool, error_message).
+        Always returns Ask AI quota message for user-facing errors to hide transcription implementation.
+        """
+        # Use Ask AI usage tracker to get the quota message
+        # This ensures users see "Ask AI requests" not "transcriptions"
+        ask_ai_tracker = AskAIUsageTracker(self.user)
+        can_use_ask_ai, ask_ai_message = ask_ai_tracker.can_use()
+
+        # Check transcription quota
+        if self._is_premium_tier:
+            limit = self._daily_limit
+            used = self._daily_count()
+            if used >= limit:
+                # Always return Ask AI quota message to hide transcription implementation
+                return False, ask_ai_message
+            return True, None
+
+        # Free users have weekly limit
+        weekly_usage = self._weekly_count()
+        if weekly_usage >= self.WEEKLY_LIMIT_FREE:
+            # Always return Ask AI quota message to hide transcription implementation
+            return False, ask_ai_message
+        return True, None
+
     def is_over_quota(self):
         """Check if user is over their transcription quota. Returns True if over quota."""
         if self._is_premium_tier:
@@ -333,6 +359,22 @@ class TranscriptionUsageTracker:
             plan_tier=self._plan_tier,
             source="live",
             over_quota=over_quota,
+        )
+        entry.save()
+        return entry
+
+    def record_denied(self, story_hash=None, request_id=None):
+        """Record a transcription attempt that was denied due to rate limits."""
+        entry = MAITranscriptionUsage(
+            user_id=self.user.pk,
+            transcription_text="",
+            duration_seconds=0.0,
+            question_id="",
+            story_hash=story_hash or "",
+            request_id=request_id or "",
+            plan_tier=self._plan_tier,
+            source="denied",
+            over_quota=True,
         )
         entry.save()
         return entry
@@ -444,3 +486,58 @@ class TranscriptionUsageTracker:
         return MAITranscriptionUsage.objects(
             user_id=self.user.pk, created_at__gte=start_utc, created_at__lt=end_utc
         ).count()
+
+    def _format_time_until_reset(self):
+        """Format time remaining until daily reset at midnight in user's timezone."""
+        tz_name = str(self.profile.timezone or "UTC")
+        try:
+            user_tz = pytz.timezone(tz_name)
+        except pytz.UnknownTimeZoneError:
+            user_tz = pytz.UTC
+
+        now_local = datetime.datetime.now(pytz.UTC).astimezone(user_tz)
+        midnight = (now_local + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        delta = midnight - now_local
+
+        hours = delta.seconds // 3600
+        minutes = (delta.seconds % 3600) // 60
+        if hours > 0:
+            return f"{hours}h {minutes}m"
+        return f"{minutes}m"
+
+    def _format_time_until_weekly_reset(self):
+        """Format time remaining until Sunday midnight reset in user's timezone."""
+        tz_name = str(self.profile.timezone or "UTC")
+        try:
+            user_tz = pytz.timezone(tz_name)
+        except pytz.UnknownTimeZoneError:
+            user_tz = pytz.UTC
+
+        now_local = datetime.datetime.now(pytz.UTC).astimezone(user_tz)
+        days_until_sunday = (6 - now_local.weekday()) % 7
+        if days_until_sunday == 0:
+            days_until_sunday = 7
+
+        next_sunday = now_local + datetime.timedelta(days=days_until_sunday)
+        sunday_midnight = next_sunday.replace(hour=0, minute=0, second=0, microsecond=0)
+        delta = sunday_midnight - now_local
+
+        days = delta.days
+        hours = delta.seconds // 3600
+        if days > 0:
+            return f"{days}d {hours}h"
+        return f"{hours}h"
+
+    def _daily_limit_message(self, limit):
+        """Generate error message for daily limit exceeded."""
+        time_remaining = self._format_time_until_reset()
+        if self.profile.is_archive or self.profile.is_pro:
+            return (
+                f"You've reached your daily limit of {limit} voice transcriptions. "
+                f"Your limit resets at midnight tonight, in {time_remaining}."
+            )
+        return (
+            f"You've reached your daily limit of {limit} voice transcriptions. "
+            f"Your limit resets at midnight tonight, in {time_remaining}.\n\n"
+            "Upgrade to Premium Archive for more transcriptions."
+        )

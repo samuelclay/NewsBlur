@@ -241,7 +241,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_save: NEWSBLUR.assets.preference("show_sideoption_save"),
             show_sideoption_share: NEWSBLUR.assets.preference("show_sideoption_share"),
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
-            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai") && (NEWSBLUR.Globals.is_archive || NEWSBLUR.Globals.is_pro),
+            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai") && (NEWSBLUR.Globals.is_archive || NEWSBLUR.Globals.is_pro || NEWSBLUR.Globals.is_staff || NEWSBLUR.Globals.is_premium),
         };
     },
 
@@ -1501,12 +1501,18 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     submit_custom_question_from_menu: function ($menu) {
         var custom_question = $menu.find('.NB-menu-ask-ai-custom-input').val();
-        if (!custom_question || !custom_question.trim()) {
+        var transcription_error = $menu.data('transcription_error');
+
+        // Allow opening with empty question if there's a transcription error to display
+        if ((!custom_question || !custom_question.trim()) && !transcription_error) {
             return;
         }
 
-        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question);
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question, transcription_error);
         this.hide_ask_ai_menu();
+
+        // Clear the stored error
+        $menu.removeData('transcription_error');
     },
 
     handle_ask_ai_question: function (question_id) {
@@ -1554,7 +1560,23 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 on_transcription_error: function (error) {
                     $voice_button.removeClass('NB-recording NB-transcribing');
                     $voice_button.attr('title', 'Record voice question');
-                    $input.attr('placeholder', error || 'Error - please try again');
+
+                    // Check if this is a quota/limit error
+                    var is_quota_error = error && (error.includes('limit') || error.includes('used all') || error.includes('reached'));
+
+                    if (is_quota_error) {
+                        // Store the error and open Ask AI view to display it
+                        $menu.data('transcription_error', error);
+                        $input.attr('placeholder', 'Quota exceeded');
+                        // Auto-submit to open Ask AI view which will show the full error
+                        _.delay(function () {
+                            self.submit_custom_question_from_menu($menu);
+                        }, 100);
+                    } else {
+                        // For other errors, show in placeholder
+                        $input.attr('placeholder', error || 'Error - please try again');
+                    }
+
                     console.error('Voice transcription error:', error);
                 }
             });

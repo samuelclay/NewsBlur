@@ -133,6 +133,16 @@ def transcribe_audio(request):
     if audio_file.size > MAX_AUDIO_SIZE_MB * 1024 * 1024:
         return {"code": -1, "message": f"Audio file too large. Maximum size is {MAX_AUDIO_SIZE_MB}MB"}
 
+    # Check transcription quota
+    transcription_tracker = TranscriptionUsageTracker(request.user)
+    can_use, limit_message = transcription_tracker.can_use()
+    if not can_use:
+        # Record this denied attempt for analytics
+        transcription_tracker.record_denied(
+            story_hash=request.POST.get("story_hash", ""), request_id=request.POST.get("request_id", "")
+        )
+        return {"code": -1, "message": limit_message}
+
     # Check OpenAI API key is configured
     if not settings.OPENAI_API_KEY:
         return {"code": -1, "message": "OpenAI API key not configured"}
@@ -158,7 +168,6 @@ def transcribe_audio(request):
         # Duration is not easily available from the audio file without additional processing
         # We'll estimate based on file size (rough approximation: webm is ~12.5KB/sec for speech)
         estimated_duration = audio_file.size / (12.5 * 1024)
-        transcription_tracker = TranscriptionUsageTracker(request.user)
         transcription_tracker.record_usage(
             transcription_text=transcribed_text,
             duration_seconds=estimated_duration,
