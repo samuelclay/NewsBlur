@@ -31,6 +31,7 @@ from zebra.signals import (
     zebra_webhook_customer_subscription_updated,
 )
 
+from apps.ask_ai.usage import AskAIUsageTracker
 from apps.feed_import.models import OPMLExporter
 from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
@@ -135,6 +136,17 @@ class Profile(models.Model):
         if self.is_archive:
             return settings.DAYS_OF_STORY_HASHES_ARCHIVE
         return settings.DAYS_OF_STORY_HASHES
+
+    def can_use_ask_ai(self):
+        return AskAIUsageTracker(self.user).can_use()
+
+    def increment_ask_ai_usage(self, question_id=None, story_hash=None, request_id=None, cached=False):
+        AskAIUsageTracker(self.user).record_usage(
+            question_id=question_id, story_hash=story_hash, request_id=request_id, cached=cached
+        )
+
+    def get_ask_ai_usage_message(self):
+        return AskAIUsageTracker(self.user).get_usage_message()
 
     def canonical(self):
         return {

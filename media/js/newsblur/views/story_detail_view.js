@@ -20,6 +20,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "mouseleave .NB-feed-story-email": "mouseleave_sideoption_email",
         "mouseenter .NB-feed-story-train": "mouseenter_sideoption_train",
         "mouseleave .NB-feed-story-train": "mouseleave_sideoption_train",
+        "mouseenter .NB-feed-story-ask-ai": "mouseenter_sideoption_ask_ai",
+        "mouseleave .NB-feed-story-ask-ai": "mouseleave_sideoption_ask_ai",
         "contextmenu .NB-feed-story-header": "show_manage_menu_rightclick",
         "mouseup .NB-story-content-wrapper": "mouseup_check_selection",
         "click .NB-feed-story-manage-icon": "show_manage_menu",
@@ -37,7 +39,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-train-selection": "train_selected_text",
         "click .NB-classifier-highlight-positive": "show_classifier_highlight_menu",
         "click .NB-classifier-highlight-negative": "show_classifier_highlight_menu",
-        "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog"
+        "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog",
+        "click .NB-feed-story-ask-ai": "show_ask_ai_menu"
     },
 
     initialize: function () {
@@ -238,6 +241,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_save: NEWSBLUR.assets.preference("show_sideoption_save"),
             show_sideoption_share: NEWSBLUR.assets.preference("show_sideoption_share"),
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
+            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai") && NEWSBLUR.Globals.is_staff,
         };
     },
 
@@ -324,7 +328,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-sideoption NB-feed-story-email" role="button">\
                         <div class="NB-sideoption-title">Email</div>\
                         <div class="NB-sideoption-thirdparty NB-sideoption-icon NB-sideoption-icon-email">&nbsp;</div>\
-                        <div class="NB-flex-break"></div>\
                         <div class="NB-sideoption-thirdparty-services">\
                             <div class="NB-sideoption-icons">\
                                 <% _.each(NEWSBLUR.assets.third_party_sharing_services, function(label, key) { %>\
@@ -341,7 +344,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-sideoption NB-feed-story-train" role="button">\
                         <div class="NB-sideoption-title">Train</div>\
                         <div class="NB-sideoption-icon NB-sideoption-icon-train">&nbsp;</div>\
-                        <div class="NB-flex-break"></div>\
                         <div class="NB-sideoption-writerules">\
                             <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-writerules" data-action="write-rules" role="button">\
                             </div>\
@@ -366,6 +368,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-sideoption NB-feed-story-discover" role="button">\
                         <div class="NB-sideoption-title">Related</div>\
                         <div class="NB-sideoption-icon">&nbsp;</div>\
+                    </div>\
+                <% } %>\
+                <% if (show_sideoption_ask_ai) { %>\
+                    <div class="NB-sideoption NB-feed-story-ask-ai" role="button">\
+                        <div class="NB-sideoption-title">Ask AI</div>\
+                        <div class="NB-sideoption-icon NB-sideoption-icon-ask-ai">&nbsp;</div>\
                     </div>\
                 <% } %>\
             </div>\
@@ -1118,7 +1126,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (!force) {
             if ((!highlights || !highlights.length) && !text_classifiers.length) return;
         }
-        console.log(['Applying highlights', highlights, 'text_classifiers', text_classifiers]);
+        // console.log(['Applying highlights', highlights, 'text_classifiers', text_classifiers]);
 
         var $doc = this.$(".NB-feed-story-content");
         $doc.unmark();
@@ -1269,6 +1277,218 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
 
         this.discover_view.toggle_feed_story_discover_dialog(options);
+    },
+
+    get_ask_ai_prompt_text: function (question_id, fallback) {
+        var prompts = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_prompts) || [];
+        var match = _.find(prompts, function (prompt) {
+            return prompt.id === question_id;
+        });
+        return (match && match.short_text) || fallback;
+    },
+
+    mouseenter_sideoption_ask_ai: function () {
+        var menu_height = 400;
+        if (this.$('.NB-feed-story-ask-ai').offset().top > $(window).height() - menu_height) {
+            this.$('.NB-feed-story-ask-ai').addClass('NB-hover-inverse');
+        }
+    },
+
+    mouseleave_sideoption_ask_ai: function () {
+        this.$('.NB-feed-story-ask-ai').removeClass('NB-hover-inverse');
+    },
+
+    show_ask_ai_menu: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $button = this.$('.NB-feed-story-ask-ai');
+        var $menu = $('.NB-menu-ask-ai-container');
+
+        if ($menu.length && $menu.is(':visible') && $menu.data('story_id') == this.model.id) {
+            this.hide_ask_ai_menu();
+            return;
+        }
+
+        this.hide_ask_ai_menu();
+
+        var questions = [
+            {
+                id: 'summarize-group',
+                text: 'Summarize',
+                isGroup: true,
+                icon: 'paragraph',
+                children: [
+                    { id: 'sentence', text: 'Brief', detail: 'One sentence', icon: 'content-preview-s', level: 'low' },
+                    { id: 'bullets', text: 'Medium', detail: 'Bullet points', icon: 'content-preview-m', level: 'medium' },
+                    { id: 'paragraph', text: 'Detailed', detail: 'Full paragraph', icon: 'content-preview-l', level: 'high' }
+                ]
+            },
+            { id: 'context', text: this.get_ask_ai_prompt_text('context', "What's the context and background?"), icon: 'world' },
+            { id: 'people', text: this.get_ask_ai_prompt_text('people', 'Identify key people and relationships'), icon: 'subscribers' },
+            { id: 'arguments', text: this.get_ask_ai_prompt_text('arguments', 'What are the main arguments?'), icon: 'venn' },
+            { id: 'factcheck', text: this.get_ask_ai_prompt_text('factcheck', 'Fact check this story'), icon: 'search' }
+        ];
+
+        var menu_template = _.template('\
+            <div class="NB-menu-ask-ai-container <% if (inverse) { %>NB-inverse<% } %>">\
+                <div class="NB-menu-ask-ai">\
+                    <ul class="NB-menu-ask-ai-options">\
+                        <% _.each(questions, function(q) { %>\
+                            <% if (q.isGroup) { %>\
+                                <li class="NB-menu-ask-ai-group">\
+                                    <div class="NB-menu-ask-ai-group-header">\
+                                        <img src="/media/img/icons/nouns/<%= q.icon %>.svg" class="NB-menu-ask-ai-icon" />\
+                                        <span class="NB-menu-ask-ai-text"><%= q.text %></span>\
+                                    </div>\
+                                    <div class="NB-menu-ask-ai-segmented-control">\
+                                        <% _.each(q.children, function(child) { %>\
+                                            <div class="NB-menu-ask-ai-segment NB-menu-ask-ai-level-<%= child.level %>" data-question-id="<%= child.id %>">\
+                                                <img src="/media/img/icons/nouns/<%= child.icon %>.svg" class="NB-menu-ask-ai-segment-icon" />\
+                                                <div class="NB-menu-ask-ai-segment-content">\
+                                                    <span class="NB-menu-ask-ai-segment-text"><%= child.text %></span>\
+                                                    <span class="NB-menu-ask-ai-segment-detail"><%= child.detail %></span>\
+                                                </div>\
+                                            </div>\
+                                        <% }) %>\
+                                    </div>\
+                                </li>\
+                            <% } else { %>\
+                                <li class="NB-menu-ask-ai-option" data-question-id="<%= q.id %>">\
+                                    <img src="/media/img/icons/nouns/<%= q.icon %>.svg" class="NB-menu-ask-ai-icon" />\
+                                    <span class="NB-menu-ask-ai-text"><%= q.text %></span>\
+                                </li>\
+                            <% } %>\
+                        <% }) %>\
+                    </ul>\
+                    <div class="NB-menu-ask-ai-custom-input-wrapper">\
+                        <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="Ask a question..." />\
+                        <div class="NB-button NB-modal-submit-green NB-menu-ask-ai-custom-submit NB-disabled">Ask</div>\
+                    </div>\
+                </div>\
+            </div>\
+        ');
+
+        var inverse = $button.hasClass('NB-hover-inverse');
+        $menu = $(menu_template({
+            questions: questions,
+            inverse: inverse
+        }));
+
+        $menu.data('story_id', this.model.id);
+        $menu.data('story_view', this);
+        $('body').append($menu);
+
+        var button_offset = $button.offset();
+        var button_height = $button.outerHeight();
+        var button_width = $button.outerWidth();
+        var menu_height = $menu.outerHeight();
+        var menu_width = $menu.outerWidth();
+
+        // Calculate centered position relative to button
+        var center_left = button_offset.left + (button_width / 2) - (menu_width / 2);
+
+        // Check if menu would go off the right edge of the screen
+        var window_width = $(window).width();
+        if (center_left + menu_width > window_width) {
+            center_left = window_width - menu_width - 10; // 10px padding from edge
+        }
+
+        // Check if menu would go off the left edge of the screen
+        if (center_left < 10) {
+            center_left = 10; // 10px padding from edge
+        }
+
+        if (inverse) {
+            $menu.css({
+                'top': button_offset.top - menu_height,
+                'left': center_left
+            });
+        } else {
+            $menu.css({
+                'top': button_offset.top + button_height + 5,
+                'left': center_left
+            });
+        }
+
+        $menu.fadeIn(200);
+
+        // Keep button highlighted while menu is open
+        $button.addClass('NB-active');
+
+        // Auto-focus the custom question input
+        _.delay(function () {
+            $menu.find('.NB-menu-ask-ai-custom-input').focus();
+        }, 250);
+
+        // Enable/disable Ask button based on input content
+        $menu.find('.NB-menu-ask-ai-custom-input').on('input', _.bind(function (ev) {
+            var $input = $(ev.currentTarget);
+            var $submit_button = $menu.find('.NB-menu-ask-ai-custom-submit');
+            var has_text = $input.val().trim().length > 0;
+
+            if (has_text) {
+                $submit_button.removeClass('NB-disabled');
+            } else {
+                $submit_button.addClass('NB-disabled');
+            }
+        }, this));
+
+        $menu.find('.NB-menu-ask-ai-option, .NB-menu-ask-ai-segment').on('click', _.bind(function (ev) {
+            var question_id = $(ev.currentTarget).data('question-id');
+            this.handle_ask_ai_question(question_id);
+            this.hide_ask_ai_menu();
+        }, this));
+
+        // Custom question input handlers
+        $menu.find('.NB-menu-ask-ai-custom-input').on('keypress', _.bind(function (ev) {
+            if (ev.which === 13) {  // Enter key
+                ev.preventDefault();
+                this.submit_custom_question_from_menu($menu);
+            }
+        }, this));
+
+        $menu.find('.NB-menu-ask-ai-custom-input').on('keydown', _.bind(function (ev) {
+            if (ev.which === 27) {  // Escape key
+                ev.preventDefault();
+                this.hide_ask_ai_menu();
+            }
+        }, this));
+
+        $menu.find('.NB-menu-ask-ai-custom-submit').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            this.submit_custom_question_from_menu($menu);
+        }, this));
+
+        $(document).on('click.ask_ai_menu', _.bind(function (ev) {
+            if (!$(ev.target).closest('.NB-menu-ask-ai-container, .NB-feed-story-ask-ai').length) {
+                this.hide_ask_ai_menu();
+            }
+        }, this));
+
+        return false;
+    },
+
+    hide_ask_ai_menu: function () {
+        $('.NB-feed-story-ask-ai').removeClass('NB-active');
+        $('.NB-menu-ask-ai-container').fadeOut(100, function () {
+            $(this).remove();
+        });
+        $(document).off('click.ask_ai_menu');
+    },
+
+    submit_custom_question_from_menu: function ($menu) {
+        var custom_question = $menu.find('.NB-menu-ask-ai-custom-input').val();
+        if (!custom_question || !custom_question.trim()) {
+            return;
+        }
+
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question);
+        this.hide_ask_ai_menu();
+    },
+
+    handle_ask_ai_question: function (question_id) {
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, question_id);
     }
 
 

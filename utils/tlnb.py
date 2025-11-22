@@ -45,7 +45,7 @@ def main(hostnames=None, roles=None, command=None, path=None):
     if not command:
         command = "tail -f"
 
-    if hostnames in ["app", "task", "push"]:
+    if hostnames in ["app", "task", "push", "work"]:
         roles = hostnames
         hostnames = None
 
