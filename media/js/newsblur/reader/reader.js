@@ -3604,7 +3604,7 @@
             story_view.show_ask_ai_menu(fake_event);
         },
 
-        open_ask_ai_pane: function (story, question_id, custom_question) {
+        open_ask_ai_pane: function (story, question_id, custom_question, transcription_error) {
             var story_view = story.latest_story_detail_view;
             if (!story_view) {
                 console.log(['No story view found for Ask AI', story]);
@@ -3623,6 +3623,7 @@
                 story: story,
                 question_id: question_id || 'custom',
                 custom_question: custom_question,
+                transcription_error: transcription_error,
                 inline: true
             });
 
@@ -5656,7 +5657,15 @@
                 if (!view) continue;
                 if (view.story_hash !== story_hash) continue;
                 if (view.question_id !== question_id) continue;
-                if (request_id && view.active_request_id && view.active_request_id !== request_id) continue;
+                // If server sends a request_id, only match views with that exact request_id
+                // This prevents matching views that never got a request_id (e.g., transcription errors)
+                if (request_id) {
+                    if (view.active_request_id === request_id) {
+                        return view;
+                    }
+                    continue;
+                }
+                // No request_id from server, match first view for this story/question
                 return view;
             }
             return null;
