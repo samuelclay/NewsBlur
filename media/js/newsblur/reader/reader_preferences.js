@@ -796,8 +796,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Story side options placement'
                         ]),
-                        $.make('div', { className: 'NB-preference-options' }, _.map(["email", "save", "train", "share", "related"], function (label) {
+                        $.make('div', { className: 'NB-preference-options' }, _.map(["email", "save", "train", "share", "related", "ask_ai"], function (label) {
                             var label_title = label.charAt(0).toUpperCase() + label.slice(1);
+                            if (label === "ask_ai") {
+                                label_title = "Ask AI";
+                            }
                             return $.make('div', { className: 'NB-preference-option NB-preference-story-sideoption', title: label_title }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-sideoption-' + label, name: 'show_sideoption_' + label }),
                                 $.make('label', { 'for': 'NB-preference-story-sideoption-' + label }, label_title)
@@ -1165,7 +1168,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
-        _.each(["email", "save", "train", "share", "related"], function (sideoption) {
+        _.each(["email", "save", "train", "share", "related", "ask_ai"], function (sideoption) {
             var sideoption_name = "show_sideoption_" + sideoption;
             $('input#NB-preference-story-sideoption-' + sideoption, $modal).prop('checked', NEWSBLUR.Preferences[sideoption_name]);
         });

@@ -1,5 +1,6 @@
 from apps.monitor.views.newsblur_app_servers import AppServers
 from apps.monitor.views.newsblur_app_times import AppTimes
+from apps.monitor.views.newsblur_ask_ai import AskAI
 from apps.monitor.views.newsblur_classifiers import Classifiers
 from apps.monitor.views.newsblur_dbtimes import DbTimes
 from apps.monitor.views.newsblur_errors import Errors
