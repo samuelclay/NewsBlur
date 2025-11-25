@@ -61,6 +61,24 @@
     enabled: no
     masked: yes
 
+- name: Remove systemd-resolved resolv.conf symlink
+  become: yes
+  file:
+    path: /etc/resolv.conf
+    state: absent
+  when: resolvconf.stat.islnk and 'systemd' in resolvconf.stat.lnk_target
+
+- name: Create resolv.conf with dnsmasq
+  become: yes
+  copy:
+    content: "nameserver 127.0.0.1\n"
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart docker
+  when: resolvconf.stat.islnk and 'systemd' in resolvconf.stat.lnk_target
+
 - name: Create Dnsmasq configuration
   become: yes
   template:
