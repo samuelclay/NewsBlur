@@ -5,6 +5,6 @@ datasources:
     type: prometheus
     uid: U1-fPO3Mk
     access: proxy
-    url: http://prometheus.service.nyc1.consul:9090
+    url: http://{% if inventory_hostname == 'db-metrics' %}prometheus{% else %}prometheus-staging{% endif %}.service.nyc1.consul:9090
     isDefault: true
     editable: true

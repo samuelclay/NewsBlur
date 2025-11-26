@@ -42,94 +42,148 @@ scrape_configs:
         - targets: ['localhost:9090']
     - job_name: 'app_servers'
       static_configs:
-        - targets: ['{{ monitor_server }}'] 
+        - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/app-servers
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'app_times'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/app-times
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'user_searches'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/user-searches
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'classifiers'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/classifiers
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'db_times'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/db-times
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'errors'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/errors
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'feed_sizes'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/feed-sizes
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'feed_counts'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/feed-counts
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'feeds'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/feeds
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'load_times'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/load-times
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'stories'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/stories
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'task_codes'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/task-codes
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'task_pipeline'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/task-pipeline
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'task_servers'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/task-servers
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'task_times'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/task-times
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'updates'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/updates
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'users'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/users
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'django'
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /metrics
       scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
 
     #- job_name: 'mongo heap usage'
     #  consul_sd_configs:

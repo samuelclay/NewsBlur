@@ -1,4 +1,11 @@
 ---
+- name: Pull newsblur repo
+  git:
+    repo: https://github.com/samuelclay/NewsBlur.git
+    dest: /srv/newsblur/
+    version: main
+    force: yes
+
 - name: Template file for prometheus
   vars:
     monitor_server: "{{ 'staging.newsblur.com' if disable_consul_services_ie_staging is defined else 'newsblur.com' }}"
