@@ -7,8 +7,6 @@ import androidx.webkit.WebViewAssetLoader.AssetsPathHandler
 import androidx.webkit.WebViewAssetLoader.ResourcesPathHandler
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
-import com.newsblur.domain.Classifier
 import com.newsblur.domain.Story
 import com.newsblur.network.AuthApi
 import com.newsblur.network.AuthApiImpl
@@ -25,7 +23,6 @@ import com.newsblur.network.UserApiImpl
 import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.serialization.BooleanTypeAdapter
-import com.newsblur.serialization.ClassifierMapTypeAdapter
 import com.newsblur.serialization.DateStringTypeAdapter
 import com.newsblur.serialization.StoriesResponseTypeAdapter
 import com.newsblur.serialization.StoryTypeAdapter
@@ -61,7 +58,6 @@ object NetworkModule {
                 registerTypeAdapter(Boolean::class.javaPrimitiveType, BooleanTypeAdapter())
                 registerTypeAdapter(Story::class.java, StoryTypeAdapter())
                 registerTypeAdapter(StoriesResponse::class.java, StoriesResponseTypeAdapter())
-                registerTypeAdapter(object : TypeToken<Map<String?, Classifier?>?>() {}.type, ClassifierMapTypeAdapter())
             }.create()
 
     @Singleton

@@ -64,16 +64,8 @@ public class AppConstants {
     // how many images to prefetch before updating the countdown UI
     public static final int IMAGE_PREFETCH_BATCH_SIZE = 6;
 
-    // how many original texts to fetch before updating the UI
-    public static final int ORIGINAL_TEXT_BATCH_SIZE = 10;
-
     // link to app feedback page
     public static final String FEEDBACK_URL = "https://forum.newsblur.com/new-topic?title=Android%3A+&body=";
-
-    // how long to wait for sync threads to shutdown. ideally we would wait the max network timeout,
-    // but the system like to force-kill terminating services that take too long, so it is often
-    // moot to tune.
-    public final static long SHUTDOWN_SLACK_SECONDS = 60L;
 
     // link to the web-based forgot password flow
     public final static String FORGOT_PASWORD_URL = "http://www.newsblur.com/folder_rss/forgot_password";
@@ -107,5 +99,7 @@ public class AppConstants {
     public static final String READ_STORIES_GROUP_KEY = "READ_STORIES_GROUP_KEY";
     public static final String SAVED_STORIES_GROUP_KEY = "SAVED_STORIES_GROUP_KEY";
     public static final String SAVED_SEARCHES_GROUP_KEY = "SAVED_SEARCHES_GROUP_KEY";
+
+    public static final String CLASSIFIERS_FEED_ID_PLACEHOLDER = "-1";
 
 }
