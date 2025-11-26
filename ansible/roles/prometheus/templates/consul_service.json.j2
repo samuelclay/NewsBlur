@@ -1,7 +1,7 @@
 {
     "service": {
         "name": "{% if inventory_hostname == 'db-metrics' %}prometheus{% else %}prometheus-staging{% endif %}",
-        "id": "{{ inventory_hostname }}",
+        "id": "{{ inventory_hostname }}-prometheus",
         "tags": [
             "db"
         ],
