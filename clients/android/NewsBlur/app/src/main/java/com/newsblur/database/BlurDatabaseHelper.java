@@ -1,5 +1,6 @@
 package com.newsblur.database;
 
+import static com.newsblur.util.AppConstants.CLASSIFIERS_FEED_ID_PLACEHOLDER;
 import static java.util.Collections.emptySet;
 
 import android.content.ContentValues;
@@ -398,7 +399,7 @@ public class BlurDatabaseHelper {
                     for (Map.Entry<String, Classifier> entry : apiResponse.classifiers.entrySet()) {
                         // the API might not have included a feed ID, in which case it deserialized as -1 and must be implied
                         String classifierFeedId = entry.getKey();
-                        if (classifierFeedId.equals("-1")) {
+                        if (classifierFeedId.equals(CLASSIFIERS_FEED_ID_PLACEHOLDER)) {
                             classifierFeedId = impliedFeedId;
                         }
                         List<ContentValues> classifierValues = entry.getValue().getContentValues();
