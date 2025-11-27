@@ -265,39 +265,17 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "task_servers",
+          "expr": "sum(task_servers)",
           "format": "time_series",
           "instant": false,
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "Value (sum)",
           "queryType": "randomWalk",
           "refId": "A"
         }
       ],
       "title": "Feed fetches past 5 min",
-      "transformations": [
-        {
-          "id": "seriesToRows",
-          "options": {}
-        },
-        {
-          "id": "groupBy",
-          "options": {
-            "fields": {
-              "Time": {
-                "aggregations": [],
-                "operation": "groupby"
-              },
-              "Value": {
-                "aggregations": [
-                  "sum"
-                ],
-                "operation": "aggregate"
-              }
-            }
-          }
-        }
-      ],
+      "transformations": [],
       "type": "timeseries"
     },
     {
