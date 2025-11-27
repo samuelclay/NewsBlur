@@ -151,7 +151,8 @@ def transcribe_audio(request):
         client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
 
         logging.user(
-            request.user, f"~FBAsk AI: Transcribing audio file {audio_file.name} ({audio_file.size} bytes)"
+            request.user,
+            f"~BB~FGAsk AI Transcribe: ~SB{audio_file.name}~SN ({audio_file.size} bytes)",
         )
 
         # Transcribe using OpenAI Whisper API
@@ -176,22 +177,23 @@ def transcribe_audio(request):
         )
 
         logging.user(
-            request.user, f"~FGAsk AI: Successfully transcribed audio to {len(transcribed_text)} characters"
+            request.user,
+            f"~BB~FGAsk AI Transcribe: Completed ~SB{len(transcribed_text)}~SN chars",
         )
 
         return {"code": 1, "text": transcribed_text}
 
     except openai.APITimeoutError as e:
         error_msg = "OpenAI API timeout during transcription"
-        logging.user(request.user, f"~FRAsk AI transcription timeout: {e}")
+        logging.user(request.user, f"~BB~FGAsk AI Transcribe: ~FR~SBTimeout~SN~FG - {e}")
         return {"code": -1, "message": error_msg}
 
     except openai.APIError as e:
         error_msg = f"OpenAI API error during transcription: {str(e)}"
-        logging.user(request.user, f"~FRAsk AI transcription error: {e}")
+        logging.user(request.user, f"~BB~FGAsk AI Transcribe: ~FR~SBError~SN~FG - {e}")
         return {"code": -1, "message": error_msg}
 
     except Exception as e:
         error_msg = f"Unexpected error during transcription: {str(e)}"
-        logging.user(request.user, f"~FRAsk AI transcription unexpected error: {e}")
+        logging.user(request.user, f"~BB~FGAsk AI Transcribe: ~FR~SBUnexpected error~SN~FG - {e}")
         return {"code": -1, "message": error_msg}

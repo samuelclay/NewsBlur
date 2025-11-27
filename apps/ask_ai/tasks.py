@@ -17,7 +17,9 @@ from .usage import AskAIUsageTracker
 
 
 @app.task(name="ask-ai-question", time_limit=120, soft_time_limit=110)
-def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conversation_history=None, request_id=None):
+def AskAIQuestion(
+    user_id, story_hash, question_id, custom_question=None, conversation_history=None, request_id=None
+):
     """
     Process an Ask AI question and stream the response via Redis PubSub.
     """
@@ -44,7 +46,7 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
             try:
                 r.publish(username, f"ask_ai:{json.dumps(payload, ensure_ascii=False)}")
             except redis.RedisError:
-                logging.user(user, f"~FRAsk AI publish failure for event {event_type}")
+                logging.user(user, f"~BB~FGAsk AI: ~FR~SBPublish failure~SN~FG for event ~SB{event_type}~SN")
 
         publish_event = publish
         publish_event("start")
@@ -53,12 +55,15 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
         if not story:
             error_msg = "Story not found"
             publish_event("error", {"error": error_msg})
-            logging.user(user, f"~FRAsk AI error: {error_msg} for story {story_hash}")
+            logging.user(user, f"~BB~FGAsk AI: ~FR~SBError~SN~FG - {error_msg} for story ~SB{story_hash}~SN")
             return {"code": -1, "message": error_msg}
 
         if not conversation_history and not custom_question:
             cached = MAskAIResponse.get_cached_response(
-                user_id=user_id, story_hash=story_hash, question_id=question_id, custom_question=custom_question
+                user_id=user_id,
+                story_hash=story_hash,
+                question_id=question_id,
+                custom_question=custom_question,
             )
             if cached:
                 response_text = cached.response_text
@@ -81,7 +86,7 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
                 publish_event("complete")
                 if usage_message:
                     publish_event("usage", {"message": usage_message})
-                logging.user(user, f"~FGAsk AI: Served cached response for story {story_hash}")
+                logging.user(user, f"~BB~FGAsk AI: Served ~SBcached~SN response for story ~SB{story_hash}~SN")
                 return {"code": 1, "message": "Cached response served", "cached": True}
 
         if conversation_history:
@@ -94,7 +99,7 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
             messages.extend(conversation_history)
             logging.user(
                 user,
-                f"~FBAsk AI: Follow-up question for story {story_hash}, {len(conversation_history)} messages in history",
+                f"~BB~FGAsk AI: Follow-up for story ~SB{story_hash}~SN, ~SB{len(conversation_history)}~SN messages in history",
             )
         else:
             story_title = story.story_title
@@ -105,7 +110,7 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
             except ValueError as e:
                 error_msg = str(e)
                 publish_event("error", {"error": error_msg})
-                logging.user(user, f"~FRAsk AI error: {error_msg}")
+                logging.user(user, f"~BB~FGAsk AI: ~FR~SBError~SN~FG - {error_msg}")
                 return {"code": -1, "message": error_msg}
 
             messages = [
@@ -119,11 +124,13 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
         if not settings.OPENAI_API_KEY:
             error_msg = "OpenAI API key not configured"
             publish_event("error", {"error": error_msg})
-            logging.user(user, f"~FRAsk AI error: {error_msg}")
+            logging.user(user, f"~BB~FGAsk AI: ~FR~SBError~SN~FG - {error_msg}")
             return {"code": -1, "message": error_msg}
 
         client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-        logging.user(user, f"~FBAsk AI: Starting streaming response for story {story_hash}, question {question_id}")
+        logging.user(
+            user, f"~BB~FGAsk AI: Starting stream for story ~SB{story_hash}~SN, question ~SB{question_id}~SN"
+        )
 
         response = client.chat.completions.create(model="gpt-4.1", messages=messages, stream=True)
 
@@ -136,7 +143,7 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
                 publish_event("chunk", {"chunk": chunk_text})
                 chunk_count += 1
                 if chunk_count == 1:
-                    logging.user(user, f"~FBAsk AI: Published first chunk to Redis channel '{username}'")
+                    logging.user(user, f"~BB~FGAsk AI: First chunk to Redis channel ~SB'{username}'~SN")
 
         full_response_text = "".join(full_response)
 
@@ -156,8 +163,8 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
 
         logging.user(
             user,
-            f"~FGAsk AI: Completed streaming response for story {story_hash}, "
-            f"{len(full_response_text)} chars in {time.time() - start_time:.2f}s",
+            f"~BB~FGAsk AI: Completed for ~SB{story_hash}~SN, "
+            f"~SB{len(full_response_text)}~SN chars in ~SB{time.time() - start_time:.2f}s~SN",
         )
 
         if not conversation_history and not custom_question:
@@ -190,7 +197,7 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
         if publish_event:
             publish_event("error", {"error": error_msg})
         if user:
-            logging.user(user, f"~FRAsk AI timeout: {e}")
+            logging.user(user, f"~BB~FGAsk AI: ~FR~SBTimeout~SN~FG - {e}")
         return {"code": -1, "message": error_msg}
 
     except openai.APIError as e:
@@ -198,7 +205,7 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
         if publish_event:
             publish_event("error", {"error": error_msg})
         if user:
-            logging.user(user, f"~FRAsk AI error: {e}")
+            logging.user(user, f"~BB~FGAsk AI: ~FR~SBError~SN~FG - {e}")
         return {"code": -1, "message": error_msg}
 
     except Exception as e:
@@ -206,5 +213,5 @@ def AskAIQuestion(user_id, story_hash, question_id, custom_question=None, conver
         if publish_event:
             publish_event("error", {"error": error_msg})
         if user:
-            logging.user(user, f"~FRAsk AI unexpected error: {e}")
+            logging.user(user, f"~BB~FGAsk AI: ~FR~SBUnexpected error~SN~FG - {e}")
         return {"code": -1, "message": error_msg}
