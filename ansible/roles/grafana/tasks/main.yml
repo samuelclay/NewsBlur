@@ -64,7 +64,8 @@
     hostname: "{{ inventory_hostname }}"
     user: root
     networks_cli_compatible: yes
-    network_mode: host
+    networks:
+      - name: newsblurnet
     ports:
       - "3000:3000"
     volumes:
