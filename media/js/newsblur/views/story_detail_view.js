@@ -241,7 +241,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_save: NEWSBLUR.assets.preference("show_sideoption_save"),
             show_sideoption_share: NEWSBLUR.assets.preference("show_sideoption_share"),
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
-            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai") && (NEWSBLUR.Globals.is_staff),
+            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai") && (
+                NEWSBLUR.Globals.is_staff ||
+                /* NEWSBLUR.Globals.is_archive || NEWSBLUR.Globals.is_pro || */
+                (NEWSBLUR.Globals.debug && NEWSBLUR.Globals.is_premium)
+            ),
         };
     },
 
@@ -1374,6 +1378,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="Ask a question..." />\
                         <div class="NB-button NB-modal-submit-green NB-menu-ask-ai-custom-submit NB-disabled">Ask</div>\
                     </div>\
+                    <div class="NB-menu-ask-ai-model-selector">\
+                        <span class="NB-menu-ask-ai-model-label">Model:</span>\
+                        <select class="NB-menu-ask-ai-model-select">\
+                            <option value="haiku">Haiku</option>\
+                            <option value="sonnet">Sonnet</option>\
+                            <option value="opus" selected>Opus</option>\
+                            <option value="gpt-4.1">GPT-4.1</option>\
+                        </select>\
+                    </div>\
                 </div>\
             </div>\
         ');
@@ -1445,7 +1458,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         $menu.find('.NB-menu-ask-ai-option, .NB-menu-ask-ai-segment').on('click', _.bind(function (ev) {
             var question_id = $(ev.currentTarget).data('question-id');
-            this.handle_ask_ai_question(question_id);
+            var model = $menu.find('.NB-menu-ask-ai-model-select').val();
+            this.handle_ask_ai_question(question_id, model);
             this.hide_ask_ai_menu();
         }, this));
 
@@ -1502,21 +1516,22 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     submit_custom_question_from_menu: function ($menu) {
         var custom_question = $menu.find('.NB-menu-ask-ai-custom-input').val();
         var transcription_error = $menu.data('transcription_error');
+        var model = $menu.find('.NB-menu-ask-ai-model-select').val();
 
         // Allow opening with empty question if there's a transcription error to display
         if ((!custom_question || !custom_question.trim()) && !transcription_error) {
             return;
         }
 
-        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question, transcription_error);
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question, transcription_error, model);
         this.hide_ask_ai_menu();
 
         // Clear the stored error
         $menu.removeData('transcription_error');
     },
 
-    handle_ask_ai_question: function (question_id) {
-        NEWSBLUR.reader.open_ask_ai_pane(this.model, question_id);
+    handle_ask_ai_question: function (question_id, model) {
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, question_id, null, null, model);
     },
 
     start_voice_recording_for_menu: function ($menu) {

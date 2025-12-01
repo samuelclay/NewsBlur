@@ -9,7 +9,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         "click .NB-story-ask-ai-followup-submit": "submit_followup_question",
         "click .NB-story-ask-ai-voice-button": "start_voice_recording",
         "keypress .NB-story-ask-ai-followup-input": "handle_followup_keypress",
-        "click .NB-story-ask-ai-usage-message a": "open_premium_modal"
+        "click .NB-story-ask-ai-usage-message a": "open_premium_modal",
+        "change .NB-story-ask-ai-model-select": "handle_model_change",
+        "click .NB-story-ask-ai-reask": "reask_with_new_model"
     },
 
     initialize: function (options) {
@@ -17,6 +19,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.question_id = options.question_id;
         this.custom_question = options.custom_question;
         this.transcription_error = options.transcription_error;
+        this.model = options.model || 'opus';  // Default to opus
 
         // If there's a transcription error, show "Audio not transcribed" as the question text
         if (this.transcription_error) {
@@ -31,6 +34,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.response_text = '';  // Accumulate response for final formatting
         this.conversation_history = [];  // Track conversation for follow-ups
         this.active_request_id = null;
+        this.original_question_id = this.question_id;  // Store for re-ask
+        this.original_custom_question = this.custom_question;  // Store for re-ask
+        this.response_model = this.model;  // Track which model produced current response
+        this.comparing_models = false;  // Track if we're comparing responses from different models
 
         // If there's a transcription error, don't send a question - we'll display the error instead
         if (this.transcription_error) {
@@ -51,6 +58,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Store view instance on DOM element for Socket.IO handler access
         this.$el.data('view', this);
 
+        // Set the model dropdown to the current model
+        this.$('.NB-story-ask-ai-model-select').val(this.model);
+
         // If there's a transcription error, display it instead of sending a question
         if (this.transcription_error) {
             this.$el.removeClass('NB-thinking');
@@ -69,18 +79,45 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // No response received within 15 seconds
         this.$el.removeClass('NB-thinking');
         this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
-        this.$('.NB-story-ask-ai-error')
-            .text('Request timed out. The AI service took too long to respond. Please try again.')
-            .addClass('NB-active');
+
+        var error_text = 'Request timed out. The AI service took too long to respond. Please try again.';
+
+        // If there's already content (re-ask scenario), append error to the answer
+        if (this.response_text) {
+            this.response_text += '\n\n**Error:** ' + error_text;
+            var html = this.markdown_to_html(this.response_text);
+            this.$('.NB-story-ask-ai-answer').html(html);
+        } else {
+            // No existing content - show error in the error div
+            this.$('.NB-story-ask-ai-error')
+                .text(error_text)
+                .addClass('NB-active');
+        }
+
+        // Show followup wrapper so user can try again
+        this.$('.NB-story-ask-ai-followup-wrapper').show();
     },
 
     handle_streaming_timeout: function () {
         // No chunk received for 10 seconds during streaming
         this.$el.removeClass('NB-thinking');
         this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
-        this.$('.NB-story-ask-ai-error')
-            .text('Stream interrupted. No response received for 10 seconds.')
-            .addClass('NB-active');
+
+        var error_text = 'Stream interrupted. No response received for 10 seconds.';
+
+        // Append error to existing content
+        if (this.response_text) {
+            this.response_text += '\n\n**Error:** ' + error_text;
+            var html = this.markdown_to_html(this.response_text);
+            this.$('.NB-story-ask-ai-answer').html(html);
+        } else {
+            this.$('.NB-story-ask-ai-error')
+                .text(error_text)
+                .addClass('NB-active');
+        }
+
+        // Show followup wrapper so user can try again
+        this.$('.NB-story-ask-ai-followup-wrapper').show();
     },
 
     template: _.template('\
@@ -106,11 +143,22 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 <div class="NB-story-ask-ai-usage-message" style="display: none;"></div>\
             </div>\
             <div class="NB-story-ask-ai-followup-wrapper" style="display: none;">\
-                <div class="NB-story-ask-ai-voice-button" title="Record voice question">\
-                    <img src="/media/img/icons/nouns/microphone.svg" class="NB-story-ask-ai-voice-icon" />\
+                <div class="NB-story-ask-ai-model-row">\
+                    <select class="NB-story-ask-ai-model-select">\
+                        <option value="haiku">Haiku</option>\
+                        <option value="sonnet">Sonnet</option>\
+                        <option value="opus">Opus</option>\
+                        <option value="gpt-4.1">GPT-4.1</option>\
+                    </select>\
+                    <div class="NB-button NB-story-ask-ai-reask">Re-ask</div>\
                 </div>\
-                <input type="text" class="NB-story-ask-ai-followup-input" placeholder="Continue the discussion..." />\
-                <div class="NB-button NB-story-ask-ai-followup-submit">Send</div>\
+                <div class="NB-story-ask-ai-input-row">\
+                    <div class="NB-story-ask-ai-voice-button" title="Record voice question">\
+                        <img src="/media/img/icons/nouns/microphone.svg" class="NB-story-ask-ai-voice-icon" />\
+                    </div>\
+                    <input type="text" class="NB-story-ask-ai-followup-input" placeholder="Continue the discussion..." />\
+                    <div class="NB-button NB-story-ask-ai-followup-submit">Send</div>\
+                </div>\
             </div>\
         </div>\
     '),
@@ -184,8 +232,12 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     send_question: function (custom_question, conversation_history) {
         var params = {
             story_hash: this.story_hash,
-            question_id: this.question_id
+            question_id: this.question_id,
+            model: this.model
         };
+
+        // Track which model is producing this response
+        this.response_model = this.model;
 
         var request_id = this.generate_request_id();
         this.active_request_id = request_id;
@@ -256,6 +308,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             this.$('.NB-story-ask-ai-usage-message').hide();
         }
 
+        // Show followup wrapper so user can change model and re-ask
+        this.$('.NB-story-ask-ai-followup-wrapper').show();
+        this.$('.NB-story-ask-ai-model-select').val(this.model);
+
         if (this.initial_timeout) {
             clearTimeout(this.initial_timeout);
             this.initial_timeout = null;
@@ -304,6 +360,20 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                     list_type = null;
                 }
                 result.push('<hr>');
+                continue;
+            }
+
+            // Headers: # H1, ## H2, ### H3, etc.
+            var header_match = trimmed.match(/^(#{1,6})\s+(.+)$/);
+            if (header_match) {
+                if (in_list) {
+                    result.push('</' + list_type + '>');
+                    in_list = false;
+                    list_type = null;
+                }
+                var level = header_match[1].length;
+                var header_text = header_match[2];
+                result.push('<h' + level + '>' + header_text + '</h' + level + '>');
                 continue;
             }
 
@@ -364,6 +434,13 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
             this.$('.NB-story-ask-ai-error').removeClass('NB-active');
             $answer.show();
+
+            // Add model header when comparing models
+            if (this.comparing_models) {
+                var new_model_name = this.get_model_display_name(this.response_model);
+                this.response_text += '**' + new_model_name + ':**\n\n';
+                this.comparing_models = false;  // Only add once
+            }
         }
 
         // Accumulate full response text
@@ -562,6 +639,93 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         } else {
             this.voice_recorder.start_recording();
         }
+    },
+
+    handle_model_change: function (e) {
+        this.model = this.$(e.target).val();
+    },
+
+    get_model_display_name: function (model) {
+        var names = {
+            'haiku': 'Haiku',
+            'sonnet': 'Sonnet',
+            'opus': 'Opus',
+            'gpt-4.1': 'GPT-4.1'
+        };
+        return names[model] || model;
+    },
+
+    reask_with_new_model: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        var old_model = this.response_model;
+        var new_model = this.model;
+
+        // If same model, just re-run without annotation
+        if (old_model === new_model || !this.response_text) {
+            this._do_reask();
+            return;
+        }
+
+        // Annotate the existing response with the model that produced it
+        var old_model_name = this.get_model_display_name(old_model);
+        var annotated_response = '**' + old_model_name + ':**\n\n' + this.response_text;
+
+        // Add separator for new model response
+        annotated_response += '\n\n---\n\n';
+
+        // Update the displayed answer with annotation
+        var $answer = this.$('.NB-story-ask-ai-answer');
+        var html = this.markdown_to_html(annotated_response);
+        $answer.html(html);
+
+        // Reset for new response but keep the annotated text
+        this.question_id = this.original_question_id;
+        this.custom_question = this.original_custom_question;
+        this.response_text = annotated_response;
+        this.conversation_history = [];
+        this.streaming_started = false;
+        this.comparing_models = true;  // Flag to add new model header on first chunk
+
+        // Show loading state but keep answer visible
+        this.$('.NB-story-ask-ai-followup-wrapper').hide();
+        this.$('.NB-story-ask-ai-error').removeClass('NB-active');
+        this.$('.NB-story-ask-ai-usage-message').hide();
+        this.$el.addClass('NB-thinking');
+        this.$('.NB-story-ask-ai-loading').show().addClass('NB-followup');
+
+        // Set up initial timeout
+        this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
+
+        // Send the original question with the new model
+        this.send_question(this.custom_question);
+    },
+
+    _do_reask: function () {
+        // Simple re-ask without annotation (same model or no existing response)
+        this.question_id = this.original_question_id;
+        this.custom_question = this.original_custom_question;
+        this.response_text = '';
+        this.conversation_history = [];
+        this.streaming_started = false;
+        this.comparing_models = false;
+
+        // Clear the answer and show loading
+        this.$('.NB-story-ask-ai-answer').hide().empty();
+        this.$('.NB-story-ask-ai-followup-wrapper').hide();
+        this.$('.NB-story-ask-ai-error').removeClass('NB-active');
+        this.$('.NB-story-ask-ai-usage-message').hide();
+        this.$el.addClass('NB-thinking');
+        this.$('.NB-story-ask-ai-loading').show().removeClass('NB-followup');
+
+        // Set up initial timeout
+        this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
+
+        // Send the original question with the new model
+        this.send_question(this.custom_question);
     }
 
 });
