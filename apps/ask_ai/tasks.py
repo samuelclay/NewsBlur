@@ -2,7 +2,6 @@ import json
 import time
 import uuid
 
-import openai
 import redis
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -13,12 +12,19 @@ from utils import log as logging
 
 from .models import MAskAIResponse
 from .prompts import get_full_prompt
+from .providers import DEFAULT_MODEL, LLM_EXCEPTIONS, MODELS, get_provider
 from .usage import AskAIUsageTracker
 
 
 @app.task(name="ask-ai-question", time_limit=120, soft_time_limit=110)
 def AskAIQuestion(
-    user_id, story_hash, question_id, custom_question=None, conversation_history=None, request_id=None
+    user_id,
+    story_hash,
+    question_id,
+    custom_question=None,
+    conversation_history=None,
+    request_id=None,
+    model=None,
 ):
     """
     Process an Ask AI question and stream the response via Redis PubSub.
@@ -58,12 +64,18 @@ def AskAIQuestion(
             logging.user(user, f"~BB~FGAsk AI: ~FR~SBError~SN~FG - {error_msg} for story ~SB{story_hash}~SN")
             return {"code": -1, "message": error_msg}
 
+        # Determine model early so it can be used for cache lookup
+        model_name = model if model and model in MODELS else getattr(settings, "ASK_AI_MODEL", DEFAULT_MODEL)
+        if model_name not in MODELS:
+            model_name = DEFAULT_MODEL
+
         if not conversation_history and not custom_question:
             cached = MAskAIResponse.get_cached_response(
                 user_id=user_id,
                 story_hash=story_hash,
                 question_id=question_id,
                 custom_question=custom_question,
+                model=model_name,
             )
             if cached:
                 response_text = cached.response_text
@@ -121,29 +133,30 @@ def AskAIQuestion(
                 {"role": "user", "content": full_prompt},
             ]
 
-        if not settings.OPENAI_API_KEY:
-            error_msg = "OpenAI API key not configured"
+        # Get provider and model ID
+        provider, model_id = get_provider(model_name)
+
+        # Check for required API key
+        if not provider.is_configured():
+            error_msg = f"{provider.__class__.__name__.replace('Provider', '')} API key not configured"
             publish_event("error", {"error": error_msg})
             logging.user(user, f"~BB~FGAsk AI: ~FR~SBError~SN~FG - {error_msg}")
             return {"code": -1, "message": error_msg}
 
-        client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
         logging.user(
-            user, f"~BB~FGAsk AI: Starting stream for story ~SB{story_hash}~SN, question ~SB{question_id}~SN"
+            user,
+            f"~BB~FGAsk AI: Starting stream for story ~SB{story_hash}~SN, question ~SB{question_id}~SN, model ~SB{model_name}~SN",
         )
-
-        response = client.chat.completions.create(model="gpt-4.1", messages=messages, stream=True)
 
         full_response = []
         chunk_count = 0
-        for chunk in response:
-            if chunk.choices[0].delta.content:
-                chunk_text = chunk.choices[0].delta.content
-                full_response.append(chunk_text)
-                publish_event("chunk", {"chunk": chunk_text})
-                chunk_count += 1
-                if chunk_count == 1:
-                    logging.user(user, f"~BB~FGAsk AI: First chunk to Redis channel ~SB'{username}'~SN")
+
+        for text in provider.stream_response(messages, model_id):
+            full_response.append(text)
+            publish_event("chunk", {"chunk": text})
+            chunk_count += 1
+            if chunk_count == 1:
+                logging.user(user, f"~BB~FGAsk AI: First chunk to Redis channel ~SB'{username}'~SN")
 
         full_response_text = "".join(full_response)
 
@@ -169,7 +182,7 @@ def AskAIQuestion(
 
         if not conversation_history and not custom_question:
             metadata = {
-                "model": "gpt-4.1",
+                "model": model_name,
                 "question_id": question_id,
                 "duration_seconds": time.time() - start_time,
                 "response_length": len(full_response_text),
@@ -182,6 +195,7 @@ def AskAIQuestion(
                 question_id=question_id,
                 response_text=full_response_text,
                 custom_question=custom_question,
+                model=model_name,
                 metadata=metadata,
             )
 
@@ -192,16 +206,8 @@ def AskAIQuestion(
             "duration": time.time() - start_time,
         }
 
-    except openai.APITimeoutError as e:
-        error_msg = "OpenAI API timeout"
-        if publish_event:
-            publish_event("error", {"error": error_msg})
-        if user:
-            logging.user(user, f"~BB~FGAsk AI: ~FR~SBTimeout~SN~FG - {e}")
-        return {"code": -1, "message": error_msg}
-
-    except openai.APIError as e:
-        error_msg = f"OpenAI API error: {str(e)}"
+    except LLM_EXCEPTIONS as e:
+        error_msg = provider.format_error(e)
         if publish_event:
             publish_event("error", {"error": error_msg})
         if user:

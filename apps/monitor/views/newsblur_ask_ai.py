@@ -34,7 +34,16 @@ class AskAI(View):
         # ===== Total Request Counts =====
         # Count total AI responses by question type
         question_counts = {}
-        for question_id in ["sentence", "bullets", "paragraph", "context", "people", "arguments", "factcheck", "custom"]:
+        for question_id in [
+            "sentence",
+            "bullets",
+            "paragraph",
+            "context",
+            "people",
+            "arguments",
+            "factcheck",
+            "custom",
+        ]:
             count = MAskAIResponse.objects(question_id=question_id).count()
             question_counts[question_id] = count
 
@@ -172,7 +181,9 @@ class AskAI(View):
 
         # Count denied requests by tier (recent periods for better accuracy)
         # Get all denied requests from last month to categorize by tier
-        denied_entries = MAskAIUsage.objects(over_quota=True, created_at__gte=last_month).only("user_id", "plan_tier")
+        denied_entries = MAskAIUsage.objects(over_quota=True, created_at__gte=last_month).only(
+            "user_id", "plan_tier"
+        )
 
         # Count by plan tier (using the recorded plan_tier field)
         denied_by_tier = {"free": 0, "premium": 0, "archive": 0}
@@ -311,103 +322,144 @@ class AskAI(View):
         formatted_data["requests_total"] = f'{chart_name}{{metric="requests_total"}} {data["requests_total"]}'
 
         # Requests by question type
-        for question_id in ["sentence", "bullets", "paragraph", "context", "people", "arguments", "factcheck", "custom"]:
+        for question_id in [
+            "sentence",
+            "bullets",
+            "paragraph",
+            "context",
+            "people",
+            "arguments",
+            "factcheck",
+            "custom",
+        ]:
             count = data[f"requests_{question_id}"]
-            formatted_data[f"requests_{question_id}"] = f'{chart_name}{{metric="requests",question_id="{question_id}"}} {count}'
+            formatted_data[
+                f"requests_{question_id}"
+            ] = f'{chart_name}{{metric="requests",question_id="{question_id}"}} {count}'
 
         # Active users
-        formatted_data["active_users_daily"] = f'{chart_name}{{metric="active_users",period="daily"}} {data["active_users_daily"]}'
-        formatted_data["active_users_weekly"] = f'{chart_name}{{metric="active_users",period="weekly"}} {data["active_users_weekly"]}'
-        formatted_data["active_users_monthly"] = f'{chart_name}{{metric="active_users",period="monthly"}} {data["active_users_monthly"]}'
+        formatted_data[
+            "active_users_daily"
+        ] = f'{chart_name}{{metric="active_users",period="daily"}} {data["active_users_daily"]}'
+        formatted_data[
+            "active_users_weekly"
+        ] = f'{chart_name}{{metric="active_users",period="weekly"}} {data["active_users_weekly"]}'
+        formatted_data[
+            "active_users_monthly"
+        ] = f'{chart_name}{{metric="active_users",period="monthly"}} {data["active_users_monthly"]}'
 
         # Usage by tier
         for tier in ["free", "premium", "archive"]:
-            formatted_data[f"tier_{tier}_using"] = f'{chart_name}{{metric="tier_usage",tier="{tier}",status="using"}} {data[f"tier_{tier}_using"]}'
-            formatted_data[f"tier_{tier}_at_limit"] = f'{chart_name}{{metric="tier_usage",tier="{tier}",status="at_limit"}} {data[f"tier_{tier}_at_limit"]}'
+            formatted_data[
+                f"tier_{tier}_using"
+            ] = f'{chart_name}{{metric="tier_usage",tier="{tier}",status="using"}} {data[f"tier_{tier}_using"]}'
+            formatted_data[
+                f"tier_{tier}_at_limit"
+            ] = f'{chart_name}{{metric="tier_usage",tier="{tier}",status="at_limit"}} {data[f"tier_{tier}_at_limit"]}'
 
         # Limit proximity distribution
         for tier in ["free", "premium", "archive"]:
             for bucket in ["0-20", "20-40", "40-60", "60-80", "80-100"]:
                 key = f"limit_{tier}_{bucket}"
-                formatted_data[key] = f'{chart_name}{{metric="limit_proximity",tier="{tier}",bucket="{bucket}"}} {data[key]}'
+                formatted_data[
+                    key
+                ] = f'{chart_name}{{metric="limit_proximity",tier="{tier}",bucket="{bucket}"}} {data[key]}'
 
         # Request rate metrics
-        formatted_data["requests_daily"] = f'{chart_name}{{metric="requests_rate",period="daily"}} {data["requests_daily"]}'
-        formatted_data["requests_weekly"] = f'{chart_name}{{metric="requests_rate",period="weekly"}} {data["requests_weekly"]}'
-        formatted_data["requests_monthly"] = f'{chart_name}{{metric="requests_rate",period="monthly"}} {data["requests_monthly"]}'
+        formatted_data[
+            "requests_daily"
+        ] = f'{chart_name}{{metric="requests_rate",period="daily"}} {data["requests_daily"]}'
+        formatted_data[
+            "requests_weekly"
+        ] = f'{chart_name}{{metric="requests_rate",period="weekly"}} {data["requests_weekly"]}'
+        formatted_data[
+            "requests_monthly"
+        ] = f'{chart_name}{{metric="requests_rate",period="monthly"}} {data["requests_monthly"]}'
 
         # Over quota (denied) metrics
         formatted_data["denied_total"] = f'{chart_name}{{metric="denied_total"}} {data["denied_total"]}'
-        formatted_data["denied_daily"] = f'{chart_name}{{metric="denied",period="daily"}} {data["denied_daily"]}'
-        formatted_data["denied_weekly"] = f'{chart_name}{{metric="denied",period="weekly"}} {data["denied_weekly"]}'
-        formatted_data["denied_monthly"] = f'{chart_name}{{metric="denied",period="monthly"}} {data["denied_monthly"]}'
+        formatted_data[
+            "denied_daily"
+        ] = f'{chart_name}{{metric="denied",period="daily"}} {data["denied_daily"]}'
+        formatted_data[
+            "denied_weekly"
+        ] = f'{chart_name}{{metric="denied",period="weekly"}} {data["denied_weekly"]}'
+        formatted_data[
+            "denied_monthly"
+        ] = f'{chart_name}{{metric="denied",period="monthly"}} {data["denied_monthly"]}'
 
         # Unique users hitting limits
-        formatted_data["denied_unique_users"] = f'{chart_name}{{metric="denied_unique_users"}} {data["denied_unique_users"]}'
+        formatted_data[
+            "denied_unique_users"
+        ] = f'{chart_name}{{metric="denied_unique_users"}} {data["denied_unique_users"]}'
 
         # Denied by tier (monthly window)
         for tier in ["free", "premium", "archive"]:
-            formatted_data[f"denied_{tier}"] = f'{chart_name}{{metric="denied_by_tier",tier="{tier}"}} {data[f"denied_{tier}"]}'
-            formatted_data[f"denied_unique_{tier}"] = f'{chart_name}{{metric="denied_unique_by_tier",tier="{tier}"}} {data[f"denied_unique_{tier}"]}'
+            formatted_data[
+                f"denied_{tier}"
+            ] = f'{chart_name}{{metric="denied_by_tier",tier="{tier}"}} {data[f"denied_{tier}"]}'
+            formatted_data[
+                f"denied_unique_{tier}"
+            ] = f'{chart_name}{{metric="denied_unique_by_tier",tier="{tier}"}} {data[f"denied_unique_{tier}"]}'
 
         # Transcription metrics
-        formatted_data["transcriptions_total"] = (
-            f'{chart_name}{{metric="transcriptions_total"}} {data["transcriptions_total"]}'
-        )
-        formatted_data["transcriptions_daily"] = (
-            f'{chart_name}{{metric="transcriptions",period="daily"}} {data["transcriptions_daily"]}'
-        )
-        formatted_data["transcriptions_weekly"] = (
-            f'{chart_name}{{metric="transcriptions",period="weekly"}} {data["transcriptions_weekly"]}'
-        )
-        formatted_data["transcriptions_monthly"] = (
-            f'{chart_name}{{metric="transcriptions",period="monthly"}} {data["transcriptions_monthly"]}'
-        )
+        formatted_data[
+            "transcriptions_total"
+        ] = f'{chart_name}{{metric="transcriptions_total"}} {data["transcriptions_total"]}'
+        formatted_data[
+            "transcriptions_daily"
+        ] = f'{chart_name}{{metric="transcriptions",period="daily"}} {data["transcriptions_daily"]}'
+        formatted_data[
+            "transcriptions_weekly"
+        ] = f'{chart_name}{{metric="transcriptions",period="weekly"}} {data["transcriptions_weekly"]}'
+        formatted_data[
+            "transcriptions_monthly"
+        ] = f'{chart_name}{{metric="transcriptions",period="monthly"}} {data["transcriptions_monthly"]}'
 
         # Transcriptions over quota
-        formatted_data["transcriptions_overquota_total"] = (
-            f'{chart_name}{{metric="transcriptions_overquota_total"}} {data["transcriptions_overquota_total"]}'
-        )
-        formatted_data["transcriptions_overquota_daily"] = (
-            f'{chart_name}{{metric="transcriptions_overquota",period="daily"}} {data["transcriptions_overquota_daily"]}'
-        )
-        formatted_data["transcriptions_overquota_weekly"] = (
-            f'{chart_name}{{metric="transcriptions_overquota",period="weekly"}} {data["transcriptions_overquota_weekly"]}'
-        )
-        formatted_data["transcriptions_overquota_monthly"] = (
-            f'{chart_name}{{metric="transcriptions_overquota",period="monthly"}} {data["transcriptions_overquota_monthly"]}'
-        )
+        formatted_data[
+            "transcriptions_overquota_total"
+        ] = f'{chart_name}{{metric="transcriptions_overquota_total"}} {data["transcriptions_overquota_total"]}'
+        formatted_data[
+            "transcriptions_overquota_daily"
+        ] = f'{chart_name}{{metric="transcriptions_overquota",period="daily"}} {data["transcriptions_overquota_daily"]}'
+        formatted_data[
+            "transcriptions_overquota_weekly"
+        ] = f'{chart_name}{{metric="transcriptions_overquota",period="weekly"}} {data["transcriptions_overquota_weekly"]}'
+        formatted_data[
+            "transcriptions_overquota_monthly"
+        ] = f'{chart_name}{{metric="transcriptions_overquota",period="monthly"}} {data["transcriptions_overquota_monthly"]}'
 
         # Unique transcription users
-        formatted_data["transcriptions_unique_users"] = (
-            f'{chart_name}{{metric="transcriptions_unique_users"}} {data["transcriptions_unique_users"]}'
-        )
-        formatted_data["transcriptions_unique_users_daily"] = (
-            f'{chart_name}{{metric="transcriptions_unique_users",period="daily"}} {data["transcriptions_unique_users_daily"]}'
-        )
-        formatted_data["transcriptions_unique_users_weekly"] = (
-            f'{chart_name}{{metric="transcriptions_unique_users",period="weekly"}} {data["transcriptions_unique_users_weekly"]}'
-        )
-        formatted_data["transcriptions_unique_users_monthly"] = (
-            f'{chart_name}{{metric="transcriptions_unique_users",period="monthly"}} {data["transcriptions_unique_users_monthly"]}'
-        )
+        formatted_data[
+            "transcriptions_unique_users"
+        ] = f'{chart_name}{{metric="transcriptions_unique_users"}} {data["transcriptions_unique_users"]}'
+        formatted_data[
+            "transcriptions_unique_users_daily"
+        ] = f'{chart_name}{{metric="transcriptions_unique_users",period="daily"}} {data["transcriptions_unique_users_daily"]}'
+        formatted_data[
+            "transcriptions_unique_users_weekly"
+        ] = f'{chart_name}{{metric="transcriptions_unique_users",period="weekly"}} {data["transcriptions_unique_users_weekly"]}'
+        formatted_data[
+            "transcriptions_unique_users_monthly"
+        ] = f'{chart_name}{{metric="transcriptions_unique_users",period="monthly"}} {data["transcriptions_unique_users_monthly"]}'
 
         # Transcriptions by tier
         for tier in ["free", "premium", "archive"]:
-            formatted_data[f"transcriptions_{tier}"] = (
-                f'{chart_name}{{metric="transcriptions_by_tier",tier="{tier}"}} {data[f"transcriptions_{tier}"]}'
-            )
-            formatted_data[f"transcriptions_overquota_{tier}"] = (
-                f'{chart_name}{{metric="transcriptions_overquota_by_tier",tier="{tier}"}} {data[f"transcriptions_overquota_{tier}"]}'
-            )
-            formatted_data[f"transcriptions_unique_{tier}"] = (
-                f'{chart_name}{{metric="transcriptions_unique_by_tier",tier="{tier}"}} {data[f"transcriptions_unique_{tier}"]}'
-            )
+            formatted_data[
+                f"transcriptions_{tier}"
+            ] = f'{chart_name}{{metric="transcriptions_by_tier",tier="{tier}"}} {data[f"transcriptions_{tier}"]}'
+            formatted_data[
+                f"transcriptions_overquota_{tier}"
+            ] = f'{chart_name}{{metric="transcriptions_overquota_by_tier",tier="{tier}"}} {data[f"transcriptions_overquota_{tier}"]}'
+            formatted_data[
+                f"transcriptions_unique_{tier}"
+            ] = f'{chart_name}{{metric="transcriptions_unique_by_tier",tier="{tier}"}} {data[f"transcriptions_unique_{tier}"]}'
 
         # Average transcription length
-        formatted_data["transcriptions_avg_length"] = (
-            f'{chart_name}{{metric="transcriptions_avg_length"}} {data["transcriptions_avg_length"]}'
-        )
+        formatted_data[
+            "transcriptions_avg_length"
+        ] = f'{chart_name}{{metric="transcriptions_avg_length"}} {data["transcriptions_avg_length"]}'
 
         context = {
             "data": formatted_data,

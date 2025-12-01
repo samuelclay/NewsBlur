@@ -2077,6 +2077,21 @@ a.mention, a.mention-group {
     filter: grayscale(0%) brightness(1.1);
 }
 
+.NB-dark .NB-menu-ask-ai-model-selector {
+    background-color: rgba(20, 25, 35, 0.5);
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-menu-ask-ai-model-label {
+    color: #90988B;
+}
+
+.NB-dark .NB-menu-ask-ai-model-select {
+    background-color: rgba(30, 35, 48, 0.8);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #E0E6ED;
+}
+
 /* ======================== */
 /* = Ask AI Inline (Dark) = */
 /* ======================== */
@@ -2170,6 +2185,19 @@ a.mention, a.mention-group {
     color: #D0D8E0;
 }
 
+.NB-dark .NB-story-ask-ai-answer h1,
+.NB-dark .NB-story-ask-ai-answer h2,
+.NB-dark .NB-story-ask-ai-answer h3,
+.NB-dark .NB-story-ask-ai-answer h4,
+.NB-dark .NB-story-ask-ai-answer h5,
+.NB-dark .NB-story-ask-ai-answer h6 {
+    color: #E8EDF4;
+}
+
+.NB-dark .NB-story-ask-ai-answer h6 {
+    color: #A0AEC0;
+}
+
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input {
     background-color: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);
@@ -2207,6 +2235,44 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-story-ask-ai-voice-icon {
     filter: grayscale(100%) brightness(0.8);
+}
+
+.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-followup-wrapper {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-model-select {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #E0E6ED;
+}
+
+.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-model-select:focus {
+    border-color: rgba(74, 144, 226, 0.6);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+}
+
+.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-reask {
+    background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+}
+
+.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-reask:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-followup-input {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #E0E6ED;
+}
+
+.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-followup-input:focus {
+    border-color: rgba(74, 144, 226, 0.6);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+}
+
+.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-followup-input::placeholder {
+    color: #6B7A92;
 }
 
 .NB-dark .NB-story-ask-ai-voice-button:hover .NB-story-ask-ai-voice-icon {
