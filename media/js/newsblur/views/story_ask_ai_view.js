@@ -93,7 +93,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         if (this.response_text) {
             this.response_text += '\n\n**Error:** ' + error_text;
             var html = this.markdown_to_html(this.response_text);
-            html = this.replace_model_pill_markers(html);
             this.$('.NB-story-ask-ai-answer').html(html);
         } else {
             // No existing content - show error in the error div
@@ -117,7 +116,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         if (this.response_text) {
             this.response_text += '\n\n**Error:** ' + error_text;
             var html = this.markdown_to_html(this.response_text);
-            html = this.replace_model_pill_markers(html);
             this.$('.NB-story-ask-ai-answer').html(html);
         } else {
             this.$('.NB-story-ask-ai-error')
@@ -138,6 +136,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                         <div class="NB-icon"></div>\
                     </div>\
                     <div class="NB-story-ask-ai-question-text"><%= question_text %></div>\
+                    <div class="NB-story-ask-ai-model-pill-container"></div>\
                 </div>\
             </div>\
             <div class="NB-story-ask-ai-response">\
@@ -474,9 +473,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             this.$('.NB-story-ask-ai-error').removeClass('NB-active');
             $answer.show();
 
-            // Add model pill before response (visual only, not in response_text for markdown)
-            // Use a special marker that we'll replace with actual HTML
-            this.response_text += '{{MODEL_PILL:' + this.response_model + '}}\n\n';
+            // Update model pill in question area
+            this.$('.NB-story-ask-ai-model-pill-container').html(this.create_model_pill_html(this.response_model));
         }
 
         // Accumulate full visual display text
@@ -486,8 +484,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
         // Convert markdown to HTML and update the answer
         var html = this.markdown_to_html(this.response_text);
-        // Replace model pill markers with actual HTML pills
-        html = this.replace_model_pill_markers(html);
         $answer.html(html);
 
         // Reset debounce timeout - if no chunk for 10s, show timeout error
@@ -597,7 +593,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Render the updated text with markdown
         var $answer = this.$('.NB-story-ask-ai-answer');
         var html = this.markdown_to_html(this.response_text);
-        html = this.replace_model_pill_markers(html);
         $answer.html(html);
 
         // Don't reset response_text - we want to keep the conversation history
@@ -825,14 +820,13 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             return;
         }
 
-        // Add separator after existing response (which already has its model pill from append_chunk)
+        // Add separator after existing response
         var annotated_response = this.response_text + '\n\n---\n\n';
         this.is_comparison_response = true;
 
         // Update the displayed answer with separator
         var $answer = this.$('.NB-story-ask-ai-answer');
         var html = this.markdown_to_html(annotated_response);
-        html = this.replace_model_pill_markers(html);
         $answer.html(html);
 
         // Reset for new response but keep the annotated text
