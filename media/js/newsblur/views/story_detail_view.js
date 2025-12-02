@@ -1376,17 +1376,19 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             </div>\
                         </div>\
                         <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="Ask a question..." />\
-                        <div class="NB-button NB-modal-submit-green NB-menu-ask-ai-custom-submit NB-disabled">Ask</div>\
-                    </div>\
-                    <div class="NB-menu-ask-ai-model-selector">\
-                        <span class="NB-menu-ask-ai-model-label">Model:</span>\
-                        <select class="NB-menu-ask-ai-model-select">\
-                            <option value="haiku">Claude 4.5 Haiku</option>\
-                            <option value="sonnet">Claude 4.5 Sonnet</option>\
-                            <option value="opus" selected>Claude 4.5 Opus</option>\
-                            <option value="gpt-4.1">GPT 4.1</option>\
-                            <option value="gemini-3">Gemini 3 Pro</option>\
-                        </select>\
+                        <div class="NB-menu-ask-ai-submit-menu NB-disabled" data-model="opus">\
+                            <div class="NB-menu-ask-ai-custom-submit">Ask</div>\
+                            <div class="NB-menu-ask-ai-submit-dropdown-trigger" title="Choose model">\
+                                <span class="NB-dropdown-arrow">▾</span>\
+                            </div>\
+                            <div class="NB-menu-ask-ai-model-dropdown">\
+                                <div class="NB-model-option" data-model="haiku">Claude 4.5 Haiku</div>\
+                                <div class="NB-model-option" data-model="sonnet">Claude 4.5 Sonnet</div>\
+                                <div class="NB-model-option NB-selected" data-model="opus">Claude 4.5 Opus</div>\
+                                <div class="NB-model-option" data-model="gpt-4.1">GPT 4.1</div>\
+                                <div class="NB-model-option" data-model="gemini-3">Gemini 3 Pro</div>\
+                            </div>\
+                        </div>\
                     </div>\
                 </div>\
             </div>\
@@ -1447,21 +1449,47 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // Enable/disable Ask button based on input content
         $menu.find('.NB-menu-ask-ai-custom-input').on('input', _.bind(function (ev) {
             var $input = $(ev.currentTarget);
-            var $submit_button = $menu.find('.NB-menu-ask-ai-custom-submit');
+            var $submit_menu = $menu.find('.NB-menu-ask-ai-submit-menu');
             var has_text = $input.val().trim().length > 0;
 
             if (has_text) {
-                $submit_button.removeClass('NB-disabled');
+                $submit_menu.removeClass('NB-disabled');
             } else {
-                $submit_button.addClass('NB-disabled');
+                $submit_menu.addClass('NB-disabled');
             }
         }, this));
 
         $menu.find('.NB-menu-ask-ai-option, .NB-menu-ask-ai-segment').on('click', _.bind(function (ev) {
             var question_id = $(ev.currentTarget).data('question-id');
-            var model = $menu.find('.NB-menu-ask-ai-model-select').val();
+            var model = $menu.find('.NB-menu-ask-ai-submit-menu').data('model');
             this.handle_ask_ai_question(question_id, model);
             this.hide_ask_ai_menu();
+        }, this));
+
+        // Model dropdown toggle
+        $menu.find('.NB-menu-ask-ai-submit-dropdown-trigger').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            $menu.find('.NB-menu-ask-ai-submit-menu').toggleClass('NB-dropdown-open');
+        }, this));
+
+        // Model selection in dropdown
+        $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            var $option = $(ev.currentTarget);
+            var model = $option.data('model');
+            var $submit_menu = $menu.find('.NB-menu-ask-ai-submit-menu');
+
+            // Update selected state
+            $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option').removeClass('NB-selected');
+            $option.addClass('NB-selected');
+
+            // Store selected model
+            $submit_menu.data('model', model);
+
+            // Close dropdown
+            $submit_menu.removeClass('NB-dropdown-open');
         }, this));
 
         // Custom question input handlers
@@ -1517,7 +1545,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     submit_custom_question_from_menu: function ($menu) {
         var custom_question = $menu.find('.NB-menu-ask-ai-custom-input').val();
         var transcription_error = $menu.data('transcription_error');
-        var model = $menu.find('.NB-menu-ask-ai-model-select').val();
+        var model = $menu.find('.NB-menu-ask-ai-submit-menu').data('model');
 
         // Allow opening with empty question if there's a transcription error to display
         if ((!custom_question || !custom_question.trim()) && !transcription_error) {

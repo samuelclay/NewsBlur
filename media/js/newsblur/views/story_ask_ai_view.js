@@ -45,6 +45,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.original_custom_question = this.custom_question;  // Store for re-ask
         this.response_model = this.model;  // Track which model produced current response
         this.is_comparison_response = false;  // Track if comparing multiple model responses
+        this.section_models = [];  // Track models for each answer section (for pills)
 
         // If there's a transcription error, don't send a question - we'll display the error instead
         if (this.transcription_error) {
@@ -136,7 +137,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                         <div class="NB-icon"></div>\
                     </div>\
                     <div class="NB-story-ask-ai-question-text"><%= question_text %></div>\
-                    <div class="NB-story-ask-ai-model-pill-container"></div>\
                 </div>\
             </div>\
             <div class="NB-story-ask-ai-response">\
@@ -453,7 +453,43 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             result.push('</' + list_type + '>');
         }
 
-        return result.join('\n');
+        var html = result.join('\n');
+
+        // Inject model pills at section boundaries (hidden by default, shown when model differs from previous)
+        if (this.section_models && this.section_models.length > 0) {
+            var self = this;
+            var section_index = 0;
+
+            // Check if any models differ - if so, we'll show pills where changes occur
+            var has_any_model_change = false;
+            for (var i = 1; i < this.section_models.length; i++) {
+                if (this.section_models[i] !== this.section_models[i - 1]) {
+                    has_any_model_change = true;
+                    break;
+                }
+            }
+
+            // Add pill for first section at the beginning (show if any model change exists)
+            if (this.section_models[0]) {
+                html = this.create_model_pill_html(this.section_models[0], has_any_model_change) + '\n' + html;
+                section_index = 1;
+            }
+
+            // Add pills after each <hr> for subsequent sections (only show if different from previous)
+            html = html.replace(/<hr>/g, function () {
+                var pill_html = '';
+                if (self.section_models[section_index]) {
+                    var current_model = self.section_models[section_index];
+                    var prev_model = self.section_models[section_index - 1];
+                    var is_different = current_model !== prev_model;
+                    pill_html = self.create_model_pill_html(current_model, has_any_model_change && is_different);
+                    section_index++;
+                }
+                return '<hr>\n' + pill_html;
+            });
+        }
+
+        return html;
     },
 
     append_chunk: function (chunk) {
@@ -473,8 +509,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             this.$('.NB-story-ask-ai-error').removeClass('NB-active');
             $answer.show();
 
-            // Update model pill in question area
-            this.$('.NB-story-ask-ai-model-pill-container').html(this.create_model_pill_html(this.response_model));
+            // Track this section's model for pill display
+            this.section_models.push(this.response_model);
         }
 
         // Accumulate full visual display text
@@ -791,10 +827,11 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         return providers[model] || 'unknown';
     },
 
-    create_model_pill_html: function (model) {
+    create_model_pill_html: function (model, visible) {
         var name = this.get_model_display_name(model);
         var provider = this.get_model_provider(model);
-        return '<div class="NB-story-ask-ai-model-pill NB-provider-' + provider + '">' + name + '</div>';
+        var visible_class = visible ? ' NB-visible' : '';
+        return '<div class="NB-story-ask-ai-model-pill-wrapper' + visible_class + '"><div class="NB-story-ask-ai-model-pill NB-provider-' + provider + '">' + name + '</div></div>';
     },
 
     replace_model_pill_markers: function (html) {
@@ -860,6 +897,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.conversation_history = [];
         this.streaming_started = false;
         this.is_comparison_response = false;
+        this.section_models = [];  // Reset section models for fresh start
 
         // Clear the answer and show loading
         this.$('.NB-story-ask-ai-answer').hide().empty();
