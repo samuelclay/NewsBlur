@@ -6,12 +6,18 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
     events: {
         "click .NB-story-ask-ai-close": "close_pane",
-        "click .NB-story-ask-ai-followup-submit": "submit_followup_question",
+        "click .NB-story-ask-ai-reask-button": "reask_with_new_model",
+        "click .NB-story-ask-ai-send-button": "submit_followup_question",
+        "click .NB-story-ask-ai-send-dropdown-trigger": "toggle_send_dropdown",
         "click .NB-story-ask-ai-voice-button": "start_voice_recording",
+        "click .NB-story-ask-ai-finish-recording-button": "finish_voice_recording",
+        "click .NB-story-ask-ai-finish-recording-dropdown-trigger": "toggle_finish_recording_dropdown",
         "keypress .NB-story-ask-ai-followup-input": "handle_followup_keypress",
+        "input .NB-story-ask-ai-followup-input": "handle_input_change",
         "click .NB-story-ask-ai-usage-message a": "open_premium_modal",
-        "change .NB-story-ask-ai-model-select": "handle_model_change",
-        "click .NB-story-ask-ai-reask": "reask_with_new_model"
+        "click .NB-reask-dropdown .NB-model-option": "handle_reask_model_click",
+        "click .NB-send-dropdown .NB-model-option": "handle_send_model_click",
+        "click .NB-finish-recording-dropdown .NB-model-option": "handle_finish_recording_model_click"
     },
 
     initialize: function (options) {
@@ -31,13 +37,14 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.inline = options.inline || false;
         this.story_hash = this.story.get('story_hash');
         this.streaming_started = false;
-        this.response_text = '';  // Accumulate response for final formatting
+        this.response_text = '';  // Accumulate full visual display text
+        this.current_response_text = '';  // Track only the current response for conversation history
         this.conversation_history = [];  // Track conversation for follow-ups
         this.active_request_id = null;
         this.original_question_id = this.question_id;  // Store for re-ask
         this.original_custom_question = this.custom_question;  // Store for re-ask
         this.response_model = this.model;  // Track which model produced current response
-        this.comparing_models = false;  // Track if we're comparing responses from different models
+        this.is_comparison_response = false;  // Track if comparing multiple model responses
 
         // If there's a transcription error, don't send a question - we'll display the error instead
         if (this.transcription_error) {
@@ -86,6 +93,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         if (this.response_text) {
             this.response_text += '\n\n**Error:** ' + error_text;
             var html = this.markdown_to_html(this.response_text);
+            html = this.replace_model_pill_markers(html);
             this.$('.NB-story-ask-ai-answer').html(html);
         } else {
             // No existing content - show error in the error div
@@ -109,6 +117,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         if (this.response_text) {
             this.response_text += '\n\n**Error:** ' + error_text;
             var html = this.markdown_to_html(this.response_text);
+            html = this.replace_model_pill_markers(html);
             this.$('.NB-story-ask-ai-answer').html(html);
         } else {
             this.$('.NB-story-ask-ai-error')
@@ -143,21 +152,50 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 <div class="NB-story-ask-ai-usage-message" style="display: none;"></div>\
             </div>\
             <div class="NB-story-ask-ai-followup-wrapper" style="display: none;">\
-                <div class="NB-story-ask-ai-model-row">\
-                    <select class="NB-story-ask-ai-model-select">\
-                        <option value="haiku">Haiku</option>\
-                        <option value="sonnet">Sonnet</option>\
-                        <option value="opus">Opus</option>\
-                        <option value="gpt-4.1">GPT-4.1</option>\
-                    </select>\
-                    <div class="NB-button NB-story-ask-ai-reask">Re-ask</div>\
-                </div>\
                 <div class="NB-story-ask-ai-input-row">\
                     <div class="NB-story-ask-ai-voice-button" title="Record voice question">\
                         <img src="/media/img/icons/nouns/microphone.svg" class="NB-story-ask-ai-voice-icon" />\
                     </div>\
-                    <input type="text" class="NB-story-ask-ai-followup-input" placeholder="Continue the discussion..." />\
-                    <div class="NB-button NB-story-ask-ai-followup-submit">Send</div>\
+                    <input type="text" class="NB-story-ask-ai-followup-input" placeholder="Follow up..." />\
+                    <div class="NB-story-ask-ai-reask-menu">\
+                        <div class="NB-button NB-story-ask-ai-reask-button" title="Re-ask original question">\
+                            <span>Re-ask</span>\
+                            <span class="NB-dropdown-arrow">▾</span>\
+                        </div>\
+                        <div class="NB-story-ask-ai-model-dropdown NB-reask-dropdown">\
+                            <div class="NB-model-option" data-model="haiku">Claude 4.5 Haiku</div>\
+                            <div class="NB-model-option" data-model="sonnet">Claude 4.5 Sonnet</div>\
+                            <div class="NB-model-option" data-model="opus">Claude 4.5 Opus</div>\
+                            <div class="NB-model-option" data-model="gpt-4.1">GPT 4.1</div>\
+                            <div class="NB-model-option" data-model="gemini-3">Gemini 3 Pro</div>\
+                        </div>\
+                    </div>\
+                    <div class="NB-story-ask-ai-send-menu" style="display: none;">\
+                        <div class="NB-button NB-story-ask-ai-send-button">Send</div>\
+                        <div class="NB-story-ask-ai-send-dropdown-trigger" title="Choose model">\
+                            <span class="NB-dropdown-arrow">▾</span>\
+                        </div>\
+                        <div class="NB-story-ask-ai-model-dropdown NB-send-dropdown">\
+                            <div class="NB-model-option" data-model="haiku">Claude 4.5 Haiku</div>\
+                            <div class="NB-model-option" data-model="sonnet">Claude 4.5 Sonnet</div>\
+                            <div class="NB-model-option" data-model="opus">Claude 4.5 Opus</div>\
+                            <div class="NB-model-option" data-model="gpt-4.1">GPT 4.1</div>\
+                            <div class="NB-model-option" data-model="gemini-3">Gemini 3 Pro</div>\
+                        </div>\
+                    </div>\
+                    <div class="NB-story-ask-ai-finish-recording-menu" style="display: none;">\
+                        <div class="NB-button NB-story-ask-ai-finish-recording-button">Finish recording...</div>\
+                        <div class="NB-story-ask-ai-finish-recording-dropdown-trigger" title="Choose model">\
+                            <span class="NB-dropdown-arrow">▾</span>\
+                        </div>\
+                        <div class="NB-story-ask-ai-model-dropdown NB-finish-recording-dropdown">\
+                            <div class="NB-model-option" data-model="haiku">Claude 4.5 Haiku</div>\
+                            <div class="NB-model-option" data-model="sonnet">Claude 4.5 Sonnet</div>\
+                            <div class="NB-model-option" data-model="opus">Claude 4.5 Opus</div>\
+                            <div class="NB-model-option" data-model="gpt-4.1">GPT 4.1</div>\
+                            <div class="NB-model-option" data-model="gemini-3">Gemini 3 Pro</div>\
+                        </div>\
+                    </div>\
                 </div>\
             </div>\
         </div>\
@@ -387,15 +425,15 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 }
                 result.push('<li>' + trimmed.replace(/^\d+\.\s/, '') + '</li>');
             }
-            // Bullet list: - item (but not if it's part of converted markdown)
-            else if (/^[-]\s/.test(trimmed) && trimmed.indexOf('<') === -1) {
+            // Bullet list: - item, * item, or • item (but not if it's part of converted markdown)
+            else if (/^[-*•]\s/.test(trimmed) && trimmed.indexOf('<') === -1) {
                 if (!in_list || list_type !== 'ul') {
                     if (in_list) result.push('</' + list_type + '>');
                     result.push('<ul>');
                     in_list = true;
                     list_type = 'ul';
                 }
-                result.push('<li>' + trimmed.replace(/^[-]\s/, '') + '</li>');
+                result.push('<li>' + trimmed.replace(/^[-*•]\s/, '') + '</li>');
             }
             // Regular line
             else {
@@ -426,6 +464,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         if (!this.streaming_started) {
             // First chunk - clear initial timeout, show answer, hide loading
             this.streaming_started = true;
+            this.current_response_text = '';  // Reset current response for new stream
             if (this.initial_timeout) {
                 clearTimeout(this.initial_timeout);
                 this.initial_timeout = null;
@@ -435,19 +474,20 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             this.$('.NB-story-ask-ai-error').removeClass('NB-active');
             $answer.show();
 
-            // Add model header when comparing models
-            if (this.comparing_models) {
-                var new_model_name = this.get_model_display_name(this.response_model);
-                this.response_text += '**' + new_model_name + ':**\n\n';
-                this.comparing_models = false;  // Only add once
-            }
+            // Add model pill before response (visual only, not in response_text for markdown)
+            // Use a special marker that we'll replace with actual HTML
+            this.response_text += '{{MODEL_PILL:' + this.response_model + '}}\n\n';
         }
 
-        // Accumulate full response text
+        // Accumulate full visual display text
         this.response_text += chunk;
+        // Also track just this response for conversation history
+        this.current_response_text += chunk;
 
         // Convert markdown to HTML and update the answer
         var html = this.markdown_to_html(this.response_text);
+        // Replace model pill markers with actual HTML pills
+        html = this.replace_model_pill_markers(html);
         $answer.html(html);
 
         // Reset debounce timeout - if no chunk for 10s, show timeout error
@@ -468,15 +508,18 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             this.initial_timeout = null;
         }
 
-        // Add assistant's response to conversation history
+        // Add only the current response (not accumulated visual text) to conversation history
         this.conversation_history.push({
             role: 'assistant',
-            content: this.response_text
+            content: this.current_response_text
         });
 
         // Show and re-enable follow-up input
         this.$('.NB-story-ask-ai-followup-wrapper').show();
         this.$('.NB-story-ask-ai-followup-input').prop('disabled', false);
+
+        // Update model dropdown selection
+        this.update_model_dropdown_selection();
     },
 
     show_error: function (error_message) {
@@ -554,6 +597,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Render the updated text with markdown
         var $answer = this.$('.NB-story-ask-ai-answer');
         var html = this.markdown_to_html(this.response_text);
+        html = this.replace_model_pill_markers(html);
         $answer.html(html);
 
         // Don't reset response_text - we want to keep the conversation history
@@ -589,12 +633,32 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                     $voice_button.addClass('NB-recording');
                     $input.attr('placeholder', 'Recording...');
                     $voice_button.attr('title', 'Stop recording');
+                    // Hide Re-ask and Send, show Finish Recording during recording
+                    self.$('.NB-story-ask-ai-reask-menu').hide();
+                    self.$('.NB-story-ask-ai-send-menu').hide();
+                    self.$('.NB-story-ask-ai-finish-recording-menu').show();
                 },
                 on_recording_stop: function () {
                     $voice_button.removeClass('NB-recording');
                     $voice_button.addClass('NB-transcribing');
                     $input.attr('placeholder', 'Transcribing...');
                     $voice_button.attr('title', 'Transcribing audio');
+                    // Hide finish recording menu during transcription
+                    self.$('.NB-story-ask-ai-finish-recording-menu').hide();
+                },
+                on_recording_cancel: function () {
+                    $voice_button.removeClass('NB-recording NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+                    $input.attr('placeholder', 'Follow up...');
+                    // Reset button visibility
+                    self.$('.NB-story-ask-ai-finish-recording-menu').hide();
+                    if (!$input.val().trim()) {
+                        self.$('.NB-story-ask-ai-send-menu').hide();
+                        self.$('.NB-story-ask-ai-reask-menu').show();
+                    } else {
+                        self.$('.NB-story-ask-ai-send-menu').show();
+                        self.$('.NB-story-ask-ai-reask-menu').hide();
+                    }
                 },
                 on_transcription_start: function () {
                     // Already showing transcribing state
@@ -602,7 +666,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 on_transcription_complete: function (text) {
                     $voice_button.removeClass('NB-transcribing');
                     $voice_button.attr('title', 'Record voice question');
-                    $input.attr('placeholder', 'Continue the discussion...');
+                    $input.attr('placeholder', 'Follow up...');
 
                     // Set the transcribed text and submit the question automatically
                     $input.val(text);
@@ -626,8 +690,17 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                         $input.attr('placeholder', 'Quota exceeded');
                     } else {
                         // Show other errors as notifications
-                        $input.attr('placeholder', 'Continue the discussion...');
+                        $input.attr('placeholder', 'Follow up...');
                         NEWSBLUR.reader.show_feed_hidden_story_title_indicator(error, false);
+                    }
+                    // Reset buttons if no text
+                    self.$('.NB-story-ask-ai-finish-recording-menu').hide();
+                    if (!$input.val().trim()) {
+                        self.$('.NB-story-ask-ai-send-menu').hide();
+                        self.$('.NB-story-ask-ai-reask-menu').show();
+                    } else {
+                        self.$('.NB-story-ask-ai-send-menu').show();
+                        self.$('.NB-story-ask-ai-reask-menu').hide();
                     }
                 }
             });
@@ -641,18 +714,100 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         }
     },
 
-    handle_model_change: function (e) {
-        this.model = this.$(e.target).val();
+    handle_input_change: function (e) {
+        var has_text = this.$(e.target).val().trim().length > 0;
+        this.$('.NB-story-ask-ai-send-menu').toggle(has_text);
+        this.$('.NB-story-ask-ai-reask-menu').toggle(!has_text);
+    },
+
+    toggle_send_dropdown: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        var $menu = this.$('.NB-story-ask-ai-send-menu');
+        $menu.toggleClass('NB-dropdown-open');
+
+        // Close on outside click
+        if ($menu.hasClass('NB-dropdown-open')) {
+            var self = this;
+            setTimeout(function () {
+                $(document).one('click', function () {
+                    self.$('.NB-story-ask-ai-send-menu').removeClass('NB-dropdown-open');
+                });
+            }, 0);
+        }
+    },
+
+    handle_reask_model_click: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        var selected_model = this.$(e.target).data('model');
+        this.model = selected_model;
+        this.update_model_dropdown_selection();
+        this.reask_with_new_model();
+    },
+
+    handle_send_model_click: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        var selected_model = this.$(e.target).data('model');
+        this.model = selected_model;
+        this.update_model_dropdown_selection();
+        this.$('.NB-story-ask-ai-send-menu').removeClass('NB-dropdown-open');
+        // User will click Send to actually send
+    },
+
+    update_model_dropdown_selection: function () {
+        var current_model = this.model;
+        this.$('.NB-model-option').each(function () {
+            var $option = $(this);
+            if ($option.data('model') === current_model) {
+                $option.addClass('NB-selected');
+            } else {
+                $option.removeClass('NB-selected');
+            }
+        });
     },
 
     get_model_display_name: function (model) {
         var names = {
-            'haiku': 'Haiku',
-            'sonnet': 'Sonnet',
-            'opus': 'Opus',
-            'gpt-4.1': 'GPT-4.1'
+            'haiku': 'Claude 4.5 Haiku',
+            'sonnet': 'Claude 4.5 Sonnet',
+            'opus': 'Claude 4.5 Opus',
+            'gpt-4.1': 'GPT 4.1',
+            'gemini-3': 'Gemini 3 Pro'
         };
         return names[model] || model;
+    },
+
+    get_model_provider: function (model) {
+        var providers = {
+            'haiku': 'anthropic',
+            'sonnet': 'anthropic',
+            'opus': 'anthropic',
+            'gpt-4.1': 'openai',
+            'gemini-3': 'google'
+        };
+        return providers[model] || 'unknown';
+    },
+
+    create_model_pill_html: function (model) {
+        var name = this.get_model_display_name(model);
+        var provider = this.get_model_provider(model);
+        return '<div class="NB-story-ask-ai-model-pill NB-provider-' + provider + '">' + name + '</div>';
+    },
+
+    replace_model_pill_markers: function (html) {
+        // Replace {{MODEL_PILL:model_name}} markers with actual HTML pills
+        var self = this;
+        return html.replace(/(<p>)?\{\{MODEL_PILL:([^}]+)\}\}(<\/p>)?/g, function (match, p1, model) {
+            return self.create_model_pill_html(model);
+        });
     },
 
     reask_with_new_model: function (e) {
@@ -670,25 +825,23 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             return;
         }
 
-        // Annotate the existing response with the model that produced it
-        var old_model_name = this.get_model_display_name(old_model);
-        var annotated_response = '**' + old_model_name + ':**\n\n' + this.response_text;
+        // Add separator after existing response (which already has its model pill from append_chunk)
+        var annotated_response = this.response_text + '\n\n---\n\n';
+        this.is_comparison_response = true;
 
-        // Add separator for new model response
-        annotated_response += '\n\n---\n\n';
-
-        // Update the displayed answer with annotation
+        // Update the displayed answer with separator
         var $answer = this.$('.NB-story-ask-ai-answer');
         var html = this.markdown_to_html(annotated_response);
+        html = this.replace_model_pill_markers(html);
         $answer.html(html);
 
         // Reset for new response but keep the annotated text
         this.question_id = this.original_question_id;
         this.custom_question = this.original_custom_question;
         this.response_text = annotated_response;
+        this.current_response_text = '';
         this.conversation_history = [];
         this.streaming_started = false;
-        this.comparing_models = true;  // Flag to add new model header on first chunk
 
         // Show loading state but keep answer visible
         this.$('.NB-story-ask-ai-followup-wrapper').hide();
@@ -709,9 +862,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.question_id = this.original_question_id;
         this.custom_question = this.original_custom_question;
         this.response_text = '';
+        this.current_response_text = '';
         this.conversation_history = [];
         this.streaming_started = false;
-        this.comparing_models = false;
+        this.is_comparison_response = false;
 
         // Clear the answer and show loading
         this.$('.NB-story-ask-ai-answer').hide().empty();
@@ -726,6 +880,60 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
         // Send the original question with the new model
         this.send_question(this.custom_question);
+    },
+
+    finish_voice_recording: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        // Stop recording (will trigger transcription)
+        if (this.voice_recorder && this.voice_recorder.is_recording) {
+            this.voice_recorder.stop_recording();
+        }
+    },
+
+    toggle_finish_recording_dropdown: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        var $menu = this.$('.NB-story-ask-ai-finish-recording-menu');
+        $menu.toggleClass('NB-dropdown-open');
+
+        // Close on outside click
+        if ($menu.hasClass('NB-dropdown-open')) {
+            var self = this;
+            setTimeout(function () {
+                $(document).one('click', function () {
+                    self.$('.NB-story-ask-ai-finish-recording-menu').removeClass('NB-dropdown-open');
+                });
+            }, 0);
+        }
+    },
+
+    handle_finish_recording_model_click: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        var selected_model = this.$(e.target).data('model');
+        this.model = selected_model;
+        this.update_model_dropdown_selection();
+        this.$('.NB-story-ask-ai-finish-recording-menu').removeClass('NB-dropdown-open');
+        // User can continue recording or click finish to send with this model
+    },
+
+    is_recording: function () {
+        return this.voice_recorder && this.voice_recorder.is_recording;
+    },
+
+    cancel_recording: function () {
+        if (this.voice_recorder && this.voice_recorder.is_recording) {
+            this.voice_recorder.cancel_recording();
+            return true;
+        }
+        return false;
     }
 
 });
