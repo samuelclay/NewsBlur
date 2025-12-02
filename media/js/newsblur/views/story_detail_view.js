@@ -1381,10 +1381,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-menu-ask-ai-model-selector">\
                         <span class="NB-menu-ask-ai-model-label">Model:</span>\
                         <select class="NB-menu-ask-ai-model-select">\
-                            <option value="haiku">Haiku</option>\
-                            <option value="sonnet">Sonnet</option>\
-                            <option value="opus" selected>Opus</option>\
-                            <option value="gpt-4.1">GPT-4.1</option>\
+                            <option value="haiku">Claude 4.5 Haiku</option>\
+                            <option value="sonnet">Claude 4.5 Sonnet</option>\
+                            <option value="opus" selected>Claude 4.5 Opus</option>\
+                            <option value="gpt-4.1">GPT 4.1</option>\
+                            <option value="gemini-3">Gemini 3 Pro</option>\
                         </select>\
                     </div>\
                 </div>\

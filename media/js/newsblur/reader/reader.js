@@ -7702,6 +7702,20 @@
             $document.bind('keydown', 'esc', function (e) {
                 e.preventDefault();
                 if (NEWSBLUR.assets.preference("keyboard-ignore-esc")) return;
+
+                // Check if any Ask AI view is recording and cancel it
+                var $ask_ai_views = $('.NB-story-ask-ai-inline, .NB-story-ask-ai-pane');
+                var recording_cancelled = false;
+                $ask_ai_views.each(function () {
+                    var view = $(this).data('view');
+                    if (view && view.is_recording && view.is_recording()) {
+                        view.cancel_recording();
+                        recording_cancelled = true;
+                        return false; // break the loop
+                    }
+                });
+                if (recording_cancelled) return;
+
                 if (!_.keys($.modal.impl.d).length &&
                     !NEWSBLUR.ReaderPopover.is_open() &&
                     !self.flags['feed_list_showing_manage_menu']) {

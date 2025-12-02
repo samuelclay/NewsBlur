@@ -4,7 +4,8 @@ NEWSBLUR.VoiceRecorder = function(options) {
         on_transcription_complete: function(text) {},
         on_transcription_error: function(error) {},
         on_recording_start: function() {},
-        on_recording_stop: function() {}
+        on_recording_stop: function() {},
+        on_recording_cancel: function() {}
     };
 
     this.options = _.extend({}, defaults, options);
@@ -90,6 +91,49 @@ NEWSBLUR.VoiceRecorder.prototype = {
     stop_recording: function() {
         if (this.media_recorder && this.is_recording) {
             this.media_recorder.stop();
+        }
+    },
+
+    cancel_recording: function() {
+        // Cancel recording without transcribing
+        if (!this.is_recording) {
+            return;
+        }
+
+        // Remove the onstop handler to prevent transcription
+        if (this.media_recorder) {
+            this.media_recorder.onstop = null;
+        }
+
+        // Stop recording
+        try {
+            if (this.media_recorder && this.is_recording) {
+                this.media_recorder.stop();
+            }
+        } catch (e) {
+            console.error('Error stopping media recorder:', e);
+        }
+
+        // Stop all tracks to release microphone
+        try {
+            if (this.stream) {
+                this.stream.getTracks().forEach(function(track) {
+                    track.stop();
+                });
+                this.stream = null;
+            }
+        } catch (e) {
+            console.error('Error stopping stream tracks:', e);
+        }
+
+        // Reset state
+        this.is_recording = false;
+        this.audio_chunks = [];
+        this.media_recorder = null;
+
+        // Notify that recording was cancelled
+        if (this.options.on_recording_cancel) {
+            this.options.on_recording_cancel();
         }
     },
 

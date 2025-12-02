@@ -2078,18 +2078,28 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-menu-ask-ai-model-selector {
-    background-color: rgba(20, 25, 35, 0.5);
-    border-top-color: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.25) 100%);
+    border-top-color: rgba(255, 255, 255, 0.06);
 }
 
 .NB-dark .NB-menu-ask-ai-model-label {
-    color: #90988B;
+    color: #7A8275;
 }
 
 .NB-dark .NB-menu-ask-ai-model-select {
-    background-color: rgba(30, 35, 48, 0.8);
+    background-color: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);
-    color: #E0E6ED;
+    color: #B8C0B3;
+}
+
+.NB-dark .NB-menu-ask-ai-model-select:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark .NB-menu-ask-ai-model-select:focus {
+    border-color: rgba(74, 144, 226, 0.5);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.15);
 }
 
 /* ======================== */
@@ -2179,6 +2189,31 @@ a.mention, a.mention-group {
     color: #A8D4FF;
 }
 
+/* Model Pills - Dark Mode */
+.NB-dark .NB-story-ask-ai-model-pill.NB-provider-anthropic {
+    background: linear-gradient(135deg, #8B6914 0%, #6B5210 100%);
+    color: #F5DEB3;
+    border: 1px solid #A67C00;
+}
+
+.NB-dark .NB-story-ask-ai-model-pill.NB-provider-openai {
+    background: linear-gradient(135deg, #1A4D44 0%, #0F3830 100%);
+    color: #A8E6CF;
+    border: 1px solid #2D6A5A;
+}
+
+.NB-dark .NB-story-ask-ai-model-pill.NB-provider-google {
+    background: linear-gradient(135deg, #1A3A5C 0%, #0F2840 100%);
+    color: #8AB4F8;
+    border: 1px solid #3D6A9F;
+}
+
+.NB-dark .NB-story-ask-ai-model-pill.NB-provider-unknown {
+    background: linear-gradient(135deg, #424242 0%, #303030 100%);
+    color: #BDBDBD;
+    border: 1px solid #616161;
+}
+
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-answer {
     background-color: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);
@@ -2241,23 +2276,80 @@ a.mention, a.mention-group {
     border-top-color: rgba(255, 255, 255, 0.1);
 }
 
-.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-model-select {
+/* Re-ask button - dark mode */
+.NB-dark .NB-story-ask-ai-reask-button {
+    background-color: transparent;
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #A0A8B0;
+}
+
+.NB-dark .NB-story-ask-ai-reask-button:hover {
     background-color: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #E0E6ED;
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #D0D8E0;
 }
 
-.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-model-select:focus {
-    border-color: rgba(74, 144, 226, 0.6);
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+/* Send split button - dark mode */
+.NB-dark .NB-story-ask-ai-send-button {
+    background-color: #3A7A8A;
+    color: white;
 }
 
-.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-reask {
-    background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+.NB-dark .NB-story-ask-ai-send-button:hover {
+    background-color: #4A8A9A;
 }
 
-.NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-reask:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+.NB-dark .NB-story-ask-ai-send-dropdown-trigger {
+    background-color: #2A6A7A;
+    border-left-color: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.NB-dark .NB-story-ask-ai-send-dropdown-trigger:hover {
+    background-color: #1A5A6A;
+}
+
+/* Finish recording split button - dark mode */
+.NB-dark .NB-story-ask-ai-finish-recording-button {
+    background-color: #A44A37;
+    color: white;
+}
+
+.NB-dark .NB-story-ask-ai-finish-recording-button:hover {
+    background-color: #B45A47;
+}
+
+.NB-dark .NB-story-ask-ai-finish-recording-dropdown-trigger {
+    background-color: #8A3A27;
+    border-left-color: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.NB-dark .NB-story-ask-ai-finish-recording-dropdown-trigger:hover {
+    background-color: #7A2A17;
+}
+
+.NB-dark .NB-story-ask-ai-model-dropdown {
+    background-color: #2A2A2A;
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-model-option {
+    color: #C0C8D0;
+}
+
+.NB-dark .NB-model-option:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-model-option.NB-selected {
+    background-color: rgba(74, 144, 226, 0.2);
+    color: #8AB4F8;
+}
+
+.NB-dark .NB-model-option.NB-selected:hover {
+    background-color: rgba(74, 144, 226, 0.3);
 }
 
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-followup-input {

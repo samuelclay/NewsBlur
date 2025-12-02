@@ -142,7 +142,8 @@ BACKED_BY_AWS = {
 
 OPENAI_API_KEY = "sk-svcacct-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ANTHROPIC_API_KEY = "sk-ant-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-ASK_AI_MODEL = "opus"  # Options: haiku, sonnet, opus, gpt-4.1
+GOOGLE_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+ASK_AI_MODEL = "opus"  # Options: haiku, sonnet, opus, gpt-4.1, gemini-3
 
 # ===========
 # = Logging =
