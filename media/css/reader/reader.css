@@ -11190,7 +11190,7 @@ form.opml_import_form input {
     align-items: stretch;
 }
 
-.NB-story-ask-ai-send-button {
+.NB-story-ask-ai-send-menu .NB-story-ask-ai-send-button {
     padding: 8px 12px;
     font-size: 12px;
     background-color: #4A90A4;
@@ -11199,17 +11199,19 @@ form.opml_import_form input {
     color: white;
     cursor: pointer;
     transition: all 0.15s ease;
+    margin: 0;
+    box-shadow: none;
 }
 
-.NB-story-ask-ai-send-button:hover {
+.NB-story-ask-ai-send-menu .NB-story-ask-ai-send-button:hover {
     background-color: #3A7A8A;
 }
 
-.NB-story-ask-ai-send-dropdown-trigger {
-    padding: 8px 8px;
-    background-color: #3A8090;
+.NB-story-ask-ai-send-menu .NB-story-ask-ai-send-dropdown-trigger {
+    padding: 8px 10px;
+    background-color: #4A90A4;
     border: none;
-    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 0 4px 4px 0;
     color: white;
     cursor: pointer;
@@ -11218,8 +11220,8 @@ form.opml_import_form input {
     transition: all 0.15s ease;
 }
 
-.NB-story-ask-ai-send-dropdown-trigger:hover {
-    background-color: #2A7080;
+.NB-story-ask-ai-send-menu .NB-story-ask-ai-send-dropdown-trigger:hover {
+    background-color: #3A7A8A;
 }
 
 .NB-story-ask-ai-send-dropdown-trigger .NB-dropdown-arrow {
@@ -11247,7 +11249,7 @@ form.opml_import_form input {
     align-items: stretch;
 }
 
-.NB-story-ask-ai-finish-recording-button {
+.NB-story-ask-ai-finish-recording-menu .NB-story-ask-ai-finish-recording-button {
     padding: 8px 12px;
     font-size: 12px;
     background-color: #C45A47;
@@ -11256,17 +11258,19 @@ form.opml_import_form input {
     color: white;
     cursor: pointer;
     transition: all 0.15s ease;
+    margin: 0;
+    box-shadow: none;
 }
 
-.NB-story-ask-ai-finish-recording-button:hover {
+.NB-story-ask-ai-finish-recording-menu .NB-story-ask-ai-finish-recording-button:hover {
     background-color: #A44A37;
 }
 
-.NB-story-ask-ai-finish-recording-dropdown-trigger {
+.NB-story-ask-ai-finish-recording-menu .NB-story-ask-ai-finish-recording-dropdown-trigger {
     padding: 8px 10px;
     background-color: #C45A47;
     border: none;
-    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 0 4px 4px 0;
     color: white;
     cursor: pointer;
@@ -11275,8 +11279,8 @@ form.opml_import_form input {
     transition: all 0.15s ease;
 }
 
-.NB-story-ask-ai-finish-recording-dropdown-trigger:hover {
-    background-color: #944030;
+.NB-story-ask-ai-finish-recording-menu .NB-story-ask-ai-finish-recording-dropdown-trigger:hover {
+    background-color: #A44A37;
 }
 
 .NB-story-ask-ai-finish-recording-dropdown-trigger .NB-dropdown-arrow {
@@ -11911,7 +11915,7 @@ form.opml_import_form input {
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-question {
-    padding: 14px 40px 14px 16px;
+    padding: 14px 16px;
     background-color: rgba(255, 255, 255, 0.85);
     border: 2px solid #D4E0F7;
     border-radius: 4px;
@@ -11981,6 +11985,20 @@ form.opml_import_form input {
     color: #2C3E50;
     font-weight: 500;
     font-style: italic;
+    padding-right: 90px;
+}
+
+/* Model pill in question area */
+.NB-story-ask-ai-model-pill-container {
+    position: absolute;
+    top: 10px;
+    right: 40px;
+}
+
+.NB-story-ask-ai-model-pill-container .NB-story-ask-ai-model-pill {
+    margin-bottom: 0;
+    font-size: 10px;
+    padding: 3px 8px;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-custom-input-wrapper {

@@ -2290,43 +2290,47 @@ a.mention, a.mention-group {
 }
 
 /* Send split button - dark mode */
-.NB-dark .NB-story-ask-ai-send-button {
+.NB-dark .NB-story-ask-ai-send-menu .NB-story-ask-ai-send-button {
     background-color: #3A7A8A;
     color: white;
+    border: none;
+    box-shadow: none;
 }
 
-.NB-dark .NB-story-ask-ai-send-button:hover {
+.NB-dark .NB-story-ask-ai-send-menu .NB-story-ask-ai-send-button:hover {
     background-color: #4A8A9A;
 }
 
-.NB-dark .NB-story-ask-ai-send-dropdown-trigger {
-    background-color: #2A6A7A;
-    border-left-color: rgba(255, 255, 255, 0.15);
+.NB-dark .NB-story-ask-ai-send-menu .NB-story-ask-ai-send-dropdown-trigger {
+    background-color: #3A7A8A;
+    border-left-color: rgba(255, 255, 255, 0.2);
     color: white;
 }
 
-.NB-dark .NB-story-ask-ai-send-dropdown-trigger:hover {
-    background-color: #1A5A6A;
+.NB-dark .NB-story-ask-ai-send-menu .NB-story-ask-ai-send-dropdown-trigger:hover {
+    background-color: #4A8A9A;
 }
 
 /* Finish recording split button - dark mode */
-.NB-dark .NB-story-ask-ai-finish-recording-button {
+.NB-dark .NB-story-ask-ai-finish-recording-menu .NB-story-ask-ai-finish-recording-button {
     background-color: #A44A37;
     color: white;
+    border: none;
+    box-shadow: none;
 }
 
-.NB-dark .NB-story-ask-ai-finish-recording-button:hover {
+.NB-dark .NB-story-ask-ai-finish-recording-menu .NB-story-ask-ai-finish-recording-button:hover {
     background-color: #B45A47;
 }
 
-.NB-dark .NB-story-ask-ai-finish-recording-dropdown-trigger {
-    background-color: #8A3A27;
-    border-left-color: rgba(255, 255, 255, 0.15);
+.NB-dark .NB-story-ask-ai-finish-recording-menu .NB-story-ask-ai-finish-recording-dropdown-trigger {
+    background-color: #A44A37;
+    border-left-color: rgba(255, 255, 255, 0.2);
     color: white;
 }
 
-.NB-dark .NB-story-ask-ai-finish-recording-dropdown-trigger:hover {
-    background-color: #7A2A17;
+.NB-dark .NB-story-ask-ai-finish-recording-menu .NB-story-ask-ai-finish-recording-dropdown-trigger:hover {
+    background-color: #B45A47;
 }
 
 .NB-dark .NB-story-ask-ai-model-dropdown {
