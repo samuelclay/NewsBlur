@@ -2077,29 +2077,34 @@ a.mention, a.mention-group {
     filter: grayscale(0%) brightness(1.1);
 }
 
-.NB-dark .NB-menu-ask-ai-model-selector {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.25) 100%);
-    border-top-color: rgba(255, 255, 255, 0.06);
+/* Ask split button - dark mode */
+.NB-dark .NB-menu-ask-ai-submit-menu .NB-menu-ask-ai-custom-submit {
+    background-color: #5A9452;
 }
 
-.NB-dark .NB-menu-ask-ai-model-label {
-    color: #7A8275;
+.NB-dark .NB-menu-ask-ai-submit-menu .NB-menu-ask-ai-custom-submit:hover {
+    background-color: #6BA562;
 }
 
-.NB-dark .NB-menu-ask-ai-model-select {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #B8C0B3;
+.NB-dark .NB-menu-ask-ai-submit-menu .NB-menu-ask-ai-submit-dropdown-trigger {
+    background-color: #5A9452;
 }
 
-.NB-dark .NB-menu-ask-ai-model-select:hover {
-    background-color: rgba(255, 255, 255, 0.08);
+.NB-dark .NB-menu-ask-ai-submit-menu .NB-menu-ask-ai-submit-dropdown-trigger:hover {
+    background-color: #6BA562;
+}
+
+.NB-dark .NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-custom-submit,
+.NB-dark .NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-submit-dropdown-trigger {
+    background-color: #4A4A4A;
+    cursor: default;
+    pointer-events: none;
+}
+
+.NB-dark .NB-menu-ask-ai-submit-menu .NB-menu-ask-ai-model-dropdown {
+    background-color: #2A2A2A;
     border-color: rgba(255, 255, 255, 0.15);
-}
-
-.NB-dark .NB-menu-ask-ai-model-select:focus {
-    border-color: rgba(74, 144, 226, 0.5);
-    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 /* ======================== */
