@@ -67,7 +67,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.$el.data('view', this);
 
         // Set the model dropdown to the current model
-        this.$('.NB-story-ask-ai-model-select').val(this.model);
+        this.update_model_dropdown_selection();
 
         // If there's a transcription error, display it instead of sending a question
         if (this.transcription_error) {
@@ -339,7 +339,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
         // Show followup wrapper so user can change model and re-ask
         this.$('.NB-story-ask-ai-followup-wrapper').show();
-        this.$('.NB-story-ask-ai-model-select').val(this.model);
+        this.update_model_dropdown_selection();
 
         if (this.initial_timeout) {
             clearTimeout(this.initial_timeout);
@@ -416,8 +416,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 }
                 result.push('<li>' + trimmed.replace(/^\d+\.\s/, '') + '</li>');
             }
-            // Bullet list: - item, * item, or • item (but not if it's part of converted markdown)
-            else if (/^[-*•]\s/.test(trimmed) && trimmed.indexOf('<') === -1) {
+            // Bullet list: - item, * item, or • item
+            else if (/^[-*•]\s/.test(trimmed)) {
                 if (!in_list || list_type !== 'ul') {
                     if (in_list) result.push('</' + list_type + '>');
                     result.push('<ul>');
