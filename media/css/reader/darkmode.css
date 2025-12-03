@@ -2095,10 +2095,12 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-custom-submit {
-    background-color: #4A4A4A;
+    background-color: #4A7A44;
+    color: rgba(255, 255, 255, 0.5);
     cursor: default;
     pointer-events: none;
 }
+
 
 .NB-dark .NB-menu-ask-ai-submit-menu .NB-menu-ask-ai-model-dropdown {
     background-color: #2A2A2A;

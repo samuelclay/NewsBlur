@@ -94,10 +94,10 @@ class GeminiProvider(LLMProvider):
     """Google Gemini provider implementation."""
 
     def is_configured(self) -> bool:
-        return bool(getattr(settings, "GOOGLE_API_KEY", None))
+        return bool(getattr(settings, "GOOGLE_GEMINI_API_KEY", None))
 
     def stream_response(self, messages: list, model_id: str) -> Generator[str, None, None]:
-        client = genai.Client(api_key=settings.GOOGLE_API_KEY)
+        client = genai.Client(api_key=settings.GOOGLE_GEMINI_API_KEY)
 
         # Extract system message for config
         system_msg = next((m["content"] for m in messages if m["role"] == "system"), None)
