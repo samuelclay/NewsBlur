@@ -1,5 +1,6 @@
 amqp==2.6.1
 appdirs==1.4.4
+anthropic==0.75.0
 asgiref==3.3.4
 attrs==21.1.0
 beautifulsoup4==4.9.3
