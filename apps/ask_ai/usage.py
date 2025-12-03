@@ -7,7 +7,7 @@ from .models import MAITranscriptionUsage, MAskAIUsage
 
 class AskAIUsageTracker:
     DAILY_LIMIT_PREMIUM = 3
-    DAILY_LIMIT_ARCHIVE = 50
+    DAILY_LIMIT_ARCHIVE = 100
     WEEKLY_LIMIT_FREE = 3
 
     def __init__(self, user):
@@ -71,7 +71,7 @@ class AskAIUsageTracker:
             if self.profile.is_archive or self.profile.is_pro:
                 show_message = remaining <= 3
             else:
-                upgrade_message = "\n\nUpgrade to Premium Archive for 50 requests per day."
+                upgrade_message = "\n\nUpgrade to Premium Archive for 100 requests per day."
 
             if not show_message:
                 return None
@@ -283,7 +283,7 @@ class AskAIUsageTracker:
         return (
             f"You've reached your daily limit of {limit} Ask AI requests. "
             f"Your limit resets at midnight tonight, in {time_remaining}.\n\n"
-            "Upgrade to Premium Archive for 50 requests per day."
+            "Upgrade to Premium Archive for 100 requests per day."
         )
 
 
@@ -293,9 +293,9 @@ class TranscriptionUsageTracker:
     These higher quotas prevent abuse while allowing legitimate voice usage.
     """
 
-    DAILY_LIMIT_PREMIUM = 9  # 3x Ask AI limit (3)
-    DAILY_LIMIT_ARCHIVE = 150  # 3x Ask AI limit (50)
-    WEEKLY_LIMIT_FREE = 9  # 3x Ask AI limit (3)
+    DAILY_LIMIT_PREMIUM = 13  # Ask AI limit + 10
+    DAILY_LIMIT_ARCHIVE = 110  # Ask AI limit + 10
+    WEEKLY_LIMIT_FREE = 13  # Ask AI limit + 10
 
     def __init__(self, user):
         self.user = user
