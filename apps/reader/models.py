@@ -1,4 +1,5 @@
 import datetime
+import heapq
 import re
 import time
 from operator import itemgetter
@@ -311,7 +312,7 @@ class UserSubscription(models.Model):
             return story_hashes
 
         chunk_count = 0
-        chunk_size = 1000
+        chunk_size = 100  # Keep chunks small to reduce Redis blocking time per ZUNIONSTORE
         if len(unread_ranked_stories_keys) < chunk_size:
             r.zunionstore(store_stories_key, unread_ranked_stories_keys)
         else:
@@ -404,6 +405,7 @@ class UserSubscription(models.Model):
         cache_prefix="",
         date_filter_start=None,
         date_filter_end=None,
+        use_lazy_merge=False,
     ):
         rt = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         across_all_feeds = False
@@ -439,37 +441,124 @@ class UserSubscription(models.Model):
             rt.delete(ranked_stories_keys)
             rt.delete(unread_ranked_stories_keys)
 
-        cls.story_hashes(
-            user_id,
-            feed_ids=feed_ids,
-            read_filter=read_filter,
-            order=order,
-            include_timestamps=False,
-            usersubs=usersubs,
-            cutoff_date=cutoff_date,
-            across_all_feeds=across_all_feeds,
-            store_stories_key=ranked_stories_keys,
-            date_filter_start=date_filter_start,
-            date_filter_end=date_filter_end,
-        )
-        story_hashes = range_func(ranked_stories_keys, offset, offset + limit)
+        def lazy_merge_story_hashes(target_read_filter, target_offset, target_limit):
+            per_feed_chunk = 25
+            per_feed_offsets = {feed_id: per_feed_chunk for feed_id in feed_ids}
+            per_feed_indices = {feed_id: 0 for feed_id in feed_ids}
 
-        if read_filter == "unread":
-            unread_feed_story_hashes = story_hashes
-            rt.zunionstore(unread_ranked_stories_keys, [ranked_stories_keys])
+            per_feed_batches = cls.story_hashes(
+                user_id,
+                feed_ids=feed_ids,
+                read_filter=target_read_filter,
+                order=order,
+                include_timestamps=True,
+                usersubs=usersubs,
+                cutoff_date=cutoff_date,
+                across_all_feeds=across_all_feeds,
+                store_stories_key=None,
+                group_by_feed=True,
+                offset=0,
+                limit=per_feed_chunk,
+                date_filter_start=date_filter_start,
+                date_filter_end=date_filter_end,
+            )
+
+            per_feed_has_more = {
+                feed_id: len(per_feed_batches.get(feed_id, [])) == per_feed_chunk for feed_id in feed_ids
+            }
+            per_feed_buffers = {feed_id: per_feed_batches.get(feed_id, []) for feed_id in feed_ids}
+
+            heap = []
+            score_transform = (lambda score: -score) if order == "newest" else (lambda score: score)
+
+            def push_next_from_feed(feed_id):
+                buffer = per_feed_buffers.get(feed_id, [])
+                idx = per_feed_indices.get(feed_id, 0)
+
+                # Refill buffer when exhausted and more stories might exist for this feed
+                while idx >= len(buffer) and per_feed_has_more.get(feed_id):
+                    next_chunk = cls.story_hashes(
+                        user_id,
+                        feed_ids=[feed_id],
+                        read_filter=target_read_filter,
+                        order=order,
+                        include_timestamps=True,
+                        usersubs=usersubs,
+                        cutoff_date=cutoff_date,
+                        across_all_feeds=across_all_feeds,
+                        store_stories_key=None,
+                        group_by_feed=True,
+                        offset=per_feed_offsets[feed_id],
+                        limit=per_feed_chunk,
+                        date_filter_start=date_filter_start,
+                        date_filter_end=date_filter_end,
+                    )
+                    buffer = next_chunk.get(feed_id, [])
+                    per_feed_buffers[feed_id] = buffer
+                    per_feed_indices[feed_id] = 0
+                    per_feed_offsets[feed_id] += per_feed_chunk
+                    per_feed_has_more[feed_id] = len(buffer) == per_feed_chunk
+                    idx = per_feed_indices[feed_id]
+
+                if idx < len(buffer):
+                    story_hash, score = buffer[idx]
+                    per_feed_indices[feed_id] = idx + 1
+                    heapq.heappush(heap, (score_transform(score), feed_id, story_hash))
+
+            for feed_id in feed_ids:
+                push_next_from_feed(feed_id)
+
+            merged_story_hashes = []
+            total_seen = 0
+            while heap and len(merged_story_hashes) < target_offset + target_limit:
+                _score, feed_id, story_hash = heapq.heappop(heap)
+                if total_seen >= target_offset:
+                    merged_story_hashes.append(story_hash)
+                total_seen += 1
+                push_next_from_feed(feed_id)
+
+            return merged_story_hashes
+
+        # Avoid large ZUNIONSTORE operations by lazily merging per-feed chunks in Python
+        skip_cache = use_lazy_merge and len(feed_ids) > 50
+        if skip_cache:
+            story_hashes = lazy_merge_story_hashes(read_filter, offset, limit)
         else:
             cls.story_hashes(
                 user_id,
                 feed_ids=feed_ids,
-                read_filter="unread",
+                read_filter=read_filter,
                 order=order,
-                include_timestamps=True,
+                include_timestamps=False,
+                usersubs=usersubs,
                 cutoff_date=cutoff_date,
-                store_stories_key=unread_ranked_stories_keys,
+                across_all_feeds=across_all_feeds,
+                store_stories_key=ranked_stories_keys,
                 date_filter_start=date_filter_start,
                 date_filter_end=date_filter_end,
             )
-            unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, offset + limit)
+            story_hashes = range_func(ranked_stories_keys, offset, offset + limit)
+
+        if read_filter == "unread":
+            unread_feed_story_hashes = story_hashes
+            if not skip_cache:
+                rt.zunionstore(unread_ranked_stories_keys, [ranked_stories_keys])
+        else:
+            if skip_cache:
+                unread_feed_story_hashes = lazy_merge_story_hashes("unread", offset, limit)
+            else:
+                cls.story_hashes(
+                    user_id,
+                    feed_ids=feed_ids,
+                    read_filter="unread",
+                    order=order,
+                    include_timestamps=True,
+                    cutoff_date=cutoff_date,
+                    store_stories_key=unread_ranked_stories_keys,
+                    date_filter_start=date_filter_start,
+                    date_filter_end=date_filter_end,
+                )
+                unread_feed_story_hashes = range_func(unread_ranked_stories_keys, offset, offset + limit)
 
         rt.expire(ranked_stories_keys, 60 * 60)
         rt.expire(unread_ranked_stories_keys, 60 * 60)
