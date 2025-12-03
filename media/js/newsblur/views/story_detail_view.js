@@ -1402,6 +1402,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         $menu.data('story_id', this.model.id);
         $menu.data('story_view', this);
+
+        // Set model from preference (default to opus)
+        var saved_model = NEWSBLUR.assets.preference('ask_ai_model') || 'opus';
+        var $submit_menu = $menu.find('.NB-menu-ask-ai-submit-menu');
+        $submit_menu.data('model', saved_model);
+        $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option').removeClass('NB-selected');
+        $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option[data-model="' + saved_model + '"]').addClass('NB-selected');
+
         $('body').append($menu);
 
         var button_offset = $button.offset();
@@ -1485,8 +1493,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option').removeClass('NB-selected');
             $option.addClass('NB-selected');
 
-            // Store selected model
+            // Store selected model and save preference
             $submit_menu.data('model', model);
+            NEWSBLUR.assets.preference('ask_ai_model', model);
 
             // Close dropdown
             $submit_menu.removeClass('NB-dropdown-open');
