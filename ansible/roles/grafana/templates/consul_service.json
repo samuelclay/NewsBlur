@@ -1,6 +1,6 @@
 {
     "service": {
-        "name": "{% if inventory_hostname == 'db-metrics' %}grafana{% else %}grafana-staging{% endif %}",
+        "name": "{% if inventory_hostname == 'hdb-metrics' %}grafana{% else %}grafana-staging{% endif %}",
         "id": "{{ inventory_hostname }}-grafana",
         "tags": [
             "db"
