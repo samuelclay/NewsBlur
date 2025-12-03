@@ -6,7 +6,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
     events: {
         "click .NB-story-ask-ai-close": "close_pane",
-        "click .NB-story-ask-ai-reask-button": "reask_with_new_model",
+        "click .NB-story-ask-ai-reask-button": "toggle_reask_dropdown",
         "click .NB-story-ask-ai-send-button": "submit_followup_question",
         "click .NB-story-ask-ai-send-dropdown-trigger": "toggle_send_dropdown",
         "click .NB-story-ask-ai-voice-button": "start_voice_recording",
@@ -72,7 +72,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // If there's a transcription error, display it instead of sending a question
         if (this.transcription_error) {
             this.$el.removeClass('NB-thinking');
-            this.$('.NB-story-ask-ai-loading').hide();
             this.show_usage_message(this.transcription_error);
         } else if (this.inline) {
             // Add thinking class and set up initial timeout (15s to wait for first response)
@@ -86,7 +85,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     handle_initial_timeout: function () {
         // No response received within 15 seconds
         this.$el.removeClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
 
         var error_text = 'Request timed out. The AI service took too long to respond. Please try again.';
 
@@ -109,7 +107,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     handle_streaming_timeout: function () {
         // No chunk received for 10 seconds during streaming
         this.$el.removeClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
 
         var error_text = 'Stream interrupted. No response received for 10 seconds.';
 
@@ -140,10 +137,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 </div>\
             </div>\
             <div class="NB-story-ask-ai-response">\
-                <div class="NB-story-ask-ai-loading">\
-                    <div class="NB-spinner"></div>\
-                    <div class="NB-loading-text">Thinking...</div>\
-                </div>\
                 <div class="NB-story-ask-ai-error">\
                     <strong>Request timed out.</strong> The AI service took too long to respond. Please try again.\
                 </div>\
@@ -312,7 +305,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
     handle_response_error: function (error) {
         this.$el.removeClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
 
         // Extract error message from various error formats
         var error_message = error;
@@ -505,7 +497,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 this.initial_timeout = null;
             }
             this.$el.removeClass('NB-thinking');
-            this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
             this.$('.NB-story-ask-ai-error').removeClass('NB-active');
             $answer.show();
 
@@ -557,7 +548,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     show_error: function (error_message) {
         // Show error, clear all timeouts, hide usage message
         this.$el.removeClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').hide().removeClass('NB-followup');
         this.$('.NB-story-ask-ai-error').text(error_message).addClass('NB-active');
         this.$('.NB-story-ask-ai-usage-message').hide();
         if (this.initial_timeout) {
@@ -634,11 +624,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Don't reset response_text - we want to keep the conversation history
         this.streaming_started = false;
 
-        // Hide follow-up input, show loading (without "Thinking..." text for follow-ups)
+        // Hide follow-up input while processing
         this.$('.NB-story-ask-ai-followup-wrapper').hide();
         this.$('.NB-story-ask-ai-followup-input').val('').prop('disabled', true);
         this.$el.addClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').show().addClass('NB-followup');
 
         // Set up initial timeout
         this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
@@ -770,13 +759,42 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         }
     },
 
+    toggle_reask_dropdown: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        var $menu = this.$('.NB-story-ask-ai-reask-menu');
+        $menu.toggleClass('NB-dropdown-open');
+
+        // Close on outside click
+        if ($menu.hasClass('NB-dropdown-open')) {
+            var self = this;
+            setTimeout(function () {
+                $(document).one('click', function () {
+                    self.$('.NB-story-ask-ai-reask-menu').removeClass('NB-dropdown-open');
+                });
+            }, 0);
+        }
+    },
+
     handle_reask_model_click: function (e) {
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
         var selected_model = this.$(e.target).data('model');
+
+        // Close dropdown
+        this.$('.NB-story-ask-ai-reask-menu').removeClass('NB-dropdown-open');
+
+        // Only re-ask if model is different from current response
+        if (selected_model === this.response_model) {
+            return;
+        }
+
         this.model = selected_model;
+        NEWSBLUR.assets.preference('ask_ai_model', selected_model);
         this.update_model_dropdown_selection();
         this.reask_with_new_model();
     },
@@ -788,6 +806,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         }
         var selected_model = this.$(e.target).data('model');
         this.model = selected_model;
+        NEWSBLUR.assets.preference('ask_ai_model', selected_model);
         this.update_model_dropdown_selection();
         this.$('.NB-story-ask-ai-send-menu').removeClass('NB-dropdown-open');
         // User will click Send to actually send
@@ -848,23 +867,18 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             e.stopPropagation();
         }
 
-        var old_model = this.response_model;
-        var new_model = this.model;
-
-        // If same model, just re-run without annotation
-        if (old_model === new_model || !this.response_text) {
-            this._do_reask();
-            return;
+        // Add separator after existing response (if any)
+        var annotated_response = this.response_text ? this.response_text + '\n\n---\n\n' : '';
+        if (this.response_text) {
+            this.is_comparison_response = true;
         }
-
-        // Add separator after existing response
-        var annotated_response = this.response_text + '\n\n---\n\n';
-        this.is_comparison_response = true;
 
         // Update the displayed answer with separator
         var $answer = this.$('.NB-story-ask-ai-answer');
-        var html = this.markdown_to_html(annotated_response);
-        $answer.html(html);
+        if (annotated_response) {
+            var html = this.markdown_to_html(annotated_response);
+            $answer.html(html);
+        }
 
         // Reset for new response but keep the annotated text
         this.question_id = this.original_question_id;
@@ -874,38 +888,11 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.conversation_history = [];
         this.streaming_started = false;
 
-        // Show loading state but keep answer visible
+        // Keep answer visible while re-asking
         this.$('.NB-story-ask-ai-followup-wrapper').hide();
         this.$('.NB-story-ask-ai-error').removeClass('NB-active');
         this.$('.NB-story-ask-ai-usage-message').hide();
         this.$el.addClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').show().addClass('NB-followup');
-
-        // Set up initial timeout
-        this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
-
-        // Send the original question with the new model
-        this.send_question(this.custom_question);
-    },
-
-    _do_reask: function () {
-        // Simple re-ask without annotation (same model or no existing response)
-        this.question_id = this.original_question_id;
-        this.custom_question = this.original_custom_question;
-        this.response_text = '';
-        this.current_response_text = '';
-        this.conversation_history = [];
-        this.streaming_started = false;
-        this.is_comparison_response = false;
-        this.section_models = [];  // Reset section models for fresh start
-
-        // Clear the answer and show loading
-        this.$('.NB-story-ask-ai-answer').hide().empty();
-        this.$('.NB-story-ask-ai-followup-wrapper').hide();
-        this.$('.NB-story-ask-ai-error').removeClass('NB-active');
-        this.$('.NB-story-ask-ai-usage-message').hide();
-        this.$el.addClass('NB-thinking');
-        this.$('.NB-story-ask-ai-loading').show().removeClass('NB-followup');
 
         // Set up initial timeout
         this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
@@ -951,6 +938,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         }
         var selected_model = this.$(e.target).data('model');
         this.model = selected_model;
+        NEWSBLUR.assets.preference('ask_ai_model', selected_model);
         this.update_model_dropdown_selection();
         this.$('.NB-story-ask-ai-finish-recording-menu').removeClass('NB-dropdown-open');
         // User can continue recording or click finish to send with this model

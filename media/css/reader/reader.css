@@ -10940,16 +10940,14 @@ form.opml_import_form input {
     opacity: 0.9;
 }
 
-/* Disabled state */
-.NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-custom-submit,
-.NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-submit-dropdown-trigger {
+/* Disabled state - only disable the Ask button, not the model dropdown trigger */
+.NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-custom-submit {
     background-color: #B0B2AC;
     cursor: default;
     pointer-events: none;
 }
 
-.NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-custom-submit:hover,
-.NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-submit-dropdown-trigger:hover {
+.NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-custom-submit:hover {
     background-color: #B0B2AC;
 }
 
@@ -12245,7 +12243,7 @@ form.opml_import_form input {
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-voice-button {
-    padding: 10px;
+    padding: 9px 10px;
     border-radius: 6px;
 }
 
@@ -12255,12 +12253,12 @@ form.opml_import_form input {
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-send-menu .NB-story-ask-ai-send-button {
-    padding: 11px 12px;
+    padding: 8px 12px;
     border-radius: 6px 0 0 6px;
 }
 
 .NB-story-ask-ai-inline .NB-story-ask-ai-send-menu .NB-story-ask-ai-send-dropdown-trigger {
-    padding: 11px 10px;
+    padding: 8px 10px;
     border-radius: 0 6px 6px 0;
 }
 

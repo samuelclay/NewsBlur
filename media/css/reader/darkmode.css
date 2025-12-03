@@ -2094,8 +2094,7 @@ a.mention, a.mention-group {
     background-color: #6BA562;
 }
 
-.NB-dark .NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-custom-submit,
-.NB-dark .NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-submit-dropdown-trigger {
+.NB-dark .NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-custom-submit {
     background-color: #4A4A4A;
     cursor: default;
     pointer-events: none;
