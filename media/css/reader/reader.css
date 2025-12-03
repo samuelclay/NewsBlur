@@ -10940,16 +10940,18 @@ form.opml_import_form input {
     opacity: 0.9;
 }
 
-/* Disabled state - only disable the Ask button, not the model dropdown trigger */
+/* Disabled state - faded green to match active state but look inactive */
 .NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-custom-submit {
-    background-color: #B0B2AC;
+    background-color: #9DBF96;
+    color: rgba(255, 255, 255, 0.6);
     cursor: default;
     pointer-events: none;
 }
 
 .NB-menu-ask-ai-submit-menu.NB-disabled .NB-menu-ask-ai-custom-submit:hover {
-    background-color: #B0B2AC;
+    background-color: #9DBF96;
 }
+
 
 /* Model dropdown */
 .NB-menu-ask-ai-submit-menu .NB-menu-ask-ai-model-dropdown {
