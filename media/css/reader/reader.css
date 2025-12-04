@@ -10963,7 +10963,7 @@ form.opml_import_form input {
     border: 1px solid #D0D2CC;
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    min-width: 160px;
+    min-width: 230px;
     max-height: 240px;
     overflow-y: auto;
     opacity: 0;
@@ -11696,6 +11696,84 @@ form.opml_import_form input {
     border: 1px solid #9E9E9E;
 }
 
+/* Pulsating border animation for loading state */
+@keyframes pulse-border {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(100, 150, 200, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(100, 150, 200, 0.2);
+    }
+}
+
+.NB-story-ask-ai-model-pill.NB-loading {
+    animation: pulse-border 1.5s ease-in-out infinite;
+}
+
+.NB-story-ask-ai-model-pill.NB-loading.NB-provider-anthropic {
+    animation: pulse-border-anthropic 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-border-anthropic {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(212, 165, 116, 0.6);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(212, 165, 116, 0.3);
+    }
+}
+
+.NB-story-ask-ai-model-pill.NB-loading.NB-provider-openai {
+    animation: pulse-border-openai 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-border-openai {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(116, 170, 156, 0.6);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(116, 170, 156, 0.3);
+    }
+}
+
+.NB-story-ask-ai-model-pill.NB-loading.NB-provider-google {
+    animation: pulse-border-google 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-border-google {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(138, 180, 248, 0.6);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(138, 180, 248, 0.3);
+    }
+}
+
+.NB-story-ask-ai-model-pill.NB-loading.NB-provider-xai {
+    animation: pulse-border-xai 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-border-xai {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(100, 100, 100, 0.6);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(100, 100, 100, 0.3);
+    }
+}
+
+/* Error state for model pill */
+.NB-story-ask-ai-model-pill.NB-error {
+    animation: none;
+    border-color: #D32F2F !important;
+    box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.3);
+}
+
 /* ======================== */
 /* = Ask AI Inline Styles = */
 /* ======================== */
@@ -12091,6 +12169,7 @@ form.opml_import_form input {
     max-height: 0;
     opacity: 0;
     margin-bottom: 0;
+    padding: 4px;
     transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-bottom 0.3s ease-out;
 }
 
