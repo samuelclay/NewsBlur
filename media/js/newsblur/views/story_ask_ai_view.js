@@ -84,21 +84,27 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     },
 
     show_loading_pill: function () {
-        var provider = this.get_model_provider(this.model);
-        var provider_name = this.get_provider_display_name(provider);
-        var model_name = this.get_model_display_name(this.model);
-        var html = '<div class="NB-story-ask-ai-model-pill NB-provider-' + provider + ' NB-loading">' +
-                   '<span class="NB-provider-pill NB-provider-' + provider + '">' + provider_name + '</span> ' +
-                   model_name + '</div>';
-        this.$('.NB-story-ask-ai-loading-pill').html(html).show();
+        // Show model pill in answer area with pulsating loading state
+        var $answer = this.$('.NB-story-ask-ai-answer');
+        var pill_html = this.create_model_pill_html(this.model, true, true);  // visible=true, loading=true
+
+        if ($answer.html() && $answer.html().trim()) {
+            // Has existing content (follow-up) - append loading pill
+            $answer.append(pill_html);
+        } else {
+            // Empty (initial question) - just show the pill
+            $answer.html(pill_html);
+        }
+        $answer.show();
     },
 
-    hide_loading_pill: function () {
-        this.$('.NB-story-ask-ai-loading-pill').hide().removeClass('NB-error');
+    stop_loading_pill: function () {
+        // Stop the pulsating animation on the model pill
+        this.$('.NB-story-ask-ai-answer .NB-story-ask-ai-model-pill').removeClass('NB-loading');
     },
 
     show_loading_pill_error: function () {
-        this.$('.NB-story-ask-ai-loading-pill .NB-story-ask-ai-model-pill').addClass('NB-error').removeClass('NB-loading');
+        this.$('.NB-story-ask-ai-answer .NB-story-ask-ai-model-pill').addClass('NB-error').removeClass('NB-loading');
     },
 
     get_provider_display_name: function (provider) {
@@ -167,7 +173,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 </div>\
             </div>\
             <div class="NB-story-ask-ai-response">\
-                <div class="NB-story-ask-ai-loading-pill"></div>\
                 <div class="NB-story-ask-ai-error">\
                     <strong>Request timed out.</strong> The AI service took too long to respond. Please try again.\
                 </div>\
@@ -532,7 +537,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 this.initial_timeout = null;
             }
             this.$el.removeClass('NB-thinking');
-            this.hide_loading_pill();
+            this.stop_loading_pill();
             this.$('.NB-story-ask-ai-error').removeClass('NB-active');
             $answer.show();
 
@@ -577,6 +582,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Show and re-enable follow-up input
         this.$('.NB-story-ask-ai-followup-wrapper').show();
         this.$('.NB-story-ask-ai-followup-input').prop('disabled', false);
+
+        // Reset button visibility (input is empty, so show Re-ask, hide Send)
+        this.$('.NB-story-ask-ai-reask-menu').show();
+        this.$('.NB-story-ask-ai-send-menu').hide();
 
         // Update model dropdown selection
         this.update_model_dropdown_selection();
@@ -666,6 +675,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.$('.NB-story-ask-ai-followup-wrapper').hide();
         this.$('.NB-story-ask-ai-followup-input').val('').prop('disabled', true);
         this.$el.addClass('NB-thinking');
+        this.show_loading_pill();
 
         // Set up initial timeout
         this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
@@ -882,11 +892,12 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         return providers[model] || 'unknown';
     },
 
-    create_model_pill_html: function (model, visible) {
+    create_model_pill_html: function (model, visible, loading) {
         var name = this.get_model_display_name(model);
         var provider = this.get_model_provider(model);
         var visible_class = visible ? ' NB-visible' : '';
-        return '<div class="NB-story-ask-ai-model-pill-wrapper' + visible_class + '"><div class="NB-story-ask-ai-model-pill NB-provider-' + provider + '">' + name + '</div></div>';
+        var loading_class = loading ? ' NB-loading' : '';
+        return '<div class="NB-story-ask-ai-model-pill-wrapper' + visible_class + '"><div class="NB-story-ask-ai-model-pill NB-provider-' + provider + loading_class + '">' + name + '</div></div>';
     },
 
     replace_model_pill_markers: function (html) {
@@ -929,6 +940,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.$('.NB-story-ask-ai-error').removeClass('NB-active');
         this.$('.NB-story-ask-ai-usage-message').hide();
         this.$el.addClass('NB-thinking');
+        this.show_loading_pill();
 
         // Set up initial timeout
         this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);

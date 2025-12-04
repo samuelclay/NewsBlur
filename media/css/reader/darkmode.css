@@ -2226,6 +2226,12 @@ a.mention, a.mention-group {
     border: 1px solid #616161;
 }
 
+/* Error state for model pill - Dark Mode */
+.NB-dark .NB-story-ask-ai-model-pill.NB-error {
+    border-color: #EF5350 !important;
+    box-shadow: 0 0 0 2px rgba(239, 83, 80, 0.3);
+}
+
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-answer {
     background-color: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);

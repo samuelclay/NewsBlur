@@ -103,11 +103,20 @@ def AskAIQuestion(
                 return {"code": 1, "message": "Cached response served", "cached": True}
 
         if conversation_history:
+            # For follow-ups, we need to include the original article as context
+            story_title = story.story_title
+            story_content = html_to_text(story.story_content_str)
+            article_context = f"Article Title: {story_title}\n\nArticle Content:\n{story_content}"
+
             messages = [
                 {
                     "role": "system",
                     "content": "You are a helpful assistant analyzing news articles. Be direct and succinct. Do not use preambles, introductory phrases like 'Certainly!' or 'Here is the analysis', or other conversational niceties. Start directly with your analysis.",
-                }
+                },
+                {
+                    "role": "user",
+                    "content": f"Here is the article I want to discuss:\n\n{article_context}",
+                },
             ]
             messages.extend(conversation_history)
             logging.user(
