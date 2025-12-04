@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from apps.rss_feeds.models import MStory
 from newsblur_web.celeryapp import app
 from utils import log as logging
+from utils.story_functions import html_to_text
 
 from .models import MAskAIResponse
 from .prompts import get_full_prompt
@@ -115,7 +116,7 @@ def AskAIQuestion(
             )
         else:
             story_title = story.story_title
-            story_content = story.story_content_str
+            story_content = html_to_text(story.story_content_str)
 
             try:
                 full_prompt = get_full_prompt(question_id, story_title, story_content, custom_question)
