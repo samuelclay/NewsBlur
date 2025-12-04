@@ -168,9 +168,8 @@ LLM_EXCEPTIONS = (
 )
 
 # Model registry: maps friendly names to (provider_class, model_id)
+# Only top-tier models per provider
 MODELS = {
-    "haiku": (AnthropicProvider, "claude-haiku-4-5-20251001"),
-    "sonnet": (AnthropicProvider, "claude-sonnet-4-5-20250929"),
     "opus": (AnthropicProvider, "claude-opus-4-5-20251101"),
     "gpt-4.1": (OpenAIProvider, "gpt-4.1"),
     "gemini-3": (GeminiProvider, "gemini-3-pro-preview"),
@@ -178,10 +177,8 @@ MODELS = {
 }
 
 VALID_MODELS = list(MODELS.keys())
-DEFAULT_MODEL = "haiku"
+DEFAULT_MODEL = "opus"
 MODEL_VENDORS = {
-    "haiku": "anthropic",
-    "sonnet": "anthropic",
     "opus": "anthropic",
     "gpt-4.1": "openai",
     "gemini-3": "google",
