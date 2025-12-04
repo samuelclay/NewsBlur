@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.views import View
 
 from apps.ask_ai.models import MAITranscriptionUsage, MAskAIResponse, MAskAIUsage
+from apps.ask_ai.providers import MODEL_VENDORS, VALID_MODELS
 from apps.ask_ai.usage import AskAIUsageTracker, TranscriptionUsageTracker
 from apps.profile.models import Profile
 
@@ -54,6 +55,57 @@ class AskAI(View):
         # Requests by question type
         for question_id, count in question_counts.items():
             data[f"requests_{question_id}"] = count
+
+        # ===== Requests by Model =====
+        # Count requests by AI model (total and by period)
+        model_counts = {}
+        model_counts_daily = {}
+        model_counts_weekly = {}
+        model_counts_monthly = {}
+
+        for model_name in VALID_MODELS:
+            model_counts[model_name] = MAskAIResponse.objects(model=model_name).count()
+            model_counts_daily[model_name] = MAskAIResponse.objects(
+                model=model_name, created_at__gte=last_day
+            ).count()
+            model_counts_weekly[model_name] = MAskAIResponse.objects(
+                model=model_name, created_at__gte=last_week
+            ).count()
+            model_counts_monthly[model_name] = MAskAIResponse.objects(
+                model=model_name, created_at__gte=last_month
+            ).count()
+
+        # Store model counts
+        for model_name in VALID_MODELS:
+            data[f"model_{model_name}_total"] = model_counts[model_name]
+            data[f"model_{model_name}_daily"] = model_counts_daily[model_name]
+            data[f"model_{model_name}_weekly"] = model_counts_weekly[model_name]
+            data[f"model_{model_name}_monthly"] = model_counts_monthly[model_name]
+
+        # Aggregate by vendor (anthropic, openai, google, xai)
+        vendor_counts = {}
+        vendor_counts_daily = {}
+        vendor_counts_weekly = {}
+        vendor_counts_monthly = {}
+
+        for vendor in set(MODEL_VENDORS.values()):
+            vendor_counts[vendor] = 0
+            vendor_counts_daily[vendor] = 0
+            vendor_counts_weekly[vendor] = 0
+            vendor_counts_monthly[vendor] = 0
+
+        for model_name in VALID_MODELS:
+            vendor = MODEL_VENDORS.get(model_name, "unknown")
+            vendor_counts[vendor] += model_counts[model_name]
+            vendor_counts_daily[vendor] += model_counts_daily[model_name]
+            vendor_counts_weekly[vendor] += model_counts_weekly[model_name]
+            vendor_counts_monthly[vendor] += model_counts_monthly[model_name]
+
+        for vendor in set(MODEL_VENDORS.values()):
+            data[f"vendor_{vendor}_total"] = vendor_counts[vendor]
+            data[f"vendor_{vendor}_daily"] = vendor_counts_daily[vendor]
+            data[f"vendor_{vendor}_weekly"] = vendor_counts_weekly[vendor]
+            data[f"vendor_{vendor}_monthly"] = vendor_counts_monthly[vendor]
 
         # ===== Active Users by Time Period =====
         active_users_daily = distinct_user_count(
@@ -336,6 +388,37 @@ class AskAI(View):
             formatted_data[
                 f"requests_{question_id}"
             ] = f'{chart_name}{{metric="requests",question_id="{question_id}"}} {count}'
+
+        # Requests by model
+        for model_name in VALID_MODELS:
+            vendor = MODEL_VENDORS.get(model_name, "unknown")
+            formatted_data[
+                f"model_{model_name}_total"
+            ] = f'{chart_name}{{metric="requests_by_model",model="{model_name}",vendor="{vendor}"}} {data[f"model_{model_name}_total"]}'
+            formatted_data[
+                f"model_{model_name}_daily"
+            ] = f'{chart_name}{{metric="requests_by_model_rate",model="{model_name}",vendor="{vendor}",period="daily"}} {data[f"model_{model_name}_daily"]}'
+            formatted_data[
+                f"model_{model_name}_weekly"
+            ] = f'{chart_name}{{metric="requests_by_model_rate",model="{model_name}",vendor="{vendor}",period="weekly"}} {data[f"model_{model_name}_weekly"]}'
+            formatted_data[
+                f"model_{model_name}_monthly"
+            ] = f'{chart_name}{{metric="requests_by_model_rate",model="{model_name}",vendor="{vendor}",period="monthly"}} {data[f"model_{model_name}_monthly"]}'
+
+        # Requests by vendor
+        for vendor in set(MODEL_VENDORS.values()):
+            formatted_data[
+                f"vendor_{vendor}_total"
+            ] = f'{chart_name}{{metric="requests_by_vendor",vendor="{vendor}"}} {data[f"vendor_{vendor}_total"]}'
+            formatted_data[
+                f"vendor_{vendor}_daily"
+            ] = f'{chart_name}{{metric="requests_by_vendor_rate",vendor="{vendor}",period="daily"}} {data[f"vendor_{vendor}_daily"]}'
+            formatted_data[
+                f"vendor_{vendor}_weekly"
+            ] = f'{chart_name}{{metric="requests_by_vendor_rate",vendor="{vendor}",period="weekly"}} {data[f"vendor_{vendor}_weekly"]}'
+            formatted_data[
+                f"vendor_{vendor}_monthly"
+            ] = f'{chart_name}{{metric="requests_by_vendor_rate",vendor="{vendor}",period="monthly"}} {data[f"vendor_{vendor}_monthly"]}'
 
         # Active users
         formatted_data[

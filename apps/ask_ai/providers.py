@@ -90,6 +90,33 @@ class OpenAIProvider(LLMProvider):
         return f"OpenAI API error: {str(error)}"
 
 
+class XAIProvider(LLMProvider):
+    """xAI/Grok provider implementation (OpenAI-compatible API)."""
+
+    def is_configured(self) -> bool:
+        return bool(getattr(settings, "XAI_GROK_API_KEY", None))
+
+    def stream_response(self, messages: list, model_id: str) -> Generator[str, None, None]:
+        client = openai.OpenAI(
+            api_key=settings.XAI_GROK_API_KEY,
+            base_url="https://api.x.ai/v1",
+        )
+        response = client.chat.completions.create(model=model_id, messages=messages, stream=True)
+
+        for chunk in response:
+            if chunk.choices[0].delta.content:
+                yield chunk.choices[0].delta.content
+
+    @property
+    def error_types(self) -> tuple:
+        return (openai.APITimeoutError, openai.APIError)
+
+    def format_error(self, error: Exception) -> str:
+        if isinstance(error, openai.APITimeoutError):
+            return "xAI API timeout"
+        return f"xAI API error: {str(error)}"
+
+
 class GeminiProvider(LLMProvider):
     """Google Gemini provider implementation."""
 
@@ -147,10 +174,19 @@ MODELS = {
     "opus": (AnthropicProvider, "claude-opus-4-5-20251101"),
     "gpt-4.1": (OpenAIProvider, "gpt-4.1"),
     "gemini-3": (GeminiProvider, "gemini-3-pro-preview"),
+    "grok-4.1": (XAIProvider, "grok-4-1-fast-non-reasoning"),
 }
 
 VALID_MODELS = list(MODELS.keys())
 DEFAULT_MODEL = "haiku"
+MODEL_VENDORS = {
+    "haiku": "anthropic",
+    "sonnet": "anthropic",
+    "opus": "anthropic",
+    "gpt-4.1": "openai",
+    "gemini-3": "google",
+    "grok-4.1": "xai",
+}
 
 
 def get_provider(model_name: str) -> tuple[LLMProvider, str]:

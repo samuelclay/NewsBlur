@@ -2214,6 +2214,12 @@ a.mention, a.mention-group {
     border: 1px solid #3D6A9F;
 }
 
+.NB-dark .NB-story-ask-ai-model-pill.NB-provider-xai {
+    background: linear-gradient(135deg, #2A2A2A 0%, #1A1A1A 100%);
+    color: #FFFFFF;
+    border: 1px solid #444444;
+}
+
 .NB-dark .NB-story-ask-ai-model-pill.NB-provider-unknown {
     background: linear-gradient(135deg, #424242 0%, #303030 100%);
     color: #BDBDBD;

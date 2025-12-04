@@ -11642,6 +11642,12 @@ form.opml_import_form input {
     border: 1px solid #5B8EE6;
 }
 
+.NB-story-ask-ai-model-pill.NB-provider-xai {
+    background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%);
+    color: #FFFFFF;
+    border: 1px solid #333333;
+}
+
 .NB-story-ask-ai-model-pill.NB-provider-unknown {
     background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%);
     color: #424242;

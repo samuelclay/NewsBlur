@@ -1387,6 +1387,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                                 <div class="NB-model-option NB-selected" data-model="opus">Claude 4.5 Opus</div>\
                                 <div class="NB-model-option" data-model="gpt-4.1">GPT 4.1</div>\
                                 <div class="NB-model-option" data-model="gemini-3">Gemini 3 Pro</div>\
+                                <div class="NB-model-option" data-model="grok-4.1">Grok 4.1 Fast</div>\
                             </div>\
                         </div>\
                     </div>\
