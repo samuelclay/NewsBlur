@@ -79,6 +79,12 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - Test API endpoints: `make api URL=/reader/feeds`
 - With POST data: `make api URL=/reader/river_stories ARGS="-X POST -d 'feeds[]=1&feeds[]=2&feeds[]=3'"`
 
+## Ask AI Development
+- **Restart Celery after changes**: Ask AI questions are processed asynchronously via Celery tasks. After modifying `apps/ask_ai/` (providers, tasks, models), restart celery: `docker restart newsblur_celery`
+- Provider implementations are in `apps/ask_ai/providers.py`
+- **Frontend model selectors**: Search for `data-model="gemini` to find all dropdown locations
+- **CSS for model pills**: Search for `NB-provider-` to find pill styles
+
 ## Sentry
 - **Projects**: `web`, `task`, `node`, `monitor` (auth token in `~/.sentryclirc`)
 - List issues: `sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --status unresolved`

@@ -160,6 +160,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                             <div class="NB-model-option" data-model="opus">Claude 4.5 Opus</div>\
                             <div class="NB-model-option" data-model="gpt-4.1">GPT 4.1</div>\
                             <div class="NB-model-option" data-model="gemini-3">Gemini 3 Pro</div>\
+                            <div class="NB-model-option" data-model="grok-4.1">Grok 4.1 Fast</div>\
                         </div>\
                     </div>\
                     <div class="NB-story-ask-ai-send-menu" style="display: none;">\
@@ -173,6 +174,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                             <div class="NB-model-option" data-model="opus">Claude 4.5 Opus</div>\
                             <div class="NB-model-option" data-model="gpt-4.1">GPT 4.1</div>\
                             <div class="NB-model-option" data-model="gemini-3">Gemini 3 Pro</div>\
+                            <div class="NB-model-option" data-model="grok-4.1">Grok 4.1 Fast</div>\
                         </div>\
                     </div>\
                     <div class="NB-story-ask-ai-finish-recording-menu" style="display: none;">\
@@ -186,6 +188,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                             <div class="NB-model-option" data-model="opus">Claude 4.5 Opus</div>\
                             <div class="NB-model-option" data-model="gpt-4.1">GPT 4.1</div>\
                             <div class="NB-model-option" data-model="gemini-3">Gemini 3 Pro</div>\
+                            <div class="NB-model-option" data-model="grok-4.1">Grok 4.1 Fast</div>\
                         </div>\
                     </div>\
                 </div>\
@@ -830,7 +833,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             'sonnet': 'Claude 4.5 Sonnet',
             'opus': 'Claude 4.5 Opus',
             'gpt-4.1': 'GPT 4.1',
-            'gemini-3': 'Gemini 3 Pro'
+            'gemini-3': 'Gemini 3 Pro',
+            'grok-4.1': 'Grok 4.1 Fast'
         };
         return names[model] || model;
     },
@@ -841,7 +845,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             'sonnet': 'anthropic',
             'opus': 'anthropic',
             'gpt-4.1': 'openai',
-            'gemini-3': 'google'
+            'gemini-3': 'google',
+            'grok-4.1': 'xai'
         };
         return providers[model] || 'unknown';
     },
