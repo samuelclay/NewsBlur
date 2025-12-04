@@ -3281,6 +3281,16 @@ class MStory(mongo.Document):
 
         return story_content
 
+    @property
+    def original_text_str(self):
+        """
+        Returns cached original/full text if available, otherwise falls back to story content.
+        Unlike fetch_original_text(), this does NOT fetch if not cached.
+        """
+        if self.original_text_z:
+            return smart_str(zlib.decompress(self.original_text_z))
+        return self.story_content_str
+
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields["story_title"].max_length
         story_content_type_max = MStory._fields["story_content_type"].max_length

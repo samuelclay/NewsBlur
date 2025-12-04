@@ -102,10 +102,17 @@ def AskAIQuestion(
                 logging.user(user, f"~BB~FGAsk AI: Served ~SBcached~SN response for story ~SB{story_hash}~SN")
                 return {"code": 1, "message": "Cached response served", "cached": True}
 
+        # Log which content source we're using
+        content_source = "original text" if story.original_text_z else "story content"
+        story_title = story.story_title
+        story_content = html_to_text(story.original_text_str)
+        logging.user(
+            user,
+            f"~BB~FGAsk AI: Using ~SB{content_source}~SN ({len(story_content)} chars) for story ~SB{story_hash}~SN",
+        )
+
         if conversation_history:
             # For follow-ups, we need to include the original article as context
-            story_title = story.story_title
-            story_content = html_to_text(story.story_content_str)
             article_context = f"Article Title: {story_title}\n\nArticle Content:\n{story_content}"
 
             messages = [
@@ -121,12 +128,9 @@ def AskAIQuestion(
             messages.extend(conversation_history)
             logging.user(
                 user,
-                f"~BB~FGAsk AI: Follow-up for story ~SB{story_hash}~SN, ~SB{len(conversation_history)}~SN messages in history",
+                f"~BB~FGAsk AI: Follow-up with ~SB{len(conversation_history)}~SN messages in history",
             )
         else:
-            story_title = story.story_title
-            story_content = html_to_text(story.story_content_str)
-
             try:
                 full_prompt = get_full_prompt(question_id, story_title, story_content, custom_question)
             except ValueError as e:
