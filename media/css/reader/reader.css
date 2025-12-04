@@ -10964,6 +10964,8 @@ form.opml_import_form input {
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     min-width: 160px;
+    max-height: 240px;
+    overflow-y: auto;
     opacity: 0;
     visibility: hidden;
     transform: translateY(4px);
@@ -11357,7 +11359,9 @@ form.opml_import_form input {
     border: 1px solid #D0D2CC;
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    min-width: 160px;
+    min-width: 250px;
+    max-height: 240px;
+    overflow-y: auto;
     opacity: 0;
     visibility: hidden;
     transform: translateY(4px);
@@ -11399,6 +11403,44 @@ form.opml_import_form input {
 
 .NB-model-option.NB-selected:hover {
     background-color: #D8E8F4;
+}
+
+.NB-provider-pill {
+    display: inline-block;
+    padding: 2px 6px;
+    margin-right: 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    vertical-align: middle;
+    width: 72px;
+    text-align: center;
+}
+
+.NB-provider-pill.NB-provider-anthropic {
+    background: linear-gradient(135deg, #D4A574 0%, #C69C6D 100%);
+    color: #3D2814;
+    border: 1px solid #B8895C;
+}
+
+.NB-provider-pill.NB-provider-openai {
+    background: linear-gradient(135deg, #74AA9C 0%, #5A9A8A 100%);
+    color: #1A3D36;
+    border: 1px solid #4A8A7A;
+}
+
+.NB-provider-pill.NB-provider-google {
+    background: linear-gradient(135deg, #8AB4F8 0%, #669DF6 100%);
+    color: #1A3A5C;
+    border: 1px solid #5B8EE6;
+}
+
+.NB-provider-pill.NB-provider-xai {
+    background: linear-gradient(135deg, #1A1A1A 0%, #0A0A0A 100%);
+    color: #FFFFFF;
+    border: 1px solid #333333;
 }
 
 .NB-story-ask-ai-voice-button {

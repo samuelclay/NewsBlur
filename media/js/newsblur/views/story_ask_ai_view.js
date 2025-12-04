@@ -76,29 +76,51 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         } else if (this.inline) {
             // Add thinking class and set up initial timeout (15s to wait for first response)
             this.$el.addClass('NB-thinking');
+            this.show_loading_pill();
             this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
         }
 
         return this;
     },
 
+    show_loading_pill: function () {
+        var provider = this.get_model_provider(this.model);
+        var provider_name = this.get_provider_display_name(provider);
+        var model_name = this.get_model_display_name(this.model);
+        var html = '<div class="NB-story-ask-ai-model-pill NB-provider-' + provider + ' NB-loading">' +
+                   '<span class="NB-provider-pill NB-provider-' + provider + '">' + provider_name + '</span> ' +
+                   model_name + '</div>';
+        this.$('.NB-story-ask-ai-loading-pill').html(html).show();
+    },
+
+    hide_loading_pill: function () {
+        this.$('.NB-story-ask-ai-loading-pill').hide().removeClass('NB-error');
+    },
+
+    show_loading_pill_error: function () {
+        this.$('.NB-story-ask-ai-loading-pill .NB-story-ask-ai-model-pill').addClass('NB-error').removeClass('NB-loading');
+    },
+
+    get_provider_display_name: function (provider) {
+        var names = {
+            'anthropic': 'Anthropic',
+            'openai': 'OpenAI',
+            'google': 'Google',
+            'xai': 'xAI'
+        };
+        return names[provider] || provider;
+    },
+
     handle_initial_timeout: function () {
         // No response received within 15 seconds
         this.$el.removeClass('NB-thinking');
+        this.show_loading_pill_error();
 
         var error_text = 'Request timed out. The AI service took too long to respond. Please try again.';
 
-        // If there's already content (re-ask scenario), append error to the answer
-        if (this.response_text) {
-            this.response_text += '\n\n**Error:** ' + error_text;
-            var html = this.markdown_to_html(this.response_text);
-            this.$('.NB-story-ask-ai-answer').html(html);
-        } else {
-            // No existing content - show error in the error div
-            this.$('.NB-story-ask-ai-error')
-                .text(error_text)
-                .addClass('NB-active');
-        }
+        // Track error separately so it can be cleared if response arrives late
+        this.pending_error = error_text;
+        this.render_with_pending_error();
 
         // Show followup wrapper so user can try again
         this.$('.NB-story-ask-ai-followup-wrapper').show();
@@ -107,22 +129,30 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     handle_streaming_timeout: function () {
         // No chunk received for 10 seconds during streaming
         this.$el.removeClass('NB-thinking');
+        this.show_loading_pill_error();
 
         var error_text = 'Stream interrupted. No response received for 10 seconds.';
 
-        // Append error to existing content
-        if (this.response_text) {
-            this.response_text += '\n\n**Error:** ' + error_text;
-            var html = this.markdown_to_html(this.response_text);
-            this.$('.NB-story-ask-ai-answer').html(html);
-        } else {
-            this.$('.NB-story-ask-ai-error')
-                .text(error_text)
-                .addClass('NB-active');
-        }
+        // Track error separately so it can be cleared if response arrives late
+        this.pending_error = error_text;
+        this.render_with_pending_error();
 
         // Show followup wrapper so user can try again
         this.$('.NB-story-ask-ai-followup-wrapper').show();
+    },
+
+    render_with_pending_error: function () {
+        // Render response with pending error appended (but not baked into response_text)
+        var $answer = this.$('.NB-story-ask-ai-answer');
+        if (this.response_text) {
+            var display_text = this.response_text + '\n\n**Error:** ' + this.pending_error;
+            var html = this.markdown_to_html(display_text);
+            $answer.html(html);
+        } else {
+            this.$('.NB-story-ask-ai-error')
+                .text(this.pending_error)
+                .addClass('NB-active');
+        }
     },
 
     template: _.template('\
@@ -137,6 +167,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 </div>\
             </div>\
             <div class="NB-story-ask-ai-response">\
+                <div class="NB-story-ask-ai-loading-pill"></div>\
                 <div class="NB-story-ask-ai-error">\
                     <strong>Request timed out.</strong> The AI service took too long to respond. Please try again.\
                 </div>\
@@ -155,12 +186,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                             <span class="NB-dropdown-arrow">▾</span>\
                         </div>\
                         <div class="NB-story-ask-ai-model-dropdown NB-reask-dropdown">\
-                            <div class="NB-model-option" data-model="haiku">Claude 4.5 Haiku</div>\
-                            <div class="NB-model-option" data-model="sonnet">Claude 4.5 Sonnet</div>\
-                            <div class="NB-model-option" data-model="opus">Claude 4.5 Opus</div>\
-                            <div class="NB-model-option" data-model="gpt-4.1">GPT 4.1</div>\
-                            <div class="NB-model-option" data-model="gemini-3">Gemini 3 Pro</div>\
-                            <div class="NB-model-option" data-model="grok-4.1">Grok 4.1 Fast</div>\
+                            <div class="NB-model-option" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude 4.5 Opus</div>\
+                            <div class="NB-model-option" data-model="gpt-4.1"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 4.1</div>\
+                            <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
+                            <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
                         </div>\
                     </div>\
                     <div class="NB-story-ask-ai-send-menu" style="display: none;">\
@@ -169,12 +198,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                             <span class="NB-dropdown-arrow">▾</span>\
                         </div>\
                         <div class="NB-story-ask-ai-model-dropdown NB-send-dropdown">\
-                            <div class="NB-model-option" data-model="haiku">Claude 4.5 Haiku</div>\
-                            <div class="NB-model-option" data-model="sonnet">Claude 4.5 Sonnet</div>\
-                            <div class="NB-model-option" data-model="opus">Claude 4.5 Opus</div>\
-                            <div class="NB-model-option" data-model="gpt-4.1">GPT 4.1</div>\
-                            <div class="NB-model-option" data-model="gemini-3">Gemini 3 Pro</div>\
-                            <div class="NB-model-option" data-model="grok-4.1">Grok 4.1 Fast</div>\
+                            <div class="NB-model-option" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude 4.5 Opus</div>\
+                            <div class="NB-model-option" data-model="gpt-4.1"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 4.1</div>\
+                            <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
+                            <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
                         </div>\
                     </div>\
                     <div class="NB-story-ask-ai-finish-recording-menu" style="display: none;">\
@@ -183,12 +210,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                             <span class="NB-dropdown-arrow">▾</span>\
                         </div>\
                         <div class="NB-story-ask-ai-model-dropdown NB-finish-recording-dropdown">\
-                            <div class="NB-model-option" data-model="haiku">Claude 4.5 Haiku</div>\
-                            <div class="NB-model-option" data-model="sonnet">Claude 4.5 Sonnet</div>\
-                            <div class="NB-model-option" data-model="opus">Claude 4.5 Opus</div>\
-                            <div class="NB-model-option" data-model="gpt-4.1">GPT 4.1</div>\
-                            <div class="NB-model-option" data-model="gemini-3">Gemini 3 Pro</div>\
-                            <div class="NB-model-option" data-model="grok-4.1">Grok 4.1 Fast</div>\
+                            <div class="NB-model-option" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude 4.5 Opus</div>\
+                            <div class="NB-model-option" data-model="gpt-4.1"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 4.1</div>\
+                            <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
+                            <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
                         </div>\
                     </div>\
                 </div>\
@@ -308,6 +333,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
     handle_response_error: function (error) {
         this.$el.removeClass('NB-thinking');
+        this.show_loading_pill_error();
 
         // Extract error message from various error formats
         var error_message = error;
@@ -464,9 +490,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 }
             }
 
-            // Add pill for first section at the beginning (show if any model change exists)
+            // Add pill for first section at the beginning (always show to reinforce which model was used)
             if (this.section_models[0]) {
-                html = this.create_model_pill_html(this.section_models[0], has_any_model_change) + '\n' + html;
+                html = this.create_model_pill_html(this.section_models[0], true) + '\n' + html;
                 section_index = 1;
             }
 
@@ -491,6 +517,12 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Append streaming chunk to answer
         var $answer = this.$('.NB-story-ask-ai-answer');
 
+        // Clear any pending error when new chunks arrive (response came through after timeout)
+        if (this.pending_error) {
+            this.pending_error = null;
+            this.$('.NB-story-ask-ai-error').removeClass('NB-active');
+        }
+
         if (!this.streaming_started) {
             // First chunk - clear initial timeout, show answer, hide loading
             this.streaming_started = true;
@@ -500,6 +532,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 this.initial_timeout = null;
             }
             this.$el.removeClass('NB-thinking');
+            this.hide_loading_pill();
             this.$('.NB-story-ask-ai-error').removeClass('NB-active');
             $answer.show();
 
@@ -524,7 +557,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     },
 
     complete_response: function () {
-        // Mark as complete, clear debounce timeout
+        // Mark as complete, clear debounce timeout and any pending error
         if (this.debounce_timeout) {
             clearTimeout(this.debounce_timeout);
             this.debounce_timeout = null;
@@ -533,6 +566,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             clearTimeout(this.initial_timeout);
             this.initial_timeout = null;
         }
+        this.pending_error = null;
 
         // Add only the current response (not accumulated visual text) to conversation history
         this.conversation_history.push({
@@ -551,6 +585,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     show_error: function (error_message) {
         // Show error, clear all timeouts, hide usage message
         this.$el.removeClass('NB-thinking');
+        this.show_loading_pill_error();
         this.$('.NB-story-ask-ai-error').text(error_message).addClass('NB-active');
         this.$('.NB-story-ask-ai-usage-message').hide();
         if (this.initial_timeout) {
@@ -829,8 +864,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
     get_model_display_name: function (model) {
         var names = {
-            'haiku': 'Claude 4.5 Haiku',
-            'sonnet': 'Claude 4.5 Sonnet',
             'opus': 'Claude 4.5 Opus',
             'gpt-4.1': 'GPT 4.1',
             'gemini-3': 'Gemini 3 Pro',
@@ -841,8 +874,6 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
 
     get_model_provider: function (model) {
         var providers = {
-            'haiku': 'anthropic',
-            'sonnet': 'anthropic',
             'opus': 'anthropic',
             'gpt-4.1': 'openai',
             'gemini-3': 'google',

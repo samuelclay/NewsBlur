@@ -2368,6 +2368,30 @@ a.mention, a.mention-group {
     background-color: rgba(74, 144, 226, 0.3);
 }
 
+.NB-dark .NB-provider-pill.NB-provider-anthropic {
+    background: linear-gradient(135deg, #8B6914 0%, #705510 100%);
+    color: #F0D090;
+    border: 1px solid #A07820;
+}
+
+.NB-dark .NB-provider-pill.NB-provider-openai {
+    background: linear-gradient(135deg, #2A5A4A 0%, #1A4A3A 100%);
+    color: #90D0C0;
+    border: 1px solid #3A6A5A;
+}
+
+.NB-dark .NB-provider-pill.NB-provider-google {
+    background: linear-gradient(135deg, #2A4A7A 0%, #1A3A6A 100%);
+    color: #90B0E0;
+    border: 1px solid #3A5A8A;
+}
+
+.NB-dark .NB-provider-pill.NB-provider-xai {
+    background: linear-gradient(135deg, #3A3A3A 0%, #2A2A2A 100%);
+    color: #E0E0E0;
+    border: 1px solid #5A5A5A;
+}
+
 .NB-dark .NB-story-ask-ai-inline .NB-story-ask-ai-followup-input {
     background-color: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);
