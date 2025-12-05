@@ -5342,7 +5342,7 @@ body {
 
 .NB-narrow-content .NB-sideoption {
     float: left;
-    margin: 8px 8px 0 0;
+    margin: 8px 2px 0 0;
     width: auto;
     clear: right;
 }
