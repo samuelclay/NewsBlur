@@ -1382,8 +1382,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                                 <span class="NB-dropdown-arrow">▾</span>\
                             </div>\
                             <div class="NB-menu-ask-ai-model-dropdown">\
-                                <div class="NB-model-option NB-selected" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude 4.5 Opus</div>\
-                                <div class="NB-model-option" data-model="gpt-4.1"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 4.1</div>\
+                                <div class="NB-model-option NB-selected" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude Opus 4.5</div>\
+                                <div class="NB-model-option" data-model="gpt-5.1"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.1</div>\
                                 <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
                                 <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
                             </div>\

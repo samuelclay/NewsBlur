@@ -143,7 +143,7 @@ BACKED_BY_AWS = {
 OPENAI_API_KEY = "sk-svcacct-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ANTHROPIC_API_KEY = "sk-ant-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 GOOGLE_GEMINI_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-ASK_AI_MODEL = "opus"  # Options: opus, gpt-4.1, gemini-3, grok-4.1
+ASK_AI_MODEL = "opus"  # Options: opus, gpt-5.1, gemini-3, grok-4.1
 
 # ===========
 # = Logging =
