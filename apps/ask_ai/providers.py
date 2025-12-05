@@ -171,7 +171,7 @@ LLM_EXCEPTIONS = (
 # Only top-tier models per provider
 MODELS = {
     "opus": (AnthropicProvider, "claude-opus-4-5-20251101"),
-    "gpt-4.1": (OpenAIProvider, "gpt-4.1"),
+    "gpt-5.1": (OpenAIProvider, "gpt-5.1"),
     "gemini-3": (GeminiProvider, "gemini-3-pro-preview"),
     "grok-4.1": (XAIProvider, "grok-4-1-fast-non-reasoning"),
 }
@@ -180,7 +180,7 @@ VALID_MODELS = list(MODELS.keys())
 DEFAULT_MODEL = "opus"
 MODEL_VENDORS = {
     "opus": "anthropic",
-    "gpt-4.1": "openai",
+    "gpt-5.1": "openai",
     "gemini-3": "google",
     "grok-4.1": "xai",
 }
