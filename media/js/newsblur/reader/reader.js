@@ -3612,10 +3612,10 @@
             }
 
             var $story_el = story_view.$el;
-            var $content_wrapper = $story_el.find('.NB-story-content-wrapper');
+            var $positioning_wrapper = $story_el.find('.NB-story-content-positioning-wrapper');
 
-            if (!$content_wrapper.length) {
-                console.log(['No content wrapper found for Ask AI', story]);
+            if (!$positioning_wrapper.length) {
+                console.log(['No positioning wrapper found for Ask AI', story]);
                 return;
             }
 
@@ -3628,12 +3628,12 @@
                 inline: true
             });
 
-            // Find the last Ask AI section in this story, or append after content wrapper
-            var $existing_ask_ai = $story_el.find('.NB-story-ask-ai-inline').last();
+            // Find the last Ask AI section in this story, or append inside positioning wrapper
+            var $existing_ask_ai = $positioning_wrapper.find('.NB-story-ask-ai-inline').last();
             if ($existing_ask_ai.length) {
                 $existing_ask_ai.after(ask_ai_pane.render().$el);
             } else {
-                $content_wrapper.after(ask_ai_pane.render().$el);
+                $positioning_wrapper.append(ask_ai_pane.render().$el);
             }
 
             // Smooth scroll to bring the new Ask AI section into view
