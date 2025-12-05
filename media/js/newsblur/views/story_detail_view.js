@@ -825,7 +825,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             var $target = $(e.target);
             var $thirdparty = $target.closest('.NB-sideoption-thirdparty');
 
-            if ($thirdparty.length) {
+            if ($thirdparty.length && !$thirdparty.hasClass('NB-sideoption-icon-email')) {
                 var serviceName = $thirdparty.data("service-label");
                 $sideoption.find(".NB-sideoption-title").text(serviceName);
                 $sideoption.find('.NB-sideoption-thirdparty').removeClass("NB-hover");
