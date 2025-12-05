@@ -5380,19 +5380,6 @@ body {
     min-width: 40px;
 }
 
-.NB-feed-story-email {
-    /* align-items: flex-start; */
-}
-
-.NB-sideoption.NB-feed-story-email {
-    display: flex;
-    justify-content: space-around;
-}
-
-.NB-sideoption.NB-feed-story-email .NB-sideoption-title {
-    min-width: 74px;
-    text-align: center;
-}
 
 .NB-content-narrow .NB-sideoption .NB-sideoption-title {
     padding-left: 10px;
@@ -5423,15 +5410,6 @@ body {
 }
 
 
-.NB-sideoption:hover .NB-sideoption-thirdparty.NB-hover,
-.NB-sideoption:hover .NB-sideoption-thirdparty.NB-sideoption-icon {
-    opacity: 1;
-}
-
-.NB-sideoption:hover .NB-sideoption-thirdparty,
-.NB-sideoption:hover .NB-sideoption-icon.NB-dimmed {
-    opacity: 0.25;
-}
 
 .NB-sideoption .NB-sideoption-icon {
     width: 24px;
@@ -5501,19 +5479,6 @@ body {
 
 .NB-sideoption-thirdparty:last-child {
     padding-right: 4px;
-}
-
-.NB-sideoption-thirdparty-services {
-    order: 3;
-}
-
-.NB-wide-content .NB-sideoption-thirdparty-services {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    order: 4;
-    margin-left: auto;
-    margin-right: 8px;
 }
 
 .NB-sideoption .NB-sideoption-thirdparty-instapaper {
@@ -5658,6 +5623,122 @@ body {
 
 .NB-sideoption .NB-sideoption-thirdparty-readwise {
     background: transparent url('/media/embed/reader/readwise.png') no-repeat center center;
+}
+
+/* ================================ */
+/* = Sideoption - Sharing Icons   = */
+/* ================================ */
+
+.NB-sideoption-sharing .NB-sideoption-icon {
+    background-size: 16px;
+}
+
+.NB-sideoption-sharing-copyurl .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/copyurl.png');
+}
+
+.NB-sideoption-sharing-copytext .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/copytext.png');
+}
+
+.NB-sideoption-sharing-print .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/print.png');
+}
+
+.NB-sideoption-sharing-facebook .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/facebook.png');
+}
+
+.NB-sideoption-sharing-twitter .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/twitter.png');
+}
+
+.NB-sideoption-sharing-reddit .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/reddit.png');
+}
+
+.NB-sideoption-sharing-readitlater .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/pocket.png');
+}
+
+.NB-sideoption-sharing-tumblr .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/tumblr.png');
+}
+
+.NB-sideoption-sharing-delicious .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/delicious.png');
+}
+
+.NB-sideoption-sharing-blogger .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/blogger.png');
+}
+
+.NB-sideoption-sharing-pinboard .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/pinboard.png');
+}
+
+.NB-sideoption-sharing-raindrop .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/raindrop.svg');
+}
+
+.NB-sideoption-sharing-whatsapp .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/whatsapp.png');
+}
+
+.NB-sideoption-sharing-bluesky .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/bluesky.svg');
+}
+
+.NB-sideoption-sharing-mastodon .NB-sideoption-icon {
+    background-image: url('/media/embed/welcome/mastodon_logo.svg');
+}
+
+.NB-sideoption-sharing-pinterest .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/pinterest.png');
+}
+
+.NB-sideoption-sharing-buffer .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/buffer.png');
+}
+
+.NB-sideoption-sharing-diigo .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/diigo.png');
+}
+
+.NB-sideoption-sharing-evernote .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/evernote.png');
+}
+
+.NB-sideoption-sharing-instapaper .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/instapaper.png');
+}
+
+.NB-sideoption-sharing-livejournal .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/livejournal.png');
+}
+
+.NB-sideoption-sharing-flipboard .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/flipboard.jpg');
+}
+
+.NB-sideoption-sharing-lineme .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/lineme.png');
+}
+
+.NB-sideoption-sharing-hackernews .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/hackernews.png');
+}
+
+.NB-sideoption-sharing-telegram .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/telegram.png');
+}
+
+.NB-sideoption-sharing-linkedin .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/linkedin.jpg');
+}
+
+.NB-sideoption-sharing-readwise .NB-sideoption-icon {
+    background-image: url('/media/embed/reader/readwise.png');
 }
 
 /* ===================== */
