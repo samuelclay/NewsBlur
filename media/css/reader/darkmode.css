@@ -1983,6 +1983,16 @@ a.mention, a.mention-group {
     color: #B0B8C0;
 }
 
+/* Highlight Summarize header row when hovering over Brief/Medium/Detailed segments (dark mode) */
+.NB-dark .NB-menu-ask-ai-group:has(.NB-menu-ask-ai-segment:hover) .NB-menu-ask-ai-group-header {
+    background-color: rgba(45, 53, 68, 0.9);
+    color: #E0E6ED;
+}
+
+.NB-dark .NB-menu-ask-ai-group:has(.NB-menu-ask-ai-segment:hover) .NB-menu-ask-ai-group-header .NB-menu-ask-ai-icon {
+    filter: grayscale(0%) brightness(1.1);
+}
+
 .NB-dark .NB-menu-ask-ai-option:last-child {
     border-bottom: none;
 }
