@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2025-10-31T12:45:57-04:00</updated>
+  <updated>2025-12-05T15:47:30-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,87 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Ask AI to make sense of the news</title>
+    <link href="https://blog.newsblur.com/2025/12/03/ask-ai/" rel="alternate" type="text/html" title="Ask AI to make sense of the news" />
+    <published>2025-12-03T00:00:00-05:00</published>
+    <updated>2025-12-03T00:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2025/12/03/ask-ai</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2025/12/03/ask-ai/">
+      <![CDATA[<p>Sometimes I open a story and realize I’m late to the party. Maybe it’s the fourth article in a saga I haven’t followed, maybe it name-drops people I should know, or maybe it’s dense and I just want the gist. Ask AI fills in those gaps. You can ask about any story in NewsBlur and get quick answers from the model you prefer.</p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Select a story and click Ask AI in the story toolbar. You’ll see quick options for getting information about the story.</p>
+
+<p><img src="/assets/ask-ai-menu.png" style="width: 100%;border: 1px solid #A6A6A6;margin: 24px auto;display: block;" /></p>
+
+<p>At the top, you can summarize the story in three flavors: a single sentence, bullet points, or a full paragraph. Below that are presets I use most often:</p>
+
+<ul>
+  <li><strong>What’s the context and background?</strong> — Fills in backstory you might have missed</li>
+  <li><strong>Identify key people and relationships</strong> — Who are all these names and how do they connect?</li>
+  <li><strong>What are the main arguments?</strong> — For opinion pieces or debates, cuts to what each side is saying</li>
+  <li><strong>Fact check this story</strong> — Flags claims that look worth verifying</li>
+</ul>
+
+<p>Or just type whatever you’re curious about.</p>
+
+<h3 id="speak-your-question">Speak your question</h3>
+
+<p>See that microphone button? Click it and say your question out loud. NewsBlur uses OpenAI’s Whisper to transcribe your voice, so you can keep reading without typing. Handy when you’re on the couch and don’t want to pull out the keyboard.</p>
+
+<h3 id="pick-your-model">Pick your model</h3>
+
+<p>Different models have different strengths. NewsBlur lets you pick from:</p>
+
+<ul>
+  <li><strong>Claude 4.5 Haiku</strong> — Fast and lightweight</li>
+  <li><strong>Claude 4.5 Sonnet</strong> — Good balance of speed and capability</li>
+  <li><strong>Claude 4.5 Opus</strong> — The default, most capable model</li>
+  <li><strong>GPT 4.1</strong> — OpenAI’s latest</li>
+  <li><strong>Gemini 3 Pro</strong> — Google’s offering</li>
+</ul>
+
+<p><img src="/assets/ask-ai-models.png" style="width: 100%;border: 1px solid #A6A6A6;margin: 24px auto;display: block;" /></p>
+
+<p>NewsBlur remembers your choice across sessions and devices. If a reply feels off, re-ask with a different model — they each have their own style.</p>
+
+<h3 id="keep-the-conversation-going">Keep the conversation going</h3>
+
+<p>After the first answer, ask follow-ups. NewsBlur keeps the conversation context so you can dig deeper or ask for a clarification. It’s meant to be a back-and-forth, not a one-shot.</p>
+
+<p><img src="/assets/ask-ai-response.png" style="width: 100%;border: 1px solid #A6A6A6;margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Ask AI is live on the web. Here’s how many questions you get:</p>
+
+<ul>
+  <li><strong>Premium Archive</strong>: 100 questions per day</li>
+  <li><strong>Premium</strong>: 3 questions per day</li>
+  <li><strong>Free</strong>: 3 questions per week</li>
+</ul>
+
+<p>Your question count resets at midnight in your local timezone.</p>
+
+<p>If you’re not yet a Premium Archive subscriber, you can <a href="https://www.newsblur.com/?next=premium">upgrade on the web</a> to get the full Ask AI experience along with unlimited story archiving and full-text search.</p>
+
+<p>As always, I’d love to hear what you think on the <a href="https://forum.newsblur.com">NewsBlur forum</a>. If you have ideas for new preset questions or ways to make Ask AI more useful, let me know.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Sometimes I open a story and realize I’m late to the party. Maybe it’s the fourth article in a saga I haven’t followed, maybe it name-drops people I should know, or maybe it’s dense and I just want the gist. Ask AI fills in those gaps. You can ask about...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Full-text filtering lets you train on any phrase</title>
@@ -1279,58 +1360,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     
     <summary type="html">
       <![CDATA[This is a big deal for Android users. The NewsBlur Android app now fully supports intelligence training and filtering, letting you filter out the stories you don’t want to read while highlighting the stories you do want by letting you filter titles, authors, tags, and the publisher.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">NewsBlur for iPhone X</title>
-    <link href="https://blog.newsblur.com/2017/12/11/newsblur-for-iphone-x/" rel="alternate" type="text/html" title="NewsBlur for iPhone X" />
-    <published>2017-12-11T07:00:14-05:00</published>
-    <updated>2017-12-11T07:00:14-05:00</updated>
-    <id>https://blog.newsblur.com/2017/12/11/newsblur-for-iphone-x</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/12/11/newsblur-for-iphone-x/">
-      <![CDATA[<p>I’m proud to announce the launch of version 7.0 of the NewsBlur iOS app, complete with iPhone X support. There’s a lot that’s new and improved in this release.</p>
-
-<figure class="tmblr-full" data-orig-height="1928" data-orig-width="1090" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v7-iphonex-feeds.png"><img width="450" style="margin: 0 auto;" data-orig-height="1928" data-orig-width="1090" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v7-iphonex-feeds.png" /></figure>
-
-<p>Also new to the release is that addition of in-app payments for a NewsBlur premium subscription. This was a long time coming. This upgrades the iOS app to match the experience on the web. And because in-app subscriptions are now live, the iOS app will now match the free account restrictions you’ll find on the web. As a reminder, NewsBlur is a paid service with free accounts that act as indefinite trials.</p>
-
-<figure class="tmblr-full" data-orig-height="1131" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/iphone-x-stories.png"><img width="650" style="margin: 24px auto;" data-orig-height="1131" data-orig-width="1200" src="https://s3.amazonaws.com/static.newsblur.com/blog/iphone-x-stories.png" /></figure>
-
-<p>Here’s a complete list of what’s new:</p>
-
-<ul>
-  <li>Built for iOS 11 and iPhone X</li>
-  <li>In app purchases allow you to upgrade to a premium subscription from inside the app</li>
-  <li>Drag-and-drop on iPad to share stories and images from NewsBlur</li>
-  <li>New view: Infrequent Site Stories shows stories from feeds that update less than once a day (premium only)</li>
-  <li>Theme manager in every view for quick color changes</li>
-  <li>Adding San Francisco font choice</li>
-  <li>Adding feed list and story list font size controls so you can change size directly from each view</li>
-  <li>Adding in-app Safari with Reader mode option</li>
-  <li>Scroll position is now saved, so when you return to a story you maintain your place</li>
-  <li>New mark as read button on iPad when in landscape or with story titles on bottom</li>
-  <li>Fixing image sizing on all iPhones and iPads</li>
-  <li>Updated many layouts for better future compatibility</li>
-  <li>Fixing unread count badge for users without notifications turned on</li>
-  <li>Fixing duplicate title/URL in Messages sharing (thanks Nicholas R!)</li>
-  <li>Fixing compatibility with Firefox (thanks Joe G!)</li>
-</ul>
-
-<p>I hope you enjoy the updated iOS app. I have plans to build new features on top of the app next year, when some huge features will make their debut.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="iOS" />
-    
-    
-    <summary type="html">
-      <![CDATA[I’m proud to announce the launch of version 7.0 of the NewsBlur iOS app, complete with iPhone X support. There’s a lot that’s new and improved in this release.
 ]]>
     </summary>
     
