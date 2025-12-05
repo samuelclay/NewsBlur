@@ -10724,7 +10724,7 @@ form.opml_import_form input {
     z-index: 10;
     position: absolute;
     display: none;
-    width: 320px;
+    width: 360px;
     padding: 0;
     margin: 0;
     background-color: #EAECE6;
@@ -10764,17 +10764,31 @@ form.opml_import_form input {
 .NB-menu-ask-ai-group {
     flex-direction: column;
     align-items: stretch;
-    padding: 12px;
+    padding: 12px 12px 4px 12px;
     cursor: default;
+    gap: 0;
 }
 
 .NB-menu-ask-ai-group-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 8px;
+    margin: -12px -12px 4px -12px;
+    padding: 12px;
+    border-radius: 4px 4px 0 0;
     font-weight: 600;
     color: #5E6267;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Highlight Summarize header row when hovering over Brief/Medium/Detailed segments */
+.NB-menu-ask-ai-group:has(.NB-menu-ask-ai-segment:hover) .NB-menu-ask-ai-group-header {
+    background-color: #ECEEEA;
+    color: #303030;
+}
+
+.NB-menu-ask-ai-group:has(.NB-menu-ask-ai-segment:hover) .NB-menu-ask-ai-group-header .NB-menu-ask-ai-icon {
+    filter: grayscale(0%) brightness(1);
 }
 
 .NB-menu-ask-ai-option:hover {
@@ -10808,6 +10822,7 @@ form.opml_import_form input {
     background-color: #F8F9F6;
     padding: 4px;
     border-radius: 6px;
+    margin-left: 28px; /* Indent to align with "Summarize" text (18px icon + 10px gap) */
 }
 
 .NB-menu-ask-ai-segment {
