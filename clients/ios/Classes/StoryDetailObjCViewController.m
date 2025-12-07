@@ -514,6 +514,8 @@
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
                          contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
     
+    NSLog(@"📚 drawStory: content width class: %@", contentWidthClass);  // log
+    
     // if (appDelegate.feedsViewController.isOffline) {
         NSFileManager *manager = [NSFileManager defaultManager];
         NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
@@ -524,7 +526,6 @@
                                               stringByAppendingPathComponent:@"story_images"];
             for (NSString *imageUrl in imageUrls) {
                 NSURL *cachedUrl = [NSURL fileURLWithPath:storyImagesDirectory];
-//                cachedUrl = [cachedUrl URLByAppendingPathComponent:[Utilities md5:imageUrl storyHash:storyHash]];
                 cachedUrl = [cachedUrl URLByAppendingPathComponent:[Utilities md5:imageUrl]];
                 cachedUrl = [cachedUrl URLByAppendingPathExtension:@"jpeg"];
                 
@@ -534,6 +535,12 @@
                     } else {
                         continue;
                     }
+                }
+                
+                NSString *imageBase64 = [[NSData dataWithContentsOfURL:cachedUrl] base64EncodedStringWithOptions:0];
+                
+                if (imageBase64 != nil) {
+                    cachedUrl = [NSURL URLWithString:[NSString stringWithFormat:@"data:image/jpeg;base64,%@", imageBase64]];
                 }
                 
                 NSLog(@"📚 %@ %@ imageURL: %@ cachedURL: %@", activeStory[@"story_title"], storyHash, imageUrl, cachedUrl);
@@ -2484,6 +2491,8 @@
             alternateViewClass = @"NB-titles-left";
         }
     }
+    
+    NSLog(@"📚 changeWebViewWidth: content width class: %@", contentWidthClass);  // log
     
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||

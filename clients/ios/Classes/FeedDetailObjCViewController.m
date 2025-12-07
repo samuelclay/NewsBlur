@@ -59,6 +59,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) BOOL isFadingTable;
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
+@property (nonatomic) NSUInteger deferredLoadStoryCount;
 
 @end
 
@@ -1454,7 +1455,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         if (appDelegate.activeStory == nil && self.cameFromFeedsList && ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone || appDelegate.splitViewController.splitBehavior != UISplitViewControllerSplitBehaviorOverlay)) {
             NSInteger storyIndex = [storiesCollection indexFromLocation:0];
             
-            if (storyIndex == -1) {
+            if (storyIndex == -1 || self.deferredLoadStoryCount > 0) {
                 return;
             }
             
@@ -1521,10 +1522,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 [[self.storyTitlesTable cellForRowAtIndexPath:indexPath] setNeedsDisplay];
             }
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-//                FeedDetailCollectionCell *cell = (FeedDetailCollectionCell *)[self.feedCollectionView cellForItemAtIndexPath:indexPath];
-                [self loadStoryAtRow:[self storyLocationForIndexPath:indexPath]];
-            });
+            self.deferredLoadStoryCount = 1;
+            [self deferredLoadStoryAtRow:indexPath];
             
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             // found the story, reset the two flags.
@@ -1533,6 +1532,19 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             appDelegate.findingStoryStartDate = nil;
         }
     }
+}
+
+- (void)deferredLoadStoryAtRow:(NSIndexPath *)indexPath {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.deferredLoadStoryCount * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (self.deferredLoadStoryCount < 10 && self.isLegacyTable && indexPath.row >= [self.storyTitlesTable numberOfRowsInSection:0]) {
+            NSLog(@"⚠️ deferredLoadStoryAtRow %@ is out of range; probably still loading; will retry in %@ seconds", @(indexPath.row), @(self.deferredLoadStoryCount));  // log
+            self.deferredLoadStoryCount += 1;
+            [self deferredLoadStoryAtRow:indexPath];
+        } else {
+            [self loadStoryAtRow:[self storyLocationForIndexPath:indexPath]];
+            self.deferredLoadStoryCount = 0;
+        }
+    });
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -1926,7 +1938,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         NSInteger location = storiesCollection.locationOfActiveStory;
         NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:location inSection:0];
         
-        if (![oldIndexPath isEqual:indexPath]) {
+        if (location >= 0 && ![oldIndexPath isEqual:indexPath]) {
             [self tableView:tableView deselectRowAtIndexPath:oldIndexPath animated:YES];
         }
         
@@ -3134,6 +3146,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:(rowIndex - offset) inSection:0];
     NSIndexPath *oldIndexPath = storyTitlesTable.indexPathForSelectedRow;
+    
+    if (indexPath.row >= [self.storyTitlesTable numberOfRowsInSection:0]) {
+        NSLog(@"⚠️ Tried to access row %@ when there are only %@ currently", @(indexPath.row), @([self.storyTitlesTable numberOfRowsInSection:0]));  // log
+        return;
+    }
     
     if (![indexPath isEqual:oldIndexPath]) {
         [self tableView:storyTitlesTable deselectRowAtIndexPath:oldIndexPath animated:YES];
