@@ -891,7 +891,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     // Add All Shared Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
-    [appDelegate.dictFoldersArray addObject:@"river_blurblogs"];
+    if ([[appDelegate.dictSocialFeeds allKeys] count] > 0) {
+        [appDelegate.dictFoldersArray addObject:@"river_blurblogs"];
+    }
     
     // Add Saved Searches folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"saved_searches"];

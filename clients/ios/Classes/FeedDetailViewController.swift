@@ -93,6 +93,20 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         changedLayout()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if view.frame.origin.y == 0, let navigationController, navigationController.navigationBar.frame.origin.y < 0 {
+            print("FeedDetailViewController: viewWillAppear in the wrong place: frame: \(view.frame), nav frame: \(navigationController.navigationBar.frame); this is a bug that started with iOS 18; working around it")
+            
+            view.frame.origin.y = -navigationController.navigationBar.frame.origin.y
+            
+            view.setNeedsUpdateConstraints()
+            view.setNeedsLayout()
+            view.setNeedsDisplay()
+        }
+    }
+    
     @objc override func loadingFeed() {
         // Make sure the view has loaded.
         _ = view
@@ -231,31 +245,31 @@ extension FeedDetailViewController {
         appDelegate.activeStory = story.dictionary
         
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { suggestedActions in
-            let read = UIAction(title: story.isRead ? "Mark as unread" : "Mark as read", image: UIImage(named: "mark-read")) { action in
+            let read = UIAction(title: story.isRead ? "Mark as unread" : "Mark as read", image: Utilities.imageNamed("mark-read", sized: 14)) { action in
                 self.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
                 self.reload()
             }
             
-            let newer = UIAction(title: "Mark newer stories read", image: UIImage(named: "mark-read")) { action in
+            let newer = UIAction(title: "Mark newer stories read", image: Utilities.imageNamed("mark-read", sized: 14)) { action in
                 self.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
                 self.reload()
             }
             
-            let older = UIAction(title: "Mark older stories read", image: UIImage(named: "mark-read")) { action in
+            let older = UIAction(title: "Mark older stories read", image: Utilities.imageNamed("mark-read", sized: 14)) { action in
                 self.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
                 self.reload()
             }
             
-            let saved = UIAction(title: story.isSaved ? "Unsave this story" : "Save this story", image: UIImage(named: "saved-stories")) { action in
+            let saved = UIAction(title: story.isSaved ? "Unsave this story" : "Save this story", image: Utilities.imageNamed("saved-stories", sized: 14)) { action in
                 self.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
                 self.reload()
             }
             
-            let send = UIAction(title: "Send this story to…", image: UIImage(named: "email")) { action in
+            let send = UIAction(title: "Send this story to…", image: Utilities.imageNamed("email", sized: 14)) { action in
                 self.appDelegate.showSend(to: self, sender: self.view)
             }
             
-            let train = UIAction(title: "Train this story", image: UIImage(named: "train")) { action in
+            let train = UIAction(title: "Train this story", image: Utilities.imageNamed("train", sized:    14)) { action in
                 self.appDelegate.openTrainStory(self.view)
             }
             

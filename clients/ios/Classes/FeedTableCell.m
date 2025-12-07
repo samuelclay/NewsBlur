@@ -174,17 +174,10 @@ static UIFont *textFont = nil;
     BOOL isHighlighted = cell.highlighted || cell.selected;
     UIColor *backgroundColor;
     
-#if TARGET_OS_MACCATALYST
-    backgroundColor = cell.isSocial ? UIColorFromRGB(0xD8E3DB) :
-                      cell.isSearch ? UIColorFromRGB(0xDBDFE6) :
-                      cell.isSaved ? UIColorFromRGB(0xDFDCD6) :
-                      UIColor.clearColor;
-#else
     backgroundColor = cell.isSocial ? UIColorFromRGB(0xD8E3DB) :
                       cell.isSearch ? UIColorFromRGB(0xDBDFE6) :
                       cell.isSaved ? UIColorFromRGB(0xDFDCD6) :
                       UIColorFromRGB(0xF7F8F5);
-#endif
     
 //    [backgroundColor set];
     self.backgroundColor = backgroundColor;
