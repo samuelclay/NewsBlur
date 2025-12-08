@@ -17,6 +17,8 @@ import SwiftUI
     @objc init(story: [String: Any]) {
         self.story = story
         super.init(nibName: nil, bundle: nil)
+        // Must set appDelegate manually since super.init(nibName:bundle:) doesn't call BaseViewController.init
+        self.appDelegate = NewsBlurAppDelegate.shared()
     }
 
     required init?(coder: NSCoder) {
