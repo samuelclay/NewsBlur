@@ -898,7 +898,7 @@
 - (NSString *)getSideOptions {
     BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
     BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
-    
+
     NSString *sideOptions = [NSString stringWithFormat:@
                              "<div class='NB-sideoptions'>"
                              "<div class='NB-share-header'></div>"
@@ -915,6 +915,12 @@
                              "      <span class=\"NB-sideoption-text\">%@</span>"
                              "    </div></a>"
                              "  </div>"
+                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-ask-ai-button NB-button'>"
+                             "    <a href=\"http://ios.newsblur.com/ask-ai\"><div>"
+                             "      <span class=\"NB-icon\"></span>"
+                             "      <span class=\"NB-sideoption-text\">Ask AI</span>"
+                             "    </div></a>"
+                             "  </div>"
                              "  <div id=\"NB-share-button-id\" class='NB-share-button NB-save-button NB-button %@'>"
                              "    <a href=\"http://ios.newsblur.com/save/save/\"><div>"
                              "      <span class=\"NB-icon\"></span>"
@@ -927,7 +933,7 @@
                              isSaved ? @"NB-button-active" : @"",
                              isSaved ? @"Saved" : @"Save"
                              ];
-    
+
     return sideOptions;
 }
 
@@ -1718,6 +1724,10 @@
             return;
         } else if ([action isEqualToString:@"share"]) {
             [self openShareDialog];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
+        } else if ([action isEqualToString:@"ask-ai"]) {
+            [appDelegate openAskAIDialog:self.activeStory];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
         } else if ([action isEqualToString:@"train"] && [urlComponents count] > 5) {

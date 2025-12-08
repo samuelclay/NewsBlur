@@ -1365,6 +1365,33 @@
     }
 }
 
+- (void)openAskAIDialog:(NSDictionary *)story {
+    if (@available(iOS 15.0, *)) {
+        UINavigationController *navController = self.feedsNavigationController;
+        AskAIViewController *askAIViewController = [[AskAIViewController alloc] initWithStory:story];
+        UINavigationController *askAINavController = [[UINavigationController alloc] initWithRootViewController:askAIViewController];
+
+        askAINavController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+        UISheetPresentationController *sheet = askAINavController.sheetPresentationController;
+        sheet.detents = @[
+            UISheetPresentationControllerDetent.mediumDetent,
+            UISheetPresentationControllerDetent.largeDetent
+        ];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
+
+        [navController presentViewController:askAINavController animated:YES completion:nil];
+    } else {
+        // iOS 14 fallback - show alert that feature requires iOS 15
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Ask AI"
+                                                                       message:@"This feature requires iOS 15 or later."
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+        [self.feedsNavigationController presentViewController:alert animated:YES completion:nil];
+    }
+}
+
 - (void)openNotificationsWithFeed:(NSString *)feedId {
     [self hidePopover];
     // Needs a delay because the menu will close the popover.

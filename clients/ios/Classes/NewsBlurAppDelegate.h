@@ -341,6 +341,7 @@ SFSafariViewControllerDelegate>  {
 - (void)openStatisticsWithFeed:(NSString *)feedId sender:(id)sender;
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
 - (void)openTrainStory:(id)sender;
+- (void)openAskAIDialog:(NSDictionary *)story;
 - (void)openUserTagsStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadFeedDetailView:(BOOL)transition;
