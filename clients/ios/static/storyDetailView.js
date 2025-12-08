@@ -55,6 +55,12 @@ $('.NB-save-button').live('click', function () {
     return false;
 });
 
+$('.NB-ask-ai-button').live('click', function () {
+    var url = $('a', this).attr('href');
+    window.location = url;
+    return false;
+});
+
 $('.NB-button').live('touchstart', function () {
     $(this).addClass('active');
 });

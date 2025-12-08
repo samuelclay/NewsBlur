@@ -968,6 +968,16 @@ a.NB-show-profile {
     background-size: 16px;
 }
 
+.NB-button.NB-ask-ai-button .NB-icon {
+    background: url("ask-ai@2x.png") no-repeat 0 0;
+    background-size: 16px;
+}
+
+.NB-button.NB-ask-ai-button {
+    float: none;
+    margin: 0 auto;
+}
+
 .NB-iphone .NB-button.NB-share-button .NB-icon {
     background-position-y: bottom;
     width: 20px;
