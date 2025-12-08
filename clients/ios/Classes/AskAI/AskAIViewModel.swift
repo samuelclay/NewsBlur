@@ -263,11 +263,15 @@ class AskAIViewModel: ObservableObject {
     // MARK: - Private Methods
 
     private func sendQuestionRequest() {
-        guard let url = URL(string: "\(appDelegate.url ?? "https://www.newsblur.com")/ask-ai/question") else {
+        let baseURL = appDelegate.url ?? "https://www.newsblur.com"
+        guard let url = URL(string: "\(baseURL)/ask-ai/question") else {
             conversation.error = "Invalid URL"
             conversation.isStreaming = false
             return
         }
+
+        NSLog("AskAI: Sending request to \(url)")
+        NSLog("AskAI: Socket connected: \(NewsBlurSocketClient.shared.connected)")
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -309,19 +313,30 @@ class AskAIViewModel: ObservableObject {
                 guard let self = self else { return }
 
                 if let error = error {
+                    NSLog("AskAI: Request error: \(error.localizedDescription)")
                     self.conversation.error = error.localizedDescription
                     self.conversation.isStreaming = false
                     return
                 }
 
+                if let httpResponse = response as? HTTPURLResponse {
+                    NSLog("AskAI: Response status: \(httpResponse.statusCode)")
+                }
+
                 guard let data = data else {
+                    NSLog("AskAI: No response data")
                     self.conversation.error = "No response data"
                     self.conversation.isStreaming = false
                     return
                 }
 
+                if let responseStr = String(data: data, encoding: .utf8) {
+                    NSLog("AskAI: Response body: \(responseStr.prefix(500))")
+                }
+
                 do {
                     let response = try JSONDecoder().decode(AskAIQuestionResponse.self, from: data)
+                    NSLog("AskAI: Parsed response code: \(response.code)")
 
                     if response.code != 1 {
                         self.conversation.error = response.message ?? "Request failed"
@@ -329,6 +344,7 @@ class AskAIViewModel: ObservableObject {
                     }
                     // Success - wait for socket events
                 } catch {
+                    NSLog("AskAI: Parse error: \(error)")
                     // Try to parse error message
                     if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                        let message = json["message"] as? String {
@@ -345,14 +361,17 @@ class AskAIViewModel: ObservableObject {
     // MARK: - Socket Event Handlers
 
     private func handleStart(_ data: Any) {
+        NSLog("AskAI: Received start event: \(data)")
         guard let dict = data as? [String: Any],
               let storyHash = dict["story_hash"] as? String,
               let requestId = dict["request_id"] as? String,
               storyHash == conversation.storyHash,
               requestId == conversation.requestId else {
+            NSLog("AskAI: Start event ignored - mismatched hash/requestId")
             return
         }
 
+        NSLog("AskAI: Start event matched, beginning streaming")
         // Reset timeout for streaming
         startStreamingTimeout()
         conversation.error = nil
@@ -368,6 +387,7 @@ class AskAIViewModel: ObservableObject {
             return
         }
 
+        NSLog("AskAI: Received chunk: \(chunk.prefix(50))...")
         // Append chunk to response
         conversation.responseText += chunk
 
@@ -376,6 +396,7 @@ class AskAIViewModel: ObservableObject {
     }
 
     private func handleComplete(_ data: Any) {
+        NSLog("AskAI: Received complete event")
         guard let dict = data as? [String: Any],
               let storyHash = dict["story_hash"] as? String,
               let requestId = dict["request_id"] as? String,
@@ -384,6 +405,7 @@ class AskAIViewModel: ObservableObject {
             return
         }
 
+        NSLog("AskAI: Stream complete")
         timeoutTimer?.invalidate()
         conversation.isStreaming = false
         conversation.isComplete = true

@@ -30,13 +30,18 @@ import Foundation
 
     private var eventHandlers: [String: [(Any) -> Void]] = [:]
 
-    private let baseURL: String = {
-        #if DEBUG
-        return "wss://localhost/v3/socket.io/"
-        #else
+    private var baseURL: String {
+        // Use the app's configured URL (handles both production and dev)
+        if let appURL = NewsBlurAppDelegate.shared()?.url,
+           !appURL.isEmpty {
+            // Convert http(s) to ws(s)
+            let wsURL = appURL
+                .replacingOccurrences(of: "https://", with: "wss://")
+                .replacingOccurrences(of: "http://", with: "ws://")
+            return "\(wsURL)/v3/socket.io/"
+        }
         return "wss://www.newsblur.com/v3/socket.io/"
-        #endif
-    }()
+    }
 
     // MARK: - Public Methods
 
@@ -94,77 +99,30 @@ import Foundation
         return isConnected
     }
 
-    // MARK: - Socket.IO Handshake
+    // MARK: - WebSocket Connection
+    // Note: NewsBlur socket server only accepts websocket transport (no polling)
+    // So we connect directly via WebSocket without HTTP polling handshake
 
     private func performHandshake(completion: @escaping (Bool) -> Void) {
-        // Socket.IO requires an initial HTTP request to get session parameters
-        var urlComponents = URLComponents(string: baseURL.replacingOccurrences(of: "wss://", with: "https://"))!
-        urlComponents.queryItems = [
-            URLQueryItem(name: "EIO", value: "4"), // Engine.IO version 4
-            URLQueryItem(name: "transport", value: "polling")
-        ]
-
-        guard let url = urlComponents.url else {
-            completion(false)
-            return
-        }
-
-        var request = URLRequest(url: url)
-        request.timeoutInterval = 30
-
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            guard let self = self else { return }
-
-            if let error = error {
-                NSLog("NewsBlurSocketClient: Handshake error: \(error.localizedDescription)")
-                completion(false)
-                return
-            }
-
-            guard let data = data, let responseString = String(data: data, encoding: .utf8) else {
-                NSLog("NewsBlurSocketClient: No handshake data")
-                completion(false)
-                return
-            }
-
-            // Parse Engine.IO open packet: 0{"sid":"...","upgrades":["websocket"],"pingInterval":25000,"pingTimeout":60000}
-            if responseString.hasPrefix("0{") {
-                let jsonString = String(responseString.dropFirst(1))
-                if let jsonData = jsonString.data(using: .utf8),
-                   let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
-                   let sid = json["sid"] as? String {
-                    self.sid = sid
-                    NSLog("NewsBlurSocketClient: Got session ID: \(sid)")
-                    completion(true)
-                    return
-                }
-            }
-
-            NSLog("NewsBlurSocketClient: Failed to parse handshake: \(responseString)")
-            completion(false)
-        }.resume()
+        // Skip polling handshake - server only accepts websocket transport
+        // We'll get the session ID from the WebSocket connection directly
+        completion(true)
     }
 
-    // MARK: - WebSocket Connection
-
     private func connectWebSocket() {
-        guard let sid = sid else {
-            NSLog("NewsBlurSocketClient: No session ID for WebSocket")
-            isConnecting = false
-            return
-        }
-
         var urlComponents = URLComponents(string: baseURL)!
         urlComponents.queryItems = [
             URLQueryItem(name: "EIO", value: "4"),
-            URLQueryItem(name: "transport", value: "websocket"),
-            URLQueryItem(name: "sid", value: sid)
+            URLQueryItem(name: "transport", value: "websocket")
         ]
 
         guard let url = urlComponents.url else {
+            NSLog("NewsBlurSocketClient: Invalid WebSocket URL")
             isConnecting = false
             return
         }
+
+        NSLog("NewsBlurSocketClient: Connecting to \(url)")
 
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 120
@@ -174,8 +132,8 @@ import Foundation
         webSocketTask = session?.webSocketTask(with: url)
         webSocketTask?.resume()
 
-        // Send WebSocket upgrade probe
-        sendRawMessage("2probe") // Engine.IO probe
+        // Start receiving messages immediately
+        receiveMessages()
     }
 
     // MARK: - Message Handling
@@ -215,8 +173,18 @@ import Foundation
         let firstChar = message.first!
 
         switch firstChar {
-        case "0": // Open
-            NSLog("NewsBlurSocketClient: Engine.IO open")
+        case "0": // Open - received when WebSocket connects directly
+            NSLog("NewsBlurSocketClient: Engine.IO open received")
+            // Parse session info from the open packet
+            let jsonPart = String(message.dropFirst())
+            if let data = jsonPart.data(using: .utf8),
+               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let sessionId = json["sid"] as? String {
+                self.sid = sessionId
+                NSLog("NewsBlurSocketClient: Got session ID: \(sessionId)")
+            }
+            // Complete connection and send Socket.IO connect
+            completeConnection()
 
         case "2": // Ping
             sendRawMessage("3") // Pong
@@ -300,12 +268,12 @@ import Foundation
         reconnectAttempts = 0
         stopReconnectTimer()
         startPingTimer()
-        receiveMessages()
+        // Note: receiveMessages() already called from connectWebSocket()
 
         // Send Socket.IO connect packet
         sendRawMessage("40") // Socket.IO connect to default namespace
 
-        NSLog("NewsBlurSocketClient: WebSocket connected")
+        NSLog("NewsBlurSocketClient: WebSocket connected, isConnected=\(isConnected)")
     }
 
     private func subscribeToFeeds() {

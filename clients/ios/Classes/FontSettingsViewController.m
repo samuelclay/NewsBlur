@@ -273,9 +273,9 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        return 12;
+        return 13;
     } else {
-        return 11;
+        return 12;
     }
 }
 
@@ -285,17 +285,17 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
     NSUInteger iPadOffset = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? 0 : 1;
     
-    if (indexPath.row == 6) {
+    if (indexPath.row == 7) {
         return [self makeFontSizeTableCell];
-    } else if (indexPath.row == 7) {
+    } else if (indexPath.row == 8) {
         return [self makeLineSpacingTableCell];
-    } else if (indexPath.row == 8 && iPadOffset == 0) {
+    } else if (indexPath.row == 9 && iPadOffset == 0) {
         return [self makeFullScreenTableCell];
-    } else if (indexPath.row == 9 - iPadOffset) {
-        return [self makeAutoscrollTableCell];
     } else if (indexPath.row == 10 - iPadOffset) {
-        return [self makeScrollOrientationTableCell];
+        return [self makeAutoscrollTableCell];
     } else if (indexPath.row == 11 - iPadOffset) {
+        return [self makeScrollOrientationTableCell];
+    } else if (indexPath.row == 12 - iPadOffset) {
         return [self makeThemeTableCell];
     }
     
@@ -343,6 +343,12 @@
         cell.imageView.image = [Utilities templateImageNamed:@"share" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0x94968E);
     } else if (indexPath.row == 5) {
+        cell.textLabel.text = @"Ask AI";
+        if (@available(iOS 13.0, *)) {
+            cell.imageView.image = [[UIImage systemImageNamed:@"sparkles"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        }
+        cell.imageView.tintColor = UIColorFromRGB(0x709E5D);
+    } else if (indexPath.row == 6) {
         NSString *fontStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontStyle"];
         if (!fontStyle) {
             fontStyle = @"GothamNarrow-Book";
@@ -368,17 +374,17 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row >= 6) {
+    if (indexPath.row >= 7) {
         return nil;
     }
     return indexPath;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row != 5) {
-        [self dismissViewControllerAnimated:indexPath.row != 3 && indexPath.row != 4 completion:nil];
+    if (indexPath.row != 6) {
+        [self dismissViewControllerAnimated:indexPath.row != 3 && indexPath.row != 4 && indexPath.row != 5 completion:nil];
     }
-    
+
     if (indexPath.row == 0) {
         [self.appDelegate.storiesCollection toggleStorySaved];
         [self.appDelegate.feedDetailViewController reloadWithSizing];
@@ -394,6 +400,8 @@
     } else if (indexPath.row == 4) {
         [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
     } else if (indexPath.row == 5) {
+        [self.appDelegate openAskAIDialog:self.appDelegate.activeStory];
+    } else if (indexPath.row == 6) {
         [self showFontList];
     }
 }
