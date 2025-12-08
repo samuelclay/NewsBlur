@@ -8,17 +8,69 @@
 
 import SwiftUI
 
-// MARK: - NewsBlur Design Colors
+// MARK: - NewsBlur Design Colors (Theme-aware)
 @available(iOS 15.0, *)
 private struct NewsBlurColors {
-    static let background = Color(red: 0.918, green: 0.925, blue: 0.902)  // #EAECE6
-    static let cardBackground = Color.white
-    static let cardHover = Color(red: 0.925, green: 0.933, blue: 0.918)  // #ECEEEA
-    static let border = Color(red: 0.816, green: 0.824, blue: 0.800)  // #D0D2CC
-    static let textPrimary = Color(red: 0.369, green: 0.384, blue: 0.404)  // #5E6267
-    static let textSecondary = Color(red: 0.565, green: 0.573, blue: 0.545)  // #90928B
-    static let inputBackground = Color(red: 0.973, green: 0.976, blue: 0.965)  // #F8F9F6
+    // Theme-aware colors: returns appropriate color based on current NewsBlur theme
+    // Themes: Light, Sepia, Medium (gray), Dark (black)
+
+    static var background: Color {
+        // Light: #EAECE6, Sepia: #F5E6D3, Medium: #3D3D3D, Dark: #1A1A1A
+        themedColor(light: 0xEAECE6, sepia: 0xF5E6D3, medium: 0x3D3D3D, dark: 0x1A1A1A)
+    }
+
+    static var cardBackground: Color {
+        // Light: white, Sepia: #FDF8F0, Medium: #4A4A4A, Dark: #2A2A2A
+        themedColor(light: 0xFFFFFF, sepia: 0xFDF8F0, medium: 0x4A4A4A, dark: 0x2A2A2A)
+    }
+
+    static var cardHover: Color {
+        // Light: #ECEEEA, Sepia: #F0E8DC, Medium: #555555, Dark: #333333
+        themedColor(light: 0xECEEEA, sepia: 0xF0E8DC, medium: 0x555555, dark: 0x333333)
+    }
+
+    static var border: Color {
+        // Light: #D0D2CC, Sepia: #D4C8B8, Medium: #5A5A5A, Dark: #404040
+        themedColor(light: 0xD0D2CC, sepia: 0xD4C8B8, medium: 0x5A5A5A, dark: 0x404040)
+    }
+
+    static var textPrimary: Color {
+        // Light: #5E6267, Sepia: #5C4A3D, Medium: #E0E0E0, Dark: #E8E8E8
+        themedColor(light: 0x5E6267, sepia: 0x5C4A3D, medium: 0xE0E0E0, dark: 0xE8E8E8)
+    }
+
+    static var textSecondary: Color {
+        // Light: #90928B, Sepia: #8B7B6B, Medium: #A0A0A0, Dark: #B0B0B0
+        themedColor(light: 0x90928B, sepia: 0x8B7B6B, medium: 0xA0A0A0, dark: 0xB0B0B0)
+    }
+
+    static var inputBackground: Color {
+        // Light: #F8F9F6, Sepia: #FAF5ED, Medium: #3A3A3A, Dark: #222222
+        themedColor(light: 0xF8F9F6, sepia: 0xFAF5ED, medium: 0x3A3A3A, dark: 0x222222)
+    }
+
     static let accent = Color(red: 0.439, green: 0.620, blue: 0.365)  // NewsBlur green #709E5D
+
+    // Helper to create themed color from hex values for Light, Sepia, Medium, Dark
+    private static func themedColor(light: Int, sepia: Int, medium: Int, dark: Int) -> Color {
+        let theme = ThemeManager.shared.theme ?? ThemeStyleLight
+        let hex: Int
+        switch theme {
+        case ThemeStyleSepia:
+            hex = sepia
+        case ThemeStyleMedium:
+            hex = medium
+        case ThemeStyleDark:
+            hex = dark
+        default:
+            hex = light
+        }
+        return Color(
+            red: Double((hex >> 16) & 0xFF) / 255.0,
+            green: Double((hex >> 8) & 0xFF) / 255.0,
+            blue: Double(hex & 0xFF) / 255.0
+        )
+    }
 }
 
 @available(iOS 15.0, *)
@@ -27,6 +79,9 @@ struct AskAIView: View {
     var onDismiss: () -> Void
 
     @FocusState private var isInputFocused: Bool
+    @State private var isScrolledToBottom: Bool = true
+    @State private var isUserDragging: Bool = false
+    @State private var lastContentLength: Int = 0
 
     var body: some View {
         VStack(spacing: 0) {
@@ -48,8 +103,6 @@ struct AskAIView: View {
 
             // Understand Section
             understandSection
-
-            Spacer(minLength: 0)
 
             // Custom Question Section
             customQuestionSection
@@ -84,8 +137,6 @@ struct AskAIView: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .padding(.leading, 28) // Align with text after icon
-            .background(NewsBlurColors.inputBackground)
-            .cornerRadius(6)
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
         }
@@ -119,7 +170,7 @@ struct AskAIView: View {
             .cornerRadius(4)
             .overlay(
                 RoundedRectangle(cornerRadius: 4)
-                    .stroke(viewModel.selectedSummarizeType == type ? NewsBlurColors.accent : NewsBlurColors.border, lineWidth: 1)
+                    .stroke(NewsBlurColors.border, lineWidth: 1)
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -205,6 +256,7 @@ struct AskAIView: View {
                 // Text input
                 TextField("Ask a question...", text: $viewModel.customQuestion)
                     .font(.system(size: 13))
+                    .foregroundColor(NewsBlurColors.textPrimary)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(NewsBlurColors.cardBackground)
@@ -215,6 +267,11 @@ struct AskAIView: View {
                     )
                     .focused($isInputFocused)
                     .disabled(viewModel.isRecording || viewModel.isTranscribing)
+                    .onSubmit {
+                        if !viewModel.customQuestion.isEmpty {
+                            viewModel.sendQuestion(.custom)
+                        }
+                    }
 
                 // Ask button with model selector
                 askButtonMenu
@@ -239,45 +296,53 @@ struct AskAIView: View {
     }
 
     private var askButtonMenu: some View {
-        Menu {
-            ForEach(AskAIProvider.allCases) { model in
-                Button(action: {
-                    viewModel.selectedModel = model
-                    if !viewModel.customQuestion.isEmpty {
-                        viewModel.sendQuestion(.custom)
-                    }
-                }) {
-                    HStack {
-                        Text(model.displayName)
-                        if model == viewModel.selectedModel {
-                            Image(systemName: "checkmark")
+        HStack(spacing: 8) {
+            // Model selector (always enabled, to the left of Ask)
+            Menu {
+                ForEach(AskAIProvider.allCases) { model in
+                    Button(action: {
+                        viewModel.selectedModel = model
+                    }) {
+                        HStack {
+                            Text(model.displayName)
+                            if model == viewModel.selectedModel {
+                                Image(systemName: "checkmark")
+                            }
                         }
                     }
                 }
+            } label: {
+                HStack(spacing: 6) {
+                    Text(viewModel.selectedModel.shortName)
+                        .font(.system(size: 12, weight: .medium))
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.system(size: 10))
+                }
+                .foregroundColor(viewModel.selectedModel.textColor)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule()
+                        .fill(viewModel.selectedModel.color)
+                )
             }
-        } label: {
-            HStack(spacing: 0) {
+
+            // Ask button
+            Button(action: {
+                if !viewModel.customQuestion.isEmpty {
+                    viewModel.sendQuestion(.custom)
+                }
+            }) {
                 Text("Ask")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.white)
-                    .padding(.horizontal, 12)
+                    .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(viewModel.customQuestion.isEmpty ? NewsBlurColors.textSecondary : NewsBlurColors.accent)
-
-                Rectangle()
-                    .fill(Color.white.opacity(0.3))
-                    .frame(width: 1)
-
-                Image(systemName: "chevron.down")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 8)
-                    .background(viewModel.customQuestion.isEmpty ? NewsBlurColors.textSecondary : NewsBlurColors.accent)
+                    .cornerRadius(4)
             }
-            .cornerRadius(4)
+            .disabled(viewModel.customQuestion.isEmpty)
         }
-        .disabled(viewModel.customQuestion.isEmpty)
     }
 
     // MARK: - Response View
@@ -287,22 +352,19 @@ struct AskAIView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        // Question header
-                        questionHeader
+                        // Display all completed response blocks
+                        ForEach(Array(viewModel.conversation.completedBlocks.enumerated()), id: \.element.id) { index, block in
+                            completedBlockView(block, index: index)
+                        }
 
-                        // Model pill
-                        ModelPill(model: viewModel.conversation.model, isLoading: viewModel.conversation.isStreaming)
+                        // Current streaming response (if any)
+                        if viewModel.conversation.isStreaming || !viewModel.conversation.responseText.isEmpty {
+                            currentStreamingView
+                        }
 
                         // Error message
                         if let error = viewModel.conversation.error {
                             errorView(error)
-                        }
-
-                        // Response text
-                        if !viewModel.conversation.responseText.isEmpty {
-                            responseText
-                        } else if viewModel.conversation.isStreaming {
-                            streamingPlaceholder
                         }
 
                         // Usage message
@@ -317,7 +379,39 @@ struct AskAIView: View {
                     }
                     .padding()
                 }
-                .onChange(of: viewModel.conversation.responseText) { _ in
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 5)
+                        .onChanged { value in
+                            // User is actively dragging - check direction
+                            if value.translation.height > 0 {
+                                // Scrolling up (dragging down) - unpin from bottom
+                                isScrolledToBottom = false
+                                isUserDragging = true
+                            } else if value.translation.height < -20 {
+                                // Scrolling down aggressively - re-pin to bottom
+                                isScrolledToBottom = true
+                                isUserDragging = true
+                            }
+                        }
+                        .onEnded { value in
+                            isUserDragging = false
+                            // If they scrolled down hard (velocity), re-pin
+                            if value.predictedEndTranslation.height < -100 {
+                                isScrolledToBottom = true
+                            }
+                        }
+                )
+                .onChange(of: viewModel.conversation.responseText) { newValue in
+                    // Only auto-scroll if user is pinned to bottom and not actively dragging
+                    if isScrolledToBottom && !isUserDragging {
+                        withAnimation(.easeOut(duration: 0.1)) {
+                            proxy.scrollTo("bottom", anchor: .bottom)
+                        }
+                    }
+                }
+                .onChange(of: viewModel.conversation.completedBlocks.count) { _ in
+                    // Always scroll to bottom when a new response block completes
+                    isScrolledToBottom = true
                     withAnimation {
                         proxy.scrollTo("bottom", anchor: .bottom)
                     }
@@ -332,13 +426,89 @@ struct AskAIView: View {
         }
     }
 
-    private var questionHeader: some View {
+    private func completedBlockView(_ block: AskAIResponseBlock, index: Int) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Question header (show story title only on first block)
+            if block.isFollowUp {
+                followUpQuestionHeader(block.questionText)
+            } else {
+                questionHeaderView(block.questionText, showStoryTitle: true)
+            }
+
+            // Model pill (right-justified) - show if first block or model changed
+            let previousModel = index > 0 ? viewModel.conversation.completedBlocks[index - 1].model : nil
+            if index == 0 || block.model != previousModel {
+                HStack {
+                    Spacer()
+                    ModelPill(model: block.model, isLoading: false)
+                }
+            }
+
+            // Response text
+            MarkdownText(block.responseText)
+                .textSelection(.enabled)
+        }
+    }
+
+    private var currentStreamingView: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // If this is a follow-up (there are completed blocks), show the question
+            if !viewModel.conversation.completedBlocks.isEmpty {
+                followUpQuestionHeader(viewModel.conversation.questionText)
+            } else {
+                questionHeaderView(viewModel.conversation.questionText, showStoryTitle: true)
+            }
+
+            // Model pill - show if first or model changed from last completed block
+            let lastModel = viewModel.conversation.completedBlocks.last?.model
+            if lastModel == nil || viewModel.conversation.model != lastModel {
+                HStack {
+                    Spacer()
+                    ModelPill(model: viewModel.conversation.model, isLoading: viewModel.conversation.isStreaming)
+                }
+            } else if viewModel.conversation.isStreaming {
+                // Show pulsing pill while streaming even if same model
+                HStack {
+                    Spacer()
+                    ModelPill(model: viewModel.conversation.model, isLoading: true)
+                }
+            }
+
+            // Response text
+            if !viewModel.conversation.responseText.isEmpty {
+                MarkdownText(viewModel.conversation.responseText)
+                    .textSelection(.enabled)
+            }
+        }
+    }
+
+    private func followUpQuestionHeader(_ text: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "arrow.turn.down.right")
+                .font(.system(size: 12))
+                .foregroundColor(NewsBlurColors.textSecondary)
+            Text(text)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(NewsBlurColors.textPrimary)
+                .lineLimit(2)
+            Spacer()
+        }
+        .padding(10)
+        .background(NewsBlurColors.cardBackground.opacity(0.7))
+        .cornerRadius(6)
+        .overlay(
+            RoundedRectangle(cornerRadius: 6)
+                .stroke(NewsBlurColors.border.opacity(0.5), lineWidth: 1)
+        )
+    }
+
+    private func questionHeaderView(_ text: String, showStoryTitle: Bool) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(viewModel.conversation.questionText)
+            Text(text)
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundColor(NewsBlurColors.textPrimary)
 
-            if !viewModel.conversation.storyTitle.isEmpty {
+            if showStoryTitle && !viewModel.conversation.storyTitle.isEmpty {
                 Text("About: \(viewModel.conversation.storyTitle)")
                     .font(.system(size: 12))
                     .foregroundColor(NewsBlurColors.textSecondary)
@@ -355,6 +525,7 @@ struct AskAIView: View {
         )
     }
 
+
     private func errorView(_ error: String) -> some View {
         HStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle.fill")
@@ -369,15 +540,6 @@ struct AskAIView: View {
         .cornerRadius(6)
     }
 
-    private var responseText: some View {
-        MarkdownText(viewModel.conversation.responseText)
-            .textSelection(.enabled)
-    }
-
-    private var streamingPlaceholder: some View {
-        // Empty view - the pulsing model pill indicates loading state
-        EmptyView()
-    }
 
     private func usageView(_ message: String) -> some View {
         HStack(spacing: 8) {
@@ -421,37 +583,6 @@ struct AskAIView: View {
                 // Text input
                 TextField("Follow up...", text: $viewModel.customQuestion)
                     .font(.system(size: 13))
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(NewsBlurColors.cardBackground)
-                    .cornerRadius(4)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(NewsBlurColors.border, lineWidth: 1)
-                    )
-                    .focused($isInputFocused)
-
-                // Re-ask menu
-                Menu {
-                    ForEach(AskAIProvider.allCases) { model in
-                        Button(action: {
-                            viewModel.reaskWithModel(model)
-                        }) {
-                            HStack {
-                                Text("Re-ask with \(model.shortName)")
-                                if model == viewModel.selectedModel {
-                                    Image(systemName: "checkmark")
-                                }
-                            }
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Text("Re-ask")
-                            .font(.system(size: 13))
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 10))
-                    }
                     .foregroundColor(NewsBlurColors.textPrimary)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
@@ -461,10 +592,61 @@ struct AskAIView: View {
                         RoundedRectangle(cornerRadius: 4)
                             .stroke(NewsBlurColors.border, lineWidth: 1)
                     )
+                    .focused($isInputFocused)
+                    .onSubmit {
+                        if !viewModel.customQuestion.isEmpty {
+                            viewModel.sendFollowUp()
+                        }
+                    }
+
+                // Model selector with native iOS picker style
+                Menu {
+                    ForEach(AskAIProvider.allCases) { model in
+                        Button(action: {
+                            viewModel.selectedModel = model
+                        }) {
+                            HStack {
+                                Text(model.displayName)
+                                if model == viewModel.selectedModel {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 6) {
+                        Text(viewModel.selectedModel.shortName)
+                            .font(.system(size: 12, weight: .medium))
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.system(size: 10))
+                    }
+                    .foregroundColor(viewModel.selectedModel.textColor)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(
+                        Capsule()
+                            .fill(viewModel.selectedModel.color)
+                    )
                 }
 
-                // Send button
-                if !viewModel.customQuestion.isEmpty {
+                // Re-ask button (when no text) or Send button (when text)
+                if viewModel.customQuestion.isEmpty {
+                    Button(action: {
+                        viewModel.reaskWithModel(viewModel.selectedModel)
+                    }) {
+                        Text("Re-ask")
+                            .font(.system(size: 13))
+                            .foregroundColor(NewsBlurColors.textPrimary)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(NewsBlurColors.cardBackground)
+                            .cornerRadius(4)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(NewsBlurColors.border, lineWidth: 1)
+                            )
+                    }
+                } else {
                     Button(action: {
                         viewModel.sendFollowUp()
                     }) {
@@ -536,7 +718,21 @@ struct MarkdownText: View {
     private let headingFont = Font.system(size: 18, weight: .semibold, design: .default)
     private let subheadingFont = Font.system(size: 16, weight: .semibold, design: .default)
     private let bulletColor = Color(red: 0.439, green: 0.620, blue: 0.365) // NewsBlur green
-    private let textColor = Color(red: 0.369, green: 0.384, blue: 0.404)
+
+    // Theme-aware text color
+    private var textColor: Color {
+        let theme = ThemeManager.shared.theme ?? ThemeStyleLight
+        switch theme {
+        case ThemeStyleSepia:
+            return Color(red: 0.36, green: 0.29, blue: 0.24) // #5C4A3D
+        case ThemeStyleMedium:
+            return Color(red: 0.88, green: 0.88, blue: 0.88) // #E0E0E0
+        case ThemeStyleDark:
+            return Color(red: 0.91, green: 0.91, blue: 0.91) // #E8E8E8
+        default:
+            return Color(red: 0.369, green: 0.384, blue: 0.404) // #5E6267
+        }
+    }
 
     init(_ text: String) {
         self.text = text
@@ -674,6 +870,7 @@ struct MarkdownText: View {
         return result
     }
 }
+
 
 // MARK: - Preview
 

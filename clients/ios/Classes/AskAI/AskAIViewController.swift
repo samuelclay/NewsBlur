@@ -7,12 +7,14 @@
 //
 
 import SwiftUI
+import Combine
 
 @available(iOS 15.0, *)
 @objc class AskAIViewController: BaseViewController {
     private var story: [String: Any]
     private var hostingController: UIHostingController<AskAIView>?
     private var viewModel: AskAIViewModel?
+    private var cancellables = Set<AnyCancellable>()
 
     @objc init(story: [String: Any]) {
         self.story = story
@@ -28,9 +30,22 @@ import SwiftUI
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Set background color to match theme
+        updateBackgroundColor()
+
         // Create view model
         let viewModel = AskAIViewModel(story: story)
         self.viewModel = viewModel
+
+        // Observe hasAskedQuestion to expand sheet when answer mode
+        viewModel.$hasAskedQuestion
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] hasAsked in
+                if hasAsked {
+                    self?.expandSheetToLarge()
+                }
+            }
+            .store(in: &cancellables)
 
         // Create SwiftUI view
         let askAIView = AskAIView(viewModel: viewModel) { [weak self] in
@@ -39,6 +54,7 @@ import SwiftUI
 
         // Create hosting controller
         let hostingController = UIHostingController(rootView: askAIView)
+        hostingController.view.backgroundColor = .clear
         self.hostingController = hostingController
 
         // Add as child view controller
@@ -54,9 +70,31 @@ import SwiftUI
             hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
 
-        // Configure navigation bar
-        navigationItem.title = "Ask AI"
+    private func updateBackgroundColor() {
+        // Get background color based on current theme
+        let theme = ThemeManager.shared.theme ?? ThemeStyleLight
+        let backgroundColor: UIColor
+        switch theme {
+        case ThemeStyleSepia:
+            backgroundColor = UIColor(red: 0.96, green: 0.90, blue: 0.83, alpha: 1.0) // #F5E6D3
+        case ThemeStyleMedium:
+            backgroundColor = UIColor(red: 0.24, green: 0.24, blue: 0.24, alpha: 1.0) // #3D3D3D
+        case ThemeStyleDark:
+            backgroundColor = UIColor(red: 0.10, green: 0.10, blue: 0.10, alpha: 1.0) // #1A1A1A
+        default:
+            backgroundColor = UIColor(red: 0.92, green: 0.93, blue: 0.90, alpha: 1.0) // #EAECE6
+        }
+        view.backgroundColor = backgroundColor
+    }
+
+    private func expandSheetToLarge() {
+        guard let sheet = navigationController?.sheetPresentationController else { return }
+        sheet.animateChanges {
+            // Add large detent option but don't auto-expand - let user expand manually
+            sheet.detents = [.medium(), .large()]
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -1373,15 +1373,29 @@
 
         askAINavController.modalPresentationStyle = UIModalPresentationPageSheet;
 
-        UISheetPresentationController *sheet = askAINavController.sheetPresentationController;
-        sheet.detents = @[
-            UISheetPresentationControllerDetent.mediumDetent,
-            UISheetPresentationControllerDetent.largeDetent
-        ];
-        sheet.prefersGrabberVisible = YES;
-        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
+        // Configure navigation bar to be hidden - we don't need the title bar
+        askAINavController.navigationBarHidden = YES;
 
-        [navController presentViewController:askAINavController animated:YES completion:nil];
+        UISheetPresentationController *sheet = askAINavController.sheetPresentationController;
+        // Start with only medium detent - AskAIViewController will add large when answer mode
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        // Allow interaction with story content behind the sheet when at medium height
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+
+        [navController presentViewController:askAINavController animated:YES completion:^{
+            // Add tap gesture to container view to dismiss on tap outside sheet
+            UIView *containerView = askAINavController.presentationController.containerView;
+            if (containerView) {
+                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
+                    initWithTarget:self
+                    action:@selector(dismissAskAIOnTap:)];
+                tapToDismiss.cancelsTouchesInView = NO;
+                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
+                [containerView addGestureRecognizer:tapToDismiss];
+            }
+        }];
     } else {
         // iOS 14 fallback - show alert that feature requires iOS 15
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Ask AI"
@@ -1390,6 +1404,26 @@
         [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
         [self.feedsNavigationController presentViewController:alert animated:YES completion:nil];
     }
+}
+
+- (void)dismissAskAIOnTap:(UITapGestureRecognizer *)gesture {
+    UIViewController *presentedVC = self.feedsNavigationController.presentedViewController;
+    if (presentedVC) {
+        [presentedVC dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    // Only allow the tap if it's outside the presented sheet view
+    UIViewController *presentedVC = self.feedsNavigationController.presentedViewController;
+    if (presentedVC && presentedVC.view) {
+        CGPoint location = [touch locationInView:presentedVC.view];
+        // If touch is inside the sheet's view bounds, don't receive it
+        if (CGRectContainsPoint(presentedVC.view.bounds, location)) {
+            return NO;
+        }
+    }
+    return YES;
 }
 
 - (void)openNotificationsWithFeed:(NSString *)feedId {

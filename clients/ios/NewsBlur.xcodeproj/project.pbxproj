@@ -105,6 +105,7 @@
 		175790732930605500490924 /* accessory_disclosure.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876BA21C99137B0055DD15 /* accessory_disclosure.png */; };
 		175790742930605500490924 /* fitvid.js in Resources */ = {isa = PBXBuildFile; fileRef = FF265F10187B6B230080C332 /* fitvid.js */; };
 		175790752930605500490924 /* storyDetailView.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BE168A708D0057A7DA /* storyDetailView.js */; };
+		17A5CA1DEBEBEBEB000002 /* prompt.svg in Resources */ = {isa = PBXBuildFile; fileRef = 17A5CA1DEBEBEBEB000001 /* prompt.svg */; };
 		175790762930605500490924 /* theme_color_sepia-sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C69B1C1110BA005EA453 /* theme_color_sepia-sel@2x.png */; };
 		175790772930605500490924 /* theme_color_medium@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C68E1C110665005EA453 /* theme_color_medium@2x.png */; };
 		175790782930605500490924 /* zepto.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BF168A708D0057A7DA /* zepto.js */; };
@@ -1182,6 +1183,7 @@
 		FF67D3BB168A70630057A7DA /* trainer.css in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BA168A70630057A7DA /* trainer.css */; };
 		FF67D3C1168A708D0057A7DA /* storyDetailView.css in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BD168A708D0057A7DA /* storyDetailView.css */; };
 		FF67D3CC168A73380057A7DA /* storyDetailView.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BE168A708D0057A7DA /* storyDetailView.js */; };
+		17A5CA1DEBEBEBEB000003 /* prompt.svg in Resources */ = {isa = PBXBuildFile; fileRef = 17A5CA1DEBEBEBEB000001 /* prompt.svg */; };
 		FF67D3CD168A73380057A7DA /* zepto.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BF168A708D0057A7DA /* zepto.js */; };
 		FF67D3CE168A73380057A7DA /* trainer.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3C4168A71870057A7DA /* trainer.js */; };
 		FF67D3CF168A73380057A7DA /* fastTouch.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3C6168A71B30057A7DA /* fastTouch.js */; };
@@ -2099,6 +2101,7 @@
 		FF67D3BA168A70630057A7DA /* trainer.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = trainer.css; path = ../static/trainer.css; sourceTree = "<group>"; };
 		FF67D3BD168A708D0057A7DA /* storyDetailView.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailView.css; path = ../static/storyDetailView.css; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.css; };
 		FF67D3BE168A708D0057A7DA /* storyDetailView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = storyDetailView.js; path = ../static/storyDetailView.js; sourceTree = "<group>"; };
+		17A5CA1DEBEBEBEB000001 /* prompt.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = prompt.svg; path = ../static/prompt.svg; sourceTree = "<group>"; };
 		FF67D3BF168A708D0057A7DA /* zepto.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = zepto.js; path = ../static/zepto.js; sourceTree = "<group>"; };
 		FF67D3C4168A71870057A7DA /* trainer.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = trainer.js; path = ../static/trainer.js; sourceTree = "<group>"; };
 		FF67D3C6168A71B30057A7DA /* fastTouch.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = fastTouch.js; path = ../static/fastTouch.js; sourceTree = "<group>"; };
@@ -3267,6 +3270,7 @@
 				17E57D551C0E592600EB3D4B /* storyDetailViewMedium.css */,
 				17E57D561C0E592600EB3D4B /* storyDetailViewSepia.css */,
 				FF67D3BA168A70630057A7DA /* trainer.css */,
+				17A5CA1DEBEBEBEB000001 /* prompt.svg */,
 			);
 			name = css;
 			sourceTree = "<group>";
@@ -4089,6 +4093,7 @@
 				175790732930605500490924 /* accessory_disclosure.png in Resources */,
 				175790742930605500490924 /* fitvid.js in Resources */,
 				175790752930605500490924 /* storyDetailView.js in Resources */,
+				17A5CA1DEBEBEBEB000002 /* prompt.svg in Resources */,
 				175790762930605500490924 /* theme_color_sepia-sel@2x.png in Resources */,
 				175790772930605500490924 /* theme_color_medium@2x.png in Resources */,
 				175790782930605500490924 /* zepto.js in Resources */,
@@ -4571,6 +4576,7 @@
 				17876BA41C99137B0055DD15 /* accessory_disclosure.png in Resources */,
 				FF265F12187B6D4F0080C332 /* fitvid.js in Resources */,
 				FF67D3CC168A73380057A7DA /* storyDetailView.js in Resources */,
+				17A5CA1DEBEBEBEB000003 /* prompt.svg in Resources */,
 				1740C6A31C1110BA005EA453 /* theme_color_sepia-sel@2x.png in Resources */,
 				1740C6921C110665005EA453 /* theme_color_medium@2x.png in Resources */,
 				FF67D3CD168A73380057A7DA /* zepto.js in Resources */,

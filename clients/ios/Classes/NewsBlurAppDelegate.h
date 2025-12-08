@@ -56,7 +56,7 @@
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
-SFSafariViewControllerDelegate>  {
+SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     UINavigationController *ftuxNavigationController;
     UINavigationController *feedsNavigationController;
     UINavigationController *modalNavigationController;
