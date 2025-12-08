@@ -21,16 +21,16 @@ enum AskAIProvider: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .opus: return "Claude Opus 4.5"
-        case .gpt: return "GPT 5.1"
-        case .gemini: return "Gemini 3 Pro"
-        case .grok: return "Grok 4.1 Fast"
+        case .opus: return "Anthropic Claude Opus 4.5"
+        case .gpt: return "OpenAI GPT 5.1"
+        case .gemini: return "Google Gemini 3 Pro"
+        case .grok: return "xAI Grok 4.1 Fast"
         }
     }
 
     var shortName: String {
         switch self {
-        case .opus: return "Opus"
+        case .opus: return "Opus 4.5"
         case .gpt: return "GPT 5.1"
         case .gemini: return "Gemini 3"
         case .grok: return "Grok 4.1"
@@ -48,7 +48,7 @@ enum AskAIProvider: String, CaseIterable, Identifiable {
 
     var color: Color {
         switch self {
-        case .opus: return Color(red: 0.55, green: 0.45, blue: 0.75) // Purple/blue
+        case .opus: return Color(red: 0.85, green: 0.47, blue: 0.34) // Anthropic coral/tan
         case .gpt: return Color(red: 0.2, green: 0.65, blue: 0.45) // Green
         case .gemini: return Color(red: 0.26, green: 0.52, blue: 0.96) // Google blue
         case .grok: return Color(red: 0.1, green: 0.1, blue: 0.1) // Dark/black
@@ -128,6 +128,15 @@ struct AskAIMessage: Identifiable {
     let content: String
 }
 
+// A completed question-response exchange
+struct AskAIResponseBlock: Identifiable {
+    let id = UUID()
+    let questionText: String
+    let model: AskAIProvider
+    let responseText: String
+    let isFollowUp: Bool
+}
+
 struct AskAIConversation {
     var storyHash: String
     var storyTitle: String
@@ -136,6 +145,7 @@ struct AskAIConversation {
     var requestId: String
     var responseText: String
     var conversationHistory: [AskAIMessage]
+    var completedBlocks: [AskAIResponseBlock]  // History of completed responses
     var model: AskAIProvider
     var isStreaming: Bool
     var isComplete: Bool
@@ -150,6 +160,7 @@ struct AskAIConversation {
         self.requestId = UUID().uuidString
         self.responseText = ""
         self.conversationHistory = []
+        self.completedBlocks = []
         self.model = .opus
         self.isStreaming = false
         self.isComplete = false

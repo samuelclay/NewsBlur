@@ -113,6 +113,26 @@ Story content is rendered in WKWebView with:
 
 ## iOS Simulator Testing
 
+### run_ios.py - Simulator Control Script
+
+Use `run_ios.py` for common simulator interactions. It handles idb PATH setup automatically.
+
+```bash
+# Basic actions
+python3 run_ios.py tap:<x>,<y>              # Tap at coordinates
+python3 run_ios.py sleep:<seconds>          # Wait
+python3 run_ios.py swipe:<x1>,<y1>,<x2>,<y2> # Swipe
+python3 run_ios.py screenshot:/tmp/shot.png  # Take screenshot
+python3 run_ios.py launch                    # Launch NewsBlur
+python3 run_ios.py terminate                 # Kill NewsBlur
+python3 run_ios.py install                   # Install from DerivedData
+
+# Chain multiple actions
+python3 run_ios.py launch sleep:2 tap:175,600 sleep:1 screenshot:/tmp/result.png
+```
+
+### Manual Simulator Commands
+
 - **idb (iOS Development Bridge)**: Use `idb` for UI interactions like tapping coordinates
   - Install: `brew install idb-companion` and `pip3 install --user fb-idb`
   - Add to PATH: `export PATH="$PATH:~/Library/Python/3.13/bin"`
