@@ -79,9 +79,7 @@ struct AskAIView: View {
     var onDismiss: () -> Void
 
     @FocusState private var isInputFocused: Bool
-    @State private var isScrolledToBottom: Bool = true
-    @State private var isUserDragging: Bool = false
-    @State private var lastContentLength: Int = 0
+    @State private var isBottomVisible: Bool = true
 
     var body: some View {
         VStack(spacing: 0) {
@@ -372,38 +370,18 @@ struct AskAIView: View {
                             usageView(usage)
                         }
 
-                        // Bottom anchor for scrolling
+                        // Bottom anchor for scrolling - tracks visibility to control auto-scroll
                         Color.clear
                             .frame(height: 1)
                             .id("bottom")
+                            .onAppear { isBottomVisible = true }
+                            .onDisappear { isBottomVisible = false }
                     }
                     .padding()
                 }
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 5)
-                        .onChanged { value in
-                            // User is actively dragging - check direction
-                            if value.translation.height > 0 {
-                                // Scrolling up (dragging down) - unpin from bottom
-                                isScrolledToBottom = false
-                                isUserDragging = true
-                            } else if value.translation.height < -20 {
-                                // Scrolling down aggressively - re-pin to bottom
-                                isScrolledToBottom = true
-                                isUserDragging = true
-                            }
-                        }
-                        .onEnded { value in
-                            isUserDragging = false
-                            // If they scrolled down hard (velocity), re-pin
-                            if value.predictedEndTranslation.height < -100 {
-                                isScrolledToBottom = true
-                            }
-                        }
-                )
                 .onChange(of: viewModel.conversation.responseText) { newValue in
-                    // Only auto-scroll if user is pinned to bottom and not actively dragging
-                    if isScrolledToBottom && !isUserDragging {
+                    // Only auto-scroll if user hasn't scrolled away from bottom
+                    if isBottomVisible {
                         withAnimation(.easeOut(duration: 0.1)) {
                             proxy.scrollTo("bottom", anchor: .bottom)
                         }
@@ -411,7 +389,6 @@ struct AskAIView: View {
                 }
                 .onChange(of: viewModel.conversation.completedBlocks.count) { _ in
                     // Always scroll to bottom when a new response block completes
-                    isScrolledToBottom = true
                     withAnimation {
                         proxy.scrollTo("bottom", anchor: .bottom)
                     }

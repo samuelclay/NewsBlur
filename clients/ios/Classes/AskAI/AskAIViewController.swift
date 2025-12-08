@@ -37,12 +37,12 @@ import Combine
         let viewModel = AskAIViewModel(story: story)
         self.viewModel = viewModel
 
-        // Observe hasAskedQuestion to expand sheet when answer mode
+        // Observe hasAskedQuestion to enable large detent when answer mode
         viewModel.$hasAskedQuestion
             .receive(on: DispatchQueue.main)
             .sink { [weak self] hasAsked in
                 if hasAsked {
-                    self?.expandSheetToLarge()
+                    self?.enableLargeDetent()
                 }
             }
             .store(in: &cancellables)
@@ -89,12 +89,14 @@ import Combine
         view.backgroundColor = backgroundColor
     }
 
-    private func expandSheetToLarge() {
+    private func enableLargeDetent() {
         guard let sheet = navigationController?.sheetPresentationController else { return }
-        sheet.animateChanges {
-            // Add large detent option but don't auto-expand - let user expand manually
-            sheet.detents = [.medium(), .large()]
-        }
+        // Add large detent option but don't auto-expand - let user expand manually
+        sheet.detents = [.medium(), .large()]
+        // Also update largestUndimmedDetentIdentifier to allow the large size
+        sheet.largestUndimmedDetentIdentifier = .large
+        // Enable scroll-to-expand when answer is visible
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = true
     }
 
     override func viewWillAppear(_ animated: Bool) {

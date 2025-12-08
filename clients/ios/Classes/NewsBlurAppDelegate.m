@@ -1383,6 +1383,8 @@
         sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
         // Allow interaction with story content behind the sheet when at medium height
         sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        // Set fixed corner radius to prevent iOS 26 liquid glass scaling effect on touch
+        sheet.preferredCornerRadius = 12.0;
 
         [navController presentViewController:askAINavController animated:YES completion:^{
             // Add tap gesture to container view to dismiss on tap outside sheet
