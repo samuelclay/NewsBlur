@@ -8,6 +8,19 @@
 
 import SwiftUI
 
+// MARK: - NewsBlur Design Colors
+@available(iOS 15.0, *)
+private struct NewsBlurColors {
+    static let background = Color(red: 0.918, green: 0.925, blue: 0.902)  // #EAECE6
+    static let cardBackground = Color.white
+    static let cardHover = Color(red: 0.925, green: 0.933, blue: 0.918)  // #ECEEEA
+    static let border = Color(red: 0.816, green: 0.824, blue: 0.800)  // #D0D2CC
+    static let textPrimary = Color(red: 0.369, green: 0.384, blue: 0.404)  // #5E6267
+    static let textSecondary = Color(red: 0.565, green: 0.573, blue: 0.545)  // #90928B
+    static let inputBackground = Color(red: 0.973, green: 0.976, blue: 0.965)  // #F8F9F6
+    static let accent = Color(red: 0.439, green: 0.620, blue: 0.365)  // NewsBlur green #709E5D
+}
+
 @available(iOS 15.0, *)
 struct AskAIView: View {
     @ObservedObject var viewModel: AskAIViewModel
@@ -16,70 +29,67 @@ struct AskAIView: View {
     @FocusState private var isInputFocused: Bool
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                if viewModel.hasAskedQuestion {
-                    responseView
-                } else {
-                    questionSelectorView
-                }
-            }
-            .navigationTitle("Ask AI")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Close") {
-                        onDismiss()
-                    }
-                }
-
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if viewModel.hasAskedQuestion && !viewModel.conversation.isStreaming {
-                        Button("New Question") {
-                            viewModel.reset()
-                        }
-                    }
-                }
+        VStack(spacing: 0) {
+            if viewModel.hasAskedQuestion {
+                responseView
+            } else {
+                questionSelectorView
             }
         }
-        .accentColor(Color(UIColor.label))
+        .background(NewsBlurColors.background)
     }
 
     // MARK: - Question Selector View
 
     private var questionSelectorView: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Summarize Section
-                summarizeSection
+        VStack(spacing: 0) {
+            // Summarize Section
+            summarizeSection
 
-                // Understand Section
-                understandSection
+            // Understand Section
+            understandSection
 
-                // Custom Question Section
-                customQuestionSection
+            Spacer(minLength: 0)
 
-                // Model Selector
-                modelSelector
-
-                Spacer(minLength: 40)
-            }
-            .padding()
+            // Custom Question Section
+            customQuestionSection
         }
+        .background(NewsBlurColors.background)
     }
 
     private var summarizeSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Summarize", systemImage: "text.alignleft")
-                .font(.headline)
-                .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: 0) {
+            // Header row
+            HStack(spacing: 10) {
+                Image(systemName: "text.alignleft")
+                    .font(.system(size: 16))
+                    .foregroundColor(NewsBlurColors.textSecondary)
+                    .frame(width: 18, height: 18)
 
-            HStack(spacing: 12) {
+                Text("Summarize")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(NewsBlurColors.textPrimary)
+
+                Spacer()
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 12)
+
+            // Segmented control for Brief/Medium/Detailed
+            HStack(spacing: 8) {
                 ForEach([AskAIQuestionType.sentence, .bullets, .paragraph], id: \.self) { type in
                     summarizeButton(type)
                 }
             }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .padding(.leading, 28) // Align with text after icon
+            .background(NewsBlurColors.inputBackground)
+            .cornerRadius(6)
+            .padding(.horizontal, 12)
+            .padding(.bottom, 12)
         }
+        .background(NewsBlurColors.cardBackground)
     }
 
     private func summarizeButton(_ type: AskAIQuestionType) -> some View {
@@ -88,47 +98,60 @@ struct AskAIView: View {
             viewModel.sendQuestion(type)
         }) {
             VStack(spacing: 4) {
-                Image(systemName: summarizeIcon(for: type))
-                    .font(.title2)
-                Text(type.displayTitle)
-                    .font(.subheadline.bold())
-                Text(type.subtitle)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                // Icon with consistent height
+                summarizeIconView(for: type)
+                    .frame(height: 20)
+
+                VStack(spacing: 2) {
+                    Text(type.displayTitle)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(NewsBlurColors.textPrimary)
+
+                    Text(type.subtitle)
+                        .font(.system(size: 10))
+                        .foregroundColor(NewsBlurColors.textSecondary)
+                }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(.systemGray6))
-            )
+            .padding(.vertical, 8)
+            .padding(.horizontal, 6)
+            .background(NewsBlurColors.cardBackground)
+            .cornerRadius(4)
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(viewModel.selectedSummarizeType == type ? viewModel.selectedModel.color : Color.clear, lineWidth: 2)
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(viewModel.selectedSummarizeType == type ? NewsBlurColors.accent : NewsBlurColors.border, lineWidth: 1)
             )
         }
         .buttonStyle(PlainButtonStyle())
     }
 
-    private func summarizeIcon(for type: AskAIQuestionType) -> String {
+    @ViewBuilder
+    private func summarizeIconView(for type: AskAIQuestionType) -> some View {
         switch type {
-        case .sentence: return "minus"
-        case .bullets: return "list.bullet"
-        case .paragraph: return "text.justify"
-        default: return "text.alignleft"
+        case .sentence:
+            // Single line - custom drawn for consistent size
+            RoundedRectangle(cornerRadius: 1)
+                .fill(NewsBlurColors.textSecondary)
+                .frame(width: 16, height: 2)
+        case .bullets:
+            Image(systemName: "list.bullet")
+                .font(.system(size: 16))
+                .foregroundColor(NewsBlurColors.textSecondary)
+        case .paragraph:
+            Image(systemName: "text.alignleft")
+                .font(.system(size: 16))
+                .foregroundColor(NewsBlurColors.textSecondary)
+        default:
+            Image(systemName: "text.alignleft")
+                .font(.system(size: 16))
+                .foregroundColor(NewsBlurColors.textSecondary)
         }
     }
 
     private var understandSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Understand", systemImage: "lightbulb")
-                .font(.headline)
-                .foregroundColor(.secondary)
-
-            VStack(spacing: 8) {
-                ForEach([AskAIQuestionType.context, .people, .arguments, .factcheck], id: \.self) { type in
-                    understandButton(type)
-                }
+        VStack(spacing: 0) {
+            ForEach([AskAIQuestionType.context, .people, .arguments, .factcheck], id: \.self) { type in
+                understandButton(type)
             }
         }
     }
@@ -137,110 +160,124 @@ struct AskAIView: View {
         Button(action: {
             viewModel.sendQuestion(type)
         }) {
-            HStack {
+            HStack(spacing: 10) {
                 Image(systemName: type.iconName)
-                    .frame(width: 24)
-                    .foregroundColor(viewModel.selectedModel.color)
+                    .font(.system(size: 16))
+                    .foregroundColor(NewsBlurColors.textSecondary)
+                    .frame(width: 18, height: 18)
 
                 Text(type.displayTitle)
-                    .font(.body)
+                    .font(.system(size: 13))
+                    .foregroundColor(NewsBlurColors.textPrimary)
+                    .lineLimit(1)
 
                 Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
             }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(.systemGray6))
-            )
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(NewsBlurColors.cardBackground)
         }
         .buttonStyle(PlainButtonStyle())
     }
 
     private var customQuestionSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Ask a question", systemImage: "questionmark.circle")
-                .font(.headline)
-                .foregroundColor(.secondary)
-
+        VStack(spacing: 0) {
             HStack(spacing: 8) {
                 // Voice button
                 Button(action: {
                     viewModel.toggleRecording()
                 }) {
-                    Image(systemName: viewModel.isRecording ? "stop.circle.fill" : "mic.circle.fill")
-                        .font(.title)
-                        .foregroundColor(viewModel.isRecording ? .red : viewModel.selectedModel.color)
+                    Image(systemName: viewModel.isRecording ? "stop.circle.fill" : "mic.fill")
+                        .font(.system(size: 16))
+                        .foregroundColor(viewModel.isRecording ? .red : NewsBlurColors.textSecondary)
+                        .frame(width: 32, height: 32)
+                        .background(
+                            Circle()
+                                .fill(viewModel.isRecording ? Color.red.opacity(0.1) : NewsBlurColors.cardBackground)
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(NewsBlurColors.border, lineWidth: 1)
+                        )
                 }
                 .disabled(viewModel.isTranscribing)
 
                 // Text input
                 TextField("Ask a question...", text: $viewModel.customQuestion)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .font(.system(size: 13))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(NewsBlurColors.cardBackground)
+                    .cornerRadius(4)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(NewsBlurColors.border, lineWidth: 1)
+                    )
                     .focused($isInputFocused)
                     .disabled(viewModel.isRecording || viewModel.isTranscribing)
 
-                // Send button
-                if !viewModel.customQuestion.isEmpty {
-                    Button(action: {
-                        viewModel.sendQuestion(.custom)
-                    }) {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .font(.title)
-                            .foregroundColor(viewModel.selectedModel.color)
-                    }
-                }
+                // Ask button with model selector
+                askButtonMenu
             }
+            .padding(10)
+            .background(NewsBlurColors.inputBackground)
 
-            if viewModel.isRecording {
+            if viewModel.isRecording || viewModel.isTranscribing {
                 HStack {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                    Text("Recording...")
-                        .foregroundColor(.secondary)
+                        .progressViewStyle(CircularProgressViewStyle(tint: NewsBlurColors.accent))
+                        .scaleEffect(0.8)
+                    Text(viewModel.isRecording ? "Recording..." : "Transcribing...")
+                        .font(.system(size: 12))
+                        .foregroundColor(NewsBlurColors.textSecondary)
                 }
-            } else if viewModel.isTranscribing {
-                HStack {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                    Text("Transcribing...")
-                        .foregroundColor(.secondary)
-                }
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity)
+                .background(NewsBlurColors.inputBackground)
             }
         }
     }
 
-    private var modelSelector: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("AI Model")
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            Menu {
-                ForEach(AskAIProvider.allCases) { model in
-                    Button(action: {
-                        viewModel.selectedModel = model
-                    }) {
-                        HStack {
-                            Text(model.displayName)
-                            if model == viewModel.selectedModel {
-                                Image(systemName: "checkmark")
-                            }
+    private var askButtonMenu: some View {
+        Menu {
+            ForEach(AskAIProvider.allCases) { model in
+                Button(action: {
+                    viewModel.selectedModel = model
+                    if !viewModel.customQuestion.isEmpty {
+                        viewModel.sendQuestion(.custom)
+                    }
+                }) {
+                    HStack {
+                        Text(model.displayName)
+                        if model == viewModel.selectedModel {
+                            Image(systemName: "checkmark")
                         }
                     }
                 }
-            } label: {
-                HStack {
-                    ModelPill(model: viewModel.selectedModel)
-                    Image(systemName: "chevron.down")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
             }
+        } label: {
+            HStack(spacing: 0) {
+                Text("Ask")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(viewModel.customQuestion.isEmpty ? NewsBlurColors.textSecondary : NewsBlurColors.accent)
+
+                Rectangle()
+                    .fill(Color.white.opacity(0.3))
+                    .frame(width: 1)
+
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 8)
+                    .background(viewModel.customQuestion.isEmpty ? NewsBlurColors.textSecondary : NewsBlurColors.accent)
+            }
+            .cornerRadius(4)
         }
+        .disabled(viewModel.customQuestion.isEmpty)
     }
 
     // MARK: - Response View
@@ -286,6 +323,7 @@ struct AskAIView: View {
                     }
                 }
             }
+            .background(NewsBlurColors.background)
 
             // Follow-up input
             if viewModel.conversation.isComplete || viewModel.conversation.error != nil {
@@ -297,36 +335,38 @@ struct AskAIView: View {
     private var questionHeader: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(viewModel.conversation.questionText)
-                .font(.headline)
-                .foregroundColor(.primary)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(NewsBlurColors.textPrimary)
 
             if !viewModel.conversation.storyTitle.isEmpty {
                 Text("About: \(viewModel.conversation.storyTitle)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.system(size: 12))
+                    .foregroundColor(NewsBlurColors.textSecondary)
                     .lineLimit(1)
             }
         }
-        .padding()
+        .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemGray6))
+        .background(NewsBlurColors.cardBackground)
+        .cornerRadius(6)
+        .overlay(
+            RoundedRectangle(cornerRadius: 6)
+                .stroke(NewsBlurColors.border, lineWidth: 1)
         )
     }
 
     private func errorView(_ error: String) -> some View {
-        HStack {
+        HStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundColor(.red)
             Text(error)
+                .font(.system(size: 13))
                 .foregroundColor(.red)
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.red.opacity(0.1))
-        )
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.red.opacity(0.1))
+        .cornerRadius(6)
     }
 
     private var responseText: some View {
@@ -335,45 +375,66 @@ struct AskAIView: View {
     }
 
     private var streamingPlaceholder: some View {
-        HStack {
+        HStack(spacing: 8) {
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle())
+                .progressViewStyle(CircularProgressViewStyle(tint: NewsBlurColors.accent))
+                .scaleEffect(0.8)
             Text("Thinking...")
-                .foregroundColor(.secondary)
+                .font(.system(size: 13))
+                .foregroundColor(NewsBlurColors.textSecondary)
         }
     }
 
     private func usageView(_ message: String) -> some View {
-        HStack {
+        HStack(spacing: 8) {
             Image(systemName: "info.circle.fill")
-                .foregroundColor(.blue)
+                .foregroundColor(NewsBlurColors.accent)
             Text(message)
-                .font(.caption)
+                .font(.system(size: 12))
+                .foregroundColor(NewsBlurColors.textPrimary)
         }
-        .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.blue.opacity(0.1))
-        )
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(NewsBlurColors.accent.opacity(0.1))
+        .cornerRadius(6)
     }
 
     private var followUpInput: some View {
         VStack(spacing: 0) {
-            Divider()
+            Rectangle()
+                .fill(NewsBlurColors.border)
+                .frame(height: 1)
 
             HStack(spacing: 8) {
                 // Voice button
                 Button(action: {
                     viewModel.toggleRecording()
                 }) {
-                    Image(systemName: viewModel.isRecording ? "stop.circle.fill" : "mic.circle.fill")
-                        .font(.title2)
-                        .foregroundColor(viewModel.isRecording ? .red : viewModel.selectedModel.color)
+                    Image(systemName: viewModel.isRecording ? "stop.circle.fill" : "mic.fill")
+                        .font(.system(size: 16))
+                        .foregroundColor(viewModel.isRecording ? .red : NewsBlurColors.textSecondary)
+                        .frame(width: 32, height: 32)
+                        .background(
+                            Circle()
+                                .fill(viewModel.isRecording ? Color.red.opacity(0.1) : NewsBlurColors.cardBackground)
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(NewsBlurColors.border, lineWidth: 1)
+                        )
                 }
 
                 // Text input
                 TextField("Follow up...", text: $viewModel.customQuestion)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .font(.system(size: 13))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(NewsBlurColors.cardBackground)
+                    .cornerRadius(4)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(NewsBlurColors.border, lineWidth: 1)
+                    )
                     .focused($isInputFocused)
 
                 // Re-ask menu
@@ -391,12 +452,21 @@ struct AskAIView: View {
                         }
                     }
                 } label: {
-                    Text("Re-ask")
-                        .font(.subheadline)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Color(.systemGray5))
-                        .cornerRadius(8)
+                    HStack(spacing: 4) {
+                        Text("Re-ask")
+                            .font(.system(size: 13))
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 10))
+                    }
+                    .foregroundColor(NewsBlurColors.textPrimary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(NewsBlurColors.cardBackground)
+                    .cornerRadius(4)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(NewsBlurColors.border, lineWidth: 1)
+                    )
                 }
 
                 // Send button
@@ -404,15 +474,19 @@ struct AskAIView: View {
                     Button(action: {
                         viewModel.sendFollowUp()
                     }) {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(viewModel.selectedModel.color)
+                        Text("Send")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(NewsBlurColors.accent)
+                            .cornerRadius(4)
                     }
                 }
             }
-            .padding()
+            .padding(10)
+            .background(NewsBlurColors.inputBackground)
         }
-        .background(Color(.systemBackground))
     }
 }
 
