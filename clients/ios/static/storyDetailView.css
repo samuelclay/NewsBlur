@@ -859,20 +859,33 @@ a.NB-show-profile {
     text-shadow: 0px 1px 0px rgba(255,255,255,1);
 }
 
+.NB-share-inner-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
 .NB-button.NB-share-button {
-    float: right;
+    float: none;
     padding: 0px 0px 20px 0px;
     margin: 0;
     display: block;
-    width: 28%;
+    flex: 1;
+    min-width: 0;
 }
 .NB-button.NB-train-button {
-    float: left;
-    margin-right: 0;
+    float: none;
+    margin: 0;
 }
 .NB-button.NB-save-button {
     float: none;
-    margin: 0 auto;
+    margin: 0;
+}
+.NB-button.NB-ask-ai-button {
+    float: none;
+    margin: 0;
 }
 
 .NB-button a {
@@ -969,13 +982,8 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-ask-ai-button .NB-icon {
-    background: url("ask-ai@2x.png") no-repeat 0 0;
-    background-size: 16px;
-}
-
-.NB-button.NB-ask-ai-button {
-    float: none;
-    margin: 0 auto;
+    background: url("prompt.svg") no-repeat center center;
+    background-size: 16px 16px;
 }
 
 .NB-iphone .NB-button.NB-share-button .NB-icon {

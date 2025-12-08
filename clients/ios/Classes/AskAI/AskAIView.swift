@@ -375,14 +375,8 @@ struct AskAIView: View {
     }
 
     private var streamingPlaceholder: some View {
-        HStack(spacing: 8) {
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: NewsBlurColors.accent))
-                .scaleEffect(0.8)
-            Text("Thinking...")
-                .font(.system(size: 13))
-                .foregroundColor(NewsBlurColors.textSecondary)
-        }
+        // Empty view - the pulsing model pill indicates loading state
+        EmptyView()
     }
 
     private func usageView(_ message: String) -> some View {
@@ -498,26 +492,37 @@ struct ModelPill: View {
     var isLoading: Bool = false
     var isError: Bool = false
 
+    @State private var isPulsing: Bool = false
+
     var body: some View {
         HStack(spacing: 4) {
-            if isLoading {
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: model.textColor))
-                    .scaleEffect(0.7)
-            }
-
             Text(model.shortName)
-                .font(.caption.bold())
+                .font(.system(size: 12, weight: .bold, design: .rounded))
                 .foregroundColor(isError ? .white : model.textColor)
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 4)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
         .background(
             Capsule()
                 .fill(isError ? Color.red : model.color)
+                .opacity(isLoading ? (isPulsing ? 0.6 : 1.0) : 1.0)
         )
-        .opacity(isLoading ? 0.8 : 1.0)
-        .animation(isLoading ? .easeInOut(duration: 1.0).repeatForever(autoreverses: true) : .default, value: isLoading)
+        .onAppear {
+            if isLoading {
+                withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
+                    isPulsing = true
+                }
+            }
+        }
+        .onChange(of: isLoading) { loading in
+            if loading {
+                withAnimation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true)) {
+                    isPulsing = true
+                }
+            } else {
+                isPulsing = false
+            }
+        }
     }
 }
 
@@ -527,43 +532,98 @@ struct ModelPill: View {
 struct MarkdownText: View {
     let text: String
 
+    private let bodyFont = Font.system(size: 15, weight: .regular, design: .default)
+    private let headingFont = Font.system(size: 18, weight: .semibold, design: .default)
+    private let subheadingFont = Font.system(size: 16, weight: .semibold, design: .default)
+    private let bulletColor = Color(red: 0.439, green: 0.620, blue: 0.365) // NewsBlur green
+    private let textColor = Color(red: 0.369, green: 0.384, blue: 0.404)
+
     init(_ text: String) {
         self.text = text
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ForEach(Array(paragraphs.enumerated()), id: \.offset) { _, paragraph in
-                if paragraph.hasPrefix("# ") {
-                    Text(paragraph.dropFirst(2))
-                        .font(.title2.bold())
-                } else if paragraph.hasPrefix("## ") {
-                    Text(paragraph.dropFirst(3))
-                        .font(.title3.bold())
-                } else if paragraph.hasPrefix("### ") {
-                    Text(paragraph.dropFirst(4))
-                        .font(.headline)
-                } else if paragraph.hasPrefix("- ") || paragraph.hasPrefix("* ") {
-                    HStack(alignment: .top, spacing: 8) {
-                        Text("•")
-                        Text(formatInlineMarkdown(String(paragraph.dropFirst(2))))
-                    }
-                } else if paragraph.hasPrefix("---") {
-                    Divider()
-                        .padding(.vertical, 8)
-                } else if let numberMatch = paragraph.range(of: #"^\d+\.\s"#, options: .regularExpression) {
-                    let number = String(paragraph[numberMatch].dropLast())
-                    let content = String(paragraph[numberMatch.upperBound...])
-                    HStack(alignment: .top, spacing: 8) {
-                        Text(number)
-                            .foregroundColor(.secondary)
-                        Text(formatInlineMarkdown(content))
-                    }
-                } else {
-                    Text(formatInlineMarkdown(paragraph))
-                }
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(Array(paragraphs.enumerated()), id: \.offset) { index, paragraph in
+                paragraphView(paragraph, index: index)
             }
         }
+    }
+
+    @ViewBuilder
+    private func paragraphView(_ paragraph: String, index: Int) -> some View {
+        if paragraph.hasPrefix("# ") {
+            // H1 Heading
+            Text(formatInlineMarkdown(String(paragraph.dropFirst(2))))
+                .font(.system(size: 20, weight: .bold, design: .default))
+                .foregroundColor(textColor)
+                .padding(.top, index > 0 ? 8 : 0)
+        } else if paragraph.hasPrefix("## ") {
+            // H2 Heading
+            Text(formatInlineMarkdown(String(paragraph.dropFirst(3))))
+                .font(headingFont)
+                .foregroundColor(textColor)
+                .padding(.top, index > 0 ? 6 : 0)
+        } else if paragraph.hasPrefix("### ") {
+            // H3 Heading
+            Text(formatInlineMarkdown(String(paragraph.dropFirst(4))))
+                .font(subheadingFont)
+                .foregroundColor(textColor)
+                .padding(.top, index > 0 ? 4 : 0)
+        } else if paragraph.hasPrefix("- ") || paragraph.hasPrefix("* ") {
+            // Bullet point with proper hanging indent
+            bulletPointView(String(paragraph.dropFirst(2)))
+        } else if paragraph.hasPrefix("---") {
+            // Horizontal rule
+            Rectangle()
+                .fill(Color(red: 0.816, green: 0.824, blue: 0.800))
+                .frame(height: 1)
+                .padding(.vertical, 8)
+        } else if let numberMatch = paragraph.range(of: #"^\d+\.\s"#, options: .regularExpression) {
+            // Numbered list
+            let number = String(paragraph[numberMatch].dropLast())
+            let content = String(paragraph[numberMatch.upperBound...])
+            numberedListView(number: number, content: content)
+        } else {
+            // Regular paragraph
+            Text(formatInlineMarkdown(paragraph))
+                .font(bodyFont)
+                .foregroundColor(textColor)
+                .lineSpacing(4)
+        }
+    }
+
+    private func bulletPointView(_ content: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 0) {
+            Text("•")
+                .font(.system(size: 15, weight: .bold))
+                .foregroundColor(bulletColor)
+                .frame(width: 20, alignment: .leading)
+
+            Text(formatInlineMarkdown(content))
+                .font(bodyFont)
+                .foregroundColor(textColor)
+                .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.leading, 4)
+    }
+
+    private func numberedListView(number: String, content: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 0) {
+            Text(number)
+                .font(.system(size: 14, weight: .medium, design: .monospaced))
+                .foregroundColor(bulletColor)
+                .frame(width: 24, alignment: .trailing)
+                .padding(.trailing, 6)
+
+            Text(formatInlineMarkdown(content))
+                .font(bodyFont)
+                .foregroundColor(textColor)
+                .lineSpacing(4)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.leading, 4)
     }
 
     private var paragraphs: [String] {
@@ -586,7 +646,7 @@ struct MarkdownText: View {
                         ? nsString.substring(with: match.range(at: 1))
                         : nsString.substring(with: match.range(at: 2))
                     var replacement = AttributedString(content)
-                    replacement.font = .body.bold()
+                    replacement.font = .system(size: 15, weight: .semibold)
                     result.replaceSubrange(attrRange, with: replacement)
                 }
             }
@@ -605,7 +665,7 @@ struct MarkdownText: View {
                         ? nsString.substring(with: match.range(at: 1))
                         : nsString.substring(with: match.range(at: 2))
                     var replacement = AttributedString(content)
-                    replacement.font = .body.italic()
+                    replacement.font = .system(size: 15).italic()
                     result.replaceSubrange(attrRange, with: replacement)
                 }
             }
