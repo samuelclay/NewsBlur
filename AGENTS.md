@@ -1,5 +1,8 @@
 # NewsBlur Development Guidelines
 
+## Platform-Specific Guidelines
+- **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
+
 ## Git Worktree Development
 - **Use git worktrees for parallel development**: Run `make worktree` in a worktree to start workspace-specific services
 - Main repo uses standard ports (80/443), worktrees get unique ports based on directory name hash
