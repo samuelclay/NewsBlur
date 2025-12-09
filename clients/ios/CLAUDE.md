@@ -113,6 +113,8 @@ Story content is rendered in WKWebView with:
 
 ## iOS Simulator Testing
 
+**IMPORTANT**: Do NOT use Chrome DevTools MCP server for iOS testing. Always use `run_ios.py` for screenshots and simulator interactions.
+
 ### run_ios.py - Simulator Control Script
 
 Use `run_ios.py` for common simulator interactions. It handles idb PATH setup automatically.

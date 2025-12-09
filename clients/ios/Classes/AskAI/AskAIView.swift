@@ -534,32 +534,86 @@ struct AskAIView: View {
 
 
     private func errorView(_ error: String) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundColor(.red)
-            Text(error)
-                .font(.system(size: 13))
-                .foregroundColor(.red)
+        let isRateLimitError = error.contains("limit") || error.contains("used all") || error.contains("reached")
+
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(isRateLimitError ? .orange : .red)
+                Text(error)
+                    .font(.system(size: 13))
+                    .foregroundColor(isRateLimitError ? NewsBlurColors.textPrimary : .red)
+            }
+
+            // Show upgrade button for rate-limited non-archive users
+            if isRateLimitError && !NewsBlurAppDelegate.shared()!.isPremiumArchive {
+                Button(action: {
+                    openPremiumDialog()
+                }) {
+                    HStack {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 12))
+                        Text("Upgrade to Premium Archive")
+                            .font(.system(size: 13, weight: .medium))
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(NewsBlurColors.accent)
+                    .cornerRadius(6)
+                }
+                .padding(.top, 4)
+            }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.red.opacity(0.1))
+        .background(isRateLimitError ? Color.orange.opacity(0.1) : Color.red.opacity(0.1))
         .cornerRadius(6)
     }
 
 
     private func usageView(_ message: String) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: "info.circle.fill")
-                .foregroundColor(NewsBlurColors.accent)
-            Text(message)
-                .font(.system(size: 12))
-                .foregroundColor(NewsBlurColors.textPrimary)
+        let isRateLimitError = message.contains("limit") || message.contains("used all") || message.contains("reached")
+
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Image(systemName: isRateLimitError ? "exclamationmark.triangle.fill" : "info.circle.fill")
+                    .foregroundColor(isRateLimitError ? .orange : NewsBlurColors.accent)
+                Text(message)
+                    .font(.system(size: 12))
+                    .foregroundColor(NewsBlurColors.textPrimary)
+            }
+
+            // Show upgrade button for rate-limited non-archive users
+            if isRateLimitError && !NewsBlurAppDelegate.shared()!.isPremiumArchive {
+                Button(action: {
+                    openPremiumDialog()
+                }) {
+                    HStack {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 12))
+                        Text("Upgrade to Premium Archive")
+                            .font(.system(size: 13, weight: .medium))
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(NewsBlurColors.accent)
+                    .cornerRadius(6)
+                }
+                .padding(.top, 4)
+            }
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(NewsBlurColors.accent.opacity(0.1))
+        .background(isRateLimitError ? Color.orange.opacity(0.1) : NewsBlurColors.accent.opacity(0.1))
         .cornerRadius(6)
+    }
+
+    private func openPremiumDialog() {
+        if let appDelegate = NewsBlurAppDelegate.shared() {
+            appDelegate.showPremiumDialog()
+        }
     }
 
     private var followUpInput: some View {
