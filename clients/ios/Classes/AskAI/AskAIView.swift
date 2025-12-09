@@ -53,18 +53,36 @@ private struct NewsBlurColors {
 
     // Helper to create themed color from hex values for Light, Sepia, Medium, Dark
     private static func themedColor(light: Int, sepia: Int, medium: Int, dark: Int) -> Color {
-        let theme = ThemeManager.shared.theme ?? ThemeStyleLight
-        let hex: Int
-        switch theme {
-        case ThemeStyleSepia:
-            hex = sepia
-        case ThemeStyleMedium:
-            hex = medium
-        case ThemeStyleDark:
-            hex = dark
-        default:
-            hex = light
+        guard let themeManager = ThemeManager.shared else {
+            // Default to light theme if no theme manager
+            return Color(
+                red: Double((light >> 16) & 0xFF) / 255.0,
+                green: Double((light >> 8) & 0xFF) / 255.0,
+                blue: Double(light & 0xFF) / 255.0
+            )
         }
+
+        let hex: Int
+
+        // Use isDarkTheme which handles "auto" mode correctly
+        if themeManager.isDarkTheme {
+            // Check if it's medium (gray) vs dark (black) theme
+            let theme = themeManager.theme
+            if theme == ThemeStyleMedium || theme == "medium" {
+                hex = medium
+            } else {
+                hex = dark
+            }
+        } else {
+            // Light or sepia theme
+            let theme = themeManager.theme
+            if theme == ThemeStyleSepia || theme == "sepia" {
+                hex = sepia
+            } else {
+                hex = light
+            }
+        }
+
         return Color(
             red: Double((hex >> 16) & 0xFF) / 255.0,
             green: Double((hex >> 8) & 0xFF) / 255.0,
@@ -79,7 +97,7 @@ struct AskAIView: View {
     var onDismiss: () -> Void
 
     @FocusState private var isInputFocused: Bool
-    @State private var isBottomVisible: Bool = true
+    @State private var shouldAutoScroll: Bool = true
 
     var body: some View {
         VStack(spacing: 0) {
@@ -370,34 +388,46 @@ struct AskAIView: View {
                             usageView(usage)
                         }
 
-                        // Bottom anchor for scrolling - tracks visibility to control auto-scroll
+                        // Bottom anchor for scrolling
                         Color.clear
                             .frame(height: 1)
                             .id("bottom")
-                            .onAppear { isBottomVisible = true }
-                            .onDisappear { isBottomVisible = false }
                     }
                     .padding()
                 }
+                // Detect user scroll interaction to disable auto-scroll
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 5)
+                        .onChanged { _ in
+                            // User is manually scrolling, disable auto-scroll
+                            if shouldAutoScroll {
+                                shouldAutoScroll = false
+                            }
+                        }
+                )
                 .onChange(of: viewModel.conversation.responseText) { newValue in
-                    // Only auto-scroll if user hasn't scrolled away from bottom
-                    if isBottomVisible {
+                    // Only auto-scroll during streaming if user hasn't scrolled away
+                    if viewModel.conversation.isStreaming && shouldAutoScroll {
                         withAnimation(.easeOut(duration: 0.1)) {
                             proxy.scrollTo("bottom", anchor: .bottom)
                         }
                     }
                 }
-                .onChange(of: viewModel.conversation.completedBlocks.count) { _ in
-                    // Always scroll to bottom when a new response block completes
-                    withAnimation {
-                        proxy.scrollTo("bottom", anchor: .bottom)
+                .onChange(of: viewModel.conversation.isStreaming) { isStreaming in
+                    // Only re-enable auto-scroll and scroll to bottom when streaming STARTS (new question)
+                    // Never force scroll when streaming stops - respect user's scroll position
+                    if isStreaming {
+                        shouldAutoScroll = true
+                        withAnimation {
+                            proxy.scrollTo("bottom", anchor: .bottom)
+                        }
                     }
                 }
             }
             .background(NewsBlurColors.background)
 
-            // Follow-up input
-            if viewModel.conversation.isComplete || viewModel.conversation.error != nil {
+            // Follow-up input - show when complete, error, or not streaming (graceful timeout)
+            if viewModel.conversation.isComplete || viewModel.conversation.error != nil || (!viewModel.conversation.isStreaming && !viewModel.conversation.responseText.isEmpty) {
                 followUpInput
             }
         }
@@ -698,16 +728,27 @@ struct MarkdownText: View {
 
     // Theme-aware text color
     private var textColor: Color {
-        let theme = ThemeManager.shared.theme ?? ThemeStyleLight
-        switch theme {
-        case ThemeStyleSepia:
-            return Color(red: 0.36, green: 0.29, blue: 0.24) // #5C4A3D
-        case ThemeStyleMedium:
-            return Color(red: 0.88, green: 0.88, blue: 0.88) // #E0E0E0
-        case ThemeStyleDark:
-            return Color(red: 0.91, green: 0.91, blue: 0.91) // #E8E8E8
-        default:
-            return Color(red: 0.369, green: 0.384, blue: 0.404) // #5E6267
+        guard let themeManager = ThemeManager.shared else {
+            return Color(red: 0.369, green: 0.384, blue: 0.404) // #5E6267 default
+        }
+
+        // Use isDarkTheme which handles "auto" mode correctly
+        if themeManager.isDarkTheme {
+            // Dark themes use light text
+            let theme = themeManager.theme
+            if theme == ThemeStyleMedium || theme == "medium" {
+                return Color(red: 0.88, green: 0.88, blue: 0.88) // #E0E0E0
+            } else {
+                return Color(red: 0.91, green: 0.91, blue: 0.91) // #E8E8E8
+            }
+        } else {
+            // Light themes use dark text
+            let theme = themeManager.theme
+            if theme == ThemeStyleSepia || theme == "sepia" {
+                return Color(red: 0.36, green: 0.29, blue: 0.24) // #5C4A3D
+            } else {
+                return Color(red: 0.369, green: 0.384, blue: 0.404) // #5E6267
+            }
         }
     }
 
