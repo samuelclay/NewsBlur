@@ -118,6 +118,20 @@ enum AskAIQuestionType: String, CaseIterable, Identifiable {
         default: return false
         }
     }
+
+    /// Full question text shown in the response header
+    var questionDescription: String {
+        switch self {
+        case .sentence: return "Summarize in one sentence"
+        case .bullets: return "Summarize in bullet points"
+        case .paragraph: return "Give a detailed summary"
+        case .context: return "What's the context and background?"
+        case .people: return "Identify key people and relationships"
+        case .arguments: return "What are the main arguments?"
+        case .factcheck: return "Fact check this story"
+        case .custom: return "Custom question"
+        }
+    }
 }
 
 // MARK: - Conversation

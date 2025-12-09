@@ -166,7 +166,7 @@ class AskAIViewModel: ObservableObject {
             conversation.questionText = customQuestion
         } else {
             conversation.questionId = type.rawValue
-            conversation.questionText = type.displayTitle
+            conversation.questionText = type.questionDescription
         }
 
         // Start timeout
@@ -181,18 +181,6 @@ class AskAIViewModel: ObservableObject {
 
     func sendFollowUp() {
         guard !customQuestion.isEmpty else { return }
-
-        // Add last completed response to conversation history for API context
-        if let lastBlock = conversation.completedBlocks.last {
-            conversation.conversationHistory.append(
-                AskAIMessage(role: "assistant", content: lastBlock.responseText)
-            )
-        }
-
-        // Add user's follow-up to history
-        conversation.conversationHistory.append(
-            AskAIMessage(role: "user", content: customQuestion)
-        )
 
         // Reset for new response (responseText is empty after handleComplete saves to completedBlocks)
         conversation.isStreaming = true
@@ -393,6 +381,12 @@ class AskAIViewModel: ObservableObject {
         }
 
         NSLog("AskAI: Received chunk: \(chunk.prefix(50))...")
+        // Clear any timeout error since content is arriving
+        if conversation.error != nil {
+            conversation.error = nil
+            conversation.isStreaming = true
+        }
+
         // Append chunk to response
         conversation.responseText += chunk
 
@@ -413,6 +407,9 @@ class AskAIViewModel: ObservableObject {
         NSLog("AskAI: Stream complete")
         timeoutTimer?.invalidate()
 
+        let responseText = conversation.responseText
+        let questionText = conversation.questionText
+
         // Save completed response to history
         let isFollowUp = !conversation.completedBlocks.isEmpty
         let block = AskAIResponseBlock(
@@ -422,6 +419,18 @@ class AskAIViewModel: ObservableObject {
             isFollowUp: isFollowUp
         )
         conversation.completedBlocks.append(block)
+
+        // Preserve conversation context for follow-ups
+        if !questionText.isEmpty {
+            conversation.conversationHistory.append(
+                AskAIMessage(role: "user", content: questionText)
+            )
+        }
+        if !responseText.isEmpty {
+            conversation.conversationHistory.append(
+                AskAIMessage(role: "assistant", content: responseText)
+            )
+        }
 
         // Clear current response (it's now in completedBlocks)
         conversation.responseText = ""
@@ -479,6 +488,8 @@ class AskAIViewModel: ObservableObject {
                 // If we have received content, treat as successful even without complete event
                 if !self.conversation.responseText.isEmpty {
                     NSLog("AskAI: Stream timeout but content received, completing gracefully")
+                    let responseText = self.conversation.responseText
+                    let questionText = self.conversation.questionText
                     // Save completed response to history
                     let isFollowUp = !self.conversation.completedBlocks.isEmpty
                     let block = AskAIResponseBlock(
@@ -488,6 +499,16 @@ class AskAIViewModel: ObservableObject {
                         isFollowUp: isFollowUp
                     )
                     self.conversation.completedBlocks.append(block)
+                    if !questionText.isEmpty {
+                        self.conversation.conversationHistory.append(
+                            AskAIMessage(role: "user", content: questionText)
+                        )
+                    }
+                    if !responseText.isEmpty {
+                        self.conversation.conversationHistory.append(
+                            AskAIMessage(role: "assistant", content: responseText)
+                        )
+                    }
                     self.conversation.responseText = ""
                     self.conversation.isStreaming = false
                     self.conversation.isComplete = true

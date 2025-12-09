@@ -510,16 +510,16 @@ struct AskAIView: View {
     }
 
     private func questionHeaderView(_ text: String, showStoryTitle: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 6) {
             Text(text)
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundColor(NewsBlurColors.textPrimary)
 
             if showStoryTitle && !viewModel.conversation.storyTitle.isEmpty {
-                Text("About: \(viewModel.conversation.storyTitle)")
-                    .font(.system(size: 12))
+                Text(viewModel.conversation.storyTitle)
+                    .font(.system(size: 12, weight: .regular, design: .serif))
                     .foregroundColor(NewsBlurColors.textSecondary)
-                    .lineLimit(1)
+                    .lineLimit(2)
             }
         }
         .padding(12)

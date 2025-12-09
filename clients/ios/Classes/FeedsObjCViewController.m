@@ -167,6 +167,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
     
     self.intelligenceControl.hidden = YES;
+    if (self.intelligenceControl.subviews.count >= 4) {
+        [self.intelligenceControl.subviews objectAtIndex:3].accessibilityLabel = @"All";
+        [self.intelligenceControl.subviews objectAtIndex:2].accessibilityLabel = @"Unread";
+        [self.intelligenceControl.subviews objectAtIndex:1].accessibilityLabel = @"Focus";
+        [self.intelligenceControl.subviews objectAtIndex:0].accessibilityLabel = @"Saved";
+    }
     
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
