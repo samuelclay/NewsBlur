@@ -29,7 +29,7 @@ class AskAIViewModel: ObservableObject {
     private var socketSubscribed = false
     private var timeoutTimer: Timer?
     private let timeoutDuration: TimeInterval = 15.0
-    private let streamingTimeoutDuration: TimeInterval = 10.0
+    private let streamingTimeoutDuration: TimeInterval = 20.0
 
     // Voice recorder
     let voiceRecorder = VoiceRecorder()
