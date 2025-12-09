@@ -17,17 +17,26 @@ Actions:
 Examples:
     python3 run_ios.py launch sleep:4 tap:100,541 sleep:2 screenshot:/tmp/test.png
     python3 run_ios.py tap:280,836 sleep:2 screenshot:/tmp/askai.png
+
+Environment:
+    IOS_SIM_UDID     - Simulator UDID to target (defaults to the stored UDID)
+    IOS_BUNDLE_ID    - App bundle identifier (defaults to NewsBlur)
+    IOS_APP_PATH     - Path to the built .app for install
 """
 
 import subprocess
 import sys
 import time
 import os
+import shlex
 
 # Configuration
-UDID = "542DF8D3-CAB2-40BE-8DB2-9CBB864F2881"
-BUNDLE_ID = "com.newsblur.NewsBlur"
-APP_PATH = "/Users/sclay/Library/Developer/Xcode/DerivedData/NewsBlur-dnwoengkjrcsjaezlhydxgrfmbhw/Build/Products/Debug-iphonesimulator/NewsBlur.app"
+UDID = os.environ.get("IOS_SIM_UDID", "542DF8D3-CAB2-40BE-8DB2-9CBB864F2881")
+BUNDLE_ID = os.environ.get("IOS_BUNDLE_ID", "com.newsblur.NewsBlur")
+APP_PATH = os.environ.get(
+    "IOS_APP_PATH",
+    "/Users/sclay/Library/Developer/Xcode/DerivedData/NewsBlur-dnwoengkjrcsjaezlhydxgrfmbhw/Build/Products/Debug-iphonesimulator/NewsBlur.app",
+)
 
 # Add idb to PATH
 os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.expanduser("~/Library/Python/3.13/bin")
@@ -90,7 +99,11 @@ def do_terminate():
 def do_install():
     """Install the app from DerivedData."""
     print("  Installing NewsBlur...")
-    run_cmd(f"xcrun simctl install {UDID} {APP_PATH}")
+    if not os.path.exists(APP_PATH):
+        print(f"  Error: APP_PATH does not exist: {APP_PATH}")
+        return
+    quoted_path = shlex.quote(APP_PATH)
+    run_cmd(f"xcrun simctl install {UDID} {quoted_path}")
 
 
 def parse_and_execute(action):

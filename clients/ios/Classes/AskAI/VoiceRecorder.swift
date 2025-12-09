@@ -32,6 +32,7 @@ class VoiceRecorder: NSObject, ObservableObject {
     private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))
     private var audioRecorder: AVAudioRecorder?
     private var recordingURL: URL?
+    private var hasCompletedTranscription = false
 
     // MARK: - Permission Handling
 
@@ -77,6 +78,7 @@ class VoiceRecorder: NSObject, ObservableObject {
         // Reset state
         error = nil
         transcribedText = ""
+        hasCompletedTranscription = false
 
         // Try live transcription first, fall back to file-based
         if speechRecognizer?.isAvailable == true {
@@ -180,6 +182,9 @@ class VoiceRecorder: NSObject, ObservableObject {
     }
 
     private func finishLiveTranscription() {
+        guard !hasCompletedTranscription else { return }
+        hasCompletedTranscription = true
+
         recognitionTask?.cancel()
         recognitionTask = nil
         recognitionRequest = nil
@@ -263,6 +268,7 @@ class VoiceRecorder: NSObject, ObservableObject {
 
                 if let result = result {
                     self.transcribedText = result.bestTranscription.formattedString
+                    self.hasCompletedTranscription = true
                     self.onTranscriptionComplete?(self.transcribedText)
                 }
             }
@@ -334,6 +340,7 @@ class VoiceRecorder: NSObject, ObservableObject {
                     let response = try JSONDecoder().decode(AskAITranscribeResponse.self, from: data)
                     if response.code == 1, let text = response.text {
                         self.transcribedText = text
+                        self.hasCompletedTranscription = true
                         self.onTranscriptionComplete?(text)
                     } else {
                         self.handleError(response.message ?? "Transcription failed")
@@ -352,6 +359,7 @@ class VoiceRecorder: NSObject, ObservableObject {
             self.error = message
             self.isRecording = false
             self.isTranscribing = false
+            self.hasCompletedTranscription = true
             self.onTranscriptionError?(message)
             self.onRecordingStateChange?(false)
         }
