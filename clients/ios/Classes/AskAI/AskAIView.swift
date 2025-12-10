@@ -8,6 +8,31 @@
 
 import SwiftUI
 
+// MARK: - Theme Observer for SwiftUI
+
+@available(iOS 15.0, *)
+class AskAIThemeObserver: ObservableObject {
+    @Published var themeVersion: Int = 0
+
+    private var observers: [NSObjectProtocol] = []
+
+    init() {
+        // Observe UserDefaults changes for theme-related keys
+        let observer = NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.themeVersion += 1
+        }
+        observers.append(observer)
+    }
+
+    deinit {
+        observers.forEach { NotificationCenter.default.removeObserver($0) }
+    }
+}
+
 // MARK: - NewsBlur Design Colors (Theme-aware)
 @available(iOS 15.0, *)
 private struct NewsBlurColors {
@@ -16,12 +41,12 @@ private struct NewsBlurColors {
 
     static var background: Color {
         // Light: #EAECE6, Sepia: #F5E6D3, Medium: #3D3D3D, Dark: #1A1A1A
-        themedColor(light: 0xEAECE6, sepia: 0xF5E6D3, medium: 0x3D3D3D, dark: 0x1A1A1A)
+        themedColor(light: 0xEAECE6, sepia: 0xF3E2CB, medium: 0x3D3D3D, dark: 0x1A1A1A)
     }
 
     static var cardBackground: Color {
         // Light: white, Sepia: #FDF8F0, Medium: #4A4A4A, Dark: #2A2A2A
-        themedColor(light: 0xFFFFFF, sepia: 0xFDF8F0, medium: 0x4A4A4A, dark: 0x2A2A2A)
+        themedColor(light: 0xFFFFFF, sepia: 0xFAF5ED, medium: 0x4A4A4A, dark: 0x2A2A2A)
     }
 
     static var cardHover: Color {
@@ -64,23 +89,17 @@ private struct NewsBlurColors {
 
         let hex: Int
 
-        // Use isDarkTheme which handles "auto" mode correctly
-        if themeManager.isDarkTheme {
-            // Check if it's medium (gray) vs dark (black) theme
-            let theme = themeManager.theme
-            if theme == ThemeStyleMedium || theme == "medium" {
-                hex = medium
-            } else {
-                hex = dark
-            }
+        // Use effectiveTheme which resolves "auto" to the actual visual theme
+        let effectiveTheme = themeManager.effectiveTheme
+
+        if effectiveTheme == ThemeStyleMedium || effectiveTheme == "medium" {
+            hex = medium
+        } else if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
+            hex = dark
+        } else if effectiveTheme == ThemeStyleSepia || effectiveTheme == "sepia" {
+            hex = sepia
         } else {
-            // Light or sepia theme
-            let theme = themeManager.theme
-            if theme == ThemeStyleSepia || theme == "sepia" {
-                hex = sepia
-            } else {
-                hex = light
-            }
+            hex = light
         }
 
         return Color(
@@ -94,6 +113,7 @@ private struct NewsBlurColors {
 @available(iOS 15.0, *)
 struct AskAIView: View {
     @ObservedObject var viewModel: AskAIViewModel
+    @StateObject private var themeObserver = AskAIThemeObserver()
     var onDismiss: () -> Void
 
     @FocusState private var isInputFocused: Bool
@@ -108,6 +128,7 @@ struct AskAIView: View {
             }
         }
         .background(NewsBlurColors.background)
+        .id(themeObserver.themeVersion) // Force re-render when theme changes
     }
 
     // MARK: - Question Selector View
@@ -786,23 +807,17 @@ struct MarkdownText: View {
             return Color(red: 0.369, green: 0.384, blue: 0.404) // #5E6267 default
         }
 
-        // Use isDarkTheme which handles "auto" mode correctly
-        if themeManager.isDarkTheme {
-            // Dark themes use light text
-            let theme = themeManager.theme
-            if theme == ThemeStyleMedium || theme == "medium" {
-                return Color(red: 0.88, green: 0.88, blue: 0.88) // #E0E0E0
-            } else {
-                return Color(red: 0.91, green: 0.91, blue: 0.91) // #E8E8E8
-            }
+        // Use effectiveTheme which resolves "auto" to the actual visual theme
+        let effectiveTheme = themeManager.effectiveTheme
+
+        if effectiveTheme == ThemeStyleMedium || effectiveTheme == "medium" {
+            return Color(red: 0.88, green: 0.88, blue: 0.88) // #E0E0E0
+        } else if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
+            return Color(red: 0.91, green: 0.91, blue: 0.91) // #E8E8E8
+        } else if effectiveTheme == ThemeStyleSepia || effectiveTheme == "sepia" {
+            return Color(red: 0.36, green: 0.29, blue: 0.24) // #5C4A3D
         } else {
-            // Light themes use dark text
-            let theme = themeManager.theme
-            if theme == ThemeStyleSepia || theme == "sepia" {
-                return Color(red: 0.36, green: 0.29, blue: 0.24) // #5C4A3D
-            } else {
-                return Color(red: 0.369, green: 0.384, blue: 0.404) // #5E6267
-            }
+            return Color(red: 0.369, green: 0.384, blue: 0.404) // #5E6267
         }
     }
 

@@ -225,7 +225,7 @@ static UIFont *indicatorFont = nil;
     
     UIColor *backgroundColor;
     backgroundColor = isHighlighted ?
-                      UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030) : UIColorFromLightSepiaMediumDarkRGB(0xF4F4F4, 0xFFFDEF, 0x4F4F4F, 0x101010);
+                      UIColorFromLightSepiaMediumDarkRGB(0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030) : UIColorFromLightSepiaMediumDarkRGB(0xF4F4F4, 0xF3E2CB, 0x4F4F4F, 0x101010);
     [backgroundColor set];
     
     CGContextFillRect(context, r);

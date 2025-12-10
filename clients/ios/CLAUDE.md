@@ -135,16 +135,16 @@ python3 run_ios.py launch sleep:2 tap:175,600 sleep:1 screenshot:/tmp/result.png
 
 ### Screenshot Coordinate Mapping (iPhone 16e)
 
-Screenshots from `run_ios.py` are 1170x2532 pixels, but tap coordinates use the simulator window size (332x824). To convert screenshot pixel coordinates to tap coordinates:
+Screenshots from `run_ios.py` are 1170x2532 pixels, but tap coordinates use the simulator window size (384x824). To convert screenshot pixel coordinates to tap coordinates:
 
 | Dimension | Screenshot | Simulator | Scale Factor |
 |-----------|------------|-----------|--------------|
-| Width     | 1170       | 332       | 3.524        |
+| Width     | 1170       | 384       | 3.047        |
 | Height    | 2532       | 824       | 3.073        |
 
 **Conversion formula:**
 ```
-tap_x = screenshot_x / 3.524
+tap_x = screenshot_x / 3.047
 tap_y = screenshot_y / 3.073
 ```
 
@@ -155,8 +155,8 @@ tap_y = screenshot_y / 3.073
 - Then apply the division formula to convert to tap coordinates
 
 **Examples:**
-- Settings cog at screenshot position (1100, 2420) → tap coordinates (312, 788)
-- List item 8 rows down at screenshot position (400, 1190) → tap coordinates (113, 387)
+- Settings cog at screenshot position (1100, 2420) → tap coordinates (361, 788)
+- List item 8 rows down at screenshot position (400, 1190) → tap coordinates (131, 387)
 
 ### Manual Simulator Commands
 
