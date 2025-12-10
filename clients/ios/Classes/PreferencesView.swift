@@ -173,7 +173,10 @@ class PreferencesViewModel: ObservableObject {
             hidden.insert("theme_auto_brightness")
         }
 
-        // Light/dark theme overrides are always shown - they define the variant when in that mode
+        // Hide infrequent stories per month when infrequent site stories is disabled
+        if !defaults.bool(forKey: "show_infrequent_site_stories") {
+            hidden.insert("infrequent_stories_per_month")
+        }
 
         hiddenKeys = hidden
     }
@@ -833,37 +836,11 @@ class PreferencesViewModel: ObservableObject {
     func preferencesDidDismiss()
 }
 
-// MARK: - Theme Observer for SwiftUI
-
-@available(iOS 15.0, *)
-class ThemeObserver: ObservableObject {
-    @Published var themeVersion: Int = 0
-
-    private var observers: [NSObjectProtocol] = []
-
-    init() {
-        // Observe UserDefaults changes for theme-related keys
-        let observer = NotificationCenter.default.addObserver(
-            forName: UserDefaults.didChangeNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.themeVersion += 1
-        }
-        observers.append(observer)
-    }
-
-    deinit {
-        observers.forEach { NotificationCenter.default.removeObserver($0) }
-    }
-}
-
 // MARK: - Preferences View
 
 @available(iOS 15.0, *)
 struct PreferencesView: View {
     @ObservedObject var viewModel: PreferencesViewModel
-    @StateObject private var themeObserver = ThemeObserver()
     var onDismiss: () -> Void
 
     @State private var expandedSections: Set<String> = []
@@ -910,7 +887,6 @@ struct PreferencesView: View {
             }
         }
         .background(PreferencesColors.background.ignoresSafeArea())
-        .id(themeObserver.themeVersion) // Force re-render when theme changes
         .onAppear {
             // Refresh state when view appears
             viewModel.updateHiddenKeys()
