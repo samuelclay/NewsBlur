@@ -36,7 +36,7 @@
     networks:
       - name: newsblurnet
     env:
-      DATA_SOURCE_NAME: "postgresql://{{ postgres_credentials.stdout }}@db-postgres.service.nyc1.consul:5432/postgres?sslmode=disable"
+      DATA_SOURCE_NAME: "postgresql://{{ postgres_credentials.stdout_lines[-1] }}@db-postgres.service.nyc1.consul:5432/postgres?sslmode=disable"
     ports:
       - "9187:9187"
 

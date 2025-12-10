@@ -101,6 +101,7 @@
             // ==================
 
             $(window).bind('resize.reader', _.throttle($.rescope(this.resize_window, this), 1000));
+            $(window).bind('beforeunload.reader', _.bind(this.cleanup_before_unload, this));
             this.$s.$body.bind('click.reader', $.rescope(this.handle_clicks, this));
             this.$s.$body.bind('keyup.reader', $.rescope(this.handle_keyup, this));
             this.handle_keystrokes();
@@ -1320,6 +1321,21 @@
 
         reset_feed: function (options) {
             options = options || {};
+
+            // Clean up any active voice recordings from Ask AI menu
+            var $menu = $('.NB-menu-ask-ai-container');
+            var menu_recorder = $menu.data('voice_recorder');
+            if (menu_recorder) {
+                menu_recorder.cleanup();
+            }
+
+            // Clean up any active voice recordings from Ask AI panes
+            $('.NB-story-ask-ai-pane, .NB-story-ask-ai-inline').each(function () {
+                var view = $(this).data('view');
+                if (view && view.voice_recorder) {
+                    view.voice_recorder.cleanup();
+                }
+            });
 
             $.extend(this.flags, {
                 'scrolling_by_selecting_story_title': false,
@@ -3588,7 +3604,7 @@
             story_view.show_ask_ai_menu(fake_event);
         },
 
-        open_ask_ai_pane: function (story, question_id, custom_question) {
+        open_ask_ai_pane: function (story, question_id, custom_question, transcription_error, model) {
             var story_view = story.latest_story_detail_view;
             if (!story_view) {
                 console.log(['No story view found for Ask AI', story]);
@@ -3596,10 +3612,10 @@
             }
 
             var $story_el = story_view.$el;
-            var $content_wrapper = $story_el.find('.NB-story-content-wrapper');
+            var $positioning_wrapper = $story_el.find('.NB-story-content-positioning-wrapper');
 
-            if (!$content_wrapper.length) {
-                console.log(['No content wrapper found for Ask AI', story]);
+            if (!$positioning_wrapper.length) {
+                console.log(['No positioning wrapper found for Ask AI', story]);
                 return;
             }
 
@@ -3607,15 +3623,17 @@
                 story: story,
                 question_id: question_id || 'custom',
                 custom_question: custom_question,
+                transcription_error: transcription_error,
+                model: model,
                 inline: true
             });
 
-            // Find the last Ask AI section in this story, or append after content wrapper
-            var $existing_ask_ai = $story_el.find('.NB-story-ask-ai-inline').last();
+            // Find the last Ask AI section in this story, or append inside positioning wrapper
+            var $existing_ask_ai = $positioning_wrapper.find('.NB-story-ask-ai-inline').last();
             if ($existing_ask_ai.length) {
                 $existing_ask_ai.after(ask_ai_pane.render().$el);
             } else {
-                $content_wrapper.after(ask_ai_pane.render().$el);
+                $positioning_wrapper.append(ask_ai_pane.render().$el);
             }
 
             // Smooth scroll to bring the new Ask AI section into view
@@ -5640,7 +5658,15 @@
                 if (!view) continue;
                 if (view.story_hash !== story_hash) continue;
                 if (view.question_id !== question_id) continue;
-                if (request_id && view.active_request_id && view.active_request_id !== request_id) continue;
+                // If server sends a request_id, only match views with that exact request_id
+                // This prevents matching views that never got a request_id (e.g., transcription errors)
+                if (request_id) {
+                    if (view.active_request_id === request_id) {
+                        return view;
+                    }
+                    continue;
+                }
+                // No request_id from server, match first view for this story/question
                 return view;
             }
             return null;
@@ -6479,6 +6505,26 @@
         // ==========
         // = Events =
         // ==========
+
+        cleanup_before_unload: function () {
+            // Clean up voice recordings when page is about to unload (refresh, navigate away, etc.)
+            // This ensures microphone is released even if user refreshes the page
+
+            // Clean up Ask AI menu recorder
+            var $menu = $('.NB-menu-ask-ai-container');
+            var menu_recorder = $menu.data('voice_recorder');
+            if (menu_recorder) {
+                menu_recorder.cleanup();
+            }
+
+            // Clean up all Ask AI pane recorders
+            $('.NB-story-ask-ai-pane, .NB-story-ask-ai-inline').each(function () {
+                var view = $(this).data('view');
+                if (view && view.voice_recorder) {
+                    view.voice_recorder.cleanup();
+                }
+            });
+        },
 
         handle_clicks: function (elem, e) {
             var self = this;
@@ -7656,6 +7702,20 @@
             $document.bind('keydown', 'esc', function (e) {
                 e.preventDefault();
                 if (NEWSBLUR.assets.preference("keyboard-ignore-esc")) return;
+
+                // Check if any Ask AI view is recording and cancel it
+                var $ask_ai_views = $('.NB-story-ask-ai-inline, .NB-story-ask-ai-pane');
+                var recording_cancelled = false;
+                $ask_ai_views.each(function () {
+                    var view = $(this).data('view');
+                    if (view && view.is_recording && view.is_recording()) {
+                        view.cancel_recording();
+                        recording_cancelled = true;
+                        return false; // break the loop
+                    }
+                });
+                if (recording_cancelled) return;
+
                 if (!_.keys($.modal.impl.d).length &&
                     !NEWSBLUR.ReaderPopover.is_open() &&
                     !self.flags['feed_list_showing_manage_menu']) {

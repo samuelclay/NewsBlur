@@ -38,18 +38,17 @@
 #   ufw: rule=allow port=22
 #   tags: ufw
 
-# - name: Allow all access from RFC1918 networks to this host
-#   become: yes
-#   ufw:
-#     rule: allow
-#     src: '{{ item }}'
-#   with_items:
-#     - 10.0.0.0/8
-#     - 172.18.0.0/16
-#     - 172.17.0.0/16
-#   tags:
-#     - firewall
-#     - ufw
+- name: Allow Docker networks to access this host
+  become: yes
+  ufw:
+    rule: allow
+    src: '{{ item }}'
+  with_items:
+    - 172.18.0.0/16
+    - 172.17.0.0/16
+  tags:
+    - firewall
+    - ufw
 
 # - name: Allow all access from Hetzner inventory hosts
 #   become: yes

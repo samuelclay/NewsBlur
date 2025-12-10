@@ -34,6 +34,7 @@
     image: newsblur/newsblur_monitor:latest
     pull: yes
     state: started
+    recreate: yes
     command: bash -c "python {{ item.file }}"
     hostname: "{{ inventory_hostname }}"
     restart_policy: unless-stopped
@@ -55,7 +56,3 @@
     - service_name: www
       file: /srv/newsblur/flask_metrics/flask_metrics_haproxy.py
 
-- name: Restart flask_metrics
-  become: yes
-  shell:
-    cmd: docker restart flask_metrics
