@@ -6,10 +6,10 @@
     dest: /srv/newsblur/docker/grafana/grafana.ini
   notify: restart grafana
 
-- name: Copy grafana datasource config
+- name: Template grafana datasource config
   become: yes
-  copy:
-    src: /srv/newsblur/docker/grafana/datasources/datasource.yaml
+  template:
+    src: /srv/newsblur/docker/grafana/datasources/datasource.yaml.j2
     dest: /srv/newsblur/docker/grafana/datasources/datasource.yaml
   notify: restart grafana
 
@@ -18,6 +18,8 @@
   file:
     path: "{{ item }}"
     state: directory
+    owner: nb
+    group: nb
     mode: "0755"
   loop:
     - /srv/newsblur/docker/grafana/datasources
@@ -62,7 +64,8 @@
     hostname: "{{ inventory_hostname }}"
     user: root
     networks_cli_compatible: yes
-    network_mode: host
+    networks:
+      - name: newsblurnet
     ports:
       - "3000:3000"
     volumes:

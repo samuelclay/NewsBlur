@@ -16,8 +16,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-title": "click_link_in_story",
         "mouseenter .NB-feed-story-manage-icon": "mouseenter_manage_icon",
         "mouseleave .NB-feed-story-manage-icon": "mouseleave_manage_icon",
-        "mouseenter .NB-feed-story-email": "mouseenter_sideoption_email",
-        "mouseleave .NB-feed-story-email": "mouseleave_sideoption_email",
         "mouseenter .NB-feed-story-train": "mouseenter_sideoption_train",
         "mouseleave .NB-feed-story-train": "mouseleave_sideoption_train",
         "mouseenter .NB-feed-story-ask-ai": "mouseenter_sideoption_ask_ai",
@@ -30,7 +28,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag": "save_classifier",
         "click .NB-feed-story-author": "save_classifier",
         "click .NB-feed-story-train": "open_story_trainer",
-        "click .NB-feed-story-email": "maybe_open_email",
+        "click .NB-feed-story-email": "open_email",
+        "click .NB-sideoption-sharing": "click_sharing_service",
         "click .NB-feed-story-save": "toggle_starred",
         "click .NB-story-comments-label": "scroll_to_comments",
         "click .NB-story-content-expander": "expand_story",
@@ -241,7 +240,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_save: NEWSBLUR.assets.preference("show_sideoption_save"),
             show_sideoption_share: NEWSBLUR.assets.preference("show_sideoption_share"),
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
-            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai") && NEWSBLUR.Globals.is_staff,
+            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai") && (
+                NEWSBLUR.Globals.is_staff ||
+                NEWSBLUR.Globals.is_archive ||
+                (NEWSBLUR.Globals.debug && NEWSBLUR.Globals.is_premium)
+            ),
+            sharing_services: NEWSBLUR.assets.third_party_sharing_services,
         };
     },
 
@@ -308,10 +312,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         <div class="NB-feed-story-shares-container"></div>\
         <div class="NB-story-content-container">\
             <div class="NB-story-content-wrapper <% if (truncatable) { %>NB-story-content-truncatable<% } %>">\
-                <div class="NB-feed-story-content <% if (feed && feed.get("is_newsletter")) { %>NB-newsletter<% } %>">\
-                    <% if (!options.skip_content) { %>\
-                        <%= story.story_content() %>\
-                    <% } %>\
+                <div class="NB-story-content-positioning-wrapper">\
+                    <div class="NB-feed-story-content <% if (feed && feed.get("is_newsletter")) { %>NB-newsletter<% } %>">\
+                        <% if (!options.skip_content) { %>\
+                            <%= story.story_content() %>\
+                        <% } %>\
+                    </div>\
                 </div>\
                 <div class="NB-story-content-expander" role="button">\
                     <div class="NB-story-content-expander-inner">\
@@ -327,19 +333,17 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <% if (show_sideoption_email) { %>\
                     <div class="NB-sideoption NB-feed-story-email" role="button">\
                         <div class="NB-sideoption-title">Email</div>\
-                        <div class="NB-sideoption-thirdparty NB-sideoption-icon NB-sideoption-icon-email">&nbsp;</div>\
-                        <div class="NB-sideoption-thirdparty-services">\
-                            <div class="NB-sideoption-icons">\
-                                <% _.each(NEWSBLUR.assets.third_party_sharing_services, function(label, key) { %>\
-                                    <% if (NEWSBLUR.Preferences["story_share_"+key]) { %>\
-                                        <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-<%= key %>" data-service-name="<%= key %>" data-service-label="<%= label %>" role="button">\
-                                        </div>\
-                                    <% } %>\
-                                <% }) %>\
-                            </div>\
-                        </div>\
+                        <div class="NB-sideoption-icon NB-sideoption-icon-email">&nbsp;</div>\
                     </div>\
                 <% } %>\
+                <% _.each(sharing_services, function(label, key) { %>\
+                    <% if (NEWSBLUR.Preferences["story_share_"+key]) { %>\
+                        <div class="NB-sideoption NB-sideoption-sharing NB-sideoption-sharing-<%= key %>" data-service-name="<%= key %>" role="button">\
+                            <div class="NB-sideoption-title"><%= label %></div>\
+                            <div class="NB-sideoption-icon NB-sideoption-icon-<%= key %>">&nbsp;</div>\
+                        </div>\
+                    <% } %>\
+                <% }) %>\
                 <% if (show_sideoption_train) { %>\
                     <div class="NB-sideoption NB-feed-story-train" role="button">\
                         <div class="NB-sideoption-title">Train</div>\
@@ -813,34 +817,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     },
 
-    mouseenter_sideoption_email: function (event) {
-        var $sideoption = $(event.currentTarget);
-        $sideoption.on('mousemove.email', _.bind(function (e) {
-            var $target = $(e.target);
-            var $thirdparty = $target.closest('.NB-sideoption-thirdparty');
-
-            if ($thirdparty.length) {
-                var serviceName = $thirdparty.data("service-label");
-                $sideoption.find(".NB-sideoption-title").text(serviceName);
-                $sideoption.find('.NB-sideoption-thirdparty').removeClass("NB-hover");
-                $thirdparty.addClass("NB-hover");
-                $sideoption.find(".NB-sideoption-icon-email").addClass("NB-dimmed");
-            } else {
-                $sideoption.find(".NB-sideoption-title").text("Email");
-                $sideoption.find('.NB-sideoption-thirdparty').removeClass("NB-hover");
-                $sideoption.find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
-            }
-        }, this));
-    },
-
-    mouseleave_sideoption_email: function (event) {
-        var $sideoption = $(event.currentTarget);
-        $sideoption.off('mousemove.email');
-        $sideoption.find(".NB-sideoption-title").text("Email");
-        $sideoption.find('.NB-sideoption-thirdparty').removeClass("NB-hover");
-        $sideoption.find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
-    },
-
     mouseenter_sideoption_train: function (event) {
         var $sideoption = $(event.currentTarget);
         $sideoption.on('mousemove.train', _.bind(function (e) {
@@ -1228,20 +1204,17 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         NEWSBLUR.reader.open_story_trainer(this.model.id, feed_id, options);
     },
 
-    maybe_open_email: function (e) {
-        // Check if target has .NB-sideoption-thirdparty class
-        if (!$(e.target).hasClass('NB-sideoption-thirdparty')) {
-            return this.open_email();
-        }
-
-        var service = $(e.target).data('service-name');
-        console.log(['maybe_open_email', e.target, service]);
+    click_sharing_service: function (e) {
+        var $sideoption = $(e.currentTarget);
+        var service = $sideoption.data('service-name');
         NEWSBLUR.reader.send_story_to_thirdparty(this.model.id, service);
 
-        if (service == 'copyurl') {
-            this.$(".NB-feed-story-email .NB-sideoption-title").text("Copied");
-        } else if (service == 'copytext') {
-            this.$(".NB-feed-story-email .NB-sideoption-title").text("Copied");
+        if (service == 'copyurl' || service == 'copytext') {
+            $sideoption.find(".NB-sideoption-title").text("Copied");
+            setTimeout(function () {
+                var label = NEWSBLUR.assets.third_party_sharing_services[service];
+                $sideoption.find(".NB-sideoption-title").text(label);
+            }, 1500);
         }
     },
 
@@ -1362,8 +1335,28 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <% }) %>\
                     </ul>\
                     <div class="NB-menu-ask-ai-custom-input-wrapper">\
+                        <div class="NB-menu-ask-ai-voice-button" title="Record voice question">\
+                            <img src="/media/img/icons/nouns/microphone.svg" class="NB-menu-ask-ai-voice-icon" />\
+                            <div class="NB-menu-ask-ai-recording-indicator">\
+                                <div class="NB-recording-bar"></div>\
+                                <div class="NB-recording-bar"></div>\
+                                <div class="NB-recording-bar"></div>\
+                                <div class="NB-recording-bar"></div>\
+                            </div>\
+                        </div>\
                         <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="Ask a question..." />\
-                        <div class="NB-button NB-modal-submit-green NB-menu-ask-ai-custom-submit NB-disabled">Ask</div>\
+                        <div class="NB-menu-ask-ai-submit-menu NB-disabled" data-model="opus">\
+                            <div class="NB-menu-ask-ai-custom-submit">Ask</div>\
+                            <div class="NB-menu-ask-ai-submit-dropdown-trigger" title="Choose model">\
+                                <span class="NB-dropdown-arrow">▾</span>\
+                            </div>\
+                            <div class="NB-menu-ask-ai-model-dropdown">\
+                                <div class="NB-model-option NB-selected" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude Opus 4.5</div>\
+                                <div class="NB-model-option" data-model="gpt-5.1"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.1</div>\
+                                <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
+                                <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
+                            </div>\
+                        </div>\
                     </div>\
                 </div>\
             </div>\
@@ -1377,6 +1370,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         $menu.data('story_id', this.model.id);
         $menu.data('story_view', this);
+
+        // Set model from preference (default to opus)
+        var saved_model = NEWSBLUR.assets.preference('ask_ai_model') || 'opus';
+        var $submit_menu = $menu.find('.NB-menu-ask-ai-submit-menu');
+        $submit_menu.data('model', saved_model);
+        $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option').removeClass('NB-selected');
+        $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option[data-model="' + saved_model + '"]').addClass('NB-selected');
+
         $('body').append($menu);
 
         var button_offset = $button.offset();
@@ -1424,20 +1425,48 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // Enable/disable Ask button based on input content
         $menu.find('.NB-menu-ask-ai-custom-input').on('input', _.bind(function (ev) {
             var $input = $(ev.currentTarget);
-            var $submit_button = $menu.find('.NB-menu-ask-ai-custom-submit');
+            var $submit_menu = $menu.find('.NB-menu-ask-ai-submit-menu');
             var has_text = $input.val().trim().length > 0;
 
             if (has_text) {
-                $submit_button.removeClass('NB-disabled');
+                $submit_menu.removeClass('NB-disabled');
             } else {
-                $submit_button.addClass('NB-disabled');
+                $submit_menu.addClass('NB-disabled');
             }
         }, this));
 
         $menu.find('.NB-menu-ask-ai-option, .NB-menu-ask-ai-segment').on('click', _.bind(function (ev) {
             var question_id = $(ev.currentTarget).data('question-id');
-            this.handle_ask_ai_question(question_id);
+            var model = $menu.find('.NB-menu-ask-ai-submit-menu').data('model');
+            this.handle_ask_ai_question(question_id, model);
             this.hide_ask_ai_menu();
+        }, this));
+
+        // Model dropdown toggle
+        $menu.find('.NB-menu-ask-ai-submit-dropdown-trigger').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            $menu.find('.NB-menu-ask-ai-submit-menu').toggleClass('NB-dropdown-open');
+        }, this));
+
+        // Model selection in dropdown
+        $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            var $option = $(ev.currentTarget);
+            var model = $option.data('model');
+            var $submit_menu = $menu.find('.NB-menu-ask-ai-submit-menu');
+
+            // Update selected state
+            $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option').removeClass('NB-selected');
+            $option.addClass('NB-selected');
+
+            // Store selected model and save preference
+            $submit_menu.data('model', model);
+            NEWSBLUR.assets.preference('ask_ai_model', model);
+
+            // Close dropdown
+            $submit_menu.removeClass('NB-dropdown-open');
         }, this));
 
         // Custom question input handlers
@@ -1460,6 +1489,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.submit_custom_question_from_menu($menu);
         }, this));
 
+        // Voice recording button handler
+        $menu.find('.NB-menu-ask-ai-voice-button').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            this.start_voice_recording_for_menu($menu);
+        }, this));
+
         $(document).on('click.ask_ai_menu', _.bind(function (ev) {
             if (!$(ev.target).closest('.NB-menu-ask-ai-container, .NB-feed-story-ask-ai').length) {
                 this.hide_ask_ai_menu();
@@ -1470,8 +1505,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     hide_ask_ai_menu: function () {
+        // Stop any active voice recording before closing
+        var $menu = $('.NB-menu-ask-ai-container');
+        var recorder = $menu.data('voice_recorder');
+        if (recorder) {
+            recorder.cleanup();
+        }
+
         $('.NB-feed-story-ask-ai').removeClass('NB-active');
-        $('.NB-menu-ask-ai-container').fadeOut(100, function () {
+        $menu.fadeOut(100, function () {
             $(this).remove();
         });
         $(document).off('click.ask_ai_menu');
@@ -1479,16 +1521,95 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     submit_custom_question_from_menu: function ($menu) {
         var custom_question = $menu.find('.NB-menu-ask-ai-custom-input').val();
-        if (!custom_question || !custom_question.trim()) {
+        var transcription_error = $menu.data('transcription_error');
+        var model = $menu.find('.NB-menu-ask-ai-submit-menu').data('model');
+
+        // Allow opening with empty question if there's a transcription error to display
+        if ((!custom_question || !custom_question.trim()) && !transcription_error) {
             return;
         }
 
-        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question);
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question, transcription_error, model);
         this.hide_ask_ai_menu();
+
+        // Clear the stored error
+        $menu.removeData('transcription_error');
     },
 
-    handle_ask_ai_question: function (question_id) {
-        NEWSBLUR.reader.open_ask_ai_pane(this.model, question_id);
+    handle_ask_ai_question: function (question_id, model) {
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, question_id, null, null, model);
+    },
+
+    start_voice_recording_for_menu: function ($menu) {
+        var self = this;
+        var $voice_button = $menu.find('.NB-menu-ask-ai-voice-button');
+        var $input = $menu.find('.NB-menu-ask-ai-custom-input');
+        var $submit_button = $menu.find('.NB-menu-ask-ai-custom-submit');
+
+        // Get or create recorder instance for this menu
+        var recorder = $menu.data('voice_recorder');
+        if (!recorder) {
+            recorder = new NEWSBLUR.VoiceRecorder({
+                on_recording_start: function () {
+                    $voice_button.addClass('NB-recording');
+                    $input.attr('placeholder', 'Recording...');
+                    $voice_button.attr('title', 'Stop recording');
+                },
+                on_recording_stop: function () {
+                    $voice_button.removeClass('NB-recording');
+                    $voice_button.addClass('NB-transcribing');
+                    $input.attr('placeholder', 'Transcribing...');
+                    $voice_button.attr('title', 'Transcribing audio');
+                },
+                on_transcription_start: function () {
+                    // Already showing transcribing state
+                },
+                on_transcription_complete: function (text) {
+                    $voice_button.removeClass('NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+                    $input.attr('placeholder', 'Ask a question...');
+
+                    // Set the transcribed text and submit the question automatically
+                    $input.val(text);
+                    $submit_button.removeClass('NB-disabled');
+
+                    // Auto-submit the question
+                    _.delay(function () {
+                        self.submit_custom_question_from_menu($menu);
+                    }, 100);
+                },
+                on_transcription_error: function (error) {
+                    $voice_button.removeClass('NB-recording NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+
+                    // Check if this is a quota/limit error
+                    var is_quota_error = error && (error.includes('limit') || error.includes('used all') || error.includes('reached'));
+
+                    if (is_quota_error) {
+                        // Store the error and open Ask AI view to display it
+                        $menu.data('transcription_error', error);
+                        $input.attr('placeholder', 'Quota exceeded');
+                        // Auto-submit to open Ask AI view which will show the full error
+                        _.delay(function () {
+                            self.submit_custom_question_from_menu($menu);
+                        }, 100);
+                    } else {
+                        // For other errors, show in placeholder
+                        $input.attr('placeholder', error || 'Error - please try again');
+                    }
+
+                    console.error('Voice transcription error:', error);
+                }
+            });
+            $menu.data('voice_recorder', recorder);
+        }
+
+        // Toggle recording
+        if (recorder.is_recording) {
+            recorder.stop_recording();
+        } else {
+            recorder.start_recording();
+        }
     }
 
 

@@ -131,6 +131,8 @@ ALLOWED_SUBDOMAINS = [
     "staging3",
     "nb",
 ]
+# Users with expensive river queries that should use lazy per-feed merge to avoid Redis blocking
+RIVER_SLOWDOWN_USERS = [510812, 37596, 22845]
 
 
 def get_subdomain(request):
@@ -1872,6 +1874,7 @@ def load_river_stories__redis(request):
                     "cache_prefix": "dashboard:" if on_dashboard else "",
                     "date_filter_start": date_filter_start_utc,
                     "date_filter_end": date_filter_end_utc,
+                    "use_lazy_merge": user.pk in RIVER_SLOWDOWN_USERS,
                 }
                 story_hashes, unread_feed_story_hashes = UserSubscription.feed_stories(**params)
             else:
