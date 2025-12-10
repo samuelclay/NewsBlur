@@ -18,3 +18,14 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks(lambda: [n.name for n in apps.get_app_configs()])
+
+
+@app.on_after_finalize.connect
+def setup_periodic_tasks(sender, **kwargs):
+    """Import task modules after Celery is fully configured."""
+    if sender.conf.imports:
+        for module_name in sender.conf.imports:
+            try:
+                __import__(module_name)
+            except ImportError as e:
+                print(f"Failed to import {module_name}: {e}")

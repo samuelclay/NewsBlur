@@ -106,7 +106,7 @@ def create_streams_for_roles(hosts, roles, command=None, path=None):
                 follow_host(hosts, streams, found, hostname, command, path)
         else:
             host = role
-            follow_host(hosts, streams, found, host, command)
+            follow_host(hosts, streams, found, host, command, path)
 
     return streams
 

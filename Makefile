@@ -277,22 +277,38 @@ pull:
 local_build_web:
 	# docker buildx build --load . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
 	docker build . --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
-build_web:
+
+# Ensure buildx builder exists for multi-platform builds
+# The default 'docker' driver doesn't support multi-platform; we need 'docker-container'
+buildx_setup:
+	@if ! docker buildx inspect newsblur-builder >/dev/null 2>&1; then \
+		echo "Creating buildx builder 'newsblur-builder'..."; \
+		docker buildx create --name newsblur-builder --driver docker-container --use; \
+		docker buildx inspect --bootstrap; \
+	else \
+		docker buildx use newsblur-builder; \
+	fi
+
+# Clean buildx cache (use if builds fail due to disk space)
+buildx_clean:
+	docker buildx prune -f
+
+build_web: buildx_setup
 	docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
-build_node: 
+build_node: buildx_setup
 	docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
-build_monitor: 
+build_monitor: buildx_setup
 	docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
-build_deploy: 
+build_deploy: buildx_setup
 	docker buildx build . --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
 build: build_web build_node build_monitor build_deploy
-push_web:
+push_web: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_base_image.Dockerfile --tag=newsblur/newsblur_python3
-push_node:
+push_node: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/node/Dockerfile --tag=newsblur/newsblur_node
-push_monitor:
+push_monitor: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/monitor/Dockerfile --tag=newsblur/newsblur_monitor
-push_deploy:
+push_deploy: buildx_setup
 	docker buildx build . --push --platform linux/amd64,linux/arm64 --file=docker/newsblur_deploy.Dockerfile --tag=newsblur/newsblur_deploy
 push_images: push_web push_node push_monitor push_deploy
 push: push_images

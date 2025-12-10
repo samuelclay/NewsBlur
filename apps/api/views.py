@@ -133,6 +133,9 @@ def add_site_load_script(request, token):
 
 def add_site(request, token):
     code = 0
+    profile = None
+    message = None
+    us = None
     get_post = getattr(request, request.method)
     url = get_post.get("url")
     folder = get_post.get("folder")
@@ -157,7 +160,8 @@ def add_site(request, token):
     if code > 0:
         message = "OK"
 
-    logging.user(profile.user, "~FRAdding URL from site: ~SB%s (in %s)" % (url, folder), request=request)
+    if profile:
+        logging.user(profile.user, "~FRAdding URL from site: ~SB%s (in %s)" % (url, folder), request=request)
 
     return HttpResponse(
         callback
