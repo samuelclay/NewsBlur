@@ -32,10 +32,10 @@ import shlex
 
 # Configuration
 UDID = os.environ.get("IOS_SIM_UDID", "542DF8D3-CAB2-40BE-8DB2-9CBB864F2881")
-BUNDLE_ID = os.environ.get("IOS_BUNDLE_ID", "com.newsblur.NewsBlur")
+BUNDLE_ID = os.environ.get("IOS_BUNDLE_ID", "com.newsblur.NB-Alpha")
 APP_PATH = os.environ.get(
     "IOS_APP_PATH",
-    "/Users/sclay/Library/Developer/Xcode/DerivedData/NewsBlur-dnwoengkjrcsjaezlhydxgrfmbhw/Build/Products/Debug-iphonesimulator/NewsBlur.app",
+    "/Users/sclay/Library/Developer/Xcode/DerivedData/NewsBlur-dnwoengkjrcsjaezlhydxgrfmbhw/Build/Products/Debug-iphonesimulator/NB Alpha.app",
 )
 
 # Add idb to PATH

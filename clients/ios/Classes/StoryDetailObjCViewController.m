@@ -899,6 +899,17 @@
     BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
     BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
 
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL showAskAI = [userPreferences objectForKey:@"show_ask_ai"] == nil || [userPreferences boolForKey:@"show_ask_ai"];
+
+    NSString *askAIButton = showAskAI ? @
+                             "  <div class='NB-share-button NB-ask-ai-button NB-button'>"
+                             "    <a href=\"http://ios.newsblur.com/ask-ai\"><div>"
+                             "      <span class=\"NB-icon\"></span>"
+                             "      <span class=\"NB-sideoption-text\">Ask AI</span>"
+                             "    </div></a>"
+                             "  </div>" : @"";
+
     NSString *sideOptions = [NSString stringWithFormat:@
                              "<div class='NB-sideoptions'>"
                              "<div class='NB-share-header'></div>"
@@ -921,17 +932,13 @@
                              "      <span class=\"NB-sideoption-text\">%@</span>"
                              "    </div></a>"
                              "  </div>"
-                             "  <div class='NB-share-button NB-ask-ai-button NB-button'>"
-                             "    <a href=\"http://ios.newsblur.com/ask-ai\"><div>"
-                             "      <span class=\"NB-icon\"></span>"
-                             "      <span class=\"NB-sideoption-text\">Ask AI</span>"
-                             "    </div></a>"
-                             "  </div>"
+                             "%@"
                              "</div></div></div>",
                              isShared ? @"NB-button-active" : @"",
                              isShared ? @"Shared" : @"Share",
                              isSaved ? @"NB-button-active" : @"",
-                             isSaved ? @"Saved" : @"Save"
+                             isSaved ? @"Saved" : @"Save",
+                             askAIButton
                              ];
 
     return sideOptions;

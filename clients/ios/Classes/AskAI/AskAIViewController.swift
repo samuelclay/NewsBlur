@@ -73,8 +73,8 @@ import Combine
     }
 
     private func updateBackgroundColor() {
-        // Get background color based on current theme
-        let theme = ThemeManager.shared.theme ?? ThemeStyleLight
+        // Get background color based on current effective theme (resolves auto to actual variant)
+        let theme = ThemeManager.shared.effectiveTheme ?? ThemeStyleLight
         let backgroundColor: UIColor
         switch theme {
         case ThemeStyleSepia:

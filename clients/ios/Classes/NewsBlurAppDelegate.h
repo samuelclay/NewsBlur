@@ -45,7 +45,6 @@
 @class UserProfileViewController;
 @class FeedChooserViewController;
 @class MenuViewController;
-@class IASKAppSettingsViewController;
 @class UnreadCounts;
 @class StoriesCollection;
 @class PINCache;
@@ -89,7 +88,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     OriginalStoryViewController *originalStoryViewController;
     UINavigationController *originalStoryViewNavController;
     UserProfileViewController *userProfileViewController;
-    IASKAppSettingsViewController *preferencesViewController;
     PremiumViewController *premiumViewController;
 
     AFHTTPSessionManager *networkManager;
@@ -190,7 +188,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
 @property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
-@property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
 @property (nonatomic,  strong) PremiumManager *premiumManager;
 @property (nonatomic) IBOutlet PremiumViewController *premiumViewController;
 @property (nonatomic, strong) UINavigationController *fontSettingsNavigationController;
@@ -326,7 +323,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
-- (void)setHiddenPreferencesAnimated:(BOOL)animated;
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
 - (void)popToRootWithCompletion:(void (^)(void))completion;

@@ -41,7 +41,6 @@
 #import "FMDatabaseAdditions.h"
 #import "SBJson4.h"
 #import "NSObject+SBJSON.h"
-#import "IASKAppSettingsViewController.h"
 #import "OfflineSyncUnreads.h"
 #import "OfflineFetchStories.h"
 #import "OfflineFetchText.h"
@@ -110,7 +109,6 @@
 @synthesize originalStoryViewController;
 @synthesize originalStoryViewNavController;
 @synthesize userProfileViewController;
-@synthesize preferencesViewController;
 @synthesize premiumViewController;
 
 @synthesize firstTimeUserViewController;
@@ -919,64 +917,26 @@
 
 - (void)showPreferences {
     if (self.isMac) {
-        //        [[UIApplication sharedApplication] sendAction:@selector(orderFrontPreferencesPanel:) to:nil from:nil forEvent:nil];
         return;
     }
-    
-    if (!preferencesViewController) {
-        preferencesViewController = [[IASKAppSettingsViewController alloc] init];
-        [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.preferencesViewController.view];
-    }
-    
+
     [self hidePopover];
-    
-    preferencesViewController.delegate = self.feedsViewController;
-    preferencesViewController.showDoneButton = YES;
-    preferencesViewController.showCreditsFooter = NO;
-    preferencesViewController.title = @"Preferences";
-    
-    [self setHiddenPreferencesAnimated:NO];
-    
+
     [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..."
                                               forKey:@"offline_cache_empty_stories"];
-    
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:preferencesViewController];
-    self.modalNavigationController = navController;
-    self.modalNavigationController.navigationBar.translucent = NO;
-    
-    if (!self.isPhone) {
-        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    }
-    
-    [feedsNavigationController presentViewController:modalNavigationController animated:YES completion:nil];
-}
 
-- (void)setHiddenPreferencesAnimated:(BOOL)animated {
-    NSMutableSet *hiddenSet = [NSMutableSet set];
-    
-    BOOL offline_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
-    if (!offline_enabled) {
-        [hiddenSet addObjectsFromArray:@[@"offline_image_download",
-                                         @"offline_download_connection",
-                                         @"offline_store_limit"]];
+    if (@available(iOS 15.0, *)) {
+        PreferencesViewHostingController *swiftUIPrefs = [[PreferencesViewHostingController alloc] init];
+
+        if (!self.isPhone) {
+            swiftUIPrefs.modalPresentationStyle = UIModalPresentationFormSheet;
+        }
+
+        [feedsNavigationController presentViewController:swiftUIPrefs animated:YES completion:^{
+            [swiftUIPrefs configureDelegate:(id<PreferencesViewDelegate>)self.feedsViewController];
+            [[ThemeManager themeManager] addThemeGestureRecognizerToView:swiftUIPrefs.view];
+        }];
     }
-    BOOL system_font_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"use_system_font_size"];
-    if (system_font_enabled) {
-        [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
-    }
-    BOOL theme_auto_toggle = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_auto_toggle"];
-    if (theme_auto_toggle) {
-        [hiddenSet addObjectsFromArray:@[@"theme_style", @"theme_gesture"]];
-    } else {
-        [hiddenSet addObjectsFromArray:@[@"theme_auto_brightness"]];
-    }
-    
-    BOOL story_full_screen = [[NSUserDefaults standardUserDefaults] boolForKey:@"story_full_screen"];
-    if (!story_full_screen) {
-        [hiddenSet addObjectsFromArray:@[@"story_hide_status_bar"]];
-    }
-    
-    [preferencesViewController setHiddenKeys:hiddenSet animated:animated];
 }
 
 - (void)showFeedChooserForOperation:(FeedChooserOperation)operation {
@@ -1226,7 +1186,6 @@
     self.shareViewController = [ShareViewController new];
     self.fontSettingsViewController = [FontSettingsViewController new];
     self.userProfileViewController = [UserProfileViewController new];
-    self.preferencesViewController = [IASKAppSettingsViewController new];
     self.premiumViewController = [PremiumViewController new];
     self.firstTimeUserViewController = [FirstTimeUserViewController new];
     self.firstTimeUserAddSitesViewController = [FirstTimeUserAddSitesViewController new];
