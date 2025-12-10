@@ -1970,7 +1970,10 @@ def paypal_signup(sender, **kwargs):
 
     if not user and ipn_obj.custom:
         try:
-            user = User.objects.get(pk=ipn_obj.custom)
+            if str(ipn_obj.custom).isdigit():
+                user = User.objects.get(pk=ipn_obj.custom)
+            else:
+                user = User.objects.get(username__iexact=ipn_obj.custom)
         except User.DoesNotExist:
             pass
 

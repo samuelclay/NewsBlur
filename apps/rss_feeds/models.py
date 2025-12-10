@@ -2418,8 +2418,9 @@ class Feed(models.Model):
         story = {}
         story["story_hash"] = getattr(story_db, "story_hash", None)
         story["story_tags"] = story_db.story_tags or []
-        story["story_date"] = story_db.story_date.replace(tzinfo=None)
-        story["story_timestamp"] = story_db.story_date.strftime("%s")
+        story_date = story_db.story_date or datetime.datetime.now()
+        story["story_date"] = story_date.replace(tzinfo=None)
+        story["story_timestamp"] = story_date.strftime("%s")
         story["story_authors"] = story_db.story_author_name or ""
         story["story_title"] = story_title
         if blank_story_title:
@@ -3280,6 +3281,16 @@ class MStory(mongo.Document):
             story_content = smart_str(story_content)
 
         return story_content
+
+    @property
+    def original_text_str(self):
+        """
+        Returns cached original/full text if available, otherwise falls back to story content.
+        Unlike fetch_original_text(), this does NOT fetch if not cached.
+        """
+        if self.original_text_z:
+            return smart_str(zlib.decompress(self.original_text_z))
+        return self.story_content_str
 
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields["story_title"].max_length

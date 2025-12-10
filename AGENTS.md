@@ -1,5 +1,8 @@
 # NewsBlur Development Guidelines
 
+## Platform-Specific Guidelines
+- **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
+
 ## Git Worktree Development
 - **Use git worktrees for parallel development**: Run `make worktree` in a worktree to start workspace-specific services
 - Main repo uses standard ports (80/443), worktrees get unique ports based on directory name hash
@@ -78,6 +81,12 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 ## API Testing
 - Test API endpoints: `make api URL=/reader/feeds`
 - With POST data: `make api URL=/reader/river_stories ARGS="-X POST -d 'feeds[]=1&feeds[]=2&feeds[]=3'"`
+
+## Ask AI Development
+- **Restart Celery after changes**: Ask AI questions are processed asynchronously via Celery tasks. After modifying `apps/ask_ai/` (providers, tasks, models), restart celery: `docker restart newsblur_celery`
+- Provider implementations are in `apps/ask_ai/providers.py`
+- **Frontend model selectors**: Search for `data-model="gemini` to find all dropdown locations
+- **CSS for model pills**: Search for `NB-provider-` to find pill styles
 
 ## Sentry
 - **Projects**: `web`, `task`, `node`, `monitor` (auth token in `~/.sentryclirc`)
