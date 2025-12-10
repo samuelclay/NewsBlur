@@ -24,6 +24,24 @@
 
 #define kMenuOptionHeight 38
 
+- (BOOL)isAskAIEnabled {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    // Default to YES if the key doesn't exist
+    if ([userPreferences objectForKey:@"show_ask_ai"] == nil) {
+        return YES;
+    }
+    return [userPreferences boolForKey:@"show_ask_ai"];
+}
+
+- (NSInteger)adjustedRow:(NSInteger)row {
+    // If Ask AI is disabled, rows 5+ need to be shifted down by 1
+    // Row 5 is Ask AI, so rows >= 5 when Ask AI is hidden become the previous row's content
+    if (![self isAskAIEnabled] && row >= 5) {
+        return row + 1;
+    }
+    return row;
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
@@ -116,17 +134,27 @@
         }
     }
     
-    NSString *theme = [ThemeManager themeManager].theme;
-    if ([theme isEqualToString:@"light"]) {
-        self.themeSegment.selectedSegmentIndex = 1;
-    } else if ([theme isEqualToString:@"sepia"]) {
-        self.themeSegment.selectedSegmentIndex = 2;
-    } else if ([theme isEqualToString:@"medium"]) {
-        self.themeSegment.selectedSegmentIndex = 3;
-    } else if ([theme isEqualToString:@"dark"]) {
-        self.themeSegment.selectedSegmentIndex = 4;
+    // Determine which theme segment to select based on user's actual choice
+    // If user chose Auto, show Auto selected (not the resolved theme)
+    // If user chose a specific theme mode, show the variant they selected
+    NSString *themeStyle = [[NSUserDefaults standardUserDefaults] objectForKey:@"theme_style"];
+
+    if ([themeStyle isEqualToString:@"auto"] || themeStyle == nil) {
+        self.themeSegment.selectedSegmentIndex = 0; // Auto
     } else {
-        self.themeSegment.selectedSegmentIndex = 0;
+        // User chose light or dark mode - show the specific variant
+        NSString *effectiveTheme = [ThemeManager themeManager].effectiveTheme;
+        if ([effectiveTheme isEqualToString:ThemeStyleLight]) {
+            self.themeSegment.selectedSegmentIndex = 1;
+        } else if ([effectiveTheme isEqualToString:ThemeStyleSepia]) {
+            self.themeSegment.selectedSegmentIndex = 2;
+        } else if ([effectiveTheme isEqualToString:ThemeStyleMedium]) {
+            self.themeSegment.selectedSegmentIndex = 3;
+        } else if ([effectiveTheme isEqualToString:ThemeStyleDark]) {
+            self.themeSegment.selectedSegmentIndex = 4;
+        } else {
+            self.themeSegment.selectedSegmentIndex = 0;
+        }
     }
     
     [self.menuTableView reloadData];
@@ -243,68 +271,84 @@
 
 - (IBAction)changeTheme:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    NSString *theme = ThemeStyleAuto;
-    switch ([sender selectedSegmentIndex]) {
+    NSInteger selectedIndex = [sender selectedSegmentIndex];
+
+    // Update the new theme system: theme_style + theme_light/theme_dark
+    switch (selectedIndex) {
+        case 0:
+            // Auto - follow system
+            [userPreferences setObject:@"auto" forKey:@"theme_style"];
+            break;
         case 1:
-            theme = ThemeStyleLight;
+            // Light (Normal)
+            [userPreferences setObject:@"light" forKey:@"theme_style"];
+            [userPreferences setObject:ThemeStyleLight forKey:@"theme_light"];
             break;
         case 2:
-            theme = ThemeStyleSepia;
+            // Sepia
+            [userPreferences setObject:@"light" forKey:@"theme_style"];
+            [userPreferences setObject:ThemeStyleSepia forKey:@"theme_light"];
             break;
         case 3:
-            theme = ThemeStyleMedium;
+            // Gray (Medium)
+            [userPreferences setObject:@"dark" forKey:@"theme_style"];
+            [userPreferences setObject:ThemeStyleMedium forKey:@"theme_dark"];
             break;
         case 4:
-            theme = ThemeStyleDark;
+            // Black (Dark)
+            [userPreferences setObject:@"dark" forKey:@"theme_style"];
+            [userPreferences setObject:ThemeStyleDark forKey:@"theme_dark"];
             break;
-            
+
         default:
             break;
     }
-    [ThemeManager themeManager].theme = theme;
-    
+
+    [userPreferences synchronize];
+    [[ThemeManager themeManager] updateTheme];
+
     self.menuTableView.backgroundColor = UIColorFromRGB(0xECEEEA);
     self.menuTableView.separatorColor = UIColorFromRGB(0x909090);
     [self.menuTableView reloadData];
-    [userPreferences synchronize];
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        return 13;
-    } else {
-        return 12;
+    NSInteger baseCount = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? 13 : 12;
+    if (![self isAskAIEnabled]) {
+        baseCount -= 1;
     }
+    return baseCount;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIndentifier = @"Cell";
-    
+
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
     NSUInteger iPadOffset = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone ? 0 : 1;
-    
-    if (indexPath.row == 7) {
+    NSInteger adjustedRow = [self adjustedRow:indexPath.row];
+
+    if (adjustedRow == 7) {
         return [self makeFontSizeTableCell];
-    } else if (indexPath.row == 8) {
+    } else if (adjustedRow == 8) {
         return [self makeLineSpacingTableCell];
-    } else if (indexPath.row == 9 && iPadOffset == 0) {
+    } else if (adjustedRow == 9 && iPadOffset == 0) {
         return [self makeFullScreenTableCell];
-    } else if (indexPath.row == 10 - iPadOffset) {
+    } else if (adjustedRow == 10 - iPadOffset) {
         return [self makeAutoscrollTableCell];
-    } else if (indexPath.row == 11 - iPadOffset) {
+    } else if (adjustedRow == 11 - iPadOffset) {
         return [self makeScrollOrientationTableCell];
-    } else if (indexPath.row == 12 - iPadOffset) {
+    } else if (adjustedRow == 12 - iPadOffset) {
         return [self makeThemeTableCell];
     }
-    
+
     if (cell == nil) {
         cell = [[MenuTableViewCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIndentifier];
     }
-    
+
     cell.textLabel.textColor = UIColorFromRGB(0x303030);
     cell.textLabel.highlightedTextColor = UIColorFromRGB(0x303030);
     cell.textLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
@@ -312,7 +356,7 @@
     cell.selectedBackgroundView.backgroundColor = UIColorFromRGB(0xECEEEA);
     cell.imageView.tintColor = UIColorFromRGB(0x303030);
 
-    if (indexPath.row == 0) {
+    if (adjustedRow == 0) {
         bool isSaved = [[self.appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isSaved) {
             cell.textLabel.text = @"Unsave this story";
@@ -321,7 +365,7 @@
         }
         cell.imageView.image = [Utilities templateImageNamed:@"saved-stories" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0x95968F);
-    } else if (indexPath.row == 1) {
+    } else if (adjustedRow == 1) {
         bool isRead = [[self.appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
             cell.textLabel.text = @"Mark as unread";
@@ -330,25 +374,25 @@
         }
         cell.imageView.image = [Utilities templateImageNamed:@"indicator-unread" sized:16];
         cell.imageView.tintColor = UIColorFromRGB(0x6A6659);
-    } else if (indexPath.row == 2) {
+    } else if (adjustedRow == 2) {
         cell.textLabel.text = @"Send to...";
         cell.imageView.image = [Utilities templateImageNamed:@"sendto" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0xBD9146);
-    } else if (indexPath.row == 3) {
+    } else if (adjustedRow == 3) {
         cell.textLabel.text = @"Train this story";
         cell.imageView.image = [Utilities templateImageNamed:@"dialog-trainer" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0x689ED7);
-    } else if (indexPath.row == 4) {
+    } else if (adjustedRow == 4) {
         cell.textLabel.text = @"Share this story";
         cell.imageView.image = [Utilities templateImageNamed:@"share" sized:20];
         cell.imageView.tintColor = UIColorFromRGB(0x94968E);
-    } else if (indexPath.row == 5) {
+    } else if (adjustedRow == 5) {
         cell.textLabel.text = @"Ask AI";
         if (@available(iOS 13.0, *)) {
             cell.imageView.image = [[UIImage systemImageNamed:@"sparkles"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         }
         cell.imageView.tintColor = UIColorFromRGB(0x709E5D);
-    } else if (indexPath.row == 6) {
+    } else if (adjustedRow == 6) {
         NSString *fontStyle = [[NSUserDefaults standardUserDefaults] stringForKey:@"fontStyle"];
         if (!fontStyle) {
             fontStyle = @"GothamNarrow-Book";
@@ -365,7 +409,7 @@
         }
         cell.imageView.image = [[UIImage imageNamed:@"choose_font.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
-    
+
     return cell;
 }
 
@@ -374,34 +418,36 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row >= 7) {
+    NSInteger adjustedRow = [self adjustedRow:indexPath.row];
+    if (adjustedRow >= 7) {
         return nil;
     }
     return indexPath;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row != 6) {
-        [self dismissViewControllerAnimated:indexPath.row != 3 && indexPath.row != 4 && indexPath.row != 5 completion:nil];
+    NSInteger adjustedRow = [self adjustedRow:indexPath.row];
+    if (adjustedRow != 6) {
+        [self dismissViewControllerAnimated:adjustedRow != 3 && adjustedRow != 4 && adjustedRow != 5 completion:nil];
     }
 
-    if (indexPath.row == 0) {
+    if (adjustedRow == 0) {
         [self.appDelegate.storiesCollection toggleStorySaved];
         [self.appDelegate.feedDetailViewController reloadWithSizing];
         [self.appDelegate.storyPagesViewController refreshHeaders];
-    } else if (indexPath.row == 1) {
+    } else if (adjustedRow == 1) {
         [self.appDelegate.storiesCollection toggleStoryUnread];
         [self.appDelegate.feedDetailViewController reloadWithSizing];
         [self.appDelegate.storyPagesViewController refreshHeaders];
-    } else if (indexPath.row == 2) {
+    } else if (adjustedRow == 2) {
         [self.appDelegate.storyPagesViewController openSendToDialog:self.appDelegate.storyPagesViewController.fontSettingsButton];
-    } else if (indexPath.row == 3) {
+    } else if (adjustedRow == 3) {
         [self.appDelegate openTrainStory:self.appDelegate.storyPagesViewController.fontSettingsButton];
-    } else if (indexPath.row == 4) {
+    } else if (adjustedRow == 4) {
         [self.appDelegate.storyPagesViewController.currentPage openShareDialog];
-    } else if (indexPath.row == 5) {
+    } else if (adjustedRow == 5) {
         [self.appDelegate openAskAIDialog:self.appDelegate.activeStory];
-    } else if (indexPath.row == 6) {
+    } else if (adjustedRow == 6) {
         [self showFontList];
     }
 }
@@ -571,33 +617,38 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.separatorInset = UIEdgeInsetsZero;
     cell.backgroundColor = UIColorFromRGB(0xffffff);
-    
+
+    BOOL autoSelected = self.themeSegment.selectedSegmentIndex == 0;
     UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:self.themeSegment.selectedSegmentIndex == 1];
     UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:self.themeSegment.selectedSegmentIndex == 2];
     UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:self.themeSegment.selectedSegmentIndex == 3];
     UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:self.themeSegment.selectedSegmentIndex == 4];
-    
-    self.themeSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
+
+    self.themeSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
     [self.themeSegment setTitle:@"Auto" forSegmentAtIndex:0];
     [self.themeSegment setImage:lightImage forSegmentAtIndex:1];
     [self.themeSegment setImage:sepiaImage forSegmentAtIndex:2];
     [self.themeSegment setImage:mediumImage forSegmentAtIndex:3];
     [self.themeSegment setImage:darkImage forSegmentAtIndex:4];
-    
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(1, self.themeSegment.frame.size.height), NO, 0.0);
-    UIImage *blankImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    [self.themeSegment setDividerImage:blankImage forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
-    self.themeSegment.tintColor = [UIColor clearColor];
+
 #if !TARGET_OS_MACCATALYST
-    self.themeSegment.backgroundColor = [UIColor clearColor];
+    self.themeSegment.backgroundColor = UIColorFromRGB(0xeeeeee);
 #endif
-    
-    [[ThemeManager themeManager] updateThemeSegmentedControl:self.themeSegment];
-    
+    [self.themeSegment setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"WhitneySSm-Medium" size:12.0f]} forState:UIControlStateNormal];
+
+    // Use standard segmented control styling
+    [[ThemeManager themeManager] updateSegmentedControl:self.themeSegment];
+
+    // But make selected tint clear so color circles show through (they have their own -sel images)
+    // Only show the white pill for Auto
+    if (autoSelected) {
+        self.themeSegment.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
+    } else {
+        self.themeSegment.selectedSegmentTintColor = [UIColor clearColor];
+    }
+
     [cell.contentView addSubview:self.themeSegment];
-    
+
     return cell;
 }
 
@@ -605,14 +656,18 @@
     if (selected) {
         name = [name stringByAppendingString:@"-sel"];
     }
-    
-    UIImage *image = [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-    
+
+    UIImage *image = [UIImage imageNamed:name];
+
+    // Scale to a consistent size that fits well in the segmented control
+    CGFloat size = 22.0;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomMac) {
-        image = [Utilities imageWithImage:image convertToSize:CGSizeMake(20.0, 20.0)];
-        image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        size = 20.0;
     }
-    
+
+    image = [Utilities imageWithImage:image convertToSize:CGSizeMake(size, size)];
+    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+
     return image;
 }
 
