@@ -138,7 +138,7 @@ NSString * const ThemeStyleDark = @"dark";
     if ([theme isEqualToString:ThemeStyleDark]) {
         return @"Black";
     } else if ([theme isEqualToString:ThemeStyleSepia]) {
-        return @"Sepia";
+        return @"Warm";
     } else if ([theme isEqualToString:ThemeStyleMedium]) {
         return @"Gray";
     } else if ([theme isEqualToString:ThemeStyleLight]) {
@@ -331,9 +331,27 @@ NSString * const ThemeStyleDark = @"dark";
             return [UIColor colorWithRed:red - 0.7 green:green - 0.7 blue:blue - 0.7 alpha:1.0];
         }
     } else if ([effectiveTheme isEqualToString:ThemeStyleSepia]) {
-        CGFloat outputRed = (red * 0.393) + (green * 0.769) + (blue * 0.189);
-        CGFloat outputGreen = (red * 0.349) + (green * 0.686) + (blue * 0.168);
-        CGFloat outputBlue = (red * 0.272) + (green * 0.534) + (blue * 0.131);
+        // Special cases for common colors to ensure warm sepia tones
+        if (rgbValue == 0xFFFFFF || rgbValue == 0xffffff) {
+            // White -> warm cream (0xFAF5ED)
+            return [UIColor colorWithRed:0xFA/255.0 green:0xF5/255.0 blue:0xED/255.0 alpha:1.0];
+        } else if (rgbValue == 0xECEEEA) {
+            // Light gray-green -> warm sepia (0xF3E2CB)
+            return [UIColor colorWithRed:0xF3/255.0 green:0xE2/255.0 blue:0xCB/255.0 alpha:1.0];
+        } else if (rgbValue == 0xf4f4f4 || rgbValue == 0xF4F4F4) {
+            // Light gray -> warm light sepia (0xF3E2CB)
+            return [UIColor colorWithRed:0xF3/255.0 green:0xE2/255.0 blue:0xCB/255.0 alpha:1.0];
+        } else if (rgbValue == 0xE9E8E4) {
+            // Separator gray -> warm sepia separator (0xD4C8B8)
+            return [UIColor colorWithRed:0xD4/255.0 green:0xC8/255.0 blue:0xB8/255.0 alpha:1.0];
+        } else if (rgbValue == 0xE3E6E0) {
+            // Toolbar gray-green -> warm sepia (0xF3E2CB)
+            return [UIColor colorWithRed:0xF3/255.0 green:0xE2/255.0 blue:0xCB/255.0 alpha:1.0];
+        }
+        // Warm sepia matrix - lighter and warmer, less yellow/green
+        CGFloat outputRed = (red * 0.42) + (green * 0.75) + (blue * 0.17);
+        CGFloat outputGreen = (red * 0.36) + (green * 0.68) + (blue * 0.14);
+        CGFloat outputBlue = (red * 0.26) + (green * 0.52) + (blue * 0.10);
 
         return [UIColor colorWithRed:outputRed green:outputGreen blue:outputBlue alpha:1.0];
     } else {
@@ -374,7 +392,7 @@ NSString * const ThemeStyleDark = @"dark";
 
 - (void)updateNavigationController:(UINavigationController *)navigationController {
     navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
-    navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x222222, 0x111111);
+    navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x222222, 0x111111);
     navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
 }
 
@@ -446,11 +464,11 @@ NSString * const ThemeStyleDark = @"dark";
 
 - (void)setupTheme {
     [UINavigationBar appearance].tintColor = UIColorFromLightSepiaMediumDarkRGB(0x0, 0x0, 0x9a8f73, 0x9a8f73);
-    [UINavigationBar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x333333, 0x222222);
-    [UINavigationBar appearance].backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x333333, 0x222222);
-    [UINavigationBar appearance].titleTextAttributes = @{NSForegroundColorAttributeName : UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8F918B, 0x8F918B, 0x8F918B)};
-    [UIToolbar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x4A4A4A, 0x222222);
-    [UISegmentedControl appearance].tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8F918B, 0x8F918B, 0x8F918B);
+    [UINavigationBar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
+    [UINavigationBar appearance].backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
+    [UINavigationBar appearance].titleTextAttributes = @{NSForegroundColorAttributeName : UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B)};
+    [UIToolbar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x4A4A4A, 0x222222);
+    [UISegmentedControl appearance].tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
     
     UIBarStyle style = self.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
     

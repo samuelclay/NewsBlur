@@ -13,11 +13,11 @@ import SwiftUI
 @available(iOS 15.0, *)
 private struct PreferencesColors {
     static var background: Color {
-        themedColor(light: 0xF0F2ED, sepia: 0xF5E6D3, medium: 0x2C2C2E, dark: 0x1C1C1E)
+        themedColor(light: 0xF0F2ED, sepia: 0xF3E2CB, medium: 0x2C2C2E, dark: 0x1C1C1E)
     }
 
     static var cardBackground: Color {
-        themedColor(light: 0xFFFFFF, sepia: 0xFDF8F0, medium: 0x3A3A3C, dark: 0x2C2C2E)
+        themedColor(light: 0xFFFFFF, sepia: 0xFAF5ED, medium: 0x3A3A3C, dark: 0x2C2C2E)
     }
 
     static var secondaryBackground: Color {
@@ -46,20 +46,18 @@ private struct PreferencesColors {
         }
 
         let hex: Int
-        if themeManager.isDarkTheme {
-            let theme = themeManager.theme
-            if theme == ThemeStyleMedium || theme == "medium" {
-                hex = medium
-            } else {
-                hex = dark
-            }
+
+        // Use effectiveTheme which resolves "auto" to the actual visual theme
+        let effectiveTheme = themeManager.effectiveTheme
+
+        if effectiveTheme == ThemeStyleMedium || effectiveTheme == "medium" {
+            hex = medium
+        } else if effectiveTheme == ThemeStyleDark || effectiveTheme == "dark" {
+            hex = dark
+        } else if effectiveTheme == ThemeStyleSepia || effectiveTheme == "sepia" {
+            hex = sepia
         } else {
-            let theme = themeManager.theme
-            if theme == ThemeStyleSepia || theme == "sepia" {
-                hex = sepia
-            } else {
-                hex = light
-            }
+            hex = light
         }
         return colorFromHex(hex)
     }
@@ -450,7 +448,7 @@ class PreferencesViewModel: ObservableObject {
                         iconColor: .orange,
                         type: .multiValue(
                             key: "theme_light",
-                            titles: ["Normal", "Sepia"],
+                            titles: ["Normal", "Warm"],
                             values: ["light", "sepia"],
                             defaultValue: "light"
                         ),
@@ -835,11 +833,37 @@ class PreferencesViewModel: ObservableObject {
     func preferencesDidDismiss()
 }
 
+// MARK: - Theme Observer for SwiftUI
+
+@available(iOS 15.0, *)
+class ThemeObserver: ObservableObject {
+    @Published var themeVersion: Int = 0
+
+    private var observers: [NSObjectProtocol] = []
+
+    init() {
+        // Observe UserDefaults changes for theme-related keys
+        let observer = NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.themeVersion += 1
+        }
+        observers.append(observer)
+    }
+
+    deinit {
+        observers.forEach { NotificationCenter.default.removeObserver($0) }
+    }
+}
+
 // MARK: - Preferences View
 
 @available(iOS 15.0, *)
 struct PreferencesView: View {
     @ObservedObject var viewModel: PreferencesViewModel
+    @StateObject private var themeObserver = ThemeObserver()
     var onDismiss: () -> Void
 
     @State private var expandedSections: Set<String> = []
@@ -886,6 +910,7 @@ struct PreferencesView: View {
             }
         }
         .background(PreferencesColors.background.ignoresSafeArea())
+        .id(themeObserver.themeVersion) // Force re-render when theme changes
         .onAppear {
             // Refresh state when view appears
             viewModel.updateHiddenKeys()

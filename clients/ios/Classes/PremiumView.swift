@@ -14,11 +14,11 @@ import StoreKit
 @available(iOS 15.0, *)
 private struct PremiumColors {
     static var background: Color {
-        themedColor(light: 0xF0F2ED, sepia: 0xF5E6D3, medium: 0x2C2C2E, dark: 0x1C1C1E)
+        themedColor(light: 0xF0F2ED, sepia: 0xF3E2CB, medium: 0x2C2C2E, dark: 0x1C1C1E)
     }
 
     static var cardBackground: Color {
-        themedColor(light: 0xFFFFFF, sepia: 0xFDF8F0, medium: 0x3A3A3C, dark: 0x2C2C2E)
+        themedColor(light: 0xFFFFFF, sepia: 0xFAF5ED, medium: 0x3A3A3C, dark: 0x2C2C2E)
     }
 
     static var secondaryBackground: Color {

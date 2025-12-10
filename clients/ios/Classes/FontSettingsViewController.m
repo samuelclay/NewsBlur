@@ -618,11 +618,10 @@
     cell.separatorInset = UIEdgeInsetsZero;
     cell.backgroundColor = UIColorFromRGB(0xffffff);
 
-    BOOL autoSelected = self.themeSegment.selectedSegmentIndex == 0;
-    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:self.themeSegment.selectedSegmentIndex == 1];
-    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:self.themeSegment.selectedSegmentIndex == 2];
-    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:self.themeSegment.selectedSegmentIndex == 3];
-    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:self.themeSegment.selectedSegmentIndex == 4];
+    UIImage *lightImage = [self themeImageWithName:@"theme_color_light" selected:NO];
+    UIImage *sepiaImage = [self themeImageWithName:@"theme_color_sepia" selected:NO];
+    UIImage *mediumImage = [self themeImageWithName:@"theme_color_medium" selected:NO];
+    UIImage *darkImage = [self themeImageWithName:@"theme_color_dark" selected:NO];
 
     self.themeSegment.frame = CGRectMake(8, 7, cell.frame.size.width - 8*2, kMenuOptionHeight - 7*2);
     [self.themeSegment setTitle:@"Auto" forSegmentAtIndex:0];
@@ -639,13 +638,8 @@
     // Use standard segmented control styling
     [[ThemeManager themeManager] updateSegmentedControl:self.themeSegment];
 
-    // But make selected tint clear so color circles show through (they have their own -sel images)
-    // Only show the white pill for Auto
-    if (autoSelected) {
-        self.themeSegment.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
-    } else {
-        self.themeSegment.selectedSegmentTintColor = [UIColor clearColor];
-    }
+    // Show white pill for all selections (Auto and color themes)
+    self.themeSegment.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
 
     [cell.contentView addSubview:self.themeSegment];
 

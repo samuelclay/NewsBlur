@@ -680,8 +680,10 @@
                             objectForKey:@"story_feed_id"]];
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
     
-    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0 && appDelegate.storyPagesViewController.currentlyTogglingNavigationBar && !appDelegate.storyPagesViewController.isNavigationBarHidden) {
-        yOffset -= 25;
+    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0 && !appDelegate.storyPagesViewController.isNavigationBarHidden) {
+        // Push gradient down below the navigation bar on notched iPhones
+        CGFloat navBarHeight = appDelegate.feedsNavigationController.navigationBar.frame.size.height;
+        yOffset += navBarHeight;
     }
     
     if (self.feedTitleGradient) {
@@ -748,8 +750,8 @@
 
 - (void)clearWebView {
     self.hasStory = NO;
-    
-    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+
+    self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
     self.webView.hidden = YES;
     self.activityIndicator.color = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     [self.activityIndicator startAnimating];
@@ -1415,8 +1417,13 @@
                 
                 if (!isNavBarHidden) {
                     [self.webView insertSubview:self.feedTitleGradient aboveSubview:self.webView.scrollView];
-                    
-                    self.feedTitleGradient.frame = CGRectMake(0, -1,
+
+                    CGFloat yOffset = -1;
+                    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0) {
+                        CGFloat navBarHeight = appDelegate.feedsNavigationController.navigationBar.frame.size.height;
+                        yOffset += navBarHeight;
+                    }
+                    self.feedTitleGradient.frame = CGRectMake(0, yOffset,
                                                               self.feedTitleGradient.frame.size.width,
                                                               self.feedTitleGradient.frame.size.height);
                 }
@@ -1999,14 +2006,14 @@
 }
 
 - (void)updateStoryTheme {
-    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    
+    self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
+
     NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-theme-style').href='storyDetailView%@.css';",
                           [ThemeManager themeManager].themeCSSSuffix];
-    
+
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
-    
-    self.webView.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+
+    self.webView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
     
     if ([ThemeManager themeManager].isDarkTheme) {
         self.webView.scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
