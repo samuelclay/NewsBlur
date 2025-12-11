@@ -3848,6 +3848,11 @@
 }
 
 - (UIView *)makeFeedTitle:(NSDictionary *)feed {
+    // Return nil if no feed is provided and no special folder is active
+    if (!feed && !storiesCollection.activeFolder) {
+        return nil;
+    }
+
     UILabel *titleLabel = [[UILabel alloc] init];
     if (storiesCollection.isSocialRiverView &&
         [storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
@@ -3874,11 +3879,19 @@
     } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Saved Stories"];
     } else if (storiesCollection.isSocialView) {
-        titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
+        NSString *feedTitle = [feed objectForKey:@"feed_title"];
+        if (!feedTitle || [feedTitle isKindOfClass:[NSNull class]]) {
+            return nil;
+        }
+        titleLabel.text = [NSString stringWithFormat:@"     %@", feedTitle];
     } else if (storiesCollection.isRiverView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeFolder];
     } else {
-        titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
+        NSString *feedTitle = [feed objectForKey:@"feed_title"];
+        if (!feedTitle || [feedTitle isKindOfClass:[NSNull class]]) {
+            return nil;
+        }
+        titleLabel.text = [NSString stringWithFormat:@"     %@", feedTitle];
     }
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.textAlignment = NSTextAlignmentLeft;
