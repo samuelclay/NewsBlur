@@ -633,7 +633,7 @@ struct AskAIView: View {
 
     private func openPremiumDialog() {
         if let appDelegate = NewsBlurAppDelegate.shared() {
-            appDelegate.showPremiumDialog()
+            appDelegate.showPremiumDialogForArchive()
         }
     }
 

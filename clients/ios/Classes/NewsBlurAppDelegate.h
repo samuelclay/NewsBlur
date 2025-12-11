@@ -321,6 +321,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showOrganizeSites;
 - (void)showWidgetSites;
 - (void)showPremiumDialog;
+- (void)showPremiumDialogForArchive;
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;

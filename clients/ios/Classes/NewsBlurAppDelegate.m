@@ -857,12 +857,23 @@
 }
 
 - (void)showPremiumDialog {
+    [self showPremiumDialogScrollToArchive:NO];
+}
+
+- (void)showPremiumDialogForArchive {
+    [self showPremiumDialogScrollToArchive:YES];
+}
+
+- (void)showPremiumDialogScrollToArchive:(BOOL)scrollToArchive {
     if (self.premiumNavigationController == nil) {
         self.premiumNavigationController = [[UINavigationController alloc]
                                             initWithRootViewController:self.premiumViewController];
     }
     self.premiumNavigationController.navigationBar.translucent = NO;
-    
+
+    // Configure the premium view to scroll to archive section if requested
+    [self.premiumViewController configureForArchive:scrollToArchive];
+
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
     premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.splitViewController presentViewController:premiumNavigationController animated:YES completion:nil];

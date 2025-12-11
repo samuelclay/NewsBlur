@@ -102,6 +102,7 @@ struct PremiumView: View {
     @ObservedObject var viewModel: PremiumViewModel
     var onDismiss: () -> Void
     var onRestore: () -> Void
+    var scrollToArchive: Bool = false
 
     private let premiumFeatures: [PremiumFeature] = [
         PremiumFeature(title: "Enable every site by going premium", icon: "square.stack.3d.up.fill", iconColor: .blue),
@@ -127,19 +128,31 @@ struct PremiumView: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Premium Section
-                    premiumSection
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Premium Section
+                        premiumSection
 
-                    // Archive Section
-                    archiveSection
+                        // Archive Section
+                        archiveSection
+                            .id("archiveSection")
 
-                    // Footer links
-                    footerSection
+                        // Footer links
+                        footerSection
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 20)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 20)
+                .onAppear {
+                    if scrollToArchive {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            withAnimation {
+                                proxy.scrollTo("archiveSection", anchor: .top)
+                            }
+                        }
+                    }
+                }
             }
             .background(PremiumColors.background.ignoresSafeArea())
             .navigationTitle("NewsBlur Premium")
@@ -556,6 +569,7 @@ class PremiumViewModel: ObservableObject {
 @objc class PremiumViewHostingController: UIViewController {
     private let viewModel = PremiumViewModel()
     private var hostingController: UIHostingController<PremiumView>?
+    @objc var scrollToArchive: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -567,7 +581,8 @@ class PremiumViewModel: ObservableObject {
             },
             onRestore: { [weak self] in
                 self?.viewModel.restore()
-            }
+            },
+            scrollToArchive: scrollToArchive
         )
 
         let hosting = UIHostingController(rootView: premiumView)
