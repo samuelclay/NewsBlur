@@ -22,6 +22,7 @@
     [super viewDidLoad];
 
     self.swiftUIController = [[PremiumViewHostingController alloc] init];
+    self.swiftUIController.scrollToArchive = self.scrollToArchive;
 
     [self addChildViewController:self.swiftUIController];
     self.swiftUIController.view.frame = self.view.bounds;
@@ -43,6 +44,28 @@
 
 - (void)closeDialog:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)configureForArchive:(BOOL)scrollToArchive {
+    self.scrollToArchive = scrollToArchive;
+
+    // Remove existing SwiftUI controller if present
+    if (self.swiftUIController) {
+        [self.swiftUIController willMoveToParentViewController:nil];
+        [self.swiftUIController.view removeFromSuperview];
+        [self.swiftUIController removeFromParentViewController];
+        self.swiftUIController = nil;
+    }
+
+    // Create new SwiftUI controller with updated scrollToArchive
+    self.swiftUIController = [[PremiumViewHostingController alloc] init];
+    self.swiftUIController.scrollToArchive = scrollToArchive;
+
+    [self addChildViewController:self.swiftUIController];
+    self.swiftUIController.view.frame = self.view.bounds;
+    self.swiftUIController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:self.swiftUIController.view];
+    [self.swiftUIController didMoveToParentViewController:self];
 }
 
 #pragma mark - StoreKit
