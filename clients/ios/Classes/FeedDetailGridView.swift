@@ -14,7 +14,7 @@ protocol FeedDetailInteraction {
     var hasNoMoreStories: Bool { get }
     var isPremiumRestriction: Bool { get }
     var isMarkReadOnScroll: Bool { get }
-    
+
     func pullToRefresh()
     func visible(story: Story)
     func tapped(story: Story)
@@ -22,6 +22,7 @@ protocol FeedDetailInteraction {
     func read(story: Story)
     func unread(story: Story)
     func hid(story: Story)
+    func openPremiumDialog()
 }
 
 /// A list or grid layout of story cards for the feed detail view.
