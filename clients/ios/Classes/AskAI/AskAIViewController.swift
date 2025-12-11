@@ -13,14 +13,37 @@ import Combine
 @objc class AskAIViewController: BaseViewController {
     private var story: [String: Any]
     private var hostingController: UIHostingController<AskAIView>?
-    private var viewModel: AskAIViewModel?
+    private(set) var viewModel: AskAIViewModel?
     private var cancellables = Set<AnyCancellable>()
+
+    /// Called when user selects a question (for iPad popover-to-sheet transition)
+    @objc var onQuestionAsked: (() -> Void)?
 
     @objc init(story: [String: Any]) {
         self.story = story
         super.init(nibName: nil, bundle: nil)
         // Must set appDelegate manually since super.init(nibName:bundle:) doesn't call BaseViewController.init
         self.appDelegate = NewsBlurAppDelegate.shared()
+    }
+
+    /// Initialize with an existing view model (for re-presenting after popover dismissal)
+    /// Not @objc because AskAIViewModel isn't ObjC-representable
+    init(existingViewModel: AskAIViewModel) {
+        self.story = existingViewModel.story
+        self.viewModel = existingViewModel
+        super.init(nibName: nil, bundle: nil)
+        self.appDelegate = NewsBlurAppDelegate.shared()
+    }
+
+    /// Factory method for ObjC to create a view controller with existing view model
+    @objc static func create(withViewModel viewModel: Any) -> AskAIViewController? {
+        guard let vm = viewModel as? AskAIViewModel else { return nil }
+        return AskAIViewController(existingViewModel: vm)
+    }
+
+    /// Get view model as Any for storing in ObjC property
+    @objc var viewModelAsAny: Any? {
+        return viewModel
     }
 
     required init?(coder: NSCoder) {
@@ -33,15 +56,17 @@ import Combine
         // Set background color to match theme
         updateBackgroundColor()
 
-        // Create view model
-        let viewModel = AskAIViewModel(story: story)
+        // Create view model if not already provided
+        let viewModel = self.viewModel ?? AskAIViewModel(story: story)
         self.viewModel = viewModel
 
         // Observe hasAskedQuestion to enable large detent when answer mode
         viewModel.$hasAskedQuestion
+            .dropFirst() // Skip initial value to only react to changes
             .receive(on: DispatchQueue.main)
             .sink { [weak self] hasAsked in
                 if hasAsked {
+                    self?.onQuestionAsked?()
                     self?.enableLargeDetent()
                 }
             }

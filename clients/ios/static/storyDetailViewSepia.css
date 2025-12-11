@@ -7,7 +7,7 @@
  */
 
 body {
-    background-color: #F5E6D3;
+    background-color: #FAF3E8;
 }
 
 /* ========== */
@@ -16,7 +16,7 @@ body {
 
 .NB-header {
     color: black;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#F7E9D8), to(#F5E6D3));
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FCF6ED), to(#FAF3E8));
     text-shadow: 0 1px 0 rgba(194, 180, 165, .25);
 
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -192,7 +192,7 @@ a:active {
 .NB-newsletter div,
 .NB-newsletter span,
 .NB-newsletter td {
-    background-color: #F5E6D3 !important;
+    background-color: #FAF3E8 !important;
 }
 .NB-newsletter h1,
 .NB-newsletter h2,
@@ -200,7 +200,7 @@ a:active {
 .NB-newsletter h4,
 .NB-newsletter h5,
 .NB-newsletter h6 {
-    background-color: #F5E6D3 !important;
+    background-color: #FAF3E8 !important;
 }
 
 /* Story Comments */
@@ -254,5 +254,5 @@ a:active {
 }
 
 .NB-text-view-premium-only {
-    background-color: #F5E6D3;
+    background-color: #FAF3E8;
 }
