@@ -1367,6 +1367,82 @@
     }
 }
 
+- (void)openAskAIDialog:(NSDictionary *)story sourceRect:(NSValue *)sourceRectValue {
+    if (@available(iOS 15.0, *)) {
+        CGRect sourceRect = [sourceRectValue CGRectValue];
+
+        // On iPad with valid coordinates, show as popover anchored to the Ask AI button
+        if (!self.isPhone && !CGRectIsEmpty(sourceRect)) {
+            AskAIViewController *askAIVC = [[AskAIViewController alloc] initWithStory:story];
+            askAIVC.modalPresentationStyle = UIModalPresentationPopover;
+            askAIVC.preferredContentSize = CGSizeMake(400, 420);
+
+            // Set up popover presentation
+            UIPopoverPresentationController *popover = askAIVC.popoverPresentationController;
+            popover.delegate = self;
+            popover.sourceView = self.storyPagesViewController.currentPage.webView;
+            popover.sourceRect = sourceRect;
+            popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
+
+            // Store view model for re-presentation as sheet
+            __weak typeof(self) weakSelf = self;
+            askAIVC.onQuestionAsked = ^{
+                // Store the view model before dismissing
+                weakSelf.activeAskAIViewModel = askAIVC.viewModelAsAny;
+                // Dismiss popover and re-present as bottom sheet
+                [askAIVC dismissViewControllerAnimated:YES completion:^{
+                    [weakSelf showAskAIInlineResponse];
+                }];
+            };
+
+            [self.navigationControllerForPopover presentViewController:askAIVC animated:YES completion:nil];
+        } else {
+            // On iPhone or if no coordinates, use the existing sheet presentation
+            [self openAskAIDialog:story];
+        }
+    } else {
+        [self openAskAIDialog:story];
+    }
+}
+
+- (void)showAskAIInlineResponse {
+    if (@available(iOS 15.0, *)) {
+        // Get the active view model that was set when question was asked
+        id viewModel = self.activeAskAIViewModel;
+        if (!viewModel) {
+            return;
+        }
+
+        // Create new view controller with existing view model (already has response streaming)
+        AskAIViewController *askAIVC = [AskAIViewController createWithViewModel:viewModel];
+        if (!askAIVC) {
+            return;
+        }
+
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:askAIVC];
+        navController.navigationBarHidden = YES;
+
+        // Present as a sheet from the bottom
+        navController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+        UISheetPresentationController *sheet = navController.sheetPresentationController;
+        sheet.detents = @[
+            UISheetPresentationControllerDetent.mediumDetent,
+            UISheetPresentationControllerDetent.largeDetent
+        ];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
+        // Allow interaction with story content behind the sheet
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        sheet.preferredCornerRadius = 12.0;
+
+        [self.splitViewController presentViewController:navController animated:YES completion:nil];
+
+        // Clear the stored view model
+        self.activeAskAIViewModel = nil;
+    }
+}
+
 - (void)dismissAskAIOnTap:(UITapGestureRecognizer *)gesture {
     UIViewController *presentedVC = self.feedsNavigationController.presentedViewController;
     if (presentedVC) {

@@ -1740,6 +1740,13 @@
             [self openShareDialog];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
+        } else if ([action isEqualToString:@"ask-ai"] && [urlComponents count] > 5) {
+            [self openAskAIDialog:[[urlComponents objectAtIndex:2] intValue]
+                      yCoordinate:[[urlComponents objectAtIndex:3] intValue]
+                            width:[[urlComponents objectAtIndex:4] intValue]
+                           height:[[urlComponents objectAtIndex:5] intValue]];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
         } else if ([action isEqualToString:@"ask-ai"]) {
             [appDelegate openAskAIDialog:self.activeStory];
             decisionHandler(WKNavigationActionPolicyCancel);
@@ -2172,10 +2179,33 @@
             y = y + 9;
         }
     }
-    
+
     frame = CGRectMake(x, y, width, height);
 
     [appDelegate openUserTagsStory:[NSValue valueWithCGRect:frame]];
+}
+
+- (void)openAskAIDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
+    CGRect frame = CGRectZero;
+    if (!self.isPhoneOrCompact) {
+        // only adjust for the bar if user is scrolling
+        if (appDelegate.storiesCollection.isRiverView ||
+            appDelegate.storiesCollection.isSocialView ||
+            appDelegate.storiesCollection.isSavedView ||
+            appDelegate.storiesCollection.isWidgetView ||
+            appDelegate.storiesCollection.isReadView) {
+            if (self.webView.scrollView.contentOffset.y == -20) {
+                y = y + 20;
+            }
+        } else {
+            if (self.webView.scrollView.contentOffset.y == -9) {
+                y = y + 9;
+            }
+        }
+
+        frame = CGRectMake(x, y, width, height);
+    }
+    [appDelegate openAskAIDialog:self.activeStory sourceRect:[NSValue valueWithCGRect:frame]];
 }
 
 - (BOOL)isTag:(NSString *)tagName equalTo:(NSString *)tagValue {

@@ -183,6 +183,10 @@
     font-size: 11px;
 }
 
+.NB-ipad-wide .NB-share-wrapper {
+    margin-bottom: 60px;
+}
+
 /**
  * iPad Narrow Style
  */

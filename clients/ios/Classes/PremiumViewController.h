@@ -12,9 +12,9 @@
 
 @class SAConfettiView;
 
-@interface PremiumViewController : BaseViewController <UITableViewDelegate, UITableViewDataSource>
+@interface PremiumViewController : BaseViewController
 
-@property (nonatomic) IBOutlet UITableView *premiumTable;
+@property (nonatomic) IBOutlet UITableView *premiumTable;  // Legacy, hidden - now using SwiftUI
 
 
 - (IBAction)closeDialog:(id)sender;

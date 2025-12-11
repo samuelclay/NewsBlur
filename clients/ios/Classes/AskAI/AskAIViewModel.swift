@@ -34,9 +34,13 @@ class AskAIViewModel: ObservableObject {
     // Voice recorder
     let voiceRecorder = VoiceRecorder()
 
+    // Store story for re-initialization
+    let story: [String: Any]
+
     // MARK: - Initialization
 
     init(story: [String: Any]) {
+        self.story = story
         let storyHash = story["story_hash"] as? String ?? ""
         let storyTitle = story["story_title"] as? String ?? ""
 

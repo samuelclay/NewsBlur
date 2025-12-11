@@ -29,7 +29,9 @@
     [self.view addSubview:self.swiftUIController.view];
     [self.swiftUIController didMoveToParentViewController:self];
 
-    // Hide the table view when using SwiftUI
+    // Disconnect and hide the legacy table view - now using SwiftUI
+    self.premiumTable.delegate = nil;
+    self.premiumTable.dataSource = nil;
     self.premiumTable.hidden = YES;
 
     // Hide navigation bar items since SwiftUI handles them

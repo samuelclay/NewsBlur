@@ -56,7 +56,8 @@ $('.NB-save-button').live('click', function () {
 });
 
 $('.NB-ask-ai-button').live('click', function () {
-    var url = $('a', this).attr('href');
+    var offset = $('a', this).offset();
+    var url = $('a', this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
     window.location = url;
     return false;
 });
