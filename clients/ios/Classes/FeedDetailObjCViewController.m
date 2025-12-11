@@ -1628,7 +1628,13 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             premiumLabel.attributedText = attributedText;
             premiumLabel.numberOfLines = 2;
             premiumLabel.textAlignment = NSTextAlignmentCenter;
-            
+            premiumLabel.userInteractionEnabled = YES;
+
+            UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc]
+                                                            initWithTarget:self action:@selector(openPremiumDialog:)];
+            tapGestureRecognizer.numberOfTapsRequired = 1;
+            [premiumLabel addGestureRecognizer:tapGestureRecognizer];
+
             [cell.contentView addSubview:premiumLabel];
             [cell.contentView addConstraint:[NSLayoutConstraint constraintWithItem:premiumLabel
                                                                          attribute:NSLayoutAttributeCenterX

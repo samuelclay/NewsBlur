@@ -187,6 +187,26 @@
     margin-bottom: 60px;
 }
 
+.NB-ipad-wide .NB-button.NB-train-button .NB-icon,
+.NB-ipad-narrow .NB-button.NB-train-button .NB-icon {
+    top: 0px;
+}
+
+.NB-ipad-wide .NB-button.NB-share-share-button .NB-icon,
+.NB-ipad-narrow .NB-button.NB-share-share-button .NB-icon {
+    top: 2px;
+}
+
+.NB-ipad-wide .NB-button.NB-save-button .NB-icon,
+.NB-ipad-narrow .NB-button.NB-save-button .NB-icon {
+    top: 0px;
+}
+
+.NB-ipad-wide .NB-button.NB-ask-ai-button .NB-icon,
+.NB-ipad-narrow .NB-button.NB-ask-ai-button .NB-icon {
+    top: -1px;
+}
+
 /**
  * iPad Narrow Style
  */
