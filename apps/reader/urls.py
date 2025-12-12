@@ -85,5 +85,6 @@ urlpatterns = [
     url(r"^save_dashboard_rivers", views.save_dashboard_rivers, name="save-dashboard-rivers"),
     url(r"^save_dashboard_river", views.save_dashboard_river, name="save-dashboard-river"),
     url(r"^remove_dashboard_river", views.remove_dashboard_river, name="remove-dashboard-river"),
+    url(r"^trending_feeds", views.trending_feeds, name="trending-feeds"),
     url(r"^print", views.print_story, name="print-story"),
 ]

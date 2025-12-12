@@ -156,6 +156,7 @@
             this.switch_story_layout();
             this.load_delayed_stylesheets();
             this.load_theme();
+            this.setup_read_time_tracker();
         },
 
         // ========
@@ -6500,6 +6501,13 @@
                     this.force_instafetch_stories(unfetched_feeds[0].id);
                 }
             }, this), 60 * 1 * 1000);
+        },
+
+        setup_read_time_tracker: function () {
+            // Initialize the read time tracker for trending feeds feature
+            if (NEWSBLUR.ReadTimeTracker) {
+                NEWSBLUR.ReadTimeTracker.bind_activity_events();
+            }
         },
 
         // ==========

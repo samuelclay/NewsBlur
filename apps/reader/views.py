@@ -70,6 +70,7 @@ from apps.rss_feeds.models import MFeedIcon, MSavedSearch, MStarredStoryCounts
 from apps.search.models import MUserSearch
 from apps.statistics.models import MAnalyticsLoader, MStatistics
 from apps.statistics.rstats import RStats
+from apps.statistics.rtrending import RTrendingStory
 
 # from apps.search.models import SearchStarredStory
 try:
@@ -2301,6 +2302,18 @@ def mark_story_hashes_as_read(request):
     except UnreadablePostError:
         return dict(code=-1, message="Missing `story_hash` list parameter.")
 
+    # Handle read times for trending feeds feature
+    read_times_raw = request.POST.get("read_times", "{}")
+    try:
+        read_times = json.decode(read_times_raw)
+        for story_hash, seconds in read_times.items():
+            try:
+                RTrendingStory.add_read_time(story_hash, int(seconds))
+            except (ValueError, TypeError):
+                pass
+    except (json.JSONDecodeError, AttributeError):
+        pass
+
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(
         request.user.pk, story_hashes, username=request.user.username
     )
@@ -3561,3 +3574,39 @@ def save_dashboard_rivers(request):
     return {
         "dashboard_rivers": dashboard_rivers,
     }
+
+
+@json.json_view
+def trending_feeds(request):
+    """
+    Get trending feeds based on accumulated reader engagement (read time).
+
+    GET Parameters:
+        days: Number of days to aggregate (default 7, max 30)
+        limit: Maximum feeds to return (default 50, max 200)
+
+    Returns:
+        trending_feeds: List of feeds with read time data
+    """
+    days = min(int(request.GET.get("days", 7)), 30)
+    limit = min(int(request.GET.get("limit", 50)), 200)
+
+    trending = RTrendingStory.get_trending_feeds(days=days, limit=limit)
+
+    # Enrich with feed details
+    feed_ids = [feed_id for feed_id, _ in trending]
+    feeds = Feed.objects.filter(pk__in=feed_ids).values(
+        "pk", "feed_title", "feed_address", "feed_link", "num_subscribers", "active_subscribers"
+    )
+    feeds_dict = {f["pk"]: f for f in feeds}
+
+    result = []
+    for feed_id, read_seconds in trending:
+        if feed_id in feeds_dict:
+            feed_data = dict(feeds_dict[feed_id])
+            feed_data["trending_read_seconds"] = read_seconds
+            result.append(feed_data)
+
+    logging.user(request, "~FBFetched ~SB%s~SN trending feeds" % len(result))
+
+    return {"trending_feeds": result}
