@@ -2308,7 +2308,29 @@ def mark_story_hashes_as_read(request):
         read_times = json.decode(read_times_raw)
         for story_hash, seconds in read_times.items():
             try:
-                RTrendingStory.add_read_time(story_hash, int(seconds))
+                seconds = int(seconds)
+                if seconds >= RTrendingStory.MIN_READ_TIME_SECONDS:
+                    RTrendingStory.add_read_time(story_hash, seconds)
+                    # Log read time with feed/story titles
+                    try:
+                        feed_id = int(story_hash.split(":")[0])
+                        feed = Feed.objects.filter(pk=feed_id).only("feed_title").first()
+                        story = MStory.objects.filter(story_hash=story_hash).only("story_title").first()
+                        feed_title = (feed.feed_title[:20] if feed else "Unknown")[:20]
+                        story_title = (story.story_title[:60] if story else "Unknown")[:60]
+                        # Color based on read time: <30s yellow, <60s cyan, 60s+ green+bold
+                        if seconds < 30:
+                            time_color = "~FY"
+                        elif seconds < 60:
+                            time_color = "~FC"
+                        else:
+                            time_color = "~FG~SB"
+                        logging.user(
+                            request,
+                            "~FMRead ~SB%s%ss~SN~FM on ~SB%s~SN: %s" % (time_color, seconds, feed_title, story_title),
+                        )
+                    except Exception:
+                        pass
             except (ValueError, TypeError):
                 pass
     except (json.JSONDecodeError, AttributeError):
