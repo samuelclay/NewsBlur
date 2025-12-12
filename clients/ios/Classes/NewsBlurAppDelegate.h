@@ -45,7 +45,6 @@
 @class UserProfileViewController;
 @class FeedChooserViewController;
 @class MenuViewController;
-@class IASKAppSettingsViewController;
 @class UnreadCounts;
 @class StoriesCollection;
 @class PINCache;
@@ -56,7 +55,7 @@
 
 @interface NewsBlurAppDelegate : BaseViewController
 <UIApplicationDelegate, UINavigationControllerDelegate, UIPopoverPresentationControllerDelegate,
-SFSafariViewControllerDelegate>  {
+SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     UINavigationController *ftuxNavigationController;
     UINavigationController *feedsNavigationController;
     UINavigationController *modalNavigationController;
@@ -89,7 +88,6 @@ SFSafariViewControllerDelegate>  {
     OriginalStoryViewController *originalStoryViewController;
     UINavigationController *originalStoryViewNavController;
     UserProfileViewController *userProfileViewController;
-    IASKAppSettingsViewController *preferencesViewController;
     PremiumViewController *premiumViewController;
 
     AFHTTPSessionManager *networkManager;
@@ -190,7 +188,6 @@ SFSafariViewControllerDelegate>  {
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
 @property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
-@property (nonatomic) IBOutlet IASKAppSettingsViewController *preferencesViewController;
 @property (nonatomic,  strong) PremiumManager *premiumManager;
 @property (nonatomic) IBOutlet PremiumViewController *premiumViewController;
 @property (nonatomic, strong) UINavigationController *fontSettingsNavigationController;
@@ -229,6 +226,7 @@ SFSafariViewControllerDelegate>  {
 @property (readwrite) NSURL * activeOriginalStoryURL;
 @property (readwrite) NSDictionary * activeComment;
 @property (readwrite) NSString * activeShareType;
+@property (nonatomic, strong) id activeAskAIViewModel;
 @property (readwrite) NSInteger feedDetailPortraitYCoordinate;
 @property (readwrite) NSInteger originalStoryCount;
 @property (readwrite) NSInteger savedSearchesCount;
@@ -323,10 +321,10 @@ SFSafariViewControllerDelegate>  {
 - (void)showOrganizeSites;
 - (void)showWidgetSites;
 - (void)showPremiumDialog;
+- (void)showPremiumDialogForArchive;
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
-- (void)setHiddenPreferencesAnimated:(BOOL)animated;
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
 - (void)popToRootWithCompletion:(void (^)(void))completion;
@@ -341,6 +339,9 @@ SFSafariViewControllerDelegate>  {
 - (void)openStatisticsWithFeed:(NSString *)feedId sender:(id)sender;
 - (void)openTrainSiteWithFeedLoaded:(BOOL)feedLoaded from:(id)sender;
 - (void)openTrainStory:(id)sender;
+- (void)openAskAIDialog:(NSDictionary *)story;
+- (void)openAskAIDialog:(NSDictionary *)story sourceRect:(NSValue *)sourceRectValue;
+- (void)showAskAIInlineResponse;
 - (void)openUserTagsStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadFeedDetailView:(BOOL)transition;

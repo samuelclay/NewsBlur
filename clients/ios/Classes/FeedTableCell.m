@@ -173,18 +173,18 @@ static UIFont *textFont = nil;
     
     BOOL isHighlighted = cell.highlighted || cell.selected;
     UIColor *backgroundColor;
-    
-    backgroundColor = cell.isSocial ? UIColorFromRGB(0xD8E3DB) :
-                      cell.isSearch ? UIColorFromRGB(0xDBDFE6) :
-                      cell.isSaved ? UIColorFromRGB(0xDFDCD6) :
-                      UIColorFromRGB(0xF7F8F5);
+
+    backgroundColor = cell.isSocial ? UIColorFromLightSepiaMediumDarkRGB(0xD8E3DB, 0xE0D8D0, 0x3A3A3C, 0x2C2C2E) :
+                      cell.isSearch ? UIColorFromLightSepiaMediumDarkRGB(0xDBDFE6, 0xE0D8D0, 0x3A3A3C, 0x2C2C2E) :
+                      cell.isSaved ? UIColorFromLightSepiaMediumDarkRGB(0xDFDCD6, 0xE0D8D0, 0x3A3A3C, 0x2C2C2E) :
+                      UIColorFromLightSepiaMediumDarkRGB(0xF7F8F5, 0xF8ECD8, 0x48484A, 0x38383A);
     
 //    [backgroundColor set];
     self.backgroundColor = backgroundColor;
     cell.backgroundColor = backgroundColor;
     
     if (isHighlighted) {
-        UIColor *highlightColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x304050, 0x000022);
+        UIColor *highlightColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xF7E9D8, 0x304050, 0x000022);
         
         CGContextSetFillColorWithColor(context, highlightColor.CGColor);
         UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:r cornerRadius:8];

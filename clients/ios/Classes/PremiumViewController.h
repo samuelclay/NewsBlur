@@ -12,15 +12,16 @@
 
 @class SAConfettiView;
 
-@interface PremiumViewController : BaseViewController <UITableViewDelegate, UITableViewDataSource>
+@interface PremiumViewController : BaseViewController
 
-@property (nonatomic) IBOutlet UITableView *premiumTable;
-
+@property (nonatomic) IBOutlet UITableView *premiumTable;  // Legacy, hidden - now using SwiftUI
+@property (nonatomic) BOOL scrollToArchive;
 
 - (IBAction)closeDialog:(id)sender;
 - (IBAction)restorePurchase:(id)sender;
 
 - (void)loadedProducts;
 - (void)finishedTransaction;
+- (void)configureForArchive:(BOOL)scrollToArchive;
 
 @end
