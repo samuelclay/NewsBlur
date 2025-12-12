@@ -16,7 +16,7 @@ class RTrendingStory:
     All keys expire after 8 days for automatic cleanup.
     """
 
-    MIN_READ_TIME_SECONDS = 10
+    MIN_READ_TIME_SECONDS = 3
     TTL_DAYS = 8
 
     @classmethod
