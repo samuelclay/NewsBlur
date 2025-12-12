@@ -377,8 +377,12 @@ extension FeedDetailViewController: FeedDetailInteraction {
     
     func hid(story: Story) {
         print("🪿 Hiding \(story.debugTitle)")
-        
+
         appDelegate.activeStory = nil
         reload()
+    }
+
+    func openPremiumDialog() {
+        appDelegate.showPremiumDialog()
     }
 }
