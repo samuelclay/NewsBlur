@@ -680,8 +680,10 @@
                             objectForKey:@"story_feed_id"]];
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
     
-    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0 && appDelegate.storyPagesViewController.currentlyTogglingNavigationBar && !appDelegate.storyPagesViewController.isNavigationBarHidden) {
-        yOffset -= 25;
+    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0 && !appDelegate.storyPagesViewController.isNavigationBarHidden) {
+        // Push gradient down below the navigation bar on notched iPhones
+        CGFloat navBarHeight = appDelegate.feedsNavigationController.navigationBar.frame.size.height;
+        yOffset += navBarHeight;
     }
     
     if (self.feedTitleGradient) {
@@ -748,8 +750,8 @@
 
 - (void)clearWebView {
     self.hasStory = NO;
-    
-    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+
+    self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
     self.webView.hidden = YES;
     self.activityIndicator.color = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     [self.activityIndicator startAnimating];
@@ -898,36 +900,49 @@
 - (NSString *)getSideOptions {
     BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
     BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
-    
+
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL showAskAI = [userPreferences objectForKey:@"show_ask_ai"] == nil || [userPreferences boolForKey:@"show_ask_ai"];
+
+    NSString *askAIButton = showAskAI ? @
+                             "  <div class='NB-share-button NB-ask-ai-button NB-button'>"
+                             "    <a href=\"http://ios.newsblur.com/ask-ai\"><div>"
+                             "      <span class=\"NB-icon\"></span>"
+                             "      <span class=\"NB-sideoption-text\">Ask AI</span>"
+                             "    </div></a>"
+                             "  </div>" : @"";
+
     NSString *sideOptions = [NSString stringWithFormat:@
                              "<div class='NB-sideoptions'>"
                              "<div class='NB-share-header'></div>"
                              "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-train-button NB-button'>"
+                             "  <div class='NB-share-button NB-train-button NB-button'>"
                              "    <a href=\"http://ios.newsblur.com/train\"><div>"
                              "      <span class=\"NB-icon\"></span>"
                              "      <span class=\"NB-sideoption-text\">Train</span>"
                              "    </div></a>"
                              "  </div>"
-                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-button %@'>"
+                             "  <div class='NB-share-button NB-share-share-button NB-button %@'>"
                              "    <a href=\"http://ios.newsblur.com/share\"><div>"
                              "      <span class=\"NB-icon\"></span>"
                              "      <span class=\"NB-sideoption-text\">%@</span>"
                              "    </div></a>"
                              "  </div>"
-                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-save-button NB-button %@'>"
+                             "  <div class='NB-share-button NB-save-button NB-button %@'>"
                              "    <a href=\"http://ios.newsblur.com/save/save/\"><div>"
                              "      <span class=\"NB-icon\"></span>"
                              "      <span class=\"NB-sideoption-text\">%@</span>"
                              "    </div></a>"
                              "  </div>"
+                             "%@"
                              "</div></div></div>",
                              isShared ? @"NB-button-active" : @"",
                              isShared ? @"Shared" : @"Share",
                              isSaved ? @"NB-button-active" : @"",
-                             isSaved ? @"Saved" : @"Save"
+                             isSaved ? @"Saved" : @"Save",
+                             askAIButton
                              ];
-    
+
     return sideOptions;
 }
 
@@ -1402,8 +1417,13 @@
                 
                 if (!isNavBarHidden) {
                     [self.webView insertSubview:self.feedTitleGradient aboveSubview:self.webView.scrollView];
-                    
-                    self.feedTitleGradient.frame = CGRectMake(0, -1,
+
+                    CGFloat yOffset = -1;
+                    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0) {
+                        CGFloat navBarHeight = appDelegate.feedsNavigationController.navigationBar.frame.size.height;
+                        yOffset += navBarHeight;
+                    }
+                    self.feedTitleGradient.frame = CGRectMake(0, yOffset,
                                                               self.feedTitleGradient.frame.size.width,
                                                               self.feedTitleGradient.frame.size.height);
                 }
@@ -1720,6 +1740,17 @@
             [self openShareDialog];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
+        } else if ([action isEqualToString:@"ask-ai"] && [urlComponents count] > 5) {
+            [self openAskAIDialog:[[urlComponents objectAtIndex:2] intValue]
+                      yCoordinate:[[urlComponents objectAtIndex:3] intValue]
+                            width:[[urlComponents objectAtIndex:4] intValue]
+                           height:[[urlComponents objectAtIndex:5] intValue]];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
+        } else if ([action isEqualToString:@"ask-ai"]) {
+            [appDelegate openAskAIDialog:self.activeStory];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
         } else if ([action isEqualToString:@"train"] && [urlComponents count] > 5) {
             [self openTrainingDialog:[[urlComponents objectAtIndex:2] intValue]
                          yCoordinate:[[urlComponents objectAtIndex:3] intValue]
@@ -1982,14 +2013,14 @@
 }
 
 - (void)updateStoryTheme {
-    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    
+    self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
+
     NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-theme-style').href='storyDetailView%@.css';",
                           [ThemeManager themeManager].themeCSSSuffix];
-    
+
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
-    
-    self.webView.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+
+    self.webView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
     
     if ([ThemeManager themeManager].isDarkTheme) {
         self.webView.scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
@@ -2148,10 +2179,33 @@
             y = y + 9;
         }
     }
-    
+
     frame = CGRectMake(x, y, width, height);
 
     [appDelegate openUserTagsStory:[NSValue valueWithCGRect:frame]];
+}
+
+- (void)openAskAIDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
+    CGRect frame = CGRectZero;
+    if (!self.isPhoneOrCompact) {
+        // only adjust for the bar if user is scrolling
+        if (appDelegate.storiesCollection.isRiverView ||
+            appDelegate.storiesCollection.isSocialView ||
+            appDelegate.storiesCollection.isSavedView ||
+            appDelegate.storiesCollection.isWidgetView ||
+            appDelegate.storiesCollection.isReadView) {
+            if (self.webView.scrollView.contentOffset.y == -20) {
+                y = y + 20;
+            }
+        } else {
+            if (self.webView.scrollView.contentOffset.y == -9) {
+                y = y + 9;
+            }
+        }
+
+        frame = CGRectMake(x, y, width, height);
+    }
+    [appDelegate openAskAIDialog:self.activeStory sourceRect:[NSValue valueWithCGRect:frame]];
 }
 
 - (BOOL)isTag:(NSString *)tagName equalTo:(NSString *)tagValue {
