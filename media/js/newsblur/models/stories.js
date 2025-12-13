@@ -708,10 +708,28 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     detect_selected_story: function (selected_story, selected) {
         if (selected) {
             // console.log(['detect_selected_story', selected, selected_story, this.active_story, this == NEWSBLUR.assets.stories ? "stories" : "dashboard"]);
+
+            // Track read time for trending feeds feature
+            var previous_story = this.active_story;
+            if (previous_story && NEWSBLUR.ReadTimeTracker) {
+                var prev_hash = previous_story.get('story_hash');
+                var read_time = NEWSBLUR.ReadTimeTracker.get_and_reset_read_time(prev_hash);
+                if (read_time > 0) {
+                    // Queue the read time to be sent with next mark-as-read call
+                    NEWSBLUR.assets.queue_read_time(prev_hash, read_time);
+                }
+            }
+
             this.deselect_other_stories(selected_story);
             this.active_story = selected_story;
             NEWSBLUR.reader.active_story = selected_story;
             this.previous_stories_stack.push(selected_story);
+
+            // Start tracking read time for the new story
+            if (NEWSBLUR.ReadTimeTracker) {
+                NEWSBLUR.ReadTimeTracker.start_tracking(selected_story.get('story_hash'));
+            }
+
             if (!selected_story.get('read_status')) {
                 this.mark_read(selected_story);
             }
