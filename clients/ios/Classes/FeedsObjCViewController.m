@@ -23,8 +23,6 @@
 #import "AddSiteViewController.h"
 #import "FMDatabase.h"
 #import "FMDatabaseAdditions.h"
-#import "IASKAppSettingsViewController.h"
-#import "IASKSettingsReader.h"
 #import "UIImageView+AFNetworking.h"
 #import "NBBarButtonItem.h"
 #import "UISearchBar+Field.h"
@@ -42,7 +40,7 @@ static UIFont *userLabelFont;
 
 static NSArray<NSString *> *NewsBlurTopSectionNames;
 
-@interface FeedsObjCViewController ()
+@interface FeedsObjCViewController () <PreferencesViewDelegate>
 
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictFeeds_;
@@ -161,7 +159,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [[NSNotificationCenter defaultCenter]
      addObserver:self
      selector:@selector(settingDidChange:)
-     name:kIASKAppSettingChanged
+     name:NSUserDefaultsDidChangeNotification
      object:nil];
     
     [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
@@ -1298,17 +1296,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 #pragma mark -
 #pragma mark Preferences
 
-- (void)settingsViewControllerWillAppear:(IASKAppSettingsViewController *)sender {
-    [[ThemeManager themeManager] updatePreferencesTheme];
-}
-
-- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender {
-    [appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
-    
-    [self resizeFontSize];
-    [self resetupGestures];
-}
-
 - (void)resizePreviewSize {
     [self reloadFeedTitlesTable];
     
@@ -1446,6 +1433,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self updateThemeBrightness];
     } else if ([identifier isEqual:@"theme_style"]) {
         [self updateThemeStyle];
+    } else if ([identifier isEqual:@"theme_light"] || [identifier isEqual:@"theme_dark"]) {
+        [self updateThemeStyle];
+    } else if ([identifier isEqual:@"theme_auto_toggle"]) {
+        [self updateThemeStyle];
     } else if ([identifier isEqual:self.appDelegate.storiesCollection.storyTitlesPositionKey]) {
         [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
     } else if ([identifier isEqual:@"story_titles_style"]) {
@@ -1457,16 +1448,16 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [defaults setObject:preview forKey:@"widget:preview_images_size"];
         [self.appDelegate.storyPagesViewController reloadWidget];
     }
-    
-    [appDelegate setHiddenPreferencesAnimated:YES];
 }
 
-- (void)settingsViewController:(IASKAppSettingsViewController*)sender buttonTappedForSpecifier:(IASKSpecifier*)specifier {
-	if ([specifier.key isEqualToString:@"offline_cache_empty_stories"]) {
+#pragma mark - PreferencesViewDelegate
+
+- (void)preferencesButtonTappedWithKey:(NSString *)key action:(NSString *)action {
+    if ([key isEqualToString:@"offline_cache_empty_stories"]) {
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
         dispatch_async(queue, ^{
             dispatch_sync(dispatch_get_main_queue(), ^{
-                [[NSUserDefaults standardUserDefaults] setObject:@"Deleting..." forKey:specifier.key];
+                [[NSUserDefaults standardUserDefaults] setObject:@"Deleting..." forKey:key];
             });
             [self.appDelegate.database inDatabase:^(FMDatabase *db) {
                 [db executeUpdate:@"VACUUM"];
@@ -1477,22 +1468,40 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
                 [self.appDelegate deleteAllCachedImages];
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     [[NSUserDefaults standardUserDefaults] setObject:@"Cleared all stories and images!"
-                                                              forKey:specifier.key];
+                                                              forKey:key];
                 });
             }];
         });
-	} else if ([specifier.key isEqualToString:@"import_prefs"]) {
-        [ImportExportPreferences importFromController:sender];
-    } else if ([specifier.key isEqualToString:@"export_prefs"]) {
-        [ImportExportPreferences exportFromController:sender];
-    } else if ([specifier.key isEqualToString:@"delete_account"]) {
-        [sender dismiss:nil];
-        
-        NSString *urlString = [NSString stringWithFormat:@"%@/profile/delete_account",
-                               self.appDelegate.url];
-        
-        [self.appDelegate showInAppBrowser:[NSURL URLWithString:urlString] withCustomTitle:@"Delete Account" fromSender:nil];
+    } else if ([key isEqualToString:@"import_prefs"]) {
+        UIViewController *presenter = [self.appDelegate.feedsNavigationController presentedViewController];
+        if (presenter) {
+            [ImportExportPreferences importFromController:presenter];
+        }
+    } else if ([key isEqualToString:@"export_prefs"]) {
+        UIViewController *presenter = [self.appDelegate.feedsNavigationController presentedViewController];
+        if (presenter) {
+            [ImportExportPreferences exportFromController:presenter];
+        }
+    } else if ([key isEqualToString:@"delete_account"]) {
+        [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:^{
+            NSString *urlString = [NSString stringWithFormat:@"%@/profile/delete_account",
+                                   self.appDelegate.url];
+            [self.appDelegate showInAppBrowser:[NSURL URLWithString:urlString] withCustomTitle:@"Delete Account" fromSender:nil];
+        }];
     }
+}
+
+- (void)preferenceValueChangedWithKey:(NSString *)key value:(id)value {
+    NSNotification *notification = [NSNotification notificationWithName:@"PreferenceValueChanged"
+                                                                 object:key
+                                                               userInfo:@{key: value}];
+    [self settingDidChange:notification];
+}
+
+- (void)preferencesDidDismiss {
+    [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
+    [self resizeFontSize];
+    [self resetupGestures];
 }
 
 - (void)validateWidgetFeedsForGroupDefaults:(NSUserDefaults *)groupDefaults usingResults:(NSDictionary *)results {
