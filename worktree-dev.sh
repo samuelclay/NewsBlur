@@ -358,6 +358,42 @@ if [ "$NEEDS_SETUP" = true ]; then
     fi
 fi
 
+# Sync .claude permissions from parent repo (always runs, idempotent)
+if [ -d "../../.claude" ]; then
+    CLAUDE_UPDATED=false
+    mkdir -p .claude
+    # Always copy settings.local.json from parent (source of truth)
+    if [ -f "../../.claude/settings.local.json" ]; then
+        if ! cmp -s "../../.claude/settings.local.json" ".claude/settings.local.json" 2>/dev/null; then
+            cp "../../.claude/settings.local.json" ".claude/settings.local.json"
+            CLAUDE_UPDATED=true
+        fi
+    fi
+    # Copy skills directory if it exists in parent (exclude .git directories)
+    if [ -d "../../.claude/skills" ]; then
+        # Check if skills differ before copying
+        if ! diff -rq --exclude='.git' "../../.claude/skills" ".claude/skills" &>/dev/null; then
+            # Use rsync to copy skills, excluding .git directories
+            if command -v rsync &>/dev/null; then
+                rsync -a --exclude='.git' "../../.claude/skills/" ".claude/skills/" 2>/dev/null
+            else
+                # Fallback: copy without .git directories
+                mkdir -p .claude/skills
+                find "../../.claude/skills" -maxdepth 1 -type d ! -name '.git' ! -path "../../.claude/skills" -exec basename {} \; 2>/dev/null | while read skill_dir; do
+                    if [ -d "../../.claude/skills/$skill_dir" ]; then
+                        rm -rf ".claude/skills/$skill_dir"
+                        cp -r "../../.claude/skills/$skill_dir" ".claude/skills/" 2>/dev/null
+                    fi
+                done
+            fi
+            CLAUDE_UPDATED=true
+        fi
+    fi
+    if [ "$CLAUDE_UPDATED" = true ]; then
+        echo -e "${GREEN}✓ Synced .claude permissions from parent repo${NC}"
+    fi
+fi
+
 # Check if shared services are already running
 echo -e "${YELLOW}Checking for shared service containers...${NC}"
 
