@@ -23,7 +23,7 @@ urlpatterns = [
     ),
     url(r"^is_premium/?", views.profile_is_premium, name="profile-is-premium"),
     url(r"^is_premium_archive/?", views.profile_is_premium_archive, name="profile-is-premium-archive"),
-    url(r"^start_premium_trial/?", views.start_premium_trial, name="start-premium-trial"),
+    url(r"^activate_premium_trial/?", views.activate_premium_trial, name="activate-premium-trial"),
     # url(r'^paypal_ipn/?', include('paypal.standard.ipn.urls'), name='paypal-ipn'),
     url(r"^paypal_ipn/?", views.paypal_ipn, name="paypal-ipn"),
     url(r"^paypal_webhooks/?", views.paypal_webhooks, name="paypal-webhooks"),

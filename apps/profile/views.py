@@ -486,22 +486,22 @@ def activate_premium(request):
     return HttpResponseRedirect(reverse("index"))
 
 
-@ajax_login_required
-@require_POST
-@json.json_view
-def start_premium_trial(request):
-    """API endpoint for existing free users to start their 30-day trial."""
+@login_required
+def activate_premium_trial(request):
+    """Page that activates a premium trial and shows progress like payment returns."""
     profile = request.user.profile
     success = profile.start_premium_trial()
 
-    return {
-        "success": success,
-        "code": 1 if success else -1,
-        "is_premium": profile.is_premium,
-        "is_premium_trial": profile.is_premium_trial,
-        "trial_days_remaining": profile.trial_days_remaining,
-        "premium_expire": int(profile.premium_expire.strftime("%s")) if profile.premium_expire else 0,
-    }
+    if not success:
+        return HttpResponseRedirect(reverse("index"))
+
+    return render(
+        request,
+        "reader/premium_trial_return.xhtml",
+        {
+            "user_profile": profile,
+        },
+    )
 
 
 @ajax_login_required
