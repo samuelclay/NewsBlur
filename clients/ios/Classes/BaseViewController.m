@@ -361,7 +361,14 @@
         NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"feed_list_spacing"];
         command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(chooseTheme:)) {
-        command.state = [command.propertyList isEqualToString:ThemeManager.themeManager.theme];
+        // Check user's actual choice - if Auto, only Auto should be checked
+        // If user chose a specific mode, check the effective theme
+        NSString *themeStyle = [[NSUserDefaults standardUserDefaults] objectForKey:@"theme_style"];
+        if ([themeStyle isEqualToString:@"auto"] || themeStyle == nil) {
+            command.state = [command.propertyList isEqualToString:ThemeStyleAuto];
+        } else {
+            command.state = [command.propertyList isEqualToString:ThemeManager.themeManager.effectiveTheme];
+        }
     } else if (command.action == @selector(openRenameSite:)) {
         if (appDelegate.storiesCollection.isRiverOrSocial) {
             command.title = @"Rename Folder…";

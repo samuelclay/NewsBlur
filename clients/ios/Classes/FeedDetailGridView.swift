@@ -13,7 +13,7 @@ import SwiftUI
     var hasNoMoreStories: Bool { get }
     var isPremiumRestriction: Bool { get }
     var isMarkReadOnScroll: Bool { get }
-    
+
     func pullToRefresh()
     func tapped(dash: DashList)
     func visible(story: Story)
@@ -27,6 +27,7 @@ import SwiftUI
     func unread(story: Story)
     func hid(story: Story)
     func scrolled(story: Story, offset: CGFloat?)
+    func openPremiumDialog()
 }
 
 /// A list or grid layout of story cards for the feed detail view.
@@ -149,7 +150,7 @@ struct FeedDetailGridView: View {
 #endif
             })
         }
-        .background(Color.themed([0xE0E0E0, 0xFFF8CA, 0x363636, 0x101010]))
+        .background(Color.themed([0xE0E0E0, 0xF3E2CB, 0x363636, 0x101010]))
         .if(cache.isGridView) { view in
             view.lazyPop()
         }

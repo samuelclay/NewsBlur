@@ -16,7 +16,7 @@ class SplitViewController: UISplitViewController {
     
     /// Update the theme of the split view controller.
     @objc func updateTheme() {
-        headerView.backgroundColor = ThemeManager.color(fromRGB: [0xE3E6E0, 0xFFFFC5, 0x222222, 0x111111])
+        headerView.backgroundColor = ThemeManager.color(fromRGB: [0xE3E6E0, 0xF3E2CB, 0x222222, 0x111111])
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {

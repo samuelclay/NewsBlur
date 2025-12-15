@@ -30,11 +30,11 @@
     
     // Background
     [NewsBlurAppDelegate fillGradient:rect
-                           startColor:UIColorFromLightSepiaMediumDarkRGB(0xEAECE5, 0xffffc6, 0x6A6A6A, 0x444444)
-                             endColor:UIColorFromLightSepiaMediumDarkRGB(0xDCDFD6, 0xffffc0, 0x666666, 0x333333)];
-    
+                           startColor:UIColorFromLightSepiaMediumDarkRGB(0xEAECE5, 0xF7E9D8, 0x6A6A6A, 0x444444)
+                             endColor:UIColorFromLightSepiaMediumDarkRGB(0xDCDFD6, 0xF3E2CB, 0x666666, 0x333333)];
+
     // Borders
-    UIColor *topColor = UIColorFromLightSepiaMediumDarkRGB(0xFDFDFD, 0xFDFDF6, 0x878B8A, 0x474B4A);
+    UIColor *topColor = UIColorFromLightSepiaMediumDarkRGB(0xFDFDFD, 0xFAF5ED, 0x878B8A, 0x474B4A);
     CGContextSetStrokeColor(context, CGColorGetComponents([topColor CGColor]));
     
     CGContextBeginPath(context);
@@ -43,7 +43,7 @@
     CGContextStrokePath(context);
     
     // bottom border
-    UIColor *bottomColor = UIColorFromLightSepiaMediumDarkRGB(0xB7BBAA, 0xe0e0a6, 0x404040, 0x0D0D0D);
+    UIColor *bottomColor = UIColorFromLightSepiaMediumDarkRGB(0xB7BBAA, 0xD4C8B8, 0x404040, 0x0D0D0D);
     CGContextSetStrokeColor(context, CGColorGetComponents([bottomColor CGColor]));
     CGContextBeginPath(context);
     CGContextMoveToPoint(context, 0, rect.size.height-0.25f);

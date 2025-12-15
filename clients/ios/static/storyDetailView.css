@@ -183,6 +183,30 @@
     font-size: 11px;
 }
 
+.NB-ipad-wide .NB-share-wrapper {
+    margin-bottom: 60px;
+}
+
+.NB-ipad-wide .NB-button.NB-train-button .NB-icon,
+.NB-ipad-narrow .NB-button.NB-train-button .NB-icon {
+    top: 0px;
+}
+
+.NB-ipad-wide .NB-button.NB-share-share-button .NB-icon,
+.NB-ipad-narrow .NB-button.NB-share-share-button .NB-icon {
+    top: 2px;
+}
+
+.NB-ipad-wide .NB-button.NB-save-button .NB-icon,
+.NB-ipad-narrow .NB-button.NB-save-button .NB-icon {
+    top: 0px;
+}
+
+.NB-ipad-wide .NB-button.NB-ask-ai-button .NB-icon,
+.NB-ipad-narrow .NB-button.NB-ask-ai-button .NB-icon {
+    top: -1px;
+}
+
 /**
  * iPad Narrow Style
  */
@@ -859,20 +883,33 @@ a.NB-show-profile {
     text-shadow: 0px 1px 0px rgba(255,255,255,1);
 }
 
+.NB-share-inner-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
 .NB-button.NB-share-button {
-    float: right;
+    float: none;
     padding: 0px 0px 20px 0px;
     margin: 0;
     display: block;
-    width: 28%;
+    flex: 1;
+    min-width: 0;
 }
 .NB-button.NB-train-button {
-    float: left;
-    margin-right: 0;
+    float: none;
+    margin: 0;
 }
 .NB-button.NB-save-button {
     float: none;
-    margin: 0 auto;
+    margin: 0;
+}
+.NB-button.NB-ask-ai-button {
+    float: none;
+    margin: 0;
 }
 
 .NB-button.NB-read-button {
@@ -959,18 +996,36 @@ a.NB-show-profile {
     display: inline-block;
     height: 18px;
     margin: 0 2px 0 12px;
-    vertical-align: text-top;
+    vertical-align: middle;
     opacity: .7;
 }
 
 .NB-button.NB-train-button .NB-icon {
     background: url("train@2x.png") no-repeat 0 0;
     background-size: 16px;
+    position: relative;
+    top: -3px;
+}
+
+.NB-button.NB-share-share-button .NB-icon {
+    position: relative;
+    top: 1px;
 }
 
 .NB-button.NB-save-button .NB-icon {
     background: url("saved-stories@2x.png") no-repeat 0 0;
     background-size: 16px;
+    position: relative;
+    top: -1px;
+}
+
+.NB-button.NB-ask-ai-button .NB-icon {
+    background: url("prompt.svg") no-repeat center center;
+    background-size: 20px 20px;
+}
+
+.NB-button.NB-share-button .NB-sideoption-text {
+    vertical-align: middle;
 }
 
 .NB-button.NB-read-button .NB-icon {

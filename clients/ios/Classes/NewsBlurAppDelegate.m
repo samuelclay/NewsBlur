@@ -40,7 +40,6 @@
 #import "FMDatabaseAdditions.h"
 #import "SBJson4.h"
 #import "NSObject+SBJSON.h"
-#import "IASKAppSettingsViewController.h"
 #import "OfflineSyncUnreads.h"
 #import "OfflineFetchStories.h"
 #import "OfflineFetchText.h"
@@ -108,7 +107,6 @@
 @synthesize originalStoryViewController;
 @synthesize originalStoryViewNavController;
 @synthesize userProfileViewController;
-@synthesize preferencesViewController;
 @synthesize premiumViewController;
 
 @synthesize firstTimeUserViewController;
@@ -866,12 +864,23 @@
 }
 
 - (void)showPremiumDialog {
+    [self showPremiumDialogScrollToArchive:NO];
+}
+
+- (void)showPremiumDialogForArchive {
+    [self showPremiumDialogScrollToArchive:YES];
+}
+
+- (void)showPremiumDialogScrollToArchive:(BOOL)scrollToArchive {
     if (self.premiumNavigationController == nil) {
         self.premiumNavigationController = [[UINavigationController alloc]
                                             initWithRootViewController:self.premiumViewController];
     }
     self.premiumNavigationController.navigationBar.translucent = NO;
-    
+
+    // Configure the premium view to scroll to archive section if requested
+    [self.premiumViewController configureForArchive:scrollToArchive];
+
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
     premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.splitViewController presentViewController:premiumNavigationController animated:YES completion:nil];
@@ -930,64 +939,26 @@
 
 - (void)showPreferences {
     if (self.isMac) {
-        //        [[UIApplication sharedApplication] sendAction:@selector(orderFrontPreferencesPanel:) to:nil from:nil forEvent:nil];
         return;
     }
-    
-    if (!preferencesViewController) {
-        preferencesViewController = [[IASKAppSettingsViewController alloc] init];
-        [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.preferencesViewController.view];
-    }
-    
+
     [self hidePopover];
-    
-    preferencesViewController.delegate = self.feedsViewController;
-    preferencesViewController.showDoneButton = YES;
-    preferencesViewController.showCreditsFooter = NO;
-    preferencesViewController.title = @"Preferences";
-    
-    [self setHiddenPreferencesAnimated:NO];
-    
+
     [[NSUserDefaults standardUserDefaults] setObject:@"Delete offline stories..."
                                               forKey:@"offline_cache_empty_stories"];
-    
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:preferencesViewController];
-    self.modalNavigationController = navController;
-    self.modalNavigationController.navigationBar.translucent = NO;
-    
-    if (!self.isPhone) {
-        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    }
-    
-    [feedsNavigationController presentViewController:modalNavigationController animated:YES completion:nil];
-}
 
-- (void)setHiddenPreferencesAnimated:(BOOL)animated {
-    NSMutableSet *hiddenSet = [NSMutableSet set];
-    
-    BOOL offline_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"offline_allowed"];
-    if (!offline_enabled) {
-        [hiddenSet addObjectsFromArray:@[@"offline_image_download",
-                                         @"offline_download_connection",
-                                         @"offline_store_limit"]];
+    if (@available(iOS 15.0, *)) {
+        PreferencesViewHostingController *swiftUIPrefs = [[PreferencesViewHostingController alloc] init];
+
+        if (!self.isPhone) {
+            swiftUIPrefs.modalPresentationStyle = UIModalPresentationFormSheet;
+        }
+
+        [feedsNavigationController presentViewController:swiftUIPrefs animated:YES completion:^{
+            [swiftUIPrefs configureDelegate:(id<PreferencesViewDelegate>)self.feedsViewController];
+            [[ThemeManager themeManager] addThemeGestureRecognizerToView:swiftUIPrefs.view];
+        }];
     }
-    BOOL system_font_enabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"use_system_font_size"];
-    if (system_font_enabled) {
-        [hiddenSet addObjectsFromArray:@[@"feed_list_font_size"]];
-    }
-    BOOL theme_auto_toggle = [[NSUserDefaults standardUserDefaults] boolForKey:@"theme_auto_toggle"];
-    if (theme_auto_toggle) {
-        [hiddenSet addObjectsFromArray:@[@"theme_style", @"theme_gesture"]];
-    } else {
-        [hiddenSet addObjectsFromArray:@[@"theme_auto_brightness"]];
-    }
-    
-    BOOL story_full_screen = [[NSUserDefaults standardUserDefaults] boolForKey:@"story_full_screen"];
-    if (!story_full_screen) {
-        [hiddenSet addObjectsFromArray:@[@"story_hide_status_bar"]];
-    }
-    
-    [preferencesViewController setHiddenKeys:hiddenSet animated:animated];
 }
 
 - (void)showFeedChooserForOperation:(FeedChooserOperation)operation dashboardRiverId:(NSString *)dashboardRiverId {
@@ -1248,7 +1219,6 @@
     self.shareViewController = [ShareViewController new];
     self.fontSettingsViewController = [FontSettingsViewController new];
     self.userProfileViewController = [UserProfileViewController new];
-    self.preferencesViewController = [IASKAppSettingsViewController new];
     self.premiumViewController = [PremiumViewController new];
     self.firstTimeUserViewController = [FirstTimeUserViewController new];
     self.firstTimeUserAddSitesViewController = [FirstTimeUserAddSitesViewController new];
@@ -1393,6 +1363,145 @@
         self.trainNavigationController.navigationBar.translucent = NO;
         [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
     }
+}
+
+- (void)openAskAIDialog:(NSDictionary *)story {
+    if (@available(iOS 15.0, *)) {
+        UINavigationController *navController = self.feedsNavigationController;
+        AskAIViewController *askAIViewController = [[AskAIViewController alloc] initWithStory:story];
+        UINavigationController *askAINavController = [[UINavigationController alloc] initWithRootViewController:askAIViewController];
+
+        askAINavController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+        // Configure navigation bar to be hidden - we don't need the title bar
+        askAINavController.navigationBarHidden = YES;
+
+        UISheetPresentationController *sheet = askAINavController.sheetPresentationController;
+        // Start with only medium detent - AskAIViewController will add large when answer mode
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        // Allow interaction with story content behind the sheet when at medium height
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        // Set fixed corner radius to prevent iOS 26 liquid glass scaling effect on touch
+        sheet.preferredCornerRadius = 12.0;
+
+        [navController presentViewController:askAINavController animated:YES completion:^{
+            // Add tap gesture to container view to dismiss on tap outside sheet
+            UIView *containerView = askAINavController.presentationController.containerView;
+            if (containerView) {
+                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
+                    initWithTarget:self
+                    action:@selector(dismissAskAIOnTap:)];
+                tapToDismiss.cancelsTouchesInView = NO;
+                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
+                [containerView addGestureRecognizer:tapToDismiss];
+            }
+        }];
+    } else {
+        // iOS 14 fallback - show alert that feature requires iOS 15
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Ask AI"
+                                                                       message:@"This feature requires iOS 15 or later."
+                                                                preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+        [self.feedsNavigationController presentViewController:alert animated:YES completion:nil];
+    }
+}
+
+- (void)openAskAIDialog:(NSDictionary *)story sourceRect:(NSValue *)sourceRectValue {
+    if (@available(iOS 15.0, *)) {
+        CGRect sourceRect = [sourceRectValue CGRectValue];
+
+        // On iPad with valid coordinates, show as popover anchored to the Ask AI button
+        if (!self.isPhone && !CGRectIsEmpty(sourceRect)) {
+            AskAIViewController *askAIVC = [[AskAIViewController alloc] initWithStory:story];
+            askAIVC.modalPresentationStyle = UIModalPresentationPopover;
+            askAIVC.preferredContentSize = CGSizeMake(400, 420);
+
+            // Set up popover presentation
+            UIPopoverPresentationController *popover = askAIVC.popoverPresentationController;
+            popover.delegate = self;
+            popover.sourceView = self.storyPagesViewController.currentPage.webView;
+            popover.sourceRect = sourceRect;
+            popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
+
+            // Store view model for re-presentation as sheet
+            __weak typeof(self) weakSelf = self;
+            askAIVC.onQuestionAsked = ^{
+                // Store the view model before dismissing
+                weakSelf.activeAskAIViewModel = askAIVC.viewModelAsAny;
+                // Dismiss popover and re-present as bottom sheet
+                [askAIVC dismissViewControllerAnimated:YES completion:^{
+                    [weakSelf showAskAIInlineResponse];
+                }];
+            };
+
+            [self.navigationControllerForPopover presentViewController:askAIVC animated:YES completion:nil];
+        } else {
+            // On iPhone or if no coordinates, use the existing sheet presentation
+            [self openAskAIDialog:story];
+        }
+    } else {
+        [self openAskAIDialog:story];
+    }
+}
+
+- (void)showAskAIInlineResponse {
+    if (@available(iOS 15.0, *)) {
+        // Get the active view model that was set when question was asked
+        id viewModel = self.activeAskAIViewModel;
+        if (!viewModel) {
+            return;
+        }
+
+        // Create new view controller with existing view model (already has response streaming)
+        AskAIViewController *askAIVC = [AskAIViewController createWithViewModel:viewModel];
+        if (!askAIVC) {
+            return;
+        }
+
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:askAIVC];
+        navController.navigationBarHidden = YES;
+
+        // Present as a sheet from the bottom
+        navController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+        UISheetPresentationController *sheet = navController.sheetPresentationController;
+        sheet.detents = @[
+            UISheetPresentationControllerDetent.mediumDetent,
+            UISheetPresentationControllerDetent.largeDetent
+        ];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
+        // Allow interaction with story content behind the sheet
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        sheet.preferredCornerRadius = 12.0;
+
+        [self.splitViewController presentViewController:navController animated:YES completion:nil];
+
+        // Clear the stored view model
+        self.activeAskAIViewModel = nil;
+    }
+}
+
+- (void)dismissAskAIOnTap:(UITapGestureRecognizer *)gesture {
+    UIViewController *presentedVC = self.feedsNavigationController.presentedViewController;
+    if (presentedVC) {
+        [presentedVC dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    // Only allow the tap if it's outside the presented sheet view
+    UIViewController *presentedVC = self.feedsNavigationController.presentedViewController;
+    if (presentedVC && presentedVC.view) {
+        CGPoint location = [touch locationInView:presentedVC.view];
+        // If touch is inside the sheet's view bounds, don't receive it
+        if (CGRectContainsPoint(presentedVC.view.bounds, location)) {
+            return NO;
+        }
+    }
+    return YES;
 }
 
 - (void)openNotificationsWithFeed:(NSString *)feedId {
@@ -3766,6 +3875,11 @@
 }
 
 - (UIView *)makeFeedTitle:(NSDictionary *)feed {
+    // Return nil if no feed is provided and no special folder is active
+    if (!feed && !storiesCollection.activeFolder) {
+        return nil;
+    }
+
     UILabel *titleLabel = [[UILabel alloc] init];
     if (storiesCollection.isSocialRiverView &&
         [storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
@@ -3795,11 +3909,19 @@
     } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
         titleLabel.text = [NSString stringWithFormat:@"     Saved Stories"];
     } else if (storiesCollection.isSocialView) {
-        titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
+        NSString *feedTitle = [feed objectForKey:@"feed_title"];
+        if (!feedTitle || [feedTitle isKindOfClass:[NSNull class]]) {
+            return nil;
+        }
+        titleLabel.text = [NSString stringWithFormat:@"     %@", feedTitle];
     } else if (storiesCollection.isRiverView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", storiesCollection.activeFolder];
     } else {
-        titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
+        NSString *feedTitle = [feed objectForKey:@"feed_title"];
+        if (!feedTitle || [feedTitle isKindOfClass:[NSNull class]]) {
+            return nil;
+        }
+        titleLabel.text = [NSString stringWithFormat:@"     %@", feedTitle];
     }
     titleLabel.backgroundColor = [UIColor clearColor];
     titleLabel.textAlignment = NSTextAlignmentLeft;

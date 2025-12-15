@@ -11,7 +11,6 @@
 #import "FolderTitleView.h"
 #import "BaseViewController.h"
 #import "NBNotifier.h"
-#import "IASKAppSettingsViewController.h"
 #import "MCSwipeTableViewCell.h"
 
 // indices in appDelegate.dictFoldersArray and button tags
@@ -26,7 +25,6 @@ static enum {
 <UITableViewDelegate, UITableViewDataSource,
 NSCacheDelegate,
 UIPopoverControllerDelegate,
-IASKSettingsDelegate,
 MCSwipeTableViewCellDelegate,
 UIGestureRecognizerDelegate, UISearchBarDelegate> {
     NSMutableDictionary * activeFeedLocations;
@@ -150,7 +148,6 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
-- (void)settingsViewControllerDidEnd:(IASKAppSettingsViewController*)sender;
 - (void)settingDidChange:(NSNotification*)notification;
 
 - (void)showRefreshNotifier;
