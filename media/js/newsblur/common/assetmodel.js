@@ -1487,10 +1487,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, null);
     },
 
-    start_premium_trial: function (callback) {
-        this.make_request('/profile/start_premium_trial', {}, callback, null, { request_type: 'POST' });
-    },
-
     view_setting: function (feed_id, setting, callback) {
         if (NEWSBLUR.reader.flags['feed_list_showing_starred'] &&
             setting == 'read_filter') return "starred";

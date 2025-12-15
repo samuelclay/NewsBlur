@@ -3567,33 +3567,9 @@
         },
 
         start_premium_trial: function () {
-            var self = this;
             var $button = $('.NB-module-trial-offer-button');
-
             $button.addClass('NB-disabled').text('Starting trial...');
-
-            this.model.start_premium_trial(function (data) {
-                if (data.success) {
-                    NEWSBLUR.Globals.is_premium = true;
-                    NEWSBLUR.Globals.is_premium_trial = true;
-                    NEWSBLUR.Globals.can_start_trial = false;
-                    NEWSBLUR.Globals.trial_days_remaining = data.trial_days_remaining;
-
-                    // Hide the trial offer module and show trial status module
-                    $('.NB-module-trial-offer').fadeOut(300, function () {
-                        $(this).remove();
-                    });
-
-                    // Update the UI to reflect premium status
-                    self.check_feed_chooser_refresh();
-
-                    // Show success message
-                    self.save_indicator_show('Trial started! Enjoy 30 days of premium.');
-                } else {
-                    $button.removeClass('NB-disabled').text('Start Trial Premium');
-                    self.save_indicator_show('Could not start trial. Please try again.');
-                }
-            });
+            window.location.href = '/profile/activate_premium_trial';
         },
 
         open_organizer_modal: function (options) {
