@@ -3566,6 +3566,36 @@
             NEWSBLUR.feedchooser = new NEWSBLUR.ReaderFeedchooser(options);
         },
 
+        start_premium_trial: function () {
+            var self = this;
+            var $button = $('.NB-module-trial-offer-button');
+
+            $button.addClass('NB-disabled').text('Starting trial...');
+
+            this.model.start_premium_trial(function (data) {
+                if (data.success) {
+                    NEWSBLUR.Globals.is_premium = true;
+                    NEWSBLUR.Globals.is_premium_trial = true;
+                    NEWSBLUR.Globals.can_start_trial = false;
+                    NEWSBLUR.Globals.trial_days_remaining = data.trial_days_remaining;
+
+                    // Hide the trial offer module and show trial status module
+                    $('.NB-module-trial-offer').fadeOut(300, function () {
+                        $(this).remove();
+                    });
+
+                    // Update the UI to reflect premium status
+                    self.check_feed_chooser_refresh();
+
+                    // Show success message
+                    self.save_indicator_show('Trial started! Enjoy 30 days of premium.');
+                } else {
+                    $button.removeClass('NB-disabled').text('Start Trial Premium');
+                    self.save_indicator_show('Could not start trial. Please try again.');
+                }
+            });
+        },
+
         open_organizer_modal: function (options) {
             NEWSBLUR.organizer = new NEWSBLUR.ReaderOrganizer(options);
         },
@@ -7123,6 +7153,18 @@
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-module-premium-button' }, function ($t, $p) {
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_feedchooser_modal({ 'premium_only': true });
+                }
+            });
+            $.targetIs(e, { tagSelector: '.NB-module-trial-offer-button' }, function ($t, $p) {
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.start_premium_trial();
+                }
+            });
+            $.targetIs(e, { tagSelector: '.NB-module-trial-button' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.open_feedchooser_modal({ 'premium_only': true });

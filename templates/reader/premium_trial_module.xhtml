@@ -1,0 +1,27 @@
+{% load utils_tags %}
+
+{% if user_profile.is_premium and user_profile.is_premium_trial %}
+<div class="NB-module NB-module-trial">
+    <h5 class="NB-module-header">
+        <div class="NB-module-header-text">Trial Premium Subscription</div>
+    </h5>
+    <div class="NB-module-item NB-module-item-intro">
+        <div class="NB-module-trial-icon"></div>
+        <p class="NB-module-trial-message">
+            Trial premium subscription with <strong class="NB-trial-days">{{ user_profile.trial_days_remaining }} day{{ user_profile.trial_days_remaining|pluralize }}</strong> remaining
+        </p>
+        <p class="NB-module-trial-benefits">
+            Enjoying premium features? Keep them forever!
+        </p>
+        <ul class="NB-module-trial-features">
+            <li>Unlimited sites</li>
+            <li>River of News</li>
+            <li>Full-text search</li>
+            <li>Saved story tags</li>
+        </ul>
+        <div class="NB-modal-submit-green NB-modal-submit-button NB-module-trial-button NB-javascript">
+            Upgrade to Premium - $36/year
+        </div>
+    </div>
+</div>
+{% endif %}

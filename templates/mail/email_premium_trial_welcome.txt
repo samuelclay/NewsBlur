@@ -1,0 +1,21 @@
+{% extends "mail/email_base.txt" %}
+
+{% block body %}Welcome to NewsBlur, {{ user.username }}!
+
+Your 30-day trial premium subscription has started. You now have full access to all premium features:
+
+    * Enable unlimited sites (up to 1,000 feeds)
+    * Sites updated up to 5x more often
+    * River of News - read all stories from folders
+    * Full-text search across all your sites
+    * Save stories with searchable tags
+    * Privacy options for your blurblog
+    * Text view extracts full story content
+    * Discover related stories and sites
+
+No credit card required. After 30 days, you can continue enjoying these features for just $36/year.
+
+Explore NewsBlur: https://newsblur.com/?next=premium
+
+Welcome aboard!
+- Sam Clay{% endblock body %}

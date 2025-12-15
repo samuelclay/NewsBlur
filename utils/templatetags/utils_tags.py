@@ -169,6 +169,26 @@ def render_premium_archive_module(context):
     }
 
 
+@register.inclusion_tag("reader/premium_trial_offer_module.xhtml", takes_context=True)
+def render_premium_trial_offer_module(context):
+    user = get_user(context["user"])
+
+    return {
+        "user": user,
+        "user_profile": user.profile,
+    }
+
+
+@register.inclusion_tag("reader/premium_trial_module.xhtml", takes_context=True)
+def render_premium_trial_module(context):
+    user = get_user(context["user"])
+
+    return {
+        "user": user,
+        "user_profile": user.profile,
+    }
+
+
 @register.inclusion_tag("reader/manage_module.xhtml", takes_context=True)
 def render_manage_module(context):
     user = get_user(context["user"])

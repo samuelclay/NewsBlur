@@ -9209,6 +9209,213 @@ form.opml_import_form input {
     height: 96px;
 }
 
+/* ================================ */
+/* = Premium Trial Offer Module   = */
+/* = (For free users to opt-in)   = */
+/* ================================ */
+
+.NB-account .NB-module-trial-offer {}
+
+.NB-module-trial-offer .NB-module-item-intro {
+    border-radius: 3px;
+    padding: 12px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    font-size: 14px;
+    text-align: center;
+}
+
+.NB-module-trial-offer .NB-module-trial-offer-icon {
+    width: 48px;
+    height: 48px;
+    display: block;
+    margin: 0 auto 12px;
+    background: transparent url('/media/embed/icons/icons8/icons8-gift-100.png') no-repeat 0 0;
+    background-size: 48px;
+}
+
+.NB-module-trial-offer .NB-module-trial-offer-headline {
+    font-size: 16px;
+    font-weight: bold;
+    color: #6c9633;
+    margin-bottom: 8px;
+}
+
+.NB-module-trial-offer .NB-module-trial-offer-message {
+    margin-bottom: 12px;
+    color: #606060;
+    line-height: 1.4;
+}
+
+.NB-module-trial-offer .NB-module-trial-offer-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px;
+    text-align: left;
+    display: inline-block;
+}
+
+.NB-module-trial-offer .NB-module-trial-offer-features li {
+    padding: 4px 0 4px 24px;
+    background: transparent url('/media/embed/icons/circular/newuser_icn_ok.png') no-repeat 0 center;
+    background-size: 16px;
+    font-size: 13px;
+    color: #505050;
+}
+
+.NB-module-trial-offer .NB-module-trial-offer-button {
+    padding: 12px 24px;
+    margin: 0 auto;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.NB-module-trial-offer .NB-module-trial-offer-no-cc {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #909090;
+}
+
+/* ================================ */
+/* = Premium Trial Status Module  = */
+/* = (For users on trial)         = */
+/* ================================ */
+
+.NB-account .NB-module-trial {}
+
+.NB-module-trial .NB-module-item-intro {
+    border-radius: 3px;
+    padding: 12px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    font-size: 14px;
+    text-align: center;
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3d4 100%);
+    border: 1px solid #e6d9b8;
+}
+
+.NB-module-trial .NB-module-trial-icon {
+    width: 48px;
+    height: 48px;
+    display: block;
+    margin: 0 auto 12px;
+    background: transparent url('/media/embed/icons/icons8/icons8-hourglass-100.png') no-repeat 0 0;
+    background-size: 48px;
+}
+
+.NB-module-trial .NB-module-trial-message {
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.NB-module-trial .NB-module-trial-message .NB-trial-days {
+    color: #c4880a;
+    font-size: 18px;
+}
+
+.NB-module-trial .NB-module-trial-benefits {
+    color: #707070;
+    margin-bottom: 12px;
+}
+
+.NB-module-trial .NB-module-trial-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px;
+    text-align: left;
+    display: inline-block;
+}
+
+.NB-module-trial .NB-module-trial-features li {
+    padding: 4px 0 4px 24px;
+    background: transparent url('/media/embed/icons/circular/newuser_icn_ok.png') no-repeat 0 center;
+    background-size: 16px;
+    font-size: 13px;
+    color: #505050;
+}
+
+.NB-module-trial .NB-module-trial-button {
+    padding: 12px 24px;
+    margin: 0 auto;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* ================================= */
+/* = Feed Chooser Trial Banner     = */
+/* ================================= */
+
+.NB-modal-feedchooser .NB-feedchooser-trial-banner {
+    margin: 0 24px 24px;
+    padding: 16px;
+    border: 2px solid #e6c86e;
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3d4 100%);
+    border-radius: 6px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-trial-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+    background: transparent url('/media/embed/icons/icons8/icons8-hourglass-100.png') no-repeat 0 0;
+    background-size: 32px;
+    flex-shrink: 0;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-trial-message {
+    font-size: 15px;
+    color: #6a5818;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-trial-message strong {
+    color: #c4880a;
+    font-size: 17px;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-trial-upgrade {
+    margin-top: 24px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-trial-cta {
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: #505050;
+    text-align: center;
+    width: 100%;
+}
+
+/* ================================= */
+/* = Welcome Page Trial Banner     = */
+/* ================================= */
+
+.NB-signup-trial-banner {
+    background: linear-gradient(135deg, #6c9633 0%, #5a7f2a 100%);
+    padding: 16px 24px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    text-align: center;
+    color: white;
+}
+
+.NB-signup-trial-banner .NB-trial-highlight {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.NB-signup-trial-banner .NB-trial-subtitle {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
 /* ================= */
 /* = Manage Module = */
 /* ================= */
@@ -10903,7 +11110,8 @@ form.opml_import_form input {
     background-color: #F8F9F6;
     padding: 4px;
     border-radius: 6px;
-    margin-left: 28px; /* Indent to align with "Summarize" text (18px icon + 10px gap) */
+    margin-left: 28px;
+    /* Indent to align with "Summarize" text (18px icon + 10px gap) */
 }
 
 .NB-menu-ask-ai-segment {
@@ -14601,6 +14809,13 @@ form.opml_import_form input {
 .NB-welcome-premium-bullet.NB-10 {
     background: transparent url('/media/embed/icons/icons8/icons8-knife-and-spatchula-100.png') no-repeat 0 0;
     background-size: 16px;
+}
+
+.NB-feedchooser-premium-bullets li.NB-11 .NB-feedchooser-premium-bullet-image,
+.NB-welcome-premium-bullet.NB-11 {
+    background: transparent url('/media/img/icons/nouns/prompt.svg') no-repeat center center;
+    background-size: 18px;
+    filter: grayscale(1) brightness(0.5);
 }
 
 .NB-feedchooser-premium-bullets .NB-feedchooser-premium-poor-hungry-dog {

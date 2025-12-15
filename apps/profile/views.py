@@ -487,6 +487,24 @@ def activate_premium(request):
 
 
 @ajax_login_required
+@require_POST
+@json.json_view
+def start_premium_trial(request):
+    """API endpoint for existing free users to start their 30-day trial."""
+    profile = request.user.profile
+    success = profile.start_premium_trial()
+
+    return {
+        "success": success,
+        "code": 1 if success else -1,
+        "is_premium": profile.is_premium,
+        "is_premium_trial": profile.is_premium_trial,
+        "trial_days_remaining": profile.trial_days_remaining,
+        "premium_expire": int(profile.premium_expire.strftime("%s")) if profile.premium_expire else 0,
+    }
+
+
+@ajax_login_required
 @json.json_view
 def profile_is_premium(request):
     # Check tries
