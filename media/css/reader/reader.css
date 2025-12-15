@@ -9336,6 +9336,10 @@ form.opml_import_form input {
     background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
 }
 
+.NB-module-trial .NB-module-trial-features li.NB-more {
+    background-image: url('/media/embed/icons/icons8/icons8-bursts-100.png');
+}
+
 .NB-module.NB-module-trial .NB-module-trial-button {
     padding: 12px 28px;
     margin: 0 auto;
