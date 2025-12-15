@@ -2327,7 +2327,8 @@ def mark_story_hashes_as_read(request):
                             time_color = "~FG~SB"
                         logging.user(
                             request,
-                            "~FMRead ~SB%s%ss~SN~FM on ~SB%s~SN: %s" % (time_color, seconds, feed_title, story_title),
+                            "~FMRead for ~SB%s%ss~SN~FM on ~SB%s~SN: %s"
+                            % (time_color, seconds, feed_title, story_title),
                         )
                     except Exception:
                         pass
