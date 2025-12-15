@@ -10,13 +10,12 @@ class RTrendingStory:
     Tracks accumulated read time for stories and feeds to identify trending content.
 
     Redis Key Structure:
-    - Story read time by day: "sRT:{story_hash}:{date}" -> total_seconds (string/int)
+    - Story read time sorted set by day: "sRTi:{date}" -> sorted set {story_hash: total_seconds}
     - Feed read time sorted set by day: "fRT:{date}" -> sorted set {feed_id: total_seconds}
-    - Story index sorted set by day: "sRTi:{date}" -> sorted set {story_hash: total_seconds}
     - Story reader count by day: "sRTc:{date}" -> sorted set {story_hash: reader_count}
     - Feed reader count by day: "fRTc:{date}" -> sorted set {feed_id: reader_count}
 
-    The story index (sRTi) enables efficient queries for top stories without key scans.
+    All data is stored in date-partitioned sorted sets for efficient aggregation.
     Reader counts (sRTc/fRTc) track unique read events to measure reach vs depth.
     All keys expire after 8 days for automatic cleanup.
     """
@@ -49,11 +48,6 @@ class RTrendingStory:
         ttl_seconds = cls.TTL_DAYS * 24 * 60 * 60
 
         pipe = r.pipeline()
-
-        # Increment story read time for today
-        story_key = f"sRT:{story_hash}:{today}"
-        pipe.incrby(story_key, int(read_time_seconds))
-        pipe.expire(story_key, ttl_seconds)
 
         # Increment feed read time in daily sorted set
         feed_day_key = f"fRT:{today}"
@@ -95,8 +89,8 @@ class RTrendingStory:
         pipe = r.pipeline()
         for i in range(days):
             day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            key = f"sRT:{story_hash}:{day}"
-            pipe.get(key)
+            key = f"sRTi:{day}"
+            pipe.zscore(key, story_hash)
 
         values = pipe.execute()
         for val in values:
