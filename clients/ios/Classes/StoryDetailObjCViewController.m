@@ -996,7 +996,6 @@
 }
 
 - (NSString *)getSideOptions {
-    BOOL isRead = [[self.activeStory objectForKey:@"read_status"] boolValue];
     BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
     BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
 
@@ -1035,7 +1034,6 @@
                              "  </div>"
                              "%@"
                              "</div></div></div>",
-                             markReadButton,
                              isShared ? @"NB-button-active" : @"",
                              isShared ? @"Shared" : @"Share",
                              isSaved ? @"NB-button-active" : @"",
