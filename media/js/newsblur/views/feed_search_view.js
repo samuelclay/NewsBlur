@@ -180,7 +180,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
 
     search: function () {
         var $search = this.$("input[name=feed_search]");
-        var query = _.escape($search.val());
+        var query = $search.val();
 
         if (query != NEWSBLUR.reader.flags.search) {
             NEWSBLUR.reader.flags.searching = true;
