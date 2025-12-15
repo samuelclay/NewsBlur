@@ -1237,7 +1237,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             $doc.mark(classifier_text, {
                 "className": className,
                 "separateWordSearch": false,
-                "acrossElements": true
+                "acrossElements": true,
+                "caseSensitive": false
             });
         }, this));
 
@@ -1248,7 +1249,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 $doc.mark(term, {
                     "className": "NB-search-highlight",
                     "separateWordSearch": false,
-                    "acrossElements": true
+                    "acrossElements": true,
+                    "caseSensitive": false
                 });
             }, this));
         }
