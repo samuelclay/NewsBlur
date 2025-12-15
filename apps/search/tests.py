@@ -110,7 +110,10 @@ class Test_SearchStoryIntegration(TransactionTestCase):
     """Integration tests for SearchStory that require Elasticsearch.
 
     These tests index real documents and verify phrase search behavior.
+    Skipped automatically when Elasticsearch is not available (e.g., in CI).
     """
+
+    es_available = None  # Class-level flag to track ES availability
 
     @classmethod
     def setUpClass(cls):
@@ -121,21 +124,27 @@ class Test_SearchStoryIntegration(TransactionTestCase):
         SearchStory.index_name = classmethod(lambda cls: "test-stories-index")
         try:
             SearchStory.create_elasticsearch_mapping(delete=True)
+            cls.es_available = True
         except Exception as e:
-            print(f"Warning: Could not set up Elasticsearch test index: {e}")
+            print(f"Skipping Elasticsearch integration tests: {e}")
+            cls.es_available = False
 
     @classmethod
     def tearDownClass(cls):
         """Clean up test index after all tests."""
-        try:
-            SearchStory.drop()
-        except Exception:
-            pass
+        if cls.es_available:
+            try:
+                SearchStory.drop()
+            except Exception:
+                pass
         SearchStory.index_name = cls.original_index_name
         super().tearDownClass()
 
     def setUp(self):
         """Index test stories before each test."""
+        if not self.es_available:
+            self.skipTest("Elasticsearch not available")
+
         self.test_feed_id = 99999
         self.story_hashes = []
 
