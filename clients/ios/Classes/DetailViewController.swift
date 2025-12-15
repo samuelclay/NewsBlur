@@ -461,6 +461,30 @@ class DetailViewController: BaseViewController {
         updateTheme()
     }
     
+    @objc(showColumn:) func show(column: UISplitViewController.Column) {
+        if isCompact {
+            if column == .primary {
+                appDelegate.feedsNavigationController.popToRootViewController(animated: false)
+            } else {
+                if let feedDetailViewController, feedDetailViewController.isFeedShown, appDelegate.feedsNavigationController.viewControllers.count < 2 {
+                    appDelegate.feedsNavigationController.pushViewController(feedDetailViewController, animated: false)
+                }
+                
+                if let feedDetailViewController, feedDetailViewController.isStoryShown, let storyPagesViewController, appDelegate.feedsNavigationController.viewControllers.count < 3 {
+                    appDelegate.feedsNavigationController.pushViewController(storyPagesViewController, animated: false)
+                }
+            }
+        } else {
+        guard let splitViewController = appDelegate.splitViewController else {
+                return
+            }
+            
+            if (splitViewController.displayMode != .secondaryOnly && splitViewController.preferredDisplayMode != .oneBesideSecondary) || splitViewController.preferredDisplayMode != .oneOverSecondary {
+                splitViewController.show(column)
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -669,7 +693,7 @@ private extension DetailViewController {
 //                appDelegate.splitViewController.setViewController(supplementaryFeedDetailNavigationController, for: .supplementary)
 //                supplementaryFeedDetailNavigationController = nil
 //                supplementaryFeedDetailViewController = nil
-            } else if isCompact || feedDetailViewController?.view.superview != leftContainerView {
+            } else if /*isCompact || */feedDetailViewController?.view.superview != leftContainerView {
                 add(viewController: feedDetailViewController, to: leftContainerView)
             }
             
