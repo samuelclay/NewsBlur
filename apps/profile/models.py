@@ -71,6 +71,7 @@ class Profile(models.Model):
     # paypal_payer_id   = models.CharField(max_length=24, blank=True, null=True)
     premium_renewal = models.BooleanField(default=False, blank=True, null=True)
     active_provider = models.CharField(max_length=24, blank=True, null=True)
+    is_premium_trial = models.BooleanField(default=None, blank=True, null=True)
 
     def __str__(self):
         return "%s <%s>%s%s%s" % (
@@ -137,6 +138,28 @@ class Profile(models.Model):
             return settings.DAYS_OF_STORY_HASHES_ARCHIVE
         return settings.DAYS_OF_STORY_HASHES
 
+    @property
+    def is_on_trial(self):
+        """Returns True if user is currently on a premium trial."""
+        return self.is_premium_trial is True and self.is_premium
+
+    @property
+    def trial_days_remaining(self):
+        """Returns number of days remaining in trial, or None if not on trial."""
+        if not self.is_on_trial or not self.premium_expire:
+            return None
+        delta = self.premium_expire - datetime.datetime.now()
+        return max(0, delta.days)
+
+    @property
+    def can_start_trial(self):
+        """Returns True if user is eligible to start a premium trial."""
+        if self.is_premium:
+            return False
+        if self.is_premium_trial is False:
+            return False
+        return True
+
     def can_use_ask_ai(self):
         return AskAIUsageTracker(self.user).can_use()
 
@@ -153,6 +176,9 @@ class Profile(models.Model):
             "is_premium": self.is_premium,
             "is_archive": self.is_archive,
             "is_pro": self.is_pro,
+            "is_premium_trial": self.is_premium_trial,
+            "trial_days_remaining": self.trial_days_remaining,
+            "can_start_trial": self.can_start_trial,
             "premium_expire": int(self.premium_expire.strftime("%s")) if self.premium_expire else 0,
             "preferences": json.decode(self.preferences),
             "tutorial_finished": self.tutorial_finished,
@@ -254,8 +280,62 @@ class Profile(models.Model):
         logging.user(self.user, "Deleting user: %s" % self.user)
         self.user.delete()
 
+    def start_premium_trial(self):
+        """Start a 30-day premium trial for existing free user."""
+        from apps.profile.tasks import EmailNewPremiumTrial
+
+        if self.is_premium:
+            logging.user(self.user, "~FRCannot start trial - already premium")
+            return False
+        if self.is_premium_trial is False:
+            logging.user(self.user, "~FRCannot start trial - already used trial")
+            return False
+
+        now = datetime.datetime.now()
+        self.is_premium = True
+        self.is_premium_trial = True
+        self.premium_expire = now + datetime.timedelta(days=30)
+        self.save()
+        self.user.is_active = True
+        self.user.save()
+
+        subs = UserSubscription.objects.filter(user=self.user)
+        for sub in subs:
+            if not sub.active:
+                sub.active = True
+                try:
+                    sub.save()
+                except (IntegrityError, Feed.DoesNotExist):
+                    pass
+
+        try:
+            scheduled_feeds = [sub.feed.pk for sub in subs]
+        except Feed.DoesNotExist:
+            scheduled_feeds = []
+        logging.user(
+            self.user,
+            "~SN~FMTasking the scheduling immediate premium trial setup of ~SB%s~SN feeds..." % len(scheduled_feeds),
+        )
+        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+
+        UserSubscription.queue_new_feeds(self.user)
+
+        EmailNewPremiumTrial.delay(user_id=self.user.pk)
+
+        logging.user(
+            self.user,
+            "~BY~SK~FW~SBNEW PREMIUM TRIAL! ~FR%s subscriptions, expires %s~SN!" % (subs.count(), self.premium_expire),
+        )
+
+        return True
+
     def activate_premium(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremium
+
+        # Clear trial status when converting to paid premium
+        if self.is_premium_trial:
+            self.is_premium_trial = False
+            logging.user(self.user, "~FMClearing trial status - converting to paid premium")
 
         EmailNewPremium.delay(user_id=self.user.pk)
 
@@ -1908,6 +1988,67 @@ class Profile(models.Model):
             "~BB~FM~SBSending premium expire email for user: %s months, %s" % (months_ago, self.user.email),
         )
 
+    def send_premium_trial_welcome_email(self, force=False):
+        """Send welcome email for new premium trial users."""
+        if not self.user.email or not self.send_emails:
+            logging.user(self.user, "~FM~SBNot sending trial welcome - no email or send_emails disabled")
+            return
+
+        params = dict(receiver_user_id=self.user.pk, email_type="premium_trial_welcome")
+        try:
+            MSentEmail.objects.get(**params)
+            if not force:
+                return
+        except MSentEmail.DoesNotExist:
+            MSentEmail.objects.create(**params)
+
+        user = self.user
+        days_remaining = self.trial_days_remaining or 30
+        data = dict(user=user, days_remaining=days_remaining)
+        text = render_to_string("mail/email_premium_trial_welcome.txt", data)
+        html = render_to_string("mail/email_premium_trial_welcome.xhtml", data)
+        subject = "Welcome to NewsBlur! Your 30-day premium trial has started"
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
+            to=["%s <%s>" % (user, user.email)],
+        )
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+
+        logging.user(self.user, "~BB~FM~SBSending trial welcome email: %s" % self.user.email)
+
+    def send_premium_trial_expire_email(self, force=False):
+        """Send email when premium trial expires."""
+        if not self.user.email:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending trial expire for user: %s" % (self.user))
+            return
+
+        emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk, email_type="premium_trial_expire")
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
+        for email in emails_sent:
+            if email.date_sent > day_ago and not force:
+                logging.user(self.user, "~FM~SBNot sending trial expire email, already sent before.")
+                return
+
+        user = self.user
+        data = dict(user=user)
+        text = render_to_string("mail/email_premium_trial_expire.txt", data)
+        html = render_to_string("mail/email_premium_trial_expire.xhtml", data)
+        subject = "Your 30-day NewsBlur premium trial has ended"
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
+            to=["%s <%s>" % (user, user.email)],
+        )
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+
+        MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_trial_expire")
+        logging.user(self.user, "~BB~FM~SBSending trial expire email for: %s" % self.user.email)
+
     def autologin_url(self, next=None):
         return reverse("autologin", kwargs={"username": self.user.username, "secret": self.secret_token}) + (
             "?" + next + "=1" if next else ""
@@ -1945,7 +2086,20 @@ class PaypalIds(models.Model):
 
 def create_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(user=instance)
+        from apps.profile.tasks import EmailNewPremiumTrial
+
+        now = datetime.datetime.now()
+        profile = Profile.objects.create(
+            user=instance,
+            is_premium=True,
+            is_premium_trial=True,
+            premium_expire=now + datetime.timedelta(days=30),
+        )
+        EmailNewPremiumTrial.delay(user_id=instance.pk)
+        logging.user(
+            instance,
+            "~BY~SK~FW~SBNEW USER WITH PREMIUM TRIAL! Expires %s~SN" % profile.premium_expire,
+        )
     else:
         Profile.objects.get_or_create(user=instance)
 

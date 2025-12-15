@@ -52,14 +52,39 @@ def EmailNewPremiumPro(user_id):
     user_profile.send_new_premium_pro_email()
 
 
+@app.task(name="email-new-premium-trial")
+def EmailNewPremiumTrial(user_id):
+    user_profile = Profile.objects.get(user__pk=user_id)
+    user_profile.send_premium_trial_welcome_email()
+
+
 @app.task(name="premium-expire")
 def PremiumExpire(**kwargs):
-    # Get expired but grace period users
-    two_days_ago = datetime.datetime.now() - datetime.timedelta(days=2)
-    thirty_days_ago = datetime.datetime.now() - datetime.timedelta(days=30)
-    expired_profiles = Profile.objects.filter(
-        is_premium=True, premium_expire__lte=two_days_ago, premium_expire__gt=thirty_days_ago
+    now = datetime.datetime.now()
+
+    # Handle trial expirations FIRST (no grace period for trials)
+    expired_trials = Profile.objects.filter(
+        is_premium=True,
+        is_premium_trial=True,
+        premium_expire__lte=now,
     )
+    logging.debug(" ---> %s trial users have expired, downgrading..." % expired_trials.count())
+    for profile in expired_trials:
+        logging.debug(" ---> Expiring trial for user: %s" % profile.user.username)
+        profile.send_premium_trial_expire_email()
+        profile.deactivate_premium()
+        profile.is_premium_trial = False
+        profile.save()
+
+    # Get expired paid premium users in grace period (2-30 days expired)
+    # Exclude trial users (is_premium_trial != True)
+    two_days_ago = now - datetime.timedelta(days=2)
+    thirty_days_ago = now - datetime.timedelta(days=30)
+    expired_profiles = Profile.objects.filter(
+        is_premium=True,
+        premium_expire__lte=two_days_ago,
+        premium_expire__gt=thirty_days_ago,
+    ).exclude(is_premium_trial=True)
     logging.debug(" ---> %s users have expired premiums, emailing grace..." % expired_profiles.count())
     for profile in expired_profiles:
         if profile.grace_period_email_sent():
@@ -68,8 +93,12 @@ def PremiumExpire(**kwargs):
         if profile.premium_expire < two_days_ago:
             profile.send_premium_expire_grace_period_email()
 
-    # Get fully expired users
-    expired_profiles = Profile.objects.filter(is_premium=True, premium_expire__lte=thirty_days_ago)
+    # Get fully expired paid premium users (30+ days expired)
+    # Exclude trial users (is_premium_trial != True)
+    expired_profiles = Profile.objects.filter(
+        is_premium=True,
+        premium_expire__lte=thirty_days_ago,
+    ).exclude(is_premium_trial=True)
     logging.debug(
         " ---> %s users have expired premiums, deactivating and emailing..." % expired_profiles.count()
     )
