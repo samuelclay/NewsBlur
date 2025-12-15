@@ -178,7 +178,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             });
         }
 
-        if (NEWSBLUR.assets.preference('show_infrequent_site_stories')) {
+        if (NEWSBLUR.assets.preference('show_infrequent_site_stories') && NEWSBLUR.assets.folders.length) {
             $('.NB-feeds-header-river-infrequent-container').css({
                 'display': 'block',
                 'opacity': 0
