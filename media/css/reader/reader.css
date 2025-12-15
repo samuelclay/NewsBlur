@@ -9234,75 +9234,8 @@ form.opml_import_form input {
 }
 
 /* ================================ */
-/* = Premium Trial Offer Module   = */
-/* = (For free users to opt-in)   = */
-/* ================================ */
-
-.NB-account .NB-module-trial-offer {}
-
-.NB-module-trial-offer .NB-module-item-intro {
-    border-radius: 3px;
-    padding: 12px;
-    margin-bottom: 24px;
-    overflow: hidden;
-    font-size: 14px;
-    text-align: center;
-}
-
-.NB-module-trial-offer .NB-module-trial-offer-icon {
-    width: 48px;
-    height: 48px;
-    display: block;
-    margin: 0 auto 12px;
-    background: transparent url('/media/embed/icons/icons8/icons8-gift-100.png') no-repeat 0 0;
-    background-size: 48px;
-}
-
-.NB-module-trial-offer .NB-module-trial-offer-headline {
-    font-size: 16px;
-    font-weight: bold;
-    color: #6c9633;
-    margin-bottom: 8px;
-}
-
-.NB-module-trial-offer .NB-module-trial-offer-message {
-    margin-bottom: 12px;
-    color: #606060;
-    line-height: 1.4;
-}
-
-.NB-module-trial-offer .NB-module-trial-offer-features {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 16px;
-    text-align: left;
-    display: inline-block;
-}
-
-.NB-module-trial-offer .NB-module-trial-offer-features li {
-    padding: 4px 0 4px 24px;
-    background: transparent url('/media/embed/icons/circular/newuser_icn_ok.png') no-repeat 0 center;
-    background-size: 16px;
-    font-size: 13px;
-    color: #505050;
-}
-
-.NB-module-trial-offer .NB-module-trial-offer-button {
-    padding: 12px 24px;
-    margin: 0 auto;
-    display: inline-block;
-    cursor: pointer;
-}
-
-.NB-module-trial-offer .NB-module-trial-offer-no-cc {
-    margin-top: 8px;
-    font-size: 11px;
-    color: #909090;
-}
-
-/* ================================ */
-/* = Premium Trial Status Module  = */
-/* = (For users on trial)         = */
+/* = Premium Trial Module         = */
+/* = (For all trial/upgrade states)*/
 /* ================================ */
 
 .NB-account .NB-module-trial {}

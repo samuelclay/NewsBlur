@@ -1,6 +1,7 @@
 {% load utils_tags %}
 
 {% if user_profile.is_premium and user_profile.is_premium_trial %}
+<!-- STATE 1: Currently on trial -->
 <div class="NB-module NB-module-trial">
     <h5 class="NB-module-header">
         <div class="NB-module-header-text">Trial Premium Subscription</div>
@@ -12,6 +13,57 @@
         </p>
         <p class="NB-module-trial-benefits">
             Enjoying premium features? Keep them forever!
+        </p>
+        <ul class="NB-module-trial-features">
+            <li class="NB-sites">Unlimited sites</li>
+            <li class="NB-folder">Reading by folder</li>
+            <li class="NB-text">Full-text articles</li>
+            <li class="NB-tags">Saved story tags</li>
+            <li class="NB-search">Search for stories</li>
+        </ul>
+        <div class="NB-modal-submit-green NB-modal-submit-button NB-module-trial-button NB-javascript">
+            Upgrade to Premium
+        </div>
+    </div>
+</div>
+
+{% elif not user_profile.is_premium and user_profile.can_start_trial %}
+<!-- STATE 2: Can start trial (existing free user) -->
+<div class="NB-module NB-module-trial">
+    <h5 class="NB-module-header">
+        <div class="NB-module-header-text">Try Premium Free</div>
+    </h5>
+    <div class="NB-module-item NB-module-item-intro">
+        <div class="NB-module-trial-icon"></div>
+        <p class="NB-module-trial-message">
+            30 days of premium, on the house
+        </p>
+        <p class="NB-module-trial-benefits">
+            No credit card required
+        </p>
+        <ul class="NB-module-trial-features">
+            <li class="NB-sites">Unlimited sites</li>
+            <li class="NB-folder">Reading by folder</li>
+            <li class="NB-text">Full-text articles</li>
+            <li class="NB-tags">Saved story tags</li>
+            <li class="NB-search">Search for stories</li>
+        </ul>
+        <div class="NB-modal-submit-green NB-modal-submit-button NB-module-trial-button NB-module-trial-offer-button NB-javascript">
+            Start Trial Premium
+        </div>
+    </div>
+</div>
+
+{% elif not user_profile.is_premium %}
+<!-- STATE 3: Trial expired, needs to upgrade -->
+<div class="NB-module NB-module-trial">
+    <h5 class="NB-module-header">
+        <div class="NB-module-header-text">Upgrade to Premium</div>
+    </h5>
+    <div class="NB-module-item NB-module-item-intro">
+        <div class="NB-module-trial-icon"></div>
+        <p class="NB-module-trial-message">
+            Unlock the full NewsBlur experience
         </p>
         <ul class="NB-module-trial-features">
             <li class="NB-sites">Unlimited sites</li>
