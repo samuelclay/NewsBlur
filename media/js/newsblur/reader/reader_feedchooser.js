@@ -163,12 +163,12 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                                 'Keep your premium features after your trial ends!'
                             ]),
                             $.make('div', { className: 'NB-provider-main' }, [
+                                $creditcards.clone(),
                                 $.make('div', {
                                     className: "NB-provider-button-premium NB-modal-submit-button NB-modal-submit-green"
                                 }, [
-                                    "Upgrade Now - $36/year"
-                                ]),
-                                $creditcards.clone()
+                                    "Upgrade to Premium"
+                                ])
                             ]),
                             $.make('div', { className: 'NB-feedchooser-or-bar' }),
                             $.make("div", { className: "NB-provider-alternate" }, [
