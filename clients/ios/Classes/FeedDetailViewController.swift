@@ -538,4 +538,8 @@ extension FeedDetailViewController: FeedDetailInteraction {
             appDelegate.storyPagesViewController.traverseBottomConstraint.constant = 0
         }
     }
+
+    func openPremiumDialog() {
+        appDelegate.showPremiumDialog()
+    }
 }

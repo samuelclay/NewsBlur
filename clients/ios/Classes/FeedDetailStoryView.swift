@@ -38,7 +38,7 @@ struct StoryHeaderView: View {
     
     var body: some View {
         ZStack {
-            Color.themed([0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030])
+            Color.themed([0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030])
             
             HStack {
                 if cache.settings.preview.isLeft, let image = previewImage {

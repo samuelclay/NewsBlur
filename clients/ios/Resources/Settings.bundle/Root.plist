@@ -917,6 +917,16 @@
 			<string>story_autoscroll</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Ask AI</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>Key</key>
+			<string>show_ask_ai</string>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>App badge</string>
 			<key>Type</key>
