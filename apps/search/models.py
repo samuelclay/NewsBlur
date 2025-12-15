@@ -463,6 +463,20 @@ class SearchStory:
             logging.debug(" ***> ~FBNo index found, nothing to drop.")
 
     @classmethod
+    def _sanitize_query(cls, query):
+        """Escape unbalanced quotes to prevent Elasticsearch query_string errors.
+
+        Elasticsearch's query_string query requires balanced quotes for phrase searches.
+        If a user enters an odd number of quotes (e.g., 'hello "world'), this will
+        escape the last quote to prevent a parsing error.
+        """
+        quote_count = query.count('"')
+        if quote_count % 2 != 0:
+            last_quote_idx = query.rfind('"')
+            query = query[:last_quote_idx] + '\\"' + query[last_quote_idx + 1:]
+        return query
+
+    @classmethod
     def query(cls, feed_ids, query, order, offset, limit, strip=False):
         try:
             cls.ES().indices.flush(cls.index_name())
@@ -471,8 +485,9 @@ class SearchStory:
             return []
 
         if strip:
-            query = re.sub(r"([^\s\w_\-])+", " ", query)  # Strip non-alphanumeric
+            query = re.sub(r'([^\s\w_\-"])+', " ", query)  # Strip non-alphanumeric, preserve quotes for phrases
         query = html.unescape(query)
+        query = cls._sanitize_query(query)
 
         body = {
             "query": {
@@ -530,8 +545,9 @@ class SearchStory:
         cls.ES().indices.flush()
 
         if strip:
-            query = re.sub(r"([^\s\w_\-])+", " ", query)  # Strip non-alphanumeric
+            query = re.sub(r'([^\s\w_\-"])+', " ", query)  # Strip non-alphanumeric, preserve quotes for phrases
         query = html.unescape(query)
+        query = cls._sanitize_query(query)
 
         body = {
             "query": {
