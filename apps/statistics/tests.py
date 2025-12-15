@@ -14,12 +14,12 @@ class Test_RTrendingStory(TestCase):
 
     def setUp(self):
         self.r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-        for pattern in ["sRT:*", "fRT:*", "sRTi:*", "sRTc:*", "fRTc:*"]:
+        for pattern in ["fRT:*", "sRTi:*", "sRTc:*", "fRTc:*"]:
             for key in self.r.scan_iter(match=pattern):
                 self.r.delete(key)
 
     def tearDown(self):
-        for pattern in ["sRT:*", "fRT:*", "sRTi:*", "sRTc:*", "fRTc:*"]:
+        for pattern in ["fRT:*", "sRTi:*", "sRTc:*", "fRTc:*"]:
             for key in self.r.scan_iter(match=pattern):
                 self.r.delete(key)
 
