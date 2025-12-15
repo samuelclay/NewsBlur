@@ -22,12 +22,14 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             NEWSBLUR.app.active_search.remove();
         }
         NEWSBLUR.app.active_search = this;
+        var search_value = NEWSBLUR.reader.flags['search'] || '';
+        // Use <%- %> to HTML-escape the value (handles quotes in phrase searches)
         var $view = $(_.template('\
-            <input type="text" name="feed_search" class="NB-story-title-search-input NB-search-input" value="<%= search %>" />\
+            <input type="text" name="feed_search" class="NB-story-title-search-input NB-search-input" value="<%- search %>" />\
             <div class="NB-search-icon"></div>\
             <div class="NB-search-close"></div>\
         ', {
-            search: NEWSBLUR.reader.flags['search']
+            search: search_value
         }));
 
         this.$el.html($view);

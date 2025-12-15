@@ -1108,7 +1108,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         var $mark = $(e.currentTarget);
         var text = $mark.text();
-        console.log(['show_search_highlight_menu', text, $mark]);
 
         // Set the serialized_highlight to the text from the mark
         this.serialized_highlight = _.string.trim(text);
