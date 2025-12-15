@@ -473,7 +473,7 @@ class SearchStory:
         quote_count = query.count('"')
         if quote_count % 2 != 0:
             last_quote_idx = query.rfind('"')
-            query = query[:last_quote_idx] + '\\"' + query[last_quote_idx + 1:]
+            query = query[:last_quote_idx] + '\\"' + query[last_quote_idx + 1 :]
         return query
 
     @classmethod
@@ -485,7 +485,9 @@ class SearchStory:
             return []
 
         if strip:
-            query = re.sub(r'([^\s\w_\-"])+', " ", query)  # Strip non-alphanumeric, preserve quotes for phrases
+            query = re.sub(
+                r'([^\s\w_\-"])+', " ", query
+            )  # Strip non-alphanumeric, preserve quotes for phrases
         query = html.unescape(query)
         query = cls._sanitize_query(query)
 
@@ -545,7 +547,9 @@ class SearchStory:
         cls.ES().indices.flush()
 
         if strip:
-            query = re.sub(r'([^\s\w_\-"])+', " ", query)  # Strip non-alphanumeric, preserve quotes for phrases
+            query = re.sub(
+                r'([^\s\w_\-"])+', " ", query
+            )  # Strip non-alphanumeric, preserve quotes for phrases
         query = html.unescape(query)
         query = cls._sanitize_query(query)
 
