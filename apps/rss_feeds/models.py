@@ -1970,10 +1970,10 @@ class Feed(models.Model):
         date_filter_start=None,
         date_filter_end=None,
     ):
-        if order == "newest":
-            stories_db = MStory.objects(story_feed_id=self.pk)
-        elif order == "oldest":
+        if order == "oldest":
             stories_db = MStory.objects(story_feed_id=self.pk).order_by("story_date")
+        else:
+            stories_db = MStory.objects(story_feed_id=self.pk)
 
         if date_filter_start:
             stories_db = stories_db.filter(story_date__gte=date_filter_start)
