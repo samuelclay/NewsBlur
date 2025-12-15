@@ -129,7 +129,7 @@ const int COUNT_HEIGHT = 18;
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
          withAttributes:@{NSFontAttributeName: indicatorFont,
-                          NSForegroundColorAttributeName:UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xF8F8E9, 0x606060, 0x000000)}];
+                          NSForegroundColorAttributeName:UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x606060, 0x000000)}];
     }
 }
 

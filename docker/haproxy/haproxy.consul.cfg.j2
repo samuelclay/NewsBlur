@@ -103,7 +103,7 @@ backend nginx
     option httpchk GET /_nginxchk
     http-check expect rstatus 200|503
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.hweb %}
+    {% for host in groups.hdjango %}
         server nginx-{{host}} {{host}}.node.nyc1.consul:80
     {% endfor %}
 
