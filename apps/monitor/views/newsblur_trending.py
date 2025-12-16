@@ -68,21 +68,21 @@ class TrendingFeeds(View):
         data["unique_feeds_read"] = unique_feeds
 
         # Format aggregate metrics
-        formatted_data["total_read_seconds"] = (
-            f'{chart_name}{{metric="total_read_seconds"}} {data["total_read_seconds"]}'
-        )
-        formatted_data["total_story_reads"] = (
-            f'{chart_name}{{metric="total_story_reads"}} {data["total_story_reads"]}'
-        )
-        formatted_data["total_feed_reads"] = (
-            f'{chart_name}{{metric="total_feed_reads"}} {data["total_feed_reads"]}'
-        )
-        formatted_data["unique_stories_read"] = (
-            f'{chart_name}{{metric="unique_stories_read"}} {data["unique_stories_read"]}'
-        )
-        formatted_data["unique_feeds_read"] = (
-            f'{chart_name}{{metric="unique_feeds_read"}} {data["unique_feeds_read"]}'
-        )
+        formatted_data[
+            "total_read_seconds"
+        ] = f'{chart_name}{{metric="total_read_seconds"}} {data["total_read_seconds"]}'
+        formatted_data[
+            "total_story_reads"
+        ] = f'{chart_name}{{metric="total_story_reads"}} {data["total_story_reads"]}'
+        formatted_data[
+            "total_feed_reads"
+        ] = f'{chart_name}{{metric="total_feed_reads"}} {data["total_feed_reads"]}'
+        formatted_data[
+            "unique_stories_read"
+        ] = f'{chart_name}{{metric="unique_stories_read"}} {data["unique_stories_read"]}'
+        formatted_data[
+            "unique_feeds_read"
+        ] = f'{chart_name}{{metric="unique_feeds_read"}} {data["unique_feeds_read"]}'
 
         # Top stories for both 1-day and 7-day windows
         for days in [1, 7]:
@@ -212,9 +212,9 @@ class TrendingFeeds(View):
                 avg_seconds = 0
 
             key = f"avg_seconds_per_reader_{days}d"
-            formatted_data[key] = (
-                f'{chart_name}{{metric="avg_seconds_per_reader",days="{days}"}} {avg_seconds:.1f}'
-            )
+            formatted_data[
+                key
+            ] = f'{chart_name}{{metric="avg_seconds_per_reader",days="{days}"}} {avg_seconds:.1f}'
 
         # Self-monitoring: track how long this endpoint takes to respond
         elapsed_ms = (time.time() - start_time) * 1000

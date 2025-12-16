@@ -301,14 +301,8 @@ class RTrendingStory:
             return []
 
         # Get the story hashes we care about
-        story_hashes = [
-            (sh.decode() if isinstance(sh, bytes) else sh)
-            for sh, _ in time_result
-        ]
-        time_map = {
-            (sh.decode() if isinstance(sh, bytes) else sh): int(score)
-            for sh, score in time_result
-        }
+        story_hashes = [(sh.decode() if isinstance(sh, bytes) else sh) for sh, _ in time_result]
+        time_map = {(sh.decode() if isinstance(sh, bytes) else sh): int(score) for sh, score in time_result}
 
         # Aggregate counts across days for these stories
         if len(count_keys) > 1:
@@ -342,13 +336,15 @@ class RTrendingStory:
             except (ValueError, IndexError):
                 feed_id = 0
 
-            results.append({
-                "story_hash": story_hash,
-                "feed_id": feed_id,
-                "total_seconds": total_seconds,
-                "reader_count": reader_count,
-                "avg_seconds_per_reader": total_seconds / reader_count if reader_count > 0 else 0,
-            })
+            results.append(
+                {
+                    "story_hash": story_hash,
+                    "feed_id": feed_id,
+                    "total_seconds": total_seconds,
+                    "reader_count": reader_count,
+                    "avg_seconds_per_reader": total_seconds / reader_count if reader_count > 0 else 0,
+                }
+            )
 
         return results
 
@@ -390,13 +386,9 @@ class RTrendingStory:
         if not time_result:
             return []
 
-        feed_ids = [
-            (fid.decode() if isinstance(fid, bytes) else fid)
-            for fid, _ in time_result
-        ]
+        feed_ids = [(fid.decode() if isinstance(fid, bytes) else fid) for fid, _ in time_result]
         time_map = {
-            (fid.decode() if isinstance(fid, bytes) else fid): int(score)
-            for fid, score in time_result
+            (fid.decode() if isinstance(fid, bytes) else fid): int(score) for fid, score in time_result
         }
 
         # Aggregate counts
@@ -429,12 +421,14 @@ class RTrendingStory:
             total_seconds = time_map.get(feed_id_str, 0)
             reader_count = count_map.get(feed_id_str, 0)
 
-            results.append({
-                "feed_id": feed_id,
-                "total_seconds": total_seconds,
-                "reader_count": reader_count,
-                "avg_seconds_per_reader": total_seconds / reader_count if reader_count > 0 else 0,
-            })
+            results.append(
+                {
+                    "feed_id": feed_id,
+                    "total_seconds": total_seconds,
+                    "reader_count": reader_count,
+                    "avg_seconds_per_reader": total_seconds / reader_count if reader_count > 0 else 0,
+                }
+            )
 
         return results
 
