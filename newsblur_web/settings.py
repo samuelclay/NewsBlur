@@ -135,6 +135,8 @@ MIDDLEWARE = (
     "apps.profile.middleware.TimingMiddleware",
     "apps.profile.middleware.LastSeenMiddleware",
     "apps.profile.middleware.UserAgentBanMiddleware",
+    "apps.profile.middleware.ScannerTrackingMiddleware",
+    "apps.profile.middleware.IPRateTrackingMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "apps.profile.middleware.SimpsonsMiddleware",
     "apps.profile.middleware.ServerHostnameMiddleware",
@@ -871,6 +873,17 @@ REDIS_SESSION_POOL = redis.ConnectionPool(
 REDIS_PUBSUB_POOL = redis.ConnectionPool(
     host=REDIS_PUBSUB["host"], port=REDIS_PUBSUB_PORT, db=0, decode_responses=True
 )
+
+# ==================
+# = IP Rate Limits =
+# ==================
+
+# IP rate tracking configuration (see utils/ip_rate_tracker.py)
+# When enabled, requests exceeding the threshold will be blocked with 429
+IP_RATE_LIMITING_ENABLED = False  # Set True to enable blocking
+IP_RATE_LIMIT_THRESHOLD = 300  # Max requests per window before flagging as abuse
+IP_RATE_WINDOW_MINUTES = 5  # Time window for counting requests
+IP_RATE_TTL_SECONDS = 3600  # How long to keep rate data (1 hour)
 
 # ==========
 # = Celery =
