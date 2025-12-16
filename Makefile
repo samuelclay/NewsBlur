@@ -191,9 +191,9 @@ jekyll:
 jekyll_drafts:
 	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --drafts --config _config.yml
 lint:
-	docker exec -t newsblur_web isort --profile black --skip-glob '*.worktree/*' --skip-glob '*/archive/*' .
-	docker exec -t newsblur_web black --line-length 110 --exclude '\.worktree/.*|.*/archive/.*' .
-	docker exec -t newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv,apps/analyzer/archive,utils/archive,vendor,.worktree
+	docker exec -t newsblur_web isort --profile black --skip-glob '*.worktree/*' --skip-glob '*/archive/*' --skip-glob '.claude/*' .
+	docker exec -t newsblur_web black --line-length 110 --exclude '\.worktree/.*|.*/archive/.*|\.claude/.*' .
+	docker exec -t newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv,apps/analyzer/archive,utils/archive,vendor,.worktree,.claude
 	
 deps:
 	docker exec -t newsblur_web pip install -U uv
