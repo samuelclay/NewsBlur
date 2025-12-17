@@ -178,10 +178,9 @@ color: #a85b40;
 
 /* Background color of "Upgrade" box (only visible for free users */
 .NB-dark .NB-module-premium .NB-module-item-intro {
-    background-image: none;
-    background-color: #303739;
-    border: none;
-    box-shadow: none;
+    background: linear-gradient(145deg, #2a3a30 0%, #253530 50%, #203028 100%);
+    border: 1px solid rgba(106, 142, 66, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .NB-dark .NB-modal-feedchooser .NB-premium-prorate-message {
@@ -2425,4 +2424,98 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-story-ask-ai-voice-button:hover .NB-story-ask-ai-voice-icon {
     filter: grayscale(0%) brightness(1.1);
+}
+
+/* ===================================== */
+/* = Getting Started Module Dark Mode  = */
+/* ===================================== */
+
+.NB-dark .NB-module-gettingstarted .NB-module-item-intro {
+    background: linear-gradient(145deg, #2a3a30 0%, #253530 50%, #203028 100%);
+    border: 1px solid rgba(106, 142, 66, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-module-gettingstarted .NB-intro-avatar-bezel {
+    background: linear-gradient(135deg, rgba(106, 142, 66, 0.25) 0%, rgba(106, 142, 66, 0.15) 100%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-module-gettingstarted .NB-intro-progress-goal:not(.NB-done) {
+    background-color: #303739;
+}
+
+.NB-dark .NB-module-gettingstarted .NB-intro-goal {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-module-gettingstarted .NB-intro-goal .NB-done {
+    color: #8cd444;
+}
+
+/* ===================================== */
+/* = Trial Premium Module Dark Mode    = */
+/* ===================================== */
+
+.NB-dark .NB-module-trial .NB-module-item-intro {
+    background: linear-gradient(145deg, #2a3a30 0%, #253530 50%, #203028 100%);
+    border: 1px solid rgba(106, 142, 66, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-message {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-message .NB-trial-days {
+    color: #8cd444;
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-benefits {
+    color: #8cd444;
+    background: rgba(106, 142, 66, 0.2);
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li {
+    color: #c0c0c0;
+    position: relative;
+    background-image: none !important;
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 16px;
+    filter: invert(0.85) brightness(1.2);
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li.NB-sites::before {
+    background-image: url('/media/embed/icons/icons8/icons8-sheets-100.png');
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li.NB-folder::before {
+    background-image: url('/media/embed/icons/icons8/icons8-comics-magazine-100.png');
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li.NB-text::before {
+    background-image: url('/media/embed/icons/icons8/icons8-activity-history-100.png');
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li.NB-tags::before {
+    background-image: url('/media/embed/icons/icons8/icons8-tags-100.png');
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li.NB-search::before {
+    background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li.NB-more::before {
+    background-image: url('/media/embed/icons/icons8/icons8-bursts-100.png');
 }
