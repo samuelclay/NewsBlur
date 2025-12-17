@@ -9945,6 +9945,14 @@ form.opml_import_form input {
     background-color: #F1F3EC;
 }
 
+/* Hide style controls when opened from modal title */
+.NB-menu-manage-container.NB-menu-manage-hide-style-controls .NB-menu-manage-font,
+.NB-menu-manage-container.NB-menu-manage-hide-style-controls .NB-menu-manage-size,
+.NB-menu-manage-container.NB-menu-manage-hide-style-controls .NB-menu-manage-density,
+.NB-menu-manage-container.NB-menu-manage-hide-style-controls .NB-menu-manage-theme {
+    display: none;
+}
+
 .NB-menu-manage {
     list-style: none;
     font-size: 11px;
@@ -14310,6 +14318,7 @@ form.opml_import_form input {
 .NB-modal-feedchooser {
     overflow: hidden;
     position: relative;
+    min-height: 500px;
 }
 
 .NB-modal-feedchooser .NB-modal-subtitle {
@@ -14335,8 +14344,8 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedchooser-type {
-    width: 300px;
-    margin: 0 52px 0 26px;
+    width: auto;
+    margin: 0 24px;
     padding: 0;
 }
 
@@ -14645,6 +14654,12 @@ form.opml_import_form input {
 
 .NB-modal-feedchooser #NB-feedchooser-feeds .feed {
     display: block;
+}
+
+.NB-modal-feedchooser #NB-feedchooser-feeds {
+    min-height: 300px;
+    max-height: 500px;
+    overflow-y: auto;
 }
 
 .NB-modal-feedchooser .NB-feed-organizer-sort {
@@ -14986,6 +15001,314 @@ form.opml_import_form input {
 
 .NB-modal-feedchooser .NB-feedchooser-premium-already-message {
     flex-grow: 1;
+}
+
+/* ======================= */
+/* = Feedchooser Upgrade = */
+/* ======================= */
+
+.NB-modal-feedchooser .NB-feedchooser-upgrade-banner {
+    margin: 0 0 16px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f8e71c 0%, #f5a623 100%);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(245, 166, 35, 0.3);
+}
+
+.NB-modal-feedchooser .NB-feedchooser-upgrade-banner:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 166, 35, 0.4);
+}
+
+.NB-modal-feedchooser .NB-feedchooser-upgrade-banner-text {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #744210;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-upgrade-banner-icon {
+    width: 24px;
+    height: 24px;
+    background: transparent url('/media/img/icons/nouns/growth-star.svg') no-repeat center center;
+    background-size: 20px;
+    filter: brightness(0.4) sepia(1) hue-rotate(-10deg);
+}
+
+.NB-modal-feedchooser .NB-feedchooser-upgrade-banner-arrow {
+    width: 20px;
+    height: 20px;
+    background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat center center;
+    background-size: 12px;
+    filter: brightness(0.4) sepia(1) hue-rotate(-10deg);
+}
+
+.NB-modal-feedchooser .NB-feedchooser-upgrade-banner-price {
+    font-size: 14px;
+    font-weight: 500;
+    color: #92610e;
+    margin-left: auto;
+    padding-right: 8px;
+}
+
+/* ========================= */
+/* = Premium Upgrade Modal = */
+/* ========================= */
+
+.NB-modal-premium-upgrade {
+    padding: 24px;
+}
+
+.NB-premium-upgrade-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.NB-modal-premium-upgrade .NB-modal-title {
+    margin-bottom: 0;
+}
+
+.NB-modal-premium-upgrade .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/circular/g_modal_premium.png') no-repeat center center;
+    background-size: 28px;
+}
+
+.NB-premium-trial-badge {
+    padding: 6px 12px;
+    background: linear-gradient(135deg, #fff9e6 0%, #fff3d4 100%);
+    border: 1px solid #e6c86e;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #6a5818;
+    white-space: nowrap;
+}
+
+.NB-premium-trial-badge strong {
+    color: #c4880a;
+    font-size: 13px;
+}
+
+/* Horizontal tier layout */
+.NB-premium-tiers {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    align-items: stretch;
+}
+
+.NB-premium-tier {
+    flex: 1;
+    background: #F7F7F5;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.NB-premium-tier:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.NB-premium-tier-header {
+    padding: 20px 16px;
+    background: #505050;
+    color: white;
+    text-align: center;
+}
+
+.NB-premium-tier-premium .NB-premium-tier-header {
+    background: linear-gradient(135deg, #5cb85c 0%, #449d44 100%);
+}
+
+.NB-premium-tier-archive .NB-premium-tier-header {
+    background: linear-gradient(135deg, #5bc0de 0%, #31b0d5 100%);
+}
+
+.NB-premium-tier-pro .NB-premium-tier-header {
+    background: linear-gradient(135deg, #f0ad4e 0%, #ec971f 100%);
+}
+
+.NB-premium-tier-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.NB-premium-tier-price {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.NB-premium-tier-price-amount {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.NB-premium-tier-price-period {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.NB-premium-tier-features {
+    flex: 1;
+    list-style: none;
+    margin: 0;
+    padding: 16px;
+    font-size: 13px;
+    color: #505050;
+    overflow-y: auto;
+    max-height: 320px;
+}
+
+.NB-premium-tier-features li {
+    padding: 8px 0 8px 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.NB-premium-tier-features li:last-child {
+    border-bottom: none;
+}
+
+.NB-premium-tier-features li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 16px;
+    height: 16px;
+    background: transparent url('/media/embed/icons/circular/newuser_icn_setup.png') no-repeat center center;
+    background-size: 14px;
+}
+
+.NB-premium-tier-features li.NB-premium-tier-includes {
+    font-weight: bold;
+    color: #337ab7;
+    padding-left: 0;
+}
+
+.NB-premium-tier-features li.NB-premium-tier-includes::before {
+    display: none;
+}
+
+.NB-premium-dog-image {
+    display: block;
+    margin: 8px auto 0;
+    width: 80px;
+    height: 60px;
+    border: 1px solid #303030;
+    border-radius: 4px;
+}
+
+.NB-premium-tier-actions {
+    padding: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    background: #fff;
+}
+
+.NB-premium-tier-buttons {
+    text-align: center;
+}
+
+.NB-premium-tier-buttons .NB-creditcards {
+    margin-bottom: 8px;
+}
+
+.NB-premium-tier-buttons .NB-creditcards img {
+    width: 24px;
+    height: 18px;
+    margin: 0 2px;
+}
+
+.NB-premium-tier-buttons .NB-modal-submit-button {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.NB-premium-tier-buttons .NB-provider-alternate {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #888;
+}
+
+.NB-premium-tier-buttons .NB-provider-alternate .NB-modal-submit-button {
+    margin-top: 4px;
+}
+
+.NB-premium-tier-buttons .NB-paypal-button {
+    margin-top: 8px;
+}
+
+.NB-premium-tier-buttons .NB-premium-prorate-message {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #888;
+}
+
+.NB-premium-tier-status {
+    text-align: center;
+    padding: 8px 0;
+}
+
+.NB-premium-tier-status-icon {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto 8px;
+    background: transparent url('/media/embed/icons/circular/newuser_icn_setup.png') no-repeat center center;
+    background-size: 28px;
+}
+
+.NB-premium-tier-status-text {
+    font-size: 14px;
+    font-weight: bold;
+    color: #5cb85c;
+    margin-bottom: 12px;
+}
+
+.NB-premium-tier-status .NB-modal-submit-button {
+    font-size: 12px;
+    padding: 8px 12px;
+}
+
+.NB-premium-tier-trial-status {
+    text-align: center;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border: 1px solid #81c784;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #2e7d32;
+}
+
+/* Responsive: stack on mobile */
+@media (max-width: 900px) {
+    .NB-premium-tiers {
+        flex-direction: column;
+    }
+
+    .NB-premium-tier {
+        max-width: 100%;
+    }
+
+    .NB-premium-tier-features {
+        max-height: none;
+    }
 }
 
 /* ===================== */
