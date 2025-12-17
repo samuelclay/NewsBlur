@@ -171,7 +171,7 @@ NEWSBLUR.ReaderGrowthPrompts.prototype = {
         ]);
 
         $prompt.find('.NB-growth-prompt-cta').click(function() {
-            NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
+            NEWSBLUR.reader.open_premium_upgrade_modal();
             self.close_prompt($prompt);
         });
 
@@ -217,7 +217,7 @@ NEWSBLUR.ReaderGrowthPrompts.prototype = {
         ]);
 
         $prompt.find('.NB-growth-prompt-cta').click(function() {
-            NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
+            NEWSBLUR.reader.open_premium_upgrade_modal();
             self.close_prompt($prompt);
         });
 
@@ -233,11 +233,17 @@ NEWSBLUR.ReaderGrowthPrompts.prototype = {
     // ============================================
 
     show_prompt: function($prompt) {
+        // Don't show growth prompt if feedchooser or premium upgrade modal is open
+        if ($('.NB-modal-feedchooser').length > 0 || $('.NB-modal-premium-upgrade').length > 0) {
+            return false;
+        }
+
         // Remove any existing prompts
         $('.NB-growth-prompt').remove();
 
         // Add to body - animation handled by CSS class
         $('body').append($prompt);
+        return true;
     },
 
     close_prompt: function($prompt) {
@@ -258,9 +264,16 @@ NEWSBLUR.ReaderGrowthPrompts.prototype = {
         var test_type = this.get_test_prompt_type();
         if (test_type) {
             var self = this;
-            setTimeout(function() {
+            // Wait for any modal to close before showing growth prompt
+            var attempt_show = function() {
+                if ($('.NB-modal-feedchooser').length > 0 || $('.NB-modal-premium-upgrade').length > 0) {
+                    // Modal is open, wait and try again
+                    setTimeout(attempt_show, 500);
+                    return;
+                }
                 self.show_milestone_prompt(test_type);
-            }, 500);
+            };
+            setTimeout(attempt_show, 500);
             return;
         }
 

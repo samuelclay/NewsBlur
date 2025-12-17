@@ -319,9 +319,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     },
 
     close_and_load_premium: function (options) {
-        options = _.extend({}, { 'premium_only': true }, options);
         this.close(function () {
-            NEWSBLUR.reader.open_feedchooser_modal(options);
+            NEWSBLUR.reader.open_premium_upgrade_modal(options);
         });
     },
 

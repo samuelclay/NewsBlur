@@ -1219,6 +1219,21 @@
             options = options || {};
             if (!NEWSBLUR.Globals.is_authenticated) return;
 
+            // Handle test parameters for opening dialogs - skip normal dialog logic if test param present
+            var test_param = $.getQueryString('test');
+            if (test_param == 'feedchooser') {
+                _.defer(_.bind(this.open_feedchooser_modal, this), 100);
+                return;
+            }
+            if (test_param == 'premium') {
+                _.defer(_.bind(this.open_premium_upgrade_modal, this), 100);
+                return;
+            }
+            // Skip normal dialog logic for other test params (growth1, growth2, etc.)
+            if (test_param) {
+                return;
+            }
+
             if (!NEWSBLUR.assets.folders.length ||
                 !NEWSBLUR.assets.preference('has_setup_feeds')) {
                 if (options.delayed_import || this.flags.delayed_import) {
@@ -1632,6 +1647,16 @@
             if (next == 'notifications') {
                 _.defer(function () {
                     NEWSBLUR.reader.open_notifications_modal(NEWSBLUR.assets.active_feed && NEWSBLUR.assets.active_feed.id);
+                });
+            }
+            if (next == 'feedchooser') {
+                _.defer(function () {
+                    NEWSBLUR.reader.open_feedchooser_modal();
+                });
+            }
+            if (next == 'premium') {
+                _.defer(function () {
+                    NEWSBLUR.reader.open_premium_upgrade_modal();
                 });
             }
             if (add_url) {
@@ -3574,6 +3599,10 @@
             NEWSBLUR.feedchooser = new NEWSBLUR.ReaderFeedchooser(options);
         },
 
+        open_premium_upgrade_modal: function (options) {
+            NEWSBLUR.premium_upgrade = new NEWSBLUR.ReaderPremiumUpgrade(options);
+        },
+
         start_premium_trial: function () {
             var $button = $('.NB-module-trial-offer-button');
             $button.addClass('NB-disabled').text('Starting trial...');
@@ -4339,6 +4368,11 @@
             var $manage_menu = this.make_manage_menu(type, feed_id, story_id, inverse, $item);
             $manage_menu_container.empty().append($manage_menu);
             $manage_menu_container.data('item', $item && $item[0]);
+            $manage_menu_container.toggleClass('NB-menu-manage-hide-style-controls', !!options.hide_style_controls);
+            if (options.hide_style_controls) {
+                // Hide the separator before style controls
+                $('.NB-menu-manage-font', $manage_menu_container).prev('.NB-menu-separator').hide();
+            }
             $('.NB-taskbar').css('z-index', 2);
             if (type == 'site') {
                 if (inverse) {
@@ -6573,7 +6607,7 @@
                 if (!$t.hasClass('NB-disabled')) {
                     var $item = $(".NB-icon", $t);
                     if ($item.length) {
-                        self.show_manage_menu('site', $item, { inverse: true, right: true, body: true });
+                        self.show_manage_menu('site', $item, { inverse: true, right: true, body: true, hide_style_controls: true });
                     }
                 }
             });
@@ -7084,9 +7118,7 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function () {
-                        self.open_feedchooser_modal({
-                            'chooser_only': NEWSBLUR.Globals.is_premium
-                        });
+                        self.open_feedchooser_modal();
                     });
                 }
             });
@@ -7102,14 +7134,14 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function () {
-                        self.open_feedchooser_modal({ 'premium_only': true });
+                        self.open_premium_upgrade_modal();
                     });
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-module-account-upgrade' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_feedchooser_modal({ 'premium_only': true });
+                    self.open_premium_upgrade_modal();
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-module-account-train' }, function ($t, $p) {
@@ -7139,7 +7171,7 @@
             $.targetIs(e, { tagSelector: '.NB-module-premium-button' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_feedchooser_modal({ 'premium_only': true });
+                    self.open_premium_upgrade_modal();
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-module-trial-offer-button' }, function ($t, $p) {
@@ -7151,7 +7183,7 @@
             $.targetIs(e, { tagSelector: '.NB-module-trial-button' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_feedchooser_modal({ 'premium_only': true });
+                    self.open_premium_upgrade_modal();
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-module-gettingstarted-hide' }, function ($t, $p) {

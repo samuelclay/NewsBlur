@@ -519,7 +519,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             e.preventDefault();
 
             self.close(function () {
-                NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
+                NEWSBLUR.reader.open_premium_upgrade_modal();
             });
         });
     },

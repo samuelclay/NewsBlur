@@ -321,12 +321,10 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_intro_modal({ page_number: 2 });
         } else if (next == 'organizer') {
             NEWSBLUR.reader.open_organizer_modal();
-        } else if (next == 'chooser') {
+        } else if (next == 'chooser' || next == 'feedchooser') {
             NEWSBLUR.reader.open_feedchooser_modal();
-        } else if (next == 'premium') {
-            NEWSBLUR.reader.open_feedchooser_modal({ 'premium_only': true });
-        } else if (next == 'renew') {
-            NEWSBLUR.reader.open_feedchooser_modal({ 'premium_only': true });
+        } else if (next == 'premium' || next == 'renew') {
+            NEWSBLUR.reader.open_premium_upgrade_modal();
         } else if (next == 'password') {
             NEWSBLUR.reader.open_account_modal({ 'change_password': true });
         } else if (next == 'notifications') {
