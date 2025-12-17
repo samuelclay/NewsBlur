@@ -345,7 +345,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             }
         }
 
-        // This removes the query string from the URL.
+        // This removes the query string from the URL (unless ?test= is present).
         if (!route_found && window.history.replaceState && !$.getQueryString('test')) {
             // In case this needs to be found again: window.location.href = BACKBONE
             window.history.replaceState({}, null, '/');
