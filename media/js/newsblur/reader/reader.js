@@ -142,6 +142,10 @@
             NEWSBLUR.assets.feeds.bind('reset', _.bind(function () {
                 this.load_dashboard_rivers();
                 this.load_intelligence_slider();
+                // Check for growth prompts after feeds load
+                if (NEWSBLUR.growth_prompts) {
+                    NEWSBLUR.growth_prompts.check_on_load();
+                }
             }, this));
 
             this.handle_mouse_indicator_hover();
@@ -2528,6 +2532,10 @@
             var story = this.model.get_story(story_id);
             if (this.active_story && !this.active_story.get('read_status')) {
                 NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+                // Track story read for growth prompts
+                if (NEWSBLUR.growth_prompts) {
+                    NEWSBLUR.growth_prompts.increment_stories_read();
+                }
             } else if (this.active_story && this.active_story.get('read_status')) {
                 NEWSBLUR.assets.stories.mark_unread(story);
             }
