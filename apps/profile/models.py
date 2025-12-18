@@ -176,7 +176,6 @@ class Profile(models.Model):
         if self.is_archive:
             return self.ARCHIVE_FEED_LIMIT
         if self.is_premium:
-            return 499  # Temporarily reduced from 1000 to 499 to test
             return self.PREMIUM_FEED_LIMIT
         return self.FREE_FEED_LIMIT
 
