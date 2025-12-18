@@ -160,6 +160,19 @@ class Profile(models.Model):
             return False
         return True
 
+    @property
+    def max_feed_limit(self):
+        """Returns the maximum number of feeds allowed for this user's subscription tier.
+        Returns None if unlimited (pro users).
+        """
+        if self.is_pro:
+            return None  # Unlimited
+        if self.is_archive:
+            return 2500
+        if self.is_premium:
+            return 1000
+        return 64  # Free tier
+
     def can_use_ask_ai(self):
         return AskAIUsageTracker(self.user).can_use()
 
