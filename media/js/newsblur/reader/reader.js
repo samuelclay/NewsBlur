@@ -1497,6 +1497,13 @@
 
         open_feed: function (feed_id, options) {
             options = options || {};
+
+            // If over feed limit, show feedchooser modal instead of opening feed
+            if (NEWSBLUR.Globals.max_feed_limit &&
+                NEWSBLUR.assets.feeds.active().length > NEWSBLUR.Globals.max_feed_limit) {
+                return this.open_feedchooser_modal();
+            }
+
             var self = this;
             var $story_titles = this.$s.$story_titles;
             var feed = this.model.get_feed(feed_id) || options.feed;
@@ -2107,6 +2114,13 @@
 
         open_river_stories: function ($folder, folder, options) {
             options = options || {};
+
+            // If over feed limit, show feedchooser modal instead of opening folder
+            if (NEWSBLUR.Globals.max_feed_limit &&
+                NEWSBLUR.assets.feeds.active().length > NEWSBLUR.Globals.max_feed_limit) {
+                return this.open_feedchooser_modal();
+            }
+
             $folder = $folder || this.$s.$feed_list;
             var folder_title = folder && folder.get('folder_title') || 'Everything';
 

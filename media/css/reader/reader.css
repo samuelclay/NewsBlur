@@ -14479,10 +14479,11 @@ form.opml_import_form input {
 .NB-modal-feedchooser .NB-feedchooser-folder-actions {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 8px;
     font-size: 11px;
     color: #808080;
-    margin: 8px 0 4px;
+    margin: 8px 0 8px;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-folder-actions .NB-splash-link {
@@ -14497,6 +14498,185 @@ form.opml_import_form input {
 
 .NB-modal-feedchooser .NB-feedchooser-folder-actions-separator {
     color: #c0c0c0;
+}
+
+/* ========================= */
+/* = Unified Header Card = */
+/* ========================= */
+
+.NB-modal-feedchooser .NB-feedchooser-header {
+    padding: 16px 0 0;
+    margin-bottom: 0;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+/* Tier badges */
+.NB-modal-feedchooser .NB-feedchooser-tier-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-free {
+    background: #e5e7eb;
+    color: #4b5563;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-premium {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-archive {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #1e40af;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-pro {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #065f46;
+}
+
+/* Usage text - small colored count in actions row */
+.NB-modal-feedchooser .NB-feedchooser-usage-text {
+    font-size: 11px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-usage-text.NB-state-ok {
+    color: #16a34a;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-usage-text.NB-state-error {
+    color: #dc2626;
+}
+
+/* Progress bar container */
+.NB-modal-feedchooser .NB-feedchooser-progress-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-progress-track {
+    flex: 1;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-progress-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.2s ease;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-progress-container.NB-state-ok .NB-feedchooser-progress-bar {
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.NB-modal-feedchooser .NB-feedchooser-progress-container.NB-state-error .NB-feedchooser-progress-bar {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.NB-modal-feedchooser .NB-feedchooser-progress-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-progress-container.NB-state-ok .NB-feedchooser-progress-label {
+    color: #16a34a;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-progress-container.NB-state-error .NB-feedchooser-progress-label {
+    color: #dc2626;
+}
+
+/* Inline upgrade prompt */
+.NB-modal-feedchooser .NB-feedchooser-upgrade-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(14, 165, 233, 0.08));
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-upgrade-inline:hover {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(14, 165, 233, 0.14));
+    border-color: rgba(56, 189, 248, 0.4);
+}
+
+.NB-modal-feedchooser .NB-feedchooser-upgrade-icon {
+    width: 20px;
+    height: 20px;
+    background: transparent url('/media/embed/icons/circular/premium.png') no-repeat center center;
+    background-size: 18px;
+    flex-shrink: 0;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-upgrade-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0369a1;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-upgrade-limit {
+    font-size: 12px;
+    font-weight: 500;
+    color: #0369a1;
+    margin-left: auto;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-upgrade-arrow {
+    width: 16px;
+    height: 16px;
+    background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat center center;
+    background-size: 10px;
+    filter: brightness(0) saturate(100%) invert(30%) sepia(98%) saturate(1200%) hue-rotate(180deg);
+    flex-shrink: 0;
+}
+
+/* Actions row - directly above feed list */
+.NB-modal-feedchooser .NB-feedchooser-actions-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 4px;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-actions-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-actions-right .NB-feedchooser-folder-actions {
+    margin: 0;
 }
 
 .NB-modal-feedchooser .NB-modal-subtitle {

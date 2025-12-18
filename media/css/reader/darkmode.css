@@ -825,6 +825,77 @@ color: #a85b40;
     color: #c0c0c0;
 }
 
+/* Feedchooser: Unified header dark mode */
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-free {
+    background: #3f3f46;
+    color: #a1a1aa;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-premium {
+    background: linear-gradient(135deg, #78350f, #92400e);
+    color: #fde68a;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-archive {
+    background: linear-gradient(135deg, #1e3a5f, #1e40af);
+    color: #93c5fd;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-pro {
+    background: linear-gradient(135deg, #064e3b, #065f46);
+    color: #6ee7b7;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-usage-text {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-usage-text.NB-state-ok {
+    color: #4ade80;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-usage-text.NB-state-error {
+    color: #f87171;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-progress-track {
+    background: #3f3f46;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-progress-label {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-progress-container.NB-state-ok .NB-feedchooser-progress-label {
+    color: #4ade80;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-progress-container.NB-state-error .NB-feedchooser-progress-label {
+    color: #f87171;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-inline {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(14, 165, 233, 0.15));
+    border-color: rgba(56, 189, 248, 0.35);
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-inline:hover {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(14, 165, 233, 0.22));
+    border-color: rgba(56, 189, 248, 0.5);
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-text {
+    color: #7dd3fc;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-limit {
+    color: #bae6fd;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-arrow {
+    filter: brightness(0) saturate(100%) invert(80%) sepia(50%) saturate(500%) hue-rotate(160deg);
+}
+
 /* Intelligence Trainer: Container color */
 .NB-dark .NB-modal .NB-modal-subtitle,
 .NB-dark .NB-modal-submit-bottom,
