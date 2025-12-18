@@ -46,9 +46,9 @@ from vendor.timezones.fields import TimeZoneField
 class Profile(models.Model):
     # Feed limits by subscription tier
     FREE_FEED_LIMIT = 64
-    PREMIUM_FEED_LIMIT = 1000
-    ARCHIVE_FEED_LIMIT = 2500
-    PRO_FEED_LIMIT = None  # Unlimited
+    PREMIUM_FEED_LIMIT = 1024
+    ARCHIVE_FEED_LIMIT = 4096
+    PRO_FEED_LIMIT = 10000
 
     user = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
     is_premium = models.BooleanField(default=False)
@@ -168,9 +168,7 @@ class Profile(models.Model):
 
     @property
     def max_feed_limit(self):
-        """Returns the maximum number of feeds allowed for this user's subscription tier.
-        Returns None if unlimited (pro users).
-        """
+        """Returns the maximum number of feeds allowed for this user's subscription tier."""
         if self.is_pro:
             return self.PRO_FEED_LIMIT
         if self.is_archive:
@@ -188,6 +186,11 @@ class Profile(models.Model):
     def archive_feed_limit(self):
         """Returns the Archive tier feed limit (for upgrade prompts)."""
         return self.ARCHIVE_FEED_LIMIT
+
+    @property
+    def pro_feed_limit(self):
+        """Returns the Pro tier feed limit (for upgrade prompts)."""
+        return self.PRO_FEED_LIMIT
 
     def can_use_ask_ai(self):
         return AskAIUsageTracker(self.user).can_use()

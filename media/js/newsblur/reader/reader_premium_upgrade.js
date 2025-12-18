@@ -71,7 +71,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-premium-tier-includes' }, 'Everything in Free, plus:'),
                         $.make('li', { className: 'NB-1' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Follow up to 1,000 sites'
+                            'Follow up to 1,024 sites'
                         ]),
                         $.make('li', { className: 'NB-2' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
@@ -123,7 +123,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-premium-tier-includes' }, 'Everything in Premium, plus:'),
                         $.make('li', { className: 'NB-1' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Follow up to 2,500 sites'
+                            'Follow up to 4,096 sites'
                         ]),
                         $.make('li', { className: 'NB-2' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
@@ -175,7 +175,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-premium-tier-includes' }, 'Everything in Archive, plus:'),
                         $.make('li', { className: 'NB-1' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'Follow an unlimited number of sites'
+                            'Follow up to 10,000 sites'
                         ]),
                         $.make('li', { className: 'NB-2' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),

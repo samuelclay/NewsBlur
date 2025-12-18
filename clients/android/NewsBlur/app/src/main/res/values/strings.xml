@@ -315,7 +315,7 @@
     <string name="subscription_details_error">Error retrieving subscription details</string>
     <string name="no_subscription_available">No subscription available</string>
 
-    <string name="premium_enable_sites">Follow up to 1,000 sites</string>
+    <string name="premium_enable_sites">Follow up to 1,024 sites</string>
     <string name="premium_sync">Sites updated up to 5x more often</string>
     <string name="premium_read_by_folder">River of News (reading by folder)</string>
     <string name="premium_search">Search sites and folders</string>
