@@ -100,7 +100,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
             (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-upgrade-banner' }, [
                 $.make('div', { className: 'NB-feedchooser-upgrade-banner-text' }, [
                     $.make('div', { className: 'NB-feedchooser-upgrade-banner-icon' }),
-                    'Want unlimited sites? Go Premium'
+                    'Want more sites? Go Premium'
                 ]),
                 $.make('div', { className: 'NB-feedchooser-upgrade-banner-price' }, '$36/year'),
                 $.make('div', { className: 'NB-feedchooser-upgrade-banner-arrow' })
