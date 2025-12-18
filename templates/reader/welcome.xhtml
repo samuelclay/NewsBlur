@@ -247,96 +247,120 @@
     <div class="NB-welcome-pricing">
         <div class="NB-inner">
             <h2>Pricing</h2>
-            <p>NewsBlur is free on the web, iPad, iPhone, and Android. By subscribing to a <br> premium account, you support a growing service and unlock a few restrictions.</p>
+            <p>NewsBlur is free on the web, iPad, iPhone, and Android. By subscribing to a premium account, you support a growing service and unlock a few restrictions.</p>
             <div class="NB-pricing-trial-callout">
                 New accounts start with a <strong>30 day trial premium subscription</strong> &mdash; no credit card required.
             </div>
-            <table class="NB-pricing">
-                <tr>
-                    <th></th>
-                    <th>Free Account</th>
-                    <th>
-                        <div class="NB-price">$36 / year</div>
-                        Premium Subscription
-                    </th>
-                    <th>
-                        <div class="NB-price">$99 / year</div>
-                        Premium Archive Subscription
-                    </th>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-1"></div> Number of sites</td>
-                    <td>Up to 64 sites</td>
-                    <td>1,000 sites</td>
-                    <td>Unlimited sites</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-3"></div> River of News</td>
-                    <td>Only 3 stories at a time</td>
-                    <td>Every story from every site</td>
-                    <td>Plus every story ever published in the archive</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-4"></div> Search</td>
-                    <td>-</td>
-                    <td>Search for recent stories, your saved stories, and shared stories</td>
-                    <td>Search the entire history of every site</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-9"></div> Related stories</td>
-                    <td>Discover only related sites</td>
-                    <td>Peek into related stories and sites</td>
-                    <td>Entire archive of related stories and sites</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-7"></div> Custom RSS</td>
-                    <td>-</td>
-                    <td>Only saved stories</td>
-                    <td>Saved stories + folders</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-2"></div> Site updates</td>
-                    <td>1X</td>
-                    <td>Up to 10X as often</td>
-                    <td>Same as premium</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-5"></div> Saved story tagging</td>
-                    <td>Only save stories</td>
-                    <td>Tag saved stories</td>
-                    <td>Same as premium</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-6"></div> Privacy</td>
-                    <td>Public shares only</td>
-                    <td>Public, protected, and private shares</td>
-                    <td>Same as premium</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-8"></div> Full text</td>
-                    <td>Only what's in the feed</td>
-                    <td>Full text of each story</td>
-                    <td>Same as premium</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold"><div class="NB-welcome-premium-bullet NB-11"></div> Ask AI</td>
-                    <td>10 uses total</td>
-                    <td>3 per day</td>
-                    <td>50 per day</td>
-                </tr>
-                <tr>
-                    <td class="NB-bold">
-                        <div class="NB-welcome-premium-bullet NB-10"></div>
-                        Feed poor Lyric
-                    </td>
-                    <td>She goes hungry</td>
-                    <td colspan="2" class="NB-lyric-text">
-                        <img src="{{ MEDIA_URL }}img/reader/lyric.jpg" class="NB-lyric">Home cooked meals of green beans, sweet potatoes, carrots, and brown rice</td>
-                </tr>
-            </table>
+
+            <div class="NB-pricing-tiers">
+                <div class="NB-pricing-tier NB-pricing-tier-premium">
+                    <div class="NB-pricing-tier-header">
+                        <div class="NB-pricing-tier-name">Premium</div>
+                        <div class="NB-pricing-tier-price">
+                            <span class="NB-pricing-tier-price-amount">$36</span>
+                            <span class="NB-pricing-tier-price-period">/year</span>
+                        </div>
+                    </div>
+                    <ul class="NB-pricing-tier-features">
+                        <li class="NB-pricing-tier-includes">Everything in Free, plus:</li>
+                        <li class="NB-1"><div class="NB-pricing-bullet"></div>Follow up to 1,000 sites</li>
+                        <li class="NB-2"><div class="NB-pricing-bullet"></div>Sites updated up to 5x more often</li>
+                        <li class="NB-3"><div class="NB-pricing-bullet"></div>River of News (reading by folder)</li>
+                        <li class="NB-4"><div class="NB-pricing-bullet"></div>Search sites and folders</li>
+                        <li class="NB-5"><div class="NB-pricing-bullet"></div>Save stories with searchable tags</li>
+                        <li class="NB-6"><div class="NB-pricing-bullet"></div>Privacy options for your blurblog</li>
+                        <li class="NB-7"><div class="NB-pricing-bullet"></div>Custom RSS feeds for saved stories</li>
+                        <li class="NB-8"><div class="NB-pricing-bullet"></div>Text view extracts the story</li>
+                        <li class="NB-9"><div class="NB-pricing-bullet"></div>Discover related stories and sites</li>
+                    </ul>
+                </div>
+
+                <div class="NB-pricing-tier NB-pricing-tier-archive">
+                    <div class="NB-pricing-tier-header">
+                        <div class="NB-pricing-tier-name">Premium Archive</div>
+                        <div class="NB-pricing-tier-price">
+                            <span class="NB-pricing-tier-price-amount">$99</span>
+                            <span class="NB-pricing-tier-price-period">/year</span>
+                        </div>
+                    </div>
+                    <ul class="NB-pricing-tier-features">
+                        <li class="NB-pricing-tier-includes">Everything in Premium, plus:</li>
+                        <li class="NB-1"><div class="NB-pricing-bullet"></div>Follow up to 2,500 sites</li>
+                        <li class="NB-2"><div class="NB-pricing-bullet"></div>Choose when stories are marked as read</li>
+                        <li class="NB-3"><div class="NB-pricing-bullet"></div>Every story archived and searchable forever</li>
+                        <li class="NB-4"><div class="NB-pricing-bullet"></div>Feeds back-filled for complete archive</li>
+                        <li class="NB-5"><div class="NB-pricing-bullet"></div>Train stories on full text content</li>
+                        <li class="NB-6"><div class="NB-pricing-bullet"></div>Discover related stories across your archive</li>
+                        <li class="NB-7"><div class="NB-pricing-bullet"></div>Export trained stories from folders</li>
+                        <li class="NB-8"><div class="NB-pricing-bullet"></div>Stories can stay unread forever</li>
+                        <li class="NB-9"><div class="NB-pricing-bullet"></div>Ask AI questions about stories</li>
+                    </ul>
+                </div>
+
+                <div class="NB-pricing-tier NB-pricing-tier-pro">
+                    <div class="NB-pricing-tier-header">
+                        <div class="NB-pricing-tier-name">Premium Pro</div>
+                        <div class="NB-pricing-tier-price">
+                            <span class="NB-pricing-tier-price-amount">$29</span>
+                            <span class="NB-pricing-tier-price-period">/month</span>
+                        </div>
+                    </div>
+                    <ul class="NB-pricing-tier-features">
+                        <li class="NB-pricing-tier-includes">Everything in Archive, plus:</li>
+                        <li class="NB-1"><div class="NB-pricing-bullet"></div>Follow an unlimited number of sites</li>
+                        <li class="NB-2"><div class="NB-pricing-bullet"></div>All feeds fetched every 5 minutes</li>
+                        <li class="NB-3"><div class="NB-pricing-bullet"></div>Priority support</li>
+                        <li class="NB-pricing-tier-upcoming-header">Coming soon:</li>
+                        <li class="NB-upcoming NB-4"><div class="NB-pricing-bullet"></div>Natural language filters</li>
+                        <li class="NB-upcoming NB-5"><div class="NB-pricing-bullet"></div>Natural language search</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="NB-pricing-tiers-bottom">
+                <div class="NB-pricing-tier NB-pricing-tier-free">
+                    <div class="NB-pricing-tier-header">
+                        <div class="NB-pricing-tier-name">Free</div>
+                    </div>
+                    <ul class="NB-pricing-tier-features">
+                        <li><div class="NB-pricing-bullet"></div><span>Follow up to 64 sites</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>Real-time RSS updates</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>Train stories by author, tag, title</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>Public blurblog sharing</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>Save stories for later</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>iOS &amp; Android apps</span></li>
+                    </ul>
+                </div>
+                <div class="NB-pricing-tier NB-pricing-tier-selfhosted">
+                    <div class="NB-pricing-tier-header">
+                        <div class="NB-pricing-tier-label">DIY</div>
+                        <div class="NB-pricing-tier-name">Self-Hosted</div>
+                    </div>
+                    <ul class="NB-pricing-tier-features">
+                        <li><div class="NB-pricing-bullet"></div><span>Run your own NewsBlur</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>Complete data ownership</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>Single command install on Docker</span></li>
+                        <li><div class="NB-pricing-bullet"></div><span>Customize with Claude Code</span></li>
+                    </ul>
+                    <div class="NB-pricing-tier-actions">
+                        <a href="https://github.com/samuelclay/NewsBlur" target="_blank" class="NB-pricing-github-button">
+                            <img src="{{ MEDIA_URL }}img/reader/github-mark.svg" class="NB-github-icon">
+                            View on GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="NB-pricing-lyric">
+                <img src="{{ MEDIA_URL }}img/reader/lyric.jpg" class="NB-lyric-photo">
+                <div class="NB-lyric-text">
+                    <div class="NB-lyric-title">Feed Lyric, NewsBlur's hungry hound</div>
+                    <div class="NB-lyric-description">Premium subscribers help feed Lyric home cooked meals of green beans, sweet potatoes, carrots, and brown rice.</div>
+                </div>
+            </div>
         </div>
     </div>
-    
+
     <div class="NB-welcome-activity">
         <div class="NB-inner">
             {% render_features_module %}

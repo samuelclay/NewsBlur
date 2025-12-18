@@ -105,7 +105,7 @@ struct PremiumView: View {
     var scrollToArchive: Bool = false
 
     private let premiumFeatures: [PremiumFeature] = [
-        PremiumFeature(title: "Enable every site by going premium", icon: "square.stack.3d.up.fill", iconColor: .blue),
+        PremiumFeature(title: "Follow up to 1,000 sites", icon: "square.stack.3d.up.fill", iconColor: .blue),
         PremiumFeature(title: "Sites updated up to 5x more often", icon: "bolt.fill", iconColor: .yellow),
         PremiumFeature(title: "River of News (reading by folder)", icon: "newspaper.fill", iconColor: .orange),
         PremiumFeature(title: "Search sites and folders", icon: "magnifyingglass", iconColor: .purple),

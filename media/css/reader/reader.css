@@ -15502,36 +15502,44 @@ form.opml_import_form input {
     filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);  /* blue */
 }
 .NB-premium-tier-features-archive li.NB-5 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/train.svg');
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);  /* blue */
+}
+.NB-premium-tier-features-archive li.NB-6 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/direction_black.svg');
     filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);  /* violet */
 }
-.NB-premium-tier-features-archive li.NB-6 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-7 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-rss-100.png');
     filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%); /* orange */
 }
-.NB-premium-tier-features-archive li.NB-7 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-8 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-calendar-100.png');
     filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);   /* cyan */
 }
-.NB-premium-tier-features-archive li.NB-8 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-9 .NB-premium-bullet-image {
     background-image: url('/media/img/icons/nouns/prompt.svg');
     filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);  /* purple */
 }
 
 /* Pro tier icons with individual vivid colors */
 .NB-premium-tier-features-pro li.NB-1 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/stack.svg');
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);  /* green */
+}
+.NB-premium-tier-features-pro li.NB-2 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-lightning-bolt-100.png');
     filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%); /* orange */
 }
-.NB-premium-tier-features-pro li.NB-2 .NB-premium-bullet-image {
+.NB-premium-tier-features-pro li.NB-3 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-pyramids-100.png');
     filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
 }
-.NB-premium-tier-features-pro li.NB-3 .NB-premium-bullet-image {
+.NB-premium-tier-features-pro li.NB-4 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/train.svg');
     filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
 }
-.NB-premium-tier-features-pro li.NB-4 .NB-premium-bullet-image {
+.NB-premium-tier-features-pro li.NB-5 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
     filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
 }
