@@ -307,7 +307,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
             $.make('a', { href: 'http://github.com/samuelclay', className: 'NB-splash-link' }, [
               $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/howitworks_github.png', style: 'float: right;margin: -68px 12px 0 0' }),
               'NewsBlur on ',
-              $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/github_icon.png', style: 'vertical-align: middle;margin: -2px 0 0' }),
+              $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/github-mark.svg', style: 'vertical-align: middle;margin: -2px 0 0;width: 16px;height: 16px' }),
               ' GitHub'
             ])
           ])

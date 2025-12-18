@@ -2558,6 +2558,76 @@ a.mention, a.mention-group {
     border-color: #4b5563;
 }
 
+/* Free tier dark mode */
+.NB-dark .NB-premium-tier-free {
+    background: linear-gradient(180deg, #1f272d 0%, #1a2027 100%);
+    border-color: #374151;
+}
+
+.NB-dark .NB-premium-tier-free .NB-premium-tier-header {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+}
+
+.NB-dark .NB-premium-tier-free .NB-premium-tier-features {
+    background-color: #1a2027;
+}
+
+.NB-dark .NB-premium-tier-free .NB-premium-tier-features li {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-premium-tier-free .NB-premium-tier-actions {
+    background: linear-gradient(180deg, #1f272d 0%, #1a2027 100%);
+    border-top-color: #374151;
+}
+
+.NB-dark .NB-premium-tier-free-trial-notice {
+    color: #9ca3af;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-premium-tier-free-current {
+    color: #9ca3af;
+}
+
+/* Self-hosted tier dark mode */
+.NB-dark .NB-premium-tier-selfhosted {
+    background: linear-gradient(180deg, #1e252b 0%, #181e23 100%);
+    border-color: #334155;
+}
+
+.NB-dark .NB-premium-tier-selfhosted .NB-premium-tier-header {
+    background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+}
+
+.NB-dark .NB-premium-tier-selfhosted .NB-premium-tier-features {
+    background-color: #181e23;
+}
+
+.NB-dark .NB-premium-tier-selfhosted .NB-premium-tier-features li {
+    color: #94a3b8;
+}
+
+.NB-dark .NB-premium-tier-selfhosted .NB-premium-tier-actions {
+    background: linear-gradient(180deg, #1e252b 0%, #181e23 100%);
+    border-top-color: #334155;
+}
+
+.NB-dark .NB-premium-selfhosted-github {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-premium-selfhosted-github:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+}
+
+.NB-dark .NB-premium-selfhosted-github .NB-github-icon {
+    filter: invert(1);
+}
+
 /* Tier headers - keep vibrant colors but darken slightly */
 .NB-dark .NB-premium-tier-premium .NB-premium-tier-header {
     background: linear-gradient(135deg, #065f46 0%, #047857 100%);
@@ -2587,6 +2657,10 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-premium-tier-features li.NB-premium-tier-includes {
     color: #9ca3af;
+}
+
+.NB-dark .NB-premium-tier-premium .NB-premium-tier-features li.NB-premium-tier-includes {
+    color: #86efac;
 }
 
 .NB-dark .NB-premium-tier-archive .NB-premium-tier-features li.NB-premium-tier-includes {

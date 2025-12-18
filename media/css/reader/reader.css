@@ -15134,17 +15134,208 @@ form.opml_import_form input {
     position: relative;
 }
 
-/* Tier width proportions: 34-38-28 */
+/* Tier width proportions: 20-27-30-23 (free column-premium-archive-pro) */
+.NB-premium-tier-column-free {
+    flex: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.NB-premium-tier-column-free .NB-premium-tier {
+    flex: 1;
+}
+
 .NB-premium-tier-premium {
-    flex: 8.5;
+    flex: 6.75;
 }
 
 .NB-premium-tier-archive {
-    flex: 9.5;
+    flex: 7.5;
 }
 
 .NB-premium-tier-pro {
-    flex: 7;
+    flex: 5.75;
+}
+
+/* Free tier muted styling */
+.NB-premium-tier-free {
+    background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
+    border-color: #d1d5db;
+}
+
+.NB-premium-tier-free:hover {
+    border-color: #9ca3af;
+    transform: translateY(-2px);
+}
+
+.NB-premium-tier-free .NB-premium-tier-header {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-premium-tier-free .NB-premium-tier-name {
+    color: white;
+    font-size: 16px;
+    text-transform: none;
+    margin-bottom: 0;
+}
+
+.NB-premium-tier-free .NB-premium-tier-price-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.NB-premium-tier-free .NB-premium-tier-features {
+    background-color: #f9fafb;
+    padding: 10px 12px;
+}
+
+.NB-premium-tier-free .NB-premium-tier-features li {
+    color: #4b5563;
+    padding: 6px 0;
+    font-size: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.NB-premium-tier-free .NB-premium-tier-features li span {
+    flex: 1;
+}
+
+/* Green checkmarks for free tier - override absolute positioning for flex layout */
+.NB-premium-tier-features-free li .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/accept.svg');
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);  /* green */
+    width: 12px;
+    height: 12px;
+    background-size: 12px;
+}
+
+.NB-premium-tier-free .NB-premium-tier-actions {
+    background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
+    border-top: 1px solid #d1d5db;
+    padding: 10px 12px;
+}
+
+/* Free tier status styling */
+.NB-premium-tier-free-status {
+    padding: 0;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-premium-tier-free-trial-notice {
+    font-size: 11px;
+    color: #6b7280;
+    line-height: 1.4;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 6px;
+}
+
+.NB-premium-tier-free-current {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.NB-premium-tier-free-current .NB-premium-tier-status-icon {
+    width: 14px;
+    height: 14px;
+    background-image: url('/media/embed/icons/nouns/accept.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
+}
+
+/* Self-Hosted tier styling */
+.NB-premium-tier-selfhosted {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border-color: #cbd5e1;
+}
+
+.NB-premium-tier-selfhosted:hover {
+    border-color: #94a3b8;
+    transform: translateY(-2px);
+}
+
+.NB-premium-tier-selfhosted .NB-premium-tier-header {
+    background: linear-gradient(135deg, #475569 0%, #334155 100%);
+    padding: 12px 16px;
+}
+
+.NB-premium-tier-selfhosted .NB-premium-tier-label {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.NB-premium-tier-selfhosted .NB-premium-tier-name {
+    color: white;
+    font-size: 16px;
+    text-transform: none;
+}
+
+.NB-premium-tier-selfhosted .NB-premium-tier-features {
+    background-color: #f8fafc;
+    padding: 10px 12px;
+}
+
+.NB-premium-tier-selfhosted .NB-premium-tier-features li {
+    color: #475569;
+    padding: 6px 0;
+    font-size: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.NB-premium-tier-selfhosted .NB-premium-tier-features li span {
+    flex: 1;
+}
+
+/* Green checkmarks for self-hosted tier - override absolute positioning for flex layout */
+.NB-premium-tier-features-selfhosted li .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/accept.svg');
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);  /* green */
+    width: 12px;
+    height: 12px;
+    background-size: 12px;
+}
+
+.NB-premium-tier-selfhosted .NB-premium-tier-actions {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border-top: 1px solid #cbd5e1;
+    padding: 10px 12px;
+}
+
+.NB-premium-selfhosted-github {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    font-size: 12px;
+    padding: 8px 12px;
+}
+
+.NB-premium-selfhosted-github .NB-github-icon {
+    width: 16px;
+    height: 16px;
 }
 
 .NB-premium-tier:hover {
@@ -15359,6 +15550,10 @@ form.opml_import_form input {
     letter-spacing: 0.02em;
 }
 
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-premium-tier-includes {
+    color: #16a34a;
+}
+
 .NB-premium-tier-archive .NB-premium-tier-features li.NB-premium-tier-includes {
     color: #2563eb;
 }
@@ -15397,6 +15592,27 @@ form.opml_import_form input {
 
 .NB-premium-tier-features li.NB-upcoming .NB-premium-bullet-image {
     opacity: 0.5;
+}
+
+/* Free and Self-Hosted tiers use flex layout instead of absolute positioning */
+.NB-premium-tier-free .NB-premium-tier-features li,
+.NB-premium-tier-selfhosted .NB-premium-tier-features li {
+    padding-left: 0;
+    position: static;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+/* Bullet image overrides for Free and Self-Hosted flex layout */
+.NB-premium-tier-free .NB-premium-tier-features li .NB-premium-bullet-image,
+.NB-premium-tier-selfhosted .NB-premium-tier-features li .NB-premium-bullet-image {
+    position: static;
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    background-size: 12px;
+    margin-top: 2px;
 }
 
 /* Dog image in premium tier */
