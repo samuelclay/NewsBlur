@@ -585,6 +585,11 @@
     box-shadow: 0 0 3px rgba(30, 30, 30, 0.3);
 }
 
+/* Remove shadows from right column images (screenshots) */
+.NB-welcome-subfeatures .NB-feature:nth-child(even) img {
+    box-shadow: none;
+}
+
 .NB-welcome-subfeatures .NB-feature-caption {
     font-weight: bold;
     font-size: 22px;
@@ -677,17 +682,17 @@
         0 16px 40px rgba(0, 0, 0, 0.12);
 }
 
-/* Premium tier proportions */
+/* Premium tier proportions: 34-38-28 */
 .NB-pricing-tier-premium {
-    flex: 1;
+    flex: 34;
 }
 
 .NB-pricing-tier-archive {
-    flex: 1;
+    flex: 38;
 }
 
 .NB-pricing-tier-pro {
-    flex: 1;
+    flex: 28;
 }
 
 /* Bottom row: Free and Self-Hosted side by side */
