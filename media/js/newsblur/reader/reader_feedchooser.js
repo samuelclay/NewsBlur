@@ -53,8 +53,14 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         // Using setTimeout to ensure SimpleModal has finished cloning and inserting elements
         setTimeout(_.bind(this.insert_feedlist, this), 300);
 
-        this.$modal.bind('mousedown', $.rescope(this.handle_mousedown, this));
-        this.$modal.bind('change', $.rescope(this.handle_change, this));
+        // Bind events to the DOM modal after SimpleModal has cloned and inserted it
+        // (binding to this.$modal before open_modal creates stale closure references)
+        var self = this;
+        setTimeout(function() {
+            var $domModal = $('.NB-modal-feedchooser');
+            $domModal.bind('mousedown', $.rescope(self.handle_mousedown, self));
+            $domModal.bind('change', $.rescope(self.handle_change, self));
+        }, 50);
     },
 
     make_modal: function () {
@@ -98,15 +104,6 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         var upgrade_text = this.get_upgrade_text();
 
         this.$modal = $.make('div', { className: 'NB-modal-feedchooser NB-modal' }, [
-            // Upgrade banner for users with limits
-            (this.MAX_FEEDS && $.make('div', { className: 'NB-feedchooser-upgrade-banner' }, [
-                $.make('div', { className: 'NB-feedchooser-upgrade-banner-text' }, [
-                    $.make('div', { className: 'NB-feedchooser-upgrade-banner-icon' }),
-                    upgrade_text.banner
-                ]),
-                $.make('div', { className: 'NB-feedchooser-upgrade-banner-price' }, upgrade_text.price),
-                $.make('div', { className: 'NB-feedchooser-upgrade-banner-arrow' })
-            ])),
             // Feed chooser content
             $.make('div', { className: 'NB-feedchooser-type NB-feedchooser-left' }, [
                 (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info' }, [
@@ -122,8 +119,8 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                         'You can always change these.'
                     ]),
                     $.make('div', { className: 'NB-feedchooser-info-counts' }),
-                    $.make('div', { className: 'NB-feedchooser-info-sort' }, 'Auto-Selected By Popularity'),
-                    $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link' }, 'Reset to popular sites')
+                    $.make('div', { className: 'NB-feedchooser-info-sort' }, 'Auto-selected by popularity'),
+                    $.make('div', { className: 'NB-feedchooser-info-reset' }, 'Auto-select top sites')
                 ])),
                 (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info' }, [
                     $.make('h2', { className: 'NB-modal-title' }, [
@@ -136,10 +133,15 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                             'You can follow up to ' + Inflector.commas(this.MAX_FEEDS) + ' sites.'
                         ])
                     ])),
-                    (this.MAX_FEEDS && $.make('div', { className: 'NB-feedchooser-info-sort' }, 'Auto-Selected By Popularity')),
-                    $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link' }, this.MAX_FEEDS ? 'Reset to popular sites' : 'Turn every site on'),
+                    (this.MAX_FEEDS && $.make('div', { className: 'NB-feedchooser-info-sort' }, 'Auto-selected by popularity')),
+                    $.make('div', { className: 'NB-feedchooser-info-reset' }, this.MAX_FEEDS ? 'Auto-select top sites' : 'Enable all sites'),
                     $.make('div', { className: 'NB-feedchooser-info-counts' })
                 ])),
+                $.make('div', { className: 'NB-feedchooser-folder-actions' }, [
+                    $.make('span', { className: 'NB-feedchooser-collapse-all NB-splash-link' }, 'Collapse all'),
+                    $.make('span', { className: 'NB-feedchooser-folder-actions-separator' }, '|'),
+                    $.make('span', { className: 'NB-feedchooser-expand-all NB-splash-link' }, 'Expand all')
+                ]),
                 $feedsPlaceholder,
                 $.make('form', { className: 'NB-feedchooser-form' }, [
                     $.make('div', { className: 'NB-modal-submit' }, [
@@ -149,7 +151,16 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                 ]).bind('submit', function (e) {
                     e.preventDefault();
                     return false;
-                })
+                }),
+                // Upgrade banner at bottom for users with limits
+                (this.MAX_FEEDS && $.make('div', { className: 'NB-feedchooser-upgrade-banner' }, [
+                    $.make('div', { className: 'NB-feedchooser-upgrade-banner-text' }, [
+                        $.make('div', { className: 'NB-feedchooser-upgrade-banner-icon' }),
+                        upgrade_text.banner
+                    ]),
+                    $.make('div', { className: 'NB-feedchooser-upgrade-banner-description' }, upgrade_text.description),
+                    $.make('div', { className: 'NB-feedchooser-upgrade-banner-arrow' })
+                ]))
             ])
         ]);
 
@@ -215,17 +226,28 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
 
     change_selection: function (update) {
         this.update_counts();
+        this.update_folder_highlight_statuses();
+    },
+
+    update_folder_highlight_statuses: function () {
+        // Update ON/OFF status for all collapsed folders
+        this.feedlist.$el.find('li.folder.NB-folder-collapsed').each(function () {
+            var folder_view = $(this).data('folder_view');
+            if (folder_view && folder_view.show_folder_highlight_status) {
+                folder_view.show_folder_highlight_status();
+            }
+        });
     },
 
     get_upgrade_text: function () {
         if (NEWSBLUR.Globals.is_pro) {
-            return { banner: '', price: '' };
+            return { banner: '', description: '' };
         } else if (NEWSBLUR.Globals.is_archive) {
-            return { banner: 'Want unlimited sites? Go Pro', price: '$299/year' };
+            return { banner: 'Upgrade for unlimited sites', description: 'Pro: Unlimited sites' };
         } else if (NEWSBLUR.Globals.is_premium) {
-            return { banner: 'Want more sites? Go Premium Archive', price: '$99/year' };
+            return { banner: 'Upgrade for more sites', description: 'Archive: Up to ' + Inflector.commas(NEWSBLUR.Globals.archive_feed_limit) + ' sites' };
         } else {
-            return { banner: 'Want more sites? Go Premium', price: '$36/year' };
+            return { banner: 'Upgrade for more sites', description: 'Premium: Up to ' + Inflector.commas(NEWSBLUR.Globals.premium_feed_limit) + ' sites' };
         }
     },
 
@@ -425,6 +447,36 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         });
     },
 
+    // ===================
+    // = Folder Actions =
+    // ===================
+
+    collapse_all_folders: function () {
+        var self = this;
+        this.feedlist.$el.find('li.folder').each(function () {
+            var $folder = $(this);
+            // Skip root folder (has no folder title text)
+            var folder_title = $folder.children('.folder_title').find('.folder_title_text').text();
+            if (!folder_title) return;
+
+            var $children = $folder.children('ul.folder');
+            if ($children.length && $children.eq(0).is(':visible')) {
+                $folder.addClass('NB-folder-collapsed');
+                $children.hide().css('opacity', 0);
+            }
+        });
+        // Update ON/OFF status for all collapsed folders
+        this.update_folder_highlight_statuses();
+    },
+
+    expand_all_folders: function () {
+        this.feedlist.$el.find('li.folder').each(function () {
+            var $folder = $(this);
+            $folder.removeClass('NB-folder-collapsed');
+            $folder.children('ul.folder').show().css('opacity', 1);
+        });
+    },
+
     // ===========
     // = Actions =
     // ===========
@@ -450,6 +502,16 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         $.targetIs(e, { tagSelector: '.NB-feedchooser-info-reset' }, _.bind(function ($t, $p) {
             e.preventDefault();
             this.initial_load_feeds(true);
+        }, this));
+
+        $.targetIs(e, { tagSelector: '.NB-feedchooser-collapse-all' }, _.bind(function ($t, $p) {
+            e.preventDefault();
+            this.collapse_all_folders();
+        }, this));
+
+        $.targetIs(e, { tagSelector: '.NB-feedchooser-expand-all' }, _.bind(function ($t, $p) {
+            e.preventDefault();
+            this.expand_all_folders();
         }, this));
     },
 

@@ -705,6 +705,22 @@ color: #a85b40;
 /* Mute sites: Text color */
 .NB-dark .NB-feedchooser-info-counts {
     text-shadow: none;
+    background: rgba(133, 189, 103, 0.15);
+    color: #85bd67;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-info-counts.NB-full {
+    color: #7dd3fc;
+    background: rgba(56, 189, 248, 0.15);
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-info-counts.NB-error {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.15);
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-info-sort {
+    color: #707070;
 }
 
 .NB-dark .NB-modal-feedchooser .NB-modal-subtitle b {
@@ -757,6 +773,56 @@ color: #a85b40;
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-already {
     background-color: rgb(48 88 83);
     color: #85bd67;
+}
+
+/* Feedchooser: Upgrade banner dark mode */
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-banner {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(14, 165, 233, 0.15) 100%);
+    border-color: rgba(56, 189, 248, 0.35);
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-banner:hover {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(14, 165, 233, 0.22) 100%);
+    border-color: rgba(56, 189, 248, 0.5);
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-banner-text {
+    color: #7dd3fc;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-banner-description {
+    color: #bae6fd;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-banner-arrow {
+    filter: brightness(0) saturate(100%) invert(80%) sepia(50%) saturate(500%) hue-rotate(160deg);
+}
+
+/* Feedchooser: Folder actions dark mode */
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-folder-actions .NB-splash-link {
+    color: #909090;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-folder-actions .NB-splash-link:hover {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-folder-actions-separator {
+    color: #505050;
+}
+
+/* Feedchooser: Auto-select button dark mode */
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-info-reset {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #a0a0a0;
+    text-shadow: none;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-info-reset:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #c0c0c0;
 }
 
 /* Intelligence Trainer: Container color */

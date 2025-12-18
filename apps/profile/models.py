@@ -44,6 +44,12 @@ from vendor.timezones.fields import TimeZoneField
 
 
 class Profile(models.Model):
+    # Feed limits by subscription tier
+    FREE_FEED_LIMIT = 64
+    PREMIUM_FEED_LIMIT = 1000
+    ARCHIVE_FEED_LIMIT = 2500
+    PRO_FEED_LIMIT = None  # Unlimited
+
     user = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
     is_premium = models.BooleanField(default=False)
     is_archive = models.BooleanField(default=False, blank=True, null=True)
@@ -166,12 +172,23 @@ class Profile(models.Model):
         Returns None if unlimited (pro users).
         """
         if self.is_pro:
-            return None  # Unlimited
+            return self.PRO_FEED_LIMIT
         if self.is_archive:
-            return 2500
+            return self.ARCHIVE_FEED_LIMIT
         if self.is_premium:
-            return 1000
-        return 64  # Free tier
+            return 499  # Temporarily reduced from 1000 to 499 to test
+            return self.PREMIUM_FEED_LIMIT
+        return self.FREE_FEED_LIMIT
+
+    @property
+    def premium_feed_limit(self):
+        """Returns the Premium tier feed limit (for upgrade prompts)."""
+        return self.PREMIUM_FEED_LIMIT
+
+    @property
+    def archive_feed_limit(self):
+        """Returns the Archive tier feed limit (for upgrade prompts)."""
+        return self.ARCHIVE_FEED_LIMIT
 
     def can_use_ask_ai(self):
         return AskAIUsageTracker(self.user).can_use()
@@ -327,7 +344,8 @@ class Profile(models.Model):
             scheduled_feeds = []
         logging.user(
             self.user,
-            "~SN~FMTasking the scheduling immediate premium trial setup of ~SB%s~SN feeds..." % len(scheduled_feeds),
+            "~SN~FMTasking the scheduling immediate premium trial setup of ~SB%s~SN feeds..."
+            % len(scheduled_feeds),
         )
         SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
 
@@ -337,7 +355,8 @@ class Profile(models.Model):
 
         logging.user(
             self.user,
-            "~BY~SK~FW~SBNEW PREMIUM TRIAL! ~FR%s subscriptions, expires %s~SN!" % (subs.count(), self.premium_expire),
+            "~BY~SK~FW~SBNEW PREMIUM TRIAL! ~FR%s subscriptions, expires %s~SN!"
+            % (subs.count(), self.premium_expire),
         )
 
         return True
@@ -634,9 +653,9 @@ class Profile(models.Model):
             if settings.DEBUG:
                 application_context["return_url"] = f"https://a6d3-161-77-224-226.ngrok.io{paypal_return}"
             else:
-                application_context[
-                    "return_url"
-                ] = f"https://{Site.objects.get_current().domain}{paypal_return}"
+                application_context["return_url"] = (
+                    f"https://{Site.objects.get_current().domain}{paypal_return}"
+                )
             paypal_subscription = paypal_api.post(
                 f"/v1/billing/subscriptions",
                 {
@@ -2038,7 +2057,9 @@ class Profile(models.Model):
             logging.user(self.user, "~FM~SB~FRNot~FM sending trial expire for user: %s" % (self.user))
             return
 
-        emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk, email_type="premium_trial_expire")
+        emails_sent = MSentEmail.objects.filter(
+            receiver_user_id=self.user.pk, email_type="premium_trial_expire"
+        )
         day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
         for email in emails_sent:
             if email.date_sent > day_ago and not force:

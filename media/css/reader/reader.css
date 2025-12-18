@@ -14426,41 +14426,77 @@ form.opml_import_form input {
 
 .NB-modal-feedchooser .NB-feedchooser-info-counts {
     float: right;
-    font-size: 14px;
-    line-height: 16px;
+    font-size: 13px;
+    line-height: 14px;
     color: #427700;
-    margin: 12px 0 1px;
-    font-weight: bold;
-    text-shadow: 1px 1px 0 #F0F0F0;
+    margin: 10px 0 1px;
+    font-weight: 600;
+    background: rgba(66, 119, 0, 0.1);
+    padding: 4px 10px;
+    border-radius: 12px;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-info-sort {
-    font-size: 12px;
-    line-height: 16px;
-    color: #C0C0C0;
-    margin: 12px 0 0;
-    font-weight: bold;
-    text-shadow: 1px 1px 0 #F6F6F6;
+    font-size: 11px;
+    line-height: 14px;
+    color: #909090;
+    margin: 8px 0 0;
+    font-weight: 500;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-info-reset {
-    font-size: 12px;
-    line-height: 16px;
-    margin: 12px 0 0;
-    font-weight: bold;
-    text-shadow: 1px 1px 0 #F6F6F6;
+    font-size: 11px;
+    line-height: 14px;
+    margin: 8px 0 0;
+    font-weight: 600;
     display: none;
     cursor: pointer;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    color: #505050;
+    transition: all 0.15s ease;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-info-reset:hover {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #303030;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-info-counts.NB-full {
-    /*    color: #5090D0;*/
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.1);
 }
 
 .NB-modal-feedchooser .NB-feedchooser-info-counts.NB-error {
     display: block;
-    padding: 0;
-    color: #C05050;
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.1);
+}
+
+.NB-modal-feedchooser .NB-feedchooser-folder-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #808080;
+    margin: 8px 0 4px;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-folder-actions .NB-splash-link {
+    color: #606060;
+    cursor: pointer;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-folder-actions .NB-splash-link:hover {
+    color: #303030;
+    text-decoration: underline;
+}
+
+.NB-modal-feedchooser .NB-feedchooser-folder-actions-separator {
+    color: #c0c0c0;
 }
 
 .NB-modal-feedchooser .NB-modal-subtitle {
@@ -14705,6 +14741,29 @@ form.opml_import_form input {
     display: none;
 }
 
+.NB-modal-feedchooser .NB-folder-highlight-status {
+    position: absolute;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+}
+
+.NB-modal-feedchooser .NB-folder-highlight-status.NB-folder-on {
+    background-color: #6EA74A;
+    color: yellow;
+}
+
+.NB-modal-feedchooser .NB-folder-highlight-status.NB-folder-off {
+    background-color: #CC2A2E;
+    color: orange;
+}
+
 .NB-modal-feedchooser .NB-feedlist .feed .NB-feedlist-manage-icon:hover {
     background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat 3px 4px;
     background-size: 8px;
@@ -14728,7 +14787,17 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedlist .folder .NB-feedlist-collapse-icon {
-    display: none !important;
+    display: block;
+    opacity: 0.4;
+    transition: opacity 0.15s ease;
+}
+
+.NB-modal-feedchooser .NB-feedlist .folder .folder_title:hover .NB-feedlist-collapse-icon {
+    opacity: 0.8;
+}
+
+.NB-modal-feedchooser .NB-feedlist .folder .folder_title:hover .NB-feedlist-collapse-icon:hover {
+    opacity: 1;
 }
 
 .NB-modal-feedchooser .unread_count_positive {
@@ -15008,54 +15077,54 @@ form.opml_import_form input {
 /* ======================= */
 
 .NB-modal-feedchooser .NB-feedchooser-upgrade-banner {
-    margin: 0 0 16px;
-    padding: 16px 20px;
-    background: linear-gradient(135deg, #f8e71c 0%, #f5a623 100%);
+    margin: 16px 0 0;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(14, 165, 233, 0.12) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.3);
     border-radius: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(245, 166, 35, 0.3);
 }
 
 .NB-modal-feedchooser .NB-feedchooser-upgrade-banner:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(245, 166, 35, 0.4);
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.22) 0%, rgba(14, 165, 233, 0.18) 100%);
+    border-color: rgba(56, 189, 248, 0.45);
 }
 
 .NB-modal-feedchooser .NB-feedchooser-upgrade-banner-text {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 15px;
+    gap: 10px;
+    font-size: 14px;
     font-weight: 600;
-    color: #744210;
+    color: #0369a1;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-upgrade-banner-icon {
-    width: 24px;
-    height: 24px;
-    background: transparent url('/media/img/icons/nouns/growth-star.svg') no-repeat center center;
+    width: 22px;
+    height: 22px;
+    background: transparent url('/media/embed/icons/circular/premium.png') no-repeat center center;
     background-size: 20px;
-    filter: brightness(0.4) sepia(1) hue-rotate(-10deg);
 }
 
 .NB-modal-feedchooser .NB-feedchooser-upgrade-banner-arrow {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     background: transparent url('/media/embed/icons/nouns/right.svg') no-repeat center center;
-    background-size: 12px;
-    filter: brightness(0.4) sepia(1) hue-rotate(-10deg);
+    background-size: 10px;
+    filter: brightness(0) saturate(100%) invert(30%) sepia(98%) saturate(1200%) hue-rotate(180deg);
+    opacity: 0.7;
 }
 
-.NB-modal-feedchooser .NB-feedchooser-upgrade-banner-price {
-    font-size: 14px;
+.NB-modal-feedchooser .NB-feedchooser-upgrade-banner-description {
+    font-size: 13px;
     font-weight: 500;
-    color: #92610e;
+    color: #0369a1;
     margin-left: auto;
-    padding-right: 8px;
+    margin-right: 8px;
 }
 
 /* ========================= */
