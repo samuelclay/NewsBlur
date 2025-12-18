@@ -256,7 +256,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         if (NEWSBLUR.Globals.is_pro) {
             return { banner: '', description: '' };
         } else if (NEWSBLUR.Globals.is_archive) {
-            return { banner: 'Upgrade to Premium Pro', description: 'Subscribe to unlimited sites' };
+            return { banner: 'Upgrade to Premium Pro', description: 'Subscribe to ' + Inflector.commas(NEWSBLUR.Globals.pro_feed_limit) + ' sites' };
         } else if (NEWSBLUR.Globals.is_premium) {
             return { banner: 'Upgrade to Premium Archive', description: 'Subscribe to ' + Inflector.commas(NEWSBLUR.Globals.archive_feed_limit) + ' sites' };
         } else {
