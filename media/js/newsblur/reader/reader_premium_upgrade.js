@@ -2,9 +2,10 @@ NEWSBLUR.ReaderPremiumUpgrade = function (options) {
     options = options || {};
     var defaults = {
         'width': 880,
-        'height': 580,
+        'height': 'auto',
         'onOpen': _.bind(function () {
-            this.resize_modal();
+            // Resize after a brief delay to let content render
+            _.defer(_.bind(this.resize_modal, this));
         }, this),
         'onClose': _.bind(function () {
             dialog.data.hide().empty().remove();
@@ -174,6 +175,15 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-2' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Priority support'
+                        ]),
+                        $.make('li', { className: 'NB-premium-tier-upcoming-header' }, 'Coming soon:'),
+                        $.make('li', { className: 'NB-upcoming NB-3' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Natural language filters'
+                        ]),
+                        $.make('li', { className: 'NB-upcoming NB-4' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Natural language search'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
@@ -185,36 +195,48 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
     },
 
     make_tier_buttons: function (plan, $creditcards) {
-        var is_current_plan = (plan === 'premium' && NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro) ||
-                              (plan === 'archive' && NEWSBLUR.Globals.is_archive) ||
-                              (plan === 'pro' && NEWSBLUR.Globals.is_pro);
-
         var is_trial = NEWSBLUR.Globals.is_premium_trial;
         var has_renewal = NEWSBLUR.Globals.premium_renewal;
-        var active_provider = NEWSBLUR.Globals.active_provider;
 
+        // Determine user's current tier level (0=free, 1=premium, 2=archive, 3=pro)
+        var user_tier = this.get_user_tier();
+        var plan_tier = this.get_plan_tier(plan);
+
+        var is_current_plan = (plan === 'premium' && NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro) ||
+            (plan === 'archive' && NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro) ||
+            (plan === 'pro' && NEWSBLUR.Globals.is_pro);
+
+        // Current plan with active renewal - show status
         if (is_current_plan && !is_trial && has_renewal) {
-            // Already subscribed with active renewal - show "Change billing details"
             return $.make('div', { className: 'NB-premium-tier-status' }, [
-                $.make('div', { className: 'NB-premium-tier-status-icon' }),
-                $.make('div', { className: 'NB-premium-tier-status-text' }, 'You have a ' + this.plan_name(plan).toLowerCase() + ' subscription'),
+                $.make('div', { className: 'NB-premium-tier-status-active' }, [
+                    $.make('div', { className: 'NB-premium-tier-status-icon' }),
+                    $.make('div', { className: 'NB-premium-tier-status-text' }, 'Your ' + this.plan_name(plan).toLowerCase() + ' subscription is active')
+                ]),
                 $.make('div', { className: 'NB-provider-button-change NB-modal-submit-button NB-modal-submit-grey' }, 'Change billing details')
             ]);
-        } else if (is_current_plan && !is_trial && !has_renewal) {
-            // Subscribed but needs renewal - show "Restart your X subscription"
+        }
+
+        // Current plan without renewal - show restart button
+        if (is_current_plan && !is_trial && !has_renewal) {
             return $.make('div', { className: 'NB-premium-tier-buttons' }, [
+                $.make('div', { className: 'NB-premium-tier-status-active' }, [
+                    $.make('div', { className: 'NB-premium-tier-status-icon' }),
+                    $.make('div', { className: 'NB-premium-tier-status-text' }, 'Your ' + this.plan_name(plan).toLowerCase() + ' subscription is active')
+                ]),
                 $creditcards,
                 $.make('div', {
                     className: 'NB-provider-button-' + plan + ' NB-modal-submit-button NB-modal-submit-green'
                 }, 'Restart your ' + this.plan_name(plan).toLowerCase() + ' subscription'),
                 this.make_paypal_alternate(plan)
             ]);
-        } else if (is_trial && is_current_plan) {
-            // Trial user on this tier - show trial status and upgrade button
+        }
+
+        // Trial user viewing their trial tier - show trial status and upgrade button
+        if (is_trial && is_current_plan) {
             return $.make('div', { className: 'NB-premium-tier-buttons' }, [
                 $.make('div', { className: 'NB-premium-tier-trial-status' }, [
-                    'Your current plan · ',
-                    $.make('strong', NEWSBLUR.Globals.trial_days_remaining + ' days left')
+                    'You are trialing this plan'
                 ]),
                 $creditcards,
                 $.make('div', {
@@ -222,17 +244,54 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                 }, 'Upgrade to ' + this.plan_name(plan)),
                 this.make_paypal_alternate(plan)
             ]);
-        } else {
-            // New upgrade or trial user upgrading to different tier
-            return $.make('div', { className: 'NB-premium-tier-buttons' }, [
-                $creditcards,
+        }
+
+        // Higher tier user viewing lower tier - show "includes everything" and switch option
+        if (!is_trial && user_tier > plan_tier && user_tier > 0) {
+            var current_plan_name = this.plan_name(this.get_plan_name_from_tier(user_tier));
+            return $.make('div', { className: 'NB-premium-tier-status' }, [
+                $.make('div', { className: 'NB-premium-tier-status-included' }, [
+                    $.make('div', { className: 'NB-premium-tier-status-icon' }),
+                    $.make('div', { className: 'NB-premium-tier-status-text' }, 'Your ' + current_plan_name.toLowerCase() + ' subscription includes everything above')
+                ]),
                 $.make('div', {
-                    className: 'NB-provider-button-' + plan + ' NB-modal-submit-button NB-modal-submit-green'
-                }, 'Upgrade to ' + this.plan_name(plan)),
-                this.make_paypal_alternate(plan),
-                this.make_prorate_message(plan)
+                    className: 'NB-provider-button-' + plan + ' NB-modal-submit-button NB-modal-submit-grey'
+                }, 'Switch to ' + this.plan_name(plan).toLowerCase())
             ]);
         }
+
+        // Lower tier user viewing higher tier, or free/trial user - show upgrade button
+        return $.make('div', { className: 'NB-premium-tier-buttons' }, [
+            $creditcards,
+            $.make('div', {
+                className: 'NB-provider-button-' + plan + ' NB-modal-submit-button NB-modal-submit-green'
+            }, 'Upgrade to ' + this.plan_name(plan)),
+            this.make_paypal_alternate(plan),
+            this.make_prorate_message(plan)
+        ]);
+    },
+
+    get_user_tier: function () {
+        // Returns user's current tier level: 0=free/trial, 1=premium, 2=archive, 3=pro
+        if (NEWSBLUR.Globals.is_pro) return 3;
+        if (NEWSBLUR.Globals.is_archive) return 2;
+        if (NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_premium_trial) return 1;
+        return 0;
+    },
+
+    get_plan_tier: function (plan) {
+        // Returns tier level for a plan: 1=premium, 2=archive, 3=pro
+        if (plan === 'pro') return 3;
+        if (plan === 'archive') return 2;
+        if (plan === 'premium') return 1;
+        return 0;
+    },
+
+    get_plan_name_from_tier: function (tier) {
+        if (tier === 3) return 'pro';
+        if (tier === 2) return 'archive';
+        if (tier === 1) return 'premium';
+        return 'free';
     },
 
     plan_name: function (plan) {
@@ -260,18 +319,23 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
         if (!_.contains(['paypal', 'stripe'], NEWSBLUR.Globals.active_provider)) return;
         if (plan === 'premium') return; // No prorate for base premium
         return $.make('div', { className: 'NB-premium-prorate-message' },
-            'Your existing subscription will be prorated'
+            'Your subscription will be prorated'
         );
     },
 
     make_paypal_button: function () {
+        var self = this;
         jQuery.ajax({
             type: "GET",
             url: NEWSBLUR.URLs.paypal_checkout_js,
             dataType: "script",
             cache: true
         }).done(_.bind(function () {
-            $(".NB-paypal-button").each(function () {
+            var $buttons = $(".NB-paypal-button");
+            var buttons_to_render = $buttons.length;
+            var buttons_rendered = 0;
+
+            $buttons.each(function () {
                 var $button = $(this);
                 var plan = $button.data('plan');
                 var plan_id;
@@ -320,13 +384,37 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                     onError: function (err) {
                         console.log(err);
                     }
-                }).render('#' + random_id);
+                }).render('#' + random_id).then(function () {
+                    buttons_rendered++;
+                    if (buttons_rendered >= buttons_to_render) {
+                        self.resize_modal();
+                    }
+                });
             });
         }, this));
     },
 
     resize_modal: function () {
-        // Modal should show all content without scrolling
+        var $container = $('#simplemodal-container');
+        var $modal = $('.NB-modal-premium-upgrade');
+        if (!$container.length || !$modal.length) return;
+
+        // Get the natural height of the modal content
+        var content_height = $modal.outerHeight(true);
+        var window_height = $(window).height();
+        var max_height = window_height - 48; // Leave some padding
+
+        // Set container height to fit content exactly
+        var new_height = Math.max(500, Math.min(content_height, max_height));
+
+        $container.css({
+            'height': new_height,
+            'max-height': max_height
+        });
+
+        // Center the modal vertically
+        var top = Math.max(24, (window_height - new_height) / 2);
+        $container.css('top', top);
     },
 
     open_stripe_checkout: function (plan, $button) {

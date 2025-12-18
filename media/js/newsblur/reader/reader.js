@@ -3599,6 +3599,18 @@
             NEWSBLUR.feedchooser = new NEWSBLUR.ReaderFeedchooser(options);
         },
 
+        get_premium_menu_title: function () {
+            if (NEWSBLUR.Globals.is_pro) {
+                return 'Premium Pro Account';
+            } else if (NEWSBLUR.Globals.is_archive) {
+                return 'Upgrade to Premium Pro';
+            } else if (NEWSBLUR.Globals.is_premium) {
+                return 'Upgrade to Archive or Pro';
+            } else {
+                return 'Upgrade to Premium';
+            }
+        },
+
         open_premium_upgrade_modal: function (options) {
             NEWSBLUR.premium_upgrade = new NEWSBLUR.ReaderPremiumUpgrade(options);
         },
@@ -3923,6 +3935,10 @@
                         $.make('div', { className: 'NB-menu-manage-logout NB-modal-submit-green NB-modal-submit-button' }, 'Logout'),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Account')
                     ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-premium', role: "button" }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Premium Subscription')
+                    ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-profile-editor', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Profile &amp; Blurblog')
@@ -3935,11 +3951,6 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences')
                     ]),
-                    (show_chooser && $.make('li', { className: 'NB-menu-separator' })),
-                    (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-premium', role: "button" }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Upgrade to premium')
-                    ])),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-font' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
