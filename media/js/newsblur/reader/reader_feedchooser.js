@@ -165,6 +165,12 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
 
         // Set minimum height on the feedlist - resize_modal will shrink it if needed
         this.feedlist.$el.css({ 'min-height': '350px', 'max-height': '500px' });
+
+        // Trigger modal resize after feedlist is inserted so submit button is visible
+        _.defer(_.bind(function () {
+            this.resize();
+            this.resize_modal();
+        }, this));
     },
 
     resize_modal: function (previous_height) {
