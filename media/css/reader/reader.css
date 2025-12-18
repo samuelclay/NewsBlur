@@ -15383,28 +15383,32 @@ form.opml_import_form input {
     position: relative;
 }
 
-/* Tier width proportions: 20-27-30-23 (free column-premium-archive-pro) */
-.NB-premium-tier-column-free {
-    flex: 5;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.NB-premium-tier-column-free .NB-premium-tier {
-    flex: 1;
-}
-
+/* Tier width proportions for three premium tiers (34-38-28) */
 .NB-premium-tier-premium {
-    flex: 6.75;
+    flex: 34;
 }
 
 .NB-premium-tier-archive {
-    flex: 7.5;
+    flex: 38;
 }
 
 .NB-premium-tier-pro {
-    flex: 5.75;
+    flex: 28;
+}
+
+/* Bottom row: Free and Self-Hosted side by side */
+.NB-premium-tiers-bottom {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    margin-top: 12px;
+    align-items: stretch;
+}
+
+.NB-premium-tiers-bottom .NB-premium-tier {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Free tier muted styling */
@@ -15423,6 +15427,9 @@ form.opml_import_form input {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 12px 16px;
+    min-height: 44px;
+    box-sizing: border-box;
 }
 
 .NB-premium-tier-free .NB-premium-tier-name {
@@ -15440,7 +15447,11 @@ form.opml_import_form input {
 
 .NB-premium-tier-free .NB-premium-tier-features {
     background-color: #f9fafb;
-    padding: 10px 12px;
+    padding: 10px 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
+    align-content: start;
 }
 
 .NB-premium-tier-free .NB-premium-tier-features li {
@@ -15522,6 +15533,8 @@ form.opml_import_form input {
 .NB-premium-tier-selfhosted .NB-premium-tier-header {
     background: linear-gradient(135deg, #475569 0%, #334155 100%);
     padding: 12px 16px;
+    min-height: 44px;
+    box-sizing: border-box;
 }
 
 .NB-premium-tier-selfhosted .NB-premium-tier-label {
@@ -15541,7 +15554,12 @@ form.opml_import_form input {
 
 .NB-premium-tier-selfhosted .NB-premium-tier-features {
     background-color: #f8fafc;
-    padding: 10px 12px;
+    padding: 10px 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
+    align-content: start;
+    flex: 1;
 }
 
 .NB-premium-tier-selfhosted .NB-premium-tier-features li {
