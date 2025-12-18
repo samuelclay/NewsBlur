@@ -15062,19 +15062,31 @@ form.opml_import_form input {
 /* = Premium Upgrade Modal = */
 /* ========================= */
 
+/* Prevent scrolling - modal should fit viewport */
+#simplemodal-container:has(.NB-modal-premium-upgrade) .simplemodal-wrap {
+    overflow: visible !important;
+}
+
 .NB-modal-premium-upgrade {
-    padding: 24px;
+    padding: 20px 28px;
+    background: linear-gradient(180deg, #fafafa 0%, #f5f5f4 100%);
 }
 
 .NB-premium-upgrade-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .NB-modal-premium-upgrade .NB-modal-title {
     margin-bottom: 0;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #1a1a1a;
 }
 
 .NB-modal-premium-upgrade .NB-modal-title .NB-icon {
@@ -15083,99 +15095,140 @@ form.opml_import_form input {
 }
 
 .NB-premium-trial-badge {
-    padding: 6px 12px;
-    background: linear-gradient(135deg, #fff9e6 0%, #fff3d4 100%);
-    border: 1px solid #e6c86e;
+    padding: 5px 10px;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 1px solid #fcd34d;
     border-radius: 4px;
-    font-size: 12px;
-    color: #6a5818;
+    font-size: 11px;
+    color: #92400e;
     white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(251, 191, 36, 0.1);
 }
 
 .NB-premium-trial-badge strong {
-    color: #c4880a;
+    color: #d97706;
     font-size: 13px;
+    font-weight: 700;
 }
 
 /* Horizontal tier layout */
 .NB-premium-tiers {
     display: flex;
     flex-direction: row;
-    gap: 16px;
+    gap: 12px;
     align-items: stretch;
 }
 
 .NB-premium-tier {
     flex: 1;
-    background: #F7F7F5;
+    background: #ffffff;
     border-radius: 8px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.04),
+        0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+/* Tier width proportions: 36-36-28 */
+.NB-premium-tier-premium,
+.NB-premium-tier-archive {
+    flex: 9;
+}
+
+.NB-premium-tier-pro {
+    flex: 7;
 }
 
 .NB-premium-tier:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        0 12px 32px rgba(0, 0, 0, 0.06);
+    transform: translateY(-4px);
 }
 
+/* Tier header styling */
 .NB-premium-tier-header {
-    padding: 20px 16px;
-    background: #505050;
-    color: white;
+    padding: 20px 16px 18px;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle pattern overlay for headers */
+.NB-premium-tier-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 40%);
+    pointer-events: none;
 }
 
 .NB-premium-tier-premium .NB-premium-tier-header {
-    background: linear-gradient(135deg, #5cb85c 0%, #449d44 100%);
+    background: linear-gradient(145deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
 }
 
 .NB-premium-tier-archive .NB-premium-tier-header {
-    background: linear-gradient(135deg, #5bc0de 0%, #31b0d5 100%);
+    background: linear-gradient(145deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
 }
 
 .NB-premium-tier-pro .NB-premium-tier-header {
-    background: linear-gradient(135deg, #f0ad4e 0%, #ec971f 100%);
+    background: linear-gradient(145deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
 }
 
 .NB-premium-tier-name {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     margin-bottom: 8px;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+    position: relative;
 }
 
 .NB-premium-tier-price {
-    font-size: 14px;
-    opacity: 0.9;
+    position: relative;
+    color: #ffffff;
 }
 
 .NB-premium-tier-price-amount {
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    display: inline-block;
 }
 
 .NB-premium-tier-price-period {
-    font-size: 14px;
-    opacity: 0.8;
+    font-size: 15px;
+    font-weight: 500;
+    opacity: 0.85;
+    margin-left: 2px;
 }
 
+/* Features list */
 .NB-premium-tier-features {
     flex: 1;
     list-style: none;
     margin: 0;
-    padding: 16px;
-    font-size: 13px;
-    color: #505050;
-    overflow-y: auto;
-    max-height: 320px;
+    padding: 14px 16px;
+    font-size: 12px;
+    color: #374151;
+    line-height: 1.4;
 }
 
 .NB-premium-tier-features li {
-    padding: 8px 0 8px 24px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 5px 0 5px 26px;
     position: relative;
 }
 
@@ -15183,40 +15236,151 @@ form.opml_import_form input {
     border-bottom: none;
 }
 
-.NB-premium-tier-features li::before {
-    content: '';
+/* Feature bullet icons */
+.NB-premium-tier-features li .NB-premium-bullet-image {
     position: absolute;
     left: 0;
-    top: 10px;
-    width: 16px;
-    height: 16px;
-    background: transparent url('/media/embed/icons/circular/newuser_icn_setup.png') no-repeat center center;
-    background-size: 14px;
+    top: 5px;
+    width: 18px;
+    height: 18px;
+    background-size: 18px;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
+/* Premium tier icons with individual vivid colors */
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-1 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-sheets-100.png');
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);  /* green */
+}
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-2 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-lightning-bolt-100.png');
+    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%); /* orange */
+}
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-3 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-comics-magazine-100.png');
+    filter: invert(36%) sepia(87%) saturate(2000%) hue-rotate(310deg) brightness(95%) contrast(100%);  /* pink */
+}
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-4 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);  /* blue */
+}
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-5 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-tags-100.png');
+    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);  /* purple */
+}
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-6 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-security-wi-fi-100.png');
+    filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(140deg) brightness(95%) contrast(95%);   /* teal */
+}
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-7 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-rss-100.png');
+    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);  /* red */
+}
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-8 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-activity-history-100.png');
+    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);   /* cyan */
+}
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-9 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/direction_black.svg');
+    filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);  /* violet */
+}
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-10 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-knife-and-spatchula-100.png');
+    filter: invert(60%) sepia(80%) saturate(1500%) hue-rotate(35deg) brightness(100%) contrast(100%);  /* yellow-gold */
+}
+
+/* Archive tier icons with individual vivid colors */
+.NB-premium-tier-features-archive li.NB-1 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-bursts-100.png');
+    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);  /* red */
+}
+.NB-premium-tier-features-archive li.NB-2 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-relax-with-book-100.png');
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);   /* green */
+}
+.NB-premium-tier-features-archive li.NB-3 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-filing-cabinet-100.png');
+    filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);   /* brown-orange */
+}
+.NB-premium-tier-features-archive li.NB-4 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-quadcopter-100.png');
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);  /* blue */
+}
+.NB-premium-tier-features-archive li.NB-5 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/direction_black.svg');
+    filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);  /* violet */
+}
+.NB-premium-tier-features-archive li.NB-6 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-rss-100.png');
+    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%); /* orange */
+}
+.NB-premium-tier-features-archive li.NB-7 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-calendar-100.png');
+    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);   /* cyan */
+}
+.NB-premium-tier-features-archive li.NB-8 .NB-premium-bullet-image {
+    background-image: url('/media/img/icons/nouns/prompt.svg');
+    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);  /* purple */
+}
+
+/* Pro tier icons with individual vivid colors */
+.NB-premium-tier-features-pro li.NB-1 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-lightning-bolt-100.png');
+    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%); /* orange */
+}
+.NB-premium-tier-features-pro li.NB-2 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-pyramids-100.png');
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
+}
+
+
+/* "Everything in X, plus:" styling */
 .NB-premium-tier-features li.NB-premium-tier-includes {
-    font-weight: bold;
-    color: #337ab7;
+    font-weight: 600;
     padding-left: 0;
+    padding-top: 0;
+    padding-bottom: 6px;
+    margin-bottom: 2px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.NB-premium-tier-archive .NB-premium-tier-features li.NB-premium-tier-includes {
+    color: #2563eb;
+}
+
+.NB-premium-tier-pro .NB-premium-tier-features li.NB-premium-tier-includes {
+    color: #d97706;
 }
 
 .NB-premium-tier-features li.NB-premium-tier-includes::before {
     display: none;
 }
 
+/* Dog image in premium tier */
 .NB-premium-dog-image {
     display: block;
-    margin: 8px auto 0;
-    width: 80px;
-    height: 60px;
-    border: 1px solid #303030;
+    margin: 4px auto 0;
+    width: 56px;
+    height: 42px;
+    border: 1px solid #e5e7eb;
     border-radius: 4px;
+    object-fit: cover;
 }
 
+.NB-premium-hungry-dog {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+/* Actions section */
 .NB-premium-tier-actions {
-    padding: 16px;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    background: #fff;
+    padding: 16px 16px 18px;
+    background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .NB-premium-tier-buttons {
@@ -15224,82 +15388,183 @@ form.opml_import_form input {
 }
 
 .NB-premium-tier-buttons .NB-creditcards {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.NB-premium-tier:hover .NB-premium-tier-buttons .NB-creditcards {
+    opacity: 1;
 }
 
 .NB-premium-tier-buttons .NB-creditcards img {
-    width: 24px;
+    width: 26px;
     height: 18px;
-    margin: 0 2px;
+    margin: 0 3px;
 }
 
+/* Upgrade buttons - tier specific */
 .NB-premium-tier-buttons .NB-modal-submit-button {
     width: 100%;
     padding: 12px 16px;
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 600;
     box-sizing: border-box;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: -0.01em;
+}
+
+.NB-premium-tier-premium .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green {
+    background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+    box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.NB-premium-tier-premium .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green:hover {
+    background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.NB-premium-tier-archive .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green {
+    background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.NB-premium-tier-archive .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green:hover {
+    background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.NB-premium-tier-pro .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green {
+    background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+    box-shadow: 0 1px 2px rgba(217, 119, 6, 0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.NB-premium-tier-pro .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green:hover {
+    background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
 }
 
 .NB-premium-tier-buttons .NB-provider-alternate {
-    margin-top: 12px;
-    font-size: 12px;
-    color: #888;
+    margin-top: 8px;
+    font-size: 10px;
+    color: #6b7280;
 }
 
 .NB-premium-tier-buttons .NB-provider-alternate .NB-modal-submit-button {
     margin-top: 4px;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.NB-premium-tier-buttons .NB-provider-alternate .NB-modal-submit-button:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
 }
 
 .NB-premium-tier-buttons .NB-paypal-button {
-    margin-top: 8px;
+    margin-top: 6px;
 }
 
 .NB-premium-tier-buttons .NB-premium-prorate-message {
-    margin-top: 8px;
+    margin-top: 10px;
     font-size: 11px;
-    color: #888;
+    color: #9ca3af;
+    font-style: italic;
 }
 
+/* Already subscribed status */
 .NB-premium-tier-status {
     text-align: center;
-    padding: 8px 0;
+    padding: 12px 0;
 }
 
 .NB-premium-tier-status-icon {
-    width: 32px;
-    height: 32px;
-    margin: 0 auto 8px;
-    background: transparent url('/media/embed/icons/circular/newuser_icn_setup.png') no-repeat center center;
-    background-size: 28px;
+    width: 36px;
+    height: 36px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-premium-tier-premium .NB-premium-tier-status-icon {
+    background: rgba(34, 197, 94, 0.12);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: 18px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.NB-premium-tier-archive .NB-premium-tier-status-icon {
+    background: rgba(59, 130, 246, 0.12);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: 18px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.NB-premium-tier-pro .NB-premium-tier-status-icon {
+    background: rgba(245, 158, 11, 0.12);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d97706' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: 18px;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .NB-premium-tier-status-text {
-    font-size: 14px;
-    font-weight: bold;
-    color: #5cb85c;
-    margin-bottom: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+
+.NB-premium-tier-premium .NB-premium-tier-status-text {
+    color: #16a34a;
+}
+
+.NB-premium-tier-archive .NB-premium-tier-status-text {
+    color: #2563eb;
+}
+
+.NB-premium-tier-pro .NB-premium-tier-status-text {
+    color: #d97706;
 }
 
 .NB-premium-tier-status .NB-modal-submit-button {
     font-size: 12px;
-    padding: 8px 12px;
+    padding: 10px 14px;
 }
 
+/* Trial status badge in tier */
 .NB-premium-tier-trial-status {
     text-align: center;
-    padding: 8px 12px;
-    margin-bottom: 12px;
-    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-    border: 1px solid #81c784;
-    border-radius: 4px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border: 1px solid #6ee7b7;
+    border-radius: 6px;
     font-size: 12px;
-    color: #2e7d32;
+    color: #047857;
+}
+
+.NB-premium-tier-trial-status strong {
+    font-weight: 700;
 }
 
 /* Responsive: stack on mobile */
 @media (max-width: 900px) {
+    .NB-modal-premium-upgrade {
+        padding: 24px 20px;
+    }
+
     .NB-premium-tiers {
         flex-direction: column;
+        gap: 16px;
     }
 
     .NB-premium-tier {
@@ -15308,6 +15573,14 @@ form.opml_import_form input {
 
     .NB-premium-tier-features {
         max-height: none;
+    }
+
+    .NB-premium-tier-header {
+        padding: 24px 16px 20px;
+    }
+
+    .NB-premium-tier-price-amount {
+        font-size: 36px;
     }
 }
 
