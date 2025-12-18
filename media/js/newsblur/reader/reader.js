@@ -1200,9 +1200,10 @@
             $('.NB-progress-counts', $progress).hide();
             $('.NB-progress-percentage', $progress).hide();
             $progress.addClass('NB-progress-error').addClass('NB-progress-big');
+            var limit_text = NEWSBLUR.Globals.max_feed_limit ? Inflector.commas(NEWSBLUR.Globals.max_feed_limit) : 'your';
             $('.NB-progress-link', $progress).html($.make('div', {
                 className: 'NB-modal-submit-button NB-modal-submit-green NB-menu-manage-feedchooser'
-            }, ['Choose your 64 sites']));
+            }, ['Choose ' + limit_text + ' sites']));
 
             this.show_progress_bar();
         },
@@ -1253,8 +1254,8 @@
                 } else {
                     _.defer(_.bind(this.open_feedchooser_modal, this), 100);
                 }
-            } else if (!NEWSBLUR.Globals.is_premium &&
-                NEWSBLUR.assets.feeds.active().length > 64) {
+            } else if (NEWSBLUR.Globals.max_feed_limit &&
+                NEWSBLUR.assets.feeds.active().length > NEWSBLUR.Globals.max_feed_limit) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
             }
         },
@@ -3886,7 +3887,7 @@
                     ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64 sites'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your ' + (NEWSBLUR.Globals.max_feed_limit ? Inflector.commas(NEWSBLUR.Globals.max_feed_limit) : '') + ' sites'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Enable the sites you want')
                     ])),
                     (NEWSBLUR.Globals.is_premium && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser', role: "button" }, [

@@ -40,6 +40,7 @@
       'is_premium_trial'        : {{ user_profile.is_premium_trial|yesno:"true,false,false" }},
       'trial_days_remaining'    : {% if user_profile.trial_days_remaining %}{{ user_profile.trial_days_remaining }}{% else %}null{% endif %},
       'can_start_trial'         : {{ user_profile.can_start_trial|yesno:"true,false" }},
+      'max_feed_limit'          : {% if user_profile.max_feed_limit %}{{ user_profile.max_feed_limit }}{% else %}null{% endif %},
       'secret_token'            : "{{ user_profile.secret_token }}",
       'username'                : "{{ user.username|safe }}",
       {% if user.pk %}'user_id'                 : {{ user.pk }},{% endif %}

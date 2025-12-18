@@ -2997,13 +2997,14 @@ def feeds_trainer(request):
 @ajax_login_required
 @json.json_view
 def save_feed_chooser(request):
-    is_premium = request.user.profile.is_premium
+    max_feed_limit = request.user.profile.max_feed_limit
     approved_feeds = request.POST.getlist("approved_feeds") or request.POST.getlist("approved_feeds[]")
     approved_feeds = [int(feed_id) for feed_id in approved_feeds if feed_id]
     approve_all = False
-    if not is_premium:
-        approved_feeds = approved_feeds[:64]
-    elif is_premium and not approved_feeds:
+    if max_feed_limit is not None:
+        approved_feeds = approved_feeds[:max_feed_limit]
+    elif not approved_feeds:
+        # Pro user (unlimited) with no approved feeds means approve all
         approve_all = True
     activated = 0
     usersubs = UserSubscription.objects.filter(user=request.user)

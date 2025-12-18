@@ -33,7 +33,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
     runner: function () {
         var self = this;
         this.start = new Date();
-        this.MAX_FEEDS = 64;
+        this.MAX_FEEDS = NEWSBLUR.Globals.max_feed_limit;
 
         NEWSBLUR.assets.feeds.each(function (feed) {
             self.add_feed_to_decline(feed);
@@ -95,14 +95,16 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         // so we need to insert the actual feedlist.$el after modal creation
         var $feedsPlaceholder = $.make('div', { className: 'NB-feedchooser-feeds-placeholder' });
 
+        var upgrade_text = this.get_upgrade_text();
+
         this.$modal = $.make('div', { className: 'NB-modal-feedchooser NB-modal' }, [
-            // Upgrade banner for free users
-            (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-upgrade-banner' }, [
+            // Upgrade banner for users with limits
+            (this.MAX_FEEDS && $.make('div', { className: 'NB-feedchooser-upgrade-banner' }, [
                 $.make('div', { className: 'NB-feedchooser-upgrade-banner-text' }, [
                     $.make('div', { className: 'NB-feedchooser-upgrade-banner-icon' }),
-                    'Want more sites? Go Premium'
+                    upgrade_text.banner
                 ]),
-                $.make('div', { className: 'NB-feedchooser-upgrade-banner-price' }, '$36/year'),
+                $.make('div', { className: 'NB-feedchooser-upgrade-banner-price' }, upgrade_text.price),
                 $.make('div', { className: 'NB-feedchooser-upgrade-banner-arrow' })
             ])),
             // Feed chooser content
@@ -114,7 +116,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                     ]),
                     $.make('h2', { className: 'NB-modal-subtitle' }, [
                         $.make('b', [
-                            'You can follow up to ' + this.MAX_FEEDS + ' sites.'
+                            'You can follow up to ' + Inflector.commas(this.MAX_FEEDS) + ' sites.'
                         ]),
                         $.make('br'),
                         'You can always change these.'
@@ -126,10 +128,16 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                 (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info' }, [
                     $.make('h2', { className: 'NB-modal-title' }, [
                         $.make('div', { className: 'NB-icon' }),
-                        'Mute sites',
+                        this.MAX_FEEDS ? 'Choose sites' : 'Mute sites',
                         $.make('div', { className: 'NB-icon-dropdown' })
                     ]),
-                    $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link' }, 'Turn every site on'),
+                    (this.MAX_FEEDS && $.make('h2', { className: 'NB-modal-subtitle' }, [
+                        $.make('b', [
+                            'You can follow up to ' + Inflector.commas(this.MAX_FEEDS) + ' sites.'
+                        ])
+                    ])),
+                    (this.MAX_FEEDS && $.make('div', { className: 'NB-feedchooser-info-sort' }, 'Auto-Selected By Popularity')),
+                    $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link' }, this.MAX_FEEDS ? 'Reset to popular sites' : 'Turn every site on'),
                     $.make('div', { className: 'NB-feedchooser-info-counts' })
                 ])),
                 $feedsPlaceholder,
@@ -209,16 +217,31 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         this.update_counts();
     },
 
+    get_upgrade_text: function () {
+        if (NEWSBLUR.Globals.is_pro) {
+            return { banner: '', price: '' };
+        } else if (NEWSBLUR.Globals.is_archive) {
+            return { banner: 'Want unlimited sites? Go Pro', price: '$299/year' };
+        } else if (NEWSBLUR.Globals.is_premium) {
+            return { banner: 'Want more sites? Go Premium Archive', price: '$99/year' };
+        } else {
+            return { banner: 'Want more sites? Go Premium', price: '$36/year' };
+        }
+    },
+
     update_counts: function (autoselected) {
         var $count = $('.NB-feedchooser-info-counts');
         var approved = this.feedlist.folder_view.highlighted_count();
         var $submit = $('.NB-modal-submit-save', this.$modal);
-        var difference = approved - this.MAX_FEEDS;
         var muted = this.feed_count - approved;
+        var has_limit = this.MAX_FEEDS !== null;
+        var over_limit = has_limit && approved > this.MAX_FEEDS;
+        var difference = has_limit ? approved - this.MAX_FEEDS : 0;
 
         $count.text(approved + '/' + Inflector.commas(this.feed_count));
 
-        if (NEWSBLUR.Globals.is_premium) {
+        if (NEWSBLUR.Globals.is_premium && !has_limit) {
+            // Pro user - no limits
             $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false);
             if (muted == 0) {
                 $submit.val('Enable all ' + Inflector.pluralize('site', this.feed_count, true));
@@ -226,14 +249,34 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                 $submit.val('Mute ' + Inflector.pluralize('site', muted, true));
             }
             $count.toggleClass('NB-full', muted == 0);
-        } else {
+        } else if (NEWSBLUR.Globals.is_premium && has_limit) {
+            // Premium or Archive user with limits
             $count.toggleClass('NB-full', approved == this.MAX_FEEDS);
-            $count.toggleClass('NB-error', approved > this.MAX_FEEDS);
+            $count.toggleClass('NB-error', over_limit);
+
+            if (over_limit) {
+                $submit.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true).val('Too many sites! Deselect ' + (
+                    difference == 1 ?
+                        '1 site...' :
+                        difference + ' sites...'
+                ));
+            } else {
+                $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false);
+                if (muted == 0) {
+                    $submit.val('Enable all ' + Inflector.pluralize('site', this.feed_count, true));
+                } else {
+                    $submit.val('Mute ' + Inflector.pluralize('site', muted, true));
+                }
+            }
+        } else {
+            // Free user
+            $count.toggleClass('NB-full', approved == this.MAX_FEEDS);
+            $count.toggleClass('NB-error', over_limit);
 
             if (!autoselected) {
                 this.hide_autoselected_label();
             }
-            if (approved > this.MAX_FEEDS) {
+            if (over_limit) {
                 $submit.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true).val('Too many sites! Deselect ' + (
                     difference == 1 ?
                         '1 site...' :
@@ -271,41 +314,50 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         }
 
         var active_feeds = feeds.any(function (feed) { return feed.get('active'); });
+        var has_limit = this.MAX_FEEDS !== null;
+
         if (!active_feeds || reset) {
-            // Get feed subscribers bottom cut-off
-            var min_subscribers = _.last(
-                _.first(
-                    _.map(feeds.select(function (f) { return !f.has_exception; }), function (f) { return f.get('subs'); }).sort(function (a, b) {
-                        return b - a;
-                    }),
-                    this.MAX_FEEDS
-                )
-            );
-
-            // Decline everything
-            var approve_feeds = [];
-            feeds.each(function (feed) {
-                if (feed.get('subs') >= min_subscribers) {
-                    approve_feeds.push(feed);
-                }
-            });
-
-            // Approve feeds in subs
-            _.each(approve_feeds, function (feed) {
-                if (feed.get('subs') > min_subscribers &&
-                    approved < self.MAX_FEEDS &&
-                    !feed.get('has_exception')) {
-                    approved++;
+            if (!has_limit) {
+                // Pro user with no limit - approve all feeds
+                feeds.each(function (feed) {
                     self.add_feed_to_approve(feed, false);
-                }
-            });
-            _.each(approve_feeds, function (feed) {
-                if (feed.get('subs') == min_subscribers &&
-                    approved < self.MAX_FEEDS) {
-                    approved++;
-                    self.add_feed_to_approve(feed, false);
-                }
-            });
+                });
+            } else {
+                // Get feed subscribers bottom cut-off
+                var min_subscribers = _.last(
+                    _.first(
+                        _.map(feeds.select(function (f) { return !f.has_exception; }), function (f) { return f.get('subs'); }).sort(function (a, b) {
+                            return b - a;
+                        }),
+                        this.MAX_FEEDS
+                    )
+                );
+
+                // Decline everything
+                var approve_feeds = [];
+                feeds.each(function (feed) {
+                    if (feed.get('subs') >= min_subscribers) {
+                        approve_feeds.push(feed);
+                    }
+                });
+
+                // Approve feeds in subs
+                _.each(approve_feeds, function (feed) {
+                    if (feed.get('subs') > min_subscribers &&
+                        approved < self.MAX_FEEDS &&
+                        !feed.get('has_exception')) {
+                        approved++;
+                        self.add_feed_to_approve(feed, false);
+                    }
+                });
+                _.each(approve_feeds, function (feed) {
+                    if (feed.get('subs') == min_subscribers &&
+                        approved < self.MAX_FEEDS) {
+                        approved++;
+                        self.add_feed_to_approve(feed, false);
+                    }
+                });
+            }
 
             this.show_autoselected_label();
         } else {

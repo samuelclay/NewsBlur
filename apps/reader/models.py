@@ -2285,18 +2285,21 @@ class UserSubscriptionFolders(models.Model):
             self.save()
 
     def auto_activate(self):
-        if self.user.profile.is_premium:
-            return
-
-        active_count = UserSubscription.objects.filter(user=self.user, active=True).count()
-        if active_count:
-            return
+        max_feed_limit = self.user.profile.max_feed_limit
+        if max_feed_limit is None:
+            # Pro user with unlimited feeds - activate all
+            pass
+        else:
+            active_count = UserSubscription.objects.filter(user=self.user, active=True).count()
+            if active_count:
+                return
 
         all_feeds = self.flat()
         if not all_feeds:
             return
 
-        for feed in all_feeds[:64]:
+        feeds_to_activate = all_feeds if max_feed_limit is None else all_feeds[:max_feed_limit]
+        for feed in feeds_to_activate:
             try:
                 sub = UserSubscription.objects.get(user=self.user, feed=feed)
             except UserSubscription.DoesNotExist:
