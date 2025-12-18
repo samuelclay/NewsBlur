@@ -56,7 +56,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         // Bind events to the DOM modal after SimpleModal has cloned and inserted it
         // (binding to this.$modal before open_modal creates stale closure references)
         var self = this;
-        setTimeout(function() {
+        setTimeout(function () {
             var $domModal = $('.NB-modal-feedchooser');
             $domModal.bind('mousedown', $.rescope(self.handle_mousedown, self));
             $domModal.bind('change', $.rescope(self.handle_change, self));
@@ -106,41 +106,43 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         this.$modal = $.make('div', { className: 'NB-modal-feedchooser NB-modal' }, [
             // Feed chooser content
             $.make('div', { className: 'NB-feedchooser-type NB-feedchooser-left' }, [
-                (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info' }, [
-                    $.make('div', { className: 'NB-feedchooser-info-type' }, [
-                        'Standard Account',
-                        $.make('span', { className: 'NB-feedchooser-subtitle-type-price' }, 'Free'),
-                    ]),
-                    $.make('h2', { className: 'NB-modal-subtitle' }, [
-                        $.make('b', [
-                            'You can follow up to ' + Inflector.commas(this.MAX_FEEDS) + ' sites.'
-                        ]),
-                        $.make('br'),
-                        'You can always change these.'
-                    ]),
-                    $.make('div', { className: 'NB-feedchooser-info-counts' }),
-                    $.make('div', { className: 'NB-feedchooser-info-sort' }, 'Auto-selected by popularity'),
-                    $.make('div', { className: 'NB-feedchooser-info-reset' }, 'Auto-select top sites')
-                ])),
-                (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info' }, [
-                    $.make('h2', { className: 'NB-modal-title' }, [
-                        $.make('div', { className: 'NB-icon' }),
-                        this.MAX_FEEDS ? 'Choose sites' : 'Mute sites',
-                        $.make('div', { className: 'NB-icon-dropdown' })
-                    ]),
-                    (this.MAX_FEEDS && $.make('h2', { className: 'NB-modal-subtitle' }, [
-                        $.make('b', [
-                            'You can follow up to ' + Inflector.commas(this.MAX_FEEDS) + ' sites.'
-                        ])
+                // Modal title with icon and dropdown
+                $.make('h2', { className: 'NB-modal-title' }, [
+                    $.make('div', { className: 'NB-icon' }),
+                    this.MAX_FEEDS ? 'Choose sites' : 'Mute sites',
+                    $.make('div', { className: 'NB-icon-dropdown' })
+                ]),
+                // Unified header card
+                $.make('div', { className: 'NB-feedchooser-header' }, [
+                    // Inline upgrade prompt (only for users with limits)
+                    (this.MAX_FEEDS && upgrade_text.banner && $.make('div', { className: 'NB-feedchooser-upgrade-inline' }, [
+                        $.make('span', { className: 'NB-feedchooser-upgrade-icon' }),
+                        $.make('span', { className: 'NB-feedchooser-upgrade-text' }, upgrade_text.banner),
+                        $.make('span', { className: 'NB-feedchooser-upgrade-limit' }, upgrade_text.description),
+                        $.make('span', { className: 'NB-feedchooser-upgrade-arrow' })
                     ])),
-                    (this.MAX_FEEDS && $.make('div', { className: 'NB-feedchooser-info-sort' }, 'Auto-selected by popularity')),
-                    $.make('div', { className: 'NB-feedchooser-info-reset' }, this.MAX_FEEDS ? 'Auto-select top sites' : 'Enable all sites'),
-                    $.make('div', { className: 'NB-feedchooser-info-counts' })
-                ])),
-                $.make('div', { className: 'NB-feedchooser-folder-actions' }, [
-                    $.make('span', { className: 'NB-feedchooser-collapse-all NB-splash-link' }, 'Collapse all'),
-                    $.make('span', { className: 'NB-feedchooser-folder-actions-separator' }, '|'),
-                    $.make('span', { className: 'NB-feedchooser-expand-all NB-splash-link' }, 'Expand all')
+                    // Progress bar (hidden for Pro users with no limit)
+                    $.make('div', { className: 'NB-feedchooser-progress-container' }, [
+                        $.make('div', { className: 'NB-feedchooser-progress-track' }, [
+                            $.make('div', { className: 'NB-feedchooser-progress-bar' })
+                        ]),
+                        $.make('div', { className: 'NB-feedchooser-progress-label' })
+                    ]),
+                ]),
+                // Actions row - directly above feed list
+                $.make('div', { className: 'NB-feedchooser-actions-row' }, [
+                    $.make('div', { className: 'NB-feedchooser-actions-left' }, [
+                        $.make('div', { className: 'NB-feedchooser-info-reset' }, this.MAX_FEEDS ? 'Auto-select top sites' : 'Enable all sites'),
+                        $.make('div', { className: 'NB-feedchooser-info-sort' }, 'Auto-selected by popularity')
+                    ]),
+                    $.make('div', { className: 'NB-feedchooser-actions-right' }, [
+                        $.make('div', { className: 'NB-feedchooser-usage-text' }),
+                        $.make('div', { className: 'NB-feedchooser-folder-actions' }, [
+                            $.make('span', { className: 'NB-feedchooser-collapse-all NB-splash-link' }, 'Collapse all'),
+                            $.make('span', { className: 'NB-feedchooser-folder-actions-separator' }, '|'),
+                            $.make('span', { className: 'NB-feedchooser-expand-all NB-splash-link' }, 'Expand all')
+                        ])
+                    ])
                 ]),
                 $feedsPlaceholder,
                 $.make('form', { className: 'NB-feedchooser-form' }, [
@@ -151,16 +153,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
                 ]).bind('submit', function (e) {
                     e.preventDefault();
                     return false;
-                }),
-                // Upgrade banner at bottom for users with limits
-                (this.MAX_FEEDS && $.make('div', { className: 'NB-feedchooser-upgrade-banner' }, [
-                    $.make('div', { className: 'NB-feedchooser-upgrade-banner-text' }, [
-                        $.make('div', { className: 'NB-feedchooser-upgrade-banner-icon' }),
-                        upgrade_text.banner
-                    ]),
-                    $.make('div', { className: 'NB-feedchooser-upgrade-banner-description' }, upgrade_text.description),
-                    $.make('div', { className: 'NB-feedchooser-upgrade-banner-arrow' })
-                ]))
+                })
             ])
         ]);
 
@@ -239,20 +232,39 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         });
     },
 
+    get_tier_class: function () {
+        if (NEWSBLUR.Globals.is_pro) return 'pro';
+        if (NEWSBLUR.Globals.is_archive) return 'archive';
+        if (NEWSBLUR.Globals.is_premium) return 'premium';
+        return 'free';
+    },
+
+    get_tier_label: function () {
+        if (NEWSBLUR.Globals.is_pro) return 'Pro';
+        if (NEWSBLUR.Globals.is_archive) return 'Archive';
+        if (NEWSBLUR.Globals.is_premium) {
+            if (NEWSBLUR.Globals.is_premium_trial) {
+                var days = NEWSBLUR.Globals.trial_days_remaining;
+                return 'Premium Trial' + (days ? ' (' + days + ' days)' : '');
+            }
+            return 'Premium';
+        }
+        return 'Free';
+    },
+
     get_upgrade_text: function () {
         if (NEWSBLUR.Globals.is_pro) {
             return { banner: '', description: '' };
         } else if (NEWSBLUR.Globals.is_archive) {
-            return { banner: 'Upgrade for unlimited sites', description: 'Pro: Unlimited sites' };
+            return { banner: 'Upgrade to Premium Pro', description: 'Subscribe to unlimited sites' };
         } else if (NEWSBLUR.Globals.is_premium) {
-            return { banner: 'Upgrade for more sites', description: 'Archive: Up to ' + Inflector.commas(NEWSBLUR.Globals.archive_feed_limit) + ' sites' };
+            return { banner: 'Upgrade to Premium Archive', description: 'Subscribe to ' + Inflector.commas(NEWSBLUR.Globals.archive_feed_limit) + ' sites' };
         } else {
-            return { banner: 'Upgrade for more sites', description: 'Premium: Up to ' + Inflector.commas(NEWSBLUR.Globals.premium_feed_limit) + ' sites' };
+            return { banner: 'Upgrade to Premium', description: 'Subscribe to ' + Inflector.commas(NEWSBLUR.Globals.premium_feed_limit) + ' sites' };
         }
     },
 
     update_counts: function (autoselected) {
-        var $count = $('.NB-feedchooser-info-counts');
         var approved = this.feedlist.folder_view.highlighted_count();
         var $submit = $('.NB-modal-submit-save', this.$modal);
         var muted = this.feed_count - approved;
@@ -260,8 +272,54 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
         var over_limit = has_limit && approved > this.MAX_FEEDS;
         var difference = has_limit ? approved - this.MAX_FEEDS : 0;
 
-        $count.text(approved + '/' + Inflector.commas(this.feed_count));
+        // Update usage text in actions row
+        var $usageText = $('.NB-feedchooser-usage-text');
+        $usageText.removeClass('NB-state-ok NB-state-error');
+        if (has_limit) {
+            $usageText.text(Inflector.commas(approved) + ' of ' + Inflector.commas(this.MAX_FEEDS) + ' sites');
+            if (over_limit) {
+                $usageText.addClass('NB-state-error');
+            } else {
+                $usageText.addClass('NB-state-ok');
+            }
+        } else {
+            $usageText.text(Inflector.commas(approved) + ' sites');
+        }
 
+        // Update progress bar
+        var $container = $('.NB-feedchooser-progress-container');
+        var $progress = $('.NB-feedchooser-progress-bar');
+        var $label = $('.NB-feedchooser-progress-label');
+
+        if (has_limit) {
+            $container.show();
+            var pct = Math.min(100, (approved / this.MAX_FEEDS) * 100);
+            $progress.css('width', pct + '%');
+
+            var available = this.MAX_FEEDS - approved;
+            var availablePct = (available / this.MAX_FEEDS) * 100;
+            $container.removeClass('NB-state-ok NB-state-warning NB-state-error');
+
+            if (available < 0) {
+                $container.addClass('NB-state-error');
+                $label.text(Math.abs(available) + ' over limit');
+            } else if (available === 0) {
+                $container.addClass('NB-state-error');
+                $label.text('No sites available');
+            } else {
+                $container.addClass('NB-state-ok');
+                $label.text(available + (available === 1 ? ' site' : ' sites') + ' available');
+            }
+        } else {
+            $container.hide();
+        }
+
+        // Update autoselected label visibility
+        if (!autoselected && has_limit) {
+            this.hide_autoselected_label();
+        }
+
+        // Update submit button state
         if (NEWSBLUR.Globals.is_premium && !has_limit) {
             // Pro user - no limits
             $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false);
@@ -270,43 +328,23 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
             } else {
                 $submit.val('Mute ' + Inflector.pluralize('site', muted, true));
             }
-            $count.toggleClass('NB-full', muted == 0);
-        } else if (NEWSBLUR.Globals.is_premium && has_limit) {
-            // Premium or Archive user with limits
-            $count.toggleClass('NB-full', approved == this.MAX_FEEDS);
-            $count.toggleClass('NB-error', over_limit);
-
-            if (over_limit) {
-                $submit.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true).val('Too many sites! Deselect ' + (
-                    difference == 1 ?
-                        '1 site...' :
-                        difference + ' sites...'
-                ));
+        } else if (over_limit) {
+            $submit.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true).val('Too many sites! Deselect ' + (
+                difference == 1 ?
+                    '1 site...' :
+                    difference + ' sites...'
+            ));
+        } else if (NEWSBLUR.Globals.is_premium) {
+            // Premium or Archive user within limits
+            $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false);
+            if (muted == 0) {
+                $submit.val('Enable all ' + Inflector.pluralize('site', this.feed_count, true));
             } else {
-                $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false);
-                if (muted == 0) {
-                    $submit.val('Enable all ' + Inflector.pluralize('site', this.feed_count, true));
-                } else {
-                    $submit.val('Mute ' + Inflector.pluralize('site', muted, true));
-                }
+                $submit.val('Mute ' + Inflector.pluralize('site', muted, true));
             }
         } else {
-            // Free user
-            $count.toggleClass('NB-full', approved == this.MAX_FEEDS);
-            $count.toggleClass('NB-error', over_limit);
-
-            if (!autoselected) {
-                this.hide_autoselected_label();
-            }
-            if (over_limit) {
-                $submit.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true).val('Too many sites! Deselect ' + (
-                    difference == 1 ?
-                        '1 site...' :
-                        difference + ' sites...'
-                ));
-            } else {
-                $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false).val('Turn on these ' + approved + ' sites, please');
-            }
+            // Free user within limits
+            $submit.removeClass('NB-disabled').removeClass('NB-modal-submit-grey').attr('disabled', false).val('Turn on these ' + approved + ' sites, please');
         }
     },
 
@@ -318,10 +356,11 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
 
         if (!feeds.size()) {
             _.defer(_.bind(function () {
-                var $info = $('.NB-feedchooser-info', this.$modal);
-                $('.NB-feedchooser-info-counts', $info).hide();
-                $('.NB-feedchooser-info-sort', $info).hide();
-                $('.NB-feedchooser-info-reset', $info).hide();
+                // Hide header elements when no feeds exist
+                $('.NB-feedchooser-progress-container', this.$modal).hide();
+                $('.NB-feedchooser-upgrade-inline', this.$modal).hide();
+                $('.NB-feedchooser-info-sort', this.$modal).hide();
+                $('.NB-feedchooser-info-reset', this.$modal).hide();
                 $('#NB-feedchooser-feeds').hide();
                 $('.NB-modal-submit-save').hide();
                 $('.NB-modal-submit-add').show();
@@ -494,7 +533,7 @@ _.extend(NEWSBLUR.ReaderFeedchooser.prototype, {
             this.close_and_add();
         }, this));
 
-        $.targetIs(e, { tagSelector: '.NB-feedchooser-upgrade-banner' }, _.bind(function ($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-feedchooser-upgrade-inline' }, _.bind(function ($t, $p) {
             e.preventDefault();
             this.open_premium_upgrade();
         }, this));
