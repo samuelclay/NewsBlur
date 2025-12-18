@@ -2519,3 +2519,202 @@ a.mention, a.mention-group {
 .NB-dark .NB-module-trial .NB-module-trial-features li.NB-more::before {
     background-image: url('/media/embed/icons/icons8/icons8-bursts-100.png');
 }
+
+/* ================================ */
+/* = Premium Upgrade Modal - Dark = */
+/* ================================ */
+
+/* Target the simplemodal container when it has the premium upgrade modal */
+.NB-dark #simplemodal-container:has(.NB-modal-premium-upgrade) {
+    background-color: #1a1f24;
+    border-color: #374151;
+}
+
+.NB-dark #simplemodal-container:has(.NB-modal-premium-upgrade) .simplemodal-data {
+    background-color: #1a1f24;
+}
+
+.NB-dark .NB-modal-premium-upgrade {
+    background: linear-gradient(180deg, #1a1f24 0%, #151a1e 100%);
+}
+
+.NB-dark .NB-modal-premium-upgrade .NB-modal-title {
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-premium-trial-badge {
+    background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+    border-color: #059669;
+    color: #d1fae5;
+}
+
+/* Tier cards */
+.NB-dark .NB-premium-tier {
+    background-color: #252d33;
+    border-color: #374151;
+}
+
+.NB-dark .NB-premium-tier:hover {
+    border-color: #4b5563;
+}
+
+/* Tier headers - keep vibrant colors but darken slightly */
+.NB-dark .NB-premium-tier-premium .NB-premium-tier-header {
+    background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+}
+
+.NB-dark .NB-premium-tier-archive .NB-premium-tier-header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+}
+
+.NB-dark .NB-premium-tier-pro .NB-premium-tier-header {
+    background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+}
+
+/* Feature lists */
+.NB-dark .NB-premium-tier-features {
+    background-color: #1f272d;
+}
+
+.NB-dark .NB-premium-tier-features li {
+    color: #d1d5db;
+    border-bottom-color: #374151;
+}
+
+.NB-dark .NB-premium-tier-features li:last-child {
+    border-bottom-color: transparent;
+}
+
+.NB-dark .NB-premium-tier-features li.NB-premium-tier-includes {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-premium-tier-archive .NB-premium-tier-features li.NB-premium-tier-includes {
+    color: #93c5fd;
+}
+
+.NB-dark .NB-premium-tier-pro .NB-premium-tier-features li.NB-premium-tier-includes {
+    color: #fcd34d;
+}
+
+/* Upcoming features in dark mode */
+.NB-dark .NB-premium-tier-features li.NB-premium-tier-upcoming-header {
+    color: #6b7280;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-premium-tier-features li.NB-upcoming {
+    color: #6b7280;
+}
+
+/* Invert icons for dark mode */
+.NB-dark .NB-premium-tier-features .NB-premium-bullet-image {
+    filter: invert(0.85) brightness(1.2) !important;
+}
+
+/* Actions section */
+.NB-dark .NB-premium-tier-actions {
+    background: linear-gradient(180deg, #252d33 0%, #1f272d 100%);
+    border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Credit cards */
+.NB-dark .NB-premium-tier-buttons .NB-creditcards {
+    filter: brightness(0.9);
+}
+
+/* Provider alternate text */
+.NB-dark .NB-premium-tier-buttons .NB-provider-alternate {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-premium-tier-buttons .NB-provider-alternate .NB-modal-submit-button {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-premium-tier-buttons .NB-provider-alternate .NB-modal-submit-button:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+}
+
+/* Prorate message */
+.NB-dark .NB-premium-tier-buttons .NB-premium-prorate-message {
+    color: #6b7280;
+}
+
+/* Trial status badge */
+.NB-dark .NB-premium-tier-trial-status {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+    border-color: #059669;
+    color: #d1fae5;
+}
+
+/* Active subscription status */
+.NB-dark .NB-premium-tier-status-active {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+    border-color: #059669;
+}
+
+.NB-dark .NB-premium-tier-archive .NB-premium-tier-status-active {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+    border-color: #3b82f6;
+}
+
+.NB-dark .NB-premium-tier-pro .NB-premium-tier-status-active {
+    background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+    border-color: #f59e0b;
+}
+
+.NB-dark .NB-premium-tier-status-active .NB-premium-tier-status-text {
+    color: #d1fae5;
+}
+
+.NB-dark .NB-premium-tier-archive .NB-premium-tier-status-active .NB-premium-tier-status-text {
+    color: #dbeafe;
+}
+
+.NB-dark .NB-premium-tier-pro .NB-premium-tier-status-active .NB-premium-tier-status-text {
+    color: #fef3c7;
+}
+
+/* Included status (for higher tier users viewing lower tiers) */
+.NB-dark .NB-premium-tier-status-included {
+    background: linear-gradient(135deg, #1f272d 0%, #252d33 100%);
+    border-color: #4b5563;
+}
+
+.NB-dark .NB-premium-tier-status-included .NB-premium-tier-status-text {
+    color: #9ca3af;
+}
+
+/* Status icons - invert for dark mode */
+.NB-dark .NB-premium-tier-status-active .NB-premium-tier-status-icon,
+.NB-dark .NB-premium-tier-status-included .NB-premium-tier-status-icon {
+    filter: brightness(1.5);
+}
+
+/* Switch/downgrade buttons */
+.NB-dark .NB-premium-tier-status .NB-modal-submit-grey {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-premium-tier-status .NB-modal-submit-grey:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+}
+
+/* Change billing details button */
+.NB-dark .NB-provider-button-change {
+    background: #374151 !important;
+    border-color: #4b5563 !important;
+    color: #e5e7eb !important;
+}
+
+.NB-dark .NB-provider-button-change:hover {
+    background: #4b5563 !important;
+    border-color: #6b7280 !important;
+}

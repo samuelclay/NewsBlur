@@ -15090,7 +15090,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-premium-upgrade .NB-modal-title .NB-icon {
-    background: transparent url('/media/embed/icons/circular/g_modal_premium.png') no-repeat center center;
+    background: transparent url('/media/embed/icons/circular/g_modal_award.png') no-repeat center center;
     background-size: 28px;
 }
 
@@ -15134,10 +15134,13 @@ form.opml_import_form input {
     position: relative;
 }
 
-/* Tier width proportions: 36-36-28 */
-.NB-premium-tier-premium,
+/* Tier width proportions: 34-38-28 */
+.NB-premium-tier-premium {
+    flex: 8.5;
+}
+
 .NB-premium-tier-archive {
-    flex: 9;
+    flex: 9.5;
 }
 
 .NB-premium-tier-pro {
@@ -15333,6 +15336,14 @@ form.opml_import_form input {
     background-image: url('/media/embed/icons/icons8/icons8-pyramids-100.png');
     filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
 }
+.NB-premium-tier-features-pro li.NB-3 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/train.svg');
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
+}
+.NB-premium-tier-features-pro li.NB-4 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
+}
 
 
 /* "Everything in X, plus:" styling */
@@ -15358,6 +15369,34 @@ form.opml_import_form input {
 
 .NB-premium-tier-features li.NB-premium-tier-includes::before {
     display: none;
+}
+
+/* Upcoming features header */
+.NB-premium-tier-features li.NB-premium-tier-upcoming-header {
+    font-weight: 600;
+    padding-left: 0;
+    padding-top: 8px;
+    padding-bottom: 6px;
+    margin-top: 4px;
+    margin-bottom: 2px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: #9ca3af;
+}
+
+.NB-premium-tier-features li.NB-premium-tier-upcoming-header::before {
+    display: none;
+}
+
+/* Upcoming features - lighter styling */
+.NB-premium-tier-features li.NB-upcoming {
+    color: #9ca3af;
+}
+
+.NB-premium-tier-features li.NB-upcoming .NB-premium-bullet-image {
+    opacity: 0.5;
 }
 
 /* Dog image in premium tier */
@@ -15538,6 +15577,69 @@ form.opml_import_form input {
 .NB-premium-tier-status .NB-modal-submit-button {
     font-size: 12px;
     padding: 10px 14px;
+}
+
+/* Active subscription status with checkmark */
+.NB-premium-tier-status-active,
+.NB-premium-tier-status-included {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+.NB-premium-tier-status-active {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border: 1px solid #6ee7b7;
+}
+
+.NB-premium-tier-archive .NB-premium-tier-status-active {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 1px solid #93c5fd;
+}
+
+.NB-premium-tier-pro .NB-premium-tier-status-active {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 1px solid #fcd34d;
+}
+
+.NB-premium-tier-status-included {
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border: 1px solid #d1d5db;
+}
+
+.NB-premium-tier-status-active .NB-premium-tier-status-icon,
+.NB-premium-tier-status-included .NB-premium-tier-status-icon {
+    width: 28px;
+    height: 28px;
+    margin: 0 0 8px 0;
+}
+
+.NB-premium-tier-status-active .NB-premium-tier-status-text,
+.NB-premium-tier-status-included .NB-premium-tier-status-text {
+    margin-bottom: 0;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.NB-premium-tier-status-included .NB-premium-tier-status-text {
+    color: #6b7280;
+}
+
+/* Switch/downgrade button styling */
+.NB-premium-tier-status .NB-modal-submit-grey {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.NB-premium-tier-status .NB-modal-submit-grey:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
 }
 
 /* Trial status badge in tier */
