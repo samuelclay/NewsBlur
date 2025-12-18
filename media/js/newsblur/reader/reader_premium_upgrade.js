@@ -58,79 +58,6 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                 ]))
             ]),
             $.make('div', { className: 'NB-premium-tiers' }, [
-                // Free + Self-Hosted Column
-                $.make('div', { className: 'NB-premium-tier-column-free' }, [
-                    // Free Tier
-                    $.make('div', { className: 'NB-premium-tier NB-premium-tier-free' }, [
-                        $.make('div', { className: 'NB-premium-tier-header' }, [
-                            $.make('div', { className: 'NB-premium-tier-name' }, 'Free')
-                        ]),
-                        $.make('ul', { className: 'NB-premium-tier-features NB-premium-tier-features-free' }, [
-                            $.make('li', [
-                                $.make('div', { className: 'NB-premium-bullet-image' }),
-                                $.make('span', 'Follow up to 64 sites')
-                            ]),
-                            $.make('li', [
-                                $.make('div', { className: 'NB-premium-bullet-image' }),
-                                $.make('span', 'Real-time RSS updates')
-                            ]),
-                            $.make('li', [
-                                $.make('div', { className: 'NB-premium-bullet-image' }),
-                                $.make('span', 'Train stories by author, tag, title')
-                            ]),
-                            $.make('li', [
-                                $.make('div', { className: 'NB-premium-bullet-image' }),
-                                $.make('span', 'Public blurblog sharing')
-                            ]),
-                            $.make('li', [
-                                $.make('div', { className: 'NB-premium-bullet-image' }),
-                                $.make('span', 'Save stories for later')
-                            ]),
-                            $.make('li', [
-                                $.make('div', { className: 'NB-premium-bullet-image' }),
-                                $.make('span', 'iOS & Android apps')
-                            ])
-                        ]),
-                        (NEWSBLUR.Globals.is_premium_trial && $.make('div', { className: 'NB-premium-tier-actions' }, [
-                            this.make_free_tier_status()
-                        ]))
-                    ]),
-                    // Self-Hosted Tier
-                    $.make('div', { className: 'NB-premium-tier NB-premium-tier-selfhosted' }, [
-                        $.make('div', { className: 'NB-premium-tier-header' }, [
-                            $.make('div', { className: 'NB-premium-tier-label' }, 'DIY'),
-                            $.make('div', { className: 'NB-premium-tier-name' }, 'Self-Hosted')
-                        ]),
-                        $.make('ul', { className: 'NB-premium-tier-features NB-premium-tier-features-selfhosted' }, [
-                            $.make('li', [
-                                $.make('div', { className: 'NB-premium-bullet-image' }),
-                                $.make('span', 'Run your own NewsBlur')
-                            ]),
-                            $.make('li', [
-                                $.make('div', { className: 'NB-premium-bullet-image' }),
-                                $.make('span', 'Complete data ownership')
-                            ]),
-                            $.make('li', [
-                                $.make('div', { className: 'NB-premium-bullet-image' }),
-                                $.make('span', 'One command with Docker')
-                            ]),
-                            $.make('li', [
-                                $.make('div', { className: 'NB-premium-bullet-image' }),
-                                $.make('span', 'Customize with Claude Code')
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-premium-tier-actions' }, [
-                            $.make('a', {
-                                className: 'NB-premium-selfhosted-github NB-modal-submit-button NB-modal-submit-grey',
-                                href: 'https://github.com/samuelclay/NewsBlur',
-                                target: '_blank'
-                            }, [
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/github-mark.svg', className: 'NB-github-icon' }),
-                                'View on GitHub'
-                            ])
-                        ])
-                    ])
-                ]),
                 // Premium Tier
                 $.make('div', { className: 'NB-premium-tier NB-premium-tier-premium' }, [
                     $.make('div', { className: 'NB-premium-tier-header' }, [
@@ -270,6 +197,79 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
                         this.make_tier_buttons('pro', $creditcards.clone())
+                    ])
+                ])
+            ]),
+            // Bottom row: Free and Self-Hosted side by side
+            $.make('div', { className: 'NB-premium-tiers-bottom' }, [
+                // Free Tier
+                $.make('div', { className: 'NB-premium-tier NB-premium-tier-free' }, [
+                    $.make('div', { className: 'NB-premium-tier-header' }, [
+                        $.make('div', { className: 'NB-premium-tier-name' }, 'Free')
+                    ]),
+                    $.make('ul', { className: 'NB-premium-tier-features NB-premium-tier-features-free' }, [
+                        $.make('li', [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            $.make('span', 'Follow up to 64 sites')
+                        ]),
+                        $.make('li', [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            $.make('span', 'Real-time RSS updates')
+                        ]),
+                        $.make('li', [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            $.make('span', 'Train stories by author, tag, title')
+                        ]),
+                        $.make('li', [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            $.make('span', 'Public blurblog sharing')
+                        ]),
+                        $.make('li', [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            $.make('span', 'Save stories for later')
+                        ]),
+                        $.make('li', [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            $.make('span', 'iOS & Android apps')
+                        ])
+                    ]),
+                    (NEWSBLUR.Globals.is_premium_trial && $.make('div', { className: 'NB-premium-tier-actions' }, [
+                        this.make_free_tier_status()
+                    ]))
+                ]),
+                // Self-Hosted Tier
+                $.make('div', { className: 'NB-premium-tier NB-premium-tier-selfhosted' }, [
+                    $.make('div', { className: 'NB-premium-tier-header' }, [
+                        $.make('div', { className: 'NB-premium-tier-label' }, 'DIY'),
+                        $.make('div', { className: 'NB-premium-tier-name' }, 'Self-Hosted')
+                    ]),
+                    $.make('ul', { className: 'NB-premium-tier-features NB-premium-tier-features-selfhosted' }, [
+                        $.make('li', [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            $.make('span', 'Run your own NewsBlur')
+                        ]),
+                        $.make('li', [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            $.make('span', 'Complete data ownership')
+                        ]),
+                        $.make('li', [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            $.make('span', 'One command with Docker')
+                        ]),
+                        $.make('li', [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            $.make('span', 'Customize with Claude Code')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-premium-tier-actions' }, [
+                        $.make('a', {
+                            className: 'NB-premium-selfhosted-github NB-modal-submit-button NB-modal-submit-grey',
+                            href: 'https://github.com/samuelclay/NewsBlur',
+                            target: '_blank'
+                        }, [
+                            $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/github-mark.svg', className: 'NB-github-icon' }),
+                            'View on GitHub'
+                        ])
                     ])
                 ])
             ])
