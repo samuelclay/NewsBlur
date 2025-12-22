@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2025-10-31T12:45:57-04:00</updated>
+  <updated>2025-12-22T12:20:55-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,38 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Join the NewsBlur iOS beta</title>
+    <link href="https://blog.newsblur.com/2015/10/07/join-the-newsblur-ios-beta/" rel="alternate" type="text/html" title="Join the NewsBlur iOS beta" />
+    <published>2015-10-07T12:52:34-04:00</published>
+    <updated>2015-10-07T12:52:34-04:00</updated>
+    <id>https://blog.newsblur.com/2015/10/07/join-the-newsblur-ios-beta</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2015/10/07/join-the-newsblur-ios-beta/">
+      <![CDATA[<p>If you like living on the bleeding edge, you should join the NewsBlur iOS beta program. You’ll get access to the latest releases a few weeks before they go out publicly.</p>
+
+<p>All you need to do is add your email address to this form: <a href="https://docs.google.com/forms/d/1XSerwoY-PEJ7JfglNr0zOKpsoMXqplSomdORSDsZ3_g/viewform?usp=send_form">https://docs.google.com/forms/d/1XSerwoY-PEJ7JfglNr0zOKpsoMXqplSomdORSDsZ3_g/viewform?usp=send_form</a></p>
+
+<p>You might be wondering why this is a bit different than the older method used in the past. The old beta program used an enterprise distribution provision profile, which was available as a workaround to install apps on devices without having to go through the App Store. Unfortunately that program has ended and Apple now recommends using their new TestFlight beta program.</p>
+
+<p>In order to use TestFlight, email addresses of interested beta testers need to be collected. But the benefit is that you can now easily move between beta and release versions. You will also automatically upgrade to the release version when it comes out. You can also give feedback in a more accurate way, with your device and OS version automatically added to anything you write as feedback.</p>
+
+<p>So if you want to try out the latest betas, specifically for iOS 9 and a whole bundle of new features, then add your email to that list and watch your inbox. It can take up to a couple days for these emails to be imported, so be patient.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="iOS" />
+    
+    
+    <summary type="html">
+      <![CDATA[If you like living on the bleeding edge, you should join the NewsBlur iOS beta program. You’ll get access to the latest releases a few weeks before they go out publicly.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Let’s all upgrade to version 4.5.0 of the NewsBlur Android app</title>
@@ -1011,43 +1043,6 @@ color: #606060;
     <summary type="html">
       <![CDATA[Wouldn’t it be nice if there was a way to automatically copy your saved stories over to Evernote or Twitter or Pinboard? What about an automatic way to keep track of your unread focus (trained) stories in Buffer or Delicious or Dropbox?
 ]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Saved story tagging </title>
-    <link href="https://blog.newsblur.com/2014/01/14/saved-story-tagging/" rel="alternate" type="text/html" title="Saved story tagging " />
-    <published>2014-01-14T10:39:00-05:00</published>
-    <updated>2014-01-14T10:39:00-05:00</updated>
-    <id>https://blog.newsblur.com/2014/01/14/saved-story-tagging</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/01/14/saved-story-tagging/">
-      <![CDATA[<p>It’s one thing to follow a handful of sites and use NewsBlur’s training to only read the stories you want to read. But sometimes you want to come back to stories long after you’ve read them. You could save the story, but then you would have to either scroll down your saved story list to find the story, or use the <a href="http://blog.newsblur.com/2021/06/21/2013-07-30-simple-search-for-feeds-saved-stories-and-blurblogs.html">new search feature</a> to find it by title or author.</p>
-
-<p>Today I would like to introduce a big new feature: saved story tagging. It works like this. When you save a story, it is automatically tagged with all of the folders that the site is part of.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/saved%20story%20tags.png" alt="" /></p>
-
-<p>After the story is auto-tagged by folder, you can then add your own tags, which are autocompleted by previously used tags. You can also click a button to auto-tag the story with its own tags, easily clicking on the tags you want to remove.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/story_tags.jpg" alt="" /></p>
-
-<p>You can also search per-tag and soon you will be able to rename and delete tags. There are more plans to integrate tagging into both iOS and Android apps.</p>
-
-<p>Saved story tags also have RSS feeds. This is a big deal, since this allows you to save stories and have them automatically ingested by <a href="http://www.ifttt.com">IFTTT</a> for use elsewhere. You already could share stories over your blurblog, but now you have a private RSS feed that gives you far greater control.</p>
-
-<p>Stay tuned because there are even more big features coming soon. Telling your friends about NewsBlur, whether on Twitter and Facebook or when spying over their shoulder and noticing that they’re hitting the same dozen sites over and over again without letting the sites come to them with new stories, goes a long way towards getting new features built. More users means more premiums which means more features getting built. It’s a vicious cycle.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[It’s one thing to follow a handful of sites and use NewsBlur’s training to only read the stories you want to read. But sometimes you want to come back to stories long after you’ve read them. You could save the story, but then you would have to either scroll down...]]>
     </summary>
     
   </entry>
