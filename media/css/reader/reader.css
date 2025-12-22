@@ -15502,6 +15502,12 @@ form.opml_import_form input {
     filter: hue-rotate(134deg) saturate(16);
 }
 
+.NB-modal-preferences label[for=NB-preference-story-sideoption-ask_ai] {
+    background: transparent url("/media/embed/icons/nouns/prompt.svg") no-repeat center left;
+    background-size: 18px;
+    filter: hue-rotate(134deg) saturate(16);
+}
+
 .NB-modal-preferences .NB-preference-keyboard-spacebar .NB-preference-keyboard-spacebaraction {
     margin-top: 12px;
 }
