@@ -2465,6 +2465,37 @@ class Feed(models.Model):
 
         return story
 
+    # Compiled regex for YouTube embed URL matching (used by apply_youtube_captions)
+    YOUTUBE_EMBED_RE = re.compile(
+        r'src=["\']https?://(?:www\.)?(?:youtube\.com|youtube-nocookie\.com)/embed/[^"\']*["\']'
+    )
+
+    @staticmethod
+    def apply_youtube_captions(story_content):
+        """
+        Transform YouTube embed URLs to enable captions by adding cc_load_policy=1.
+        This makes captions show by default when videos are played.
+        """
+        if not story_content:
+            return story_content
+
+        def add_captions_param(match):
+            url = match.group(0)
+            if "cc_load_policy" in url:
+                return url
+            if "?" in url:
+                if url.endswith('"') or url.endswith("'"):
+                    quote = url[-1]
+                    return url[:-1] + "&cc_load_policy=1" + quote
+                return url + "&cc_load_policy=1"
+            else:
+                if url.endswith('"') or url.endswith("'"):
+                    quote = url[-1]
+                    return url[:-1] + "?cc_load_policy=1" + quote
+                return url + "?cc_load_policy=1"
+
+        return Feed.YOUTUBE_EMBED_RE.sub(add_captions_param, story_content)
+
     @classmethod
     def secure_image_urls(cls, urls):
         signed_urls = [

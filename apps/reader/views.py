@@ -972,6 +972,10 @@ def load_single_feed(request, feed_id):
 
     checkpoint4 = time.time()
 
+    # Check if user wants YouTube captions enabled
+    user_preferences = json.decode(user.profile.preferences)
+    youtube_captions_enabled = user_preferences.get("youtube_captions", False)
+
     for story in stories:
         # Calculate intelligence BEFORE deleting story content (text classifier needs it)
         story["intelligence"] = {
@@ -986,6 +990,10 @@ def load_single_feed(request, feed_id):
             ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
+
+        # Apply YouTube captions if user preference is enabled
+        if youtube_captions_enabled and "story_content" in story and story["story_content"]:
+            story["story_content"] = Feed.apply_youtube_captions(story["story_content"])
 
         if not include_story_content:
             del story["story_content"]
@@ -1949,6 +1957,11 @@ def load_river_stories__redis(request):
 
     # Just need to format stories
     nowtz = localtime_for_timezone(now, user.profile.timezone)
+
+    # Check if user wants YouTube captions enabled
+    user_preferences = json.decode(user.profile.preferences)
+    youtube_captions_enabled = user_preferences.get("youtube_captions", False)
+
     for story in stories:
         if read_filter == "starred":
             story["read_status"] = 1
@@ -1982,6 +1995,10 @@ def load_river_stories__redis(request):
             ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
+
+        # Apply YouTube captions if user preference is enabled
+        if youtube_captions_enabled and "story_content" in story and story["story_content"]:
+            story["story_content"] = Feed.apply_youtube_captions(story["story_content"])
 
     if include_feeds:
         feeds = Feed.objects.filter(pk__in=set([story["story_feed_id"] for story in stories]))
