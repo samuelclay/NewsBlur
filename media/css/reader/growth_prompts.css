@@ -1,0 +1,418 @@
+/**
+ * Growth Prompts CSS
+ * Premium upgrade conversion prompts with animations
+ */
+
+.NB-growth-prompt {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 380px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    z-index: 10000;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.NB-dark .NB-growth-prompt {
+    background: #1a1a1a;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Full-bleed animated header */
+.NB-growth-prompt-header {
+    background: linear-gradient(135deg, #5cb85c 0%, #3d8b3d 50%, #2d682d 100%);
+    padding: 32px 24px 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animated background shapes */
+.NB-growth-prompt-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+    animation: shimmer 8s ease-in-out infinite;
+}
+
+.NB-growth-prompt-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(to top, rgba(0,0,0,0.1), transparent);
+}
+
+@keyframes shimmer {
+    0%, 100% { transform: translate(-30%, -30%) rotate(0deg); }
+    50% { transform: translate(-20%, -40%) rotate(10deg); }
+}
+
+/* Floating particles */
+.NB-growth-prompt-particles {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.NB-growth-prompt-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    animation: float-up 4s ease-in-out infinite;
+}
+
+.NB-growth-prompt-particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.NB-growth-prompt-particle:nth-child(2) { left: 30%; animation-delay: 1s; }
+.NB-growth-prompt-particle:nth-child(3) { left: 50%; animation-delay: 2s; }
+.NB-growth-prompt-particle:nth-child(4) { left: 70%; animation-delay: 0.5s; }
+.NB-growth-prompt-particle:nth-child(5) { left: 90%; animation-delay: 1.5s; }
+
+@keyframes float-up {
+    0% {
+        transform: translateY(100px) scale(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-20px) scale(1);
+        opacity: 0;
+    }
+}
+
+/* Icon container with glow */
+.NB-growth-prompt-icon {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-growth-prompt-icon-wrapper {
+    width: 72px;
+    height: 72px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: icon-pulse 3s ease-in-out infinite;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes icon-pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+}
+
+.NB-growth-prompt-icon img {
+    width: 40px;
+    height: 40px;
+    filter: brightness(0) invert(1);
+    animation: rocket-float 2s ease-in-out infinite;
+}
+
+@keyframes rocket-float {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-4px) rotate(5deg); }
+}
+
+/* Close button */
+.NB-growth-prompt-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    line-height: 26px;
+    text-align: center;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.NB-growth-prompt-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* Content area */
+.NB-growth-prompt-content {
+    padding: 24px;
+}
+
+.NB-growth-prompt-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+}
+
+.NB-dark .NB-growth-prompt-title {
+    color: #fff;
+}
+
+.NB-growth-prompt-body {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.NB-dark .NB-growth-prompt-body {
+    color: #999;
+}
+
+/* Feature list */
+.NB-growth-prompt-features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.NB-growth-prompt-feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #444;
+}
+
+.NB-dark .NB-growth-prompt-feature {
+    color: #bbb;
+}
+
+.NB-growth-prompt-feature-icon {
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #5cb85c, #3d8b3d);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.NB-growth-prompt-feature-icon::after {
+    content: '✓';
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* Actions */
+.NB-growth-prompt-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.NB-growth-prompt-cta {
+    flex: 1;
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #5cb85c 0%, #449d44 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 14px rgba(92, 184, 92, 0.4);
+    transition: all 0.3s ease;
+}
+
+.NB-growth-prompt-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.NB-growth-prompt-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(92, 184, 92, 0.5);
+}
+
+.NB-growth-prompt-cta:hover::before {
+    left: 100%;
+}
+
+.NB-growth-prompt-cta:active {
+    transform: translateY(0);
+}
+
+.NB-growth-prompt-dismiss {
+    font-size: 14px;
+    color: #999;
+    cursor: pointer;
+    padding: 8px 12px;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+}
+
+.NB-growth-prompt-dismiss:hover {
+    color: #666;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.NB-dark .NB-growth-prompt-dismiss {
+    color: #666;
+}
+
+.NB-dark .NB-growth-prompt-dismiss:hover {
+    color: #999;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Milestone prompt - different color scheme */
+.NB-growth-prompt-milestone .NB-growth-prompt-header {
+    background: linear-gradient(135deg, #f0ad4e 0%, #ec971f 50%, #d58512 100%);
+}
+
+.NB-growth-prompt-milestone .NB-growth-prompt-cta {
+    background: linear-gradient(135deg, #f0ad4e 0%, #ec971f 100%);
+    box-shadow: 0 4px 14px rgba(240, 173, 78, 0.4);
+}
+
+.NB-growth-prompt-milestone .NB-growth-prompt-cta:hover {
+    box-shadow: 0 8px 20px rgba(240, 173, 78, 0.5);
+}
+
+.NB-growth-prompt-milestone .NB-growth-prompt-feature-icon {
+    background: linear-gradient(135deg, #f0ad4e, #ec971f);
+}
+
+/* Feature gate - compact version */
+.NB-growth-prompt-feature-gate {
+    width: 340px;
+}
+
+.NB-growth-prompt-feature-gate .NB-growth-prompt-header {
+    padding: 24px 20px 32px;
+    background: linear-gradient(135deg, #5bc0de 0%, #31b0d5 50%, #269abc 100%);
+}
+
+.NB-growth-prompt-feature-gate .NB-growth-prompt-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+}
+
+.NB-growth-prompt-feature-gate .NB-growth-prompt-icon img {
+    width: 28px;
+    height: 28px;
+}
+
+.NB-growth-prompt-feature-gate .NB-growth-prompt-content {
+    padding: 20px;
+}
+
+.NB-growth-prompt-feature-gate .NB-growth-prompt-title {
+    font-size: 18px;
+}
+
+.NB-growth-prompt-feature-gate .NB-growth-prompt-cta {
+    background: linear-gradient(135deg, #5bc0de 0%, #31b0d5 100%);
+    box-shadow: 0 4px 14px rgba(91, 192, 222, 0.4);
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    .NB-growth-prompt {
+        width: calc(100% - 24px);
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        border-radius: 12px;
+    }
+
+    .NB-growth-prompt-header {
+        padding: 24px 20px 32px;
+    }
+
+    .NB-growth-prompt-icon-wrapper {
+        width: 56px;
+        height: 56px;
+    }
+
+    .NB-growth-prompt-content {
+        padding: 20px;
+    }
+
+    .NB-growth-prompt-title {
+        font-size: 20px;
+    }
+}
+
+/* Entrance animation */
+@keyframes prompt-slide-in {
+    0% {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.NB-growth-prompt-entering {
+    animation: prompt-slide-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Exit animation */
+@keyframes prompt-slide-out {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+}
+
+.NB-growth-prompt-exiting {
+    animation: prompt-slide-out 0.25s ease-in forwards;
+}

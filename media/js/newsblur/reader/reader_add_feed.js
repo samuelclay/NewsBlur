@@ -233,6 +233,10 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                 if (data.feed) {
                     NEWSBLUR.reader.open_feed(data.feed.id);
                 }
+                // Show growth prompt after feed is added (if eligible)
+                if (NEWSBLUR.growth_prompts) {
+                    NEWSBLUR.growth_prompts.on_feed_added();
+                }
             });
             NEWSBLUR.reader.load_recommended_feed();
             NEWSBLUR.reader.handle_mouse_indicator_hover();
