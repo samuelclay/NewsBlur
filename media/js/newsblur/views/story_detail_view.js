@@ -243,11 +243,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_save: NEWSBLUR.assets.preference("show_sideoption_save"),
             show_sideoption_share: NEWSBLUR.assets.preference("show_sideoption_share"),
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
-            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai") && (
-                NEWSBLUR.Globals.is_staff ||
-                NEWSBLUR.Globals.is_archive ||
-                (NEWSBLUR.Globals.debug && NEWSBLUR.Globals.is_premium)
-            ),
+            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai"),
             sharing_services: NEWSBLUR.assets.third_party_sharing_services,
         };
     },
