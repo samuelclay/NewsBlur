@@ -8,7 +8,7 @@
 
 #import "ThemeManager.h"
 #import "NewsBlurAppDelegate.h"
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 #import "OriginalStoryViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import "NewsBlur-Swift.h"
@@ -500,7 +500,7 @@ NSString * const ThemeStyleDark = @"dark";
     
     [appDelegate.splitViewController updateTheme];
     [appDelegate.feedsViewController updateTheme];
-    [appDelegate.dashboardViewController updateTheme];
+    [appDelegate.activitiesViewController updateTheme];
     [appDelegate.feedDetailViewController updateTheme];
     [appDelegate.detailViewController updateTheme];
     [appDelegate.storyPagesViewController updateTheme];

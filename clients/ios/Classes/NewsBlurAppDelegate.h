@@ -15,14 +15,13 @@
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
 #define FEED_TITLE_GRADIENT_TAG 100003
-#define FEED_DASHBOARD_VIEW_TAG 100004
 #define SHARE_MODAL_HEIGHT 120
 #define STORY_TITLES_HEIGHT 240
-#define DASHBOARD_TITLE @"NewsBlur"
 
+@class AppDelegateHelper;
 @class SplitViewController;
 @class FeedsViewController;
-@class DashboardViewController;
+@class ActivitiesViewController;
 @class FeedDetailViewController;
 @class MarkReadMenuViewController;
 @class FirstTimeUserViewController;
@@ -71,7 +70,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
     FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
     
-    DashboardViewController *dashboardViewController;
+    ActivitiesViewController *activitiesViewController;
     FeedsViewController *feedsViewController;
     FeedDetailViewController *feedDetailViewController;
     FriendsListViewController *friendsListViewController;
@@ -155,6 +154,8 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 }
 
 @property (class, nonatomic, readonly) NewsBlurAppDelegate *shared;
+@property (class, nonatomic, readonly) AppDelegateHelper *helper;
+@property (nonatomic, readonly) AppDelegateHelper *helper;
 
 @property (nonatomic, readonly) NSURL *documentsURL;
 @property (nonatomic) SplitViewController *splitViewController;
@@ -170,7 +171,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet DetailViewController *detailViewController;
-@property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
+@property (nonatomic) IBOutlet ActivitiesViewController *activitiesViewController;
 @property (nonatomic) IBOutlet FeedsViewController *feedsViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
@@ -215,6 +216,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
 @property (nonatomic, readwrite) BOOL hasLoadedFeedDetail;
 @property (nonatomic, readwrite) NSDate *findingStoryStartDate;
+@property (nonatomic) NSDictionary *findingStoryDictionary;
 @property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic) NSString *tryFeedFeedId;
 @property (nonatomic) NSString *tryFeedCategory;
@@ -250,7 +252,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSMutableDictionary *collapsedFolders;
 @property (nonatomic) UIFontDescriptor *fontDescriptorTitleSize;
 
-
 @property (nonatomic) NSDictionary *dictFolders;
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
 @property (nonatomic, strong) NSMutableDictionary *dictInactiveFeeds;
@@ -271,6 +272,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
 @property (nonatomic) NSArray *notificationFeedIds;
+@property (nonatomic) NSArray *dashboardArray;
 
 @property (nonatomic, readonly) NSString *widgetFolder;
 @property (nonatomic, strong) NSString *pendingFolder;
@@ -320,6 +322,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showMuteSites;
 - (void)showOrganizeSites;
 - (void)showWidgetSites;
+- (void)showDashboardSites:(NSString *)selectedRiverId;
 - (void)showPremiumDialog;
 - (void)showPremiumDialogForArchive;
 - (void)updateSplitBehavior:(BOOL)refresh;
@@ -350,8 +353,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)backgroundLoadNotificationStory;
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder;
-- (void)openDashboardRiverForStory:(NSString *)contentId
-                  showFindingStory:(BOOL)showHUD;
 
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;

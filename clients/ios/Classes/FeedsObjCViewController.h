@@ -16,8 +16,9 @@
 // indices in appDelegate.dictFoldersArray and button tags
 // keep in sync with NewsBlurTopSectionNames
 static enum {
-    NewsBlurTopSectionInfrequentSiteStories = 0,
-    NewsBlurTopSectionAllStories = 1
+    NewsBlurTopSectionDashboard = 0,
+    NewsBlurTopSectionInfrequentSiteStories = 1,
+    NewsBlurTopSectionAllStories = 2
 } NewsBlurTopSection;
 
 @interface FeedsObjCViewController : BaseViewController
@@ -100,11 +101,18 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)selectNextFolderOrFeed;
 
 - (IBAction)selectIntelligence;
+- (void)selectDashboard:(id)sender;
 - (void)selectEverything:(id)sender;
 - (void)selectNextFeed:(id)sender;
 - (void)selectPreviousFeed:(id)sender;
 - (void)selectNextFolder:(id)sender;
 - (void)selectPreviousFolder:(id)sender;
+
+- (void)selectWidgetStories;
+
+- (void)selectFolder:(NSString *)folder;
+- (void)selectFeed:(NSString *)feedId inFolder:(NSString *)folder;
+
 
 - (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days;
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;
@@ -131,8 +139,6 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)fadeSelectedCell;
 - (void)fadeFeed:(NSString *)feedId;
 - (IBAction)tapAddSite:(id)sender;
-
-- (void)selectWidgetStories;
 
 - (void)reloadFeedTitlesTable;
 - (void)resetToolbar;

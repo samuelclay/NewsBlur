@@ -6,14 +6,13 @@
 //
 
 #import "NewsBlurAppDelegate.h"
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 #import "MarkReadMenuViewController.h"
 #import "FirstTimeUserViewController.h"
 #import "FriendsListViewController.h"
 #import "LoginViewController.h"
 #import "AddSiteViewController.h"
 #import "MoveSiteViewController.h"
-#import "TrainerViewController.h"
 #import "NotificationsViewController.h"
 #import "UserTagsViewController.h"
 #import "OriginalStoryViewController.h"
@@ -93,7 +92,7 @@
 @synthesize userProfileNavigationController;
 //@synthesize masterContainerViewController;
 @synthesize detailViewController;
-@synthesize dashboardViewController;
+@synthesize activitiesViewController;
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
 @synthesize friendsListViewController;
@@ -195,6 +194,14 @@
 
 + (instancetype)shared {
     return (NewsBlurAppDelegate *)[UIApplication sharedApplication].delegate;
+}
+
++ (AppDelegateHelper *)helper {
+    return [AppDelegateHelper shared];
+}
+
+- (AppDelegateHelper *)helper {
+    return [AppDelegateHelper shared];
 }
 
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -486,7 +493,11 @@
     }
     
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    NSInteger release = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
     [[NSUserDefaults standardUserDefaults] setObject:version forKey:@"version"];
+    [[NSUserDefaults standardUserDefaults] setInteger:release forKey:@"release"];
+    
+    [self.helper upgradeSettingsFrom:release];
 }
 
 - (void)registerDefaultsFromSettingsBundle:(NSString *)settingsPath withPlistName:(NSString *)name {
@@ -650,6 +661,7 @@
         
         self.inFindingStoryMode = YES;
         self.findingStoryStartDate = [NSDate date];
+        self.findingStoryDictionary = nil;
         self.tryFeedStoryId = storyHash;
         self.tryFeedFeedId = nil;
         
@@ -915,7 +927,11 @@
 
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {
     NSString *preferenceKey = @"split_behavior";
+#if TARGET_OS_MACCATALYST
+    NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full window"];
+#else
     NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full screen"];
+#endif
     NSArray *values = @[@"auto", @"tile", @"displace", @"overlay"];
     
     [menuViewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
@@ -950,11 +966,12 @@
     }
 }
 
-- (void)showFeedChooserForOperation:(FeedChooserOperation)operation {
+- (void)showFeedChooserForOperation:(FeedChooserOperation)operation dashboardRiverId:(NSString *)dashboardRiverId {
     [self hidePopover];
     
     self.feedChooserViewController = [FeedChooserViewController new];
     self.feedChooserViewController.operation = operation;
+    self.feedChooserViewController.dashboardRiverId = dashboardRiverId;
     
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.feedChooserViewController];
     
@@ -965,15 +982,19 @@
 }
 
 - (void)showMuteSites {
-    [self showFeedChooserForOperation:FeedChooserOperationMuteSites];
+    [self showFeedChooserForOperation:FeedChooserOperationMuteSites dashboardRiverId:nil];
 }
 
 - (void)showOrganizeSites {
-    [self showFeedChooserForOperation:FeedChooserOperationOrganizeSites];
+    [self showFeedChooserForOperation:FeedChooserOperationOrganizeSites dashboardRiverId:nil];
 }
 
 - (void)showWidgetSites {
-    [self showFeedChooserForOperation:FeedChooserOperationWidgetSites];
+    [self showFeedChooserForOperation:FeedChooserOperationWidgetSites dashboardRiverId:nil];
+}
+
+- (void)showDashboardSites:(NSString *)selectedRiverId {
+    [self showFeedChooserForOperation:FeedChooserOperationDashboardSites dashboardRiverId:selectedRiverId];
 }
 
 - (void)showFindFriends {
@@ -1111,7 +1132,7 @@
             popPC.sourceView = self.storyPagesViewController.view;
         } else {
             popPC.sourceRect = [sender frame];
-            popPC.sourceView = [sender superview];
+            popPC.sourceView = (UIView *)[sender superview];
             
             //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
@@ -1164,6 +1185,15 @@
 }
 
 #pragma mark -
+#pragma mark Menus
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+    [super buildMenuWithBuilder:builder];
+    
+    [AppMenuHelper.shared buildMenuWithBuilder:builder];
+}
+
+#pragma mark -
 #pragma mark View Management
 
 - (void)prepareViewControllers {
@@ -1186,7 +1216,7 @@
     self.detailNavigationController = (UINavigationController *)splitChildren[2];
     self.detailViewController = self.detailNavigationController.viewControllers.firstObject;
     
-    self.dashboardViewController = [DashboardViewController new];
+    self.activitiesViewController = [ActivitiesViewController new];
     self.friendsListViewController = [FriendsListViewController new];
     self.storyDetailViewController = [StoryDetailViewController new];
     self.loginViewController = [LoginViewController new];
@@ -1211,6 +1241,8 @@
     
     [feedsViewController view];
     [feedsViewController loadOfflineFeeds:NO];
+    
+    [[UIMenuSystem mainSystem] setNeedsRebuild];
 }
 
 - (StoryPagesViewController *)storyPagesViewController {
@@ -1238,8 +1270,8 @@
         [self.feedsViewController.feedTitlesTable reloadData];
         [self.feedsViewController resetToolbar];
         
-        [self.dashboardViewController.interactionsModule.interactionsTable reloadData];
-        [self.dashboardViewController.activitiesModule.activitiesTable reloadData];
+        [self.activitiesViewController.interactionsModule.interactionsTable reloadData];
+        [self.activitiesViewController.activitiesModule.activitiesTable reloadData];
         
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
@@ -1799,7 +1831,7 @@
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController loadingFeed];
         
-        if (detailViewController.storyTitlesOnLeft || detailViewController.storyTitlesInGrid) {
+        if (detailViewController.storyTitlesOnLeft || detailViewController.storyTitlesInGridView) {
             [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
         }
     }
@@ -1833,6 +1865,7 @@
     self.isTryFeedView = YES;
     self.inFindingStoryMode = YES;
     self.findingStoryStartDate = [NSDate date];
+    self.findingStoryDictionary = nil;
     self.tryFeedStoryId = contentId;
     self.tryFeedFeedId = feedId;
     
@@ -2017,7 +2050,7 @@
 }
 
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
-    if ([folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
+    if ([folderTitle isEqualToString:@"dashboard"] || [folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
         return @[folderTitle];
     } else if ([folderTitle isEqualToString:@"widget_stories"]) {
         NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
@@ -2114,6 +2147,11 @@
     NSMutableArray *feeds = [NSMutableArray array];
     
     if (self.loginViewController.view.window != nil) {
+        return;
+    }
+    
+    if ([folder isEqualToString:@"dashboard"]) {
+        NSLog(@"⚠️ Called loadRiverFeedDetailView with dashboard; this should never occur");  // log
         return;
     }
     
@@ -2245,35 +2283,6 @@
     }];
 }
 
-- (void)openDashboardRiverForStory:(NSString *)contentId
-                  showFindingStory:(BOOL)showHUD {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
-        [self showFeedsListAnimated:NO];
-        [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
-        [self hidePopoverAnimated:NO];
-    }
-    
-    self.inFindingStoryMode = YES;
-    [storiesCollection reset];
-    storiesCollection.isRiverView = YES;
-    
-    self.tryFeedStoryId = contentId;
-    storiesCollection.activeFolder = @"everything";
-    
-    [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"river_dashboard"];
-    
-    if (showHUD) {
-        if (!self.isPhone) {
-            [self.storyPagesViewController showShareHUD:@"Finding story..."];
-        } else {
-            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
-            HUD.labelText = @"Finding story...";
-        }
-    }
-}
-
 - (void)adjustStoryDetailWebView {
     // change the web view
     [self.storyPagesViewController.currentPage changeWebViewWidth];
@@ -2367,10 +2376,13 @@
     //        feedsNavigationController.navigationItem.hidesBackButton = YES;
     //    }
     
-    self.inFindingStoryMode = NO;
-    self.findingStoryStartDate = nil;
-    self.tryFeedStoryId = nil;
-    self.tryFeedFeedId = nil;
+    if (-appDelegate.findingStoryStartDate.timeIntervalSinceNow > 10) {
+        self.inFindingStoryMode = NO;
+        self.findingStoryStartDate = nil;
+        self.findingStoryDictionary = nil;
+        self.tryFeedStoryId = nil;
+        self.tryFeedFeedId = nil;
+    }
     
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
     if (activeStoryLocation >= 0) {
@@ -2699,6 +2711,8 @@
         activity.title = @"Read All Shared Stories";
     } else if ([folder isEqualToString:@"river_global"]) {
         activity.title = @"Read Global Shared Stories";
+    } else if ([folder isEqualToString:@"dashboard"]) {
+        activity.title = @"NewsBlur Dashboard";
     } else if ([folder isEqualToString:@"everything"]) {
         activity.title = @"Read All the Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
@@ -2888,9 +2902,11 @@
     } else if ([folderName isEqual:@"river_global"] ||
                (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         total = 0;
-    } else if ([folderName isEqual:@"everything"] ||
+    } else if ([folderName isEqual:@"dashboard"] ||
+               [folderName isEqual:@"everything"] ||
                [folderName isEqual:@"infrequent"] ||
-               (!folderName && ([storiesCollection.activeFolder isEqual:@"everything"] ||
+               (!folderName && ([storiesCollection.activeFolder isEqual:@"dashboard"] ||
+                                [storiesCollection.activeFolder isEqual:@"everything"] ||
                                 [storiesCollection.activeFolder isEqual:@"infrequent"]))) {
         // TODO: Fix race condition where self.dictUnreadCounts can be changed while being updated.
         for (id feedId in self.dictUnreadCounts) {
@@ -2955,9 +2971,11 @@
     } else if ([folderName isEqual:@"river_global"] ||
                (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         // Nothing for global
-    } else if ([folderName isEqual:@"everything"] ||
+    } else if ([folderName isEqual:@"dashboard"] ||
+               [folderName isEqual:@"everything"] ||
                [folderName isEqual:@"infrequent"] ||
-               (!folderName && ([storiesCollection.activeFolder isEqual:@"everything"] ||
+               (!folderName && ([storiesCollection.activeFolder isEqual:@"dashboard"] ||
+                                [storiesCollection.activeFolder isEqual:@"everything"] ||
                                 [storiesCollection.activeFolder isEqual:@"infrequent"]))) {
         NSMutableSet *uniqueFeeds = [NSMutableSet new];
         for (NSArray *folder in [self.dictFolders allValues]) {
@@ -3048,7 +3066,7 @@
 #pragma mark Mark as read
 
 - (void)markActiveFolderAllRead {
-    if ([storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
+    if ([storiesCollection.activeFolder isEqual:@"dashboard"] || [storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
         for (NSString *folderName in self.dictFoldersArray) {
             for (id feedId in [self.dictFolders objectForKey:folderName]) {
                 [self markFeedAllRead:feedId];
@@ -3600,6 +3618,7 @@
 
 - (NSString *)extractParentFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
+        [folderName isEqual:@"dashboard"] ||
         [folderName isEqual:@"everything"] ||
         [folderName isEqual:@"infrequent"]) {
         folderName = @"";
@@ -3618,6 +3637,7 @@
 
 - (NSString *)extractFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
+        [folderName isEqual:@"dashboard"] ||
         [folderName isEqual:@"everything"] ||
         [folderName isEqual:@"infrequent"]) {
         folderName = @"";
@@ -3872,6 +3892,9 @@
                [storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             titleLabel.text = [NSString stringWithFormat:@"     Global Shared Stories"];
     } else if (storiesCollection.isRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     NewsBlur Dashboard"];
+    } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"everything"]) {
         titleLabel.text = [NSString stringWithFormat:@"     All Site Stories"];
     } else if (storiesCollection.isRiverView &&
@@ -3927,6 +3950,9 @@
                    [storiesCollection.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"all-stories"];
         } else if (storiesCollection.isRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+            titleImage = [UIImage imageNamed:@"saved-stories"];
+        } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
         } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
@@ -3956,7 +3982,9 @@
         return @"All Shared Stories";
     } else if ([folder isEqualToString:@"river_global"]) {
         return @"Global Shared Stories";
-    } else if ([folder isEqualToString:@"everything"]) {
+    } else if ([folder isEqualToString:@"dashboard"]) {
+        return @"NewsBlur Dashboard";
+    } else if ([folder isEqualToString:@"everything"] || [folder isEqualToString:@" "]) {
         return @"All Site Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
         return @"Infrequent Site Stories";
@@ -3978,6 +4006,8 @@
         return [UIImage imageNamed:@"global-shares"];
     } else if ([folder isEqualToString:@"river_blurblogs"]) {
         return [UIImage imageNamed:@"all-shares"];
+    } else if ([folder isEqualToString:@"dashboard"]) {
+        return [UIImage imageNamed:@"saved-stories"];
     } else if ([folder isEqualToString:@"everything"]) {
         return [UIImage imageNamed:@"all-stories"];
     } else if ([folder isEqualToString:@"infrequent"]) {

@@ -131,18 +131,9 @@
     doubleDoubleTapGesture.delegate = self;
     [self.webView addGestureRecognizer:doubleDoubleTapGesture];
     
-    UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc]
-                                                      initWithTarget:self
-                                                      action:@selector(longPress:)];
-    longPressGesture.numberOfTouchesRequired = 1;
-    longPressGesture.delegate = self;
-    [self.webView addGestureRecognizer:longPressGesture];
-    
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
-                                                  initWithTarget:self action:@selector(pinchGesture:)];
-        [self.webView addGestureRecognizer:pinchGesture];
-    }
+    UIPinchGestureRecognizer *pinchGesture = [[UIPinchGestureRecognizer alloc]
+                                              initWithTarget:self action:@selector(pinchGesture:)];
+    [self.webView addGestureRecognizer:pinchGesture];
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.webView];
     
@@ -252,8 +243,8 @@
     }
 }
 
-- (void)longPress:(UILongPressGestureRecognizer *)gestureRecognizer {
-    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+- (void)pinchGesture:(UIPinchGestureRecognizer *)gestureRecognizer {
+    if (gestureRecognizer.state == UIGestureRecognizerStateBegan && gestureRecognizer.scale > 1.0) {
         CGPoint pt = [self pointForGesture:gestureRecognizer];
         if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
         if (inDoubleTap) return;
@@ -261,13 +252,12 @@
         [webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
             if ([self isTag:tagName equalTo:@"IMG"]) {
                 [self showImageMenu:pt];
+                gestureRecognizer.state = UIGestureRecognizerStateCancelled;
             }
         }];
     }
-}
-
-- (void)pinchGesture:(UIPinchGestureRecognizer *)gestureRecognizer {
-    if (gestureRecognizer.state != UIGestureRecognizerStateEnded) {
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone || gestureRecognizer.state != UIGestureRecognizerStateEnded) {
         return;
     }
     
@@ -286,7 +276,7 @@
 }
 
 - (void)deferredEnableScrolling {
-    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhone || !self.appDelegate.detailViewController.storyTitlesInGrid;
+    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhone || !self.appDelegate.detailViewController.storyTitlesInGridView;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -952,7 +942,7 @@
     }
     
     NSString *storyUnread = @"";
-    if (self.isRecentlyUnread && [appDelegate.storiesCollection isStoryUnread:self.activeStory]) {
+    if ([appDelegate.storiesCollection isStoryUnread:self.activeStory]) {
         NSInteger score = [NewsBlurAppDelegate computeStoryScore:[self.activeStory objectForKey:@"intelligence"]];
         storyUnread = [NSString stringWithFormat:@"<div class=\"NB-story-unread NB-%@\"></div>",
                        score > 0 ? @"positive" : score < 0 ? @"negative" : @"neutral"];
@@ -1006,6 +996,7 @@
 }
 
 - (NSString *)getSideOptions {
+    BOOL isRead = [[self.activeStory objectForKey:@"read_status"] boolValue];
     BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
     BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
 
@@ -1020,7 +1011,25 @@
                              "    </div></a>"
                              "  </div>" : @"";
 
-    NSString *sideOptions = [NSString stringWithFormat:@
+    NSString *markReadButton = @"";
+
+    if (appDelegate.feedDetailViewController.isMarkReadManually) {
+        markReadButton = [NSString stringWithFormat:@
+                          "<div class='NB-sideoptions'>"
+                          "<div class='NB-share-header'></div>"
+                          "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
+                          "  <div id=\"NB-share-button-id\" class='NB-share-button NB-read-button NB-button'>"
+                          "    <a href=\"http://ios.newsblur.com/read\"><div>"
+                          "      <span class=\"NB-icon\"></span>"
+                          "      <span class=\"NB-sideoption-text\">%@</span>"
+                          "    </div></a>"
+                          "  </div>"
+                          "</div></div></div>",
+                          isRead ? @"Read" : @"Mark Story Read"
+        ];
+    }
+
+    NSString *sideOptions = [NSString stringWithFormat:@"%@"
                              "<div class='NB-sideoptions'>"
                              "<div class='NB-share-header'></div>"
                              "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
@@ -1044,6 +1053,7 @@
                              "  </div>"
                              "%@"
                              "</div></div></div>",
+                             markReadButton,
                              isShared ? @"NB-button-active" : @"",
                              isShared ? @"Shared" : @"Share",
                              isSaved ? @"NB-button-active" : @"",
@@ -1569,10 +1579,7 @@
             hasScrolled = YES;
         }
         
-        if (hasScrolled && !atTop && [appDelegate.storiesCollection isStoryUnread:activeStory]) {
-            [appDelegate.storiesCollection markStoryRead:activeStory];
-            [appDelegate.storiesCollection syncStoryAsRead:activeStory];
-            
+        if (hasScrolled && !atTop && [appDelegate.feedDetailViewController markStoryReadIfNeeded:activeStory isScrolling:YES]) {
             NSIndexPath *reloadIndexPath = appDelegate.feedDetailViewController.storyTitlesTable.indexPathForSelectedRow;
             if (reloadIndexPath != nil) {
                 [appDelegate.feedDetailViewController reloadIndexPath:reloadIndexPath withRowAnimation:UITableViewRowAnimationNone];
@@ -1844,6 +1851,20 @@
             }
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
+        } else if ([action isEqualToString:@"read"]) {
+            if ([[activeStory objectForKey:@"read_status"] boolValue]) {
+                [appDelegate.storiesCollection markStoryUnread:activeStory];
+                [appDelegate.storiesCollection syncStoryAsUnread:activeStory];
+            } else {
+                [appDelegate.storiesCollection markStoryRead:activeStory];
+                [appDelegate.storiesCollection syncStoryAsRead:activeStory];
+            }
+            [self setActiveStoryAtIndex:-1];
+            [self refreshHeader];
+            [self refreshSideOptions];
+            [appDelegate.feedDetailViewController reload];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
         } else if ([action isEqualToString:@"share"]) {
             [self openShareDialog];
             decisionHandler(WKNavigationActionPolicyCancel);
@@ -2018,7 +2039,7 @@
     
     [self.activityIndicator stopAnimating];
     
-    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhone || !self.appDelegate.detailViewController.storyTitlesInGrid;
+    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhone || !self.appDelegate.detailViewController.storyTitlesInGridView;
     
     [self loadHTMLString:self.fullStoryHTML];
     self.fullStoryHTML = nil;
@@ -2040,7 +2061,7 @@
         self.webView.hidden = NO;
         [self.webView setNeedsDisplay];
         
-        if (self == self.appDelegate.storyPagesViewController.currentPage && !self.appDelegate.detailViewController.isPhone && self.appDelegate.detailViewController.storyTitlesInGrid) {
+        if (self == self.appDelegate.storyPagesViewController.currentPage && !self.appDelegate.detailViewController.isPhone && self.appDelegate.detailViewController.storyTitlesInGridView) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 //                [self.appDelegate.feedDetailViewController changedStoryHeight:self.webView.scrollView.contentSize.height];
                 [self.appDelegate.feedDetailViewController reload];
@@ -2320,48 +2341,11 @@
     return [tagName isKindOfClass:[NSString class]] && [tagName isEqualToString:tagValue];
 }
 
-- (void)tapImage:(UIGestureRecognizer *)gestureRecognizer {
-    CGPoint pt = [self pointForGesture:gestureRecognizer];
-    if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
-//    NSLog(@"Tapped point: %@", NSStringFromCGPoint(pt));
-    [webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'tagName');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *tagName, NSError *error) {
-        if ([self isTag:tagName equalTo:@"IMG"]) {
-            [self showImageMenu:pt];
-            [gestureRecognizer setEnabled:NO];
-            [gestureRecognizer setEnabled:YES];
-        }
-    }];
-}
-
 - (void)showImageMenu:(CGPoint)pt {
     [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'title');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *title, NSError *error) {
         [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'alt');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *alt, NSError *error) {
             [self.webView evaluateJavaScript:[NSString stringWithFormat:@"linkAt(%li, %li, 'src');", (long)pt.x,(long)pt.y] completionHandler:^(NSString *src, NSError * error) {
-                NSString *alertTitle = title.length ? title : alt;
-                self->activeLongPressUrl = [NSURL URLWithString:src];
-                
-                UIAlertController *alert = [UIAlertController alertControllerWithTitle:alertTitle.length ? alertTitle : nil
-                                                                               message:nil
-                                                                        preferredStyle:UIAlertControllerStyleActionSheet];
-                [alert addAction:[UIAlertAction actionWithTitle:@"View and zoom" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    [self.appDelegate showOriginalStory:self->activeLongPressUrl];
-                }]];
-                [alert addAction:[UIAlertAction actionWithTitle:@"Copy image" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    [self fetchImage:self->activeLongPressUrl copy:YES save:NO];
-                }]];
-                [alert addAction:[UIAlertAction actionWithTitle:@"Save to camera roll" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    [self fetchImage:self->activeLongPressUrl copy:NO save:YES];
-                }]];
-                [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-                    
-                }]];
-                
-                [alert setModalPresentationStyle:UIModalPresentationPopover];
-                
-                UIPopoverPresentationController *popover = [alert popoverPresentationController];
-                popover.sourceRect = CGRectMake(pt.x, pt.y, 1, 1);
-                popover.sourceView = self.appDelegate.storyPagesViewController.view;
-                [self presentViewController:alert animated:YES completion:nil];
+                [self previewImage:[NSURL URLWithString:src]];
             }];
         }];
     }];
@@ -2411,37 +2395,39 @@
     return pt;
 }
 
-- (void)fetchImage:(NSURL *)url copy:(BOOL)copy save:(BOOL)save {
-    [MBProgressHUD hideHUDForView:self.webView animated:YES];
-    [appDelegate.storyPagesViewController showShareHUD:copy ?
-                                               @"Copying..." : @"Saving..."];
+- (void)previewImage:(NSURL *)url {
+    [self hideHUDAnimated:YES];
+    [appDelegate.storyPagesViewController showShareHUD:@"Previewing..."];
     
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     [manager setResponseSerializer:[AFImageResponseSerializer serializer]];
     [manager GET:url.absoluteString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         UIImage *image = responseObject;
-        if (copy) {
-            [UIPasteboard generalPasteboard].image = image;
-            [self flashCheckmarkHud:@"copied"];
-        } else if (save) {
-            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-                PHAssetChangeRequest *changeRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
-                changeRequest.creationDate = [NSDate date];
-            } completionHandler:^(BOOL success, NSError * _Nullable error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (success) {
-                        [self flashCheckmarkHud:@"saved"];
-                    } else {
-                        [MBProgressHUD hideHUDForView:self.webView animated:NO];
-                        [self informError:error];
-                    }
-                });
-            }];
+        
+        if (self != self.appDelegate.storyPagesViewController.currentPage) {
+            [self hideHUDAnimated:YES];
+            return;
+        }
+        
+        PreviewViewController *previewViewController = [PreviewViewController new];
+        
+        if ([previewViewController saveImage:image withFilename:url.URLByDeletingPathExtension.lastPathComponent]) {
+            [self hideHUDAnimated:YES];
+            [self presentViewController:previewViewController animated:YES completion:nil];
+        } else {
+            [self hideHUDAnimated:YES];
+            [self informError:@"Could not preview image"];
         }
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [MBProgressHUD hideHUDForView:self.webView animated:YES];
+        [self hideHUDAnimated:YES];
         [self informError:@"Could not fetch image"];
     }];
+}
+
+- (void)hideHUDAnimated:(BOOL)animated {
+    [MBProgressHUD hideHUDForView:self.webView animated:animated];
+    [MBProgressHUD hideHUDForView:self.appDelegate.storyPagesViewController.view animated:animated];
+    [MBProgressHUD hideHUDForView:self.appDelegate.storyPagesViewController.currentPage.view animated:animated];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {

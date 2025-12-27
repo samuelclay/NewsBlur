@@ -8,11 +8,11 @@
 
 #import "FeedsObjCViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 #import "InteractionsModule.h"
 #import "ActivityModule.h"
 #import "FeedTableCell.h"
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 #import "UserProfileViewController.h"
 #import "MBProgressHUD.h"
 #import "SBJson4.h"
@@ -98,8 +98,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 + (void)initialize {
     // keep in sync with NewsBlurTopSection
-    NewsBlurTopSectionNames = @[/* 0 */ @"infrequent",
-                                /* 1 */ @"everything"];
+    NewsBlurTopSectionNames = @[/* 0 */ @"dashboard",
+                                        /* 1 */ @"infrequent",
+                                        /* 2 */ @"everything"];
 }
 
 - (void)viewDidLoad {
@@ -227,7 +228,16 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
     
     self.currentRowAtIndexPath = nil;
-    self.currentSection = NewsBlurTopSectionAllStories;
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSString *appOpening = [userPreferences stringForKey:@"app_opening"];
+    
+    if ([appOpening isEqualToString:@"feeds"]) {
+        self.currentSection = -1;
+    } else {
+        self.currentSection = NewsBlurTopSectionAllStories;
+    }
+    
     self.lastRowAtIndexPath = nil;
     self.lastSection = NewsBlurTopSectionAllStories;
     
@@ -240,6 +250,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierAlternate action:@selector(selectPreviousFeed:) discoverabilityTitle:@"Previous Site" wantPriority:YES];
     [self addKeyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierShift action:@selector(selectNextFolder:) discoverabilityTitle:@"Next Folder" wantPriority:YES];
     [self addKeyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(selectPreviousFolder:) discoverabilityTitle:@"Previous Folder" wantPriority:YES];
+    [self addKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierCommand action:@selector(selectDashboard:) discoverabilityTitle:@"Open Dashboard"];
     [self addKeyCommandWithInput:@"e" modifierFlags:UIKeyModifierCommand action:@selector(selectEverything:) discoverabilityTitle:@"Open All Stories"];
     [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(selectPreviousIntelligence:) discoverabilityTitle:@"Switch Views"];
     [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(selectNextIntelligence:) discoverabilityTitle:@"Switch Views"];
@@ -340,37 +351,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
     [self becomeFirstResponder];
 }
-
-//- (void)handleGesture:(UIScreenEdgePanGestureRecognizer *)gesture {
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) return;
-//
-//    self.interactiveFeedDetailTransition = YES;
-//
-//    CGPoint point = [gesture locationInView:self.view];
-//    CGFloat viewWidth = CGRectGetWidth(self.view.frame);
-//    CGFloat percentage = MIN(point.x, viewWidth) / viewWidth;
-////    NSLog(@"back gesture: %d, %f - %f/%f", (int)gesture.state, percentage, point.x, viewWidth);
-//
-//    if (gesture.state == UIGestureRecognizerStateBegan) {
-////        if (appDelegate.storiesCollection.transferredFromDashboard) {
-////            [appDelegate.dashboardViewController.storiesModule.storiesCollection
-////             transferStoriesFromCollection:appDelegate.storiesCollection];
-////            [appDelegate.dashboardViewController.storiesModule fadeSelectedCell:NO];
-////        }
-//    } else if (gesture.state == UIGestureRecognizerStateChanged) {
-//        [appDelegate.masterContainerViewController interactiveTransitionFromFeedDetail:percentage];
-//    } else if (gesture.state == UIGestureRecognizerStateEnded) {
-//        CGPoint velocity = [gesture velocityInView:self.view];
-//        if (velocity.x > 0) {
-//            [appDelegate.masterContainerViewController transitionFromFeedDetail];
-//        } else {
-////            // Returning back to view, cancelling pop animation.
-////            [appDelegate.masterContainerViewController transitionToFeedDetail:NO];
-//        }
-//
-//        self.interactiveFeedDetailTransition = NO;
-//    }
-//}
 
 - (void)fadeSelectedCell {
     [self fadeCellWithIndexPath:[self.feedTitlesTable indexPathForSelectedRow]];
@@ -525,10 +505,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {
     return YES;
-}
-
-- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
-    
 }
 
 #pragma mark -
@@ -747,6 +723,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     appDelegate.dictUserProfile = [results objectForKey:@"user_profile"];
     appDelegate.dictSocialServices = [results objectForKey:@"social_services"];
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
+    
+    appDelegate.dashboardArray = [results objectForKey:@"dashboard_rivers"];
     
     appDelegate.isPremium = [[appDelegate.dictUserProfile objectForKey:@"is_premium"] integerValue] == 1;
     appDelegate.isPremiumArchive = [[appDelegate.dictUserProfile objectForKey:@"is_archive"] integerValue] == 1;
@@ -1055,6 +1033,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }];
 }
 
+- (void)clearDashboard {
+    @throw [NSException exceptionWithName:@"Missing clearDashboard implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
+- (void)loadDashboard {
+    @throw [NSException exceptionWithName:@"Missing loadDashboard implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
 - (void)loadNotificationStory {
     @throw [NSException exceptionWithName:@"Missing loadNotificationStory implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
@@ -1069,6 +1055,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (NSArray<NSString *> *)parentTitlesForFolderTitle:(NSString *)folderTitle {
     @throw [NSException exceptionWithName:@"Missing parentsTitlesForFolderTitle: implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
+- (NSString *)folderTitleForFullFolderPath:(NSString *)fullFolderPath {
+    @throw [NSException exceptionWithName:@"Missing folderTitleForFullFolderPath: implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
+- (NSString *)fullFolderPathForFolderTitle:(NSString *)folderTitle {
+    @throw [NSException exceptionWithName:@"Missing fullFolderPathForFolderTitle: implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
 - (void)showUserProfile {
@@ -1220,10 +1214,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     CGSize size = CGSizeMake(self.view.frame.size.width - 36,
                              self.view.frame.size.height - 60);
     
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.dashboardViewController contentSize:size barButtonItem:self.activitiesButton];
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.activitiesButton];
     
-    [appDelegate.dashboardViewController refreshInteractions];
-    [appDelegate.dashboardViewController refreshActivity];
+    [appDelegate.activitiesViewController refreshInteractions];
+    [appDelegate.activitiesViewController refreshActivity];
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
@@ -1407,7 +1401,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [values addObject:@"everything"];
     
     for (NSString *folder in self.appDelegate.dictFoldersArray) {
-        if ([folder hasPrefix:@"river_"] || [folder isEqualToString:@"everything"] || [folder isEqualToString:@"infrequent"] || [folder isEqualToString:@"widget"] || [folder isEqualToString:@"read_stories"] || [folder hasPrefix:@"saved_"]) {
+        if ([folder hasPrefix:@"river_"] ||
+            [folder isEqualToString:@"dashboard"] ||
+            [folder isEqualToString:@"everything"] ||
+            [folder isEqualToString:@"infrequent"] ||
+            [folder isEqualToString:@"widget"] ||
+            [folder isEqualToString:@"read_stories"] ||
+            [folder hasPrefix:@"saved_"]) {
             continue;
         }
         
@@ -1692,6 +1692,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         return;
     }
     
+    [self.appDelegate.feedDetailViewController cancelMarkStoryReadTimer];
     [appDelegate.storiesCollection reset];
     
     [self clearSelectedHeader];
@@ -1720,6 +1721,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     }
     
     [[tableView cellForRowAtIndexPath:indexPath] setNeedsDisplay];
+    
+    [self clearDashboard];
     
     if (searchFolder != nil) {
         [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:searchFolder];
@@ -1880,8 +1883,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (IBAction)sectionTapped:(UIButton *)button {
-    [self clearSelectedHeader];
-    
     button.backgroundColor = UIColorFromRGB(0x214607);
 }
 
@@ -1898,6 +1899,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (self.currentSection >= 0) {
         FolderTitleView *title = self.folderTitleViews[@(self.currentSection)];
         
+        title.selectionColor = [UIColor clearColor];
+        
         [UIView animateWithDuration:0.2 animations:^{
             title.invisibleHeaderButton.layer.backgroundColor = [UIColor clearColor].CGColor;
         } completion:NULL];
@@ -1910,6 +1913,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (self.currentSection >= 0) {
         FolderTitleView *title = self.folderTitleViews[@(self.currentSection)];
         
+        title.selectionColor = [UIColor clearColor];
         title.invisibleHeaderButton.backgroundColor = UIColor.clearColor;
         
         self.currentSection = -1;
@@ -1931,6 +1935,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [color getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha];
         color = [UIColor colorWithHue:hue saturation:1 brightness:1 alpha:alpha];
         
+        title.selectionColor = color;
         title.invisibleHeaderButton.backgroundColor = color;
         [title.invisibleHeaderButton setNeedsDisplay];
     }
@@ -1945,13 +1950,20 @@ heightForHeaderInSection:(NSInteger)section {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
-    if (!visibleFeeds && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories &&
+    if (!visibleFeeds && section != NewsBlurTopSectionDashboard &&
+        section != NewsBlurTopSectionInfrequentSiteStories &&
+        section != NewsBlurTopSectionAllStories &&
         ![folderName isEqualToString:@"river_global"] &&
         ![folderName isEqualToString:@"river_blurblogs"] &&
         ![folderName isEqualToString:@"saved_searches"] &&
         ![folderName isEqualToString:@"saved_stories"] &&
         ![folderName isEqualToString:@"read_stories"] &&
         ![folderName isEqualToString:@"widget_stories"]) {
+        return 0;
+    }
+    
+    if (section == NewsBlurTopSectionDashboard &&
+        [[prefs stringForKey:@"dashboard_layout"] isEqualToString:@"none"]) {
         return 0;
     }
     
@@ -1987,6 +1999,7 @@ heightForHeaderInSection:(NSInteger)section {
         [self fadeCellWithIndexPath:self.currentRowAtIndexPath];
     }
     
+    [self.appDelegate.feedDetailViewController cancelMarkStoryReadTimer];
     [self clearSelectedHeader];
     
     // reset pointer to the cells
@@ -2005,7 +2018,14 @@ heightForHeaderInSection:(NSInteger)section {
         folder = [NSString stringWithFormat:@"%ld", (long)tag];
     }
     
-    [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
+    [self clearDashboard];
+    
+    if ([folder isEqualToString:@"dashboard"]) {
+        appDelegate.detailViewController.storyTitlesInDashboard = YES;
+        [self loadDashboard];
+    } else {
+        [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
+    }
     
     if (!appDelegate.isPhone) {
         [appDelegate.feedDetailViewController viewWillAppear:NO];
@@ -2152,12 +2172,7 @@ heightForHeaderInSection:(NSInteger)section {
     } while (!foundNext && section != stopAtSection);
     
     [self didSelectSectionHeaderWithTag:section];
-    
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:section];
-    
-    if ([self.feedTitlesTable numberOfRowsInSection:section] > 0) {
-        [self.feedTitlesTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
-    }
+    [self scrollToSection:section];
 }
 
 - (void)selectPreviousFolder:(id)sender {
@@ -2170,12 +2185,11 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     [self didSelectSectionHeaderWithTag:section];
-    
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:section];
-    
-    if ([self.feedTitlesTable numberOfRowsInSection:section] > 0) {
-        [self.feedTitlesTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
-    }
+    [self scrollToSection:section];
+}
+
+- (void)selectDashboard:(id)sender {
+    [self didSelectSectionHeaderWithTag:NewsBlurTopSectionDashboard];
 }
 
 - (void)selectEverything:(id)sender {
@@ -2187,6 +2201,43 @@ heightForHeaderInSection:(NSInteger)section {
     
     if (tag != NSNotFound) {
         [self didSelectSectionHeaderWithTag:tag];
+    }
+}
+
+- (void)selectFolder:(NSString *)folder {
+    NSInteger tag = [appDelegate.dictFoldersArray indexOfObject:folder];
+    
+    if (tag != NSNotFound) {
+        [self didSelectSectionHeaderWithTag:tag];
+        [self scrollToSection:tag];
+    }
+}
+
+- (void)selectFeed:(NSString *)feedId inFolder:(NSString *)folder {
+    NSInteger section = [appDelegate.dictFoldersArray indexOfObject:folder];
+    NSArray *feedsInFolder = [appDelegate.dictFolders objectForKey:folder];
+    
+    if (section != NSNotFound) {
+        for (NSInteger row = 0; row < feedsInFolder.count; row++) {
+            id thisFeedId = [feedsInFolder objectAtIndex:row];
+            NSString *thisFeedIdStr = [NSString stringWithFormat:@"%@", thisFeedId];
+            
+            if ([thisFeedIdStr isEqualToString:feedId]) {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
+                
+                [self expandFolderIfNecessary:folder];
+                [feedTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+                [self tableView:feedTitlesTable didSelectRowAtIndexPath:indexPath];
+            }
+        }
+    }
+}
+
+- (void)scrollToSection:(NSInteger)section {
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:section];
+    
+    if ([self.feedTitlesTable numberOfRowsInSection:section] > 0) {
+        [self.feedTitlesTable scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
     }
 }
 
@@ -2255,7 +2306,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days {
-    if (feedIds.count == 1 && ([feedIds.firstObject isEqual:@"everything"] || [feedIds.firstObject isEqual:@"infrequent"])) {
+    if (feedIds.count == 1 && ([feedIds.firstObject isEqual:@"dashboard"] || [feedIds.firstObject isEqual:@"everything"] || [feedIds.firstObject isEqual:@"infrequent"])) {
         [self markEverythingReadWithDays:days infrequent:[feedIds.firstObject isEqual:@"infrequent"]];
         return;
     }
@@ -2407,6 +2458,29 @@ heightForHeaderInSection:(NSInteger)section {
     
 }
 
+- (void)expandFolderIfNecessary:(NSString *)folderName {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
+    bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
+    
+    if (isFolderCollapsed) {
+        // Expand folder
+        [userPreferences setBool:NO forKey:collapseKey];
+        [userPreferences synchronize];
+        appDelegate.collapsedFolders = nil;
+        
+        [self resetRowHeights];
+        
+        NSInteger tag = [appDelegate.dictFoldersArray indexOfObject:folderName];
+        
+        [self.feedTitlesTable beginUpdates];
+        [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:tag]
+                            withRowAnimation:UITableViewRowAnimationFade];
+        [self.feedTitlesTable endUpdates];
+    }
+}
+
 - (BOOL)isFeedVisible:(id)feedId {
     if (![feedId isKindOfClass:[NSString class]]) {
         feedId = [NSString stringWithFormat:@"%@",feedId];
@@ -2535,7 +2609,7 @@ heightForHeaderInSection:(NSInteger)section {
     [self showExplainerOnEmptyFeedlist];
     
 //    if (!self.isPhone) {
-//        FeedDetailViewController *storiesModule = self.appDelegate.dashboardViewController.storiesModule;
+//        FeedDetailViewController *storiesModule = self.appDelegate.activitiesViewController.storiesModule;
 //
 //        storiesModule.storiesCollection.feedPage = 0;
 //        storiesModule.storiesCollection.storyCount = 0;

@@ -60,10 +60,14 @@
 
 @property (nonatomic, readonly) BOOL canPullToRefresh;
 @property (nonatomic, readonly) BOOL isMarkReadOnScroll;
+@property (nonatomic, readonly) BOOL isMarkReadOnScrollOrSelection;
+@property (nonatomic, readonly) NSTimeInterval markReadAfterInterval;
+@property (nonatomic, readonly) BOOL isMarkReadManually;
 @property (nonatomic, readonly) BOOL isLegacyTable;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
+@property (nonatomic, readwrite) BOOL dashboardAwaitingFinish;
 @property (nonatomic, readwrite) BOOL finishedAnimatingIn;
 @property (nonatomic, readwrite) BOOL isOnline;
 @property (nonatomic, readwrite) BOOL isShowingFetching;
@@ -71,6 +75,8 @@
 @property (nonatomic, readwrite) BOOL showImagePreview;
 @property (nonatomic, readwrite) BOOL invalidateFontCache;
 @property (nonatomic, readwrite) BOOL cameFromFeedsList;
+@property (nonatomic, readwrite) NSInteger dashboardIndex;
+@property (nonatomic, readwrite) BOOL dashboardSingleMode;
 
 //- (void)changedStoryHeight:(CGFloat)storyHeight;
 - (void)loadingFeed;
@@ -80,6 +86,7 @@
 - (void)reloadTable;
 - (void)reloadIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)rowAnimation;
 - (void)reloadWithSizing;
+- (void)doneDashboardChooseSite:(NSString *)riverId;
 - (void)resetFeedDetail;
 - (void)reloadStories;
 - (void)fetchNextPage:(void(^)(void))callback;
@@ -130,6 +137,8 @@
 - (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 - (void)loadFaviconsFromActiveFeed;
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
+- (void)cancelMarkStoryReadTimer;
+- (BOOL)markStoryReadIfNeeded:(NSDictionary *)story isScrolling:(BOOL)isScrolling;
 - (void)finishMarkAsSaved:(NSDictionary *)params;
 - (void)failedMarkAsSaved:(NSDictionary *)params;
 - (void)finishMarkAsUnsaved:(NSDictionary *)params;

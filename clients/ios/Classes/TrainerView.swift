@@ -9,7 +9,7 @@
 import SwiftUI
 
 /// A protocol of interaction between the trainer view and the enclosing view controller.
-protocol TrainerInteraction {
+@MainActor protocol TrainerInteraction {
     var isStoryTrainer: Bool { get set }
 }
 

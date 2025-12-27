@@ -60,6 +60,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic, strong) NSString *restoringFolder;
 @property (nonatomic, strong) NSString *restoringFeedID;
 @property (nonatomic) NSUInteger deferredLoadStoryCount;
+@property (nonatomic, strong) NSTimer *markStoryReadTimer;
 
 @end
 
@@ -98,6 +99,9 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                                                object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishedLoadingFeedsNotification:) name:@"FinishedLoadingFeedsNotification" object:nil];
+    
+    self.dashboardIndex = -1;
+    self.dashboardSingleMode = NO;
     
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
@@ -356,6 +360,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     @throw [NSException exceptionWithName:@"Missing reloadIndexPath implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
 }
 
+- (void)doneDashboardChooseSite:(NSString *)riverId {
+    @throw [NSException exceptionWithName:@"Missing doneDashboardChooseSite implementation" reason:@"This is implemented in the Swift subclass, so should never reach here." userInfo:nil];
+}
+
 - (void)reloadTable {
     if (self.isFadingTable) {
         return;
@@ -493,13 +501,16 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         settingsBarButton.enabled = YES;
     }
     
-    if (storiesCollection.isSocialRiverView ||
+    if (self.isDashboard ||
+        storiesCollection.isSocialRiverView ||
         storiesCollection.isSavedView ||
         storiesCollection.isReadView) {
         feedMarkReadButton.enabled = NO;
     } else {
         feedMarkReadButton.enabled = YES;
     }
+    
+    [self cancelMarkStoryReadTimer];
     
     [self.notifier setNeedsLayout];
     
@@ -588,6 +599,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (self.isMovingToParentViewController) {
         appDelegate.inFindingStoryMode = NO;
         appDelegate.findingStoryStartDate = nil;
+        appDelegate.findingStoryDictionary = nil;
         appDelegate.tryFeedStoryId = nil;
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     }
@@ -712,6 +724,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.navigationItem.titleView = nil;
     self.pageFetching = NO;
     self.pageFinished = NO;
+    self.dashboardAwaitingFinish = YES;
     self.isOnline = YES;
     self.isShowingFetching = NO;
     self.cameFromFeedsList = YES;
@@ -723,10 +736,17 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [appDelegate.storyPagesViewController resetPages];
     [appDelegate.storyPagesViewController hidePages];
     
-    storiesCollection.inSearch = NO;
-    storiesCollection.searchQuery = nil;
-    storiesCollection.savedSearchQuery = nil;
-    [self.searchBar setText:@""];
+    if (appDelegate.isDashboard) {
+        storiesCollection.inSearch = appDelegate.storiesCollection.inSearch;
+        storiesCollection.searchQuery = appDelegate.storiesCollection.searchQuery;
+        storiesCollection.savedSearchQuery = appDelegate.storiesCollection.savedSearchQuery;
+        [self.searchBar setText:storiesCollection.searchQuery ?: @""];
+    } else {
+        storiesCollection.inSearch = NO;
+        storiesCollection.searchQuery = nil;
+        storiesCollection.savedSearchQuery = nil;
+        [self.searchBar setText:@""];
+    }
     [self.notifier hideIn:0];
     [self beginOfflineTimer];
     [appDelegate.cacheImagesOperationQueue cancelAllOperations];
@@ -744,6 +764,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     storiesCollection.activePopularTags = [NSArray array];
     self.pageFetching = NO;
     self.pageFinished = NO;
+    self.dashboardAwaitingFinish = YES;
     self.isOnline = YES;
     self.isShowingFetching = NO;
     
@@ -798,6 +819,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     NSString *storyImageUrl = [[storyImageUrls firstObject] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     
     if (storyImageUrl == nil) {
+        return;
+    }
+    
+    if ([storyImageUrl hasPrefix:@"http://data:image"]) {
         return;
     }
     
@@ -1097,6 +1122,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     
     [self loadingFeed];
     
+    if ([storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+        NSLog(@"⚠️ Called fetchRiverPage with dashboard; this should never occur");  // log
+        return;
+    }
+    
     storiesCollection.feedPage = page;
     self.pageFetching = YES;
     NSInteger storyCount = storiesCollection.storyCount;
@@ -1202,6 +1232,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         self.appDelegate.tryFeedStoryId = nil;
         self.appDelegate.inFindingStoryMode = NO;
         self.appDelegate.findingStoryStartDate = nil;
+        self.appDelegate.findingStoryDictionary = nil;
         //            storiesCollection.feedPage = 1;
         [self loadOfflineStories];
         [self showOfflineNotifier];
@@ -1218,6 +1249,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 #pragma mark Processing Stories
 
 - (void)finishedLoadingFeed:(NSDictionary *)results feedPage:(NSInteger)feedPage feedId:(NSString *)sentFeedId {
+    if (self.dashboardIndex >= 0 && !self.isDashboard) {
+        return;
+    }
+    
     appDelegate.hasLoadedFeedDetail = YES;
     self.isOnline = YES;
     self.isShowingFetching = NO;
@@ -1326,6 +1361,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [self renderStories:confirmedNewStories];
     
     NSLog(@"...rendered");  // log
+    
+    if (self.dashboardIndex >= 0) {
+        self.pageFinished = YES;
+        [appDelegate.feedsViewController loadDashboard];
+        return;
+    }
     
     if (!self.isPhoneOrCompact) {
         [appDelegate.storyPagesViewController resizeScrollView];
@@ -1466,7 +1507,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 feedOpening = @"story";
             }
             
-            if ([feedOpening isEqualToString:@"story"]) {
+            if ([feedOpening isEqualToString:@"story"] && !self.isDashboard) {
                 appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
                 [appDelegate loadStoryDetailView];
             }
@@ -1474,14 +1515,38 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         return;
     }
     
-    if (!self.view.window || -appDelegate.findingStoryStartDate.timeIntervalSinceNow > 15) {
+    if (-appDelegate.findingStoryStartDate.timeIntervalSinceNow > 15) {
         NSLog(@"No longer looking for try feed.");
         if (appDelegate.inFindingStoryMode) {
             [MBProgressHUD hideHUDForView:self.view animated:YES];
         }
         appDelegate.inFindingStoryMode = NO;
         appDelegate.findingStoryStartDate = nil;
+        appDelegate.findingStoryDictionary = nil;
         appDelegate.tryFeedStoryId = nil;
+        return;
+    }
+    
+    if (appDelegate.findingStoryDictionary != nil) {
+        NSLog(@"Got a finding story dictionary, so showing that while we look");
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.appDelegate.detailViewController.storyPagesViewController refreshPages];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.appDelegate.detailViewController.currentStoryController.activeStory = [self.appDelegate.findingStoryDictionary mutableCopy];
+                [self.appDelegate.detailViewController.currentStoryController drawStory];
+                
+                self.appDelegate.findingStoryDictionary = nil;
+            });
+        });
+    }
+    
+    if (!self.view.window || [storiesCollection.activeFeedStories count] == 0) {
+        NSLog(@"Want to test for try feed, but no stories loaded yet; deferring");  // log
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self testForTryFeed];
+        });
         return;
     }
     
@@ -1530,6 +1595,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             appDelegate.tryFeedStoryId = nil;
             appDelegate.inFindingStoryMode = NO;
             appDelegate.findingStoryStartDate = nil;
+            appDelegate.findingStoryDictionary = nil;
         }
     }
 }
@@ -1861,10 +1927,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (void)loadStoryAtRow:(NSInteger)row {
     NSInteger storyIndex = [storiesCollection indexFromLocation:row];
     appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-    if ([storiesCollection isStoryUnread:appDelegate.activeStory]) {
-        [storiesCollection markStoryRead:appDelegate.activeStory];
-        [storiesCollection syncStoryAsRead:appDelegate.activeStory];
-    }
+    [self markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
     [self setTitleForBackButton];
     [appDelegate loadStoryDetailView];
     [self redrawUnreadStory];
@@ -1878,6 +1941,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 feedTitle = @"All Shared Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
                 feedTitle = @"Global Shared Stories";
+            } else if ([storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+                feedTitle = @"NewsBlur Dashboard";
             } else if ([storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 feedTitle = @"All Stories";
             } else if ([storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
@@ -1973,19 +2038,14 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 //        FeedDetailCollectionCell *cell = (FeedDetailCollectionCell*) [collectionView cellForItemAtIndexPath:indexPath];
         NSInteger storyIndex = [storiesCollection indexFromLocation:location];
         NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
-        BOOL isGrid = appDelegate.detailViewController.storyTitlesInGrid;
+        BOOL isGridView = appDelegate.detailViewController.storyTitlesInGridView;
         
         if (!self.isPhoneOrCompact &&
             appDelegate.activeStory &&
             [[story objectForKey:@"story_hash"]
              isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
-            if ([storiesCollection isStoryUnread:story]) {
-                [storiesCollection markStoryRead:story];
-                [storiesCollection syncStoryAsRead:story];
-                
-                if (!isGrid) {
-                    [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
-                }
+            if ([self markStoryReadIfNeeded:story isScrolling:NO] && !isGridView) {
+                [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
             }
             
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row"];
@@ -1995,7 +2055,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 [appDelegate.storyPagesViewController viewDidAppear:NO];
             }
             
-            if (!isGrid) {
+            if (!isGridView) {
                 return;
             }
         }
@@ -2138,18 +2198,82 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         UIInterfaceOrientationIsPortrait(orientation);
 }
 
-- (BOOL)isMarkReadOnScroll {
+- (NSString *)markReadValue {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
-    if ([userPreferences boolForKey:@"override_scroll_read_filter"]) {
-        NSNumber *markRead = [userPreferences objectForKey:appDelegate.storiesCollection.scrollReadFilterKey];
+    if ([userPreferences boolForKey:@"override_mark_read_filter"]) {
+        NSString *markRead = [userPreferences objectForKey:appDelegate.storiesCollection.markReadFilterKey];
         
         if (markRead != nil) {
-            return markRead.boolValue;
+            return markRead;
         }
     }
     
-    return [userPreferences boolForKey:@"default_scroll_read_filter"];
+    NSString *markRead = [userPreferences stringForKey:@"default_mark_read_filter"];
+    
+    return markRead;
+}
+
+- (void)cancelMarkStoryReadTimer {
+    [self.markStoryReadTimer invalidate];
+    self.markStoryReadTimer = nil;
+}
+
+- (BOOL)markStoryReadIfNeeded:(NSDictionary *)story isScrolling:(BOOL)isScrolling {
+    if (!isScrolling) {
+        [self cancelMarkStoryReadTimer];
+    }
+    
+    if (![storiesCollection isStoryUnread:story]) {
+        return NO;
+    }
+    
+    NSTimeInterval interval = self.markReadAfterInterval;
+    
+    if (interval > 0) {
+        if (isScrolling && self.markStoryReadTimer != nil) {
+            return NO;
+        }
+        
+        self.markStoryReadTimer = [NSTimer scheduledTimerWithTimeInterval:interval repeats:NO block:^(NSTimer * _Nonnull timer) {
+            [self.storiesCollection markStoryRead:story];
+            [self.storiesCollection syncStoryAsRead:story];
+            
+            [self reload];
+            [self.appDelegate.storyPagesViewController.currentPage setActiveStoryAtIndex:-1];
+            [self.appDelegate.storyPagesViewController.currentPage refreshHeader];
+        }];
+        
+        return NO;
+    } else if (self.isMarkReadManually) {
+        return NO;
+    } else {
+        [storiesCollection markStoryRead:story];
+        [storiesCollection syncStoryAsRead:story];
+        
+        return YES;
+    }
+}
+
+- (BOOL)isMarkReadOnScroll {
+    return [[self markReadValue] isEqualToString:@"scroll"];
+}
+
+- (BOOL)isMarkReadOnScrollOrSelection {
+    return [[self markReadValue] isEqualToString:@"scroll"] || [[self markReadValue] isEqualToString:@"selection"];
+}
+
+- (NSTimeInterval)markReadAfterInterval {
+    NSString *markRead = [self markReadValue];
+    if ([markRead hasPrefix:@"after"]) {
+        return [[markRead substringFromIndex:5] integerValue];
+    } else {
+        return 0;
+    }
+}
+
+- (BOOL)isMarkReadManually {
+    return [[self markReadValue] isEqualToString:@"manually"];
 }
 
 - (void)checkScroll {
@@ -2186,9 +2310,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 NSInteger storyIndex = [storiesCollection indexFromLocation:thisRow];
                 NSDictionary *story = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
                 
-                if ([storiesCollection isStoryUnread:story]) {
-                    [storiesCollection markStoryRead:story];
-                    [storiesCollection syncStoryAsRead:story];
+                if ([self markStoryReadIfNeeded:story isScrolling:YES]) {
                     NSIndexPath *reloadIndexPath = [NSIndexPath indexPathForRow:thisRow inSection:0];
                     NSLog(@" --> Reloading indexPath: %@", reloadIndexPath);
                     [self reloadIndexPath:reloadIndexPath withRowAnimation:UITableViewRowAnimationFade];
@@ -2383,7 +2505,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     
     if (storiesCollection.isRiverView) {
-        if ([storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
+        if ([storiesCollection.activeFolder isEqual:@"dashboard"] || [storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
             for (NSString *folderName in appDelegate.dictFoldersArray) {
                 for (id feedId in [appDelegate.dictFolders objectForKey:folderName]) {
                     if (![feedId isKindOfClass:[NSString class]] || ![feedId startsWith:@"saved:"]) {
@@ -2468,10 +2590,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #if TARGET_OS_MACCATALYST
     UINavigationController *feedDetailNavController = appDelegate.feedDetailViewController.navigationController;
     UIView *sourceView = feedDetailNavController.view;
-    CGRect sourceRect = CGRectMake(120, 0, 20, 20);
+    CGRect sourceRect = CGRectMake(120, 10, 20, 20);
     
     if (appDelegate.splitViewController.isFeedListHidden) {
-        sourceRect = CGRectMake(192, 0, 20, 20);
+        sourceRect = CGRectMake(-130, 10, 20, 20);
     }
     
     [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount sourceView:sourceView sourceRect:sourceRect completionHandler:^(BOOL marked){
@@ -2492,7 +2614,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (IBAction)doOpenMarkReadMenu:(id)sender {
-    [self markReadShowMenu:MarkReadShowMenuBasedOnPref sender:sender];
+    if (feedMarkReadButton.isEnabled) {
+        [self markReadShowMenu:MarkReadShowMenuBasedOnPref sender:sender];
+    }
 }
 
 - (IBAction)doMarkAllRead:(id)sender {
@@ -2521,6 +2645,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     MenuViewController *viewController = [MenuViewController new];
     __weak MenuViewController *weakViewController = viewController;
     
+    BOOL dashboard = self.isDashboard;
     BOOL everything = appDelegate.storiesCollection.isEverything;
     BOOL infrequent = appDelegate.storiesCollection.isInfrequent;
     BOOL river = [self isRiver];
@@ -2541,15 +2666,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
     
-    if ((!everything || !appDelegate.storiesCollection.isRiverView) && !infrequent && !saved && !read && !social && !widget) {
-        NSString *manageText = [NSString stringWithFormat:@"Manage this %@", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
+    if ((!everything || !appDelegate.storiesCollection.isRiverView) && !infrequent && !saved && !read && !social && !widget && !dashboard) {
+        NSString *manageText = [NSString stringWithFormat:@"Manage this %@…", appDelegate.storiesCollection.isRiverView ? @"folder" : @"site"];
         
         [viewController addTitle:manageText iconName:@"menu_icn_move.png" selectionShouldDismiss:NO handler:^{
             [self manageSite:weakViewController.navigationController manageText:manageText everything:everything];
         }];
     }
     
-    if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read && !social && !widget) {
+    if (!appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read && !social && !widget && !dashboard) {
         [viewController addTitle:@"Train this site" iconName:@"menu_icn_train.png" selectionShouldDismiss:YES handler:^{
             [self openTrainSite];
         }];
@@ -2577,78 +2702,96 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    [viewController addSegmentedControlWithTitles:@[@"Newest first", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-        if (selectedIndex == 0) {
-            [userPreferences setObject:@"newest" forKey:[self.appDelegate.storiesCollection orderKey]];
-        } else {
-            [userPreferences setObject:@"oldest" forKey:[self.appDelegate.storiesCollection orderKey]];
-        }
+    if (!dashboard) {
+        NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
+        NSArray *titles = @[@"On scroll or selection", @"Only on selection", @"After 1 second", @"After 2 seconds", @"After 3 seconds", @"After 4 seconds", @"After 5 seconds", @"After 10 seconds", @"After 15 seconds", @"After 30 seconds", @"After 45 seconds", @"After 60 seconds", @"Manually"];
+        NSArray *values = @[ @"scroll", @"selection", @"after1", @"after2", @"after3", @"after4", @"after5", @"after10", @"after15", @"after30", @"after45", @"after60", @"manually"];
         
-        [self reloadStories];
-    }];
-    
-    if (infrequent || !river) {
-        [viewController addSegmentedControlWithTitles:@[@"All stories", @"Unread only"] selectIndex:[appDelegate.storiesCollection.activeReadFilter isEqualToString:@"all"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+        [viewController addTitle:@"Mark story read…" iconName:@"indicator-unread" iconColor:UIColorFromRGB(0xD58B4F) submenuTitles:titles values:values overrideSelectedValue:self.markReadValue defaultValue:@"scroll" preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(id selectedValue) {
+            // Nothing to do.
+        }];
+        
+        [viewController addSegmentedControlWithTitles:@[@"Newest first", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
             if (selectedIndex == 0) {
-                [userPreferences setObject:@"all" forKey:self.appDelegate.storiesCollection.readFilterKey];
+                [userPreferences setObject:@"newest" forKey:[self.appDelegate.storiesCollection orderKey]];
             } else {
-                [userPreferences setObject:@"unread" forKey:self.appDelegate.storiesCollection.readFilterKey];
+                [userPreferences setObject:@"oldest" forKey:[self.appDelegate.storiesCollection orderKey]];
             }
             
             [self reloadStories];
         }];
         
-        [viewController addSegmentedControlWithTitles:@[@"Read on scroll", @"Leave unread"] selectIndex:self.isMarkReadOnScroll ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-            [userPreferences setBool:selectedIndex == 0 forKey:self.appDelegate.storiesCollection.scrollReadFilterKey];
-        }];
+        if (!dashboard || infrequent || !river) {
+            [viewController addSegmentedControlWithTitles:@[@"All stories", @"Unread only"] selectIndex:[appDelegate.storiesCollection.activeReadFilter isEqualToString:@"all"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+                if (selectedIndex == 0) {
+                    [userPreferences setObject:@"all" forKey:self.appDelegate.storiesCollection.readFilterKey];
+                } else {
+                    [userPreferences setObject:@"unread" forKey:self.appDelegate.storiesCollection.readFilterKey];
+                }
+                
+                [self reloadStories];
+            }];
+        }
     }
     
     [appDelegate addSplitControlToMenuController:viewController];
     
-    NSString *preferenceKey = self.appDelegate.storiesCollection.storyTitlesPositionKey;
-    NSArray *titles;
-    NSArray *values;
-    
-    if (appDelegate.detailViewController.isPhone) {
-        titles = @[@"List", @"Grid"];
-        values = @[@"titles_on_left", @"titles_in_grid"];
-    } else {
-        titles = @[@"Left", @"Top", @"Bottom", @"Grid"];
-        values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom", @"titles_in_grid"];
+    if (dashboard) {
+        NSString *preferenceKey = @"dashboard_layout";
+        NSArray *titles = @[@"Single", @"Columns", @"Rows"];
+        NSArray *values = @[@"single", @"vertical", @"horizontal"];
+        
+        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+            [self reload];
+        }];
     }
     
-    [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"titles_on_left" selectValue:self.appDelegate.storiesCollection.activeStoryTitlesPosition preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-        [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
-    }];
-    
-    if (self.appDelegate.detailViewController.storyTitlesInGrid) {
-        preferenceKey = @"grid_columns";
+    if (!dashboard) {
+        NSString *preferenceKey = self.appDelegate.storiesCollection.storyTitlesPositionKey;
+        NSArray *titles;
+        NSArray *values;
         
         if (appDelegate.detailViewController.isPhone) {
-            titles = @[@"Auto Cols", @"1", @"2"];
-            values = @[@"auto", @"1", @"2"];
+            titles = @[@"List", @"Grid"];
+            values = @[@"titles_on_left", @"titles_in_grid"];
         } else {
-            titles = @[@"Auto Cols", @"1", @"2", @"3", @"4"];
-            values = @[@"auto", @"1", @"2", @"3", @"4"];
+            titles = @[@"layout-split.png", @"layout-top2.png", @"layout-full.png", @"layout-list.png", @"layout-magazine.png", @"layout-grid.png"];
+            values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom", @"titles_in_list", @"titles_in_magazine", @"titles_in_grid"];
         }
         
-        [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"auto" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+        [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"titles_on_left" selectValue:self.appDelegate.storiesCollection.activeStoryTitlesPosition preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
             [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
         }];
         
-        preferenceKey = @"grid_height";
-        titles = @[@"XS", @"Short", @"Medium", @"Tall", @"XL"];
-        values = @[@"xs", @"short", @"medium", @"tall", @"xl"];
-        
-        [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"medium" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
-            [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
-        }];
+        if (self.appDelegate.detailViewController.storyTitlesInGrid) {
+            preferenceKey = @"grid_columns";
+            
+            if (appDelegate.detailViewController.isPhone) {
+                titles = @[@"Auto Cols", @"1", @"2"];
+                values = @[@"auto", @"1", @"2"];
+            } else {
+                titles = @[@"Auto Cols", @"1", @"2", @"3", @"4"];
+                values = @[@"auto", @"1", @"2", @"3", @"4"];
+            }
+            
+            [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"auto" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+                [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+            }];
+            
+            preferenceKey = @"grid_height";
+            titles = @[@"XS", @"Short", @"Medium", @"Tall", @"XL"];
+            values = @[@"xs", @"short", @"medium", @"tall", @"xl"];
+            
+            [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"medium" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+                [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+            }];
+        }
     }
     
     if (!self.appDelegate.detailViewController.storyTitlesInGrid) {
-        preferenceKey = @"story_list_preview_text_size";
-        titles = @[@"Title", @"content_preview_small.png", @"content_preview_medium.png", @"content_preview_large.png"];
-        values = @[@"title", @"short", @"medium", @"long"];
+        NSString *preferenceKey = @"story_list_preview_text_size";
+        NSArray *titles = @[@"Title", @"content_preview_small.png", @"content_preview_medium.png", @"content_preview_large.png"];
+        NSArray *values = @[@"title", @"short", @"medium", @"long"];
         
         [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
             [self.appDelegate resizePreviewSize];
@@ -2672,9 +2815,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    preferenceKey = @"feed_list_font_size";
-    titles = @[@"XS", @"S", @"M", @"L", @"XL"];
-    values = @[@"xs", @"small", @"medium", @"large", @"xl"];
+    NSString *preferenceKey = @"feed_list_font_size";
+    NSArray *titles = @[@"XS", @"S", @"M", @"L", @"XL"];
+    NSArray *values = @[@"xs", @"small", @"medium", @"large", @"xl"];
     
     [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
         [self.appDelegate resizeFontSize];
@@ -2707,10 +2850,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #if TARGET_OS_MACCATALYST
     UINavigationController *feedDetailNavController = appDelegate.feedDetailViewController.navigationController;
     UIView *sourceView = feedDetailNavController.view;
-    CGRect sourceRect = CGRectMake(152, 0, 20, 20);
+    CGRect sourceRect = CGRectMake(152, 10, 20, 20);
     
     if (appDelegate.splitViewController.isFeedListHidden) {
-        sourceRect = CGRectMake(224, 0, 20, 20);
+        sourceRect = CGRectMake(-98, 10, 20, 20);
     }
     
     [viewController showFromNavigationController:navController barButtonItem:nil sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:UIPopoverArrowDirectionDown];
@@ -3048,7 +3191,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             if ([title isEqualToString:@"everything"]) {
                 title = @"Top Level";
                 iconName = @"menu_icn_all.png";
-            } else if ([title isEqualToString:@"infrequent"]) {
+            } else if ([title isEqualToString:@"dashboard"] || [title isEqualToString:@"infrequent"]) {
                 continue;
             } else {
                 NSArray *components = [title componentsSeparatedByString:@" ▸ "];

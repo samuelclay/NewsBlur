@@ -107,7 +107,9 @@
     UIFont *font = [UIFont fontWithName:@"WhitneySSm-Medium" size:boldFontDescriptor.pointSize];
     NSInteger titleOffsetY = ((rect.size.height - font.pointSize) / 2) - 1;
     NSString *folderTitle;
-    if (section == NewsBlurTopSectionInfrequentSiteStories) {
+    if (section == NewsBlurTopSectionDashboard) {
+        folderTitle = @"NewsBlur Dashboard";
+    } else if (section == NewsBlurTopSectionInfrequentSiteStories) {
         folderTitle = @"Infrequent Site Stories";
     } else if (section == NewsBlurTopSectionAllStories) {
         folderTitle = @"All Site Stories";
@@ -147,7 +149,8 @@
     invisibleHeaderButton.frame = CGRectMake(rect.origin.x, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.layer.cornerRadius = 10;
     invisibleHeaderButton.clipsToBounds = YES;
-    invisibleHeaderButton.alpha = .1;
+    invisibleHeaderButton.alpha = .2;
+    invisibleHeaderButton.backgroundColor = self.selectionColor;
     invisibleHeaderButton.tag = section;
     invisibleHeaderButton.accessibilityLabel = [NSString stringWithFormat:@"%@ folder%@", folderTitle, accessibilityCount];
     invisibleHeaderButton.accessibilityTraits = UIAccessibilityTraitNone;
@@ -179,7 +182,7 @@
         disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2-1, disclosureHeight, disclosureHeight);
 
         // Add collapse button to all folders except Everything
-        if (section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"]) {
+        if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"]) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
@@ -211,7 +214,15 @@
     int width = 20;
     int height = 20;
     
-    if (section == NewsBlurTopSectionInfrequentSiteStories) {
+    if (section == NewsBlurTopSectionDashboard) {
+        folderImage = [UIImage imageNamed:@"saved-stories"];
+        if (!appDelegate.isPhone) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 7;
+        }
+        allowLongPress = YES;
+    } else if (section == NewsBlurTopSectionInfrequentSiteStories) {
         folderImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
         if (!appDelegate.isPhone) {
             folderImageViewX = 10;

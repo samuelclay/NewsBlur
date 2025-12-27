@@ -287,6 +287,9 @@
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 titleImage = [UIImage imageNamed:@"all-stories"];
             } else if (appDelegate.storiesCollection.isRiverView &&
+                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+                titleImage = [UIImage imageNamed:@"saved-stories"];
+            } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
             } else if (appDelegate.storiesCollection.isSavedView &&
@@ -393,7 +396,7 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    if (!appDelegate.detailViewController.storyTitlesInGrid) {
+    if (!appDelegate.detailViewController.storyTitlesInGridView) {
         appDelegate.detailViewController.navigationItem.leftBarButtonItem = nil;
     }
 }
@@ -1213,11 +1216,9 @@
         
         appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex updateFeedDetail:YES];
-        if ([appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
-            [appDelegate.storiesCollection markStoryRead:appDelegate.activeStory];
-            [appDelegate.storiesCollection syncStoryAsRead:appDelegate.activeStory];
-        }
+        [appDelegate.feedDetailViewController markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
         [appDelegate.feedDetailViewController redrawUnreadStory];
+        [appDelegate.storyPagesViewController.currentPage refreshHeader];
     }
     
     if (!appDelegate.storiesCollection.inSearch) {

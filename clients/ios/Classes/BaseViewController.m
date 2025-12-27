@@ -215,6 +215,14 @@
     }
 }
 
+- (BOOL)isOS26OrLater {
+    if (@available(iOS 26.0, *)) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 - (BOOL)isPortrait {
     UIWindow *window = [NewsBlurAppDelegate sharedAppDelegate].window;
     UIInterfaceOrientation orientation = window.windowScene.interfaceOrientation;
@@ -237,6 +245,18 @@
     return self.appDelegate.detailViewController.storyTitlesInGrid;
 }
 
+- (BOOL)isGridView {
+    return self.appDelegate.detailViewController.storyTitlesInGridView;
+}
+
+- (BOOL)isDashboard {
+    return self.appDelegate.detailViewController.storyTitlesInDashboard;
+}
+
+- (BOOL)fromDashboardStory {
+    return self.appDelegate.detailViewController.storyTitlesFromDashboardStory;
+}
+
 - (BOOL)isFeedShown {
     return appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
 }
@@ -245,7 +265,18 @@
     return !appDelegate.storyPagesViewController.currentPage.view.isHidden && appDelegate.storyPagesViewController.currentPage.noStoryMessage.isHidden;
 }
 
+#pragma mark -
+#pragma mark Menus
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+    [super buildMenuWithBuilder:builder];
+    
+    [AppMenuHelper.shared buildMenuWithBuilder:builder];
+}
+
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+    [AppMenuHelper.shared prepareIfNeeded];
+    
     if (action == @selector(chooseLayout:) || action == @selector(findInFeedDetail:)) {
         return self.isFeedShown;
     } else if (action == @selector(chooseTitle:) || action == @selector(choosePreview:)) {
@@ -259,13 +290,13 @@
         action == @selector(moveSite:) ||
         action == @selector(openRenameSite:) ||
         action == @selector(deleteSite:)) {
-        return self.isFeedShown && appDelegate.storiesCollection.isCustomFolderOrFeed;
-    } else if (action == @selector(muteSite) || 
+        return self.isFeedShown && !self.isDashboard && appDelegate.storiesCollection.isCustomFolderOrFeed;
+    } else if (action == @selector(muteSite) ||
                action == @selector(muteSite:)) {
-        return self.isFeedShown && !appDelegate.storiesCollection.isRiverView;
+        return self.isFeedShown && !self.isDashboard && !appDelegate.storiesCollection.isRiverView;
     } else if (action == @selector(instaFetchFeed:) ||
                action == @selector(doMarkAllRead:)) {
-        return self.isFeedShown;
+        return self.isFeedShown && !self.isDashboard;
     } else if (action == @selector(showSendTo:) ||
                action == @selector(showTrain:) ||
                action == @selector(showShare:) ||
@@ -291,6 +322,12 @@
     } else if (command.action == @selector(chooseIntelligence:)) {
         NSInteger intelligence = [[NSUserDefaults standardUserDefaults] integerForKey:@"selectedIntelligence"];
         NSString *value = [NSString stringWithFormat:@"%@", @(intelligence + 1)];
+        command.state = [command.propertyList isEqualToString:value];
+    } else if (command.action == @selector(chooseDashboard:)) {
+        NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:@"dashboard_layout"];
+        if (value == nil) {
+            value = @"vertical";
+        }
         command.state = [command.propertyList isEqualToString:value];
     } else if (command.action == @selector(toggleSidebar:)) {
         UISplitViewController *splitViewController = self.appDelegate.splitViewController;
@@ -358,6 +395,16 @@
         } else {
             command.title = @"Mark as Read";
         }
+    } else if (command.action == @selector(chooseMarkRead:)) {
+        NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
+        NSString *value = [[NSUserDefaults standardUserDefaults] objectForKey:preferenceKey];
+        
+        if (value == nil) {
+            preferenceKey = @"default_mark_read_filter";
+            value = [[NSUserDefaults standardUserDefaults] objectForKey:preferenceKey];
+        }
+        
+        command.state = [command.propertyList isEqualToString:value];
     }
 }
 
@@ -457,6 +504,25 @@
     [self.appDelegate.feedsViewController selectIntelligence];
 }
 
+- (IBAction)chooseDashboard:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    NSString *key = @"dashboard_layout";
+    
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:key];
+    
+    if ([string isEqualToString:@"none"]) {
+        [self.appDelegate.feedsViewController reloadFeeds:nil];
+        [self.appDelegate.feedsViewController selectEverything:nil];
+    } else if (self.isDashboard) {
+        [self.appDelegate.feedDetailViewController reload];
+    } else {
+        [self.appDelegate.feedsViewController reloadFeeds:nil];
+        [self.appDelegate.feedsViewController selectDashboard:nil];
+    }
+}
+
+
 - (IBAction)chooseTitle:(id)sender {
     UICommand *command = sender;
     NSString *string = command.propertyList;
@@ -519,7 +585,7 @@
     [ThemeManager themeManager].theme = string;
 }
 
-- (IBAction)toggleSidebar:(id)sender{
+- (IBAction)toggleFeeds:(id)sender {
     UISplitViewController *splitViewController = self.appDelegate.splitViewController;
     
     [UIView animateWithDuration:0.2 animations:^{
@@ -586,6 +652,14 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
+- (IBAction)chooseMarkRead:(id)sender {
+    UICommand *command = sender;
+    NSString *string = command.propertyList;
+    NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
+    
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:preferenceKey];
+}
+
 - (IBAction)openTrainSite:(id)sender {
     [self.appDelegate.feedDetailViewController openTrainSite];
 }
@@ -629,6 +703,10 @@
 
 - (IBAction)previousFolder:(id)sender {
     [self.appDelegate.feedsViewController selectPreviousFolder:sender];
+}
+
+- (IBAction)openDashboard:(id)sender {
+    [self.appDelegate.feedsViewController selectDashboard:sender];
 }
 
 - (IBAction)openAllStories:(id)sender {
