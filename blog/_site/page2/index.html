@@ -66,6 +66,61 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Jul 1, 2021</span>
+          <h3>
+            <a class="post-link" href="/2021/07/01/refreshing-newsblur-design/">
+              Redesigning NewsBlur on the web, iOS, and Android
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>This past year we’ve focused on maintenance and improving quality behind the scenes. It just so happens that the urge to clean is so strong that this work extended to the front-end. After months of work, today we’re launching a redesigned NewsBlur for all three platforms: on the web, on iOS, and on Android. There’s a lot that’s new. And what better day to launch a redesign than on <a href="/2013/03/17/three-months-to-scale-newsblur/">the ninth anniversary of the sunset of Google Reader</a>.</p>
+
+<p>To start, let’s take a look below at the redesigned NewsBlur.</p>
+
+<p><img src="/assets/redesign-web.png" style="width: 750px;" /></p>
+
+<p>Loads of new features:</p>
+
+<ul>
+  <li>The dashboard now has multiple, customizable rivers of news</li>
+  <li>Image previews are now customizable by size and layout</li>
+  <li>Story previews are also customizable by length</li>
+  <li>Images are now full bleed on the web (edge-to-edge)</li>
+  <li>Controls have been re-styled and made more accessible</li>
+  <li>Sizes, spaces, and text have all been tweaked for a more legible read</li>
+  <li>Upgraded backend: Python 2 to Python 3, latest Django and libraries, containerized infrastructure</li>
+  <li>Both Android and iOS apps have been updated with the new design</li>
+</ul>
+
+<p>Those multiple rivers come in handy when you want to follow different interests at a glance. You can of course change which individual feeds or folders is loaded, letting you focus on saved searches, infrequent stories, a single feed, or everything you’re subscribed to.</p>
+
+<p>Below you can see the design in action. Notice how easy it is to change where the image preview is located as well as adjust the number of lines of story text to show.</p>
+
+<p>
+    <video autoplay="" loop="" playsinline="" width="500" style="width: 500px;border: 2px solid rgba(0,0,0,0.1)">
+        <source src="/assets/redesign-content-preview.mp4" type="video/mp4" />
+    </video>
+</p>
+
+<p>The reading experience itself has also seen improvement. Full bleed images have been ported over from iOS to both Android and the web. This means that images will now run edge-to-edge. And the controls at the top and bottom of the web app have been restyled to be easier to understand at a quick glance.</p>
+
+<p><img src="/assets/redesign-full-bleed.jpg" style="border: 2px solid rgba(0,0,0,0.1);" /></p>
+
+<p>There’s many ways to adjust story titles to fit. Pack them in dense or offer titles room to breathe.</p>
+
+<p><img src="/assets/redesign-bottom.jpg" style="border: 2px solid rgba(0,0,0,0.1);" /></p>
+
+<p>The redesign has also come to both of the official Android and iOS apps. Right now both are in beta testing, but you can join the <a href="https://testflight.apple.com/join/hYk9WU3f">iOS TestFlight</a> or the <a href="https://play.google.com/store/apps/details?id=com.newsblur&amp;hl=en_US&amp;gl=US">Android beta</a>.</p>
+
+<p><img src="/assets/redesign-ios-android.png" style="" /></p>
+
+<p>This whole redesign weighs in at a whopping 1,316 commits, which <a href="https://github.com/samuelclay/NewsBlur/compare/python2...master">you can view on GitHub</a>. Much of the work that took place here involves upgrading from Python 2 to Python 3 and containerizing everything with Docker. In a few weeks, we’ll post a technical writeup of what those backend changes are and how you can now run a local version of NewsBlur on your own computer with a single line of code. For those that want to run their own private instance of NewsBlur, that line of code is <code class="language-plaintext highlighter-rouge">make nb</code> and <a href="https://github.com/samuelclay/NewsBlur">instructions are found on the repo</a>.</p>
+
+<p>If you’ve enjoyed using NewsBlur and are a fan of this grand redesign, please take a moment to share on social media that you read your news with the help of NewsBlur.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Jun 28, 2021</span>
           <h3>
             <a class="post-link" href="/2021/06/28/story-of-a-hacking/">
@@ -496,38 +551,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
 </ul>
 
 <p>Thanks to <a href="https://github.com/dejal">David Sinclair</a> for putting together this release. Keep up the great work! And if you have ideas for what you’d like to see in the next NewsBlur iOS release, please, please, please <a href="https://forum.newsblur.com/c/idea">submit them to the forum</a>.</p>
-
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Jun 1, 2019</span>
-          <h3>
-            <a class="post-link" href="/2019/06/01/updates-to-the-android-app-and-a-new-addition-to/">
-              Updates to the Android app and a new addition to the team
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.</p>
-
-<figure class="tmblr-full" data-orig-height="1920" data-orig-width="1080" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png"><img width="600" style="width: 600px; margin: 0 auto;border:1px solid #606060" data-orig-height="1920" data-orig-width="1080" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png" /></figure>
-
-<p>Here’s the full list of changes for version 9.0:</p>
-
-<ul>
-  <li>Fixes black background for stories while reading with the Light theme.</li>
-  <li>Total rewrite of the backend story management platform. This fixes the oldest issues known in story paging and scroll state. The story rivers should now act like dynamic views instead of static lists.</li>
-  <li>New feature: renaming feeds directly in the app.</li>
-  <li>Improved messaging and display behavior for the original text view.</li>
-  <li>Fixes for the dark theme’s menu color.</li>
-  <li>Many other bug fixes and performance tweaks.</li>
-</ul>
-
-<p>I’d also like to introduce our newest developer, <a href="https://github.com/caleb-allen">Caleb Allen</a>.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/caleb-allen.jpeg" alt="" /></p>
-
-<p>Caleb will be working on the Android app. Our Android developer Daniel spent the last 5 years with us working many, many versions of the NewsBlur app. I want to thank Daniel for his years of service and we wish him well on his next adventure. And here’s hoping for many fruitful years with Caleb!</p>
 
 
         </div>

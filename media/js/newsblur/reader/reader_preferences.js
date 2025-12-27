@@ -810,6 +810,17 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Story side options buttons'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-youtube-captions' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-youtube-captions', type: 'checkbox', name: 'youtube_captions' }),
+                                $.make('label', { 'for': 'NB-preference-youtube-captions' }, 'Enable captions/subtitles for YouTube videos')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'YouTube Captions'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-highlights' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -1044,6 +1055,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=show_infrequent_site_stories]', $modal).each(function () {
             if (NEWSBLUR.Preferences.show_infrequent_site_stories) {
+                $(this).prop('checked', true);
+                return false;
+            }
+        });
+        $('input[name=youtube_captions]', $modal).each(function () {
+            if (NEWSBLUR.Preferences.youtube_captions) {
                 $(this).prop('checked', true);
                 return false;
             }

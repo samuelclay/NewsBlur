@@ -195,6 +195,43 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return theme;
     },
 
+    queue_read_time: function (story_hash, read_time_seconds) {
+        // Queue read time to be sent with the next mark-as-read API call
+        if (!('read_times' in this.queued_read_stories)) {
+            this.queued_read_stories['read_times'] = {};
+        }
+        // Accumulate read time in case the same story is queued multiple times
+        if (story_hash in this.queued_read_stories['read_times']) {
+            this.queued_read_stories['read_times'][story_hash] += read_time_seconds;
+        } else {
+            this.queued_read_stories['read_times'][story_hash] = read_time_seconds;
+        }
+    },
+
+    flush_read_times: function () {
+        // Send any queued read times to the server immediately (e.g., when switching feeds)
+        var self = this;
+        if (!NEWSBLUR.Globals.is_authenticated) return;
+        if (!this.queued_read_stories['read_times'] ||
+            _.isEmpty(this.queued_read_stories['read_times'])) return;
+
+        var data = {
+            read_times: JSON.stringify(this.queued_read_stories['read_times'])
+        };
+
+        // Clear read_times before sending to avoid duplicates
+        var read_times_to_send = this.queued_read_stories['read_times'];
+        this.queued_read_stories['read_times'] = {};
+
+        this.make_request('/reader/mark_story_hashes_as_read', data, null, function () {
+            // On error, restore queued read times to retry later
+            if (!self.queued_read_stories['read_times']) {
+                self.queued_read_stories['read_times'] = {};
+            }
+            _.extend(self.queued_read_stories['read_times'], read_times_to_send);
+        });
+    },
+
     mark_story_hash_as_read: function (story, callback, error_callback, data) {
         var self = this;
 
@@ -209,6 +246,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 data = _.extend({
                     story_hash: this.queued_read_stories['hashes']
                 }, data);
+
+                // Include read times for trending feeds feature
+                if (this.queued_read_stories['read_times'] &&
+                    !_.isEmpty(this.queued_read_stories['read_times'])) {
+                    data.read_times = JSON.stringify(this.queued_read_stories['read_times']);
+                }
 
                 this.make_request('/reader/mark_story_hashes_as_read', data, callback, error_callback, {
                     'ajax_group': 'queue_clear',
@@ -565,6 +608,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }));
         }
         this.make_request('/reader/favicons', data, pre_callback, pre_callback, { request_type: 'GET' });
+    },
+
+    fetch_trending_feeds: function (days, limit, callback, error_callback) {
+        this.make_request('/reader/trending_feeds', {
+            days: days || 7,
+            limit: limit || 50
+        }, callback, error_callback, { request_type: 'GET' });
     },
 
     load_feed: function (feed_id, page, first_load, callback, error_callback) {
