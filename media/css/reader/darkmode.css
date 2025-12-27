@@ -1407,6 +1407,13 @@ background-color: #5d8392;
     cursor: pointer;
 }
 
+.NB-dark .NB-feed-story-content .NB-search-highlight {
+    background-color: #5E4A6E;
+    color: #f3f3f3;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+
 /* Link color */
 .NB-dark .NB-feed-story a {
     color: #83b4e0;
