@@ -116,6 +116,7 @@ worktree-stop:
 worktree-close: worktree-stop
 	@if [ -f ".git" ]; then \
 		echo "Detected git worktree"; \
+		$(MAKE) worktree-permissions; \
 		if [ -z "$$(git status --porcelain)" ]; then \
 			WORKTREE_PATH=$$(pwd); \
 			cd ..; \
@@ -128,6 +129,51 @@ worktree-close: worktree-stop
 		fi; \
 	else \
 		echo "Not in a worktree, keeping directory"; \
+	fi
+
+# Bidirectional Claude permissions sync (worktree ↔ parent)
+# Only syncs permissions.allow array, merges both directions
+worktree-permissions:
+	@if [ ! -f ".git" ]; then \
+		echo "Not in a worktree, skipping permission sync"; \
+		exit 0; \
+	fi; \
+	PARENT="../../.claude/settings.local.json"; \
+	LOCAL=".claude/settings.local.json"; \
+	mkdir -p .claude; \
+	if [ ! -f "$$PARENT" ] && [ ! -f "$$LOCAL" ]; then \
+		exit 0; \
+	fi; \
+	if [ -f "$$PARENT" ] && [ ! -f "$$LOCAL" ]; then \
+		cp "$$PARENT" "$$LOCAL"; \
+		echo "✓ Copied permissions from parent repo"; \
+		exit 0; \
+	fi; \
+	if [ ! -f "$$PARENT" ] && [ -f "$$LOCAL" ]; then \
+		exit 0; \
+	fi; \
+	PARENT_PERMS=$$(jq -r '.permissions.allow[]' "$$PARENT" 2>/dev/null | sort); \
+	LOCAL_PERMS=$$(jq -r '.permissions.allow[]' "$$LOCAL" 2>/dev/null | sort); \
+	NEW_IN_LOCAL=$$(echo "$$LOCAL_PERMS" | grep -vxF "$$PARENT_PERMS" 2>/dev/null || true); \
+	NEW_IN_PARENT=$$(echo "$$PARENT_PERMS" | grep -vxF "$$LOCAL_PERMS" 2>/dev/null || true); \
+	if [ -n "$$NEW_IN_PARENT" ]; then \
+		COUNT=$$(echo "$$NEW_IN_PARENT" | grep -c . || echo 0); \
+		echo "Syncing $$COUNT permission(s) from parent → worktree:"; \
+		echo "$$NEW_IN_PARENT" | while read perm; do [ -n "$$perm" ] && echo "  + $$perm"; done; \
+		MERGED=$$(jq -s '.[0].permissions.allow = (.[0].permissions.allow + .[1].permissions.allow | unique) | .[0]' "$$LOCAL" "$$PARENT"); \
+		echo "$$MERGED" > "$$LOCAL"; \
+	fi; \
+	if [ -n "$$NEW_IN_LOCAL" ]; then \
+		COUNT=$$(echo "$$NEW_IN_LOCAL" | grep -c . || echo 0); \
+		echo "Syncing $$COUNT permission(s) from worktree → parent:"; \
+		echo "$$NEW_IN_LOCAL" | while read perm; do [ -n "$$perm" ] && echo "  + $$perm"; done; \
+		MERGED=$$(jq -s '.[0].permissions.allow = (.[0].permissions.allow + .[1].permissions.allow | unique) | .[0]' "$$PARENT" "$$LOCAL"); \
+		echo "$$MERGED" > "$$PARENT"; \
+	fi; \
+	if [ -z "$$NEW_IN_LOCAL" ] && [ -z "$$NEW_IN_PARENT" ]; then \
+		echo "✓ Permissions already in sync"; \
+	else \
+		echo "✓ Permissions synced"; \
 	fi
 
 coffee:
@@ -191,9 +237,9 @@ jekyll:
 jekyll_drafts:
 	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --drafts --config _config.yml
 lint:
-	docker exec -t newsblur_web isort --profile black --skip-glob '*.worktree/*' --skip-glob '*/archive/*' .
-	docker exec -t newsblur_web black --line-length 110 --exclude '\.worktree/.*|.*/archive/.*' .
-	docker exec -t newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv,apps/analyzer/archive,utils/archive,vendor,.worktree
+	docker exec -t newsblur_web isort --profile black --skip-glob '*.worktree/*' --skip-glob '*/archive/*' --skip-glob '.claude/*' .
+	docker exec -t newsblur_web black --line-length 110 --exclude '\.worktree/.*|.*/archive/.*|\.claude/.*' .
+	docker exec -t newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv,apps/analyzer/archive,utils/archive,vendor,.worktree,.claude
 	
 deps:
 	docker exec -t newsblur_web pip install -U uv
@@ -341,6 +387,9 @@ monitor: deploy_monitor
 deploy_staging:
 	ansible-playbook ansible/deploy.yml -l staging
 staging: deploy_staging
+deploy_blog:
+	ansible-playbook ansible/deploy.yml -l blogs
+blog: deploy_blog
 deploy_staging_static: staging_static
 staging_static:
 	ansible-playbook ansible/deploy.yml -l staging --tags static

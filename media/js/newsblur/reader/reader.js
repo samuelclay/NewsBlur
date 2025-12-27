@@ -156,6 +156,7 @@
             this.switch_story_layout();
             this.load_delayed_stylesheets();
             this.load_theme();
+            this.setup_read_time_tracker();
         },
 
         // ========
@@ -1336,6 +1337,17 @@
                     view.voice_recorder.cleanup();
                 }
             });
+
+            // Flush read time for the current story before resetting (for trending feeds feature)
+            if (NEWSBLUR.ReadTimeTracker && this.active_story) {
+                var story_hash = this.active_story.get('story_hash');
+                var read_time = NEWSBLUR.ReadTimeTracker.get_and_reset_read_time(story_hash);
+                if (read_time > 0) {
+                    NEWSBLUR.assets.queue_read_time(story_hash, read_time);
+                }
+                NEWSBLUR.ReadTimeTracker.stop_tracking();
+                NEWSBLUR.assets.flush_read_times();
+            }
 
             $.extend(this.flags, {
                 'scrolling_by_selecting_story_title': false,
@@ -6500,6 +6512,13 @@
                     this.force_instafetch_stories(unfetched_feeds[0].id);
                 }
             }, this), 60 * 1 * 1000);
+        },
+
+        setup_read_time_tracker: function () {
+            // Initialize the read time tracker for trending feeds feature
+            if (NEWSBLUR.ReadTimeTracker) {
+                NEWSBLUR.ReadTimeTracker.bind_activity_events();
+            }
         },
 
         // ==========

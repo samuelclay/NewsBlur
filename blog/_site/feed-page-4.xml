@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2025-10-31T12:45:57-04:00</updated>
+  <updated>2025-12-22T12:20:55-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,43 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Saved story tagging </title>
+    <link href="https://blog.newsblur.com/2014/01/14/saved-story-tagging/" rel="alternate" type="text/html" title="Saved story tagging " />
+    <published>2014-01-14T10:39:00-05:00</published>
+    <updated>2014-01-14T10:39:00-05:00</updated>
+    <id>https://blog.newsblur.com/2014/01/14/saved-story-tagging</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/01/14/saved-story-tagging/">
+      <![CDATA[<p>It’s one thing to follow a handful of sites and use NewsBlur’s training to only read the stories you want to read. But sometimes you want to come back to stories long after you’ve read them. You could save the story, but then you would have to either scroll down your saved story list to find the story, or use the <a href="http://blog.newsblur.com/2021/06/21/2013-07-30-simple-search-for-feeds-saved-stories-and-blurblogs.html">new search feature</a> to find it by title or author.</p>
+
+<p>Today I would like to introduce a big new feature: saved story tagging. It works like this. When you save a story, it is automatically tagged with all of the folders that the site is part of.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/saved%20story%20tags.png" alt="" /></p>
+
+<p>After the story is auto-tagged by folder, you can then add your own tags, which are autocompleted by previously used tags. You can also click a button to auto-tag the story with its own tags, easily clicking on the tags you want to remove.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/story_tags.jpg" alt="" /></p>
+
+<p>You can also search per-tag and soon you will be able to rename and delete tags. There are more plans to integrate tagging into both iOS and Android apps.</p>
+
+<p>Saved story tags also have RSS feeds. This is a big deal, since this allows you to save stories and have them automatically ingested by <a href="http://www.ifttt.com">IFTTT</a> for use elsewhere. You already could share stories over your blurblog, but now you have a private RSS feed that gives you far greater control.</p>
+
+<p>Stay tuned because there are even more big features coming soon. Telling your friends about NewsBlur, whether on Twitter and Facebook or when spying over their shoulder and noticing that they’re hitting the same dozen sites over and over again without letting the sites come to them with new stories, goes a long way towards getting new features built. More users means more premiums which means more features getting built. It’s a vicious cycle.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[It’s one thing to follow a handful of sites and use NewsBlur’s training to only read the stories you want to read. But sometimes you want to come back to stories long after you’ve read them. You could save the story, but then you would have to either scroll down...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Three new features for the web: syntax highlighting for source code, adjustable video widths, and footnotes</title>
@@ -1131,67 +1168,6 @@ io.sockets.on 'connection', (socket) -&gt;
     
     <summary type="html">
       <![CDATA[Today, NewsBlur is going real-time. Blogs using the PubSubHubbub protocol (PuSH), which includes all Blogger, Tumblr, and many Wordpress blogs, will instantaneously show new updates to subscribers on NewsBlur. Making this happen, while not for the faint of heart, was straight-forward enough that I’m sharing the recipe I used to...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Knight News Challenge: NewsBlur</title>
-    <link href="https://blog.newsblur.com/2012/03/16/knight-news-challenge/" rel="alternate" type="text/html" title="Knight News Challenge: NewsBlur" />
-    <published>2012-03-16T11:29:00-04:00</published>
-    <updated>2012-03-16T11:29:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/03/16/knight-news-challenge</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/03/16/knight-news-challenge/">
-      <![CDATA[<p><a href="http://newschallenge.tumblr.com/post/19397311604/newsblur">Knight News Challenge: NewsBlur</a></p>
-
-<p>Hey NewsBlurians, I’m applying for a grant from the Knight Foundation. In a previous life I worked on DocumentCloud, a successful Knight grantee, building <a href="http://www.documentcloud.org/opensource">open-source libraries</a>. I’m looking to continue the fine tradition of building for both users and for other developers.</p>
-
-<p>I’m asking for enough to fund a year of development with the help of another engineer. Please vote for the NewsBlur grant application on Knight’s website, reblogged below.</p>
-
-<p><a href="http://newschallenge.tumblr.com/post/19397311604/newsblur">Knight News Challenge Entry</a>:</p>
-
-<blockquote>
-  <h3 id="1-what-do-you-propose-to-do-20-words">1. What do you propose to do? [20 words]</h3>
-
-  <p>To build an intelligent social news reader for web and mobile called NewsBlur.</p>
-
-  <h3 id="2-is-anyone-doing-something-like-this-now-and-how-is-your-project-different-30-words">2. Is anyone doing something like this now and how is your project different? [30 words]</h3>
-
-  <p>RSS feed readers exist, none have the sharing model, original site view, and intelligence classifiers of NewsBlur. Since Google Reader phased out sharing, there’s a sizable community looking to share and discuss news.</p>
-
-  <h3 id="3-describe-the-network-with-which-you-intend-to-build-or-work-50-words">3. Describe the network with which you intend to build or work. [50 words]</h3>
-
-  <p>NewsBlur will surface stories shared by friends and friends of friends by combining the imported networks of Twitter/Facebook with communities on NewsBlur. These communities make it easy to expand your network by showing popular comments from outside your network. NewsBlur also has intelligence classifiers which allow the user to filter and highlight comments across all networks.</p>
-
-  <h3 id="4-why-will-it-work-100-words">4. Why will it work? [100 words]</h3>
-
-  <p>Because it’s worked before, just under a different model in Google Reader’s now defunct all-or-nothing community. NewsBlur’s network will be oriented more towards showing relationships and distance between you and the other active commenters on a story. NewsBlur will capitalize on the value of pre-existing networks with an intuitive and clean interface that highlights the distance between users. Surfacing relative connections between people will result in a more active community and increased engagement between like-minded readers. NewsBlur further benefits newspapers, publishers, and individual writers by showing the original site (including ads and design), as well as encouraging reading through NewsBlur’s intelligence filters.</p>
-
-  <h3 id="5-who-is-working-on-it-100-words">5. Who is working on it? [100 words]</h3>
-
-  <p>I started working on NewsBlur as a side project in June 2009. Over the past 2.5 years, NewsBlur has become self-sustainable through organic growth (word-of-mouth, blog posts, github activity). Because NewsBlur is open-source, a number of contributors from the NewsBlur community have developed their own pet features which have been integrated back into the website. This also works well for finding typos in documentation and allowing users to submit a simple pull request to get it fixed.</p>
-
-  <h3 id="6-what-part-of-the-project-have-you-already-built-100-words">6. What part of the project have you already built? [100 words]</h3>
-
-  <p>On the back-end: distributed feed fetchers and parsers. On the front-end: the feed reader itself, intelligence training, and an iPhone app. There is an actively used API, on top of which NewsBlur’s users have built a mobile website, an Android app, a Windows Phone app, and a Nokia MeeGo app. What’s not built is the entire social layer. A prototype has already been developed to surface any network relationships on comments and shared stories.</p>
-
-  <h3 id="7-how-would-you-sustain-the-project-after-the-funding-expires-50-words">7. How would you sustain the project after the funding expires? [50 words]</h3>
-
-  <p>NewsBlur is free, but there is also a premium subscription that costs between $1 - $3 per month. Users can choose how much they’d like to pay, but that means that NewsBlur is able to pay for its 8 servers. The gap between costs and revenue (also known as profit) is increasing every day.</p>
-
-  <p>Requested amount from Knight News Challenge: $150,000<br />
-Expected amount of time required to complete project: 1 year</p>
-</blockquote>
-
-]]>
-    </content>
-    
-    
-    
-    
-    <summary type="html">
-      <![CDATA[Knight News Challenge: NewsBlur
-]]>
     </summary>
     
   </entry>
