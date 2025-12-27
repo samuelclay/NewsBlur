@@ -136,7 +136,8 @@ NEWSBLUR.Router = Backbone.Router.extend({
 
     extract_query: function () {
         var search = $.getQueryString('search');
-        var sanitized = search && search.replace(/[^\w\s]+/g, " ");
+        // Preserve quotes for phrase searches, strip other special characters
+        var sanitized = search && search.replace(/[^\w\s""\u201C\u201D]+/g, " ");
 
         // console.log('extract_query', search, sanitized);
 
