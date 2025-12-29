@@ -21,6 +21,7 @@ from django.contrib.auth import logout as logout_user
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.core.validators import validate_email
 from django.db import IntegrityError
@@ -99,7 +100,7 @@ from apps.social.views import load_social_page
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince
-from utils.ratelimit import ratelimit
+from utils.ratelimit import ratelimit, ratelimit_by_url_user
 from utils.story_functions import (
     format_story_link_date__long,
     format_story_link_date__short,
@@ -1486,7 +1487,14 @@ def starred_stories_rss_feed_tag(request, user_id, secret_token, tag_slug):
     return HttpResponse(rss.writeString("utf-8"), content_type="application/rss+xml")
 
 
+@ratelimit_by_url_user(minutes=1, requests=30)
 def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
+    # Check cache first (60 second TTL)
+    cache_key = f"folder_rss:{user_id}:{folder_slug}:{unread_filter}"
+    cached_response = cache.get(cache_key)
+    if cached_response:
+        return HttpResponse(cached_response, content_type="application/rss+xml")
+
     domain = Site.objects.get_current().domain
     date_hack_2023 = datetime.datetime.now() > datetime.datetime(2023, 7, 1)
     try:
@@ -1639,7 +1647,11 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         "~FBGenerating ~SB%s~SN's folder RSS feed (%s, %s stories): ~FM%s"
         % (user.username, folder_title, len(stories), request.META.get("HTTP_USER_AGENT", "")[:24]),
     )
-    return HttpResponse(rss.writeString("utf-8"), content_type="application/rss+xml")
+
+    # Cache the RSS response for 60 seconds
+    rss_content = rss.writeString("utf-8")
+    cache.set(cache_key, rss_content, 60)
+    return HttpResponse(rss_content, content_type="application/rss+xml")
 
 
 @json.json_view
