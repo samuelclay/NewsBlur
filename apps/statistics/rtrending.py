@@ -1,5 +1,4 @@
 import datetime
-import uuid
 
 import redis
 from django.conf import settings
@@ -22,6 +21,43 @@ class RTrendingStory:
 
     MIN_READ_TIME_SECONDS = 3
     TTL_DAYS = 8
+    CACHE_TTL_SECONDS = 60  # Cache aggregated results for 60 seconds
+
+    @classmethod
+    def _get_cached_union(cls, r, prefix, days):
+        """
+        Get or create a cached ZUNIONSTORE result for multi-day aggregation.
+
+        Uses a deterministic cache key based on prefix, days, and today's date.
+        Returns the cache key name which can be used for ZREVRANGE etc.
+        The caller should NOT delete this key - it will expire automatically.
+
+        Args:
+            r: Redis connection
+            prefix: Key prefix (e.g., "sRTi", "sRTc", "fRT", "fRTc")
+            days: Number of days to aggregate
+
+        Returns:
+            Cache key name containing the aggregated sorted set
+        """
+        today = datetime.date.today().strftime("%Y-%m-%d")
+        cache_key = f"{prefix}:cache:{days}d:{today}"
+
+        # Check if cache exists
+        if r.exists(cache_key):
+            return cache_key
+
+        # Build list of daily keys
+        keys = []
+        for i in range(days):
+            day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
+            keys.append(f"{prefix}:{day}")
+
+        # Create the aggregated set
+        r.zunionstore(cache_key, keys, aggregate="SUM")
+        r.expire(cache_key, cls.CACHE_TTL_SECONDS)
+
+        return cache_key
 
     @classmethod
     def add_read_time(cls, story_hash, read_time_seconds):
@@ -116,27 +152,12 @@ class RTrendingStory:
         """
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
 
-        # Get keys for past N days
-        keys = []
-        for i in range(days):
-            day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            keys.append(f"fRT:{day}")
-
-        if not keys:
-            return []
-
-        if len(keys) > 1:
-            # Create temporary union key
-            temp_key = f"fRT:temp:{uuid.uuid4()}"
-
-            # ZUNIONSTORE to combine all daily sorted sets
-            r.zunionstore(temp_key, keys, aggregate="SUM")
-            r.expire(temp_key, 60)  # Short TTL for temp key
-
-            result = r.zrevrange(temp_key, 0, limit - 1, withscores=True)
-            r.delete(temp_key)
+        if days > 1:
+            cache_key = cls._get_cached_union(r, "fRT", days)
+            result = r.zrevrange(cache_key, 0, limit - 1, withscores=True)
         else:
-            result = r.zrevrange(keys[0], 0, limit - 1, withscores=True)
+            today = datetime.date.today().strftime("%Y-%m-%d")
+            result = r.zrevrange(f"fRT:{today}", 0, limit - 1, withscores=True)
 
         return [(int(feed_id), int(score)) for feed_id, score in result]
 
@@ -185,22 +206,12 @@ class RTrendingStory:
         """
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
 
-        keys = []
-        for i in range(days):
-            day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            keys.append(f"sRTi:{day}")
-
-        if not keys:
-            return []
-
-        if len(keys) > 1:
-            temp_key = f"sRTi:temp:{uuid.uuid4()}"
-            r.zunionstore(temp_key, keys, aggregate="SUM")
-            r.expire(temp_key, 60)
-            result = r.zrevrange(temp_key, 0, limit - 1, withscores=True)
-            r.delete(temp_key)
+        if days > 1:
+            cache_key = cls._get_cached_union(r, "sRTi", days)
+            result = r.zrevrange(cache_key, 0, limit - 1, withscores=True)
         else:
-            result = r.zrevrange(keys[0], 0, limit - 1, withscores=True)
+            today = datetime.date.today().strftime("%Y-%m-%d")
+            result = r.zrevrange(f"sRTi:{today}", 0, limit - 1, withscores=True)
 
         return [
             (story_hash.decode() if isinstance(story_hash, bytes) else story_hash, int(score))
@@ -275,27 +286,14 @@ class RTrendingStory:
             sorted by total_seconds desc
         """
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        today = datetime.date.today().strftime("%Y-%m-%d")
 
-        # Get story seconds
-        time_keys = []
-        count_keys = []
-        for i in range(days):
-            day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            time_keys.append(f"sRTi:{day}")
-            count_keys.append(f"sRTc:{day}")
-
-        if not time_keys:
-            return []
-
-        # Aggregate time across days
-        if len(time_keys) > 1:
-            time_temp = f"sRTi:temp:{uuid.uuid4()}"
-            r.zunionstore(time_temp, time_keys, aggregate="SUM")
-            r.expire(time_temp, 60)
-            time_result = r.zrevrange(time_temp, 0, limit - 1, withscores=True)
-            r.delete(time_temp)
+        # Get time data
+        if days > 1:
+            time_cache_key = cls._get_cached_union(r, "sRTi", days)
+            time_result = r.zrevrange(time_cache_key, 0, limit - 1, withscores=True)
         else:
-            time_result = r.zrevrange(time_keys[0], 0, limit - 1, withscores=True)
+            time_result = r.zrevrange(f"sRTi:{today}", 0, limit - 1, withscores=True)
 
         if not time_result:
             return []
@@ -304,22 +302,17 @@ class RTrendingStory:
         story_hashes = [(sh.decode() if isinstance(sh, bytes) else sh) for sh, _ in time_result]
         time_map = {(sh.decode() if isinstance(sh, bytes) else sh): int(score) for sh, score in time_result}
 
-        # Aggregate counts across days for these stories
-        if len(count_keys) > 1:
-            count_temp = f"sRTc:temp:{uuid.uuid4()}"
-            r.zunionstore(count_temp, count_keys, aggregate="SUM")
-            r.expire(count_temp, 60)
-            # Get counts for our specific stories
-            pipe = r.pipeline()
-            for sh in story_hashes:
-                pipe.zscore(count_temp, sh)
-            count_values = pipe.execute()
-            r.delete(count_temp)
+        # Get count data
+        if days > 1:
+            count_cache_key = cls._get_cached_union(r, "sRTc", days)
         else:
-            pipe = r.pipeline()
-            for sh in story_hashes:
-                pipe.zscore(count_keys[0], sh)
-            count_values = pipe.execute()
+            count_cache_key = f"sRTc:{today}"
+
+        # Get counts for our specific stories
+        pipe = r.pipeline()
+        for sh in story_hashes:
+            pipe.zscore(count_cache_key, sh)
+        count_values = pipe.execute()
 
         count_map = {}
         for sh, val in zip(story_hashes, count_values):
@@ -362,26 +355,14 @@ class RTrendingStory:
             sorted by total_seconds desc
         """
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        today = datetime.date.today().strftime("%Y-%m-%d")
 
-        time_keys = []
-        count_keys = []
-        for i in range(days):
-            day = (datetime.date.today() - datetime.timedelta(days=i)).strftime("%Y-%m-%d")
-            time_keys.append(f"fRT:{day}")
-            count_keys.append(f"fRTc:{day}")
-
-        if not time_keys:
-            return []
-
-        # Aggregate time
-        if len(time_keys) > 1:
-            time_temp = f"fRT:temp:{uuid.uuid4()}"
-            r.zunionstore(time_temp, time_keys, aggregate="SUM")
-            r.expire(time_temp, 60)
-            time_result = r.zrevrange(time_temp, 0, limit - 1, withscores=True)
-            r.delete(time_temp)
+        # Get time data
+        if days > 1:
+            time_cache_key = cls._get_cached_union(r, "fRT", days)
+            time_result = r.zrevrange(time_cache_key, 0, limit - 1, withscores=True)
         else:
-            time_result = r.zrevrange(time_keys[0], 0, limit - 1, withscores=True)
+            time_result = r.zrevrange(f"fRT:{today}", 0, limit - 1, withscores=True)
 
         if not time_result:
             return []
@@ -391,21 +372,16 @@ class RTrendingStory:
             (fid.decode() if isinstance(fid, bytes) else fid): int(score) for fid, score in time_result
         }
 
-        # Aggregate counts
-        if len(count_keys) > 1:
-            count_temp = f"fRTc:temp:{uuid.uuid4()}"
-            r.zunionstore(count_temp, count_keys, aggregate="SUM")
-            r.expire(count_temp, 60)
-            pipe = r.pipeline()
-            for fid in feed_ids:
-                pipe.zscore(count_temp, fid)
-            count_values = pipe.execute()
-            r.delete(count_temp)
+        # Get count data
+        if days > 1:
+            count_cache_key = cls._get_cached_union(r, "fRTc", days)
         else:
-            pipe = r.pipeline()
-            for fid in feed_ids:
-                pipe.zscore(count_keys[0], fid)
-            count_values = pipe.execute()
+            count_cache_key = f"fRTc:{today}"
+
+        pipe = r.pipeline()
+        for fid in feed_ids:
+            pipe.zscore(count_cache_key, fid)
+        count_values = pipe.execute()
 
         count_map = {}
         for fid, val in zip(feed_ids, count_values):
