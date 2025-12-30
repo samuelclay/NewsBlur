@@ -92,6 +92,7 @@
     self.webView.navigationDelegate = self;
     self.webView.allowsLinkPreview = YES;
     
+    [self.webView.scrollView setDirectionalLockEnabled:YES];
     [self.webView.scrollView setAlwaysBounceVertical:appDelegate.storyPagesViewController.isHorizontal];
     [self.webView.scrollView setDelaysContentTouches:NO];
     [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
@@ -424,6 +425,12 @@
 
     scrollPct = 0;
     hasScrolled = NO;
+    
+    if (appDelegate.storyPagesViewController.isNavigationBarHidden) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.appDelegate.storyPagesViewController setNavigationBarHidden:NO];
+        });
+    }
     
     if (appDelegate.storyPagesViewController.currentPage == self) {
         self.appDelegate.feedDetailViewController.storyHeight = 200;
