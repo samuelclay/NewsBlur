@@ -660,6 +660,11 @@ class UserSubscription(models.Model):
 
             MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
 
+            if subscription_created:
+                from apps.statistics.rtrending_subscriptions import RTrendingSubscription
+
+                RTrendingSubscription.add_subscription(feed_id=feed.pk)
+
             feed.setup_feed_for_premium_subscribers(allow_skip_resync=allow_skip_resync)
             feed.count_subscribers()
 
