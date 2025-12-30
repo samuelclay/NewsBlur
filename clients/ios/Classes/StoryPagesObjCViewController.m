@@ -106,6 +106,7 @@
 	[self.scrollView setShowsVerticalScrollIndicator:NO];
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
+    [self.scrollView setDirectionalLockEnabled:YES];
     
     if (@available(iOS 17.0, *)) {
         self.scrollView.allowsKeyboardScrolling = NO;
@@ -503,6 +504,9 @@
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse {
+//    #warning temporarily disabled hiding menubar
+//    return;
+    
     if (appDelegate.isMac || self.navigationController == nil || self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
         return;
     }
