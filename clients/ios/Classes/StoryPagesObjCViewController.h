@@ -21,7 +21,6 @@
     UIButton *buttonNext;
     UIButton *buttonText;
     UIBarButtonItem *markReadBarButton;
-    UIBarButtonItem *separatorBarButton2;
     UIActivityIndicatorView *loadingIndicator;
     UIBarButtonItem *buttonBack;
     UIView *traverseView;
@@ -63,10 +62,6 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic) IBOutlet UIView *bottomSize;
 @property (nonatomic) IBOutlet NSLayoutConstraint *bottomSizeHeightConstraint;
-@property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
 @property (nonatomic) IBOutlet UIView *traverseView;
 @property (nonatomic) IBOutlet UIView *progressView;
 @property (nonatomic) IBOutlet UIView *progressViewContainer;

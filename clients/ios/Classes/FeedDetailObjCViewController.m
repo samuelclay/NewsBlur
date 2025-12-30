@@ -68,9 +68,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
 @synthesize storyTitlesTable, feedMarkReadButton;
 @synthesize settingsBarButton;
-@synthesize separatorBarButton;
 @synthesize titleImageBarButton;
-@synthesize spacerBarButton, spacer2BarButton;
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize finishedAnimatingIn;
@@ -114,13 +112,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
 
-    spacerBarButton = [[UIBarButtonItem alloc]
-                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spacerBarButton.width = 0;
-    spacer2BarButton = [[UIBarButtonItem alloc]
-                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spacer2BarButton.width = 0;
-    
 #if !TARGET_OS_MACCATALYST
     self.refreshControl = [UIRefreshControl new];
     self.refreshControl.tintColor = UIColorFromLightDarkRGB(0x0, 0xffffff);
@@ -142,14 +133,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.storyTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.messageView.translatesAutoresizingMaskIntoConstraints = NO;
 //    self.view.translatesAutoresizingMaskIntoConstraints = NO; // No autolayout until UISplitViewController is built
-    
-    UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
-    if ([ThemeManager themeManager].isDarkTheme) {
-        separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
-    }
-    separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage target:nil action:nil];
-    [separatorBarButton setEnabled:NO];
-    separatorBarButton.isAccessibilityElement = NO;
     
     self.feedsBarButton = [[UIBarButtonItem alloc] initWithTitle:@"Sites" style:UIBarButtonItemStylePlain target:self action:@selector(doShowFeeds:)];
     self.feedsBarButton.accessibilityLabel = @"Show Sites";
@@ -439,14 +422,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     self.showImagePreview = ![[userPreferences stringForKey:@"story_list_preview_images_size"] isEqualToString:@"none"];
     
-    // set right avatar title image
-    spacerBarButton.width = 0;
-    spacer2BarButton.width = 0;
-    if (!self.isPhoneOrCompact) {
-        spacerBarButton.width = -6;
-        spacer2BarButton.width = 10;
-    }
-    
     if (storiesCollection == nil) {
         NSString *appOpening = [userPreferences stringForKey:@"app_opening"];
         
@@ -456,29 +431,15 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         }
     }
     
-    if (storiesCollection.isSocialView) {
-        spacerBarButton.width = -6;
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]];
-        UIImage *titleImage  = [appDelegate getFavicon:feedIdStr isSocial:YES];
-        titleImage = [Utilities roundCorneredImage:titleImage radius:6 convertToSize:CGSizeMake(32, 32)];
-        [((UIButton *)titleImageBarButton.customView).imageView removeFromSuperview];
-        titleImageBarButton = [UIBarButtonItem barItemWithImage:titleImage
-                                                         target:self
-                                                         action:@selector(showUserProfile)];
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                   spacerBarButton,
-                                                   titleImageBarButton,
-                                                   spacer2BarButton,
-                                                   separatorBarButton,
-                                                   feedMarkReadButton, nil];
+    NSArray *items = [NSArray arrayWithObjects:
+                      settingsBarButton,
+                      feedMarkReadButton,
+                      nil];
+    
+    if (appDelegate.isPhone) {
+        appDelegate.detailViewController.feedDetailNavigationItem.rightBarButtonItems = items;
     } else {
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                   spacerBarButton,
-                                                   settingsBarButton,
-                                                   spacer2BarButton,
-                                                   separatorBarButton,
-                                                   feedMarkReadButton,
-                                                   nil];
+        appDelegate.detailViewController.feedDetailNavigationItem.leftBarButtonItems = items;
     }
     
     // set center title
@@ -2848,15 +2809,14 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     UINavigationController *navController = self.navigationController ?: appDelegate.storyPagesViewController.navigationController;
     
 #if TARGET_OS_MACCATALYST
-    UINavigationController *feedDetailNavController = appDelegate.feedDetailViewController.navigationController;
-    UIView *sourceView = feedDetailNavController.view;
-    CGRect sourceRect = CGRectMake(152, 10, 20, 20);
+    UIView *sourceView = navController.view;
+    CGRect sourceRect = CGRectMake(430, 0, 20, 20);
     
     if (appDelegate.splitViewController.isFeedListHidden) {
-        sourceRect = CGRectMake(-98, 10, 20, 20);
+        sourceRect = CGRectMake(270, 0, 20, 20);
     }
     
-    [viewController showFromNavigationController:navController barButtonItem:nil sourceView:sourceView sourceRect:sourceRect permittedArrowDirections:UIPopoverArrowDirectionDown];
+    [appDelegate showPopoverWithViewController:viewController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
 #else
     [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
 #endif
