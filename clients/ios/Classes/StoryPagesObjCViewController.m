@@ -38,8 +38,6 @@
 
 @synthesize currentPage, nextPage, previousPage;
 @synthesize circularProgressView;
-@synthesize separatorBarButton;
-@synthesize spacerBarButton, spacer2BarButton, spacer3BarButton;
 @synthesize buttonPrevious;
 @synthesize buttonNext;
 @synthesize buttonAction;
@@ -152,29 +150,6 @@
     [self.traverseView insertSubview:tapIndicator aboveSubview:circularProgressView];
     self.loadingIndicator.frame = self.circularProgressView.frame;
 
-    spacerBarButton = [[UIBarButtonItem alloc]
-                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                       target:nil action:nil];
-    spacerBarButton.width = -12;
-    spacer2BarButton = [[UIBarButtonItem alloc]
-                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                        target:nil action:nil];
-    spacer2BarButton.width = -6;
-    spacer3BarButton = [[UIBarButtonItem alloc]
-                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                        target:nil action:nil];
-    spacer3BarButton.width = -6;
-    
-    UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
-    if ([ThemeManager themeManager].isDarkTheme) {
-        separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
-    }
-    separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
-                                                    target:nil
-                                                    action:nil];
-    [separatorBarButton setEnabled:NO];
-    separatorBarButton.isAccessibilityElement = NO;
-    
     UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:self.isMac ? 24 : 30];
     fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage
                                                     target:self
@@ -187,12 +162,6 @@
                                                      action:@selector(showOriginalSubview:)];
     originalStoryButton.accessibilityLabel = @"Show original story";
 
-    separatorBarButton2 = [UIBarButtonItem barItemWithImage:separatorImage
-                                                                      target:nil
-                                                                      action:nil];
-    [separatorBarButton2 setEnabled:NO];
-    separatorBarButton2.isAccessibilityElement = NO;
-    
     UIImage *markReadImage = [UIImage imageNamed:@"markread.png"];
     markReadBarButton = [UIBarButtonItem barItemWithImage:markReadImage
                                                                     target:self
@@ -221,9 +190,8 @@
     self.traverseBottomConstraint.constant = 0;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+        appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                    originalStoryButton,
-                                                   separatorBarButton,
                                                    fontSettingsButton, nil];
     }
     
@@ -1258,20 +1226,15 @@
     self.appDelegate.detailViewController.navigationItem.leftBarButtonItems = @[[[UIBarButtonItem alloc] initWithCustomView:[UIView new]]];
 #endif
     
-    if (!self.isPhone) {
-        if (appDelegate.detailViewController.storyTitlesOnLeft) {
-            appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                       originalStoryButton,
-                                                       separatorBarButton,
-                                                       fontSettingsButton, nil];
-        } else {
-            appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                       originalStoryButton,
-                                                       separatorBarButton,
-                                                       fontSettingsButton,
-                                                       separatorBarButton2,
-                                                       markReadBarButton, nil];
-        }
+    if (appDelegate.detailViewController.storyTitlesOnLeft) {
+        appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                   originalStoryButton,
+                                                   fontSettingsButton, nil];
+    } else {
+        appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                   originalStoryButton,
+                                                   fontSettingsButton,
+                                                   markReadBarButton, nil];
     }
     
     [self setNextPreviousButtons];

@@ -332,6 +332,24 @@ class DetailViewController: BaseViewController {
         return navigationController?.parent as? UINavigationController
     }
     
+    /// The navigation item to use for the feed detail view controller.
+    @objc var feedDetailNavigationItem: UINavigationItem {
+        if isPhone {
+            return feedDetailViewController?.navigationItem ?? navigationItem
+        } else {
+            return navigationItem
+        }
+    }
+    
+    /// The navigation item to use for the story pages view controller.
+    @objc var storiesNavigationItem: UINavigationItem {
+        if isPhone {
+            return storyPagesViewController?.navigationItem ?? navigationItem
+        } else {
+            return navigationItem
+        }
+    }
+    
     /// The feed detail view controller.
     @objc var feedDetailViewController: FeedDetailViewController?
     
@@ -379,12 +397,6 @@ class DetailViewController: BaseViewController {
         
         if fetchFeeds {
             appDelegate.feedsViewController.loadOfflineFeeds(false)
-        }
-        
-        if layout != .left, let controller = feedDetailViewController {
-            navigationItem.leftBarButtonItems = [controller.feedsBarButton, controller.settingsBarButton]
-        } else {
-            navigationItem.leftBarButtonItems = []
         }
         
         if reload {
