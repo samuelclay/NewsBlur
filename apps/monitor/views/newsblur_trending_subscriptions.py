@@ -31,18 +31,16 @@ class TrendingSubscriptions(View):
         stats = RTrendingSubscription.get_stats_for_prometheus()
 
         formatted_data["total_subscriptions_today"] = (
-            f'{chart_name}{{metric="total_subscriptions_today"}} '
-            f'{stats["total_subscriptions_today"]}'
+            f'{chart_name}{{metric="total_subscriptions_today"}} ' f'{stats["total_subscriptions_today"]}'
         )
         formatted_data["unique_feeds_subscribed_today"] = (
-            f'{chart_name}{{metric="unique_feeds_subscribed_today"}} '
-            f'{stats["unique_feeds_today"]}'
+            f'{chart_name}{{metric="unique_feeds_subscribed_today"}} ' f'{stats["unique_feeds_today"]}'
         )
 
         # Top trending feeds for 1d, 7d, and 30d windows
         for days in [1, 7, 30]:
             trending = RTrendingSubscription.get_trending_feeds_detailed(
-                days=days, limit=10, min_subscribers=1
+                days=days, limit=10
             )
 
             if trending:
@@ -60,9 +58,7 @@ class TrendingSubscriptions(View):
                     subs_today = feed_data["subscriptions_today"]
 
                     feed_info = feeds_by_id.get(feed_id, {})
-                    feed_title = self._sanitize_label(
-                        feed_info.get("feed_title", "Unknown")
-                    )
+                    feed_title = self._sanitize_label(feed_info.get("feed_title", "Unknown"))
                     total_subs = feed_info.get("num_subscribers", 0)
 
                     key = f"trending_feed_{days}d_{rank}"
@@ -77,15 +73,11 @@ class TrendingSubscriptions(View):
         daily_totals = RTrendingSubscription.get_daily_totals(days=7)
         for date_str, total in daily_totals:
             key = f"daily_total_{date_str}"
-            formatted_data[key] = (
-                f'{chart_name}{{metric="daily_subscriptions",date="{date_str}"}} {total}'
-            )
+            formatted_data[key] = f'{chart_name}{{metric="daily_subscriptions",date="{date_str}"}} {total}'
 
         # Self-monitoring: track endpoint response time
         elapsed_ms = (time.time() - start_time) * 1000
-        formatted_data["scrape_duration"] = (
-            f'{chart_name}{{metric="scrape_duration_ms"}} {elapsed_ms:.1f}'
-        )
+        formatted_data["scrape_duration"] = f'{chart_name}{{metric="scrape_duration_ms"}} {elapsed_ms:.1f}'
 
         context = {
             "data": formatted_data,
