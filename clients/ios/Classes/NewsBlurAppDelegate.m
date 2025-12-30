@@ -848,17 +848,17 @@
     }
     
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"popToRootWithCompletion"];
+    [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"popToRootWithCompletion" animated:YES];
     
     if (completion) {
         [CATransaction commit];
     }
 }
 
-- (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo {
+- (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo animated:(BOOL)animated {
     NSLog(@"⚠️ show column for %@: split view controller: %@ split nav: %@; split controllers: %@; detail controller: %@; detail nav: %@; detail nav controllers: %@", debugInfo, self.splitViewController, self.splitViewController.navigationController, self.splitViewController.viewControllers, self.detailViewController, self.detailViewController.navigationController, self.detailViewController.navigationController.viewControllers);  // log
     
-    [self.detailViewController showColumn:column];
+    [self.detailViewController showColumn:column animated:animated];
     
     NSLog(@"...shown");  // log
 }
@@ -1829,7 +1829,7 @@
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController loadingFeed];
         
-        [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadFeedDetailView"];
+        [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadFeedDetailView" animated:YES];
     }
     
     [self flushQueuedReadStories:NO withCallback:^{
@@ -2268,7 +2268,7 @@
         }
     }
     
-    [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadRiverFeedDetailView"];
+    [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadRiverFeedDetailView" animated:YES];
     
     [self flushQueuedReadStories:NO withCallback:^{
         [self flushQueuedSavedStories:NO withCallback:^{
@@ -2632,7 +2632,7 @@
     if (self.splitViewController.isCollapsed) {
         [self.feedsNavigationController popToRootViewControllerAnimated:YES];
     } else {
-        [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeedsListAnimated"];
+        [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeedsListAnimated" animated:YES];
     }
 }
 

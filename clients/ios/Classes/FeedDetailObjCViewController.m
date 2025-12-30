@@ -2048,7 +2048,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 [self reloadIndexPath:indexPath withRowAnimation:UITableViewRowAnimationFade];
             }
             
-            [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row"];
+            [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row" animated:YES];
             
             if (!appDelegate.isPhone) {
                 [appDelegate.storyPagesViewController viewWillAppear:NO];
@@ -2632,7 +2632,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (IBAction)doShowFeeds:(id)sender {
-    [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeeds"];
+    [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeeds" animated:YES];
 }
 
 - (IBAction)doOpenSettingsMenu:(id)sender {
@@ -3027,7 +3027,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [self.appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-        [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"deleteSite"];
+        [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"deleteSite" animated:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];
@@ -3050,7 +3050,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-        [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"deleteFolder"];
+        [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"deleteFolder" animated:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];
@@ -3076,7 +3076,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [params setObject:activeIdentifiers forKey:@"approved_feeds"];
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
-        [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"muteSite"];
+        [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"muteSite" animated:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];

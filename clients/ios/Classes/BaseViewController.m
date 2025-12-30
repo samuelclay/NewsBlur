@@ -262,7 +262,10 @@
 }
 
 - (BOOL)isStoryShown {
-    return !appDelegate.storyPagesViewController.currentPage.view.isHidden && appDelegate.storyPagesViewController.currentPage.noStoryMessage.isHidden;
+    BOOL pageShown = !appDelegate.storyPagesViewController.currentPage.view.isHidden;
+    BOOL hasStory = appDelegate.storyPagesViewController.currentPage.activeStoryId != nil;
+    
+    return pageShown && hasStory;
 }
 
 #pragma mark -
@@ -461,12 +464,12 @@
 #pragma mark Edit menu
 
 - (IBAction)findInFeeds:(id)sender {
-    [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"findInFeeds"];
+    [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"findInFeeds" animated:YES];
     [self.appDelegate.feedsViewController.searchBar becomeFirstResponder];
 }
 
 - (IBAction)findInFeedDetail:(id)sender {
-    [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"findInFeedDetail"];
+    [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"findInFeedDetail" animated:YES];
     [self.appDelegate.feedDetailViewController.searchBar becomeFirstResponder];
 }
 

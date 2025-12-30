@@ -330,7 +330,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
 - (void)popToRootWithCompletion:(void (^)(void))completion;
-- (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo;
+- (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo animated:(BOOL)animated;
 
 - (void)showMoveSite;
 - (void)openTrainSite;
