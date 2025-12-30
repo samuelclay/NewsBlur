@@ -902,7 +902,7 @@
     } else if (outOfBounds && pageController == self.currentPage) {
         [pageController clearStory];
         
-        [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"applyNewIndex"];
+        [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"applyNewIndex" animated:YES];
     }
     
     if (!suppressRedraw) {
@@ -1120,7 +1120,10 @@
     }
     
     if (self.isPhoneOrCompact || animated) {
-        [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"changePage"];
+        appDelegate.storyPagesViewController.currentPage.view.hidden = NO;
+        appDelegate.storyPagesViewController.currentPage.noStoryMessage.hidden = YES;
+        
+        [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"changePage" animated:animated];
     }
     
     [self becomeFirstResponder];
@@ -1807,7 +1810,7 @@
     self.circularProgressView.hidden = NO;
     id previousStoryId = [appDelegate.storiesCollection popReadStory];
     if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"story_hash"]) {
-        [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"doPreviousStory"];
+        [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"doPreviousStory" animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
         NSInteger previousLocation = [appDelegate.storiesCollection locationOfStoryId:previousStoryId];
