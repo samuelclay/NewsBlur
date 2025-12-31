@@ -1,4 +1,5 @@
 ---
+git_branch: main
 ansible_cache_dir: /var/cache # Need to update references to ansible cache to use this variable
 software_install_dir: /usr/local/share
 user_binaries: /usr/local/bin
