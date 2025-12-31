@@ -661,7 +661,9 @@ class UserSubscription(models.Model):
             MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
 
             if subscription_created:
-                from apps.statistics.rtrending_subscriptions import RTrendingSubscription
+                from apps.statistics.rtrending_subscriptions import (
+                    RTrendingSubscription,
+                )
 
                 RTrendingSubscription.add_subscription(feed_id=feed.pk)
 

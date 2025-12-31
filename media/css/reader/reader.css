@@ -18774,3 +18774,213 @@ form.opml_import_form input {
     background-color: rgba(255, 255, 255, .4);
     list-style: none;
 }
+
+/* =================== */
+/* = Trending Sites  = */
+/* =================== */
+
+.NB-trending-sites-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #F4F4F2;
+    background: linear-gradient(180deg, #FAFAFA 0%, #F4F4F2 100%);
+}
+
+.NB-trending-container {
+    max-width: 680px;
+    margin: 0;
+    padding: 0 24px 48px;
+}
+
+/* Story position variants for trending view */
+.NB-pref-story-position-stretch .NB-trending-container {
+    max-width: none;
+}
+
+.NB-pref-story-position-left .NB-trending-container {
+    margin: 0;
+}
+
+.NB-pref-story-position-center .NB-trending-container {
+    margin: 0 auto;
+}
+
+.NB-pref-story-position-right .NB-trending-container {
+    margin: 0 0 0 auto;
+}
+
+.NB-trending-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 0 16px;
+    background: linear-gradient(180deg, #FAFAFA 0%, #FAFAFA 80%, rgba(250, 250, 250, 0) 100%);
+    margin-bottom: 8px;
+}
+
+.NB-trending-header-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    opacity: 0.7;
+}
+
+.NB-trending-header-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #404040;
+    letter-spacing: -0.02em;
+}
+
+.NB-trending-subtitle {
+    font-size: 13px;
+    color: #808080;
+    flex-grow: 1;
+}
+
+.NB-trending-time-selector-container {
+    position: absolute;
+    right: 36px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.NB-trending-time-selector {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    padding: 6px 28px 6px 12px;
+    font-size: 12px;
+    color: #505050;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23606060' d='M3 4.5L6 8l3-3.5H3z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.NB-feedbar .NB-trending-time-selector {
+    padding: 4px 24px 4px 10px;
+    font-size: 11px;
+}
+
+.NB-trending-time-selector:hover {
+    border-color: #5C89C9;
+}
+
+.NB-trending-time-selector:focus {
+    outline: none;
+    border-color: #5C89C9;
+    box-shadow: 0 0 0 3px rgba(92, 137, 201, 0.15);
+}
+
+.NB-trending-feed-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 16px;
+}
+
+.NB-trending-feed-badge {
+    background: #fff;
+    border: 1px solid #e8e8e6;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.NB-trending-feed-badge:hover {
+    border-color: #d0d0ce;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.NB-trending-feed-badge .NB-feed-badge {
+    padding: 16px 20px 12px;
+    border-bottom: none;
+    background: linear-gradient(180deg, #FCFCFC 0%, #F8F8F6 100%);
+    border-bottom: 1px solid #f0f0ee;
+}
+
+.NB-trending-feed-badge .NB-story-titles {
+    margin: 0;
+    border: none;
+}
+
+.NB-trending-feed-badge .NB-story-title {
+    border-left: none;
+    border-right: none;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.NB-trending-feed-badge .NB-story-title:first-child {
+    border-top: none;
+}
+
+.NB-trending-feed-badge .NB-story-title:last-child {
+    border-bottom: none;
+}
+
+.NB-trending-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    padding: 48px 0;
+}
+
+.NB-trending-loading .NB-loading.NB-active {
+    width: 32px;
+    height: 32px;
+    background-size: 32px;
+    margin: 0 auto;
+}
+
+.NB-trending-error {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 14px;
+    color: #8B3A3A;
+    background-color: #FDF6F6;
+    border-radius: 8px;
+    border: 1px solid #F0D6D6;
+}
+
+.NB-trending-sites-view .NB-loading-container {
+    padding: 16px 0 32px;
+}
+
+.NB-trending-sites-view .NB-end-line {
+    border-radius: 6px;
+    margin: 0;
+}
+
+/* Density adjustments for trending view */
+.NB-density-compact .NB-trending-feed-badge .NB-feed-badge {
+    padding: 12px 16px 10px;
+}
+
+.NB-density-compact .NB-trending-feed-badge .NB-story-title {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+.NB-density-comfortable .NB-trending-feed-badge .NB-feed-badge {
+    padding: 20px 24px 16px;
+}
+
+.NB-density-comfortable .NB-trending-feed-badge .NB-story-title {
+    padding-left: 24px;
+    padding-right: 24px;
+}

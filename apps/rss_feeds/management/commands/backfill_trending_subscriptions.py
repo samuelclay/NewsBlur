@@ -66,9 +66,7 @@ class Command(BaseCommand):
             if verbose and count % 1000 == 0:
                 self.stdout.write(f"  Processed {count} activities...")
 
-        self.stdout.write(
-            f"Found {count} subscription activities across {len(feed_counts)} feed-day pairs"
-        )
+        self.stdout.write(f"Found {count} subscription activities across {len(feed_counts)} feed-day pairs")
 
         if dry_run:
             self.stdout.write(self.style.WARNING("Dry run - not writing to Redis"))

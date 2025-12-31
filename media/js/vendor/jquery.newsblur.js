@@ -254,6 +254,8 @@ NEWSBLUR.log = function(msg) {
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/all-shares.svg';
                 if (feed_id == 'river:global')
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/global-shares.svg';
+                if (feed_id == 'river:trending')
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/discover.svg';
                 if (_.string.startsWith(feed_id, 'river:'))
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg';
                 if (feed_id == "read")
