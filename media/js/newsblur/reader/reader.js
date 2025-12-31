@@ -48,6 +48,7 @@
                 $river_infrequent_header: $('.NB-feeds-header-river-infrequent'),
                 $river_blurblogs_header: $('.NB-feeds-header-river-blurblogs'),
                 $river_global_header: $('.NB-feeds-header-river-global'),
+                $river_trending_header: $('.NB-feeds-header-river-trending'),
                 $starred_header: $('.NB-feeds-header-starred'),
                 $searches_header: $('.NB-feeds-header-searches'),
                 $read_header: $('.NB-feeds-header-read'),
@@ -1411,6 +1412,7 @@
             this.$s.$river_infrequent_header.removeClass('NB-selected');
             this.$s.$river_blurblogs_header.removeClass('NB-selected');
             this.$s.$river_global_header.removeClass('NB-selected');
+            this.$s.$river_trending_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
             this.$s.$layout.removeClass('NB-view-river');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
@@ -1436,6 +1438,12 @@
             this.model.searches_feeds.deselect();
             this.model.folders.deselect();
             this.model.social_feeds.deselect();
+
+            if (this.trending_sites_view) {
+                this.trending_sites_view.close();
+                this.trending_sites_view = null;
+            }
+            this.flags['trending_view'] = false;
 
             this.active_folder = null;
             this.active_feed = null;
@@ -1465,6 +1473,8 @@
                 this.active_feed == 'river:global') {
                 options.global = true;
                 this.open_river_blurblogs_stories(options);
+            } else if (this.flags['trending_view']) {
+                this.open_trending_sites(options);
             } else if (this.flags['social_view']) {
                 this.open_social_stories(this.active_feed, options);
             } else if (this.flags['river_view']) {
@@ -2342,6 +2352,40 @@
         },
 
         // ==================
+        // = Trending Sites =
+        // ==================
+
+        open_trending_sites: function (options) {
+            options = options || {};
+
+            this.reset_feed(options);
+            this.hide_splash_page();
+
+            this.active_feed = 'river:trending';
+            this.active_folder = new Backbone.Model({
+                id: 'river:trending',
+                folder_title: "Trending Sites",
+                fake: true,
+                show_options: false
+            });
+
+            this.flags['trending_view'] = true;
+            this.flags['river_view'] = true;
+
+            this.$s.$river_trending_header.addClass('NB-selected');
+            this.$s.$layout.addClass('NB-view-river');
+
+            // Create and append trending sites view to content pane (covers both story titles and story pane)
+            this.trending_sites_view = new NEWSBLUR.Views.TrendingSitesView();
+            this.$s.$content_pane.append(this.trending_sites_view.$el);
+
+            // Update URL
+            NEWSBLUR.router.navigate('/trending');
+
+            this.make_feed_title_in_stories();
+        },
+
+        // ==================
         // = Social Stories =
         // ==================
 
@@ -3124,6 +3168,8 @@
                 feed_title = "All Shared Stories";
             } else if (feed_id == 'river:infrequent') {
                 feed_title = "Infrequent Site Stories";
+            } else if (feed_id == 'river:trending') {
+                feed_title = "Trending Sites";
             } else if (_.string.startsWith(feed_id, 'river:')) {
                 var feed = NEWSBLUR.assets.get_feed(feed_id);
                 if (!feed) return;
