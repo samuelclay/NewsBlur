@@ -18903,8 +18903,6 @@ form.opml_import_form input {
 .NB-trending-feed-badge .NB-story-title {
     border-left: none;
     border-right: none;
-    padding-left: 20px;
-    padding-right: 20px;
 }
 
 .NB-trending-feed-badge .NB-story-title:first-child {
@@ -18954,16 +18952,6 @@ form.opml_import_form input {
     padding: 12px 16px 10px;
 }
 
-.NB-density-compact .NB-trending-feed-badge .NB-story-title {
-    padding-left: 16px;
-    padding-right: 16px;
-}
-
 .NB-density-comfortable .NB-trending-feed-badge .NB-feed-badge {
     padding: 20px 24px 16px;
-}
-
-.NB-density-comfortable .NB-trending-feed-badge .NB-story-title {
-    padding-left: 24px;
-    padding-right: 24px;
 }
