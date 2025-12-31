@@ -124,6 +124,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
                     'display': 'block',
                     'opacity': 0
                 }).animate({ 'opacity': 1 }, { 'duration': 700 });
+                NEWSBLUR.app.sidebar.update_toggle_all_folders_icon();
             }
 
             if (NEWSBLUR.reader.flags['showing_feed_in_tryfeed_view'] ||

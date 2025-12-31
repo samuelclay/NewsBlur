@@ -1052,6 +1052,34 @@ img.feed_favicon {
 }
 */
 
+.NB-feeds-header-river-sites .NB-feedlist-toggle-all-icon {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    background: transparent url('/media/embed/icons/circular/folder_collapse.png') no-repeat center center;
+    background-size: 24px;
+    opacity: .6;
+    display: none;
+}
+
+.NB-feeds-header-river-sites.NB-all-folders-collapsed .NB-feedlist-toggle-all-icon {
+    background-image: url('/media/embed/icons/circular/folder_expand.png');
+}
+
+.NB-feeds-header-river-sites:hover .NB-feedlist-toggle-all-icon {
+    display: block;
+}
+
+.NB-feeds-header-river-sites:hover .NB-feedlist-toggle-all-icon:hover {
+    opacity: 1;
+}
+
+.NB-feeds-header-river-sites:hover .feed_counts_floater {
+    margin-right: 28px;
+}
+
 .NB-feedlist .feed.NB-toplevel:hover .feed_favicon {
     display: none;
 }
