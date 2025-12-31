@@ -75,6 +75,12 @@ class ShareViewController: UIViewController {
     
     /// Title of the item being shared.
     var itemTitle: String? = nil
+
+    /// URL of the site being added, for notification display.
+    var addedSiteURL: String? = nil
+
+    /// Folder name for notification display.
+    var addedToFolder: String? = nil
     
     /// The index path of the new tag field.
     lazy var indexPathForNewTag: IndexPath = {
@@ -157,21 +163,41 @@ class ShareViewController: UIViewController {
     
     @IBAction func save(_ sender: Any) {
         itemTitle = nil
-        
+
+        // Capture folder name for notification display (only for .add mode)
+        if mode == .add {
+            let folderPath = folders[selectedFolderIndexPath.row]
+            let folder = extractFolderName(folderPath)
+            addedToFolder = folder.isEmpty ? nil : folder
+        }
+
         if let itemProvider = providerWithURL {
             itemProvider.loadItem(forTypeIdentifier: kUTTypeURL as String, options: nil) { item, error in
                 if let url = item as? URL {
+                    self.addedSiteURL = url.host ?? url.absoluteString
+                    if self.mode == .add {
+                        self.sendNotification(body: self.addingNotificationBody())
+                    }
                     self.send(url: url)
                 }
-                
+
                 self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
             }
         } else if let itemProvider = providerWithText {
             itemProvider.loadItem(forTypeIdentifier: kUTTypeText as String, options: nil) { item, error in
                 if let text = item as? String {
+                    // Extract domain from URL string if possible
+                    if let url = URL(string: text) {
+                        self.addedSiteURL = url.host ?? text
+                    } else {
+                        self.addedSiteURL = text
+                    }
+                    if self.mode == .add {
+                        self.sendNotification(body: self.addingNotificationBody())
+                    }
                     self.send(text: text)
                 }
-                
+
                 self.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
             }
         }
@@ -278,6 +304,30 @@ private extension ShareViewController {
     func encoded(_ string: String?) -> String {
         return string?.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) ?? ""
     }
+
+    func sendNotification(body: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "NewsBlur"
+        content.body = body
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error {
+                print("notification error: \(error)")
+            }
+        }
+    }
+
+    func addingNotificationBody() -> String {
+        let siteName = addedSiteURL ?? "site"
+        if let folder = addedToFolder {
+            return "Adding \(siteName) to \(folder)..."
+        } else {
+            return "Adding \(siteName)..."
+        }
+    }
     
     func postSave(url: URL?, text: String?) -> String {
         let title = itemTitle
@@ -326,17 +376,40 @@ private extension ShareViewController {
         return postBody
     }
     
+    /// Extracts just the folder name from a full folder path.
+    /// "everything ▸ Tech ▸ Python" → "Python"
+    /// "everything" → "" (root level)
+    func extractFolderName(_ folderPath: String) -> String {
+        // "everything" alone means top level
+        if folderPath == "everything" {
+            return ""
+        }
+
+        // Extract last component after " ▸ "
+        if let range = folderPath.range(of: " ▸ ", options: .backwards) {
+            return String(folderPath[range.upperBound...])
+        }
+
+        // No separator found - check for Top Level
+        if folderPath.contains("Top Level") {
+            return ""
+        }
+
+        return folderPath
+    }
+
     func postAdd(url: URL?, text: String?) -> String {
-        let folder = folders[selectedFolderIndexPath.row]
+        let folderPath = folders[selectedFolderIndexPath.row]
+        let folder = extractFolderName(folderPath)
         let encodedFolder = encoded(folder)
         let encodedURL = encoded(url?.absoluteString)
-        
+
         var postBody = "folder=\(encodedFolder)&url=\(encodedURL)"
-        
+
         if newFolder != "" {
             postBody += "&new_folder=\(encoded(newFolder))"
         }
-        
+
         return postBody
     }
     
@@ -361,43 +434,45 @@ private extension ShareViewController {
 extension ShareViewController: URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         let content = UNMutableNotificationContent()
-        
         content.title = "NewsBlur"
-        
+
+        let siteName = addedSiteURL ?? "site"
+        let folderSuffix = addedToFolder.map { " to \($0)" } ?? ""
+
         if let error {
             NSLog("task completed with error: \(error)")
             
             NSLog("⚾️ share error: \(error)")
-            
+
             switch mode {
             case .save:
                 content.body = "Unable to save this story"
             case .share:
                 content.body = "Unable to share this story"
             case .add:
-                content.body = "Unable to add this site"
+                content.body = "Failed to add \(siteName)\(folderSuffix)"
             }
         } else {
             NSLog("task completed successfully: \(String(describing: task.response))")
             
             NSLog("⚾️ share success: \(String(describing: task.response))")
-            
+
             switch mode {
             case .save:
                 content.body = "Saved this story"
             case .share:
                 content.body = "Shared this story"
             case .add:
-                content.body = "Added this site"
+                content.body = "Added \(siteName)\(folderSuffix)"
             }
         }
-        
+
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
         let uuidString = UUID().uuidString
         let request = UNNotificationRequest(identifier: uuidString,
                                             content: content, trigger: trigger)
         let notificationCenter = UNUserNotificationCenter.current()
-        
+
         notificationCenter.add(request) { (error) in
             if let error {
                 NSLog("notification error: \(error)")
