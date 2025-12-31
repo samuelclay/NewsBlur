@@ -12,7 +12,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         "click .NB-feedbar-mark-feed-read-expand": "expand_mark_read",
         "click .NB-feedbar-mark-feed-read-time": "mark_folder_as_read_days",
         "click .NB-story-title-indicator": "show_hidden_story_titles",
-        "change .NB-trending-time-selector": "change_trending_time_window"
+        "click .NB-trending-time-option": "change_trending_time_window"
     },
 
     initialize: function () {
@@ -95,11 +95,11 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <% } %>\
                     <% if (is_trending) { %>\
                         <div class="NB-trending-time-selector-container">\
-                            <select class="NB-trending-time-selector">\
-                                <option value="1">Past 24 hours</option>\
-                                <option value="7" selected>Past 7 days</option>\
-                                <option value="30">Past 30 days</option>\
-                            </select>\
+                            <ul class="segmented-control NB-trending-time-selector">\
+                                <li class="NB-trending-time-option" data-days="1" role="button">1 day</li>\
+                                <li class="NB-trending-time-option NB-active" data-days="7" role="button">7 days</li>\
+                                <li class="NB-trending-time-option" data-days="30" role="button">30 days</li>\
+                            </ul>\
                         </div>\
                     <% } else if (show_options) { %>\
                         <div class="NB-feedbar-options-container">\
@@ -343,8 +343,14 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         NEWSBLUR.Views.FeedTitleView.prototype.expand_mark_read.call(this);
     },
 
-    change_trending_time_window: function () {
-        var new_days = parseInt(this.$('.NB-trending-time-selector').val(), 10);
+    change_trending_time_window: function (e) {
+        var $option = $(e.currentTarget);
+        var new_days = parseInt($option.data('days'), 10);
+
+        // Update active state
+        this.$('.NB-trending-time-option').removeClass('NB-active');
+        $option.addClass('NB-active');
+
         if (NEWSBLUR.reader.trending_sites_view) {
             NEWSBLUR.reader.trending_sites_view.days = new_days;
             NEWSBLUR.reader.trending_sites_view.page = 1;
