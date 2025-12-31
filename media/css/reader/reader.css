@@ -18975,6 +18975,16 @@ form.opml_import_form input {
     margin: 0;
 }
 
+.NB-trending-feed-badge .NB-badge-folders {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+}
+
+.NB-trending-feed-badge .NB-badge-folders .NB-folders {
+    vertical-align: middle;
+}
+
 /* Density adjustments for trending view */
 .NB-density-compact .NB-trending-feed-badge .NB-feed-badge {
     padding: 12px 16px 10px;
