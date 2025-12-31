@@ -18855,34 +18855,17 @@ form.opml_import_form input {
 }
 
 .NB-trending-time-selector {
-    appearance: none;
-    -webkit-appearance: none;
-    background-color: #fff;
-    border: 1px solid #d0d0d0;
+    display: flex;
+    margin: 0;
+    padding: 2px;
+    background-color: rgba(0, 0, 0, 0.06);
     border-radius: 6px;
-    padding: 6px 28px 6px 12px;
-    font-size: 12px;
-    color: #505050;
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23606060' d='M3 4.5L6 8l3-3.5H3z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.NB-feedbar .NB-trending-time-selector {
-    padding: 4px 24px 4px 10px;
+.NB-trending-time-selector .NB-trending-time-option {
+    padding: 3px 10px;
     font-size: 11px;
-}
-
-.NB-trending-time-selector:hover {
-    border-color: #5C89C9;
-}
-
-.NB-trending-time-selector:focus {
-    outline: none;
-    border-color: #5C89C9;
-    box-shadow: 0 0 0 3px rgba(92, 137, 201, 0.15);
+    font-weight: 500;
 }
 
 .NB-trending-feed-badges {
