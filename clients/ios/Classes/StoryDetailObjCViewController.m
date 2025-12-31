@@ -426,12 +426,6 @@
     scrollPct = 0;
     hasScrolled = NO;
     
-    if (appDelegate.storyPagesViewController.isNavigationBarHidden) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.appDelegate.storyPagesViewController setNavigationBarHidden:NO];
-        });
-    }
-    
     if (appDelegate.storyPagesViewController.currentPage == self) {
         self.appDelegate.feedDetailViewController.storyHeight = 200;
     }

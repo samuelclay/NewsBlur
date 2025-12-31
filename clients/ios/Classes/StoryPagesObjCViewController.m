@@ -28,6 +28,7 @@
 @property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic) BOOL wasNavigationBarHidden;
 @property (nonatomic) BOOL doneInitialRefresh;
+@property (nonatomic) BOOL doneInitialDisplay;
 @property (nonatomic, strong) NSTimer *autoscrollTimer;
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
 @property (nonatomic, strong) NSString *restoringStoryId;
@@ -236,6 +237,7 @@
     [self updateStatusBarState];
     
     self.currentlyTogglingNavigationBar = NO;
+    self.doneInitialDisplay = NO;
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
@@ -344,6 +346,10 @@
     appDelegate.isTryFeedView = NO;
     [self reorientPages];
     previousPage.view.hidden = NO;
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.doneInitialDisplay = YES;
+    });
     
     [self becomeFirstResponder];
 }
@@ -475,7 +481,7 @@
 //    #warning temporarily disabled hiding menubar
 //    return;
     
-    if (appDelegate.isMac || self.navigationController == nil || self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
+    if (appDelegate.isMac || self.navigationController == nil || self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar || !self.doneInitialDisplay) {
         return;
     }
     
@@ -883,6 +889,10 @@
     [self setTextButton];
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
+    
+    if (self.isNavigationBarHidden) {
+        [self setNavigationBarHidden:NO];
+    }
     
 //    if (self.currentPage != nil && pageController == self.currentPage) {
 //        [self.appDelegate.feedDetailViewController changedStoryHeight:currentPage.webView.scrollView.contentSize.height];
