@@ -39,9 +39,7 @@ class TrendingSubscriptions(View):
 
         # Top trending feeds for 1d, 7d, and 30d windows
         for days in [1, 7, 30]:
-            trending = RTrendingSubscription.get_trending_feeds_detailed(
-                days=days, limit=10
-            )
+            trending = RTrendingSubscription.get_trending_feeds_detailed(days=days, limit=10)
 
             if trending:
                 feed_ids = [f["feed_id"] for f in trending]
