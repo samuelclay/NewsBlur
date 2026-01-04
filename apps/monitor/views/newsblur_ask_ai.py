@@ -157,18 +157,26 @@ class AskAI(View):
             else:
                 buckets[tier]["80-100"] += 1
 
-        # Process weekly counts for free users
+        # Process weekly counts for free and premium users
         for user_id, count in weekly_counts.items():
             profile = profiles_by_user.get(user_id)
-            if not profile or profile.is_premium or profile.is_archive or profile.is_pro:
+            if not profile or profile.is_archive or profile.is_pro:
                 continue
-            if count > 0:
-                tier_stats["free"]["using"] += 1
-            if count >= AskAIUsageTracker.WEEKLY_LIMIT_FREE:
-                tier_stats["free"]["at_limit"] += 1
-            add_bucket("free", count, AskAIUsageTracker.WEEKLY_LIMIT_FREE)
+            if profile.is_premium:
+                if count > 0:
+                    tier_stats["premium"]["using"] += 1
+                if count >= AskAIUsageTracker.WEEKLY_LIMIT_PREMIUM:
+                    tier_stats["premium"]["at_limit"] += 1
+                add_bucket("premium", count, AskAIUsageTracker.WEEKLY_LIMIT_PREMIUM)
+            else:
+                # Free users
+                if count > 0:
+                    tier_stats["free"]["using"] += 1
+                if count >= AskAIUsageTracker.WEEKLY_LIMIT_FREE:
+                    tier_stats["free"]["at_limit"] += 1
+                add_bucket("free", count, AskAIUsageTracker.WEEKLY_LIMIT_FREE)
 
-        # Process daily counts for premium users
+        # Process daily counts for archive users
         for user_id, count in daily_counts.items():
             profile = profiles_by_user.get(user_id)
             if not profile:
@@ -179,12 +187,6 @@ class AskAI(View):
                 if count >= AskAIUsageTracker.DAILY_LIMIT_ARCHIVE:
                     tier_stats["archive"]["at_limit"] += 1
                 add_bucket("archive", count, AskAIUsageTracker.DAILY_LIMIT_ARCHIVE)
-            elif profile.is_premium:
-                if count > 0:
-                    tier_stats["premium"]["using"] += 1
-                if count >= AskAIUsageTracker.DAILY_LIMIT_PREMIUM:
-                    tier_stats["premium"]["at_limit"] += 1
-                add_bucket("premium", count, AskAIUsageTracker.DAILY_LIMIT_PREMIUM)
 
         data["tier_free_using"] = tier_stats["free"]["using"]
         data["tier_free_at_limit"] = tier_stats["free"]["at_limit"]
