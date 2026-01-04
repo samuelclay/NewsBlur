@@ -143,3 +143,12 @@ def CleanSpam():
 def ReimportStripeHistory():
     logging.debug(" ---> Reimporting Stripe history...")
     Profile.reimport_stripe_history(limit=10, days=1)
+
+
+@app.task(name="email-feed-limit-notifications")
+def EmailFeedLimitNotifications():
+    """Email grandfathered users 7 days before their grandfather_expires date."""
+    from django.core.management import call_command
+
+    logging.debug(" ---> Sending feed limit notification emails...")
+    call_command("email_feed_limit_notification")
