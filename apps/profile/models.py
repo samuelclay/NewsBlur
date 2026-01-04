@@ -50,6 +50,12 @@ class Profile(models.Model):
     ARCHIVE_FEED_LIMIT = 4096
     PRO_FEED_LIMIT = 10000
 
+    # Grandfathering: Premium users who signed up before this date with fewer than
+    # GRANDFATHER_FEED_THRESHOLD feeds are exempt from the PREMIUM_FEED_LIMIT.
+    # Users with >= GRANDFATHER_FEED_THRESHOLD feeds must mute down to the limit.
+    GRANDFATHER_CUTOFF_DATE = datetime.datetime(2026, 1, 1, tzinfo=datetime.timezone.utc)
+    GRANDFATHER_FEED_THRESHOLD = 2000
+
     user = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
     is_premium = models.BooleanField(default=False)
     is_archive = models.BooleanField(default=False, blank=True, null=True)
@@ -78,6 +84,7 @@ class Profile(models.Model):
     premium_renewal = models.BooleanField(default=False, blank=True, null=True)
     active_provider = models.CharField(max_length=24, blank=True, null=True)
     is_premium_trial = models.BooleanField(default=None, blank=True, null=True)
+    grandfather_expires = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return "%s <%s>%s%s%s" % (
@@ -167,13 +174,44 @@ class Profile(models.Model):
         return True
 
     @property
+    def is_feed_limit_grandfathered(self):
+        """
+        Returns True if this premium user is grandfathered and exempt from the feed limit.
+
+        Grandfathering is determined by the grandfather_expires field, which is set
+        when we send the feed limit notification email. Until that date passes,
+        the user won't see the mute dialog and can add feeds freely.
+        """
+        # Only applies to premium users (not archive/pro)
+        if not self.is_premium or self.is_archive or self.is_pro:
+            return False
+
+        # If grandfather_expires is set and in the future, user is grandfathered
+        if self.grandfather_expires:
+            expires = self.grandfather_expires
+            if expires.tzinfo is None:
+                expires = expires.replace(tzinfo=datetime.timezone.utc)
+            now = datetime.datetime.now(datetime.timezone.utc)
+            if now < expires:
+                return True
+
+        return False
+
+    @property
     def max_feed_limit(self):
-        """Returns the maximum number of feeds allowed for this user's subscription tier."""
+        """
+        Returns the maximum number of feeds allowed for this user's subscription tier.
+
+        For grandfathered premium users, returns None to disable the mute dialog
+        entirely until their renewal date passes.
+        """
         if self.is_pro:
             return self.PRO_FEED_LIMIT
         if self.is_archive:
             return self.ARCHIVE_FEED_LIMIT
         if self.is_premium:
+            if self.is_feed_limit_grandfathered:
+                return None
             return self.PREMIUM_FEED_LIMIT
         return self.FREE_FEED_LIMIT
 
@@ -191,6 +229,16 @@ class Profile(models.Model):
     def pro_feed_limit(self):
         """Returns the Pro tier feed limit (for upgrade prompts)."""
         return self.PRO_FEED_LIMIT
+
+    @property
+    def add_feed_limit(self):
+        """
+        Returns the feed limit for adding new feeds, or None if no limit.
+
+        Grandfathered premium users have no limit (returns None).
+        Same as max_feed_limit - grandfathered users can add feeds freely.
+        """
+        return self.max_feed_limit
 
     def can_use_ask_ai(self):
         return AskAIUsageTracker(self.user).can_use()

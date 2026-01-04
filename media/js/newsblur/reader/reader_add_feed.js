@@ -213,6 +213,17 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         var url = this.$('.NB-add-url').val();
         var folder = this.$('.NB-folders').val();
 
+        // Check feed limit before adding
+        var add_limit = NEWSBLUR.Globals.add_feed_limit;
+        var active_feeds = NEWSBLUR.assets.feeds.active().length;
+        if (add_limit && active_feeds >= add_limit) {
+            this.error({
+                message: "You've reached your limit of " + Inflector.commas(add_limit) +
+                    " sites. Mute some sites or upgrade your account to add more."
+            });
+            return;
+        }
+
         $error.slideUp(300);
         $loading.addClass('NB-active');
         $submit.addClass('NB-disabled').text('Adding...');
