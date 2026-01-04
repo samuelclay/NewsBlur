@@ -8,6 +8,7 @@ Two tracking systems:
 See apps/profile/middleware.py for middleware integration.
 """
 import datetime
+import json
 import re
 import time
 
@@ -39,6 +40,21 @@ ABUSER_REQUESTS = Gauge(
     "newsblur_rate_limit_abuser_requests",
     "Requests per abusing IP (limited to top offenders)",
     ["ip", "user", "ua"],
+)
+
+# Soft launch metrics - track what WOULD be denied without actually denying
+WOULD_BE_DENIED_TOTAL = Counter(
+    "newsblur_rate_limit_would_deny_total",
+    "Total requests that would be denied if rate limiting was enabled",
+)
+WOULD_BE_DENIED_IPS = Gauge(
+    "newsblur_rate_limit_would_deny_ips_current",
+    "Current number of unique IPs that would be denied",
+)
+WOULD_BE_DENIED_DETAILS = Gauge(
+    "newsblur_rate_limit_would_deny_details",
+    "Details of IPs that would be denied (high cardinality, limited)",
+    ["ip", "user", "ua", "endpoint"],
 )
 
 
@@ -331,6 +347,187 @@ class IPRateTracker:
         """
         window = self.get_current_window()
         self._update_gauges(window)
+
+    def track_would_be_denied(self, request, endpoint):
+        """
+        Record that a request WOULD have been denied if rate limiting was enforced.
+
+        This stores detailed information in Redis for debugging and exposes
+        metrics in Prometheus for Grafana dashboards.
+
+        Called by middleware when rate limit is exceeded but enforcement is disabled.
+        """
+        ip = self.get_ip(request)
+        ua_type = self.get_user_agent_type(request)
+        user_id, username = self.get_user_info(request)
+        window = self.get_current_window()
+        now_ts = str(int(time.time()))
+
+        # Increment Prometheus counter
+        WOULD_BE_DENIED_TOTAL.inc()
+
+        # Get current request count for this IP
+        total_key = f"ipr:{ip}:total:{window}"
+        count = self.redis.get(total_key)
+        request_count = int(count) if count else 0
+
+        # Store denial event in Redis list (for debugging/investigation)
+        # Key: ipr:denied:{window} -> list of JSON denial records
+        denial_key = f"ipr:denied:{window}"
+        denial_record = {
+            "ip": ip,
+            "user_id": user_id,
+            "username": username,
+            "user_agent": ua_type,
+            "endpoint": endpoint,
+            "request_count": request_count,
+            "threshold": self.ABUSE_THRESHOLD,
+            "timestamp": now_ts,
+            "path": request.path[:200],  # Truncate long paths
+        }
+
+        pipe = self.redis.pipeline()
+
+        # Add to denial list (keep last 1000 per window)
+        pipe.lpush(denial_key, json.dumps(denial_record))
+        pipe.ltrim(denial_key, 0, 999)
+        pipe.expire(denial_key, self.TTL_SECONDS)
+
+        # Track unique IPs that would be denied in this window
+        denied_ips_key = f"ipr:denied_ips:{window}"
+        pipe.sadd(denied_ips_key, ip)
+        pipe.expire(denied_ips_key, self.TTL_SECONDS)
+
+        # Store per-IP denial count (how many requests this IP was denied)
+        denied_count_key = f"ipr:denied_count:{ip}:{window}"
+        pipe.incr(denied_count_key)
+        pipe.expire(denied_count_key, self.TTL_SECONDS)
+
+        pipe.execute()
+
+        # Update Prometheus gauges (rate-limited)
+        self._maybe_update_denial_gauges(window)
+
+    def _maybe_update_denial_gauges(self, window):
+        """Update denial gauges periodically."""
+        # Reuse the same rate limiting as regular gauge updates
+        now = time.time()
+        if now - self._last_gauge_update < self._gauge_update_interval:
+            return
+        self._update_denial_gauges(window)
+
+    def _update_denial_gauges(self, window):
+        """Update Prometheus gauges for denial tracking."""
+        denied_ips_key = f"ipr:denied_ips:{window}"
+
+        # Get count of unique denied IPs
+        denied_count = self.redis.scard(denied_ips_key)
+        WOULD_BE_DENIED_IPS.set(denied_count)
+
+        # Clear previous detail metrics
+        WOULD_BE_DENIED_DETAILS._metrics.clear()
+
+        # Get details for top denied IPs (by request count)
+        denied_ips = self.redis.smembers(denied_ips_key)
+        if not denied_ips:
+            return
+
+        # Get denial counts for each IP
+        ip_counts = []
+        for ip_bytes in denied_ips:
+            ip = ip_bytes if isinstance(ip_bytes, str) else ip_bytes.decode("utf-8")
+            denied_count_key = f"ipr:denied_count:{ip}:{window}"
+            count = self.redis.get(denied_count_key)
+            if count:
+                ip_counts.append((ip, int(count)))
+
+        # Sort by count descending, limit to top 20
+        ip_counts.sort(key=lambda x: x[1], reverse=True)
+        for ip, count in ip_counts[:self.MAX_ABUSER_METRICS]:
+            meta = self.get_ip_metadata(ip)
+            username = meta.get(b"username", meta.get("username", b"unknown"))
+            if isinstance(username, bytes):
+                username = username.decode("utf-8")
+            ua = meta.get(b"user_agent", meta.get("user_agent", b"unknown"))
+            if isinstance(ua, bytes):
+                ua = ua.decode("utf-8")
+
+            # Get last endpoint for this IP
+            denial_key = f"ipr:denied:{window}"
+            last_denial = self.redis.lindex(denial_key, 0)
+            endpoint = "unknown"
+            if last_denial:
+                try:
+                    denial_data = json.loads(last_denial)
+                    if denial_data.get("ip") == ip:
+                        endpoint = denial_data.get("endpoint", "unknown")
+                except Exception:
+                    pass
+
+            WOULD_BE_DENIED_DETAILS.labels(
+                ip=ip,
+                user=username,
+                ua=ua,
+                endpoint=endpoint,
+            ).set(count)
+
+    def get_denied_requests(self, window=None, limit=100):
+        """
+        Get list of requests that would have been denied.
+
+        Useful for debugging and investigation when users complain.
+        Returns list of denial records with full details.
+        """
+        if window is None:
+            window = self.get_current_window()
+
+        denial_key = f"ipr:denied:{window}"
+        denials = self.redis.lrange(denial_key, 0, limit - 1)
+
+        results = []
+        for denial_bytes in denials:
+            denial = denial_bytes if isinstance(denial_bytes, str) else denial_bytes.decode("utf-8")
+            try:
+                results.append(json.loads(denial))
+            except Exception:
+                pass
+
+        return results
+
+    def get_denied_ips_summary(self, window=None):
+        """
+        Get summary of IPs that would have been denied.
+
+        Returns dict with IP -> {count, username, user_agent, last_endpoint}.
+        """
+        if window is None:
+            window = self.get_current_window()
+
+        denied_ips_key = f"ipr:denied_ips:{window}"
+        denied_ips = self.redis.smembers(denied_ips_key)
+
+        results = {}
+        for ip_bytes in denied_ips:
+            ip = ip_bytes if isinstance(ip_bytes, str) else ip_bytes.decode("utf-8")
+            denied_count_key = f"ipr:denied_count:{ip}:{window}"
+            count = self.redis.get(denied_count_key)
+            meta = self.get_ip_metadata(ip)
+
+            # Decode metadata
+            username = meta.get(b"username", meta.get("username", b"unknown"))
+            if isinstance(username, bytes):
+                username = username.decode("utf-8")
+            ua = meta.get(b"user_agent", meta.get("user_agent", b"unknown"))
+            if isinstance(ua, bytes):
+                ua = ua.decode("utf-8")
+
+            results[ip] = {
+                "denied_count": int(count) if count else 0,
+                "username": username,
+                "user_agent": ua,
+            }
+
+        return results
 
 
 # Prometheus metrics for fail2ban-style tracking

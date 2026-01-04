@@ -662,9 +662,13 @@ class IPRateTrackingMiddleware:
     Records IP, user, user agent type, and endpoint for each request.
     Data is stored in Redis and exposed via Prometheus metrics for Grafana.
 
-    This middleware only tracks requests; it does not block them.
-    To enable rate limiting, set IP_RATE_LIMITING_ENABLED=True in settings.
+    SOFT LAUNCH MODE (current):
+    - Tracks all requests and detects rate limit violations
+    - Logs what WOULD be denied but does NOT return 429
+    - Stores denial details in Redis for investigation
+    - Exposes metrics in Prometheus for Grafana dashboards
 
+    To enable actual blocking, set IP_RATE_LIMITING_ENABLED=True in settings.
     See utils/ip_rate_tracker.py for implementation details.
     """
 
@@ -705,24 +709,38 @@ class IPRateTrackingMiddleware:
         endpoint = self.get_endpoint(request.path)
 
         if endpoint:
-            # Track the request
             try:
+                # Track the request
                 self.tracker.track_request(request, endpoint)
 
-                # Check rate limit (tracking only for now)
-                if getattr(settings, "IP_RATE_LIMITING_ENABLED", False):
-                    ip = self.tracker.get_ip(request)
-                    if self.tracker.is_rate_limited(ip):
-                        full_path = request.get_full_path()
-                        user_info = ""
-                        if hasattr(request, "user") and request.user.is_authenticated:
-                            user_info = " user=%s" % request.user.username
+                # Check if rate limit would be exceeded
+                ip = self.tracker.get_ip(request)
+                if self.tracker.is_rate_limited(ip):
+                    full_path = request.get_full_path()
+                    user_info = ""
+                    if hasattr(request, "user") and request.user.is_authenticated:
+                        user_info = " user=%s" % request.user.username
+
+                    # Track this "would be denied" event for soft launch monitoring
+                    self.tracker.track_would_be_denied(request, endpoint)
+
+                    # Log what would have been blocked
+                    logging.user(
+                        request,
+                        "~FY~SB WOULD BLOCK ~SN~FR Rate Limit: ~SB%s~SN~FR %s%s" % (ip, full_path, user_info),
+                    )
+
+                    # SOFT LAUNCH: Only block if explicitly enabled
+                    if getattr(settings, "IP_RATE_LIMITING_ENABLED", False):
                         logging.user(
                             request,
                             "~FW~BR~SB BLOCKED ~BT~FR Rate Limit: ~SB%s~SN~FR %s%s" % (ip, full_path, user_info),
                         )
-                        # TODO: Uncomment to actually block
-                        # return HttpResponse("Rate limit exceeded", status=429)
+                        return HttpResponse(
+                            '{"error": "Rate limit exceeded", "code": -1}',
+                            status=429,
+                            content_type="application/json",
+                        )
             except Exception as e:
                 # Don't let tracking errors break the request
                 logging.debug(" ***> IP rate tracking error: %s" % e)
