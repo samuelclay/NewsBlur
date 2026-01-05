@@ -134,8 +134,9 @@ public class Story implements Serializable {
 
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
+        String safeTitle = title == null ? "" : title;
 		values.put(DatabaseConstants.STORY_ID, id);
-		values.put(DatabaseConstants.STORY_TITLE, title.replace("\n", " ").replace("\r", " "));
+		values.put(DatabaseConstants.STORY_TITLE, safeTitle.replace("\n", " ").replace("\r", " "));
 		values.put(DatabaseConstants.STORY_TIMESTAMP, timestamp);
         values.put(DatabaseConstants.STORY_CONTENT, content);
         values.put(DatabaseConstants.STORY_SHORT_CONTENT, shortContent);
@@ -316,21 +317,23 @@ public class Story implements Serializable {
         String content = story.content;
         
         String ytUrl = null;
-        if (ytUrl == null) {
-            Matcher m = ytSniff1.matcher(content);
-            if (m.find()) ytUrl = m.group(1);
-        }
-        if (ytUrl == null) {
-            Matcher m = ytSniff2.matcher(content);
-            if (m.find()) ytUrl = m.group(1);
-        }
-        if (ytUrl == null) {
-            Matcher m = ytSniff3.matcher(content);
-            if (m.find()) ytUrl = m.group(1);
-        }
-        if (ytUrl == null) {
-            Matcher m = ytSniff4.matcher(content);
-            if (m.find()) ytUrl = m.group(1);
+        if (content != null && !content.isEmpty()) {
+            if (ytUrl == null) {
+                Matcher m = ytSniff1.matcher(content);
+                if (m.find()) ytUrl = m.group(1);
+            }
+            if (ytUrl == null) {
+                Matcher m = ytSniff2.matcher(content);
+                if (m.find()) ytUrl = m.group(1);
+            }
+            if (ytUrl == null) {
+                Matcher m = ytSniff3.matcher(content);
+                if (m.find()) ytUrl = m.group(1);
+            }
+            if (ytUrl == null) {
+                Matcher m = ytSniff4.matcher(content);
+                if (m.find()) ytUrl = m.group(1);
+            }
         }
         if (ytUrl != null) {
             return YT_THUMB_PRE + ytUrl + YT_THUMB_POST;
