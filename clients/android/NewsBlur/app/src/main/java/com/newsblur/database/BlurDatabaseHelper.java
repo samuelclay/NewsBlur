@@ -453,27 +453,35 @@ public class BlurDatabaseHelper {
         ContentValues values = story.getValues();
         dbRW.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         // if a story was shared by a user, also insert it into the social table under their userid, too
-        for (String sharedUserId : story.sharedUserIds) {
-            ContentValues socialValues = new ContentValues();
-            socialValues.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, sharedUserId);
-            socialValues.put(DatabaseConstants.SOCIALFEED_STORY_STORYID, values.getAsString(DatabaseConstants.STORY_ID));
-            dbRW.insertWithOnConflict(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, socialValues, SQLiteDatabase.CONFLICT_REPLACE);
+        if (story.sharedUserIds != null) {
+            for (String sharedUserId : story.sharedUserIds) {
+                ContentValues socialValues = new ContentValues();
+                socialValues.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, sharedUserId);
+                socialValues.put(DatabaseConstants.SOCIALFEED_STORY_STORYID, values.getAsString(DatabaseConstants.STORY_ID));
+                dbRW.insertWithOnConflict(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, socialValues, SQLiteDatabase.CONFLICT_REPLACE);
+            }
         }
         // handle comments
-        for (Comment comment : story.publicComments) {
-            comment.storyId = story.id;
-            insertSingleCommentExtSync(comment);
+        if (story.publicComments != null) {
+            for (Comment comment : story.publicComments) {
+                comment.storyId = story.id;
+                insertSingleCommentExtSync(comment);
+            }
         }
-        for (Comment comment : story.friendsComments) {
-            comment.storyId = story.id;
-            comment.byFriend = true;
-            insertSingleCommentExtSync(comment);
+        if (story.friendsComments != null) {
+            for (Comment comment : story.friendsComments) {
+                comment.storyId = story.id;
+                comment.byFriend = true;
+                insertSingleCommentExtSync(comment);
+            }
         }
-        for (Comment comment : story.friendsShares) {
-            comment.isPseudo = true;
-            comment.storyId = story.id;
-            comment.byFriend = true;
-            insertSingleCommentExtSync(comment);
+        if (story.friendsShares != null) {
+            for (Comment comment : story.friendsShares) {
+                comment.isPseudo = true;
+                comment.storyId = story.id;
+                comment.byFriend = true;
+                insertSingleCommentExtSync(comment);
+            }
         }
     }
 
