@@ -1,4 +1,6 @@
 import datetime
+import re
+import threading
 from collections import defaultdict
 
 import mongoengine as mongo
@@ -12,6 +14,54 @@ from apps.analyzer.tasks import EmailPopularityQuery
 from apps.rss_feeds.models import Feed
 from utils import log as logging
 from utils.ai_functions import classify_stories_with_ai
+
+# Regex timeout in seconds to prevent ReDoS attacks
+REGEX_TIMEOUT = 0.1  # 100ms
+
+
+def validate_regex_pattern(pattern):
+    """
+    Validate a regex pattern.
+    Returns (is_valid, error_message).
+    """
+    try:
+        re.compile(pattern)
+        return True, None
+    except re.error as e:
+        return False, str(e)
+
+
+def safe_regex_match(pattern, text, timeout=REGEX_TIMEOUT):
+    """
+    Safely perform regex matching with timeout protection.
+    Returns True if pattern matches, False otherwise.
+    Uses threading-based timeout (works on all platforms).
+    """
+    result = [False]
+    exception = [None]
+
+    def do_match():
+        try:
+            compiled = re.compile(pattern, re.IGNORECASE)
+            if compiled.search(text):
+                result[0] = True
+        except Exception as e:
+            exception[0] = e
+
+    thread = threading.Thread(target=do_match)
+    thread.daemon = True
+    thread.start()
+    thread.join(timeout)
+
+    if thread.is_alive():
+        # Thread is still running, regex timed out
+        return False
+
+    if exception[0]:
+        # Regex raised an exception
+        return False
+
+    return result[0]
 
 
 class FeatureCategory(models.Model):
@@ -94,6 +144,7 @@ class MClassifierTitle(mongo.Document):
     social_user_id = mongo.IntField()
     title = mongo.StringField(max_length=255)
     score = mongo.IntField()
+    is_regex = mongo.BooleanField(default=False)
     creation_date = mongo.DateTimeField()
 
     meta = {
@@ -104,7 +155,8 @@ class MClassifierTitle(mongo.Document):
 
     def __str__(self):
         user = User.objects.get(pk=self.user_id)
-        return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, self.title[:30])
+        regex_indicator = " [regex]" if self.is_regex else ""
+        return "%s - %s/%s: (%s) %s%s" % (user, self.feed_id, self.social_user_id, self.score, self.title[:30], regex_indicator)
 
 
 class MClassifierText(mongo.Document):
@@ -113,6 +165,7 @@ class MClassifierText(mongo.Document):
     social_user_id = mongo.IntField()
     text = mongo.StringField(max_length=255)
     score = mongo.IntField()
+    is_regex = mongo.BooleanField(default=False)
     creation_date = mongo.DateTimeField()
 
     meta = {
@@ -123,7 +176,8 @@ class MClassifierText(mongo.Document):
 
     def __str__(self):
         user = User.objects.get(pk=self.user_id)
-        return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, self.text[:30])
+        regex_indicator = " [regex]" if self.is_regex else ""
+        return "%s - %s/%s: (%s) %s%s" % (user, self.feed_id, self.social_user_id, self.score, self.text[:30], regex_indicator)
 
 
 class MClassifierAuthor(mongo.Document):
@@ -194,6 +248,7 @@ def compute_story_score(
     classifier_feeds,
     classifier_texts=None,
     prompt_score=None,
+    user_is_pro=False,
 ):
     if classifier_texts is None:
         classifier_texts = []
@@ -202,8 +257,9 @@ def compute_story_score(
         "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
         "author": apply_classifier_authors(classifier_authors, story),
         "tags": apply_classifier_tags(classifier_tags, story),
-        "title": apply_classifier_titles(classifier_titles, story),
-        "text": apply_classifier_texts(classifier_texts, story),
+        "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
+        "text": apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro),
+        "regex": apply_classifier_regex(classifier_texts, story, user_is_pro=user_is_pro),
     }
 
     # Include AI prompt classifier score if provided
@@ -217,8 +273,8 @@ def compute_story_score(
         return intelligence["prompt"]
 
     # Otherwise use the traditional classifier logic
-    score_max = max(intelligence["title"], intelligence["author"], intelligence["tags"], intelligence["text"])
-    score_min = min(intelligence["title"], intelligence["author"], intelligence["tags"], intelligence["text"])
+    score_max = max(intelligence["title"], intelligence["author"], intelligence["tags"], intelligence["text"], intelligence["regex"])
+    score_min = min(intelligence["title"], intelligence["author"], intelligence["tags"], intelligence["text"], intelligence["regex"])
     if score_max > 0:
         score = score_max
     elif score_min < 0:
@@ -230,32 +286,117 @@ def compute_story_score(
     return score
 
 
-def apply_classifier_titles(classifiers, story):
+def apply_classifier_titles(classifiers, story, user_is_pro=False):
+    """
+    Apply title classifiers to a story (non-regex only).
+
+    Args:
+        classifiers: List of MClassifierTitle objects
+        story: Story dict with 'story_feed_id' and 'story_title'
+        user_is_pro: Unused, kept for API compatibility
+
+    Returns:
+        Score (1 for like, -1 for dislike, 0 for neutral)
+    """
     score = 0
+    story_title = story.get("story_title", "")
+    if not story_title:
+        return score
+
+    story_title_lower = story_title.lower()
+
     for classifier in classifiers:
         if classifier.feed_id != story["story_feed_id"]:
             continue
-        if classifier.title.lower() in story["story_title"].lower():
-            # print 'Titles: (%s) %s -- %s' % (classifier.title in story['story_title'], classifier.title, story['story_title'])
+
+        # Skip regex classifiers - they're handled by apply_classifier_regex
+        if getattr(classifier, "is_regex", False):
+            continue
+
+        # Standard substring matching (case-insensitive)
+        if classifier.title.lower() in story_title_lower:
             score = classifier.score
             if score > 0:
                 return score
+
     return score
 
 
-def apply_classifier_texts(classifiers, story):
+def apply_classifier_texts(classifiers, story, user_is_pro=False):
+    """
+    Apply text classifiers to a story (non-regex only).
+
+    Args:
+        classifiers: List of MClassifierText objects
+        story: Story dict with 'story_feed_id' and 'story_content'
+        user_is_pro: Unused, kept for API compatibility
+
+    Returns:
+        Score (1 for like, -1 for dislike, 0 for neutral)
+    """
     score = 0
     story_content = story.get("story_content", "")
     if not story_content:
         return score
+
     story_content_lower = story_content.lower()
+
     for classifier in classifiers:
         if classifier.feed_id != story["story_feed_id"]:
             continue
+
+        # Skip regex classifiers - they're handled by apply_classifier_regex
+        if getattr(classifier, "is_regex", False):
+            continue
+
+        # Standard substring matching (case-insensitive)
         if classifier.text.lower() in story_content_lower:
             score = classifier.score
             if score > 0:
                 return score
+
+    return score
+
+
+def apply_classifier_regex(classifiers, story, user_is_pro=False):
+    """
+    Apply regex classifiers to a story. Regex patterns match against BOTH title AND content.
+
+    Args:
+        classifiers: List of MClassifierText objects with is_regex=True
+        story: Story dict with 'story_feed_id', 'story_title', and 'story_content'
+        user_is_pro: Whether the user has PRO subscription (required for regex filters)
+
+    Returns:
+        Score (1 for like, -1 for dislike, 0 for neutral)
+    """
+    # Regex filters only apply for PRO users
+    if not user_is_pro:
+        return 0
+
+    score = 0
+    story_title = story.get("story_title", "")
+    story_content = story.get("story_content", "")
+
+    for classifier in classifiers:
+        if classifier.feed_id != story["story_feed_id"]:
+            continue
+
+        # Only process regex classifiers
+        if not getattr(classifier, "is_regex", False):
+            continue
+
+        pattern = classifier.text
+
+        # Match against title OR content
+        title_match = story_title and safe_regex_match(pattern, story_title)
+        content_match = story_content and safe_regex_match(pattern, story_content)
+
+        if title_match or content_match:
+            score = classifier.score
+            if score > 0:
+                return score
+
     return score
 
 
@@ -493,12 +634,32 @@ def get_classifiers_for_user(
         else:
             feeds.append((f.feed_id, f.score))
 
+    # Build titles dict - only non-regex patterns
+    titles_dict = {}
+    for t in classifier_titles:
+        if not getattr(t, "is_regex", False):
+            titles_dict[t.title] = t.score
+
+    # Build texts dict - only non-regex patterns
+    texts_dict = {}
+    for t in classifier_texts:
+        if not getattr(t, "is_regex", False):
+            texts_dict[t.text] = t.score
+
+    # Build regex dict - patterns stored in MClassifierText with is_regex=True
+    # These apply to both title AND content
+    regex_dict = {}
+    for t in classifier_texts:
+        if getattr(t, "is_regex", False):
+            regex_dict[t.text] = t.score
+
     payload = {
         "feeds": dict(feeds),
         "authors": dict([(a.author, a.score) for a in classifier_authors]),
-        "titles": dict([(t.title, t.score) for t in classifier_titles]),
+        "titles": titles_dict,
         "tags": dict([(t.tag, t.score) for t in classifier_tags]),
-        "texts": dict([(t.text, t.score) for t in classifier_texts]),
+        "texts": texts_dict,
+        "regex": regex_dict,
     }
 
     return payload

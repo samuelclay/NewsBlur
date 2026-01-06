@@ -2433,3 +2433,56 @@ a.mention, a.mention-group {
 .NB-dark .NB-story-ask-ai-voice-button:hover .NB-story-ask-ai-voice-icon {
     filter: grayscale(0%) brightness(1.1);
 }
+
+/* =============================== */
+/* = Regex Classifier Dark Mode  = */
+/* =============================== */
+
+.NB-dark .NB-classifier-regex-container {
+    background-color: rgba(80, 100, 140, 0.15);
+    border-color: rgba(100, 120, 160, 0.25);
+}
+
+.NB-dark .NB-classifier-regex-toggle {
+    color: #b0b0b0;
+}
+
+.NB-dark .NB-classifier-regex-input {
+    background-color: #2a2c2e;
+    border-color: #4a4c4e;
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-classifier-regex-input:focus {
+    border-color: #4A90D9;
+    box-shadow: 0 0 3px rgba(74, 144, 217, 0.4);
+}
+
+.NB-dark .NB-classifier-regex-preview-container {
+    background-color: rgba(40, 42, 44, 0.9);
+    border-color: #4a4c4e;
+}
+
+.NB-dark .NB-classifier-regex-preview {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-classifier-regex-preview .NB-regex-match {
+    background-color: #6d5f00;
+    color: #fff;
+}
+
+.NB-dark .NB-classifiers .NB-classifier.NB-classifier-regex {
+    background-color: #3d4a5c;
+    border-color: #5c6b80;
+}
+
+.NB-dark .NB-classifier-regex-pro-notice {
+    background-color: #3d3a20;
+    border-color: #5a5530;
+    color: #b0a080;
+}
+
+.NB-dark .NB-classifier-regex-pro-notice a {
+    color: #9B88FE;
+}

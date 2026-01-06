@@ -13,6 +13,7 @@ from apps.analyzer.models import (
     MClassifierTitle,
     MPopularityQuery,
     get_classifiers_for_user,
+    validate_regex_pattern,
 )
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed
@@ -67,18 +68,38 @@ def save_classifier(request):
             usersub.save()
 
     def _save_classifier(ClassifierCls, content_type):
+        # Standard classifiers (non-regex)
         classifiers = {
-            "like_" + content_type: 1,
-            "dislike_" + content_type: -1,
-            "remove_like_" + content_type: 0,
-            "remove_dislike_" + content_type: 0,
+            "like_" + content_type: (1, False),
+            "dislike_" + content_type: (-1, False),
+            "remove_like_" + content_type: (0, False),
+            "remove_dislike_" + content_type: (0, False),
         }
-        for opinion, score in classifiers.items():
+        # Add unified regex classifier (stored in text table, applies to both title and content)
+        if content_type == "text":
+            classifiers.update(
+                {
+                    "like_regex": (1, True),
+                    "dislike_regex": (-1, True),
+                    "remove_like_regex": (0, True),
+                    "remove_dislike_regex": (0, True),
+                }
+            )
+
+        for opinion, (score, is_regex) in classifiers.items():
             if opinion in post:
                 post_contents = post.getlist(opinion)
                 for post_content in post_contents:
                     if not post_content:
                         continue
+
+                    # Validate regex patterns before saving
+                    if is_regex and score != 0:
+                        is_valid, error_msg = validate_regex_pattern(post_content)
+                        if not is_valid:
+                            logging.user(request, "~FRInvalid regex pattern: %s - %s" % (post_content, error_msg))
+                            continue
+
                     classifier_dict = {
                         "user_id": request.user.pk,
                         "feed_id": feed_id or 0,
@@ -87,6 +108,9 @@ def save_classifier(request):
                     if content_type in ("author", "tag", "title", "text"):
                         max_length = ClassifierCls._fields[content_type].max_length
                         classifier_dict.update({content_type: post_content[:max_length]})
+                        # Add is_regex for title and text classifiers
+                        if content_type in ("title", "text"):
+                            classifier_dict["is_regex"] = is_regex
                     elif content_type == "feed":
                         if not post_content.startswith("social:"):
                             classifier_dict["feed_id"] = post_content
@@ -95,13 +119,13 @@ def save_classifier(request):
                     except ClassifierCls.DoesNotExist:
                         classifier = None
                     except ClassifierCls.MultipleObjectsReturned:
-                        classifiers = ClassifierCls.objects.filter(**classifier_dict)
-                        for classifier in classifiers:
+                        classifiers_found = ClassifierCls.objects.filter(**classifier_dict)
+                        for classifier in classifiers_found:
                             # Update the score of the first classifier, delete the others, but don't delete more than 1
-                            first_classifier = classifiers[0]
+                            first_classifier = classifiers_found[0]
                             first_classifier.score = score
                             first_classifier.save()
-                            for classifier in classifiers[1:]:
+                            for classifier in classifiers_found[1:]:
                                 classifier.delete()
                                 break
                             logging.info(

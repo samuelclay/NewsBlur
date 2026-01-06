@@ -8561,6 +8561,158 @@ form.opml_import_form input {
     text-decoration: underline;
 }
 
+/* =============================== */
+/* = Regex Classifier Input      = */
+/* =============================== */
+
+.NB-classifier-regex-container {
+    margin: 12px 0;
+    padding: 10px;
+    background-color: rgba(100, 130, 180, 0.08);
+    border-radius: 4px;
+    border: 1px solid rgba(100, 130, 180, 0.15);
+    clear: both;
+}
+
+.NB-classifier-regex-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.NB-classifier-regex-toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 12px;
+    color: #606060;
+}
+
+.NB-classifier-regex-toggle input {
+    margin-right: 6px;
+}
+
+.NB-classifier-regex-pro-badge {
+    font-size: 9px;
+    text-transform: uppercase;
+    background-color: #7B68EE;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.NB-classifier-regex-input-wrapper {
+    transition: opacity 0.2s ease;
+}
+
+.NB-classifier-regex-input-wrapper.NB-hidden {
+    display: none;
+}
+
+.NB-classifier-regex-input {
+    width: 100%;
+    padding: 8px;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.NB-classifier-regex-input:focus {
+    border-color: #4A90D9;
+    outline: none;
+    box-shadow: 0 0 3px rgba(74, 144, 217, 0.3);
+}
+
+.NB-classifier-regex-validation {
+    font-size: 11px;
+    margin: 4px 0;
+    min-height: 16px;
+}
+
+.NB-classifier-regex-validation.NB-valid {
+    color: #3D931B;
+}
+
+.NB-classifier-regex-validation.NB-error {
+    color: #932C15;
+}
+
+.NB-classifier-regex-preview-container {
+    margin-top: 8px;
+    padding: 8px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid #e0e0e0;
+    border-radius: 3px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.NB-classifier-regex-preview-header {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #808080;
+    margin-bottom: 6px;
+}
+
+.NB-classifier-regex-preview {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #404040;
+}
+
+.NB-classifier-regex-preview .NB-regex-match {
+    background-color: #FFEB3B;
+    padding: 1px 2px;
+    border-radius: 2px;
+}
+
+.NB-classifier-regex-preview .NB-no-matches {
+    color: #999;
+    font-style: italic;
+}
+
+/* Regex classifier pill styling */
+.NB-classifiers .NB-classifier.NB-classifier-regex {
+    background-color: #E8EAF6;
+    border: 1px dashed #7986CB;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-like {
+    background-color: #2E7D32;
+    border: 1px solid #1B5E20;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-dislike {
+    background-color: #C62828;
+    border: 1px solid #B71C1C;
+}
+
+/* PRO notice for regex */
+.NB-classifier-regex-pro-notice {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background-color: #FFF9E6;
+    border: 1px solid #FFD700;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.NB-classifier-regex-pro-notice a {
+    color: #7B68EE;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.NB-classifier-regex-pro-notice a:hover {
+    text-decoration: underline;
+}
+
 /* =================== */
 /* = Mouse Indicator = */
 /* =================== */
