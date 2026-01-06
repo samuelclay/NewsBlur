@@ -657,6 +657,55 @@ hr {
     display: none;
 }
 
+/* Hide default folder background when custom icon is present */
+.NB-feedlist li.folder .NB-folder-icon:has(.feed_favicon),
+.NB-feedlist li.folder .NB-folder-icon:has(.NB-folder-emoji),
+.NB-feedlist li.folder .NB-folder-icon:has(.NB-folder-icon-colored) {
+    background: none !important;
+}
+
+/* Fallback for browsers that don't support :has() */
+.NB-feedlist li.folder .NB-folder-icon.NB-has-custom-icon {
+    background: none !important;
+}
+
+.NB-feedlist li.folder .NB-folder-icon .feed_favicon {
+    width: 16px;
+    height: 16px;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.NB-feedlist li.folder .NB-folder-icon .NB-folder-emoji {
+    font-size: 13px;
+    line-height: 16px;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    text-align: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Colored folder icon using mask-image */
+.NB-feedlist li.folder .NB-folder-icon .NB-folder-icon-colored {
+    width: 16px;
+    height: 16px;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
 .NB-feedlist .feeds {
     margin-left: 22px;
 }
@@ -1860,13 +1909,35 @@ img.feed_favicon {
     text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 
-.NB-feedbar .NB-folder .NB-folder-icon .feed_favicon {
-    vertical-align: text-bottom;
+/* Default folder icon for feedbar */
+.NB-feedbar .NB-folder .NB-folder-icon {
+    background: transparent url('/media/embed/icons/nouns/folder-open.svg') no-repeat 0 0;
+    background-size: 16px;
     width: 16px;
     height: 16px;
     position: absolute;
     left: 12px;
     top: 10px;
+}
+
+/* Hide default background when custom icon is present */
+.NB-feedbar .NB-folder .NB-folder-icon:has(.feed_favicon),
+.NB-feedbar .NB-folder .NB-folder-icon:has(.NB-folder-emoji),
+.NB-feedbar .NB-folder .NB-folder-icon:has(.NB-folder-icon-colored) {
+    background: none;
+}
+
+.NB-feedbar .NB-folder .NB-folder-icon.NB-has-custom-icon {
+    background: none;
+}
+
+.NB-feedbar .NB-folder .NB-folder-icon .feed_favicon {
+    vertical-align: text-bottom;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .NB-feedbar .folder ul.folder,
@@ -10915,7 +10986,8 @@ form.opml_import_form input {
     background-color: #F8F9F6;
     padding: 4px;
     border-radius: 6px;
-    margin-left: 28px; /* Indent to align with "Summarize" text (18px icon + 10px gap) */
+    margin-left: 28px;
+    /* Indent to align with "Summarize" text (18px icon + 10px gap) */
 }
 
 .NB-menu-ask-ai-segment {
@@ -13959,6 +14031,43 @@ form.opml_import_form input {
     font-size: 11px;
 }
 
+.NB-modal-folder-settings .NB-folder-icon-settings {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 12px;
+}
+
+.NB-modal-folder-settings .NB-folder-icon-current-preview {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F5F5F5;
+    border-radius: 6px;
+    border: 1px solid #DDD;
+}
+
+.NB-dark .NB-modal-folder-settings .NB-folder-icon-current-preview {
+    background: #333;
+    border-color: #444;
+}
+
+.NB-modal-folder-settings .NB-folder-icon-current-preview img {
+    width: 32px;
+    height: 32px;
+}
+
+.NB-modal-folder-settings .NB-folder-icon-preview-emoji {
+    font-size: 32px;
+    line-height: 1;
+}
+
+.NB-modal-folder-settings .NB-folder-icon-preview-default {
+    opacity: 0.5;
+}
+
 /* ======================= */
 /* = Notifications Modal = */
 /* ======================= */
@@ -16916,6 +17025,536 @@ form.opml_import_form input {
     width: auto;
     clear: none;
     cursor: pointer;
+}
+
+/* ============================ */
+/* = Folder Icon Editor Modal = */
+/* ============================ */
+
+/* Folder settings modal header - title and tabs on same line */
+.NB-modal-exception.NB-modal-folder-settings .NB-modal-subtitle {
+    display: inline-flex;
+    align-items: center;
+    background: transparent !important;
+    padding: 8px 0;
+    margin: 8px 0 0;
+    float: left;
+}
+
+.NB-modal-exception.NB-modal-folder-settings .NB-modal-tabs {
+    float: right;
+    margin: 12px 0 0;
+    position: relative;
+    bottom: auto;
+}
+
+.NB-modal-exception.NB-modal-folder-settings .NB-modal-feed-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 8px;
+}
+
+/* Clear floats before tab content */
+.NB-modal-exception.NB-modal-folder-settings .NB-tab {
+    clear: both;
+}
+
+/* Upload section margin */
+.NB-folder-icon-editor .NB-folder-icon-upload-section {
+    margin-top: 8px;
+}
+
+/* Clear icon link */
+.NB-folder-icon-editor .NB-folder-icon-clear {
+    font-size: 12px;
+    color: #999;
+    text-decoration: none;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-clear:hover {
+    color: #c00;
+    text-decoration: underline;
+}
+
+/* Header Clear Link */
+.NB-modal .NB-folder-icon-clear-header {
+    float: right;
+    font-size: 11px;
+    color: #999;
+    text-decoration: none;
+    margin-left: 12px;
+}
+
+.NB-modal .NB-folder-icon-clear-header:hover {
+    color: #c00;
+    text-decoration: underline;
+}
+
+/* Sections */
+.NB-folder-icon-editor .NB-folder-icon-section {
+    margin-bottom: 16px;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-section-label {
+    font-size: 11px;
+    font-weight: bold;
+    color: #808080;
+    text-transform: uppercase;
+    margin: 0 0 6px 0;
+    letter-spacing: 0.5px;
+}
+
+/* Icon Grid - No sub-scrollbars */
+.NB-folder-icon-editor .NB-folder-icon-presets-grid,
+.NB-folder-icon-editor .NB-folder-icon-emojis-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 2px;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-preset,
+.NB-folder-icon-editor .NB-folder-icon-emoji-option {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.1s ease;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-preset:hover,
+.NB-folder-icon-editor .NB-folder-icon-emoji-option:hover {
+    background: #E8E8E8;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-preset:hover,
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-emoji-option:hover {
+    background: #404040;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-preset.NB-active,
+.NB-folder-icon-editor .NB-folder-icon-emoji-option.NB-active {
+    background: #D4EDFF;
+    border-color: #2A7FD8;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-preset.NB-active,
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-emoji-option.NB-active {
+    background: #2A4A6A;
+    border-color: #4A9FFF;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-preset img {
+    width: 20px;
+    height: 20px;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-colored-preview {
+    width: 20px;
+    height: 20px;
+    transition: background-color 0.2s ease;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-emoji-option {
+    font-size: 18px;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-emoji {
+    font-size: 24px;
+}
+
+/* Row-based icon/emoji containers with category labels */
+.NB-folder-icon-editor .NB-folder-icon-presets-container,
+.NB-folder-icon-editor .NB-folder-icon-filled-container,
+.NB-folder-icon-editor .NB-folder-icon-emojis-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-preset-row,
+.NB-folder-icon-editor .NB-folder-icon-filled-row,
+.NB-folder-icon-editor .NB-folder-icon-emoji-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-preset-label,
+.NB-folder-icon-editor .NB-folder-icon-filled-label,
+.NB-folder-icon-editor .NB-folder-icon-emoji-label {
+    width: 60px;
+    min-width: 60px;
+    font-size: 10px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-preset-label,
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-filled-label,
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-emoji-label {
+    color: #777;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-preset-items,
+.NB-folder-icon-editor .NB-folder-icon-filled-items,
+.NB-folder-icon-editor .NB-folder-icon-emoji-items {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 2px;
+}
+
+/* Color Picker */
+.NB-folder-icon-editor .NB-folder-icon-colors-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 6px 12px;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-color {
+    width: 100%;
+    height: 18px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.1s ease;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-color:hover {
+    transform: scale(1.15);
+}
+
+.NB-folder-icon-editor .NB-folder-icon-color.NB-active {
+    border-color: #333;
+    transform: scale(1.2);
+    box-shadow: 0 0 0 1px #fff;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-color.NB-active {
+    border-color: #FFF;
+    box-shadow: 0 0 0 1px #000;
+}
+
+/* Upload section */
+.NB-folder-icon-editor .NB-folder-icon-upload-section {
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-section {
+    border-bottom-color: #444;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-file-input {
+    display: none;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: linear-gradient(to bottom, #f8f9fa 0%, #f0f1f2 100%);
+    border: 2px dashed #ccd0d5;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-button:hover {
+    background: linear-gradient(to bottom, #fff 0%, #f5f6f7 100%);
+    border-color: #8c9299;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-button.NB-uploading {
+    background: #f0f7ff;
+    border-color: #4a90d9;
+    border-style: solid;
+    pointer-events: none;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button {
+    background: linear-gradient(to bottom, #3a3a3a 0%, #333 100%);
+    border-color: #555;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button:hover {
+    background: linear-gradient(to bottom, #444 0%, #3a3a3a 100%);
+    border-color: #777;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button.NB-uploading {
+    background: #2a3a4a;
+    border-color: #4a90d9;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-icon {
+    width: 32px;
+    height: 32px;
+    background-color: #666;
+    -webkit-mask: url('/media/img/icons/heroicons-solid/arrow-up-tray.svg') no-repeat center center;
+    mask: url('/media/img/icons/heroicons-solid/arrow-up-tray.svg') no-repeat center center;
+    -webkit-mask-size: 24px;
+    mask-size: 24px;
+    flex-shrink: 0;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-button:hover .NB-folder-icon-upload-icon {
+    background-color: #333;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-icon {
+    background-color: #999;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button:hover .NB-folder-icon-upload-icon {
+    background-color: #ccc;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-label {
+    color: #ddd;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-hint {
+    font-size: 11px;
+    color: #888;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-button .NB-loading {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    float: none;
+    margin: 0;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-button .NB-loading.NB-active {
+    background-size: 20px;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-preview {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #e8f5e9;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #2e7d32;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-preview img {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview {
+    background: #1b3d1f;
+    color: #81c784;
+}
+
+.NB-folder-icon-editor .NB-folder-icon-upload-error {
+    display: none;
+    padding: 10px 14px;
+    background: #ffebee;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #c62828;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-error {
+    background: #3d1b1b;
+    color: #ef9a9a;
+}
+
+.NB-folder-icon-editor .NB-modal-submit-save {
+    background: #2A7FD8;
+    color: #FFF;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.NB-folder-icon-editor .NB-modal-submit-save:hover {
+    background: #1A6FC8;
+}
+
+.NB-folder-icon-editor .NB-modal-submit-remove {
+    background: transparent;
+    color: #C55;
+    border: 1px solid #C55;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.NB-folder-icon-editor .NB-modal-submit-remove:hover {
+    background: #C55;
+    color: #FFF;
+}
+
+/* Inline folder emoji display */
+.NB-folder-emoji {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.NB-feedbar .NB-folder-icon .NB-folder-emoji {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* Colored folder icon using mask-image for feedbar */
+.NB-feedbar .NB-folder-icon .NB-folder-icon-colored {
+    width: 16px;
+    height: 16px;
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+/* Colored folder icon in modal header */
+.NB-modal-subtitle .NB-folder-icon-colored {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+/* Feed Options Popover - Folder Icon Section */
+.NB-popover-section-folder-icon {
+    padding: 8px 12px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.NB-dark .NB-popover-section-folder-icon {
+    border-bottom-color: #444;
+}
+
+.NB-popover-section-folder-icon .NB-popover-section-title {
+    font-size: 10px;
+    font-weight: bold;
+    color: #808080;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.NB-popover-section-folder-icon .NB-folder-icon-current {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.NB-popover-section-folder-icon .NB-folder-icon-current-preview {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F0F0F0;
+    border-radius: 4px;
+    border: 1px solid #DDD;
+}
+
+.NB-dark .NB-popover-section-folder-icon .NB-folder-icon-current-preview {
+    background: #333;
+    border-color: #444;
+}
+
+.NB-popover-section-folder-icon .NB-folder-icon-current-preview img {
+    width: 24px;
+    height: 24px;
+}
+
+.NB-popover-section-folder-icon .NB-folder-icon-current-preview .NB-folder-emoji {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+}
+
+.NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button {
+    padding: 6px 12px;
+    background: #F0F0F0;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.NB-dark .NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button {
+    background: #333;
+    border-color: #555;
+    color: #DDD;
+}
+
+.NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button:hover {
+    background: #E0E0E0;
+    border-color: #AAA;
+}
+
+.NB-dark .NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button:hover {
+    background: #444;
+    border-color: #666;
 }
 
 /* ================= */

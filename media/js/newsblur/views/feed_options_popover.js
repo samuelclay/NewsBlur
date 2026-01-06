@@ -28,6 +28,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-filter-popover-dashboard-add-module-left": "add_dashboard_module_left",
         "click .NB-filter-popover-dashboard-add-module-right": "add_dashboard_module_right",
         "click .NB-filter-popover-dashboard-remove-module": "remove_dashboard_module",
+        "click .NB-filter-popover-folder-icon-button": "open_folder_icon_editor",
         "change .NB-modal-feed-chooser": "change_feed",
         "input .NB-date-input": "debounced_change_date_range",
         "blur .NB-date-input": "on_date_input_blur",
@@ -188,6 +189,11 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-clear-date-button' })
                 ])
             ]),
+            (is_river && !this.options.on_dashboard && $.make('div', { className: 'NB-popover-section NB-popover-section-folder-icon' }, [
+                $.make('div', { className: 'NB-popover-section-title' }, 'Folder Icon'),
+                $.make('div', { className: 'NB-folder-icon-current' }, this.make_folder_icon_preview()),
+                $.make('div', { className: 'NB-filter-popover-folder-icon-button NB-splash-link' }, 'Change folder icon')
+            ])),
             $.make('div', { className: 'NB-popover-section' }, [
                 $.make('div', { className: 'NB-popover-section-title' }, 'Story title styling'),
                 (this.options.show_markscroll && $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-markscroll' }, [
@@ -585,6 +591,35 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     open_site_settings: function () {
         this.close(function () {
             NEWSBLUR.reader.open_feed_exception_modal();
+        });
+    },
+
+    make_folder_icon_preview: function () {
+        var feed_id = this.options.feed_id || NEWSBLUR.reader.active_feed;
+        var folder_title = feed_id.replace('river:', '');
+        var folder_icon = NEWSBLUR.assets.get_folder_icon(folder_title);
+        var $preview = $.make('div', { className: 'NB-folder-icon-preview-small' });
+
+        if (folder_icon && folder_icon.icon_type && folder_icon.icon_type !== 'none') {
+            if (folder_icon.icon_type === 'upload') {
+                $preview.append($.make('img', { src: 'data:image/png;base64,' + folder_icon.icon_data }));
+            } else if (folder_icon.icon_type === 'preset') {
+                $preview.append($.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/lucide/' + folder_icon.icon_data + '.svg' }));
+            } else if (folder_icon.icon_type === 'emoji') {
+                $preview.append($.make('span', { className: 'NB-folder-icon-emoji-small' }, folder_icon.icon_data));
+            }
+        } else {
+            $preview.append($.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg' }));
+        }
+
+        return $preview;
+    },
+
+    open_folder_icon_editor: function () {
+        var feed_id = this.options.feed_id || NEWSBLUR.reader.active_feed;
+        var folder_title = feed_id.replace('river:', '');
+        this.close(function () {
+            new NEWSBLUR.ReaderFolderIconEditor({ folder_title: folder_title });
         });
     },
 

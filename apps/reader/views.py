@@ -61,6 +61,7 @@ from apps.profile.models import MCustomStyling, MDashboardRiver, Profile
 from apps.reader.forms import FeatureForm, LoginForm, SignupForm
 from apps.reader.models import (
     Feature,
+    MFolderIcon,
     RUserStory,
     RUserUnreadStory,
     UserSubscription,
@@ -494,6 +495,9 @@ def load_feeds(request):
     if not user_subs:
         categories = MCategory.serialize()
 
+    folder_icons = MFolderIcon.get_folder_icons_for_user(user.pk)
+    folder_icons_dict = {fi.folder_title: fi.to_json() for fi in folder_icons}
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB feeds/socials%s"
@@ -514,6 +518,7 @@ def load_feeds(request):
         "saved_searches": saved_searches,
         "dashboard_rivers": dashboard_rivers,
         "categories": categories,
+        "folder_icons": folder_icons_dict,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -2828,6 +2833,9 @@ def delete_folder(request):
     user_sub_folders.delete_folder(folder_to_delete, in_folder, feed_ids_in_folder)
     folders = json.decode(user_sub_folders.folders)
 
+    # Clean up folder icon when folder is deleted
+    MFolderIcon.delete_folder_icon(request.user.pk, folder_to_delete)
+
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "reload:feeds")
 
@@ -2890,6 +2898,8 @@ def rename_folder(request):
     if folder_to_rename and new_folder_name:
         user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
         user_sub_folders.rename_folder(folder_to_rename, new_folder_name, in_folder)
+        # Update folder icon when folder is renamed
+        MFolderIcon.rename_folder_icon(request.user.pk, folder_to_rename, new_folder_name)
         code = 1
     else:
         code = -1
@@ -2973,6 +2983,105 @@ def move_feeds_by_folder_to_folder(request):
     r.publish(request.user.username, "reload:feeds")
 
     return dict(code=1, folders=json.decode(user_sub_folders.folders))
+
+
+@ajax_login_required
+@json.json_view
+def save_folder_icon(request):
+    """Save a folder icon (upload, preset, emoji, or remove)"""
+    folder_title = request.POST.get("folder_title", "").replace("river:", "")
+    icon_type = request.POST.get("icon_type", "none")  # upload, preset, emoji, none
+    icon_data = request.POST.get("icon_data")  # base64, icon name, or emoji
+    icon_color = request.POST.get("icon_color")  # hex color
+    icon_set = request.POST.get("icon_set", "lucide")  # lucide, heroicons-solid
+
+    if not folder_title:
+        return {"code": -1, "message": "Folder title required"}
+
+    if icon_type == "none":
+        MFolderIcon.delete_folder_icon(request.user.pk, folder_title)
+        logging.user(request, "~FRRemoving folder icon: ~SB%s" % folder_title)
+    else:
+        MFolderIcon.save_folder_icon(
+            request.user.pk,
+            folder_title,
+            icon_type,
+            icon_data,
+            icon_color,
+            icon_set,
+        )
+        logging.user(request, "~FBSaving folder icon: ~SB%s (%s)" % (folder_title, icon_type))
+
+    folder_icons = MFolderIcon.get_folder_icons_for_user(request.user.pk)
+    return {
+        "code": 1,
+        "folder_icons": {fi.folder_title: fi.to_json() for fi in folder_icons},
+    }
+
+
+@ajax_login_required
+@json.json_view
+def upload_folder_icon(request):
+    """Handle file upload for custom folder icons"""
+    from io import BytesIO
+
+    from PIL import Image
+
+    folder_title = request.POST.get("folder_title", "").replace("river:", "")
+    photo = request.FILES.get("photo")
+
+    if not folder_title or not photo:
+        return {"code": -1, "message": "Folder title and photo required"}
+
+    try:
+        # Read and validate image
+        photo_body = photo.read()
+        image_file = BytesIO(photo_body)
+        image = Image.open(image_file)
+
+        # Convert to RGBA if needed (for PNG with transparency)
+        if image.mode not in ("RGBA", "RGB"):
+            image = image.convert("RGBA")
+
+        # Resize to 128x128 with aspect ratio preserved, then crop to center
+        image.thumbnail((128, 128), Image.LANCZOS)
+
+        # Create a 128x128 canvas and paste the thumbnail centered
+        canvas = Image.new("RGBA", (128, 128), (255, 255, 255, 0))
+        offset = ((128 - image.width) // 2, (128 - image.height) // 2)
+        canvas.paste(image, offset)
+
+        # Convert to base64
+        buffer = BytesIO()
+        canvas.save(buffer, format="PNG")
+        icon_data = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+        MFolderIcon.save_folder_icon(
+            request.user.pk,
+            folder_title,
+            icon_type="upload",
+            icon_data=icon_data,
+            icon_color=None,
+        )
+
+        logging.user(request, "~FC~BM~SBUploading folder icon: %s" % folder_title)
+
+        folder_icons = MFolderIcon.get_folder_icons_for_user(request.user.pk)
+        return {
+            "code": 1,
+            "folder_icons": {fi.folder_title: fi.to_json() for fi in folder_icons},
+        }
+    except Exception as e:
+        logging.user(request, "~FRFolder icon upload error: %s" % e)
+        return {"code": -1, "message": "Invalid image file"}
+
+
+@ajax_login_required
+@json.json_view
+def load_folder_icons(request):
+    """Load all folder icons for the current user"""
+    folder_icons = MFolderIcon.get_folder_icons_for_user(request.user.pk)
+    return {"folder_icons": {fi.folder_title: fi.to_json() for fi in folder_icons}}
 
 
 @login_required
