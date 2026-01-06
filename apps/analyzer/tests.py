@@ -413,9 +413,11 @@ class Test_Classifiers(TransactionTestCase):
         self.assertIn("tags", classifiers)
         self.assertIn("feeds", classifiers)
 
+        # titles and texts are simple score dicts, regex is separate
         self.assertEqual(classifiers["titles"]["important"], 1)
         self.assertEqual(classifiers["texts"]["exclusive"], 1)
         self.assertEqual(classifiers["authors"]["Good Author"], 1)
+        self.assertIn("regex", classifiers)  # regex should always be present
 
     def test_text_classifiers_premium_tiers(self):
         # Create text classifier for testing

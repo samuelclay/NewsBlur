@@ -1227,13 +1227,15 @@ class UserSubscription(models.Model):
                 "feed": apply_classifier_feeds(classifier_feeds, self.feed),
             }
 
+            user_is_pro = self.user.profile.is_pro
+
             for story in unread_stories:
                 scores.update(
                     {
                         "author": apply_classifier_authors(classifier_authors, story),
                         "tags": apply_classifier_tags(classifier_tags, story),
-                        "title": apply_classifier_titles(classifier_titles, story),
-                        "text": apply_classifier_texts(classifier_texts, story),
+                        "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
+                        "text": apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro),
                     }
                 )
 

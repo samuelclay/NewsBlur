@@ -2128,6 +2128,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     recalculate_story_scores: function (feed_id, options) {
         options = options || {};
+        var user_is_pro = NEWSBLUR.Globals.is_pro;
+
         this.stories.each(_.bind(function (story, i) {
             if (story.get('story_feed_id') != feed_id) return;
             var intelligence = {
@@ -2135,13 +2137,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 feed: 0,
                 tags: 0,
                 title: 0,
-                text: 0
+                text: 0,
+                regex: 0
             };
 
             _.each(this.classifiers[feed_id].titles, function (classifier_score, classifier_title) {
-                if (intelligence.title <= 0 &&
-                    story.get('story_title', '').toLowerCase().indexOf(classifier_title.toLowerCase()) != -1) {
-                    intelligence.title = classifier_score;
+                if (intelligence.title <= 0) {
+                    // Standard substring matching
+                    if (story.get('story_title', '').toLowerCase().indexOf(classifier_title.toLowerCase()) != -1) {
+                        intelligence.title = classifier_score;
+                    }
                 }
             });
 
@@ -2167,11 +2172,31 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             });
 
             _.each(this.classifiers[feed_id].texts, function (classifier_score, classifier_text) {
-                if (intelligence.text <= 0 &&
-                    story.get('story_content', '').toLowerCase().indexOf(classifier_text.toLowerCase()) != -1) {
-                    intelligence.text = classifier_score;
+                if (intelligence.text <= 0) {
+                    // Standard substring matching
+                    if (story.get('story_content', '').toLowerCase().indexOf(classifier_text.toLowerCase()) != -1) {
+                        intelligence.text = classifier_score;
+                    }
                 }
             });
+
+            // Regex classifiers (PRO only) - match against both title AND content
+            if (user_is_pro && this.classifiers[feed_id].regex) {
+                _.each(this.classifiers[feed_id].regex, function (classifier_score, pattern) {
+                    if (intelligence.regex <= 0) {
+                        try {
+                            var regex = new RegExp(pattern, 'i');
+                            var title_match = regex.test(story.get('story_title', ''));
+                            var content_match = regex.test(story.get('story_content', ''));
+                            if (title_match || content_match) {
+                                intelligence.regex = classifier_score;
+                            }
+                        } catch (e) {
+                            // Invalid regex, skip
+                        }
+                    }
+                });
+            }
 
             story.set('intelligence', intelligence, options);
         }, this));

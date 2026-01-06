@@ -977,15 +977,17 @@ def load_single_feed(request, feed_id):
     user_preferences = json.decode(user.profile.preferences)
     youtube_captions_enabled = user_preferences.get("youtube_captions", False)
 
+    user_is_pro = user.profile.is_pro
+
     for story in stories:
         # Calculate intelligence BEFORE deleting story content (text classifier needs it)
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, feed),
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story),
+            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
             "text": (
-                apply_classifier_texts(classifier_texts, story)
+                apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
@@ -1555,14 +1557,15 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
     )
+    user_is_pro = user.profile.is_pro
     for story in stories:
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story),
+            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
             "text": (
-                apply_classifier_texts(classifier_texts, story)
+                apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
@@ -1974,6 +1977,8 @@ def load_river_stories__redis(request):
     user_preferences = json.decode(user.profile.preferences)
     youtube_captions_enabled = user_preferences.get("youtube_captions", False)
 
+    user_is_pro = user.profile.is_pro
+
     for story in stories:
         if read_filter == "starred":
             story["read_status"] = 1
@@ -1999,9 +2004,9 @@ def load_river_stories__redis(request):
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story),
+            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
             "text": (
-                apply_classifier_texts(classifier_texts, story)
+                apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
