@@ -124,7 +124,14 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         <div class="NB-story-title-indicator-count"></div>\
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
                     </div>\
-                    <div class="NB-folder-icon"><img class="feed_favicon" src="<%= $.favicon(folder_id) %>">\</div>\
+                    <div class="NB-folder-icon">\
+                        <% var icon_url = $.favicon(folder_id); %>\
+                        <% if (icon_url && icon_url.indexOf("emoji:") === 0) { %>\
+                            <span class="NB-folder-emoji"><%= icon_url.substring(6) %></span>\
+                        <% } else { %>\
+                            <img class="feed_favicon" src="<%= icon_url %>">\
+                        <% } %>\
+                    </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <span class="folder_title_text"><%= folder_title %></span>\
                 </div>\

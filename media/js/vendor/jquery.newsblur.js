@@ -254,8 +254,14 @@ NEWSBLUR.log = function(msg) {
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/all-shares.svg';
                 if (feed_id == 'river:global')
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/global-shares.svg';
-                if (_.string.startsWith(feed_id, 'river:'))
+                if (_.string.startsWith(feed_id, 'river:')) {
+                    var folder_title = feed_id.substring('river:'.length);
+                    var folder_icon = NEWSBLUR.assets && NEWSBLUR.assets.get_folder_icon(folder_title);
+                    if (folder_icon && folder_icon.icon_type && folder_icon.icon_type !== 'none') {
+                        return $.make_folder_icon(folder_icon);
+                    }
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg';
+                }
                 if (feed_id == "read")
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/indicator-unread.svg';
                 if (feed_id == "starred")
@@ -294,7 +300,20 @@ NEWSBLUR.log = function(msg) {
 
             return empty_icon;
         },
-        
+
+        make_folder_icon: function (folder_icon) {
+            if (folder_icon.icon_type === 'upload') {
+                return 'data:image/png;base64,' + folder_icon.icon_data;
+            } else if (folder_icon.icon_type === 'preset') {
+                var icon_set = folder_icon.icon_set || 'lucide';
+                return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/' + icon_set + '/' + folder_icon.icon_data + '.svg';
+            } else if (folder_icon.icon_type === 'emoji') {
+                // Return a special marker that folder_view.js will handle
+                return 'emoji:' + folder_icon.icon_data;
+            }
+            return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg';
+        },
+
         deepCopy: function(obj) {
             var type = $.typeOf(obj);
             switch (type) {

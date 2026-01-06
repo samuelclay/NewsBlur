@@ -61,6 +61,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.dashboard_rivers = new NEWSBLUR.Collections.DashboardRivers();
         this.starred_stories = [];
         this.starred_count = 0;
+        this.folder_icons = {};
         this.flags = {
             'favicons_fetching': false,
             'has_chosen_feeds': false
@@ -562,6 +563,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.searches_feeds.reset(subscriptions.saved_searches, { parse: true });
             self.social_services = subscriptions.social_services;
             self.dashboard_rivers.reset(subscriptions.dashboard_rivers);
+            self.folder_icons = subscriptions.folder_icons || {};
 
             if (selected && self.feeds.get(selected)) {
                 self.feeds.get(selected).set('selected', true);
@@ -1964,6 +1966,51 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.user_profile.set(response.user_profile);
             callback(response);
         }, this));
+    },
+
+    // ===================
+    // = Folder Icons =
+    // ===================
+
+    get_folder_icon: function (folder_title) {
+        return this.folder_icons[folder_title] || null;
+    },
+
+    save_folder_icon: function (folder_title, icon_type, icon_data, icon_color, icon_set, callback, error_callback) {
+        this.make_request('/reader/save_folder_icon', {
+            folder_title: folder_title,
+            icon_type: icon_type,
+            icon_data: icon_data,
+            icon_color: icon_color,
+            icon_set: icon_set || 'lucide'
+        }, _.bind(function (response) {
+            this.folder_icons = response.folder_icons || {};
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    upload_folder_icon: function (folder_title, file, callback, error_callback) {
+        var self = this;
+        var formData = new FormData();
+        formData.append('folder_title', folder_title);
+        formData.append('photo', file);
+
+        $.ajax({
+            url: NEWSBLUR.URLs.reader + '/upload_folder_icon',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                self.folder_icons = response.folder_icons || {};
+                callback && callback(response);
+            },
+            error: error_callback
+        });
+    },
+
+    remove_folder_icon: function (folder_title, callback, error_callback) {
+        this.save_folder_icon(folder_title, 'none', null, null, null, callback, error_callback);
     },
 
     save_dashboard_river: function (river_id, river_side, river_order, callback, error_callback) {
