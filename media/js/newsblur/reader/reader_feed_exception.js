@@ -615,13 +615,6 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var has_icon = this.folder_icon && this.folder_icon.icon_type && this.folder_icon.icon_type !== 'none';
         $('.NB-folder-icon-clear-header', this.$modal).toggle(has_icon);
 
-        // Add direct click handler for upload button ($.targetIs doesn't always work)
-        var self = this;
-        $('.NB-folder-icon-upload-button', this.$modal).on('click', function (e) {
-            e.preventDefault();
-            $('.NB-folder-icon-file-input', self.$modal).click();
-        });
-
         // Add click handler for header clear link
         $('.NB-folder-icon-clear-header', this.$modal).on('click', function (e) {
             e.preventDefault();
@@ -1146,7 +1139,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
         var formData = new FormData();
         formData.append('folder_title', this.folder_title);
-        formData.append('icon_file', file);
+        formData.append('photo', file);
 
         $.ajax({
             url: '/reader/upload_folder_icon',

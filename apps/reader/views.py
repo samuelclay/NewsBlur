@@ -3069,6 +3069,7 @@ def upload_folder_icon(request):
         folder_icons = MFolderIcon.get_folder_icons_for_user(request.user.pk)
         return {
             "code": 1,
+            "icon_data": icon_data,
             "folder_icons": {fi.folder_title: fi.to_json() for fi in folder_icons},
         }
     except Exception as e:
