@@ -80,6 +80,7 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-tls = { group = "com.squareup.okhttp3", name = "okhttp-tls", version.ref = "okhttp"}
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 play-review = { module = "com.google.android.play:review", version.ref = "playReview" }
 androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "preference" }

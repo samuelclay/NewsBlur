@@ -58,16 +58,30 @@ class PrefsRepo(
     private val syncServiceState: SyncServiceState,
 ) {
     fun saveCustomServer(customServer: String?) {
-        if (customServer == null) return
-        if (customServer.isEmpty()) return
+        if (customServer.isNullOrBlank()) return
         prefs.edit { putString(PrefConstants.PREF_CUSTOM_SERVER, customServer) }
     }
 
     fun getCustomSever(): String? = prefs.getString(PrefConstants.PREF_CUSTOM_SERVER, null)
 
     fun clearCustomServer() {
-        prefs.edit { remove(PrefConstants.PREF_CUSTOM_SERVER) }
+        prefs.edit {
+            remove(PrefConstants.PREF_CUSTOM_SERVER)
+        }
     }
+
+    fun saveCustomServerCaPem(pem: String?) {
+        if (pem.isNullOrBlank()) return
+        prefs.edit { putString(PrefConstants.PREF_CUSTOM_SERVER_CA_PEM, pem.trim()) }
+    }
+
+    fun clearCustomServerCaPem() {
+        prefs.edit {
+            remove(PrefConstants.PREF_CUSTOM_SERVER_CA_PEM)
+        }
+    }
+
+    fun getCustomServerCaPem(): String? = prefs.getString(PrefConstants.PREF_CUSTOM_SERVER_CA_PEM, null)
 
     fun saveLogin(
         userName: String,
@@ -218,6 +232,7 @@ class PrefsRepo(
         keys.remove(PrefConstants.PREF_COOKIE)
         keys.remove(PrefConstants.PREF_UNIQUE_LOGIN)
         keys.remove(PrefConstants.PREF_CUSTOM_SERVER)
+        keys.remove(PrefConstants.PREF_CUSTOM_SERVER_CA_PEM)
         prefs.edit(commit = true) {
             for (key in keys) {
                 remove(key)
