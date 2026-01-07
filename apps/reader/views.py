@@ -3084,14 +3084,6 @@ def upload_folder_icon(request):
 
 @ajax_login_required
 @json.json_view
-def load_folder_icons(request):
-    """Load all folder icons for the current user"""
-    folder_icons = MFolderIcon.get_folder_icons_for_user(request.user.pk)
-    return {"folder_icons": {fi.folder_title: fi.to_json() for fi in folder_icons}}
-
-
-@ajax_login_required
-@json.json_view
 def save_feed_icon(request):
     """Save a custom feed icon (upload, preset, emoji, or remove)"""
     feed_id = request.POST.get("feed_id")
