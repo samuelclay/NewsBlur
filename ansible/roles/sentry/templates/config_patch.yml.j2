@@ -1,0 +1,5 @@
+# Sentry system.url-prefix configuration
+# This gets appended to sentry/config.yml by Ansible
+
+# Set the public URL for Sentry (required for CSRF validation when behind proxy)
+system.url-prefix: {{ sentry_url }}

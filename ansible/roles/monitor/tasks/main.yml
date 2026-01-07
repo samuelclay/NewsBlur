@@ -31,6 +31,8 @@
     volumes:
       - /srv/newsblur:/srv/newsblur
     network_mode: host
+    dns_servers:
+      - 127.0.0.1
 
 - name: Restart monitor
   become: yes

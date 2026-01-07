@@ -629,7 +629,7 @@
                                                 <action selector="chooseTheme:" destination="J28-e1-gcC" id="AGW-N1-hqV"/>
                                             </connections>
                                         </command>
-                                        <command title="Sepia" propertyListString="sepia" id="Nvo-zG-r0S">
+                                        <command title="Warm" propertyListString="sepia" id="Nvo-zG-r0S">
                                             <connections>
                                                 <action selector="chooseTheme:" destination="J28-e1-gcC" id="F6m-fp-d1B"/>
                                             </connections>

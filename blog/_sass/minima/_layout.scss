@@ -8,6 +8,7 @@
   position: sticky;
   top: 0;
   background-color: $background-color;
+  z-index: 100;
 
   .wrapper {
     display: flex;
@@ -240,12 +241,25 @@
 
   > li {
     margin-bottom: $spacing-unit;
+    position: relative;
   }
+}
+
+.post-header-sticky {
+  position: sticky;
+  top: calc($spacing-unit * 1.865 + 7px); // Site header min-height + borders + 1px clearance
+  background-color: $background-color;
+  z-index: 10;
+  padding: 12px 0 6px 0;
+  margin: 0 0 20px 0;
+  border-bottom: 1px solid $grey-color-light;
 }
 
 .post-meta {
   font-size: $small-font-size;
   color: $grey-color;
+  margin-bottom: 4px;
+  display: block;
 }
 
 .post-link {

@@ -50,6 +50,7 @@
   unarchive:
     src: /srv/newsblur/static.tgz
     dest: /srv/newsblur/static
+    remote_src: yes
   when: jscss_updated is succeeded
   tags: always
 

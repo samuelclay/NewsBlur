@@ -211,6 +211,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('label', { 'for': 'NB-preference-showinfrequentsitestories-1' }, [
                                     'Show Infrequent Site Stories'
                                 ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showtrendingsites-1', type: 'checkbox', name: 'show_trending_sites', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-showtrendingsites-1' }, [
+                                    'Show Trending Sites'
+                                ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
@@ -796,8 +802,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Story side options placement'
                         ]),
-                        $.make('div', { className: 'NB-preference-options' }, _.map(["email", "save", "train", "share", "related"], function (label) {
+                        $.make('div', { className: 'NB-preference-options' }, _.map(["email", "save", "train", "share", "related", "ask_ai"], function (label) {
                             var label_title = label.charAt(0).toUpperCase() + label.slice(1);
+                            if (label === "ask_ai") {
+                                label_title = "Ask AI";
+                            }
                             return $.make('div', { className: 'NB-preference-option NB-preference-story-sideoption', title: label_title }, [
                                 $.make('input', { type: 'checkbox', id: 'NB-preference-story-sideoption-' + label, name: 'show_sideoption_' + label }),
                                 $.make('label', { 'for': 'NB-preference-story-sideoption-' + label }, label_title)
@@ -805,6 +814,17 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         })),
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Story side options buttons'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-youtube-captions' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-youtube-captions', type: 'checkbox', name: 'youtube_captions' }),
+                                $.make('label', { 'for': 'NB-preference-youtube-captions' }, 'Enable captions/subtitles for YouTube videos')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'YouTube Captions'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-highlights' }, [
@@ -1045,6 +1065,18 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=show_trending_sites]', $modal).each(function () {
+            if (NEWSBLUR.Preferences.show_trending_sites) {
+                $(this).prop('checked', true);
+                return false;
+            }
+        });
+        $('input[name=youtube_captions]', $modal).each(function () {
+            if (NEWSBLUR.Preferences.youtube_captions) {
+                $(this).prop('checked', true);
+                return false;
+            }
+        });
         $('input[name=open_feed_action]', $modal).each(function () {
             if ($(this).val() == NEWSBLUR.Preferences.open_feed_action) {
                 $(this).prop('checked', true);
@@ -1165,7 +1197,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
-        _.each(["email", "save", "train", "share", "related"], function (sideoption) {
+        _.each(["email", "save", "train", "share", "related", "ask_ai"], function (sideoption) {
             var sideoption_name = "show_sideoption_" + sideoption;
             $('input#NB-preference-story-sideoption-' + sideoption, $modal).prop('checked', NEWSBLUR.Preferences[sideoption_name]);
         });
@@ -1352,7 +1384,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 NEWSBLUR.app.feed_list.make_social_feeds();
             }
             if (self.original_preferences['show_global_shared_stories'] != form['show_global_shared_stories'] ||
-                self.original_preferences['show_infrequent_site_stories'] != form['show_infrequent_site_stories']) {
+                self.original_preferences['show_infrequent_site_stories'] != form['show_infrequent_site_stories'] ||
+                self.original_preferences['show_trending_sites'] != form['show_trending_sites']) {
                 NEWSBLUR.app.feed_list.toggle_filter_feeds();
             }
             if (self.original_preferences['ssl'] != form['ssl']) {

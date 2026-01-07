@@ -1,5 +1,5 @@
 ---
-# File: main.yml - Handlers for Consul
+# File: main.yml - Handlers for Consul and Elasticsearch
 
 - name: reload consul configuration
   become: yes
@@ -7,3 +7,11 @@
     name: consul
     state: reloaded
   listen: reload consul
+
+- name: restart elasticsearch container
+  become: yes
+  docker_container:
+    name: elasticsearch
+    state: started
+    restart: yes
+  listen: restart elasticsearch

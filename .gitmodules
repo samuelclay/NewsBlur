@@ -1,0 +1,3 @@
+[submodule ".claude/skills/ios-simulator-skill"]
+	path = .claude/skills/ios-simulator-skill
+	url = https://github.com/conorluddy/ios-simulator-skill.git

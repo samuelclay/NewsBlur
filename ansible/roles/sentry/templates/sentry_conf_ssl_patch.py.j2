@@ -1,0 +1,9 @@
+# SSL/TLS settings for Sentry behind reverse proxy (HAProxy)
+# This configuration is appended to sentry/sentry.conf.py by Ansible
+
+# Enable SSL proxy headers when Sentry is behind HAProxy/nginx
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = True

@@ -30,10 +30,12 @@ from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierText,
     MClassifierTitle,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
+    apply_classifier_texts,
     apply_classifier_titles,
 )
 from apps.profile.models import MSentEmail, Profile
@@ -892,6 +894,7 @@ class MSocialProfile(mongo.Document):
             (MClassifierTitle, "title"),
             (MClassifierAuthor, "author"),
             (MClassifierTag, "tag"),
+            (MClassifierText, "text"),
             (MClassifierFeed, "feed_id"),
         ]:
             scores[facet] = calculate_scores(cls, facet)
@@ -1605,6 +1608,9 @@ class MSocialSubscription(mongo.Document):
         classifier_tags = list(
             MClassifierTag.objects(user_id=self.user_id, social_user_id=self.subscription_user_id)
         )
+        classifier_texts = list(
+            MClassifierText.objects(user_id=self.user_id, social_user_id=self.subscription_user_id)
+        )
         # Merge with feed specific classifiers
         if story_feed_ids:
             classifier_feeds = classifier_feeds + list(
@@ -1619,6 +1625,9 @@ class MSocialSubscription(mongo.Document):
             classifier_tags = classifier_tags + list(
                 MClassifierTag.objects(user_id=self.user_id, feed_id__in=story_feed_ids)
             )
+            classifier_texts = classifier_texts + list(
+                MClassifierText.objects(user_id=self.user_id, feed_id__in=story_feed_ids)
+            )
 
         for story in stories:
             scores = {
@@ -1627,11 +1636,16 @@ class MSocialSubscription(mongo.Document):
                 ),
                 "author": apply_classifier_authors(classifier_authors, story),
                 "tags": apply_classifier_tags(classifier_tags, story),
-                "title": apply_classifier_titles(classifier_titles, story),
+                "text": apply_classifier_texts(classifier_texts, story),
+                "title": (
+                    apply_classifier_titles(classifier_titles, story)
+                    if user_profile.premium_available_text_classifiers
+                    else 0
+                ),
             }
 
-            max_score = max(scores["author"], scores["tags"], scores["title"])
-            min_score = min(scores["author"], scores["tags"], scores["title"])
+            max_score = max(scores["author"], scores["tags"], scores["title"], scores["text"])
+            min_score = min(scores["author"], scores["tags"], scores["title"], scores["text"])
 
             if max_score > 0:
                 feed_scores["positive"] += 1

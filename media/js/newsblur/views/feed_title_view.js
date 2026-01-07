@@ -138,7 +138,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                     <div class="NB-feedbar-discover-icon"></div>\
                     <% if (feed.get("similar_feeds") && feed.get("similar_feeds").length) { %>\
                         <% _.map(feed.get("similar_feeds"), (feed_id) => { %>\
-                            <img class="feed_favicon" src="<%= $.favicon(feed_id) %>">\
+                            <%= $.favicon_html(feed_id) %>\
                         <% }); %>\
                     <% } else { %>\
                         <span class="NB-feedbar-discover-text">Related</span>\
@@ -147,7 +147,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                 </div>\
               <% } %>\
           <% } %>\
-          <img class="feed_favicon" src="<%= $.favicon(feed) %>" <% if (type == "story") { %>role="button"<% } %>>\
+          <%= $.favicon_html(feed, { role: type == "story" ? "button" : null }) %>\
           <span class="feed_title">\
             <%= feed.get("feed_title") %>\
           </span>\
@@ -353,10 +353,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         e.preventDefault();
         e.stopPropagation();
 
-        if (NEWSBLUR.reader.get_unread_view_name() != "starred" &&
-            (this.model.get('has_exception') && this.model.get('exception_type') == 'feed')) {
-            NEWSBLUR.reader.open_feed_exception_modal(this.model.id);
-        } else if (this.model.is_search()) {
+        if (this.model.is_search()) {
             NEWSBLUR.reader.open_saved_search({ search_model: this.model, $feed: this.$el });
         } else if (this.model.is_social()) {
             NEWSBLUR.reader.open_social_stories(this.model.id, { force: true, $feed: this.$el });

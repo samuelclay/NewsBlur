@@ -9,7 +9,7 @@ DATABASES["default"] = {
     "ENGINE": "django.db.backends.postgresql_psycopg2",
     "USER": "newsblur",
     "PASSWORD": "newsblur",
-    "HOST": "db_postgres" if DOCKERBUILD else "localhost",
+    "HOST": "newsblur_db_postgres" if DOCKERBUILD else "localhost",
     "PORT": "5432",
     "TEST": {
         "NAME": "test_newsblur",
@@ -57,7 +57,7 @@ if DOCKERBUILD:
     MONGO_PORT = 29019
     MONGO_DB = {
         "name": "newsblur_test",
-        "host": "db_mongo:29019",
+        "host": "newsblur_db_mongo:29019",
     }
 
 else:

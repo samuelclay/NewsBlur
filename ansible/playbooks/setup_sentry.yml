@@ -12,9 +12,10 @@
     - { role: "ufw", tags: "ufw" }
     - { role: "docker", tags: "docker" }
     - { role: "repo", tags: ["repo", "pull"] }
-    - { role: "dnsmasq", tags: "dnsmasq" }
-    - { role: "consul", tags: "consul" }
-    - { role: "consul-client", tags: "consul" }
-    - { role: "node-exporter", tags: ["node-exporter", "metrics"] }
+    # Don't install dnsmasq on sentry because it messes with dns in the containers, plus this db gets its own dns via dnsimple
+    # - { role: "dnsmasq", tags: "dnsmasq" }
+    # - { role: "consul", tags: "consul" }
+    # - { role: "consul-client", tags: "consul" }
+    # - { role: "node-exporter", tags: ["node-exporter", "metrics"] }
 
     - { role: "sentry", tags: "sentry" }

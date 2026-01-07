@@ -16,8 +16,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-title": "click_link_in_story",
         "mouseenter .NB-feed-story-manage-icon": "mouseenter_manage_icon",
         "mouseleave .NB-feed-story-manage-icon": "mouseleave_manage_icon",
-        "mouseenter .NB-sideoption-thirdparty": "mouseenter_thirdparty",
-        "mouseleave .NB-sideoption-thirdparty": "mouseleave_thirdparty",
+        "mouseenter .NB-feed-story-train": "mouseenter_sideoption_train",
+        "mouseleave .NB-feed-story-train": "mouseleave_sideoption_train",
+        "mouseenter .NB-feed-story-ask-ai": "mouseenter_sideoption_ask_ai",
+        "mouseleave .NB-feed-story-ask-ai": "mouseleave_sideoption_ask_ai",
         "contextmenu .NB-feed-story-header": "show_manage_menu_rightclick",
         "mouseup .NB-story-content-wrapper": "mouseup_check_selection",
         "click .NB-feed-story-manage-icon": "show_manage_menu",
@@ -26,17 +28,25 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag": "save_classifier",
         "click .NB-feed-story-author": "save_classifier",
         "click .NB-feed-story-train": "open_story_trainer",
-        "click .NB-feed-story-email": "maybe_open_email",
+        "click .NB-feed-story-email": "open_email",
+        "click .NB-sideoption-sharing": "click_sharing_service",
         "click .NB-feed-story-save": "toggle_starred",
         "click .NB-story-comments-label": "scroll_to_comments",
         "click .NB-story-content-expander": "expand_story",
         "click .NB-highlight-selection": "highlight_selected_text",
         "click .NB-unhighlight-selection": "unhighlight_selected_text",
-        "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog"
+        "click .NB-train-selection": "train_selected_text",
+        "click .NB-classifier-highlight-positive": "show_classifier_highlight_menu",
+        "click .NB-classifier-highlight-negative": "show_classifier_highlight_menu",
+        "click .NB-search-highlight": "show_search_highlight_menu",
+        "click .NB-search-site-selection": "search_selected_text_site",
+        "click .NB-search-folder-selection": "search_selected_text_folder",
+        "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog",
+        "click .NB-feed-story-ask-ai": "show_ask_ai_menu"
     },
 
     initialize: function () {
-        _.bindAll(this, 'mouseleave', 'mouseenter', 'mouseup_check_selection', 'highlight_selected_text', 'unhighlight_selected_text');
+        _.bindAll(this, 'mouseleave', 'mouseenter', 'mouseup_check_selection', 'highlight_selected_text', 'unhighlight_selected_text', 'search_selected_text_site', 'search_selected_text_folder');
         this.model.bind('change', this.toggle_classes, this);
         this.model.bind('change:read_status', this.toggle_read_status, this);
         this.model.bind('change:selected', this.toggle_selected, this);
@@ -233,6 +243,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_save: NEWSBLUR.assets.preference("show_sideoption_save"),
             show_sideoption_share: NEWSBLUR.assets.preference("show_sideoption_share"),
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
+            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai"),
+            sharing_services: NEWSBLUR.assets.third_party_sharing_services,
         };
     },
 
@@ -240,7 +252,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         <div class="NB-feed-story-header-feed">\
             <% if (feed) { %>\
                 <div class="NB-feed-story-feed">\
-                    <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                    <%= $.favicon_html(feed) %>\
                     <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
                 </div>\
             <% } %>\
@@ -299,10 +311,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         <div class="NB-feed-story-shares-container"></div>\
         <div class="NB-story-content-container">\
             <div class="NB-story-content-wrapper <% if (truncatable) { %>NB-story-content-truncatable<% } %>">\
-                <div class="NB-feed-story-content <% if (feed && feed.get("is_newsletter")) { %>NB-newsletter<% } %>">\
-                    <% if (!options.skip_content) { %>\
-                        <%= story.story_content() %>\
-                    <% } %>\
+                <div class="NB-story-content-positioning-wrapper">\
+                    <div class="NB-feed-story-content <% if (feed && feed.get("is_newsletter")) { %>NB-newsletter<% } %>">\
+                        <% if (!options.skip_content) { %>\
+                            <%= story.story_content() %>\
+                        <% } %>\
+                    </div>\
                 </div>\
                 <div class="NB-story-content-expander" role="button">\
                     <div class="NB-story-content-expander-inner">\
@@ -318,24 +332,25 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <% if (show_sideoption_email) { %>\
                     <div class="NB-sideoption NB-feed-story-email" role="button">\
                         <div class="NB-sideoption-title">Email</div>\
-                        <div class="NB-sideoption-thirdparty NB-sideoption-icon NB-sideoption-icon-email">&nbsp;</div>\
-                        <div class="NB-flex-break"></div>\
-                        <div class="NB-sideoption-thirdparty-services">\
-                            <div class="NB-sideoption-icons">\
-                                <% _.each(NEWSBLUR.assets.third_party_sharing_services, function(label, key) { %>\
-                                    <% if (NEWSBLUR.Preferences["story_share_"+key]) { %>\
-                                        <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-<%= key %>" data-service-name="<%= key %>" data-service-label="<%= label %>" role="button">\
-                                        </div>\
-                                    <% } %>\
-                                <% }) %>\
-                            </div>\
-                        </div>\
+                        <div class="NB-sideoption-icon NB-sideoption-icon-email">&nbsp;</div>\
                     </div>\
                 <% } %>\
+                <% _.each(sharing_services, function(label, key) { %>\
+                    <% if (NEWSBLUR.Preferences["story_share_"+key]) { %>\
+                        <div class="NB-sideoption NB-sideoption-sharing NB-sideoption-sharing-<%= key %>" data-service-name="<%= key %>" role="button">\
+                            <div class="NB-sideoption-title"><%= label %></div>\
+                            <div class="NB-sideoption-icon NB-sideoption-icon-<%= key %>">&nbsp;</div>\
+                        </div>\
+                    <% } %>\
+                <% }) %>\
                 <% if (show_sideoption_train) { %>\
                     <div class="NB-sideoption NB-feed-story-train" role="button">\
                         <div class="NB-sideoption-title">Train</div>\
-                        <div class="NB-sideoption-icon">&nbsp;</div>\
+                        <div class="NB-sideoption-icon NB-sideoption-icon-train">&nbsp;</div>\
+                        <div class="NB-sideoption-writerules">\
+                            <div class="NB-sideoption-thirdparty NB-sideoption-thirdparty-writerules" data-action="write-rules" role="button">\
+                            </div>\
+                        </div>\
                     </div>\
                 <% } %>\
                 <% if (show_sideoption_save) { %>\
@@ -356,6 +371,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <div class="NB-sideoption NB-feed-story-discover" role="button">\
                         <div class="NB-sideoption-title">Related</div>\
                         <div class="NB-sideoption-icon">&nbsp;</div>\
+                    </div>\
+                <% } %>\
+                <% if (show_sideoption_ask_ai) { %>\
+                    <div class="NB-sideoption NB-feed-story-ask-ai" role="button">\
+                        <div class="NB-sideoption-title">Ask AI</div>\
+                        <div class="NB-sideoption-icon NB-sideoption-icon-ask-ai">&nbsp;</div>\
                     </div>\
                 <% } %>\
             </div>\
@@ -453,6 +474,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.$el.addClass('NB-hidden');
             this.model.set('visible', false);
         }
+
+        // Refresh classifiers reference and reapply highlights when classifiers change
+        this.classifiers = NEWSBLUR.assets.classifiers[this.model.get('story_feed_id')];
+        this.apply_starred_story_selections(true);
     },
 
     // ============
@@ -791,24 +816,30 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     },
 
-    mouseenter_thirdparty: function (event) {
-        var serviceName = $(event.currentTarget).data("service-label");
-        $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-title").text(serviceName);
-        $(event.currentTarget).addClass("NB-hover");
-        $(event.currentTarget).siblings(".NB-sideoption-icon").addClass("NB-dimmed");
-        if ($(event.currentTarget).closest(".NB-sideoption-thirdparty-services").length) {
-            $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-icon-email").addClass("NB-dimmed");
-        } else {
-            $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
-        }
+    mouseenter_sideoption_train: function (event) {
+        var $sideoption = $(event.currentTarget);
+        $sideoption.on('mousemove.train', _.bind(function (e) {
+            var $target = $(e.target);
+            var $thirdparty = $target.closest('.NB-sideoption-thirdparty-writerules');
+
+            if ($thirdparty.length) {
+                $sideoption.find(".NB-sideoption-title").text("AI Filter");
+                $thirdparty.addClass("NB-hover");
+                $sideoption.find(".NB-sideoption-icon-train").addClass("NB-dimmed");
+            } else {
+                $sideoption.find(".NB-sideoption-title").text("Train");
+                $sideoption.find('.NB-sideoption-thirdparty-writerules').removeClass("NB-hover");
+                $sideoption.find(".NB-sideoption-icon-train").removeClass("NB-dimmed");
+            }
+        }, this));
     },
 
-    mouseleave_thirdparty: function (event) {
-        $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-title").text("Email");
-
-        $(event.currentTarget).siblings(".NB-sideoption-icon").removeClass("NB-dimmed");
-        $(event.currentTarget).removeClass("NB-hover");
-        $(event.currentTarget).closest(".NB-sideoption").find(".NB-sideoption-icon-email").removeClass("NB-dimmed");
+    mouseleave_sideoption_train: function (event) {
+        var $sideoption = $(event.currentTarget);
+        $sideoption.off('mousemove.train');
+        $sideoption.find(".NB-sideoption-title").text("Train");
+        $sideoption.find('.NB-sideoption-thirdparty-writerules').removeClass("NB-hover");
+        $sideoption.find(".NB-sideoption-icon-train").removeClass("NB-dimmed");
     },
 
     mouseup_check_selection: function (e) {
@@ -820,6 +851,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
         if ($(e.target).hasClass("NB-highlight")) {
             this.show_unhighlight_tooltip($(e.target));
+            return;
+        }
+        if ($(e.target).hasClass("NB-classifier-highlight-positive") ||
+            $(e.target).hasClass("NB-classifier-highlight-negative")) {
+            // Let the click handler deal with classifier highlights
+            return;
+        }
+        if ($(e.target).hasClass("NB-search-highlight")) {
+            // Let the click handler deal with search highlights
             return;
         }
 
@@ -864,7 +904,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             "done": _.bind(function () {
                 var $selection = $(".NB-starred-story-selection-highlight", $doc);
                 console.log(['$selection', $selection, $selection.first().get(0), $selection.last().get(0)]);
-                $selection.attr('title', "<div class='NB-highlight-selection'>Highlight</div>");
+                $selection.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
                 var $t = tippy($selection.get(0), {
                     // delay: 100,
                     appendTo: this.el,
@@ -908,7 +948,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     show_unhighlight_tooltip: function ($highlight) {
         this.$highlight = $highlight;
-        $highlight.attr('title', "<div class='NB-unhighlight-selection'>Unhighlight</div>");
+        $highlight.attr('title', "<span class='NB-unhighlight-selection'>Unhighlight</span><span class='NB-train-selection'>Train</span><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
         var $t = tippy($highlight.get(0), {
             // delay: 100,
             appendTo: this.el,
@@ -931,6 +971,44 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     },
 
+    show_classifier_highlight_menu: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $mark = $(e.currentTarget);
+        var text = $mark.text();
+        console.log(['show_classifier_highlight_menu', text, $mark]);
+
+        // Set the serialized_highlight to the text from the mark
+        this.serialized_highlight = _.string.trim(text);
+
+        // Close any existing tooltip
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+
+        // Show the highlight/train/search menu
+        $mark.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
+        var $t = tippy($mark.get(0), {
+            appendTo: this.el,
+            arrow: true,
+            arrowType: 'round',
+            size: 'large',
+            duration: 350,
+            animation: 'scale',
+            trigger: 'click',
+            interactive: true,
+            performance: true,
+            onHide: _.bind(function () {
+                // Cleanup if needed
+            }, this)
+        });
+        this.tooltip = $t;
+        _.defer(function () {
+            if ($t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
+        });
+    },
+
     highlight_selected_text: function () {
         var highlights = this.model.get('highlights');
         if (!highlights || !$.isArray(highlights)) highlights = [];
@@ -949,14 +1027,24 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
 
     unhighlight_selected_text: function (el) {
-        var remove_highlight = this.$highlight.text();
+        var highlight_index = this.$highlight.attr('data-highlight-index');
         var highlights = this.model.get('highlights');
         if (!highlights || !$.isArray(highlights)) highlights = [];
-        highlights = _.filter(highlights, function (value) { return !_.string.contains(value, remove_highlight); });
+
+        if (highlight_index !== undefined) {
+            // Remove the highlight at the specific index
+            var remove_highlight = highlights[parseInt(highlight_index)];
+            highlights = _.filter(highlights, function (value) { return value !== remove_highlight; });
+            console.log(['Unhighlighting by index', highlight_index, remove_highlight, highlights]);
+        } else {
+            // Fallback to old method if no index found
+            var remove_highlight = this.$highlight.text();
+            highlights = _.filter(highlights, function (value) { return !_.string.contains(value, remove_highlight); });
+            console.log(['Unhighlighting by text', remove_highlight, highlights]);
+        }
 
         this.model.set('highlights', highlights, { silent: true });
         this.model.trigger('change:highlights');
-        console.log(['UNhighlighting', remove_highlight, highlights]);
 
         if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
             this.tooltip.tooltips[0].hide();
@@ -967,23 +1055,272 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return true;
     },
 
+    train_selected_text: function () {
+        var feed_id = this.model.get('story_feed_id');
+        var options = {};
+        if (NEWSBLUR.reader.flags['social_view']) {
+            options['social_feed'] = true;
+            options['feed_loaded'] = true;
+        }
+        if (this.serialized_highlight) {
+            options['selected_text'] = this.serialized_highlight;
+        }
+
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+
+        // Clear the temporary selection highlight
+        var $doc = this.$(".NB-feed-story-content");
+
+        // Remove all temporary highlight marks
+        this.$(".NB-starred-story-selection-highlight").each(function () {
+            $(this).contents().unwrap();
+        });
+        this.$("[data-tippy]").each(function () {
+            $(this).contents().unwrap();
+        });
+
+        $doc.removeAttr('id');
+
+        // Restore permanent highlights
+        this.apply_starred_story_selections();
+
+        // Clear the window selection
+        if (window.getSelection) {
+            window.getSelection().removeAllRanges();
+        } else if (document.selection) {
+            document.selection.empty();
+        }
+
+        NEWSBLUR.reader.open_story_trainer(this.model.id, feed_id, options);
+
+        return true;
+    },
+
+    show_search_highlight_menu: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $mark = $(e.currentTarget);
+        var text = $mark.text();
+
+        // Set the serialized_highlight to the text from the mark
+        this.serialized_highlight = _.string.trim(text);
+
+        // Close any existing tooltip
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+
+        // Show the highlight/train/search menu
+        $mark.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
+        var $t = tippy($mark.get(0), {
+            appendTo: this.el,
+            arrow: true,
+            arrowType: 'round',
+            size: 'large',
+            duration: 350,
+            animation: 'scale',
+            trigger: 'click',
+            interactive: true,
+            performance: true,
+            onHide: _.bind(function () {
+                // Cleanup if needed
+            }, this)
+        });
+        this.tooltip = $t;
+        _.defer(function () {
+            if ($t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
+        });
+    },
+
+    search_selected_text_site: function () {
+        // Search current site/feed for the selected text
+        var search_text = this.serialized_highlight;
+        if (!search_text) return false;
+
+        // Wrap in quotes if it contains spaces (phrase search)
+        if (search_text.indexOf(' ') !== -1) {
+            search_text = '"' + search_text + '"';
+        }
+
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+
+        // Clear the temporary selection highlight
+        this.$(".NB-starred-story-selection-highlight").each(function () {
+            $(this).contents().unwrap();
+        });
+        this.$("[data-tippy]").each(function () {
+            $(this).contents().unwrap();
+        });
+
+        // Set search flags and reload current context (stays in current site/feed)
+        NEWSBLUR.reader.flags.searching = true;
+        NEWSBLUR.reader.flags.search = search_text;
+        window.history.pushState({}, "", $.updateQueryString('search', search_text, window.location.pathname));
+        NEWSBLUR.reader.reload_feed({ force: true, search: search_text });
+        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
+
+        return true;
+    },
+
+    search_selected_text_folder: function () {
+        // Search all site stories (folder-level) for the selected text
+        var search_text = this.serialized_highlight;
+        if (!search_text) return false;
+
+        // Wrap in quotes if it contains spaces (phrase search)
+        if (search_text.indexOf(' ') !== -1) {
+            search_text = '"' + search_text + '"';
+        }
+
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+
+        // Clear the temporary selection highlight
+        this.$(".NB-starred-story-selection-highlight").each(function () {
+            $(this).contents().unwrap();
+        });
+        this.$("[data-tippy]").each(function () {
+            $(this).contents().unwrap();
+        });
+
+        // Open river stories (all site stories / folder-level) with search query
+        NEWSBLUR.reader.flags.searching = true;
+        NEWSBLUR.reader.flags.search = search_text;
+        window.history.pushState({}, "", $.updateQueryString('search', search_text, window.location.pathname));
+        NEWSBLUR.reader.open_river_stories(null, null, { force: true, search: search_text });
+        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
+
+        return true;
+    },
+
     apply_starred_story_selections: function (force) {
         var highlights = this.model.user_highlights();
+        var text_classifiers = this.classifiers && this.classifiers.texts ? _.keys(this.classifiers.texts) : [];
+        var search_query = NEWSBLUR.reader.flags.search;
+
         if (!force) {
-            if (!highlights || !highlights.length) return;
+            if ((!highlights || !highlights.length) && !text_classifiers.length && !search_query) return;
         }
-        console.log(['Applying highlights', highlights]);
+        // console.log(['Applying highlights', highlights, 'text_classifiers', text_classifiers, 'search_query', search_query]);
 
         var $doc = this.$(".NB-feed-story-content");
         $doc.unmark();
 
         $doc.attr('id', 'NB-highlighting');
-        $doc.mark(highlights, {
-            "className": "NB-highlight",
-            "separateWordSearch": false,
-            "acrossElements": true
-        });
+
+        // Apply user saved highlights
+        _.each(highlights, _.bind(function (highlight, index) {
+            $doc.mark(highlight, {
+                "className": "NB-highlight",
+                "separateWordSearch": false,
+                "acrossElements": true,
+                "each": function (element) {
+                    $(element).attr('data-highlight-index', index);
+                }
+            });
+        }, this));
+
+        // Apply text classifier highlights
+        _.each(text_classifiers, _.bind(function (classifier_text) {
+            var classifier_score = this.classifiers.texts[classifier_text];
+            var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+            $doc.mark(classifier_text, {
+                "className": className,
+                "separateWordSearch": false,
+                "acrossElements": true,
+                "caseSensitive": false
+            });
+        }, this));
+
+        // Apply search highlights (last, so they appear on top)
+        if (search_query) {
+            var search_terms = this.parse_search_query(search_query);
+            _.each(search_terms, _.bind(function (term) {
+                $doc.mark(term, {
+                    "className": "NB-search-highlight",
+                    "separateWordSearch": false,
+                    "acrossElements": true,
+                    "caseSensitive": false
+                });
+            }, this));
+        }
+
         $doc.removeAttr('id');
+    },
+
+    parse_search_query: function (query) {
+        // Extract quoted phrases and generate n-grams from unquoted terms
+        // Returns terms ordered longest-first for progressive highlighting
+        var terms = [];
+        var remaining = query;
+
+        // Common English stop words that shouldn't be highlighted individually
+        // These are only filtered for single-word terms, not phrases
+        var stop_words = [
+            'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+            'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been',
+            'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would',
+            'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need',
+            'it', 'its', 'this', 'that', 'these', 'those', 'i', 'you', 'he',
+            'she', 'we', 'they', 'what', 'which', 'who', 'whom', 'when', 'where',
+            'why', 'how', 'all', 'each', 'every', 'both', 'few', 'more', 'most',
+            'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same',
+            'so', 'than', 'too', 'very', 'just', 'also', 'now', 'here', 'there',
+            'then', 'once', 'if', 'about', 'into', 'through', 'during', 'before',
+            'after', 'above', 'below', 'between', 'under', 'again', 'further',
+            'any', 'because', 'being', 'get', 'got', 'him', 'her', 'his', 'hers',
+            'me', 'my', 'our', 'ours', 'their', 'them', 'up', 'down', 'out', 'off'
+        ];
+
+        // Extract quoted phrases first (strip the quotes)
+        // Handle straight quotes (") and curly/smart quotes (" ")
+        var phrase_regex = /[""\u201C\u201D]([^""\u201C\u201D]+)[""\u201C\u201D]/g;
+        var match;
+        while ((match = phrase_regex.exec(query)) !== null) {
+            terms.push(match[1]); // match[1] is the content without quotes
+            remaining = remaining.replace(match[0], '');
+        }
+
+        // Get individual words from remaining text, filtering out operators
+        var operators = ['AND', 'OR', 'NOT'];
+        var words = [];
+        var rawWords = remaining.trim().split(/\s+/);
+        _.each(rawWords, function (word) {
+            word = word.trim();
+            if (word && operators.indexOf(word.toUpperCase()) === -1) {
+                words.push(word);
+            }
+        });
+
+        // Generate all contiguous n-grams from longest to shortest
+        // For "a b c d e", generate: "a b c d e", then "a b c d", "b c d e",
+        // then "a b c", "b c d", "c d e", etc.
+        // Single-word stop words are filtered out to avoid highlighting common words
+        if (words.length > 1) {
+            for (var n = words.length; n >= 1; n--) {
+                for (var i = 0; i <= words.length - n; i++) {
+                    var ngram = words.slice(i, i + n).join(' ');
+                    // Filter out single-word stop words
+                    if (n === 1 && stop_words.indexOf(ngram.toLowerCase()) !== -1) {
+                        continue;
+                    }
+                    terms.push(ngram);
+                }
+            }
+        } else if (words.length === 1) {
+            // Only add single word if it's not a stop word
+            if (stop_words.indexOf(words[0].toLowerCase()) === -1) {
+                terms.push(words[0]);
+            }
+        }
+
+        return terms;
     },
 
     show_manage_menu_rightclick: function (e) {
@@ -1055,20 +1392,17 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         NEWSBLUR.reader.open_story_trainer(this.model.id, feed_id, options);
     },
 
-    maybe_open_email: function (e) {
-        // Check if target has .NB-sideoption-thirdparty class
-        if (!$(e.target).hasClass('NB-sideoption-thirdparty')) {
-            return this.open_email();
-        }
-
-        var service = $(e.target).data('service-name');
-        console.log(['maybe_open_email', e.target, service]);
+    click_sharing_service: function (e) {
+        var $sideoption = $(e.currentTarget);
+        var service = $sideoption.data('service-name');
         NEWSBLUR.reader.send_story_to_thirdparty(this.model.id, service);
 
-        if (service == 'copyurl') {
-            this.$(".NB-feed-story-email .NB-sideoption-title").text("Copied");
-        } else if (service == 'copytext') {
-            this.$(".NB-feed-story-email .NB-sideoption-title").text("Copied");
+        if (service == 'copyurl' || service == 'copytext') {
+            $sideoption.find(".NB-sideoption-title").text("Copied");
+            setTimeout(function () {
+                var label = NEWSBLUR.assets.third_party_sharing_services[service];
+                $sideoption.find(".NB-sideoption-title").text(label);
+            }, 1500);
         }
     },
 
@@ -1104,6 +1438,366 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
 
         this.discover_view.toggle_feed_story_discover_dialog(options);
+    },
+
+    get_ask_ai_prompt_text: function (question_id, fallback) {
+        var prompts = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_prompts) || [];
+        var match = _.find(prompts, function (prompt) {
+            return prompt.id === question_id;
+        });
+        return (match && match.short_text) || fallback;
+    },
+
+    mouseenter_sideoption_ask_ai: function () {
+        var menu_height = 400;
+        if (this.$('.NB-feed-story-ask-ai').offset().top > $(window).height() - menu_height) {
+            this.$('.NB-feed-story-ask-ai').addClass('NB-hover-inverse');
+        }
+    },
+
+    mouseleave_sideoption_ask_ai: function () {
+        this.$('.NB-feed-story-ask-ai').removeClass('NB-hover-inverse');
+    },
+
+    show_ask_ai_menu: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $button = this.$('.NB-feed-story-ask-ai');
+        var $menu = $('.NB-menu-ask-ai-container');
+
+        if ($menu.length && $menu.is(':visible') && $menu.data('story_id') == this.model.id) {
+            this.hide_ask_ai_menu();
+            return;
+        }
+
+        this.hide_ask_ai_menu();
+
+        var questions = [
+            {
+                id: 'summarize-group',
+                text: 'Summarize',
+                isGroup: true,
+                icon: 'paragraph',
+                children: [
+                    { id: 'sentence', text: 'Brief', detail: 'One sentence', icon: 'content-preview-s', level: 'low' },
+                    { id: 'bullets', text: 'Medium', detail: 'Bullet points', icon: 'content-preview-m', level: 'medium' },
+                    { id: 'paragraph', text: 'Detailed', detail: 'Full paragraph', icon: 'content-preview-l', level: 'high' }
+                ]
+            },
+            { id: 'context', text: this.get_ask_ai_prompt_text('context', "What's the context and background?"), icon: 'world' },
+            { id: 'people', text: this.get_ask_ai_prompt_text('people', 'Identify key people and relationships'), icon: 'subscribers' },
+            { id: 'arguments', text: this.get_ask_ai_prompt_text('arguments', 'What are the main arguments?'), icon: 'venn' },
+            { id: 'factcheck', text: this.get_ask_ai_prompt_text('factcheck', 'Fact check this story'), icon: 'search' }
+        ];
+
+        var menu_template = _.template('\
+            <div class="NB-menu-ask-ai-container <% if (inverse) { %>NB-inverse<% } %>">\
+                <div class="NB-menu-ask-ai">\
+                    <ul class="NB-menu-ask-ai-options">\
+                        <% _.each(questions, function(q) { %>\
+                            <% if (q.isGroup) { %>\
+                                <li class="NB-menu-ask-ai-group">\
+                                    <div class="NB-menu-ask-ai-group-header">\
+                                        <img src="/media/img/icons/nouns/<%= q.icon %>.svg" class="NB-menu-ask-ai-icon" />\
+                                        <span class="NB-menu-ask-ai-text"><%= q.text %></span>\
+                                    </div>\
+                                    <div class="NB-menu-ask-ai-segmented-control">\
+                                        <% _.each(q.children, function(child) { %>\
+                                            <div class="NB-menu-ask-ai-segment NB-menu-ask-ai-level-<%= child.level %>" data-question-id="<%= child.id %>">\
+                                                <img src="/media/img/icons/nouns/<%= child.icon %>.svg" class="NB-menu-ask-ai-segment-icon" />\
+                                                <div class="NB-menu-ask-ai-segment-content">\
+                                                    <span class="NB-menu-ask-ai-segment-text"><%= child.text %></span>\
+                                                    <span class="NB-menu-ask-ai-segment-detail"><%= child.detail %></span>\
+                                                </div>\
+                                            </div>\
+                                        <% }) %>\
+                                    </div>\
+                                </li>\
+                            <% } else { %>\
+                                <li class="NB-menu-ask-ai-option" data-question-id="<%= q.id %>">\
+                                    <img src="/media/img/icons/nouns/<%= q.icon %>.svg" class="NB-menu-ask-ai-icon" />\
+                                    <span class="NB-menu-ask-ai-text"><%= q.text %></span>\
+                                </li>\
+                            <% } %>\
+                        <% }) %>\
+                    </ul>\
+                    <div class="NB-menu-ask-ai-custom-input-wrapper">\
+                        <div class="NB-menu-ask-ai-voice-button" title="Record voice question">\
+                            <img src="/media/img/icons/nouns/microphone.svg" class="NB-menu-ask-ai-voice-icon" />\
+                            <div class="NB-menu-ask-ai-recording-indicator">\
+                                <div class="NB-recording-bar"></div>\
+                                <div class="NB-recording-bar"></div>\
+                                <div class="NB-recording-bar"></div>\
+                                <div class="NB-recording-bar"></div>\
+                            </div>\
+                        </div>\
+                        <input type="text" class="NB-menu-ask-ai-custom-input" placeholder="Ask a question..." />\
+                        <div class="NB-menu-ask-ai-submit-menu NB-disabled" data-model="opus">\
+                            <div class="NB-menu-ask-ai-custom-submit">Ask</div>\
+                            <div class="NB-menu-ask-ai-submit-dropdown-trigger" title="Choose model">\
+                                <span class="NB-dropdown-arrow">▾</span>\
+                            </div>\
+                            <div class="NB-menu-ask-ai-model-dropdown">\
+                                <div class="NB-model-option NB-selected" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude Opus 4.5</div>\
+                                <div class="NB-model-option" data-model="gpt-5.1"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.1</div>\
+                                <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
+                                <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
+                            </div>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>\
+        ');
+
+        var inverse = $button.hasClass('NB-hover-inverse');
+        $menu = $(menu_template({
+            questions: questions,
+            inverse: inverse
+        }));
+
+        $menu.data('story_id', this.model.id);
+        $menu.data('story_view', this);
+
+        // Set model from preference (default to opus)
+        var saved_model = NEWSBLUR.assets.preference('ask_ai_model') || 'opus';
+        var $submit_menu = $menu.find('.NB-menu-ask-ai-submit-menu');
+        $submit_menu.data('model', saved_model);
+        $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option').removeClass('NB-selected');
+        $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option[data-model="' + saved_model + '"]').addClass('NB-selected');
+
+        $('body').append($menu);
+
+        var button_offset = $button.offset();
+        var button_height = $button.outerHeight();
+        var button_width = $button.outerWidth();
+        var menu_height = $menu.outerHeight();
+        var menu_width = $menu.outerWidth();
+
+        // Calculate centered position relative to button
+        var center_left = button_offset.left + (button_width / 2) - (menu_width / 2);
+
+        // Check if menu would go off the right edge of the screen
+        var window_width = $(window).width();
+        if (center_left + menu_width > window_width) {
+            center_left = window_width - menu_width - 10; // 10px padding from edge
+        }
+
+        // Check if menu would go off the left edge of the screen
+        if (center_left < 10) {
+            center_left = 10; // 10px padding from edge
+        }
+
+        if (inverse) {
+            $menu.css({
+                'top': button_offset.top - menu_height,
+                'left': center_left
+            });
+        } else {
+            $menu.css({
+                'top': button_offset.top + button_height + 5,
+                'left': center_left
+            });
+        }
+
+        $menu.fadeIn(200);
+
+        // Keep button highlighted while menu is open
+        $button.addClass('NB-active');
+
+        // Auto-focus the custom question input
+        _.delay(function () {
+            $menu.find('.NB-menu-ask-ai-custom-input').focus();
+        }, 250);
+
+        // Enable/disable Ask button based on input content
+        $menu.find('.NB-menu-ask-ai-custom-input').on('input', _.bind(function (ev) {
+            var $input = $(ev.currentTarget);
+            var $submit_menu = $menu.find('.NB-menu-ask-ai-submit-menu');
+            var has_text = $input.val().trim().length > 0;
+
+            if (has_text) {
+                $submit_menu.removeClass('NB-disabled');
+            } else {
+                $submit_menu.addClass('NB-disabled');
+            }
+        }, this));
+
+        $menu.find('.NB-menu-ask-ai-option, .NB-menu-ask-ai-segment').on('click', _.bind(function (ev) {
+            var question_id = $(ev.currentTarget).data('question-id');
+            var model = $menu.find('.NB-menu-ask-ai-submit-menu').data('model');
+            this.handle_ask_ai_question(question_id, model);
+            this.hide_ask_ai_menu();
+        }, this));
+
+        // Model dropdown toggle
+        $menu.find('.NB-menu-ask-ai-submit-dropdown-trigger').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            $menu.find('.NB-menu-ask-ai-submit-menu').toggleClass('NB-dropdown-open');
+        }, this));
+
+        // Model selection in dropdown
+        $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            var $option = $(ev.currentTarget);
+            var model = $option.data('model');
+            var $submit_menu = $menu.find('.NB-menu-ask-ai-submit-menu');
+
+            // Update selected state
+            $menu.find('.NB-menu-ask-ai-model-dropdown .NB-model-option').removeClass('NB-selected');
+            $option.addClass('NB-selected');
+
+            // Store selected model and save preference
+            $submit_menu.data('model', model);
+            NEWSBLUR.assets.preference('ask_ai_model', model);
+
+            // Close dropdown
+            $submit_menu.removeClass('NB-dropdown-open');
+        }, this));
+
+        // Custom question input handlers
+        $menu.find('.NB-menu-ask-ai-custom-input').on('keypress', _.bind(function (ev) {
+            if (ev.which === 13) {  // Enter key
+                ev.preventDefault();
+                this.submit_custom_question_from_menu($menu);
+            }
+        }, this));
+
+        $menu.find('.NB-menu-ask-ai-custom-input').on('keydown', _.bind(function (ev) {
+            if (ev.which === 27) {  // Escape key
+                ev.preventDefault();
+                this.hide_ask_ai_menu();
+            }
+        }, this));
+
+        $menu.find('.NB-menu-ask-ai-custom-submit').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            this.submit_custom_question_from_menu($menu);
+        }, this));
+
+        // Voice recording button handler
+        $menu.find('.NB-menu-ask-ai-voice-button').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            this.start_voice_recording_for_menu($menu);
+        }, this));
+
+        $(document).on('click.ask_ai_menu', _.bind(function (ev) {
+            if (!$(ev.target).closest('.NB-menu-ask-ai-container, .NB-feed-story-ask-ai').length) {
+                this.hide_ask_ai_menu();
+            }
+        }, this));
+
+        return false;
+    },
+
+    hide_ask_ai_menu: function () {
+        // Stop any active voice recording before closing
+        var $menu = $('.NB-menu-ask-ai-container');
+        var recorder = $menu.data('voice_recorder');
+        if (recorder) {
+            recorder.cleanup();
+        }
+
+        $('.NB-feed-story-ask-ai').removeClass('NB-active');
+        $menu.fadeOut(100, function () {
+            $(this).remove();
+        });
+        $(document).off('click.ask_ai_menu');
+    },
+
+    submit_custom_question_from_menu: function ($menu) {
+        var custom_question = $menu.find('.NB-menu-ask-ai-custom-input').val();
+        var transcription_error = $menu.data('transcription_error');
+        var model = $menu.find('.NB-menu-ask-ai-submit-menu').data('model');
+
+        // Allow opening with empty question if there's a transcription error to display
+        if ((!custom_question || !custom_question.trim()) && !transcription_error) {
+            return;
+        }
+
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question, transcription_error, model);
+        this.hide_ask_ai_menu();
+
+        // Clear the stored error
+        $menu.removeData('transcription_error');
+    },
+
+    handle_ask_ai_question: function (question_id, model) {
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, question_id, null, null, model);
+    },
+
+    start_voice_recording_for_menu: function ($menu) {
+        var self = this;
+        var $voice_button = $menu.find('.NB-menu-ask-ai-voice-button');
+        var $input = $menu.find('.NB-menu-ask-ai-custom-input');
+        var $submit_button = $menu.find('.NB-menu-ask-ai-custom-submit');
+
+        // Get or create recorder instance for this menu
+        var recorder = $menu.data('voice_recorder');
+        if (!recorder) {
+            recorder = new NEWSBLUR.VoiceRecorder({
+                on_recording_start: function () {
+                    $voice_button.addClass('NB-recording');
+                    $input.attr('placeholder', 'Recording...');
+                    $voice_button.attr('title', 'Stop recording');
+                },
+                on_recording_stop: function () {
+                    $voice_button.removeClass('NB-recording');
+                    $voice_button.addClass('NB-transcribing');
+                    $input.attr('placeholder', 'Transcribing...');
+                    $voice_button.attr('title', 'Transcribing audio');
+                },
+                on_transcription_start: function () {
+                    // Already showing transcribing state
+                },
+                on_transcription_complete: function (text) {
+                    $voice_button.removeClass('NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+                    $input.attr('placeholder', 'Ask a question...');
+
+                    // Set the transcribed text and submit the question automatically
+                    $input.val(text);
+                    $submit_button.removeClass('NB-disabled');
+
+                    // Auto-submit the question
+                    _.delay(function () {
+                        self.submit_custom_question_from_menu($menu);
+                    }, 100);
+                },
+                on_transcription_error: function (error) {
+                    $voice_button.removeClass('NB-recording NB-transcribing');
+                    $voice_button.attr('title', 'Record voice question');
+
+                    // Check if this is a quota/limit error
+                    var is_quota_error = error && (error.includes('limit') || error.includes('used all') || error.includes('reached'));
+
+                    if (is_quota_error) {
+                        // Store the error and open Ask AI view to display it
+                        $menu.data('transcription_error', error);
+                        $input.attr('placeholder', 'Quota exceeded');
+                        // Auto-submit to open Ask AI view which will show the full error
+                        _.delay(function () {
+                            self.submit_custom_question_from_menu($menu);
+                        }, 100);
+                    } else {
+                        // For other errors, show in placeholder
+                        $input.attr('placeholder', error || 'Error - please try again');
+                    }
+
+                    console.error('Voice transcription error:', error);
+                }
+            });
+            $menu.data('voice_recorder', recorder);
+        }
+
+        // Toggle recording
+        if (recorder.is_recording) {
+            recorder.stop_recording();
+        } else {
+            recorder.start_recording();
+        }
     }
 
 

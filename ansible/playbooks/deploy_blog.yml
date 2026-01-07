@@ -1,0 +1,14 @@
+---
+- name: DEPLOY -> blog
+  hosts: blogs
+  gather_facts: false
+  vars_files:
+    - ../env_vars/base.yml
+
+  tasks:
+    - name: Pull newsblur_web github
+      git:
+        repo: https://github.com/samuelclay/NewsBlur.git
+        dest: /srv/newsblur/
+        version: main
+      register: pulled

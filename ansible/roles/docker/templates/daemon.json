@@ -1,4 +1,10 @@
-{    
-    "dns": ["127.0.0.1"],
-    "dns-search": ["node.consul", "service.consul"]
+{
+    "dns-search": ["node.consul", "service.consul"],
+    "default-ulimits": {
+        "nofile": {
+            "Name": "nofile",
+            "Hard": 65536,
+            "Soft": 65536
+        }
+    }
 }

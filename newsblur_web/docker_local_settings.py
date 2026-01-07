@@ -32,7 +32,7 @@ DEBUG_ASSETS = True
 # down verbosity.
 DEBUG_QUERIES = DEBUG
 DEBUG_QUERIES_SUMMARY_ONLY = True
-# DEBUG_QUERIES_SUMMARY_ONLY = False
+DEBUG_QUERIES_SUMMARY_ONLY = False
 
 MEDIA_URL = "/media/"
 IMAGES_URL = "/imageproxy"
@@ -57,7 +57,7 @@ PRO_MINUTES_BETWEEN_FETCHES = 15
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://db_redis:6579/6",
+        "LOCATION": "redis://newsblur_db_redis:6579/6",
     },
 }
 
@@ -101,39 +101,39 @@ DATABASES = {
         #'ENGINE': 'django.db.backends.mysql',
         "USER": "newsblur",
         "PASSWORD": "newsblur",
-        "HOST": "db_postgres",
+        "HOST": "newsblur_db_postgres",
         "PORT": 5432,
     },
 }
 
-MONGO_DB = {"name": "newsblur", "host": "db_mongo:29019"}
+MONGO_DB = {"name": "newsblur", "host": "newsblur_db_mongo:29019"}
 MONGO_ANALYTICS_DB = {
     "name": "nbanalytics",
-    "host": "db_mongo:29019",
+    "host": "newsblur_db_mongo:29019",
 }
 
-MONGODB_SLAVE = {"host": "db_mongo"}
+MONGODB_SLAVE = {"host": "newsblur_db_mongo"}
 
 # Celery RabbitMQ/Redis Broker
-BROKER_URL = "redis://db_redis:6579/0"
+BROKER_URL = "redis://newsblur_db_redis:6579/0"
 CELERY_RESULT_BACKEND = BROKER_URL
 CELERY_WORKER_CONCURRENCY = 1
 
-REDIS_USER = {"host": "db_redis", "port": 6579}
-REDIS_PUBSUB = {"host": "db_redis", "port": 6579}
-REDIS_STORY = {"host": "db_redis", "port": 6579}
-REDIS_SESSIONS = {"host": "db_redis", "port": 6579}
+REDIS_USER = {"host": "newsblur_db_redis", "port": 6579}
+REDIS_PUBSUB = {"host": "newsblur_db_redis", "port": 6579}
+REDIS_STORY = {"host": "newsblur_db_redis", "port": 6579}
+REDIS_SESSIONS = {"host": "newsblur_db_redis", "port": 6579}
 
 CELERY_REDIS_DB_NUM = 4
 SESSION_REDIS_DB = 5
 
-ELASTICSEARCH_FEED_HOSTS = ["db_elasticsearch:9200"]
-ELASTICSEARCH_STORY_HOSTS = ["db_elasticsearch:9200"]
-ELASTICSEARCH_DISCOVER_HOSTS = ["db_elasticsearch:9200"]
+ELASTICSEARCH_FEED_HOSTS = ["newsblur_db_elasticsearch:9200"]
+ELASTICSEARCH_STORY_HOSTS = ["newsblur_db_elasticsearch:9200"]
+ELASTICSEARCH_DISCOVER_HOSTS = ["newsblur_db_elasticsearch:9200"]
 
-ELASTICSEARCH_FEED_HOST = "http://db_elasticsearch:9200"
-ELASTICSEARCH_STORY_HOST = "http://db_elasticsearch:9200"
-ELASTICSEARCH_DISCOVER_HOST = "http://db_elasticsearch:9200"
+ELASTICSEARCH_FEED_HOST = "http://newsblur_db_elasticsearch:9200"
+ELASTICSEARCH_STORY_HOST = "http://newsblur_db_elasticsearch:9200"
+ELASTICSEARCH_DISCOVER_HOST = "http://newsblur_db_elasticsearch:9200"
 BACKED_BY_AWS = {
     "pages_on_node": False,
     "pages_on_s3": False,
@@ -141,6 +141,9 @@ BACKED_BY_AWS = {
 }
 
 OPENAI_API_KEY = "sk-svcacct-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+ANTHROPIC_API_KEY = "sk-ant-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+GOOGLE_GEMINI_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+ASK_AI_MODEL = "opus"  # Options: opus, gpt-5.1, gemini-3, grok-4.1
 
 # ===========
 # = Logging =

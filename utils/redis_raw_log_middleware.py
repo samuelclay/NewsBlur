@@ -101,7 +101,7 @@ class RedisDumpMiddleware(object):
                     redis_server_name = "redis_story"
                 elif "db-redis-pubsub" in redis_server_name:
                     redis_server_name = "redis_pubsub"
-                elif "db_redis" in redis_server_name:
+                elif "db_redis" in redis_server_name or "newsblur_db_redis" in redis_server_name:
                     redis_server_name = "redis_user"
                 continue
             if len(str(arg)) > 100:
@@ -126,7 +126,7 @@ class RedisDumpMiddleware(object):
                     redis_server_name = "redis_story"
                 elif "db-redis-pubsub" in redis_server_name:
                     redis_server_name = "redis_pubsub"
-                elif "db_redis" in redis_server_name:
+                elif "db_redis" in redis_server_name or "newsblur_db_redis" in redis_server_name:
                     redis_server_name = "redis_user"
                 continue
             if not isinstance(arg, list):
