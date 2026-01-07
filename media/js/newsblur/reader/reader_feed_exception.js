@@ -710,7 +710,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     select_current_feed_icon: function () {
         // Always clear upload preview first
         var $preview = $('.NB-folder-icon-upload-preview', this.$modal);
-        $preview.empty().hide();
+        $preview.empty().removeClass('NB-active');
 
         if (!this.feed_icon || !this.feed_icon.icon_type || this.feed_icon.icon_type === 'none') return;
 
@@ -734,7 +734,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             $preview.empty().append(
                 $.make('img', { src: 'data:image/png;base64,' + this.feed_icon.icon_data }),
                 $.make('span', 'Custom icon')
-            ).show();
+            ).addClass('NB-active');
         }
     },
 
@@ -1203,7 +1203,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     $preview.empty().append(
                         $.make('img', { src: 'data:image/png;base64,' + response.icon_data }),
                         $.make('span', 'Uploaded!')
-                    ).show();
+                    ).addClass('NB-active');
 
                     self.update_header_icon();
                     $('.NB-folder-icon-preset', self.$modal).removeClass('NB-active');
@@ -1284,7 +1284,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             $('.NB-folder-icon-clear', self.$modal).hide();
             $('.NB-folder-icon-clear-header', self.$modal).hide();
             // Clear upload preview
-            $('.NB-folder-icon-upload-preview', self.$modal).empty().hide();
+            $('.NB-folder-icon-upload-preview', self.$modal).empty().removeClass('NB-active');
         });
     },
 
