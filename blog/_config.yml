@@ -46,6 +46,7 @@ theme: minima
 plugins:
   - jekyll-redirect-from
   - jekyll-paginate
+  - jekyll-auto-image
 paginate: 10
 paginate_path: "/page:num"
 

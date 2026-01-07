@@ -66,6 +66,165 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">May 20, 2013</span>
+          <h3>
+            <a class="post-link" href="/2013/05/20/the-newsblur-redesign/">
+              The NewsBlur Redesign
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Not to say that NewsBlur was <em>ugly</em> before today, but it certainly didn’t have the loving embrace of a talented designer. So without waiting another moment (or month) I proudly present the NewsBlur redesign.</p>
+
+<p><img src="http://dev.newsblur.com/media/img/welcome/header-web.png" alt="image" /></p>
+
+<p>It’s a full scale redesign, too. And not just one of those redesigns where the icons get glossier and fonts, bolder. Every moving piece of machinery got more than a coat of paint. A number of new crucial reading features have been added. Some features were merged, some were repaired, and some were scrapped.</p>
+
+<p>Dashboard before &amp; after:</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/before_dashboard.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/after_dashboard.png" alt="image" /></p>
+
+<p>Reading before &amp; after:</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/before_feed.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/after_feed.png" alt="image" /></p>
+
+<p>In no particular order, here’s what’s new:</p>
+
+<ul>
+  <li>Unified interactions/activities popover. Gets out of your way and gives the dashboard more room to breath.</li>
+  <li>Rewritten feed loader, offering incredible performance, even at the 20x scale of today vs 2 months ago before the Google Reader announcement.</li>
+  <li>Custom vector graphics, retina-fying the entire site.</li>
+  <li>Increased transparency of sites by showing more detail in feed fetching/statistics.</li>
+  <li>A new List view to complement the Split view for stories.</li>
+</ul>
+
+<p>And that’s just for the website. The iOS app, Android app, and blurblogs all got the update goodness that has graced the web app.</p>
+
+<p><img src="http://dev.newsblur.com/media/img/welcome/header-ios.png" alt="image" /></p>
+
+<p>As for what’s happening these days, post-Reader:</p>
+
+<ul>
+  <li>Took some extra time to scale out my backend, now completed.</li>
+  <li>Running on 48 servers, serving 20x traffic</li>
+  <li>Because I had the foresight to charge users for premium service, I’m now confident that NewsBlur will be standing tall a few years from now.</li>
+  <li>Working on the next few big ticket features: saved story search and tagging, batch editing organizer, keyboard shortcut manager, and more.</li>
+</ul>
+
+<blockquote>
+  <p>Biggest unanticipated consequence of the Reader shutdown – I no longer have to wear a jacket in SF because my core temperature has risen.</p>
+
+  <p>— Samuel Clay (@samuelclay)</p>
+
+  <p><a href="https://twitter.com/samuelclay/status/317111582817660929">March 28, 2013</a></p>
+</blockquote>
+
+<script src="//platform.twitter.com/widgets.js" charset="utf-8" type="text/javascript"></script>
+
+<p>And if you’re new to NewsBlur, here’s the six core benefits to using the one with the Sun:</p>
+
+<ol>
+  <li><strong>Training</strong> - hide the stories you don’t like and highlight the stories you do. Make mincemeat out of heavy feeds and make sure to never miss stories from the feeds you love.</li>
+  <li><strong>Original site</strong> - read a publisher’s stories the way they wanted you to read it - on the original website. NewsBlur embeds the publisher’s site in an iframe, and marks what you read as read as you scroll.</li>
+  <li><strong>Text view</strong> - conveniently extracts the story text from articles, necessary for reading truncated rss feeds.</li>
+  <li><strong>Blurblogs / sharing</strong> - a social community where you can share and discuss stories with friends.</li>
+  <li><strong>Speed</strong> - A dedication to fast load times, graphed on your dashboard.</li>
+  <li><strong>Mobile</strong> - native, first-class iOS and Android apps, with all of the functionality of the website.</li>
+</ol>
+
+<p>Now that the redesign has launched, I plan to blog about how to best use the intelligence trainer efficiently, all new [future] features, and how I was able to successfully scale out the four databases (count ‘em: postgresql, mongodb, redis, elasticsearch) to handle more than 10,000 users and 4 million site updates a day. It’s no Tumblr, but it’s still way more traffic than you can fit on a single machine.</p>
+
+<p>Thanks for using NewsBlur and turning my passion project (four years running) into a full-time dream.</p>
+
+
+        </div>
+      </li><li><div class="post-header-sticky">
+          <span class="post-meta">Mar 17, 2013</span>
+          <h3>
+            <a class="post-link" href="/2013/03/17/three-months-to-scale-newsblur/">
+              Three Months to Scale NewsBlur
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>At 4:16pm last Wednesday I got a short and to-the-point email from Nilay Patel at The Verge with only a link that started with the host “googlereader.blogspot.com”. The sudden spike in NewsBlur’s visitors immediately confirmed — Google was shutting down Reader.</p>
+
+<figure class="tmblr-full" data-orig-height="800" data-orig-width="600" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/Late%20night%20at%20the%20office.jpeg"><img width="500" style="margin: 0 auto;" data-orig-height="800" data-orig-width="600" src="https://s3.amazonaws.com/static.newsblur.com/blog/Late%20night%20at%20the%20office.jpeg" /></figure>
+
+<h5 id="late-night-at-the-office">Late night at the office</h5>
+
+<p>I had been preparing for a black swan event like this for the last four years since I began NewsBlur. With the deprecation of their social features a year ago I knew it was only a matter of time before Google stopped supporting Reader entirely. I did not expect it to come this soon.</p>
+
+<p>As the <a href="http://storify.com/mattrose/reader-o-calypse-from-the-pov-of-a-competitor">Storify history of the Reader-o-calypse</a>, NewsBlur suffered a number of hurdles with the onslaught of new subscribers.</p>
+
+<h2 id="a-few-of-my-challenges-and-solutions">A few of my challenges and solutions</h2>
+
+<p>I was able to handle the 1,500 users who were using the service everyday, but when 50,000 users hit an uncachable and resource intensive backend, unless you’ve done your homework and load tested the living crap out of your entire stack, there’s going to be trouble brewing. Here’s just a few of the immediate challenges I faced over the past four days:</p>
+
+<ul>
+  <li>My hosting provider, Reliable Hosting Services, was neither reliable, able to host my increasing demands, or a service I could count on. I switched to Digital Ocean and immediately got to <a href="https://github.com/samuelclay/NewsBlur/blob/master/fabfile.py#L934-L970">writing new Fabric scripts</a> so I could deploy a new app/task server by issuing a single command and having it serve requests automatically within 10 minutes of bootstrapping.</li>
+  <li>It didn’t take long to max out my Amazon Simple Email Service (SES) account’s quota of 10,000 emails a day. So a few hours into the melee I switched to Mailgun, which unfortunately resulted in emailing myself 250,000 error reports. If you tried to email me and couldn’t get through, it’s because 50,000 emails about lost database connections made their way ahead of you in line.</li>
+  <li>Eventually, I was just plain blacklisted on SES for sending too many emails.</li>
+  <li>Fortunately, when the PayPal fraud department called because of an unprecedented spike in payments, I was prepared.</li>
+</ul>
+
+<blockquote>
+  <p>Paypal’s fraud department just called, asked me what’s going on. Asked the rep from Omaha if she’s heard of Reader, and then a big Ohhh.</p>
+
+  <p>— NewsBlur (@NewsBlur) <a href="https://twitter.com/NewsBlur/status/313354032083259394">March 17, 2013</a></p>
+</blockquote>
+
+<script async="" src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<ul>
+  <li>HAProxy would serve errors (site is down, maintenance, timeouts, etc) with a 200 OK status code instead of the proper 500 Exception status code because of a ridiculous undocumented requirement to <a href="https://github.com/samuelclay/NewsBlur/blob/master/templates/502.http#L1-L4">include HTTP Headers at the top of the error template</a>. When your webapp uses status codes to determine errors, you get extremely strange behavior when it loads utter crap into your DOM.</li>
+  <li>The inevitable file descriptor limits on Linux means that for every database connection you make, you use up one of the 1,024 file descriptors that are allocated to your process by default. Changing these limits is not only non-trivial, but they don’t tend to stick. This is responsible for bringing down Mongo, PostgreSQL, and the real-time Node servers, all at different times of the night.</li>
+  <li>The support queue is enormous and I’ve had to spend big chunks of my 16 hour days reassuring paying customers that eventually Stripe will forgive me and my unresponsive servers and will send the payment notification that is responsible for automatically upgrading their accounts to premium.</li>
+</ul>
+
+<figure class="tmblr-full" data-orig-height="450" data-orig-width="600" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/St%20Pattys%20Day%20Desk.jpeg"><img width="500" style="margin: 0 auto;" data-orig-height="450" data-orig-width="600" src="https://s3.amazonaws.com/static.newsblur.com/blog/St%20Pattys%20Day%20Desk.jpeg" /></figure>
+
+<h5 id="the-sad-extent-of-my-st-patricks-day">The sad extent of my St. Patrick’s Day</h5>
+
+<p>As a one-man-shop it has been humbling to receive the benefit of the doubt from many who have withheld their judgment despite the admittedly slow loadtimes and downtime NewsBlur experienced. Having the support of the amazing NewsBlur community is more than a guy could ask for. The tweets of encouragement, voting NewsBlur up on <a href="http://replacereader.com">replacereader.com</a> (If you haven’t yet, please tweet a vote for <a href="https://twitter.com/intent/tweet?source=webclient&amp;text=I%20think%20%23NewsBlur%20should%20%23replacereader.%20http://replacereader.com">“#newsblur to #replacereader”</a>), and the many positive comments and blog posts from people who have tried NewsBlur is great.</p>
+
+<p>It has also been a dream come true to receive accolades from the many who are trying NewsBlur for the first time and loving it. Since the announcement, NewsBlur has welcomed 5,000 new premium subscribers and 60,000 new users (from 50,000 users originally).</p>
+
+<p>&lt;table cellpadding=”12” cellspacing=”12” width=”100%”&gt;&lt;tr&gt;&lt;td&gt;<figure class="tmblr-full" data-orig-height="225" data-orig-width="300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/Shirt%201.jpg"><img width="300" data-orig-height="225" data-orig-width="300" src="https://s3.amazonaws.com/static.newsblur.com/blog/Shirt%201.jpg" /></figure>&lt;/td&gt; &lt;td&gt;<figure class="tmblr-full" data-orig-height="200" data-orig-width="300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/Shirt%202.jpg"><img width="300" data-orig-height="200" data-orig-width="300" src="https://s3.amazonaws.com/static.newsblur.com/blog/Shirt%202.jpg" /></figure>&lt;/td&gt; &lt;/tr&gt;&lt;tr&gt;&lt;td&gt;<figure class="tmblr-full" data-orig-height="225" data-orig-width="300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/Shirt%203.jpg"><img width="300" data-orig-height="225" data-orig-width="300" src="https://s3.amazonaws.com/static.newsblur.com/blog/Shirt%203.jpg" /></figure>&lt;/td&gt; &lt;td&gt;<figure class="tmblr-full" data-orig-height="225" data-orig-width="300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/Shirt%204.jpg"><img width="300" data-orig-height="225" data-orig-width="300" src="https://s3.amazonaws.com/static.newsblur.com/blog/Shirt%204.jpg" /></figure>&lt;/td&gt; &lt;/tr&gt;&lt;tr&gt;&lt;td&gt;<figure class="tmblr-full" data-orig-height="400" data-orig-width="300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/Shirt%205.jpg"><img width="300" data-orig-height="400" data-orig-width="300" src="https://s3.amazonaws.com/static.newsblur.com/blog/Shirt%205.jpg" /></figure>&lt;/td&gt; &lt;td&gt;<figure class="tmblr-full" data-orig-height="405" data-orig-width="300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/Shirt%206.jpg"><img width="300" data-orig-height="405" data-orig-width="300" src="https://s3.amazonaws.com/static.newsblur.com/blog/Shirt%206.jpg" /></figure>&lt;/td&gt; &lt;/tr&gt;&lt;/table&gt;</p>
+<h5 id="newsblur-users-are-intelligent-kind-and-good-looking">NewsBlur users are intelligent, kind, and good looking!</h5>
+
+<h1 id="the-next-three-months">The next three months</h1>
+
+<p>Over the next three months I’ll be working on:</p>
+
+<ul>
+  <li>Scaling, scaling, scaling</li>
+  <li>Launching the redesign (<a href="http://dev.newsblur.com">which you can preview</a>)</li>
+  <li>Listening to all of you</li>
+</ul>
+
+<p>For those of you who are still trying to decide where to go now that you’re a Reader refugee let me tell you a few of the unique things NewsBlur has to offer:</p>
+
+<ol>
+  <li>Radical transparency. <a href="https://github.com/samuelclay">NewsBlur is totally open source</a> and will remain that way.</li>
+  <li>It still feels like RSS, just with a few more bells and whistles. NewsBlur provides actual list of posts, as opposed to the more curated magazine format of some of the other popular replacements. This clean interface makes it easy to see the stories you want. One innovation however is the four different view options you have. NewsBlur can show you the original site, feed, text or story view.</li>
+  <li>It has training. NewsBlur hides stories you don’t want to read based on tags, keywords, authors, etc. It also highlights stories you want to read, based on the same criteria. This allows you to find the stories you care about, not just the stories that the hive cares about. And best of all, NewsBlur will show you why stories are either highlighted or hidden by showing the criteria in green or red.</li>
+  <li>NewsBlur has rebuilt the social community that Google had stripped out of Reader. Users can share stories through their Blurblog and discover new content by following friends’ Blurblogs. <a href="http://popular.newsblur.com">The People Have Spoken</a> is the blurblog of popular stories.</li>
+  <li>Because NewsBlur is entirely open-source, if you don’t want to pay you can host your own server. <a href="http://github.com/samuelclay/NewsBlur">Instructions are on GitHub</a>, where you can also find the source code for the <a href="https://github.com/samuelclay/NewsBlur/tree/master/media/ios">NewsBlur iPhone + iPad app</a> and <a href="https://github.com/samuelclay/NewsBlur/tree/master/media/android/NewsBlur">Android app</a>.</li>
+  <li>Most importantly, NewsBlur is not entirely a free app. The immediate benefits of revenue have been very clear over the past few days. Not only are NewsBlur’s interests aligned with its users, but as more users join NewsBlur, it makes more revenue that can be used to directly support the new users. Not convinced that paid is better than free? Read Pinboard’s Maciej Ceglowski’s essay <a href="http://blog.pinboard.in/2011/12/don_t_be_a_free_user/">Don’t Be a Free User</a>.</li>
+</ol>
+
+<figure class="tmblr-full" data-orig-height="450" data-orig-width="600" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/Shiloh%20in%20good%20times.jpeg"><img width="500" style="margin: 0 auto;" data-orig-height="450" data-orig-width="600" src="https://s3.amazonaws.com/static.newsblur.com/blog/Shiloh%20in%20good%20times.jpeg" /></figure>
+
+<h5 id="shiloh-during-better-times-your-premium-subscription-goes-to-both-server-costs-and-feeding-her">Shiloh during better times. Your premium subscription goes to both server costs and feeding her</h5>
+
+<p>With NewsBlur’s native iOS app and Android app, you can read your news and share it with your friends anywhere. And with the coming improvements over the next three months, you bet NewsBlur will be the #1 choice for Google Reader refugees.</p>
+
+<p><a href="http://www.newsblur.com">Join NewsBlur for $24/year</a> and discover what RSS should have been.</p>
+
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Jan 3, 2013</span>
           <h3>
             <a class="post-link" href="/2013/01/03/privacy-controls/">
@@ -268,217 +427,6 @@
 <p>Until then, follow <a href="http://twitter.com/newsblur">@newsblur</a> on Twitter and start sharing news and blogs on <a href="http://www.newsblur.com">NewsBlur</a>.</p>
 
 <p>— Samuel Clay, <a href="http://twitter.com/samuelclay">@samuelclay</a></p>
-
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Apr 2, 2012</span>
-          <h3>
-            <a class="post-link" href="/2012/04/02/building-real-time-feed-updates-for-newsblur/">
-              Building real-time feed updates for NewsBlur with Redis and WebSockets
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>Today, NewsBlur is going real-time. Blogs using the PubSubHubbub protocol (PuSH), which includes all Blogger, Tumblr, and many Wordpress blogs, will instantaneously show new updates to subscribers on NewsBlur. Making this happen, while not for the faint of heart, was straight-forward enough that I’m sharing the recipe I used to get everything hooked up and running smoothly.</p>
-
-<p>Every user, both premium and standard, will now receive instantaneous updates. I’ve been beta-testing this feature for the past few weeks, and I’ve been quite pleased in knowing that I’m now reading on the bleeding-edge.</p>
-
-<p>If you are a developer, you may be interested in how this was done. There are two components in a real-time feed: detecting updates and then informing users of those updates.</p>
-
-<h2 id="get-blog-updates-in-real-time">Get blog updates in real-time</h2>
-
-<p>If you are building a system that consumes an RSS feed and you want it to push to you, you’ll have to subscribe to a special PubSubHubbub hub url that the RSS feed gives you in the original RSS feed.</p>
-
-<p>Take a look at the <code class="language-plaintext highlighter-rouge">&lt;feed&gt;</code> section in the NewsBlur Blog’s RSS feed:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;&gt;&gt; # Python
-&gt;&gt;&gt; from utils import feedparser
-&gt;&gt;&gt; from pprint import pprint
-&gt;&gt;&gt; fp = feedparser.parse('http://blog.newsblur.com/rss')
-&gt;&gt;&gt; pprint(fp.feed)
-{'generator': u'Tumblr (3.0; @newsblur)',
- 'generator_detail': {'name': u'Tumblr (3.0; @newsblur)'},
- 'link': u'http://blog.newsblur.com/',
- 'links': [{'href': u'http://tumblr.superfeedr.com/',
-            'rel': u'hub',
-            'type': u'text/html'},
-           {'href': u'http://blog.newsblur.com/',
-            'rel': u'alternate',
-            'type': u'text/html'}],
- 'subtitle': u'Visual feed reading with intelligence.',
- 'subtitle_detail': {'base': u'http://blog.newsblur.com/rss',
-                     'language': None,
-                     'type': u'text/html',
-                     'value': u'Visual feed reading with intelligence.'},
- 'title': u'The NewsBlur Blog',
- 'title_detail': {'base': u'http://blog.newsblur.com/rss',
-                  'language': None,
-                  'type': u'text/plain',
-                  'value': u'The NewsBlur Blog'}}
-</code></pre></div></div>
-
-<p>If there’s a <code class="language-plaintext highlighter-rouge">rel="hub"</code> node under <code class="language-plaintext highlighter-rouge">links</code>, then the RSS feed is advertising its PubSubHubbub abilities. If you make a subscription request to that address, then the feed will push out updates to your callback URL.</p>
-
-<p>The code for sending the subscription requests, along with generating the verification token, can be found on GitHub: <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/push/views.py">the PuSH views for handling updates and the initial callback</a> and <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/push/models.py">the PuSH models used to store subscriptions in the DB</a>. Here’s the main request that your server has to send:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Python
-response = self._send_request(hub, {
-    'hub.mode' : 'subscribe',
-    'hub.callback' : callback,
-    'hub.topic' : topic,
-    'hub.verify' : ['async', 'sync'],
-    'hub.verify_token' : subscription.generate_token('subscribe'),
-    'hub.lease_seconds' : lease_seconds,
-})
-</code></pre></div></div>
-
-<p>The publisher will then ping your server back to confirm the subscription. Once the publisher is configured to send blog updates to your server, you just have to let users know when there’s a new story, and that’s takes some COMET/push technology with the help of WebSockets.</p>
-
-<h2 id="serving-updates-to-visitors-in-real-time">Serving updates to visitors in real-time</h2>
-
-<p>When a publisher pushes a new story to your server, apart from dupe detection and storing it in your database, you need to alert users who are currently on the site.</p>
-
-<p><a href="http://redis.io">Redis</a> is your new best friend. One of its primary data structures, apart from hashes, sets, sorted sets, and key-value, is a pubsub type that is perfect for this kind of update. Users subscribe to the updates of all of the feeds to which they subscribe. When these sites have a new story, they publish a simple notification to each of the feed’s subscribers.</p>
-
-<p>Here the feed fetcher is publishing to any listening subscribers.</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Python
-def publish_to_subscribers(self, feed):
-    try:
-        r = redis.Redis(connection_pool=settings.REDIS_POOL)
-        listeners_count = r.publish(str(feed.pk), 'story:new')
-        if listeners_count:
-            logging.debug(" ---&gt; [%-30s] Published to %s subscribers" % (
-                          feed.title[:30], listeners_count))
-    except redis.ConnectionError:
-        logging.debug(" ***&gt; [%-30s] Redis is unavailable for real-time." % (
-                      feed.title[:30],))
-</code></pre></div></div>
-
-<p>These subscribers have subscribed via Redis. To know that a user is currently connected and wants to be notified of updates, <a href="http://socket.io">Socket.io</a> is used to connect the browser to a Node.js server that will subscribe to updates via Redis.</p>
-
-<p>The browser opens up a WebSocket and listens for updates for the feeds that they care about:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// JavaScript
-setup_socket_realtime_unread_counts: function() {
-    if (!this.socket) {
-        var server = window.location.protocol + '//' +
-                     window.location.hostname + ':8888';
-        this.socket = this.socket || io.connect(server);
-
-        this.socket.on('connect', _.bind(function() {
-            var active_feeds = this.send_socket_active_feeds();
-            console.log(["Connected to real-time pubsub with " + 
-                         active_feeds.length + " feeds."]);
-
-            this.socket.on('feed:update', _.bind(function(feed_id, message) {
-                console.log(['Real-time feed update', feed_id, message]);
-                this.force_feeds_refresh(false, false, parseInt(feed_id, 10));
-            }, this));
-
-            this.flags.feed_refreshing_in_realtime = true;
-            this.setup_feed_refresh();
-        }, this));
-
-        this.socket.on('disconnect', _.bind(function() {
-            console.log(["Lost connection to real-time pubsub. Falling back to polling."]);
-            this.setup_feed_refresh();
-        }, this));
-    }
-},
-</code></pre></div></div>
-
-<p>The app server is ready to handle thousands of concurrent subscription requests, being Node.js and asynchronous:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># CoffeeScript
-fs = require 'fs'
-io = require('socket.io').listen 8888
-redis = require 'redis'
-
-REDIS_SERVER = if process.env.NODE_ENV == 'dev' then 'localhost' else 'db01'
-client = redis.createClient 6379, REDIS_SERVER
-
-io.sockets.on 'connection', (socket) -&gt;
-    console.log " ---&gt; New connection brings total to" +
-                " #{io.sockets.clients().length} consumers."
-    socket.on 'subscribe:feeds', (feeds, username) -&gt;
-        socket.subscribe?.end()
-        socket.subscribe = redis.createClient 6379, REDIS_SERVER
-
-        console.log " ---&gt; [#{username}] Subscribing to #{feeds.length} feeds"
-        socket.subscribe.subscribe feeds
-
-        socket.subscribe.on 'message', (channel, message) -&gt;
-            console.log " ---&gt; [#{username}] Update on #{channel}: #{message}"
-            socket.emit 'feed:update', channel
-
-    socket.on 'disconnect', () -&gt;
-        socket.subscribe?.end()
-        console.log " ---&gt; [] Disconnect, there are now" +
-                    " #{io.sockets.clients().length-1} consumers."
-</code></pre></div></div>
-
-<p>That’s all there is to it. There a lot going on, but it’s effectively a small circle composed of subscribers and publishers, using Redis to maintain pubsub connections between the many clients and their many feeds.</p>
-
-<script src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
-<link rel="stylesheet" type="text/css" href="http://yandex.st/highlightjs/6.1/styles/github.min.css" />
-
-<script type="text/javascript">
-  hljs.initHighlightingOnLoad();
-</script>
-
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Mar 16, 2012</span>
-          <h3>
-            <a class="post-link" href="/2012/03/16/knight-news-challenge/">
-              Knight News Challenge: NewsBlur
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p><a href="http://newschallenge.tumblr.com/post/19397311604/newsblur">Knight News Challenge: NewsBlur</a></p>
-
-<p>Hey NewsBlurians, I’m applying for a grant from the Knight Foundation. In a previous life I worked on DocumentCloud, a successful Knight grantee, building <a href="http://www.documentcloud.org/opensource">open-source libraries</a>. I’m looking to continue the fine tradition of building for both users and for other developers.</p>
-
-<p>I’m asking for enough to fund a year of development with the help of another engineer. Please vote for the NewsBlur grant application on Knight’s website, reblogged below.</p>
-
-<p><a href="http://newschallenge.tumblr.com/post/19397311604/newsblur">Knight News Challenge Entry</a>:</p>
-
-<blockquote>
-  <h3 id="1-what-do-you-propose-to-do-20-words">1. What do you propose to do? [20 words]</h3>
-
-  <p>To build an intelligent social news reader for web and mobile called NewsBlur.</p>
-
-  <h3 id="2-is-anyone-doing-something-like-this-now-and-how-is-your-project-different-30-words">2. Is anyone doing something like this now and how is your project different? [30 words]</h3>
-
-  <p>RSS feed readers exist, none have the sharing model, original site view, and intelligence classifiers of NewsBlur. Since Google Reader phased out sharing, there’s a sizable community looking to share and discuss news.</p>
-
-  <h3 id="3-describe-the-network-with-which-you-intend-to-build-or-work-50-words">3. Describe the network with which you intend to build or work. [50 words]</h3>
-
-  <p>NewsBlur will surface stories shared by friends and friends of friends by combining the imported networks of Twitter/Facebook with communities on NewsBlur. These communities make it easy to expand your network by showing popular comments from outside your network. NewsBlur also has intelligence classifiers which allow the user to filter and highlight comments across all networks.</p>
-
-  <h3 id="4-why-will-it-work-100-words">4. Why will it work? [100 words]</h3>
-
-  <p>Because it’s worked before, just under a different model in Google Reader’s now defunct all-or-nothing community. NewsBlur’s network will be oriented more towards showing relationships and distance between you and the other active commenters on a story. NewsBlur will capitalize on the value of pre-existing networks with an intuitive and clean interface that highlights the distance between users. Surfacing relative connections between people will result in a more active community and increased engagement between like-minded readers. NewsBlur further benefits newspapers, publishers, and individual writers by showing the original site (including ads and design), as well as encouraging reading through NewsBlur’s intelligence filters.</p>
-
-  <h3 id="5-who-is-working-on-it-100-words">5. Who is working on it? [100 words]</h3>
-
-  <p>I started working on NewsBlur as a side project in June 2009. Over the past 2.5 years, NewsBlur has become self-sustainable through organic growth (word-of-mouth, blog posts, github activity). Because NewsBlur is open-source, a number of contributors from the NewsBlur community have developed their own pet features which have been integrated back into the website. This also works well for finding typos in documentation and allowing users to submit a simple pull request to get it fixed.</p>
-
-  <h3 id="6-what-part-of-the-project-have-you-already-built-100-words">6. What part of the project have you already built? [100 words]</h3>
-
-  <p>On the back-end: distributed feed fetchers and parsers. On the front-end: the feed reader itself, intelligence training, and an iPhone app. There is an actively used API, on top of which NewsBlur’s users have built a mobile website, an Android app, a Windows Phone app, and a Nokia MeeGo app. What’s not built is the entire social layer. A prototype has already been developed to surface any network relationships on comments and shared stories.</p>
-
-  <h3 id="7-how-would-you-sustain-the-project-after-the-funding-expires-50-words">7. How would you sustain the project after the funding expires? [50 words]</h3>
-
-  <p>NewsBlur is free, but there is also a premium subscription that costs between $1 - $3 per month. Users can choose how much they’d like to pay, but that means that NewsBlur is able to pay for its 8 servers. The gap between costs and revenue (also known as profit) is increasing every day.</p>
-
-  <p>Requested amount from Knight News Challenge: $150,000<br />
-Expected amount of time required to complete project: 1 year</p>
-</blockquote>
 
 
         </div>

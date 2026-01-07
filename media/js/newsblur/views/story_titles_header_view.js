@@ -124,7 +124,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         <div class="NB-story-title-indicator-count"></div>\
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
                     </div>\
-                    <div class="NB-folder-icon"><img class="feed_favicon" src="<%= $.favicon(folder_id) %>">\</div>\
+                    <div class="NB-folder-icon">\
+                        <%= $.favicon_html(folder_id) %>\
+                    </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <span class="folder_title_text"><%= folder_title %></span>\
                 </div>\

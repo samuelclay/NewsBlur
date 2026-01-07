@@ -57,7 +57,11 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 $.make('div', { className: 'NB-icon-dropdown' })
             ])),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
-                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
+                $.favicon_el(this.feed, {
+                    image_class: 'NB-modal-feed-image feed_favicon',
+                    emoji_class: 'NB-modal-feed-image NB-feed-emoji',
+                    colored_class: 'NB-modal-feed-image NB-feed-icon-colored'
+                }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
                     $.make('span', { className: 'NB-modal-feed-subscribers ' + (_.isUndefined(this.feed.get('num_subscribers')) && 'NB-hidden') }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
@@ -252,12 +256,20 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
             var key = counts[facet];
             if (facet == 'feed' && self.options.social_feed && counts['feed_id'] != 0) {
                 key = [$.make('div', [
-                    $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(counts['feed_id']) }),
+                    $.favicon_el(counts['feed_id'], {
+                        image_class: 'NB-modal-feed-image feed_favicon',
+                        emoji_class: 'NB-modal-feed-image NB-feed-emoji',
+                        colored_class: 'NB-modal-feed-image NB-feed-icon-colored'
+                    }),
                     $.make('span', { className: 'NB-modal-feed-title' }, counts['feed_title'])
                 ])];
             } else if (facet == 'feed') {
                 key = [$.make('div', [
-                    $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(self.feed) }),
+                    $.favicon_el(self.feed, {
+                        image_class: 'NB-modal-feed-image feed_favicon',
+                        emoji_class: 'NB-modal-feed-image NB-feed-emoji',
+                        colored_class: 'NB-modal-feed-image NB-feed-icon-colored'
+                    }),
                     $.make('span', { className: 'NB-modal-feed-title' }, self.feed.get('feed_title'))
                 ])];
             }
