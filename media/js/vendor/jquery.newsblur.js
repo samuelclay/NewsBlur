@@ -276,7 +276,15 @@ NEWSBLUR.log = function(msg) {
                     return $.favicon(NEWSBLUR.assets.get_feed(feed_id));
             }
             
-            // Feed is a model
+            // Feed is a model - check for custom feed icon first
+            var feed_id = feed.id;
+            if (_.isNumber(feed_id)) {
+                var custom_feed_icon = NEWSBLUR.assets && NEWSBLUR.assets.get_feed_icon(feed_id);
+                if (custom_feed_icon && custom_feed_icon.icon_type && custom_feed_icon.icon_type !== 'none') {
+                    return $.make_feed_icon(custom_feed_icon);
+                }
+            }
+
             if (feed.get('favicon') && feed.get('favicon').length && feed.get('favicon').indexOf('data:image/png;base64,') != -1)
                 return feed.get('favicon');
             if (feed.get('favicon') && feed.get('favicon').length)
@@ -312,6 +320,19 @@ NEWSBLUR.log = function(msg) {
                 return 'emoji:' + folder_icon.icon_data;
             }
             return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg';
+        },
+
+        make_feed_icon: function (feed_icon) {
+            if (feed_icon.icon_type === 'upload') {
+                return 'data:image/png;base64,' + feed_icon.icon_data;
+            } else if (feed_icon.icon_type === 'preset') {
+                var icon_set = feed_icon.icon_set || 'lucide';
+                return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/' + icon_set + '/' + feed_icon.icon_data + '.svg';
+            } else if (feed_icon.icon_type === 'emoji') {
+                // Return a special marker that feed_title_view.js will handle
+                return 'emoji:' + feed_icon.icon_data;
+            }
+            return null;
         },
 
         deepCopy: function(obj) {

@@ -32,6 +32,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             this.setup_folder_tabs();
         }
         if (this.feed) {
+            this.setup_feed_tabs();
             this.show_recommended_options_meta();
             _.delay(_.bind(function () {
                 this.get_feed_settings();
@@ -135,8 +136,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-settings' }, 'Settings'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-folder-icon' }, 'Folder Icon')
             ])),
+            (this.feed && $.make('div', { className: 'NB-modal-tabs NB-modal-tabs-feed' }, [
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-settings' }, 'Settings'),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-feed-icon' }, 'Feed Icon')
+            ])),
             $.make('div', { className: 'NB-tab NB-tab-settings NB-active' }),
             $.make('div', { className: 'NB-tab NB-tab-folder-icon' }),
+            $.make('div', { className: 'NB-tab NB-tab-feed-icon' }),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-view NB-modal-submit NB-settings-only' }, [
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-status NB-right' }),
@@ -532,15 +538,20 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
             });
         });
-        // Folder icon tab handlers
+        // Tab handlers (work for both folder and feed)
         $.targetIs(e, { tagSelector: '.NB-modal-tab-settings' }, function ($t, $p) {
             e.preventDefault();
-            self.switch_folder_tab('settings');
+            self.switch_tab('settings');
         });
         $.targetIs(e, { tagSelector: '.NB-modal-tab-folder-icon' }, function ($t, $p) {
             e.preventDefault();
-            self.switch_folder_tab('folder-icon');
+            self.switch_tab('folder-icon');
         });
+        $.targetIs(e, { tagSelector: '.NB-modal-tab-feed-icon' }, function ($t, $p) {
+            e.preventDefault();
+            self.switch_tab('feed-icon');
+        });
+        // Icon selection handlers (work for both folder and feed)
         $.targetIs(e, { tagSelector: '.NB-folder-icon-preset' }, function ($t, $p) {
             e.preventDefault();
             var icon_name = $t.data('icon');
@@ -563,7 +574,11 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         });
         $.targetIs(e, { tagSelector: '.NB-folder-icon-clear' }, function ($t, $p) {
             e.preventDefault();
-            self.clear_folder_icon();
+            if (self.folder) {
+                self.clear_folder_icon();
+            } else if (self.feed) {
+                self.clear_feed_icon();
+            }
         });
     },
 
@@ -626,193 +641,98 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     },
 
     make_folder_icon_tab: function () {
-        return $.make('div', { className: 'NB-folder-icon-editor' }, [
-            $.make('div', { className: 'NB-folder-icon-section NB-folder-icon-upload-section' }, [
-                $.make('div', { className: 'NB-folder-icon-upload-container' }, [
-                    $.make('input', { type: 'file', className: 'NB-folder-icon-file-input', accept: 'image/*' }),
-                    $.make('div', { className: 'NB-folder-icon-upload-button' }, [
-                        $.make('div', { className: 'NB-folder-icon-upload-icon' }),
-                        $.make('div', { className: 'NB-folder-icon-upload-text' }, [
-                            $.make('span', { className: 'NB-folder-icon-upload-label' }, 'Upload Custom Image'),
-                            $.make('span', { className: 'NB-folder-icon-upload-hint' }, 'PNG, JPG, or GIF')
-                        ]),
-                        $.make('div', { className: 'NB-loading' })
-                    ]),
-                    $.make('div', { className: 'NB-folder-icon-upload-preview' }),
-                    $.make('div', { className: 'NB-folder-icon-upload-error' })
-                ])
-            ]),
-            $.make('div', { className: 'NB-folder-icon-section' }, [
-                $.make('div', { className: 'NB-folder-icon-section-label' }, 'Color'),
-                this.make_color_palette()
-            ]),
-            $.make('div', { className: 'NB-folder-icon-section' }, [
-                $.make('div', { className: 'NB-folder-icon-section-label' }, 'Outline Icons'),
-                this.make_preset_icons()
-            ]),
-            $.make('div', { className: 'NB-folder-icon-section' }, [
-                $.make('div', { className: 'NB-folder-icon-section-label' }, 'Filled Icons'),
-                this.make_filled_icons()
-            ]),
-            $.make('div', { className: 'NB-folder-icon-section' }, [
-                $.make('div', { className: 'NB-folder-icon-section-label' }, 'Emoji'),
-                this.make_emoji_picker()
-            ])
-        ]);
+        // Use shared icon picker component
+        return NEWSBLUR.IconPicker.make_icon_editor({
+            include_upload: true,
+            include_reset: false
+        });
     },
 
-    make_preset_icons: function () {
+    setup_feed_tabs: function () {
         var self = this;
-        // Lucide outline icons organized by category with labels
-        var icon_categories = [
-            { label: 'Files', icons: ['folder', 'folder-open', 'file', 'file-text', 'files', 'archive', 'folder-archive', 'folder-check', 'folder-cog', 'folder-heart'] },
-            { label: 'Places', icons: ['home', 'building', 'building-2', 'store', 'landmark', 'factory', 'warehouse', 'castle', 'church', 'hospital'] },
-            { label: 'Favorites', icons: ['star', 'heart', 'bookmark', 'flag', 'tag', 'tags', 'award', 'crown', 'gem', 'diamond'] },
-            { label: 'Reading', icons: ['book', 'book-open', 'book-marked', 'library', 'newspaper', 'scroll', 'notebook', 'graduation-cap', 'school', 'brain'] },
-            { label: 'Audio', icons: ['music', 'headphones', 'mic', 'radio', 'podcast', 'disc', 'album', 'bluetooth', 'signal', 'atom'] },
-            { label: 'Visual', icons: ['video', 'film', 'tv', 'monitor', 'camera', 'image', 'images', 'eye', 'gamepad-2', 'dice-5'] },
-            { label: 'Travel', icons: ['trophy', 'medal', 'target', 'puzzle', 'bike', 'ship', 'rocket', 'plane', 'train', 'bus'] },
-            { label: 'Tech', icons: ['code', 'terminal', 'database', 'server', 'cpu', 'hard-drive', 'wifi', 'globe', 'rss', 'git-merge'] },
-            { label: 'Nature', icons: ['sun', 'moon', 'cloud', 'umbrella', 'tree-pine', 'flower-2', 'leaf', 'droplets', 'snowflake', 'wind'] },
-            { label: 'Food', icons: ['coffee', 'utensils', 'chef-hat', 'pizza', 'apple', 'cake', 'cookie', 'ice-cream-cone', 'thermometer', 'flame'] },
-            { label: 'Shopping', icons: ['shopping-cart', 'shopping-bag', 'gift', 'package', 'wallet', 'credit-card', 'coins', 'piggy-bank', 'box', 'briefcase'] },
-            { label: 'Social', icons: ['mail', 'message-square', 'phone', 'at-sign', 'send', 'inbox', 'users', 'user', 'contact', 'hand'] }
-        ];
+        var $settings_tab = $('.NB-tab-settings', this.$modal);
+        var $feed_icon_tab = $('.NB-tab-feed-icon', this.$modal);
 
-        var $container = $.make('div', { className: 'NB-folder-icon-presets-container' });
+        // Move all feed-specific content into the Settings tab
+        var $view_settings = $('.NB-exception-option-view', this.$modal).detach();
+        var $retry_option = $('.NB-exception-option-retry', this.$modal).detach();
+        var $feed_option = $('.NB-exception-option-feed', this.$modal).detach();
+        var $page_option = $('.NB-exception-option-page', this.$modal).detach();
+        $settings_tab.append($view_settings).append($feed_option).append($page_option).append($retry_option);
 
-        _.each(icon_categories, function (category) {
-            var $row = $.make('div', { className: 'NB-folder-icon-preset-row' }, [
-                $.make('div', { className: 'NB-folder-icon-preset-label' }, category.label),
-                $.make('div', { className: 'NB-folder-icon-preset-items' })
-            ]);
-            var $items = $row.find('.NB-folder-icon-preset-items');
-            _.each(category.icons, function (icon_name) {
-                var $icon = $.make('div', { className: 'NB-folder-icon-preset', 'data-icon': icon_name }, [
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/lucide/' + icon_name + '.svg' })
-                ]);
-                $items.append($icon);
-            });
-            $container.append($row);
+        // Build feed icon tab content
+        this.feed_icon = NEWSBLUR.assets.get_feed_icon(this.feed_id) || {};
+        this.selected_icon_type = this.feed_icon.icon_type || 'none';
+        this.selected_icon_data = this.feed_icon.icon_data || '';
+        this.selected_icon_color = this.feed_icon.icon_color || '#000000';
+
+        $feed_icon_tab.append(this.make_feed_icon_tab());
+
+        // Update header icon to show custom icon if one exists
+        if (this.feed_icon && this.feed_icon.icon_type && this.feed_icon.icon_type !== 'none') {
+            this.update_header_icon();
+        }
+        this.select_current_feed_icon();
+        this.select_current_color();
+        // Apply color preview to icon grid if color is set
+        if (this.selected_icon_color && this.selected_icon_color !== '#000000') {
+            this.update_icon_grid_colors(this.selected_icon_color);
+        }
+
+        // Show/hide header clear link based on whether there's an icon
+        var has_icon = this.feed_icon && this.feed_icon.icon_type && this.feed_icon.icon_type !== 'none';
+        $('.NB-folder-icon-clear-header', this.$modal).toggle(has_icon);
+
+        // Update header clear link text for feeds
+        $('.NB-folder-icon-clear-header', this.$modal).text('Reset to favicon');
+
+        // Add click handler for header clear link
+        $('.NB-folder-icon-clear-header', this.$modal).on('click', function (e) {
+            e.preventDefault();
+            self.clear_feed_icon();
         });
 
-        return $container;
+        // Add change handler for file input
+        $('.NB-folder-icon-file-input', this.$modal).on('change', _.bind(this.handle_icon_upload, this));
     },
 
-    make_filled_icons: function () {
-        var self = this;
-        // Heroicons solid icons organized by category with accurate labels
-        var icon_categories = [
-            { label: 'Files', icons: ['folder', 'folder-open', 'document', 'document-text', 'document-chart-bar', 'archive-box', 'clipboard', 'clipboard-document', 'inbox', 'rectangle-stack'] },
-            { label: 'Places', icons: ['home', 'building-office', 'building-library', 'building-storefront', 'map', 'map-pin', 'globe-alt', 'globe-americas', 'academic-cap', 'briefcase'] },
-            { label: 'People', icons: ['users', 'user', 'face-smile', 'face-frown', 'identification', 'hand-raised', 'hand-thumb-up'] },
-            { label: 'Messages', icons: ['envelope', 'phone', 'megaphone', 'chat-bubble-left', 'chat-bubble-bottom-center', 'chat-bubble-left-right', 'paper-airplane', 'at-symbol', 'hashtag', 'signal'] },
-            { label: 'Media', icons: ['musical-note', 'film', 'camera', 'photo', 'video-camera', 'tv', 'radio', 'play', 'speaker-wave', 'microphone'] },
-            { label: 'Markers', icons: ['star', 'heart', 'bookmark', 'flag', 'tag', 'sparkles', 'trophy', 'gift', 'ticket', 'cake'] },
-            { label: 'Creative', icons: ['book-open', 'newspaper', 'pencil', 'paint-brush', 'scissors', 'paper-clip', 'light-bulb', 'puzzle-piece', 'swatch', 'eye'] },
-            { label: 'Finance', icons: ['shopping-cart', 'wallet', 'banknotes', 'credit-card', 'currency-dollar', 'receipt-percent', 'calculator', 'chart-bar', 'chart-pie', 'table-cells'] },
-            { label: 'Devices', icons: ['computer-desktop', 'device-phone-mobile', 'device-tablet', 'printer', 'server', 'server-stack', 'cpu-chip', 'wifi', 'code-bracket', 'command-line'] },
-            { label: 'Tools', icons: ['cog-6-tooth', 'wrench', 'adjustments-horizontal', 'bars-3', 'magnifying-glass', 'key', 'lock-closed', 'lock-open', 'bell', 'trash'] },
-            { label: 'Security', icons: ['finger-print', 'shield-check', 'link', 'qr-code', 'rss'] },
-            { label: 'Weather', icons: ['sun', 'moon', 'cloud', 'fire', 'bolt', 'bolt-slash'] },
-            { label: 'Science', icons: ['beaker', 'bug-ant', 'scale', 'lifebuoy'] },
-            { label: 'Objects', icons: ['truck', 'rocket-launch', 'cube', 'square-2-stack', 'language', 'clock', 'calendar'] },
-            { label: 'Arrows', icons: ['arrow-path', 'arrow-down-tray', 'arrow-up-tray', 'arrow-up-circle', 'arrow-down-circle', 'backspace'] },
-            { label: 'Status', icons: ['check-circle', 'x-circle', 'plus-circle', 'minus-circle', 'question-mark-circle', 'exclamation-circle', 'exclamation-triangle', 'information-circle'] }
-        ];
-
-        var $container = $.make('div', { className: 'NB-folder-icon-filled-container' });
-
-        _.each(icon_categories, function (category) {
-            var $row = $.make('div', { className: 'NB-folder-icon-filled-row' }, [
-                $.make('div', { className: 'NB-folder-icon-filled-label' }, category.label),
-                $.make('div', { className: 'NB-folder-icon-filled-items' })
-            ]);
-            var $items = $row.find('.NB-folder-icon-filled-items');
-            _.each(category.icons, function (icon_name) {
-                var $icon = $.make('div', { className: 'NB-folder-icon-preset NB-folder-icon-filled', 'data-icon': icon_name, 'data-icon-set': 'heroicons-solid' }, [
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/heroicons-solid/' + icon_name + '.svg' })
-                ]);
-                $items.append($icon);
-            });
-            $container.append($row);
+    make_feed_icon_tab: function () {
+        // Use shared icon picker component
+        return NEWSBLUR.IconPicker.make_icon_editor({
+            include_upload: true,
+            include_reset: false
         });
-
-        return $container;
     },
 
-    make_emoji_picker: function () {
-        // Emojis organized by category with labels
-        var emoji_categories = [
-            { label: 'Files', emojis: ['📁', '📂', '📚', '📖', '📰', '📄', '📑', '📋', '📝', '✏️'] },
-            { label: 'Tech', emojis: ['💻', '📱', '📺', '🎬', '🎵', '🎧', '🎮', '📷', '📹', '🖨️'] },
-            { label: 'Stars', emojis: ['⭐', '🌟', '✨', '💫', '⚡', '🔥', '💥', '❄️', '🌈', '🎇'] },
-            { label: 'Weather', emojis: ['☀️', '🌙', '☁️', '🌧️', '⛈️', '🌪️', '🌊', '💧', '🌤️', '🌥️'] },
-            { label: 'Nature', emojis: ['🌲', '🌳', '🌴', '🌻', '🌺', '🌸', '🌷', '🌹', '🍀', '🌿'] },
-            { label: '', emojis: ['🍂', '🍁', '🌵', '🌾', '🌱', '🪴', '🎋', '🎍', '🍃', '☘️'] },
-            { label: 'Food', emojis: ['☕', '🍵', '🍺', '🍷', '🥤', '🧃', '🍽️', '🍴', '🥢', '🧂'] },
-            { label: '', emojis: ['🍕', '🍔', '🍟', '🌮', '🍜', '🍣', '🍰', '🍩', '🍎', '🍇'] },
-            { label: 'Animals', emojis: ['🐶', '🐱', '🐦', '🐟', '🦋', '🐝', '🦊', '🐼', '🦁', '🐸'] },
-            { label: '', emojis: ['🦄', '🐯', '🐻', '🐨', '🐰', '🦉', '🦅', '🐢', '🐬', '🦈'] },
-            { label: 'Places', emojis: ['🏠', '🏢', '🏫', '🏥', '🏰', '⛪', '🕌', '🗼', '🏛️', '🎪'] },
-            { label: 'Transport', emojis: ['✈️', '🚗', '🚲', '🚀', '⛵', '🚂', '🚁', '🛸', '🏎️', '🚌'] },
-            { label: 'Sports', emojis: ['⚽', '🏀', '🎾', '🎯', '🏆', '🎭', '🎨', '🎸', '🎹', '🏋️'] },
-            { label: 'Hearts', emojis: ['❤️', '💛', '💚', '💙', '💜', '🧡', '🖤', '🤍', '💖', '💝'] },
-            { label: 'Status', emojis: ['✅', '❌', '⚠️', 'ℹ️', '❓', '🔔', '🔒', '🔑', '💡', '🎁'] },
-            { label: 'Objects', emojis: ['💰', '💼', '🎓', '🏅', '💎', '🛒', '🌍', '🌎', '🌏', '🗺️'] },
-            { label: 'Faces', emojis: ['😀', '😊', '🥳', '🤔', '😎', '🤩', '🙄', '😴', '🤗', '🥰'] },
-            { label: 'Gestures', emojis: ['👍', '👎', '👋', '✋', '🤝', '🙏', '👏', '🎉', '🎊', '🔖'] }
-        ];
+    select_current_feed_icon: function () {
+        // Always clear upload preview first
+        var $preview = $('.NB-folder-icon-upload-preview', this.$modal);
+        $preview.empty().hide();
 
-        var $container = $.make('div', { className: 'NB-folder-icon-emojis-container' });
+        if (!this.feed_icon || !this.feed_icon.icon_type || this.feed_icon.icon_type === 'none') return;
 
-        _.each(emoji_categories, function (category) {
-            var $row = $.make('div', { className: 'NB-folder-icon-emoji-row' }, [
-                $.make('div', { className: 'NB-folder-icon-emoji-label' }, category.label),
-                $.make('div', { className: 'NB-folder-icon-emoji-items' })
-            ]);
-            var $items = $row.find('.NB-folder-icon-emoji-items');
-            _.each(category.emojis, function (emoji) {
-                var $emoji = $.make('div', { className: 'NB-folder-icon-emoji-option', 'data-emoji': emoji }, emoji);
-                $items.append($emoji);
+        if (this.feed_icon.icon_type === 'preset') {
+            var icon_set = this.feed_icon.icon_set || 'lucide';
+            if (icon_set === 'heroicons-solid') {
+                $('.NB-folder-icon-preset[data-icon="' + this.feed_icon.icon_data + '"][data-icon-set="heroicons-solid"]', this.$modal).addClass('NB-active');
+            } else {
+                $('.NB-folder-icon-preset[data-icon="' + this.feed_icon.icon_data + '"]:not([data-icon-set])', this.$modal).addClass('NB-active');
+            }
+        } else if (this.feed_icon.icon_type === 'emoji') {
+            var icon_data = this.feed_icon.icon_data;
+            $('.NB-folder-icon-emoji-option', this.$modal).each(function () {
+                if ($(this).data('emoji') === icon_data) {
+                    $(this).addClass('NB-active');
+                }
             });
-            $container.append($row);
-        });
-
-        return $container;
-    },
-
-    make_color_palette: function () {
-        // Color palette organized by columns (each column is one hue, rows go light to dark)
-        // 12 columns: Gray, Red, Pink, Purple, Indigo, Blue, Cyan, Teal, Green, Lime, Yellow, Orange
-        var colors = [
-            // Row 1: Lightest
-            '#f5f5f5', '#ffcdd2', '#f8bbd0', '#e1bee7', '#c5cae9', '#bbdefb', '#b3e5fc', '#b2dfdb', '#c8e6c9', '#dcedc8', '#fff9c4', '#ffe0b2',
-            // Row 2: Light
-            '#e0e0e0', '#ef9a9a', '#f48fb1', '#ce93d8', '#9fa8da', '#90caf9', '#81d4fa', '#80cbc4', '#a5d6a7', '#c5e1a5', '#fff59d', '#ffcc80',
-            // Row 3: Medium-Light
-            '#bdbdbd', '#e57373', '#f06292', '#ba68c8', '#7986cb', '#64b5f6', '#4fc3f7', '#4db6ac', '#81c784', '#aed581', '#fff176', '#ffb74d',
-            // Row 4: Medium
-            '#9e9e9e', '#f44336', '#ec407a', '#ab47bc', '#5c6bc0', '#42a5f5', '#29b6f6', '#26a69a', '#66bb6a', '#9ccc65', '#ffee58', '#ffa726',
-            // Row 5: Medium-Dark
-            '#757575', '#e53935', '#d81b60', '#8e24aa', '#3f51b5', '#1e88e5', '#039be5', '#00897b', '#43a047', '#7cb342', '#fdd835', '#ff9800',
-            // Row 6: Dark
-            '#616161', '#c62828', '#ad1457', '#6a1b9a', '#303f9f', '#1565c0', '#0277bd', '#00695c', '#2e7d32', '#558b2f', '#f9a825', '#ef6c00',
-            // Row 7: Darkest
-            '#424242', '#b71c1c', '#880e4f', '#4a148c', '#1a237e', '#0d47a1', '#01579b', '#004d40', '#1b5e20', '#33691e', '#f57f17', '#e65100'
-        ];
-
-        var $colors = $.make('div', { className: 'NB-folder-icon-colors-grid' });
-        _.each(colors, function (color) {
-            var $color = $.make('div', {
-                className: 'NB-folder-icon-color',
-                style: 'background-color: ' + color + (color === '#ffffff' ? '; border: 1px solid #ddd' : ''),
-                'data-color': color
-            });
-            $colors.append($color);
-        });
-
-        return $colors;
+        } else if (this.feed_icon.icon_type === 'upload') {
+            // Show upload preview
+            var $preview = $('.NB-folder-icon-upload-preview', this.$modal);
+            $preview.empty().append(
+                $.make('img', { src: 'data:image/png;base64,' + this.feed_icon.icon_data }),
+                $.make('span', 'Custom icon')
+            ).show();
+        }
     },
 
     select_current_icon: function () {
@@ -843,7 +763,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         }
     },
 
-    switch_folder_tab: function (tab_name) {
+    switch_tab: function (tab_name) {
         $('.NB-modal-tab', this.$modal).removeClass('NB-active');
         $('.NB-modal-tab-' + tab_name, this.$modal).addClass('NB-active');
         $('.NB-tab', this.$modal).removeClass('NB-active');
@@ -866,13 +786,18 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         }
         $('.NB-folder-icon-emoji-option', this.$modal).removeClass('NB-active');
 
-        this.folder_icon = {
-            folder_title: this.folder_title,
+        var icon_data = {
             icon_type: 'preset',
             icon_data: icon_name,
             icon_set: icon_set,
             icon_color: this.selected_icon_color || '#000000'
         };
+
+        if (this.folder) {
+            this.folder_icon = _.extend({ folder_title: this.folder_title }, icon_data);
+        } else if (this.feed) {
+            this.feed_icon = _.extend({ feed_id: this.feed_id }, icon_data);
+        }
         this.update_header_icon();
         this.save_and_refresh_icon();
     },
@@ -887,12 +812,17 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         }).addClass('NB-active');
         $('.NB-folder-icon-preset', this.$modal).removeClass('NB-active');
 
-        this.folder_icon = {
-            folder_title: this.folder_title,
+        var icon_data = {
             icon_type: 'emoji',
             icon_data: emoji,
             icon_color: this.selected_icon_color || '#000000'
         };
+
+        if (this.folder) {
+            this.folder_icon = _.extend({ folder_title: this.folder_title }, icon_data);
+        } else if (this.feed) {
+            this.feed_icon = _.extend({ feed_id: this.feed_id }, icon_data);
+        }
         this.update_header_icon();
         this.save_and_refresh_icon();
     },
@@ -906,17 +836,32 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         // Update icon preview in the grid immediately
         this.update_icon_grid_colors(color);
 
-        // If no icon is set, use the default folder-open icon with this color
-        if (!this.folder_icon || !this.folder_icon.icon_type || this.folder_icon.icon_type === 'none') {
-            this.folder_icon = {
-                folder_title: this.folder_title,
-                icon_type: 'preset',
-                icon_data: 'folder-open',
-                icon_set: 'lucide',
-                icon_color: color
-            };
-        } else {
-            this.folder_icon.icon_color = color;
+        if (this.folder) {
+            // If no icon is set, use the default folder-open icon with this color
+            if (!this.folder_icon || !this.folder_icon.icon_type || this.folder_icon.icon_type === 'none') {
+                this.folder_icon = {
+                    folder_title: this.folder_title,
+                    icon_type: 'preset',
+                    icon_data: 'folder-open',
+                    icon_set: 'lucide',
+                    icon_color: color
+                };
+            } else {
+                this.folder_icon.icon_color = color;
+            }
+        } else if (this.feed) {
+            // If no icon is set, use the default rss icon with this color
+            if (!this.feed_icon || !this.feed_icon.icon_type || this.feed_icon.icon_type === 'none') {
+                this.feed_icon = {
+                    feed_id: this.feed_id,
+                    icon_type: 'preset',
+                    icon_data: 'rss',
+                    icon_set: 'lucide',
+                    icon_color: color
+                };
+            } else {
+                this.feed_icon.icon_color = color;
+            }
         }
 
         this.update_header_icon();
@@ -924,64 +869,28 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     },
 
     update_icon_grid_colors: function (color) {
-        // Apply color tint to all preset icons in the grid using mask-image
-        var has_color = color && color !== '#000000';
-
-        $('.NB-folder-icon-preset img', this.$modal).each(function () {
-            var $img = $(this);
-            var icon_url = $img.attr('src');
-
-            if (has_color) {
-                // Replace img with colored span using mask-image
-                var $colored = $.make('span', { className: 'NB-folder-icon-colored-preview' });
-                $colored.css({
-                    'display': 'inline-block',
-                    'width': '20px',
-                    'height': '20px',
-                    'background-color': color,
-                    '-webkit-mask-image': 'url(' + icon_url + ')',
-                    'mask-image': 'url(' + icon_url + ')',
-                    '-webkit-mask-size': 'contain',
-                    'mask-size': 'contain',
-                    '-webkit-mask-repeat': 'no-repeat',
-                    'mask-repeat': 'no-repeat',
-                    '-webkit-mask-position': 'center',
-                    'mask-position': 'center'
-                });
-                $colored.attr('data-original-src', icon_url);
-                $img.replaceWith($colored);
-            }
-        });
-
-        // Also handle already-colored previews
-        $('.NB-folder-icon-preset .NB-folder-icon-colored-preview', this.$modal).each(function () {
-            var $preview = $(this);
-            if (has_color) {
-                $preview.css('background-color', color);
-            } else {
-                // Restore to original img
-                var icon_url = $preview.attr('data-original-src');
-                var $img = $.make('img', { src: icon_url });
-                $preview.replaceWith($img);
-            }
-        });
+        // Use shared icon picker utility
+        NEWSBLUR.IconPicker.update_icon_grid_colors(this.$modal, color);
     },
 
     update_header_icon: function () {
-        // Update the folder icon in the modal header/subtitle
+        // Update the icon in the modal header/subtitle (works for both folder and feed)
         var $header_container = $('.NB-modal-subtitle', this.$modal);
         var $header_icon = $header_container.find('.NB-modal-feed-image, .NB-folder-emoji, .NB-folder-icon-colored').first();
 
         if (!$header_container.length) return;
 
+        // Determine which icon data to use
+        var icon = this.folder ? this.folder_icon : this.feed_icon;
         var new_icon;
-        if (this.folder_icon && this.folder_icon.icon_type && this.folder_icon.icon_type !== 'none') {
-            var icon_color = this.folder_icon.icon_color;
+
+        if (icon && icon.icon_type && icon.icon_type !== 'none') {
+            var icon_color = icon.icon_color;
             var has_color = icon_color && icon_color !== '#000000';
 
-            if (this.folder_icon.icon_type === 'preset') {
-                var icon_set = this.folder_icon.icon_set || 'lucide';
-                var icon_url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/' + icon_set + '/' + this.folder_icon.icon_data + '.svg';
+            if (icon.icon_type === 'preset') {
+                var icon_set = icon.icon_set || 'lucide';
+                var icon_url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/' + icon_set + '/' + icon.icon_data + '.svg';
                 if (has_color) {
                     // Use mask-image for colored icons
                     new_icon = $.make('span', { className: 'NB-modal-feed-image NB-folder-icon-colored' });
@@ -996,19 +905,25 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                         src: icon_url
                     });
                 }
-            } else if (this.folder_icon.icon_type === 'emoji') {
-                new_icon = $.make('span', { className: 'NB-modal-feed-image NB-folder-emoji' }, this.folder_icon.icon_data);
-            } else if (this.folder_icon.icon_type === 'upload') {
+            } else if (icon.icon_type === 'emoji') {
+                new_icon = $.make('span', { className: 'NB-modal-feed-image NB-folder-emoji' }, icon.icon_data);
+            } else if (icon.icon_type === 'upload') {
                 new_icon = $.make('img', {
                     className: 'NB-modal-feed-image feed_favicon',
-                    src: 'data:image/png;base64,' + this.folder_icon.icon_data
+                    src: 'data:image/png;base64,' + icon.icon_data
                 });
             }
-        } else {
+        } else if (this.folder) {
             // Default folder icon
             new_icon = $.make('img', {
                 className: 'NB-modal-feed-image feed_favicon',
                 src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg'
+            });
+        } else if (this.feed) {
+            // Default feed favicon
+            new_icon = $.make('img', {
+                className: 'NB-modal-feed-image feed_favicon',
+                src: $.favicon(this.feed)
             });
         }
 
@@ -1021,32 +936,40 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         }
 
         // Show/hide the clear link based on whether there's a custom icon
-        var has_custom_icon = this.folder_icon && this.folder_icon.icon_type && this.folder_icon.icon_type !== 'none';
+        var has_custom_icon = icon && icon.icon_type && icon.icon_type !== 'none';
         $('.NB-folder-icon-clear-header', this.$modal).toggle(has_custom_icon);
     },
 
     save_and_refresh_icon: function () {
         var self = this;
-        // Save to backend
-        NEWSBLUR.assets.save_folder_icon(
-            this.folder_title,
-            this.folder_icon.icon_type,
-            this.folder_icon.icon_data,
-            this.folder_icon.icon_color,
-            this.folder_icon.icon_set,
-            function () {
-                // Refresh folder icon everywhere
-                self.refresh_folder_icon_everywhere();
-                // Show the clear link if not already visible
-                if (!$('.NB-folder-icon-clear', self.$modal).length) {
-                    $('.NB-folder-icon-header', self.$modal).append(
-                        $.make('a', { className: 'NB-folder-icon-clear', href: '#' }, 'Clear icon')
-                    );
-                } else {
-                    $('.NB-folder-icon-clear', self.$modal).show();
+
+        if (this.folder) {
+            // Save folder icon to backend
+            NEWSBLUR.assets.save_folder_icon(
+                this.folder_title,
+                this.folder_icon.icon_type,
+                this.folder_icon.icon_data,
+                this.folder_icon.icon_color,
+                this.folder_icon.icon_set,
+                function () {
+                    self.refresh_folder_icon_everywhere();
+                    $('.NB-folder-icon-clear-header', self.$modal).show();
                 }
-            }
-        );
+            );
+        } else if (this.feed) {
+            // Save feed icon to backend
+            NEWSBLUR.assets.save_feed_icon(
+                this.feed_id,
+                this.feed_icon.icon_type,
+                this.feed_icon.icon_data,
+                this.feed_icon.icon_color,
+                this.feed_icon.icon_set,
+                function () {
+                    self.refresh_feed_icon_everywhere();
+                    $('.NB-folder-icon-clear-header', self.$modal).show();
+                }
+            );
+        }
     },
 
     refresh_folder_icon_everywhere: function () {
@@ -1109,7 +1032,97 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         }
     },
 
-    handle_folder_icon_upload: function () {
+    refresh_feed_icon_everywhere: function () {
+        var self = this;
+        var feed_icon = this.feed_icon || {};
+        var is_custom = feed_icon && feed_icon.icon_type && feed_icon.icon_type !== 'none';
+        var icon_color = feed_icon.icon_color;
+        var has_color = icon_color && icon_color !== '#000000';
+
+        // Get icon URL for rendering
+        var icon_url = null;
+        if (feed_icon.icon_type === 'preset') {
+            var icon_set = feed_icon.icon_set || 'lucide';
+            icon_url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/' + icon_set + '/' + feed_icon.icon_data + '.svg';
+        } else if (feed_icon.icon_type === 'upload') {
+            icon_url = 'data:image/png;base64,' + feed_icon.icon_data;
+        }
+
+        // Update sidebar feed
+        var feed = this.feed;
+        if (feed) {
+            // Find the feed in the sidebar and update its favicon
+            var $feed_items = $('.NB-feedlist .feed[data-id="' + this.feed_id + '"]');
+            $feed_items.each(function () {
+                var $feed_item = $(this);
+                var $favicon = $feed_item.find('.feed_favicon');
+
+                if (is_custom) {
+                    if (feed_icon.icon_type === 'emoji') {
+                        // Replace favicon with emoji
+                        var $emoji = $.make('span', { className: 'feed_favicon NB-feed-emoji' }, feed_icon.icon_data);
+                        $favicon.replaceWith($emoji);
+                    } else if (has_color && feed_icon.icon_type === 'preset') {
+                        // Use mask-image for colored preset icons
+                        var $colored = $.make('span', { className: 'feed_favicon NB-feed-icon-colored' });
+                        $colored.css({
+                            'background-color': icon_color,
+                            '-webkit-mask-image': 'url(' + icon_url + ')',
+                            'mask-image': 'url(' + icon_url + ')'
+                        });
+                        $favicon.replaceWith($colored);
+                    } else {
+                        // Regular image icon
+                        $favicon.attr('src', icon_url);
+                    }
+                } else {
+                    // Reset to original favicon
+                    var original_favicon = $.favicon(feed);
+                    if ($favicon.is('img')) {
+                        $favicon.attr('src', original_favicon);
+                    } else {
+                        // Replace back with img
+                        var $img = $.make('img', { className: 'feed_favicon', src: original_favicon });
+                        $favicon.replaceWith($img);
+                    }
+                }
+            });
+
+            // Trigger feed view update if this is the active feed
+            if (NEWSBLUR.reader.active_feed && NEWSBLUR.reader.active_feed == this.feed_id) {
+                // Update feedbar favicon
+                var $feedbar_icon = $('.NB-feedbar .feed_favicon');
+                if ($feedbar_icon.length) {
+                    if (is_custom) {
+                        if (feed_icon.icon_type === 'emoji') {
+                            var $emoji = $.make('span', { className: 'feed_favicon NB-feed-emoji' }, feed_icon.icon_data);
+                            $feedbar_icon.replaceWith($emoji);
+                        } else if (has_color && feed_icon.icon_type === 'preset') {
+                            var $colored = $.make('span', { className: 'feed_favicon NB-feed-icon-colored' });
+                            $colored.css({
+                                'background-color': icon_color,
+                                '-webkit-mask-image': 'url(' + icon_url + ')',
+                                'mask-image': 'url(' + icon_url + ')'
+                            });
+                            $feedbar_icon.replaceWith($colored);
+                        } else {
+                            $feedbar_icon.attr('src', icon_url);
+                        }
+                    } else {
+                        var original_favicon = $.favicon(feed);
+                        if ($feedbar_icon.is('img')) {
+                            $feedbar_icon.attr('src', original_favicon);
+                        } else {
+                            var $img = $.make('img', { className: 'feed_favicon', src: original_favicon });
+                            $feedbar_icon.replaceWith($img);
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    handle_icon_upload: function () {
         var self = this;
         var $file_input = $('.NB-folder-icon-file-input', this.$modal);
         var $button = $('.NB-folder-icon-upload-button', this.$modal);
@@ -1138,11 +1151,19 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         $loading.addClass('NB-active');
 
         var formData = new FormData();
-        formData.append('folder_title', this.folder_title);
+        var upload_url;
+
+        if (this.folder) {
+            formData.append('folder_title', this.folder_title);
+            upload_url = '/reader/upload_folder_icon';
+        } else if (this.feed) {
+            formData.append('feed_id', this.feed_id);
+            upload_url = '/reader/upload_feed_icon';
+        }
         formData.append('photo', file);
 
         $.ajax({
-            url: '/reader/upload_folder_icon',
+            url: upload_url,
             type: 'POST',
             data: formData,
             processData: false,
@@ -1154,13 +1175,26 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 if (response.code >= 0) {
                     self.selected_icon_type = 'upload';
                     self.selected_icon_data = response.icon_data;
-                    self.folder_icon = {
-                        folder_title: self.folder_title,
-                        icon_type: 'upload',
-                        icon_data: response.icon_data,
-                        icon_color: self.selected_icon_color || '#000000'
-                    };
-                    NEWSBLUR.assets.folder_icons[self.folder_title] = self.folder_icon;
+
+                    if (self.folder) {
+                        self.folder_icon = {
+                            folder_title: self.folder_title,
+                            icon_type: 'upload',
+                            icon_data: response.icon_data,
+                            icon_color: self.selected_icon_color || '#000000'
+                        };
+                        NEWSBLUR.assets.folder_icons[self.folder_title] = self.folder_icon;
+                        self.refresh_folder_icon_everywhere();
+                    } else if (self.feed) {
+                        self.feed_icon = {
+                            feed_id: self.feed_id,
+                            icon_type: 'upload',
+                            icon_data: response.icon_data,
+                            icon_color: self.selected_icon_color || '#000000'
+                        };
+                        NEWSBLUR.assets.feed_icons[self.feed_id] = self.feed_icon;
+                        self.refresh_feed_icon_everywhere();
+                    }
 
                     // Show preview
                     $preview.empty().append(
@@ -1169,7 +1203,6 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     ).show();
 
                     self.update_header_icon();
-                    self.refresh_folder_icon_everywhere();
                     $('.NB-folder-icon-preset', self.$modal).removeClass('NB-active');
                     $('.NB-folder-icon-emoji-option', self.$modal).removeClass('NB-active');
                     // Show clear link in header
@@ -1187,6 +1220,11 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
         // Reset file input so same file can be re-selected
         $file_input.val('');
+    },
+
+    // Legacy alias for folder icon upload
+    handle_folder_icon_upload: function () {
+        this.handle_icon_upload();
     },
 
     save_folder_icon: function () {
@@ -1220,6 +1258,30 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             $('.NB-folder-icon-color[data-color="#000000"]', self.$modal).addClass('NB-active');
             // Hide the clear link
             $('.NB-folder-icon-clear', self.$modal).hide();
+            $('.NB-folder-icon-clear-header', self.$modal).hide();
+        });
+    },
+
+    clear_feed_icon: function () {
+        var self = this;
+        this.selected_icon_type = 'none';
+        this.selected_icon_data = '';
+        this.selected_icon_color = '#000000';
+        this.feed_icon = { icon_type: 'none' };
+
+        NEWSBLUR.assets.remove_feed_icon(this.feed_id, function () {
+            self.update_header_icon();
+            self.refresh_feed_icon_everywhere();
+            $('.NB-folder-icon-preset', self.$modal).removeClass('NB-active');
+            $('.NB-folder-icon-emoji-option', self.$modal).removeClass('NB-active');
+            $('.NB-folder-icon-color', self.$modal).removeClass('NB-active');
+            // Select default black color
+            $('.NB-folder-icon-color[data-color="#000000"]', self.$modal).addClass('NB-active');
+            // Hide the clear links
+            $('.NB-folder-icon-clear', self.$modal).hide();
+            $('.NB-folder-icon-clear-header', self.$modal).hide();
+            // Clear upload preview
+            $('.NB-folder-icon-upload-preview', self.$modal).empty().hide();
         });
     },
 

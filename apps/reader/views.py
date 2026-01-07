@@ -61,6 +61,7 @@ from apps.profile.models import MCustomStyling, MDashboardRiver, Profile
 from apps.reader.forms import FeatureForm, LoginForm, SignupForm
 from apps.reader.models import (
     Feature,
+    MCustomFeedIcon,
     MFolderIcon,
     RUserStory,
     RUserUnreadStory,
@@ -498,6 +499,9 @@ def load_feeds(request):
     folder_icons = MFolderIcon.get_folder_icons_for_user(user.pk)
     folder_icons_dict = {fi.folder_title: fi.to_json() for fi in folder_icons}
 
+    feed_icons = MCustomFeedIcon.get_feed_icons_for_user(user.pk)
+    feed_icons_dict = {str(fi.feed_id): fi.to_json() for fi in feed_icons}
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB feeds/socials%s"
@@ -519,6 +523,7 @@ def load_feeds(request):
         "dashboard_rivers": dashboard_rivers,
         "categories": categories,
         "folder_icons": folder_icons_dict,
+        "feed_icons": feed_icons_dict,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -3083,6 +3088,108 @@ def load_folder_icons(request):
     """Load all folder icons for the current user"""
     folder_icons = MFolderIcon.get_folder_icons_for_user(request.user.pk)
     return {"folder_icons": {fi.folder_title: fi.to_json() for fi in folder_icons}}
+
+
+@ajax_login_required
+@json.json_view
+def save_feed_icon(request):
+    """Save a custom feed icon (upload, preset, emoji, or remove)"""
+    feed_id = request.POST.get("feed_id")
+    icon_type = request.POST.get("icon_type", "none")  # upload, preset, emoji, none
+    icon_data = request.POST.get("icon_data")  # base64, icon name, or emoji
+    icon_color = request.POST.get("icon_color")  # hex color
+    icon_set = request.POST.get("icon_set", "lucide")  # lucide, heroicons-solid
+
+    if not feed_id:
+        return {"code": -1, "message": "Feed ID required"}
+
+    try:
+        feed_id = int(feed_id)
+    except (ValueError, TypeError):
+        return {"code": -1, "message": "Invalid feed ID"}
+
+    if icon_type == "none":
+        MCustomFeedIcon.delete_feed_icon(request.user.pk, feed_id)
+        logging.user(request, "~FRRemoving feed icon: ~SB%s" % feed_id)
+    else:
+        MCustomFeedIcon.save_feed_icon(
+            request.user.pk,
+            feed_id,
+            icon_type,
+            icon_data,
+            icon_color,
+            icon_set,
+        )
+        logging.user(request, "~FBSaving feed icon: ~SB%s (%s)" % (feed_id, icon_type))
+
+    feed_icons = MCustomFeedIcon.get_feed_icons_for_user(request.user.pk)
+    return {
+        "code": 1,
+        "feed_icons": {str(fi.feed_id): fi.to_json() for fi in feed_icons},
+    }
+
+
+@ajax_login_required
+@json.json_view
+def upload_feed_icon(request):
+    """Handle file upload for custom feed icons"""
+    from io import BytesIO
+
+    from PIL import Image
+
+    feed_id = request.POST.get("feed_id")
+    photo = request.FILES.get("photo")
+
+    if not feed_id or not photo:
+        return {"code": -1, "message": "Feed ID and photo required"}
+
+    try:
+        feed_id = int(feed_id)
+    except (ValueError, TypeError):
+        return {"code": -1, "message": "Invalid feed ID"}
+
+    try:
+        # Read and validate image
+        photo_body = photo.read()
+        image_file = BytesIO(photo_body)
+        image = Image.open(image_file)
+
+        # Convert to RGBA if needed (for PNG with transparency)
+        if image.mode not in ("RGBA", "RGB"):
+            image = image.convert("RGBA")
+
+        # Resize to 128x128 with aspect ratio preserved, then crop to center
+        image.thumbnail((128, 128), Image.LANCZOS)
+
+        # Create a 128x128 canvas and paste the thumbnail centered
+        canvas = Image.new("RGBA", (128, 128), (255, 255, 255, 0))
+        offset = ((128 - image.width) // 2, (128 - image.height) // 2)
+        canvas.paste(image, offset)
+
+        # Convert to base64
+        buffer = BytesIO()
+        canvas.save(buffer, format="PNG")
+        icon_data = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+        MCustomFeedIcon.save_feed_icon(
+            request.user.pk,
+            feed_id,
+            icon_type="upload",
+            icon_data=icon_data,
+            icon_color=None,
+        )
+
+        logging.user(request, "~FC~BM~SBUploading feed icon: %s" % feed_id)
+
+        feed_icons = MCustomFeedIcon.get_feed_icons_for_user(request.user.pk)
+        return {
+            "code": 1,
+            "icon_data": icon_data,
+            "feed_icons": {str(fi.feed_id): fi.to_json() for fi in feed_icons},
+        }
+    except Exception as e:
+        logging.user(request, "~FRFeed icon upload error: %s" % e)
+        return {"code": -1, "message": "Invalid image file"}
 
 
 @login_required

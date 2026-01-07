@@ -2493,3 +2493,79 @@ class MFolderIcon(mongo.Document):
             "icon_color": self.icon_color,
             "icon_set": self.icon_set or "lucide",
         }
+
+
+class MCustomFeedIcon(mongo.Document):
+    """
+    Custom feed icons for users. Overrides the default favicon.
+    Supports:
+    - Custom uploaded images (base64 PNG)
+    - Preset icons from Lucide or Heroicons library (icon name)
+    - Emoji icons (Unicode character)
+    """
+
+    user_id = mongo.IntField()
+    feed_id = mongo.IntField()
+    icon_type = mongo.StringField(max_length=20, default="none")  # upload, preset, emoji, none
+    icon_data = mongo.StringField()  # base64 PNG, icon name, or emoji char
+    icon_color = mongo.StringField(max_length=20)  # hex color like "#ff5722"
+    icon_set = mongo.StringField(max_length=30, default="lucide")  # lucide, heroicons-solid
+    created_at = mongo.DateTimeField(default=datetime.datetime.now)
+    updated_at = mongo.DateTimeField(default=datetime.datetime.now)
+
+    meta = {
+        "collection": "custom_feed_icons",
+        "indexes": [
+            {"fields": ["user_id", "feed_id"], "unique": True},
+            "user_id",
+        ],
+        "allow_inheritance": False,
+    }
+
+    def __str__(self):
+        return f"[{self.user_id}] feed:{self.feed_id}: {self.icon_type}"
+
+    @classmethod
+    def get_feed_icon(cls, user_id, feed_id):
+        try:
+            return cls.objects.get(user_id=user_id, feed_id=feed_id)
+        except cls.DoesNotExist:
+            return None
+
+    @classmethod
+    def get_feed_icons_for_user(cls, user_id):
+        return cls.objects.filter(user_id=user_id)
+
+    @classmethod
+    def save_feed_icon(cls, user_id, feed_id, icon_type, icon_data=None, icon_color=None, icon_set=None):
+        try:
+            feed_icon = cls.objects.get(user_id=user_id, feed_id=feed_id)
+            feed_icon.icon_type = icon_type
+            feed_icon.icon_data = icon_data
+            feed_icon.icon_color = icon_color
+            feed_icon.icon_set = icon_set or "lucide"
+            feed_icon.updated_at = datetime.datetime.now()
+            feed_icon.save()
+        except cls.DoesNotExist:
+            feed_icon = cls.objects.create(
+                user_id=user_id,
+                feed_id=feed_id,
+                icon_type=icon_type,
+                icon_data=icon_data,
+                icon_color=icon_color,
+                icon_set=icon_set or "lucide",
+            )
+        return feed_icon
+
+    @classmethod
+    def delete_feed_icon(cls, user_id, feed_id):
+        cls.objects.filter(user_id=user_id, feed_id=feed_id).delete()
+
+    def to_json(self):
+        return {
+            "feed_id": self.feed_id,
+            "icon_type": self.icon_type,
+            "icon_data": self.icon_data,
+            "icon_color": self.icon_color,
+            "icon_set": self.icon_set or "lucide",
+        }
