@@ -14050,11 +14050,6 @@ form.opml_import_form input {
     border: 1px solid #DDD;
 }
 
-.NB-dark .NB-modal-folder-settings .NB-folder-icon-current-preview {
-    background: #333;
-    border-color: #444;
-}
-
 .NB-modal-folder-settings .NB-folder-icon-current-preview img {
     width: 32px;
     height: 32px;
@@ -17173,21 +17168,10 @@ form.opml_import_form input {
     background: #E8E8E8;
 }
 
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-preset:hover,
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-emoji-option:hover {
-    background: #404040;
-}
-
 .NB-folder-icon-editor .NB-folder-icon-preset.NB-active,
 .NB-folder-icon-editor .NB-folder-icon-emoji-option.NB-active {
     background: #D4EDFF;
     border-color: #2A7FD8;
-}
-
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-preset.NB-active,
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-emoji-option.NB-active {
-    background: #2A4A6A;
-    border-color: #4A9FFF;
 }
 
 .NB-folder-icon-editor .NB-folder-icon-preset img {
@@ -17240,12 +17224,6 @@ form.opml_import_form input {
     padding-top: 8px;
 }
 
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-preset-label,
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-filled-label,
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-emoji-label {
-    color: #777;
-}
-
 .NB-folder-icon-editor .NB-folder-icon-preset-items,
 .NB-folder-icon-editor .NB-folder-icon-filled-items,
 .NB-folder-icon-editor .NB-folder-icon-emoji-items {
@@ -17281,20 +17259,11 @@ form.opml_import_form input {
     box-shadow: 0 0 0 1px #fff;
 }
 
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-color.NB-active {
-    border-color: #FFF;
-    box-shadow: 0 0 0 1px #000;
-}
-
 /* Upload section */
 .NB-folder-icon-editor .NB-folder-icon-upload-section {
     padding-bottom: 16px;
     margin-bottom: 16px;
     border-bottom: 1px solid #E0E0E0;
-}
-
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-section {
-    border-bottom-color: #444;
 }
 
 .NB-folder-icon-editor .NB-folder-icon-upload-container {
@@ -17354,26 +17323,6 @@ form.opml_import_form input {
     pointer-events: none;
 }
 
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button {
-    background: #2A2A2A;
-    border-color: #4A4A4A;
-}
-
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button::before {
-    background: linear-gradient(135deg, rgba(74, 144, 217, 0.08) 0%, rgba(74, 144, 217, 0) 60%);
-}
-
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button:hover {
-    background: #333;
-    border-color: #5A9FE8;
-    box-shadow: 0 2px 8px rgba(74, 144, 217, 0.2);
-}
-
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button.NB-uploading {
-    background: #1E3A50;
-    border-color: #4A90D9;
-}
-
 .NB-folder-icon-editor .NB-folder-icon-upload-icon {
     width: 40px;
     height: 40px;
@@ -17400,10 +17349,6 @@ form.opml_import_form input {
     box-shadow: 0 4px 12px rgba(74, 144, 217, 0.3);
 }
 
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-icon {
-    background: linear-gradient(135deg, #5A9FE8 0%, #4A8FD8 100%);
-}
-
 .NB-folder-icon-editor .NB-folder-icon-upload-text {
     display: flex;
     flex-direction: column;
@@ -17416,10 +17361,6 @@ form.opml_import_form input {
     font-weight: 600;
     color: #333;
     letter-spacing: -0.01em;
-}
-
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-label {
-    color: #E8E8E8;
 }
 
 .NB-folder-icon-editor .NB-folder-icon-upload-hint {
@@ -17496,23 +17437,6 @@ form.opml_import_form input {
     flex-shrink: 0;
 }
 
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview {
-    background: linear-gradient(135deg, #1B3D1F 0%, #243D27 100%);
-    border-color: #2E5233;
-}
-
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview img {
-    border-color: #333;
-}
-
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview span {
-    color: #81C784;
-}
-
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview span::before {
-    background-color: #81C784;
-}
-
 .NB-folder-icon-editor .NB-folder-icon-upload-error {
     display: none;
     padding: 12px 16px;
@@ -17531,12 +17455,6 @@ form.opml_import_form input {
     40% { transform: translateX(4px); }
     60% { transform: translateX(-4px); }
     80% { transform: translateX(4px); }
-}
-
-.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-error {
-    background: linear-gradient(135deg, #3D1B1B 0%, #4A2020 100%);
-    border-color: #5D2A2A;
-    color: #EF9A9A;
 }
 
 .NB-folder-icon-editor .NB-modal-submit-save {
@@ -17629,10 +17547,6 @@ form.opml_import_form input {
     border-bottom: 1px solid #E0E0E0;
 }
 
-.NB-dark .NB-popover-section-folder-icon {
-    border-bottom-color: #444;
-}
-
 .NB-popover-section-folder-icon .NB-popover-section-title {
     font-size: 10px;
     font-weight: bold;
@@ -17658,11 +17572,6 @@ form.opml_import_form input {
     border: 1px solid #DDD;
 }
 
-.NB-dark .NB-popover-section-folder-icon .NB-folder-icon-current-preview {
-    background: #333;
-    border-color: #444;
-}
-
 .NB-popover-section-folder-icon .NB-folder-icon-current-preview img {
     width: 24px;
     height: 24px;
@@ -17684,20 +17593,9 @@ form.opml_import_form input {
     transition: all 0.15s ease;
 }
 
-.NB-dark .NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button {
-    background: #333;
-    border-color: #555;
-    color: #DDD;
-}
-
 .NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button:hover {
     background: #E0E0E0;
     border-color: #AAA;
-}
-
-.NB-dark .NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button:hover {
-    background: #444;
-    border-color: #666;
 }
 
 /* ========================== */
