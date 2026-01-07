@@ -1991,26 +1991,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, this), error_callback);
     },
 
-    upload_folder_icon: function (folder_title, file, callback, error_callback) {
-        var self = this;
-        var formData = new FormData();
-        formData.append('folder_title', folder_title);
-        formData.append('photo', file);
-
-        $.ajax({
-            url: NEWSBLUR.URLs.reader + '/upload_folder_icon',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                self.folder_icons = response.folder_icons || {};
-                callback && callback(response);
-            },
-            error: error_callback
-        });
-    },
-
     remove_folder_icon: function (folder_title, callback, error_callback) {
         this.save_folder_icon(folder_title, 'none', null, null, null, callback, error_callback);
     },
@@ -2035,26 +2015,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.feed_icons = response.feed_icons || {};
             callback && callback(response);
         }, error_callback);
-    },
-
-    upload_feed_icon: function (feed_id, file, callback, error_callback) {
-        var self = this;
-        var formData = new FormData();
-        formData.append('feed_id', feed_id);
-        formData.append('photo', file);
-
-        $.ajax({
-            url: NEWSBLUR.URLs.reader + '/upload_feed_icon',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                self.feed_icons = response.feed_icons || {};
-                callback && callback(response);
-            },
-            error: error_callback
-        });
     },
 
     remove_feed_icon: function (feed_id, callback, error_callback) {

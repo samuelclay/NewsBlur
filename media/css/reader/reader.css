@@ -9452,6 +9452,14 @@ form.opml_import_form input {
     margin-right: 8px;
 }
 
+.NB-module-river .NB-module-river-favicon .NB-feed-emoji,
+.NB-module-river .NB-module-river-favicon .NB-feed-icon-colored,
+.NB-module-river .NB-module-river-favicon .NB-folder-emoji,
+.NB-module-river .NB-module-river-favicon .NB-folder-icon-colored {
+    transform: translate(0px, 2px);
+    margin-right: 8px;
+}
+
 .NB-module-river .NB-module-river-title {
     display: inline-block;
     cursor: pointer;
@@ -13771,7 +13779,7 @@ form.opml_import_form input {
     opacity: 1;
 }
 
-.NB-intro-categories .NB-category-feed img {
+.NB-intro-categories .NB-category-feed .NB-category-feed-favicon {
     float: left;
     width: 16px;
     height: 16px;
@@ -17502,6 +17510,19 @@ form.opml_import_form input {
     vertical-align: middle;
 }
 
+.NB-folder-icon-colored {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
 .NB-feedbar .NB-folder-icon .NB-folder-emoji {
     width: 16px;
     height: 16px;
@@ -17675,6 +17696,20 @@ form.opml_import_form input {
     font-size: 16px;
     vertical-align: middle;
     margin-right: 8px;
+}
+
+.NB-modal-subtitle .NB-feed-icon-colored {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
 }
 
 /* ================= */
@@ -19439,6 +19474,14 @@ form.opml_import_form input {
 .NB-feed-badge .NB-feed-badge-title {}
 
 .NB-feed-badge .NB-feed-badge-title img {
+    float: left;
+    margin: 0 4px 0 0;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-feed-badge .NB-feed-badge-title .NB-feed-emoji,
+.NB-feed-badge .NB-feed-badge-title .NB-feed-icon-colored {
     float: left;
     margin: 0 4px 0 0;
     width: 16px;

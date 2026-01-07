@@ -597,19 +597,15 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     make_folder_icon_preview: function () {
         var feed_id = this.options.feed_id || NEWSBLUR.reader.active_feed;
         var folder_title = feed_id.replace('river:', '');
-        var folder_icon = NEWSBLUR.assets.get_folder_icon(folder_title);
         var $preview = $.make('div', { className: 'NB-folder-icon-preview-small' });
+        var $icon = $.favicon_el('river:' + folder_title, {
+            image_class: '',
+            emoji_class: 'NB-folder-icon-emoji-small',
+            colored_class: 'NB-folder-icon-colored'
+        });
 
-        if (folder_icon && folder_icon.icon_type && folder_icon.icon_type !== 'none') {
-            if (folder_icon.icon_type === 'upload') {
-                $preview.append($.make('img', { src: 'data:image/png;base64,' + folder_icon.icon_data }));
-            } else if (folder_icon.icon_type === 'preset') {
-                $preview.append($.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/lucide/' + folder_icon.icon_data + '.svg' }));
-            } else if (folder_icon.icon_type === 'emoji') {
-                $preview.append($.make('span', { className: 'NB-folder-icon-emoji-small' }, folder_icon.icon_data));
-            }
-        } else {
-            $preview.append($.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg' }));
+        if ($icon) {
+            $preview.append($icon);
         }
 
         return $preview;

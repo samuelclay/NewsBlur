@@ -418,6 +418,15 @@ fieldset legend {
     height: 16px;
 }
 
+.NB-modal .NB-modal-feed-image.NB-feed-emoji,
+.NB-modal .NB-modal-feed-image.NB-feed-icon-colored,
+.NB-modal .NB-modal-feed-image.NB-folder-emoji,
+.NB-modal .NB-modal-feed-image.NB-folder-icon-colored {
+    margin: 0 6px 0 0;
+    width: 16px;
+    height: 16px;
+}
+
 .NB-modal .NB-fieldset {
     /* border-bottom: 1px solid rgba(0, 0, 0, .1); */
     margin: 24px 0 0;

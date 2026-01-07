@@ -285,54 +285,5 @@ NEWSBLUR.IconPicker = {
                 $preview.replaceWith($img);
             }
         });
-    },
-
-    // Helper to get icon URL from icon data
-    get_icon_url: function (icon_type, icon_data, icon_set) {
-        if (icon_type === 'upload') {
-            return 'data:image/png;base64,' + icon_data;
-        } else if (icon_type === 'preset') {
-            icon_set = icon_set || 'lucide';
-            return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/' + icon_set + '/' + icon_data + '.svg';
-        } else if (icon_type === 'emoji') {
-            return 'emoji:' + icon_data;
-        }
-        return null;
-    },
-
-    // Build an icon preview element from icon data
-    make_icon_preview: function (icon_type, icon_data, icon_color, icon_set, size) {
-        size = size || 16;
-        var has_color = icon_color && icon_color !== '#000000';
-
-        if (icon_type === 'emoji') {
-            return $.make('span', { className: 'NB-folder-emoji', style: 'font-size: ' + size + 'px' }, icon_data);
-        } else if (icon_type === 'preset') {
-            icon_set = icon_set || 'lucide';
-            var icon_url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/' + icon_set + '/' + icon_data + '.svg';
-            if (has_color) {
-                var $colored = $.make('span', { className: 'NB-folder-icon-colored' });
-                $colored.css({
-                    'display': 'inline-block',
-                    'width': size + 'px',
-                    'height': size + 'px',
-                    'background-color': icon_color,
-                    '-webkit-mask-image': 'url(' + icon_url + ')',
-                    'mask-image': 'url(' + icon_url + ')',
-                    '-webkit-mask-size': 'contain',
-                    'mask-size': 'contain',
-                    '-webkit-mask-repeat': 'no-repeat',
-                    'mask-repeat': 'no-repeat',
-                    '-webkit-mask-position': 'center',
-                    'mask-position': 'center'
-                });
-                return $colored;
-            } else {
-                return $.make('img', { className: 'feed_favicon', src: icon_url, style: 'width: ' + size + 'px; height: ' + size + 'px' });
-            }
-        } else if (icon_type === 'upload') {
-            return $.make('img', { className: 'feed_favicon', src: 'data:image/png;base64,' + icon_data, style: 'width: ' + size + 'px; height: ' + size + 'px' });
-        }
-        return null;
     }
 };

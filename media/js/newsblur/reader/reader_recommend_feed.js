@@ -40,7 +40,11 @@ _.extend(NEWSBLUR.ReaderRecommendFeed.prototype, {
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
-                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
+                $.favicon_el(this.feed, {
+                    image_class: 'NB-modal-feed-image feed_favicon',
+                    emoji_class: 'NB-modal-feed-image NB-feed-emoji',
+                    colored_class: 'NB-modal-feed-image NB-feed-icon-colored'
+                }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
                     $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
