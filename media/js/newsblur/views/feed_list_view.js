@@ -60,7 +60,6 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         $('.NB-feeds-header-river-sites .NB-feeds-header-icon').attr('src', $.favicon('river:'));
         $('.NB-feeds-header-read .NB-feeds-header-icon').attr('src', $.favicon('read'));
         $('.NB-feeds-header-searches .NB-feeds-header-icon').attr('src', $.favicon('searches'));
-        $('.NB-feeds-header-read .NB-feeds-header-icon').attr('src', $.favicon('read'));
         $('.NB-feeds-header-starred .NB-feeds-header-icon').attr('src', $.favicon('starred'));
     },
 

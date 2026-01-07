@@ -252,7 +252,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         <div class="NB-feed-story-header-feed">\
             <% if (feed) { %>\
                 <div class="NB-feed-story-feed">\
-                    <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                    <%= $.favicon_html(feed) %>\
                     <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
                 </div>\
             <% } %>\

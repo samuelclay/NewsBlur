@@ -281,7 +281,19 @@ var classifier_prototype = {
         if (this.options.feed_loaded && this.feed) {
             this.feed_tags = this.model.get_feed_tags();
             this.feed_authors = this.model.get_feed_authors();
-            $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
+            var $feed_icon = $.favicon_el(this.feed, {
+                image_class: 'NB-modal-feed-image feed_favicon',
+                emoji_class: 'NB-modal-feed-image NB-feed-emoji',
+                colored_class: 'NB-modal-feed-image NB-feed-icon-colored'
+            });
+            if ($feed_icon) {
+                var $existing_icon = $('.NB-modal-subtitle .NB-modal-feed-image, .NB-modal-subtitle .NB-feed-emoji, .NB-modal-subtitle .NB-feed-icon-colored', this.$modal).first();
+                if ($existing_icon.length) {
+                    $existing_icon.replaceWith($feed_icon);
+                } else {
+                    $('.NB-modal-subtitle', this.$modal).prepend($feed_icon);
+                }
+            }
             $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed.get('feed_title'));
             $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true));
         }
@@ -403,7 +415,11 @@ var classifier_prototype = {
             $.make('h2', { className: 'NB-modal-title' }, ''),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
-                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
+                $.favicon_el(this.feed, {
+                    image_class: 'NB-modal-feed-image feed_favicon',
+                    emoji_class: 'NB-modal-feed-image NB-feed-emoji',
+                    colored_class: 'NB-modal-feed-image NB-feed-icon-colored'
+                }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
                     $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
@@ -479,7 +495,11 @@ var classifier_prototype = {
             $.make('h2', { className: 'NB-modal-title' }),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
-                $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
+                $.favicon_el(this.feed, {
+                    image_class: 'NB-modal-feed-image feed_favicon',
+                    emoji_class: 'NB-modal-feed-image NB-feed-emoji',
+                    colored_class: 'NB-modal-feed-image NB-feed-icon-colored'
+                }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
                     $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
                     $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
@@ -801,11 +821,7 @@ var classifier_prototype = {
                     $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
                 ]),
                 $.make('label', [
-                    (classifier_type == 'feed' &&
-                        $.make('img', {
-                            className: 'feed_favicon',
-                            src: $.favicon(classifier)
-                        })),
+                    (classifier_type == 'feed' && $.favicon_el(classifier)),
                     $.make('b', classifier_type_title + ': '),
                     $.make('span', classifier_title)
                 ])
