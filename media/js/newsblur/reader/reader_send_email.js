@@ -44,7 +44,11 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             $.make('h2', { className: 'NB-modal-title' }, 'Send Story by Email'),
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 (this.feed && $.make('div', { className: 'NB-modal-email-feed' }, [
-                    $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
+                    $.favicon_el(this.feed, {
+                        image_class: 'NB-modal-feed-image feed_favicon',
+                        emoji_class: 'NB-modal-feed-image NB-feed-emoji',
+                        colored_class: 'NB-modal-feed-image NB-feed-icon-colored'
+                    }),
                     $.make('div', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title'))
                 ])),
                 $.make('div', { className: 'NB-modal-email-story-title' }, this.story.story_title),

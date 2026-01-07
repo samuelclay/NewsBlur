@@ -426,15 +426,15 @@ class Feed(models.Model):
         return [f.pk for f in feeds]
 
     @classmethod
-    def autocomplete(self, prefix, limit=5):
-        results = SearchFeed.query(prefix)
-        feed_ids = [result["_source"]["feed_id"] for result in results[:5]]
+    def autocomplete(cls, prefix, limit=5):
+        # Fast text search first
+        results = SearchFeed.query(prefix, max_results=limit)
 
-        # results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
-        #
-        # if len(results) < limit:
-        #     results += SearchQuerySet().autocomplete(title=prefix).order_by('-num_subscribers')[:limit-len(results)]
-        #
+        # Fall back to hybrid (semantic) search if no text results
+        if not results:
+            results = SearchFeed.hybrid_query(prefix, max_results=limit)
+
+        feed_ids = [result["_source"]["feed_id"] for result in results[:limit]]
         return feed_ids
 
     @classmethod
@@ -1424,8 +1424,8 @@ class Feed(models.Model):
     def fake_user_agent(self):
         ua = (
             '("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
-            "AppleWebKit/605.1.15 (KHTML, like Gecko) "
-            'Version/14.0.1 Safari/605.1.15")'
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            'Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0")'
         )
 
         return ua
