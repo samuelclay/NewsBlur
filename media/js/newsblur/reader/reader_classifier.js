@@ -487,77 +487,16 @@ var classifier_prototype = {
             ]),
             (this.options['feed_loaded'] &&
                 $.make('form', { method: 'post' }, [
-                    $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
-                        $.make('h5', 'Story Text'),
-                        $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                            $.make('div', { className: 'NB-classifier-help-text' }, 'Highlight text in the field below to train on specific phrases'),
-                            $.make('input', { type: 'text', value: selected_text, className: 'NB-classifier-text-highlight' }),
-                            this.make_classifier('<span class="NB-classifier-text-placeholder">Select text above</span>', '', 'text'),
-                            $.make('span',
-                                this.make_user_texts(story.get('story_content'))
-                            ),
-                            (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && $.make('div', { className: 'NB-classifier-text-premium-notice' }, [
-                                $.make('div', { className: 'NB-classifier-text-premium-notice-text' }, [
-                                    'Text classifiers will be saved but not applied.',
-                                    $.make('br'),
-                                    'Upgrade to ',
-                                    $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive or Premium Pro'),
-                                    ' to use text classifiers.'
-                                ])
-                            ]))
-                        ])
-                    ]),
-                    (story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
-                        $.make('h5', 'Story Title'),
-                        $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                            $.make('div', { className: 'NB-classifier-help-text' }, 'Highlight phrases in the title below to train on specific words'),
-                            $.make('input', { type: 'text', value: story_title, className: 'NB-classifier-title-highlight' }),
-                            this.make_classifier('<span class="NB-classifier-title-placeholder">Select phrase above</span>', '', 'title'),
-                            $.make('span',
-                                this.make_user_titles(story_title)
-                            )
-                        ])
-                    ])),
+                    // Section 1: Combined Text/Title matching (compact stacked)
+                    this.make_content_matching_section(story_title, selected_text, story),
+                    // Section 2: Regex Filter
                     this.make_regex_section(),
-                    (story.story_authors() && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
-                        $.make('h5', 'Story Author'),
-                        $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
-                            this.make_authors([story.story_authors()])
-                        )
-                    ])),
-                    (story.get('story_tags').length && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
-                        $.make('h5', 'Story Categories &amp; Tags'),
-                        $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
-                            this.make_tags(story.get('story_tags'))
-                        )
-                    ])),
-
-                    (this.feed_authors && this.feed_authors.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                        $.make('h5', 'Feed Authors'),
-                        $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
-                            this.make_authors(this.feed_authors)
-                        )
-                    ])),
-
-                    (this.feed_tags && this.feed_tags.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                        $.make('h5', 'Feed Categories &amp; Tags'),
-                        $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
-                            this.make_tags(this.feed_tags)
-                        )
-                    ])),
-
-                    (this.feed_publishers && this.feed_publishers.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-publishers' }, [
-                        $.make('h5', 'Sharing Stories From These Sites'),
-                        $.make('div', { className: 'NB-classifier-publishers NB-fieldset-fields NB-classifiers' },
-                            this.make_publishers(this.feed_publishers)
-                        )
-                    ])),
-                    $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
-                        $.make('h5', 'Everything by This Publisher'),
-                        $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
-                            this.make_publisher(feed)
-                        )
-                    ])
+                    // Section 3: Combined Authors (story author + feed authors)
+                    this.make_combined_authors_section(story),
+                    // Section 4: Combined Tags (story tags + feed tags)
+                    this.make_combined_tags_section(story),
+                    // Section 5: Publisher
+                    this.make_combined_publisher_section(feed)
                 ])
             ),
             (!this.options['feed_loaded'] &&
@@ -568,6 +507,118 @@ var classifier_prototype = {
                     $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
                     $.make('div', { className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-disabled' }, 'Check what you like above...')
                 ])
+            ])
+        ]);
+    },
+
+    make_content_matching_section: function (story_title, selected_text, story) {
+        var self = this;
+        return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section' }, [
+            $.make('h5', 'Match Text or Title'),
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                $.make('div', { className: 'NB-classifier-help-text' }, 'Highlight words to train'),
+                $.make('div', { className: 'NB-classifier-content-inputs' }, [
+                    $.make('label', 'Title'),
+                    $.make('input', { type: 'text', value: story_title || '', className: 'NB-classifier-title-highlight' }),
+                    $.make('label', 'Content'),
+                    $.make('input', { type: 'text', value: selected_text, className: 'NB-classifier-text-highlight' })
+                ]),
+                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
+                    this.make_classifier('<span class="NB-classifier-title-placeholder">Select title phrase</span>', '', 'title'),
+                    $.make('span', this.make_user_titles(story_title)),
+                    this.make_classifier('<span class="NB-classifier-text-placeholder">Select content text</span>', '', 'text'),
+                    $.make('span', this.make_user_texts(story.get('story_content')))
+                ]),
+                (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && $.make('div', { className: 'NB-classifier-text-premium-notice' }, [
+                    $.make('div', { className: 'NB-classifier-text-premium-notice-text' }, [
+                        'Text classifiers will be saved but not applied. ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Upgrade to Premium')
+                    ])
+                ]))
+            ])
+        ]);
+    },
+
+    make_combined_authors_section: function (story) {
+        var story_author = story.story_authors();
+        var feed_authors = this.feed_authors || [];
+
+        // Filter out story author from feed authors to avoid duplication
+        var other_authors = feed_authors.filter(function (author_obj) {
+            var author = typeof author_obj === 'string' ? author_obj : author_obj[0];
+            return author !== story_author;
+        });
+
+        // Build combined authors list
+        var has_story_author = story_author && story_author.length > 0;
+        var has_other_authors = other_authors.length > 0;
+
+        if (!has_story_author && !has_other_authors) {
+            return '';  // No authors to show
+        }
+
+        var $story_authors = has_story_author ?
+            $.make('div', { className: 'NB-classifier-this-story' }, this.make_authors([story_author])) : '';
+        var $feed_authors = has_other_authors ?
+            $.make('div', { className: 'NB-classifier-feed-items' }, this.make_authors(other_authors)) : '';
+
+        return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+            $.make('h5', 'Authors'),
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                $story_authors,
+                $feed_authors
+            ])
+        ]);
+    },
+
+    make_combined_tags_section: function (story) {
+        var story_tags = story.get('story_tags') || [];
+        var feed_tags = this.feed_tags || [];
+
+        // Get story tag names for comparison
+        var story_tag_names = story_tags.map(function (tag) {
+            return typeof tag === 'string' ? tag.toLowerCase() : tag[0].toLowerCase();
+        });
+
+        // Filter out story tags from feed tags to avoid duplication
+        var other_tags = feed_tags.filter(function (tag_obj) {
+            var tag = typeof tag_obj === 'string' ? tag_obj : tag_obj[0];
+            return !_.contains(story_tag_names, tag.toLowerCase());
+        });
+
+        // Build combined tags list
+        var has_story_tags = story_tags.length > 0;
+        var has_other_tags = other_tags.length > 0;
+
+        if (!has_story_tags && !has_other_tags) {
+            return '';  // No tags to show
+        }
+
+        var $story_tags = has_story_tags ?
+            $.make('div', { className: 'NB-classifier-this-story' }, this.make_tags(story_tags)) : '';
+        var $feed_tags = has_other_tags ?
+            $.make('div', { className: 'NB-classifier-feed-items' }, this.make_tags(other_tags)) : '';
+
+        return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+            $.make('h5', 'Categories &amp; Tags'),
+            $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' }, [
+                $story_tags,
+                $feed_tags
+            ])
+        ]);
+    },
+
+    make_combined_publisher_section: function (feed) {
+        var has_other_publishers = this.feed_publishers && this.feed_publishers.length > 0;
+
+        var $other_publishers = has_other_publishers ?
+            $.make('div', { className: 'NB-classifier-feed-items' }, this.make_publishers(this.feed_publishers)) : '';
+
+        return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+            $.make('h5', 'Publisher'),
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                this.make_publisher(feed),
+                $other_publishers
             ])
         ]);
     },

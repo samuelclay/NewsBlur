@@ -8713,6 +8713,89 @@ form.opml_import_form input {
     text-decoration: underline;
 }
 
+/* ================================== */
+/* = Compact Classifier Dialog      = */
+/* ================================== */
+
+/* Reduced section spacing */
+.NB-modal-classifiers .NB-modal-field {
+    margin-bottom: 8px;
+}
+
+/* Smaller section headers */
+.NB-modal-classifiers h5 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 6px 0;
+    color: #666;
+}
+
+/* Combined content matching section */
+.NB-classifier-content-section .NB-classifier-help-text {
+    font-size: 10px;
+    margin: 0 0 6px 0;
+    padding: 4px 6px;
+}
+
+/* Compact stacked inputs */
+.NB-classifier-content-inputs {
+    margin-bottom: 8px;
+}
+
+.NB-classifier-content-inputs label {
+    font-size: 10px;
+    color: #888;
+    margin-bottom: 2px;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.NB-classifier-content-inputs input {
+    width: 100%;
+    padding: 6px 8px;
+    font-size: 12px;
+    margin-bottom: 6px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.NB-classifier-content-inputs input:focus {
+    border-color: #4A90D9;
+    outline: none;
+}
+
+/* Content classifiers container */
+.NB-classifier-content-classifiers {
+    clear: both;
+    overflow: hidden;
+}
+
+/* "This story" indicator - colored left border */
+.NB-classifier-this-story {
+    border-left: 3px solid #a0c6e8;
+    padding-left: 8px;
+    margin-bottom: 6px;
+}
+
+/* Feed items container */
+.NB-classifier-feed-items {
+    clear: both;
+    overflow: hidden;
+}
+
+/* Smaller premium notice */
+.NB-modal-classifiers .NB-classifier-text-premium-notice {
+    margin-top: 6px;
+}
+
+.NB-modal-classifiers .NB-classifier-text-premium-notice-text {
+    font-size: 10px;
+    padding: 4px 8px;
+}
+
 /* =================== */
 /* = Mouse Indicator = */
 /* =================== */
