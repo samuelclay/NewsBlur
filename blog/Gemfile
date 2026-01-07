@@ -17,6 +17,7 @@ gem "minima", "~> 2.5"
 group :jekyll_plugins do
   gem "jekyll-redirect-from", "~> 0.16"
   gem "jekyll-paginate", "~> 1.1"
+  gem "jekyll-auto-image"
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem

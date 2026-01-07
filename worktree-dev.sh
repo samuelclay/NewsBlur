@@ -87,6 +87,10 @@ NEEDS_SETUP=false
 if [ ! -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" ]; then
     NEEDS_SETUP=true
 fi
+# Also run setup if SSL certificates are missing
+if [ ! -f "config/certificates/localhost.pem" ]; then
+    NEEDS_SETUP=true
+fi
 
 # Run setup if needed
 if [ "$NEEDS_SETUP" = true ]; then
@@ -136,9 +140,9 @@ if [ "$NEEDS_SETUP" = true ]; then
     echo -e "${GREEN}✓ Docker and Docker Compose are available${NC}"
 
     # Copy local_settings.py from parent repo if it exists and we don't have it
-    if [ ! -f "newsblur_web/local_settings.py" ] && [ -f "../../../newsblur_web/local_settings.py" ]; then
+    if [ ! -f "newsblur_web/local_settings.py" ] && [ -f "../../newsblur_web/local_settings.py" ]; then
         echo -e "${YELLOW}Copying local_settings.py from parent repo...${NC}"
-        cp ../../../newsblur_web/local_settings.py newsblur_web/local_settings.py
+        cp ../../newsblur_web/local_settings.py newsblur_web/local_settings.py
         echo -e "${GREEN}✓ Copied local_settings.py${NC}"
     elif [ -f "newsblur_web/local_settings.py" ]; then
         echo -e "${GREEN}✓ local_settings.py already exists${NC}"
@@ -172,8 +176,9 @@ if [ "$NEEDS_SETUP" = true ]; then
     if [ ! -f "config/certificates/localhost.pem" ]; then
         # Check if we can copy from parent repo (handle both regular repo and worktree)
         PARENT_CERTS=""
-        if [ -d "../../../config/certificates" ] && [ -f "../../../config/certificates/localhost.pem" ]; then
-            PARENT_CERTS="../../../config/certificates"
+        if [ -d "../../config/certificates" ] && [ -f "../../config/certificates/localhost.pem" ]; then
+            # Worktree is at .worktree/<name>, so ../../ gets to main repo
+            PARENT_CERTS="../../config/certificates"
         elif [ -d "/srv/newsblur/config/certificates" ] && [ -f "/srv/newsblur/config/certificates/localhost.pem" ]; then
             PARENT_CERTS="/srv/newsblur/config/certificates"
         fi
@@ -203,19 +208,19 @@ if [ "$NEEDS_SETUP" = true ]; then
 
     SHARED_SERVICES_RUNNING=true
 
-    if ! docker ps --filter "name=db_postgres" --filter "status=running" --format "{{.Names}}" | grep -q "db_postgres"; then
+    if ! docker ps --filter "name=newsblur_db_postgres" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_postgres"; then
         SHARED_SERVICES_RUNNING=false
     fi
 
-    if ! docker ps --filter "name=db_mongo" --filter "status=running" --format "{{.Names}}" | grep -q "db_mongo"; then
+    if ! docker ps --filter "name=newsblur_db_mongo" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_mongo"; then
         SHARED_SERVICES_RUNNING=false
     fi
 
-    if ! docker ps --filter "name=db_redis" --filter "status=running" --format "{{.Names}}" | grep -q "db_redis"; then
+    if ! docker ps --filter "name=newsblur_db_redis" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_redis"; then
         SHARED_SERVICES_RUNNING=false
     fi
 
-    if ! docker ps --filter "name=db_elasticsearch" --filter "status=running" --format "{{.Names}}" | grep -q "db_elasticsearch"; then
+    if ! docker ps --filter "name=newsblur_db_elasticsearch" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_elasticsearch"; then
         SHARED_SERVICES_RUNNING=false
     fi
 
@@ -224,18 +229,18 @@ if [ "$NEEDS_SETUP" = true ]; then
 
         # Start only the shared services (databases and imageproxy)
         # Using the standard docker-compose.yml which already has the correct names and ports
-        docker compose -f docker-compose.yml up -d db_postgres db_mongo db_redis db_elasticsearch imageproxy dejavu
+        docker compose -f docker-compose.yml up -d newsblur_db_postgres newsblur_db_mongo newsblur_db_redis newsblur_db_elasticsearch imageproxy dejavu
 
         echo -e "${YELLOW}Waiting for shared services to be ready...${NC}"
 
         echo "  - Waiting for PostgreSQL..."
         for i in {1..30}; do
-            if docker exec db_postgres pg_isready -U newsblur &>/dev/null; then
+            if docker exec newsblur_db_postgres pg_isready -U newsblur &>/dev/null; then
                 break
             fi
             if [ $i -eq 30 ]; then
                 echo -e "${RED}ERROR: PostgreSQL failed to start${NC}"
-                docker compose -f docker-compose.yml logs db_postgres
+                docker compose -f docker-compose.yml logs newsblur_db_postgres
                 exit 1
             fi
             sleep 2
@@ -243,12 +248,12 @@ if [ "$NEEDS_SETUP" = true ]; then
 
         echo "  - Waiting for MongoDB..."
         for i in {1..30}; do
-            if docker exec db_mongo mongo --port 29019 --eval 'db.adminCommand({ping: 1})' --quiet &>/dev/null; then
+            if docker exec newsblur_db_mongo mongo --port 29019 --eval 'db.adminCommand({ping: 1})' --quiet &>/dev/null; then
                 break
             fi
             if [ $i -eq 30 ]; then
                 echo -e "${RED}ERROR: MongoDB failed to start${NC}"
-                docker compose -f docker-compose.yml logs db_mongo
+                docker compose -f docker-compose.yml logs newsblur_db_mongo
                 exit 1
             fi
             sleep 2
@@ -256,12 +261,12 @@ if [ "$NEEDS_SETUP" = true ]; then
 
         echo "  - Waiting for Redis..."
         for i in {1..30}; do
-            if docker exec db_redis redis-cli -p 6579 ping &>/dev/null; then
+            if docker exec newsblur_db_redis redis-cli -p 6579 ping &>/dev/null; then
                 break
             fi
             if [ $i -eq 30 ]; then
                 echo -e "${RED}ERROR: Redis failed to start${NC}"
-                docker compose -f docker-compose.yml logs db_redis
+                docker compose -f docker-compose.yml logs newsblur_db_redis
                 exit 1
             fi
             sleep 2
@@ -278,10 +283,7 @@ if [ "$NEEDS_SETUP" = true ]; then
     # Set environment variables for the workspace
     export COMPOSE_PROJECT_NAME="${WORKSPACE_NAME}"
 
-    # Stop any existing containers first to avoid name conflicts
-    docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" down 2>/dev/null || true
-
-    # Start workspace containers using the standalone compose file
+    # Start workspace containers (docker compose up -d is idempotent for running containers)
     docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d --remove-orphans
 
     # Wait for workspace web container
@@ -356,6 +358,101 @@ if [ "$NEEDS_SETUP" = true ]; then
     if [ "$SETUP_ONLY" = true ]; then
         exit 0
     fi
+fi
+
+# Sync .claude permissions bidirectionally (worktree ↔ parent)
+make worktree-permissions
+
+# Copy skills directory from parent if it exists (exclude .git directories)
+if [ -d "../../.claude/skills" ]; then
+    mkdir -p .claude/skills
+    if ! diff -rq --exclude='.git' "../../.claude/skills" ".claude/skills" &>/dev/null; then
+        if command -v rsync &>/dev/null; then
+            rsync -a --exclude='.git' "../../.claude/skills/" ".claude/skills/" 2>/dev/null
+        else
+            find "../../.claude/skills" -maxdepth 1 -type d ! -name '.git' ! -path "../../.claude/skills" -exec basename {} \; 2>/dev/null | while read skill_dir; do
+                if [ -d "../../.claude/skills/$skill_dir" ]; then
+                    rm -rf ".claude/skills/$skill_dir"
+                    cp -r "../../.claude/skills/$skill_dir" ".claude/skills/" 2>/dev/null
+                fi
+            done
+        fi
+        echo -e "${GREEN}✓ Synced .claude skills from parent repo${NC}"
+    fi
+fi
+
+# Check if shared services are already running
+echo -e "${YELLOW}Checking for shared service containers...${NC}"
+
+SHARED_SERVICES_RUNNING=true
+
+if ! docker ps --filter "name=newsblur_db_postgres" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_postgres"; then
+    SHARED_SERVICES_RUNNING=false
+fi
+
+if ! docker ps --filter "name=newsblur_db_mongo" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_mongo"; then
+    SHARED_SERVICES_RUNNING=false
+fi
+
+if ! docker ps --filter "name=newsblur_db_redis" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_redis"; then
+    SHARED_SERVICES_RUNNING=false
+fi
+
+if ! docker ps --filter "name=newsblur_db_elasticsearch" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_elasticsearch"; then
+    SHARED_SERVICES_RUNNING=false
+fi
+
+if [ "$SHARED_SERVICES_RUNNING" = false ]; then
+    echo -e "${YELLOW}Shared services not running. Starting them...${NC}"
+
+    # Start only the shared services (databases and imageproxy)
+    # Using the standard docker-compose.yml which already has the correct names and ports
+    docker compose -f docker-compose.yml up -d newsblur_db_postgres newsblur_db_mongo newsblur_db_redis newsblur_db_elasticsearch imageproxy dejavu
+
+    echo -e "${YELLOW}Waiting for shared services to be ready...${NC}"
+
+    echo "  - Waiting for PostgreSQL..."
+    for i in {1..30}; do
+        if docker exec newsblur_db_postgres pg_isready -U newsblur &>/dev/null; then
+            break
+        fi
+        if [ $i -eq 30 ]; then
+            echo -e "${RED}ERROR: PostgreSQL failed to start${NC}"
+            docker compose -f docker-compose.yml logs newsblur_db_postgres
+            exit 1
+        fi
+        sleep 2
+    done
+
+    echo "  - Waiting for MongoDB..."
+    for i in {1..30}; do
+        if docker exec newsblur_db_mongo mongo --port 29019 --eval 'db.adminCommand({ping: 1})' --quiet &>/dev/null; then
+            break
+        fi
+        if [ $i -eq 30 ]; then
+            echo -e "${RED}ERROR: MongoDB failed to start${NC}"
+            docker compose -f docker-compose.yml logs newsblur_db_mongo
+            exit 1
+        fi
+        sleep 2
+    done
+
+    echo "  - Waiting for Redis..."
+    for i in {1..30}; do
+        if docker exec newsblur_db_redis redis-cli -p 6579 ping &>/dev/null; then
+            break
+        fi
+        if [ $i -eq 30 ]; then
+            echo -e "${RED}ERROR: Redis failed to start${NC}"
+            docker compose -f docker-compose.yml logs newsblur_db_redis
+            exit 1
+        fi
+        sleep 2
+    done
+
+    echo -e "${GREEN}✓ Shared services are ready${NC}"
+else
+    echo -e "${GREEN}✓ Shared services already running${NC}"
 fi
 
 # Print banner

@@ -1,5 +1,5 @@
 /**
- * Sepia Theme overrides
+ * Warm Theme overrides (formerly Sepia)
  */
 
 /**
@@ -7,7 +7,7 @@
  */
 
 body {
-    background-color: #FFFEE5;
+    background-color: #FAF3E8;
 }
 
 /* ========== */
@@ -16,41 +16,41 @@ body {
 
 .NB-header {
     color: black;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffd0), to(#ffffc0));
-    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FCF6ED), to(#FAF3E8));
+    text-shadow: 0 1px 0 rgba(194, 180, 165, .25);
 
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 .NB-story-title {
-    color: #111111;
+    color: #3C3226;
 }
 
 .NB-story-title-positive {
     color: #58A353;
-    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
+    text-shadow: 0 1px 0 rgba(194, 180, 165, .25);
 }
 .NB-story-title-negative {
     color: #B85044;
-    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
+    text-shadow: 0 1px 0 rgba(194, 180, 165, .25);
 }
 
 .NB-story-permalink {
-    color: #111111;
+    color: #3C3226;
 }
 .NB-story-toggle-changes {
-    color: #818776;
+    color: #8B7B6B;
 }
 .NB-story-date {
-    color: #818776;
+    color: #8B7B6B;
 }
 
 .NB-middot {
-    color: #A0A0A0;
+    color: #B0A090;
 }
 
 .NB-story-author {
-    color: #959B8B;
-    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
+    color: #8B7B6B;
+    text-shadow: 0 1px 0 rgba(194, 180, 165, .25);
 }
 .NB-story-author-positive {
     color: #58A353;
@@ -62,9 +62,9 @@ body {
 }
 
 .NB-story-tag {
-    background-color: rgba(0, 0, 0, .1);
-    color: #959B8B;
-    text-shadow: 0 1px 0 rgba(245, 245, 192, .9);
+    background-color: rgba(0, 0, 0, .08);
+    color: #8B7B6B;
+    text-shadow: 0 1px 0 rgba(245, 230, 211, .9);
     border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
 }
 .NB-story-tag-positive {
@@ -85,20 +85,20 @@ body {
 }
 
 .NB-user-tag {
-    color: #959B8B;
-    text-shadow: 0 1px 0 rgba(245, 245, 192, .9);
+    color: #8B7B6B;
+    text-shadow: 0 1px 0 rgba(245, 230, 211, .9);
     border-color: rgba(255, 255, 255, .3) transparent rgba(0, 0, 0, .1);
 }
 
 .NB-user-tag.NB-add-user-tag {
-    background: rgba(0, 0, 0, .25) url("add_tag.png") no-repeat 6px 3px;
+    background: rgba(0, 0, 0, .2) url("add_tag.png") no-repeat 6px 3px;
     background-size: 8px;
-    color: #E5EBDB;
+    color: #D4C8B8;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
 }
 
 .NB-story-starred-date {
-    color: #818776;
+    color: #8B7B6B;
 }
 
 a {
@@ -109,18 +109,18 @@ a:active {
 }
 
 .NB-story blockquote {
-    border-left-color: #E1E3B6;
-    background-color: #F2F2D4;
+    border-left-color: #D4C8B8;
+    background-color: #EDE0D0;
 }
 
 .NB-story blockquote p {
-    background-color: #F2F2D4;
+    background-color: #EDE0D0;
 }
 
 /* Comments */
 
 .NB-story-comments-group:last-child {
-    border-bottom: 1px solid rgba(194, 197, 190, .5);
+    border-bottom: 1px solid rgba(180, 165, 150, .5);
 }
 
 #story_pane .NB-story-comments-shares-teaser.NB-highlighted {
@@ -139,7 +139,7 @@ a:active {
 }
 
 .NB-story-comment:last-child {
-    border-bottom: 1px solid #A6A6A6;
+    border-bottom: 1px solid #B0A090;
 }
 
 /* Edit, Like, and Reply buttons */
@@ -192,7 +192,7 @@ a:active {
 .NB-newsletter div,
 .NB-newsletter span,
 .NB-newsletter td {
-    background-color: #FFFEE5 !important;
+    background-color: #FAF3E8 !important;
 }
 .NB-newsletter h1,
 .NB-newsletter h2,
@@ -200,35 +200,35 @@ a:active {
 .NB-newsletter h4,
 .NB-newsletter h5,
 .NB-newsletter h6 {
-    background-color: #FFFEE5 !important;
+    background-color: #FAF3E8 !important;
 }
 
 /* Story Comments */
 
 #story_pane .NB-story-comment {
-    border-bottom: 1px solid rgba(194, 197, 190, .25);
-    background:#ffffd0;
+    border-bottom: 1px solid rgba(180, 165, 150, .25);
+    background: #F7E9D8;
     box-shadow: none;
 }
 
 #story_pane .NB-story-comment .NB-story-comment-username {
     color: #1D4BA6;
-    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
+    text-shadow: 0 1px 0 rgba(180, 165, 150, .25);
 }
 #story_pane .NB-story-comment .NB-story-comment-date {
     color: #9D9D9D;
 }
 
 #story_pane .NB-story-comment .NB-story-comment-content {
-    color: #303030;
+    color: #3C3226;
 }
 
 #story_pane .NB-story-comment-reply {
-    border-top: 1px solid rgba(194, 197, 190, .25);
+    border-top: 1px solid rgba(180, 165, 150, .25);
 }
 
 #story_pane .NB-story-comment-reply-content {
-    color: #303030;
+    color: #3C3226;
 }
 
 #story_pane .NB-story-comment-reply-form .NB-error {
@@ -238,21 +238,21 @@ a:active {
 #story_pane .NB-story-comments-public-teaser,
 #story_pane .NB-story-comments-public-header,
 #story_pane .NB-story-comments-friends-header {
-    background-color: #fffff0;
+    background-color: #EDE0D0;
     color: white;
-    text-shadow: 0 1px 0 rgba(194, 197, 190, .25);
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#f6f6b0), to(#f0f29e));
-    color: #404040;
-    border-color: #e7e998 transparent #d8dd81;
+    text-shadow: 0 1px 0 rgba(180, 165, 150, .25);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#E8D8C5), to(#DDD0C0));
+    color: #5C4A3D;
+    border-color: #D4C8B8 transparent #C5B8A8;
 }
 #story_pane .NB-story-comments-shares-teaser {
-    background-color: #fffff0;
-    color: #898989;
+    background-color: #EDE0D0;
+    color: #8B7B6B;
     text-shadow: 0 1px 0 #FFF;
-    border-bottom: 1px solid #DCDDB6;
+    border-bottom: 1px solid #D4C8B8;
     -webkit-box-shadow: inset 0px 1px 1px rgba(0, 0, 0, .1);
 }
 
 .NB-text-view-premium-only {
-    background-color: #FFFEE5;
+    background-color: #FAF3E8;
 }

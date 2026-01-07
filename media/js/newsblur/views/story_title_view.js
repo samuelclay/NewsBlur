@@ -76,7 +76,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <% } %>\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
-                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                        <%= $.favicon_html(feed) %>\
                         <span class="feed_title"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
@@ -125,7 +125,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <% } %>\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
-                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                        <%= $.favicon_html(feed) %>\
                         <span class="feed_title"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
@@ -166,7 +166,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             <div class="NB-storytitles-content">\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
-                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                        <%= $.favicon_html(feed) %>\
                         <span class="feed_title"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
@@ -209,7 +209,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             <div class="NB-storytitles-content">\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
-                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                        <%= $.favicon_html(feed) %>\
                         <span class="feed_title"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\

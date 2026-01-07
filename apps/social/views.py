@@ -1247,7 +1247,10 @@ def shared_stories_public(request, username):
 @json.json_view
 def profile(request):
     user = get_user(request.user)
-    user_id = int(request.GET.get("user_id", user.pk))
+    try:
+        user_id = int(request.GET.get("user_id", user.pk))
+    except (ValueError, TypeError):
+        return json.json_response(request, {"code": -1, "message": "Invalid user_id parameter."})
     categories = request.GET.getlist("category") or request.GET.getlist("category[]")
     include_activities_html = request.GET.get("include_activities_html", None)
 

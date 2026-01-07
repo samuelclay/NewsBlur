@@ -84,3 +84,5 @@ apps/api/ip_addresses.txt
 .dev_session
 .conductor
 .worktree
+docs
+plans

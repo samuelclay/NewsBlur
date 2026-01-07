@@ -101,6 +101,7 @@
             // ==================
 
             $(window).bind('resize.reader', _.throttle($.rescope(this.resize_window, this), 1000));
+            $(window).bind('beforeunload.reader', _.bind(this.cleanup_before_unload, this));
             this.$s.$body.bind('click.reader', $.rescope(this.handle_clicks, this));
             this.$s.$body.bind('keyup.reader', $.rescope(this.handle_keyup, this));
             this.handle_keystrokes();
@@ -155,6 +156,7 @@
             this.switch_story_layout();
             this.load_delayed_stylesheets();
             this.load_theme();
+            this.setup_read_time_tracker();
         },
 
         // ========
@@ -1321,6 +1323,32 @@
 
         reset_feed: function (options) {
             options = options || {};
+
+            // Clean up any active voice recordings from Ask AI menu
+            var $menu = $('.NB-menu-ask-ai-container');
+            var menu_recorder = $menu.data('voice_recorder');
+            if (menu_recorder) {
+                menu_recorder.cleanup();
+            }
+
+            // Clean up any active voice recordings from Ask AI panes
+            $('.NB-story-ask-ai-pane, .NB-story-ask-ai-inline').each(function () {
+                var view = $(this).data('view');
+                if (view && view.voice_recorder) {
+                    view.voice_recorder.cleanup();
+                }
+            });
+
+            // Flush read time for the current story before resetting (for trending feeds feature)
+            if (NEWSBLUR.ReadTimeTracker && this.active_story) {
+                var story_hash = this.active_story.get('story_hash');
+                var read_time = NEWSBLUR.ReadTimeTracker.get_and_reset_read_time(story_hash);
+                if (read_time > 0) {
+                    NEWSBLUR.assets.queue_read_time(story_hash, read_time);
+                }
+                NEWSBLUR.ReadTimeTracker.stop_tracking();
+                NEWSBLUR.assets.flush_read_times();
+            }
 
             $.extend(this.flags, {
                 'scrolling_by_selecting_story_title': false,
@@ -3567,6 +3595,83 @@
             NEWSBLUR.statistics = new NEWSBLUR.ReaderStatistics(feed_id);
         },
 
+        open_ask_ai_menu: function (story_id) {
+            story_id = story_id || this.active_story && this.active_story.id;
+            if (!story_id) return;
+
+            var story = this.model.get_story(story_id);
+            if (!story) return;
+
+            var story_view = story.latest_story_detail_view;
+            if (!story_view) {
+                console.log(['No story view found for Ask AI menu', story]);
+                return;
+            }
+
+            // Call show_ask_ai_menu on the story view
+            // Create a fake event object since the function expects one
+            var fake_event = {
+                preventDefault: function () { },
+                stopPropagation: function () { }
+            };
+            story_view.show_ask_ai_menu(fake_event);
+        },
+
+        open_ask_ai_pane: function (story, question_id, custom_question, transcription_error, model) {
+            var story_view = story.latest_story_detail_view;
+            if (!story_view) {
+                console.log(['No story view found for Ask AI', story]);
+                return;
+            }
+
+            var $story_el = story_view.$el;
+            var $positioning_wrapper = $story_el.find('.NB-story-content-positioning-wrapper');
+
+            if (!$positioning_wrapper.length) {
+                console.log(['No positioning wrapper found for Ask AI', story]);
+                return;
+            }
+
+            var ask_ai_pane = new NEWSBLUR.Views.StoryAskAiView({
+                story: story,
+                question_id: question_id || 'custom',
+                custom_question: custom_question,
+                transcription_error: transcription_error,
+                model: model,
+                inline: true
+            });
+
+            // Find the last Ask AI section in this story, or append inside positioning wrapper
+            var $existing_ask_ai = $positioning_wrapper.find('.NB-story-ask-ai-inline').last();
+            if ($existing_ask_ai.length) {
+                $existing_ask_ai.after(ask_ai_pane.render().$el);
+            } else {
+                $positioning_wrapper.append(ask_ai_pane.render().$el);
+            }
+
+            // Smooth scroll to bring the new Ask AI section into view
+            _.delay(function () {
+                var $new_ask_ai_el = $story_el.find('.NB-story-ask-ai-inline').last();
+                if ($new_ask_ai_el.length) {
+                    $new_ask_ai_el[0].scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest',
+                        inline: 'nearest'
+                    });
+                }
+            }, 100);
+        },
+
+        close_ask_ai_pane: function () {
+            $('.NB-story-ask-ai-inline').fadeOut(200, function () {
+                $(this).remove();
+            });
+            if (this.ask_ai_pane) {
+                this.ask_ai_pane.remove();
+                this.ask_ai_pane = null;
+            }
+        },
+
         open_social_profile_modal: function (user_id) {
             if (!user_id) user_id = NEWSBLUR.Globals.user_id;
             if (_.string.contains(user_id, 'social:')) {
@@ -5304,7 +5409,8 @@
                 var local = false && _.any(['nb.local.com'], function (hostname) {
                     return _.string.contains(window.location.host, hostname);
                 });
-                var port = https ? 443 : 80;
+                // Use the actual port from the URL to support worktrees
+                var port = window.location.port || (https ? 443 : 80);
                 if (local) {
                     port = https ? 8889 : 8888;
                 }
@@ -5389,6 +5495,21 @@
                 this.socket.removeAllListeners("user:update");
                 this.socket.on('user:update', _.bind(this.handle_realtime_update, this));
 
+                // Ask AI streaming event listeners
+                this.socket.removeAllListeners('ask_ai:start');
+                this.socket.on('ask_ai:start', _.bind(this.handle_ask_ai_start, this));
+
+                this.socket.removeAllListeners('ask_ai:chunk');
+                this.socket.on('ask_ai:chunk', _.bind(this.handle_ask_ai_chunk, this));
+
+                this.socket.removeAllListeners('ask_ai:complete');
+                this.socket.on('ask_ai:complete', _.bind(this.handle_ask_ai_complete, this));
+
+                this.socket.removeAllListeners('ask_ai:error');
+                this.socket.on('ask_ai:error', _.bind(this.handle_ask_ai_error, this));
+
+                this.socket.removeAllListeners('ask_ai:usage');
+                this.socket.on('ask_ai:usage', _.bind(this.handle_ask_ai_usage, this));
 
                 this.socket.on('disconnect', _.bind(function (reason) {
                     NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);
@@ -5509,6 +5630,59 @@
                     }
                 }
             }
+        },
+
+        handle_ask_ai_start: function (data) {
+            this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
+        },
+
+        handle_ask_ai_chunk: function (data) {
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
+            if (view && data.chunk) {
+                view.append_chunk(data.chunk);
+            }
+        },
+
+        handle_ask_ai_complete: function (data) {
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
+            if (view) {
+                view.complete_response();
+            }
+        },
+
+        handle_ask_ai_error: function (data) {
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
+            if (view) {
+                view.show_error(data.error);
+            }
+        },
+
+        handle_ask_ai_usage: function (data) {
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
+            if (view) {
+                view.show_usage_message(data.message);
+            }
+        },
+
+        find_ask_ai_view_for_story: function (story_hash, question_id, request_id) {
+            var $ask_ai_elements = $('.NB-story-ask-ai-inline, .NB-story-ask-ai-pane');
+            for (var i = 0; i < $ask_ai_elements.length; i++) {
+                var view = $($ask_ai_elements[i]).data('view');
+                if (!view) continue;
+                if (view.story_hash !== story_hash) continue;
+                if (view.question_id !== question_id) continue;
+                // If server sends a request_id, only match views with that exact request_id
+                // This prevents matching views that never got a request_id (e.g., transcription errors)
+                if (request_id) {
+                    if (view.active_request_id === request_id) {
+                        return view;
+                    }
+                    continue;
+                }
+                // No request_id from server, match first view for this story/question
+                return view;
+            }
+            return null;
         },
 
         update_discover_indexing_progress: function (message) {
@@ -5729,7 +5903,7 @@
             }
             Push.create("NewsBlur", {
                 body: feed.get('feed_title') + " notifications are setup",
-                icon: $.favicon(feed),
+                icon: $.favicon_image_url(feed),
                 timeout: 3000,
                 onClick: function () {
                     window.focus();
@@ -5748,7 +5922,7 @@
 
             Push.create(feed.get('feed_title'), {
                 body: story_title,
-                icon: $.favicon(feed),
+                icon: $.favicon_image_url(feed),
                 timeout: 4000,
                 onClick: function () {
                     window.focus();
@@ -6121,7 +6295,14 @@
             feed = this.model.set_feed(feed_id, feed);
 
             $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(feed.get('feed_title'));
-            $('.NB-feeds-header-icon', this.$s.$tryfeed_header).attr('src', $.favicon(feed));
+            var $tryfeed_icon = $.favicon_el(feed, {
+                image_class: 'NB-feeds-header-icon',
+                emoji_class: 'NB-feeds-header-icon NB-feed-emoji',
+                colored_class: 'NB-feeds-header-icon NB-feed-icon-colored'
+            });
+            if ($tryfeed_icon) {
+                $('.NB-feeds-header-icon', this.$s.$tryfeed_header).replaceWith($tryfeed_icon);
+            }
 
             $tryfeed_container.slideDown(350, _.bind(function () {
                 options.force = true;
@@ -6149,7 +6330,14 @@
             this.reset_feed();
 
             $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(social_feed.get('username'));
-            $('.NB-feeds-header-icon', this.$s.$tryfeed_header).attr('src', $.favicon(social_feed));
+            var $tryfeed_icon = $.favicon_el(social_feed, {
+                image_class: 'NB-feeds-header-icon',
+                emoji_class: 'NB-feeds-header-icon NB-feed-emoji',
+                colored_class: 'NB-feeds-header-icon NB-feed-icon-colored'
+            });
+            if ($tryfeed_icon) {
+                $('.NB-feeds-header-icon', this.$s.$tryfeed_header).replaceWith($tryfeed_icon);
+            }
 
             $tryfeed_container.slideDown(350, _.bind(function () {
                 this.open_social_stories(social_feed.get('id'), options);
@@ -6341,9 +6529,36 @@
             }, this), 60 * 1 * 1000);
         },
 
+        setup_read_time_tracker: function () {
+            // Initialize the read time tracker for trending feeds feature
+            if (NEWSBLUR.ReadTimeTracker) {
+                NEWSBLUR.ReadTimeTracker.bind_activity_events();
+            }
+        },
+
         // ==========
         // = Events =
         // ==========
+
+        cleanup_before_unload: function () {
+            // Clean up voice recordings when page is about to unload (refresh, navigate away, etc.)
+            // This ensures microphone is released even if user refreshes the page
+
+            // Clean up Ask AI menu recorder
+            var $menu = $('.NB-menu-ask-ai-container');
+            var menu_recorder = $menu.data('voice_recorder');
+            if (menu_recorder) {
+                menu_recorder.cleanup();
+            }
+
+            // Clean up all Ask AI pane recorders
+            $('.NB-story-ask-ai-pane, .NB-story-ask-ai-inline').each(function () {
+                var view = $(this).data('view');
+                if (view && view.voice_recorder) {
+                    view.voice_recorder.cleanup();
+                }
+            });
+        },
 
         handle_clicks: function (elem, e) {
             var self = this;
@@ -7434,6 +7649,10 @@
                     scroll_offset: -50
                 });
             });
+            $document.bind('keydown', 'i', function (e) {
+                e.preventDefault();
+                self.open_ask_ai_menu();
+            });
             $document.bind('keydown', 'x', function (e) {
                 e.preventDefault();
                 var story = NEWSBLUR.reader.active_story;
@@ -7517,6 +7736,20 @@
             $document.bind('keydown', 'esc', function (e) {
                 e.preventDefault();
                 if (NEWSBLUR.assets.preference("keyboard-ignore-esc")) return;
+
+                // Check if any Ask AI view is recording and cancel it
+                var $ask_ai_views = $('.NB-story-ask-ai-inline, .NB-story-ask-ai-pane');
+                var recording_cancelled = false;
+                $ask_ai_views.each(function () {
+                    var view = $(this).data('view');
+                    if (view && view.is_recording && view.is_recording()) {
+                        view.cancel_recording();
+                        recording_cancelled = true;
+                        return false; // break the loop
+                    }
+                });
+                if (recording_cancelled) return;
+
                 if (!_.keys($.modal.impl.d).length &&
                     !NEWSBLUR.ReaderPopover.is_open() &&
                     !self.flags['feed_list_showing_manage_menu']) {
@@ -7530,6 +7763,10 @@
             $document.bind('keypress', 'shift+t', function (e) {
                 e.preventDefault();
                 self.open_feed_intelligence_modal(1);
+            });
+            $document.bind('keypress', 'i', function (e) {
+                e.preventDefault();
+                self.open_ask_ai_menu();
             });
             $document.bind('keypress', 'a', function (e) {
                 e.preventDefault();

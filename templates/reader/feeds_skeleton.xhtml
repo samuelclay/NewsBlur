@@ -1,3 +1,7 @@
+<script type="text/javascript" charset="utf-8">
+// Ask AI prompt templates
+NEWSBLUR.Globals.ask_ai_prompts = {{ ask_ai_prompts_json|safe }};
+</script>
 
 <div class="NB-layout">
 
@@ -347,7 +351,11 @@
                 </div>
             </div>
 
-        </div>    
+            <div id="ask_ai_pane" class="right-east">
+                <div class="NB-story-ask-ai-pane-content"></div>
+            </div>
+
+        </div>
 
     </div>
 

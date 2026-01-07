@@ -161,10 +161,12 @@ OAUTH2_PROVIDER = {
         "read": "View new unread stories, saved stories, and shared stories.",
         "write": "Create new saved stories, shared stories, and subscriptions.",
         "ifttt": "Pair your NewsBlur account with other services.",
+        "email": "Access your email address for account identification.",
     },
     "CLIENT_ID_GENERATOR_CLASS": "oauth2_provider.generators.ClientIdGenerator",
     "ACCESS_TOKEN_EXPIRE_SECONDS": 60 * 60 * 24 * 365 * 10,  # 10 years
     "AUTHORIZATION_CODE_EXPIRE_SECONDS": 60 * 60,  # 1 hour
+    "PKCE_REQUIRED": False,  # Allow legacy OAuth clients that don't support PKCE (e.g., Unread, other third-party apps)
 }
 
 # ===========
@@ -357,6 +359,7 @@ INSTALLED_APPS = (
     "apps.oauth",
     "apps.search",
     "apps.categories",
+    "apps.ask_ai",
     "utils",  # missing models so no migrations
     "vendor",
     "typogrify",
@@ -435,6 +438,11 @@ CELERY_TASK_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "discover_indexer",
     },
+    "ask_ai": {
+        "exchange": "ask_ai",
+        "exchange_type": "direct",
+        "binding_key": "ask_ai",
+    },
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"
 
@@ -447,6 +455,7 @@ CELERY_IMPORTS = (
     "apps.feed_import.tasks",
     "apps.search.tasks",
     "apps.statistics.tasks",
+    "apps.ask_ai.tasks",
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
