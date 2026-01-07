@@ -203,7 +203,7 @@ class TwitterFetcher:
                 self.feed.save_feed_history(563, "Twitter Error: Expired token")
                 self.disconnect_twitter()
                 return
-            elif "not found" in message:
+            elif "not found" in message or "does not exist" in message:
                 logging.debug(
                     "   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s"
                     % (self.feed.log_title[:30], self.address, e)
@@ -313,7 +313,7 @@ class TwitterFetcher:
                 self.feed.save_feed_history(573, "Twitter Error: Expired token")
                 self.disconnect_twitter()
                 return None, None
-            elif "not found" in message:
+            elif "not found" in message or "does not exist" in message:
                 logging.debug(
                     "   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s"
                     % (self.feed.log_title[:30], self.address, e)
@@ -375,7 +375,7 @@ class TwitterFetcher:
                 self.feed.save_feed_history(573, "Twitter Error: Expired token")
                 self.disconnect_twitter()
                 return None
-            elif "not found" in message:
+            elif "not found" in message or "does not exist" in message:
                 logging.debug(
                     "   ***> [%-30s] ~FRTwitter user not found, disconnecting twitter: %s: %s"
                     % (self.feed.log_title[:30], self.address, e)

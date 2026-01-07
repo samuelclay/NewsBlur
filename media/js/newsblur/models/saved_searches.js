@@ -9,30 +9,9 @@ NEWSBLUR.Models.SavedSearchFeed = Backbone.Model.extend({
     },
 
     favicon_url: function () {
-        var url;
         var feed_id = this.get('feed_id');
-
-        if (feed_id == 'river:' || feed_id == 'river:infrequent') {
-            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/all-stories.svg';
-        } else if (_.string.startsWith(feed_id, 'river:')) {
-            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg';
-        } else if (feed_id == "read") {
-            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/indicator-unread.svg';
-        } else if (feed_id == "starred") {
-            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/saved-stories.svg';
-        } else if (_.string.startsWith(feed_id, 'starred:')) {
-            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/tag.svg';
-        } else if (_.string.startsWith(feed_id, 'feed:')) {
-            url = $.favicon(parseInt(feed_id.replace('feed:', ''), 10));
-        } else if (_.string.startsWith(feed_id, 'social:')) {
-            url = $.favicon(NEWSBLUR.assets.get_feed(feed_id));
-        }
-
-        if (!url) {
-            url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/search.svg';
-        }
-
-        return url;
+        var url = feed_id ? $.favicon(feed_id) : null;
+        return url || NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/search.svg';
     },
 
     is_social: function () {

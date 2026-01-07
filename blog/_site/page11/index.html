@@ -66,6 +66,217 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Apr 2, 2012</span>
+          <h3>
+            <a class="post-link" href="/2012/04/02/building-real-time-feed-updates-for-newsblur/">
+              Building real-time feed updates for NewsBlur with Redis and WebSockets
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Today, NewsBlur is going real-time. Blogs using the PubSubHubbub protocol (PuSH), which includes all Blogger, Tumblr, and many Wordpress blogs, will instantaneously show new updates to subscribers on NewsBlur. Making this happen, while not for the faint of heart, was straight-forward enough that I’m sharing the recipe I used to get everything hooked up and running smoothly.</p>
+
+<p>Every user, both premium and standard, will now receive instantaneous updates. I’ve been beta-testing this feature for the past few weeks, and I’ve been quite pleased in knowing that I’m now reading on the bleeding-edge.</p>
+
+<p>If you are a developer, you may be interested in how this was done. There are two components in a real-time feed: detecting updates and then informing users of those updates.</p>
+
+<h2 id="get-blog-updates-in-real-time">Get blog updates in real-time</h2>
+
+<p>If you are building a system that consumes an RSS feed and you want it to push to you, you’ll have to subscribe to a special PubSubHubbub hub url that the RSS feed gives you in the original RSS feed.</p>
+
+<p>Take a look at the <code class="language-plaintext highlighter-rouge">&lt;feed&gt;</code> section in the NewsBlur Blog’s RSS feed:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;&gt;&gt; # Python
+&gt;&gt;&gt; from utils import feedparser
+&gt;&gt;&gt; from pprint import pprint
+&gt;&gt;&gt; fp = feedparser.parse('http://blog.newsblur.com/rss')
+&gt;&gt;&gt; pprint(fp.feed)
+{'generator': u'Tumblr (3.0; @newsblur)',
+ 'generator_detail': {'name': u'Tumblr (3.0; @newsblur)'},
+ 'link': u'http://blog.newsblur.com/',
+ 'links': [{'href': u'http://tumblr.superfeedr.com/',
+            'rel': u'hub',
+            'type': u'text/html'},
+           {'href': u'http://blog.newsblur.com/',
+            'rel': u'alternate',
+            'type': u'text/html'}],
+ 'subtitle': u'Visual feed reading with intelligence.',
+ 'subtitle_detail': {'base': u'http://blog.newsblur.com/rss',
+                     'language': None,
+                     'type': u'text/html',
+                     'value': u'Visual feed reading with intelligence.'},
+ 'title': u'The NewsBlur Blog',
+ 'title_detail': {'base': u'http://blog.newsblur.com/rss',
+                  'language': None,
+                  'type': u'text/plain',
+                  'value': u'The NewsBlur Blog'}}
+</code></pre></div></div>
+
+<p>If there’s a <code class="language-plaintext highlighter-rouge">rel="hub"</code> node under <code class="language-plaintext highlighter-rouge">links</code>, then the RSS feed is advertising its PubSubHubbub abilities. If you make a subscription request to that address, then the feed will push out updates to your callback URL.</p>
+
+<p>The code for sending the subscription requests, along with generating the verification token, can be found on GitHub: <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/push/views.py">the PuSH views for handling updates and the initial callback</a> and <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/push/models.py">the PuSH models used to store subscriptions in the DB</a>. Here’s the main request that your server has to send:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Python
+response = self._send_request(hub, {
+    'hub.mode' : 'subscribe',
+    'hub.callback' : callback,
+    'hub.topic' : topic,
+    'hub.verify' : ['async', 'sync'],
+    'hub.verify_token' : subscription.generate_token('subscribe'),
+    'hub.lease_seconds' : lease_seconds,
+})
+</code></pre></div></div>
+
+<p>The publisher will then ping your server back to confirm the subscription. Once the publisher is configured to send blog updates to your server, you just have to let users know when there’s a new story, and that’s takes some COMET/push technology with the help of WebSockets.</p>
+
+<h2 id="serving-updates-to-visitors-in-real-time">Serving updates to visitors in real-time</h2>
+
+<p>When a publisher pushes a new story to your server, apart from dupe detection and storing it in your database, you need to alert users who are currently on the site.</p>
+
+<p><a href="http://redis.io">Redis</a> is your new best friend. One of its primary data structures, apart from hashes, sets, sorted sets, and key-value, is a pubsub type that is perfect for this kind of update. Users subscribe to the updates of all of the feeds to which they subscribe. When these sites have a new story, they publish a simple notification to each of the feed’s subscribers.</p>
+
+<p>Here the feed fetcher is publishing to any listening subscribers.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Python
+def publish_to_subscribers(self, feed):
+    try:
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        listeners_count = r.publish(str(feed.pk), 'story:new')
+        if listeners_count:
+            logging.debug(" ---&gt; [%-30s] Published to %s subscribers" % (
+                          feed.title[:30], listeners_count))
+    except redis.ConnectionError:
+        logging.debug(" ***&gt; [%-30s] Redis is unavailable for real-time." % (
+                      feed.title[:30],))
+</code></pre></div></div>
+
+<p>These subscribers have subscribed via Redis. To know that a user is currently connected and wants to be notified of updates, <a href="http://socket.io">Socket.io</a> is used to connect the browser to a Node.js server that will subscribe to updates via Redis.</p>
+
+<p>The browser opens up a WebSocket and listens for updates for the feeds that they care about:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// JavaScript
+setup_socket_realtime_unread_counts: function() {
+    if (!this.socket) {
+        var server = window.location.protocol + '//' +
+                     window.location.hostname + ':8888';
+        this.socket = this.socket || io.connect(server);
+
+        this.socket.on('connect', _.bind(function() {
+            var active_feeds = this.send_socket_active_feeds();
+            console.log(["Connected to real-time pubsub with " + 
+                         active_feeds.length + " feeds."]);
+
+            this.socket.on('feed:update', _.bind(function(feed_id, message) {
+                console.log(['Real-time feed update', feed_id, message]);
+                this.force_feeds_refresh(false, false, parseInt(feed_id, 10));
+            }, this));
+
+            this.flags.feed_refreshing_in_realtime = true;
+            this.setup_feed_refresh();
+        }, this));
+
+        this.socket.on('disconnect', _.bind(function() {
+            console.log(["Lost connection to real-time pubsub. Falling back to polling."]);
+            this.setup_feed_refresh();
+        }, this));
+    }
+},
+</code></pre></div></div>
+
+<p>The app server is ready to handle thousands of concurrent subscription requests, being Node.js and asynchronous:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># CoffeeScript
+fs = require 'fs'
+io = require('socket.io').listen 8888
+redis = require 'redis'
+
+REDIS_SERVER = if process.env.NODE_ENV == 'dev' then 'localhost' else 'db01'
+client = redis.createClient 6379, REDIS_SERVER
+
+io.sockets.on 'connection', (socket) -&gt;
+    console.log " ---&gt; New connection brings total to" +
+                " #{io.sockets.clients().length} consumers."
+    socket.on 'subscribe:feeds', (feeds, username) -&gt;
+        socket.subscribe?.end()
+        socket.subscribe = redis.createClient 6379, REDIS_SERVER
+
+        console.log " ---&gt; [#{username}] Subscribing to #{feeds.length} feeds"
+        socket.subscribe.subscribe feeds
+
+        socket.subscribe.on 'message', (channel, message) -&gt;
+            console.log " ---&gt; [#{username}] Update on #{channel}: #{message}"
+            socket.emit 'feed:update', channel
+
+    socket.on 'disconnect', () -&gt;
+        socket.subscribe?.end()
+        console.log " ---&gt; [] Disconnect, there are now" +
+                    " #{io.sockets.clients().length-1} consumers."
+</code></pre></div></div>
+
+<p>That’s all there is to it. There a lot going on, but it’s effectively a small circle composed of subscribers and publishers, using Redis to maintain pubsub connections between the many clients and their many feeds.</p>
+
+<script src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
+<link rel="stylesheet" type="text/css" href="http://yandex.st/highlightjs/6.1/styles/github.min.css" />
+
+<script type="text/javascript">
+  hljs.initHighlightingOnLoad();
+</script>
+
+
+        </div>
+      </li><li><div class="post-header-sticky">
+          <span class="post-meta">Mar 16, 2012</span>
+          <h3>
+            <a class="post-link" href="/2012/03/16/knight-news-challenge/">
+              Knight News Challenge: NewsBlur
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p><a href="http://newschallenge.tumblr.com/post/19397311604/newsblur">Knight News Challenge: NewsBlur</a></p>
+
+<p>Hey NewsBlurians, I’m applying for a grant from the Knight Foundation. In a previous life I worked on DocumentCloud, a successful Knight grantee, building <a href="http://www.documentcloud.org/opensource">open-source libraries</a>. I’m looking to continue the fine tradition of building for both users and for other developers.</p>
+
+<p>I’m asking for enough to fund a year of development with the help of another engineer. Please vote for the NewsBlur grant application on Knight’s website, reblogged below.</p>
+
+<p><a href="http://newschallenge.tumblr.com/post/19397311604/newsblur">Knight News Challenge Entry</a>:</p>
+
+<blockquote>
+  <h3 id="1-what-do-you-propose-to-do-20-words">1. What do you propose to do? [20 words]</h3>
+
+  <p>To build an intelligent social news reader for web and mobile called NewsBlur.</p>
+
+  <h3 id="2-is-anyone-doing-something-like-this-now-and-how-is-your-project-different-30-words">2. Is anyone doing something like this now and how is your project different? [30 words]</h3>
+
+  <p>RSS feed readers exist, none have the sharing model, original site view, and intelligence classifiers of NewsBlur. Since Google Reader phased out sharing, there’s a sizable community looking to share and discuss news.</p>
+
+  <h3 id="3-describe-the-network-with-which-you-intend-to-build-or-work-50-words">3. Describe the network with which you intend to build or work. [50 words]</h3>
+
+  <p>NewsBlur will surface stories shared by friends and friends of friends by combining the imported networks of Twitter/Facebook with communities on NewsBlur. These communities make it easy to expand your network by showing popular comments from outside your network. NewsBlur also has intelligence classifiers which allow the user to filter and highlight comments across all networks.</p>
+
+  <h3 id="4-why-will-it-work-100-words">4. Why will it work? [100 words]</h3>
+
+  <p>Because it’s worked before, just under a different model in Google Reader’s now defunct all-or-nothing community. NewsBlur’s network will be oriented more towards showing relationships and distance between you and the other active commenters on a story. NewsBlur will capitalize on the value of pre-existing networks with an intuitive and clean interface that highlights the distance between users. Surfacing relative connections between people will result in a more active community and increased engagement between like-minded readers. NewsBlur further benefits newspapers, publishers, and individual writers by showing the original site (including ads and design), as well as encouraging reading through NewsBlur’s intelligence filters.</p>
+
+  <h3 id="5-who-is-working-on-it-100-words">5. Who is working on it? [100 words]</h3>
+
+  <p>I started working on NewsBlur as a side project in June 2009. Over the past 2.5 years, NewsBlur has become self-sustainable through organic growth (word-of-mouth, blog posts, github activity). Because NewsBlur is open-source, a number of contributors from the NewsBlur community have developed their own pet features which have been integrated back into the website. This also works well for finding typos in documentation and allowing users to submit a simple pull request to get it fixed.</p>
+
+  <h3 id="6-what-part-of-the-project-have-you-already-built-100-words">6. What part of the project have you already built? [100 words]</h3>
+
+  <p>On the back-end: distributed feed fetchers and parsers. On the front-end: the feed reader itself, intelligence training, and an iPhone app. There is an actively used API, on top of which NewsBlur’s users have built a mobile website, an Android app, a Windows Phone app, and a Nokia MeeGo app. What’s not built is the entire social layer. A prototype has already been developed to surface any network relationships on comments and shared stories.</p>
+
+  <h3 id="7-how-would-you-sustain-the-project-after-the-funding-expires-50-words">7. How would you sustain the project after the funding expires? [50 words]</h3>
+
+  <p>NewsBlur is free, but there is also a premium subscription that costs between $1 - $3 per month. Users can choose how much they’d like to pay, but that means that NewsBlur is able to pay for its 8 servers. The gap between costs and revenue (also known as profit) is increasing every day.</p>
+
+  <p>Requested amount from Knight News Challenge: $150,000<br />
+Expected amount of time required to complete project: 1 year</p>
+</blockquote>
+
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Mar 14, 2012</span>
           <h3>
             <a class="post-link" href="/2012/03/14/mobile-app-web-feeds-nokia-meego/">
@@ -614,95 +825,6 @@ $ curl http://www.newsblur.com/reader/feeds_trainer?feed_id=172
 <ul>
   <li>Samuel Clay, innocent Founder of NewsBlur</li>
 </ul>
-
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Apr 23, 2011</span>
-          <h3>
-            <a class="post-link" href="/2011/04/23/where-we-are-in-april/">
-              Where We Are in April
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>Hi readers, I want to take a moment to share what I’m working on for the month of April:</p>
-
-<ul>
-  <li>The API: This is the biggest and baddest update since the River of News and premium accounts. The API includes some lightweight rewrites of how NewsBlur communicates to the back-end server. It’s going smoothly, and you can watch the progress on the less-than-aptly named branch <a href="https://github.com/samuelclay/NewsBlur/commits/dashboard_tweaks">dashboard_tweaks on GitHub</a>.</li>
-</ul>
-
-<p>The goal for the API is to have users build Android and iPhone apps on top of NewsBlur. Heck, even web apps which use NewsBlur data sound just fine. Whatever it is, I want to support it. </p>
-<ul>
-  <li>Graphs on the Dashboard: I want to add some transparency to how the NewsBlur service is doing, both in terms of user growth and server status. I am adding a few graphs and numbers to the dashboard to show off how many premium and standard users have logged in during the past day, as well as how many feeds have been loaded, the response time for those feeds, and if there is a backlog for feed fetching.</li>
-  <li>Bug fixes: If you watch how often I’m committing to NewsBlur on GitHub, you may notice that a handful of bugs are fixed every single day. If you see a bug and it hasn’t been fixed, let me know on Twitter at <a href="http://twitter.com/samuelclay">@samuelclay</a>, or email me at <a href="mailto:samuel@ofbrooklyn.com">samuel@ofbrooklyn.com</a>.</li>
-  <li>Press page: Along with the API there will be a press page to showcase the nearly 40 articles and reviews written about NewsBlur. This page will also have a press kit, since one of the easiest ways to get reviewed is to have a number of materials at the ready.</li>
-  <li>Publisher information: If you’re a publisher and you want to make sure the NewsBlur experience is tip-top for your readers, this new page will highlight how to make the Original view work best.</li>
-</ul>
-
-<p>The work is progressing and it won’t be long now until everything above is ready for you to use and enjoy. There are a few other features that may make it out if I find myself working through everything else quickly enough.</p>
-
-<p>I recently launched a feature to show an aggregation of the intelligence classifiers that users are using on their sites. Soon, this data may come back to implicitly recommend stories for you. But in order for there to be enough data to make recommendations useful, more users needs to classify stories they like and dislike.</p>
-
-<p>The chart below shows the growth of different intelligence classifiers. The trend is up for tags, authors, feeds, and titles. That’s very good news.</p>
-
-<p><img src="http://cl.ly/6D0o/classifiers.png" alt="" /></p>
-
-<p>I’m also happy to say that as NewsBlur continues to grow, and with a few hundred premium users, it is becoming quite a big network of readers.</p>
-
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Apr 1, 2011</span>
-          <h3>
-            <a class="post-link" href="/2011/04/01/explaining-intelligence/">
-              Explaining Intelligence
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>If you’re not using intelligence classifiers, you’re only getting half the value out of NewsBlur. </p>
-
-<p>Intelligence classifiers are the phrases, tags, and authors that you like and dislike. Training your sites by choosing classifiers for each feed will automatically highlight the stories you want to read and hide the stories you don’t want to see.</p>
-
-<figure class="tmblr-full" data-orig-height="298" data-orig-width="600" data-orig-src="http://f.cl.ly/items/1J1N2e2Q0E133N3R0r3m/slider_states.png"><img data-orig-height="298" data-orig-width="600" src="http://f.cl.ly/items/1J1N2e2Q0E133N3R0r3m/slider_states.png" /></figure>
-
-<h2 id="how-to-train-intelligence">How to train intelligence</h2>
-
-<p>To train your feeds, you have four options:</p>
-
-<p>1) Train everything at once using the intelligence trainer, linked to from the Dashboard:</p>
-
-<figure class="tmblr-full" data-orig-height="95" data-orig-width="471"><img src="https://64.media.tumblr.com/cd8ffc2728c10f595c7fac06ce4f42b4/1a17e4479e9a96eb-0d/s540x810/d068b09f480a0052176b5a146e87761b13e08489.png" data-orig-height="95" data-orig-width="471" /></figure>
-
-<p>2) Train a feed individually:</p>
-
-<figure data-orig-height="272" data-orig-width="266"><img src="https://64.media.tumblr.com/32a74af0de7004dbfceee0632e014f35/1a17e4479e9a96eb-62/s540x810/c27823f31bb1d19c39d9a1a05fdffa8a54958ca1.png" align="middle" data-orig-height="272" data-orig-width="266" /></figure>
-<p>  <figure data-orig-height="71" data-orig-width="264"><img src="https://64.media.tumblr.com/6cdfff509662b28d905a2b9d59c07b43/1a17e4479e9a96eb-f6/s540x810/878ded95af12fc01e5c699422bb64bdc04aae1e3.png" align="middle" data-orig-height="71" data-orig-width="264" /></figure></p>
-
-<p>3) Train a story:</p>
-
-<p><img src="http://f.cl.ly/items/3G1w0X3P2i0T2J1L2D2K/story_trainer.png" alt="" /></p>
-
-<p>4) Choose tags and authors in the Feed view:</p>
-
-<p><img src="http://f.cl.ly/items/2o2x0b1E3I0F2Z273i0F/story_tags.png" alt="" /></p>
-
-<h2 id="whats-happening-under-the-hood">What’s happening under the hood</h2>
-
-<p>To get a better picture of how stories are being classified into the red, yellow, and green states, we need to take a look at how NewsBlur is using your intelligence classifiers and applying them to stories.</p>
-
-<p>When you select a tag, author, or phrase, NewsBlur looks for an exact match in all other stories in the same feed. It’s a very simple match, and nothing mysterious is happening without you being explicit about what you want to see.</p>
-
-<p>Green always wins. If you have 2 green classifiers and 3 red classifiers on a single story, the story will show up green, since it’s clear there is at least *something* you like about the story.</p>
-
-<p>However, classifying the publisher (i.e. the feed itself) works slightly differently. If you specify that you like or dislike the feed, all stories are automatically classified according to this preference, unless there is a tag, author, or title phrase that is classified, in which case it wins over the feed’s classification.</p>
-
-<p>This offers a neat trick to hide most stories from a feed, even in the yellow intelligence state, except for the few stories that you want to watch. Simply train the feed to dislike the feed itself, but give a thumbs up to the tags/authors/phrases in the stories you want to read. This will result in all stories being either red or green, which keeps the site out of your yellow intelligence setting.</p>
-
-<h2 id="whats-in-store-for-the-future">What’s in store for the future</h2>
-
-<p>Right now the intelligence classifiers are pretty naive. But the impetus for building NewsBlur was to passively train your feeds, just based on your implicit preferences. There’s a lot of work to be done to make this happen, and you can follow NewsBlur’s progress over on GitHub at <a href="http://github.com/samuelclay">http://github.com/samuelclay</a>.</p>
 
 
         </div>

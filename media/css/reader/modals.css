@@ -222,11 +222,11 @@ fieldset legend {
     font-weight: bold;
     padding: 0 4px;
     text-transform: uppercase;
-    overflow: hidden;
     border-radius: 3px;
     -moz-border-radius: 3px;
     text-shadow: none;
     float: left;
+    white-space: nowrap;
 }
 
 .NB-modal .NB-modal-feed-heading {
@@ -414,6 +414,15 @@ fieldset legend {
 .NB-modal img.feed_favicon {
     margin: 0 6px 0 0;
     vertical-align: middle;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-modal .NB-modal-feed-image.NB-feed-emoji,
+.NB-modal .NB-modal-feed-image.NB-feed-icon-colored,
+.NB-modal .NB-modal-feed-image.NB-folder-emoji,
+.NB-modal .NB-modal-feed-image.NB-folder-icon-colored {
+    margin: 0 6px 0 0;
     width: 16px;
     height: 16px;
 }

@@ -17,12 +17,13 @@
     name: dnsmasq
     enabled: true
 
-- name: Bind dnsmasq to localhost
+- name: Remove localhost-only binding from dnsmasq
   become: yes
   lineinfile:
     dest: /etc/dnsmasq.conf
-    state: present
+    state: absent
     line: 'listen-address=127.0.0.1'
+  notify: restart dnsmasq
 
 - name: Gather network facts
   become: yes
@@ -33,18 +34,19 @@
 
 - name: Check if resolv.conf exists
   become: yes
-  stat: 
+  stat:
     path: /etc/resolv.conf
+    follow: no
   register: resolvconf
 
 - name: Add localhost to resolv.conf
   become: yes
-  lineinfile: 
-    dest: /etc/resolv.conf 
-    state: present 
+  lineinfile:
+    dest: /etc/resolv.conf
+    state: present
     line: 'nameserver 127.0.0.1'
     insertbefore: BOF
-  when: resolvconf.stat.exists
+  when: resolvconf.stat.exists and not resolvconf.stat.islnk
 
 - name: Set dnsmasq user to root
   become: yes
@@ -60,6 +62,48 @@
     state: stopped
     enabled: no
     masked: yes
+
+- name: Ensure systemd-resolve directory exists for Docker compatibility
+  become: yes
+  file:
+    path: /run/systemd/resolve
+    state: directory
+    mode: '0755'
+
+- name: Point systemd-resolve resolv.conf to dnsmasq for Docker compatibility
+  become: yes
+  copy:
+    content: "nameserver 127.0.0.1\n"
+    dest: /run/systemd/resolve/resolv.conf
+    mode: '0644'
+  notify: restart docker
+
+- name: Remove resolv.conf symlink
+  become: yes
+  file:
+    path: /etc/resolv.conf
+    state: absent
+  when: resolvconf.stat.islnk is defined and resolvconf.stat.islnk
+
+- name: Create resolv.conf with dnsmasq
+  become: yes
+  copy:
+    content: "nameserver 127.0.0.1\n"
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: '0644'
+  when: resolvconf.stat.islnk is defined and resolvconf.stat.islnk
+
+- name: Ensure resolv.conf exists with dnsmasq
+  become: yes
+  copy:
+    content: "nameserver 127.0.0.1\n"
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: '0644'
+    force: no
 
 - name: Create Dnsmasq configuration
   become: yes
@@ -99,3 +143,6 @@
   service:
     name: dnsmasq
     state: started
+
+- name: Flush handlers to restart dnsmasq before other roles
+  meta: flush_handlers

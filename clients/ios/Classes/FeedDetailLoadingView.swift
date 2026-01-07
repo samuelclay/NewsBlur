@@ -21,7 +21,7 @@ struct FeedDetailLoadingView: View {
                 if let image = UIImage(named: "fleuron.png") {
                     Image(uiImage: image)
                 }
-                
+
                 if feedDetailInteraction.isPremiumRestriction {
                     Text("Reading by folder is only available to")
                         .font(.system(size: 14))
@@ -33,6 +33,11 @@ struct FeedDetailLoadingView: View {
                 }
             }
             .padding(cache.isGrid ? 0 : 20)
+            .onTapGesture {
+                if feedDetailInteraction.isPremiumRestriction {
+                    feedDetailInteraction.openPremiumDialog()
+                }
+            }
         } else if cache.isGrid {
             RoundedRectangle(cornerRadius: 10)
                 .fill(animate ? Color.themed([0x5C89C9, 0x666666]) : Color.themed([0xE1EBFF, 0x222222]))
