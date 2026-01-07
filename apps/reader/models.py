@@ -2451,7 +2451,9 @@ class MFolderIcon(mongo.Document):
         return cls.objects.filter(user_id=user_id)
 
     @classmethod
-    def save_folder_icon(cls, user_id, folder_title, icon_type, icon_data=None, icon_color=None, icon_set=None):
+    def save_folder_icon(
+        cls, user_id, folder_title, icon_type, icon_data=None, icon_color=None, icon_set=None
+    ):
         try:
             folder_icon = cls.objects.get(user_id=user_id, folder_title=folder_title)
             folder_icon.icon_type = icon_type
