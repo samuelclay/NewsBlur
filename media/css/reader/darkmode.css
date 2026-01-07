@@ -2486,3 +2486,30 @@ a.mention, a.mention-group {
 .NB-dark .NB-classifier-regex-pro-notice a {
     color: #9B88FE;
 }
+
+/* ================================== */
+/* = Compact Classifier Dialog      = */
+/* ================================== */
+
+.NB-dark .NB-modal-classifiers h5 {
+    color: #888;
+}
+
+.NB-dark .NB-classifier-content-inputs label {
+    color: #777;
+}
+
+.NB-dark .NB-classifier-content-inputs input {
+    background-color: #2a2c2e;
+    border-color: #4a4c4e;
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-classifier-content-inputs input:focus {
+    border-color: #4A90D9;
+}
+
+/* "This story" indicator - dark mode blue border */
+.NB-dark .NB-classifier-this-story {
+    border-left-color: #5080b0;
+}
