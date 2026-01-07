@@ -17121,6 +17121,7 @@ form.opml_import_form input {
     color: #999;
     text-decoration: none;
     margin-left: 12px;
+    white-space: nowrap;
 }
 
 .NB-modal .NB-folder-icon-clear-header:hover {
