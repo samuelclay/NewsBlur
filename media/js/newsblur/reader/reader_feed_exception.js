@@ -136,7 +136,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-settings' }, 'Settings'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-folder-icon' }, 'Folder Icon')
             ])),
-            (this.feed && !this.feed.is_starred() && $.make('div', { className: 'NB-modal-tabs NB-modal-tabs-feed' }, [
+            (this.feed && !this.feed.is_starred() && !this.feed.is_social() && $.make('div', { className: 'NB-modal-tabs NB-modal-tabs-feed' }, [
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-settings' }, 'Settings'),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-feed-icon' }, 'Feed Icon')
             ])),
@@ -660,8 +660,8 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var $page_option = $('.NB-exception-option-page', this.$modal).detach();
         $settings_tab.append($view_settings).append($feed_option).append($page_option).append($retry_option);
 
-        // Skip icon tab setup for starred/saved story tags
-        if (this.feed.is_starred()) return;
+        // Skip icon tab setup for starred/saved story tags and social/shared feeds
+        if (this.feed.is_starred() || this.feed.is_social()) return;
 
         // Build feed icon tab content
         this.feed_icon = NEWSBLUR.assets.get_feed_icon(this.feed_id) || {};
