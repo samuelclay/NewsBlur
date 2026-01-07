@@ -9,6 +9,28 @@ body {
   height: 16px;
   vertical-align: text-top;
 }
+.NB-feed-emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 14px;
+  line-height: 1;
+  vertical-align: middle;
+}
+.NB-feed-icon-colored {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
 .NB-story-tags {
   overflow: hidden;
   line-height: 12px;
@@ -154,6 +176,10 @@ body {
   color: #8D8D8D;
 }
 #NB-story-list .NB-read .NB-story-feed img {
+  opacity: .6;
+}
+#NB-story-list .NB-read .NB-story-feed .NB-feed-emoji,
+#NB-story-list .NB-read .NB-story-feed .NB-feed-icon-colored {
   opacity: .6;
 }
 #NB-story-list .NB-story .NB-story-title {

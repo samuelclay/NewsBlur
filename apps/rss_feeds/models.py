@@ -1424,8 +1424,8 @@ class Feed(models.Model):
     def fake_user_agent(self):
         ua = (
             '("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
-            "AppleWebKit/605.1.15 (KHTML, like Gecko) "
-            'Version/14.0.1 Safari/605.1.15")'
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            'Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0")'
         )
 
         return ua

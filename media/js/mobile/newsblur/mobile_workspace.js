@@ -114,7 +114,7 @@
                     <% if (feed.ng) { %>\
                         <span class="ui-li-count ui-li-count-negative"><%= feed.ng %></span>\
                     <% } %>\
-                    <img src="<%= $.favicon(feed) %>" class="ui-li-icon">\
+                    <%= $.favicon_html(feed, { image_class: "ui-li-icon", emoji_class: "ui-li-icon NB-feed-emoji", colored_class: "ui-li-icon NB-feed-icon-colored" }) %>\
                     <%= feed.feed_title %>\
                 </a>\
             </li>', {
@@ -191,7 +191,7 @@
                     <% } %>\
                     <div class="NB-story-title"><%= story.story_title %></div>\
                     <div class="NB-story-feed">\
-                        <div class="NB-story-feed-icon"><img src="<%= $.favicon(feed) %>"></div>\
+                        <div class="NB-story-feed-icon"><%= $.favicon_html(feed, { image_class: "NB-favicon", emoji_class: "NB-favicon NB-feed-emoji", colored_class: "NB-favicon NB-feed-icon-colored" }) %></div>\
                         <div class="NB-story-feed-title"><%= feed.feed_title %></div>\
                     </div>\
                 </a>\
@@ -276,7 +276,7 @@
                 .toggleClass('NB-inverse', NEWSBLUR.utils.is_feed_floater_gradient_light(feed));
                 
             var $feed = _.template('<div class="NB-story-feed-header">\
-                <img class="NB-favicon" src="<%= $.favicon(feed) %>" />\
+                <%= $.favicon_html(feed, { image_class: "NB-favicon", emoji_class: "NB-favicon NB-feed-emoji", colored_class: "NB-favicon NB-feed-icon-colored" }) %>\
                 <span class="feed_title">\
                     <%= feed.feed_title %>\
                 </span>\

@@ -54,7 +54,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
                 </div>\
                 <div class="NB-module-river-settings NB-javascript"></div>\
                 <div class="NB-module-river-title">\
-                    <div class="NB-module-river-favicon"><img src="<%= favicon_url %>"></div>\
+                    <div class="NB-module-river-favicon"><%= favicon_html %></div>\
                     <div class="NB-module-river-title-text"><%= river_title %></div>\
                 </div>\
             </h5>\
@@ -66,7 +66,7 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             </div>\
         </div>\
         ', {
-            favicon_url: this.model.favicon_url(),
+            favicon_html: $.favicon_html(this.model.get('river_id')),
             river_title: NEWSBLUR.reader.feed_title(this.model.get('river_id')),
             river_order: this.model.get('river_order'),
             river_side: this.model.get('river_side'),
