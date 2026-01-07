@@ -1,0 +1,21 @@
+{% extends "mail/email_base.txt" %}
+
+{% block body %}Hi {{ username }},
+
+I'm reaching out because your NewsBlur account has {{ feed_count }} active sites, and I wanted to give you a heads up about an upcoming change.
+
+To help balance server load and keep NewsBlur running smoothly for everyone, Premium subscriptions now include up to 1,024 sites. Premium Archive subscriptions include up to 4,096 sites.
+
+On {{ deadline_date }}, when your subscription renews, you'll need to choose one of these options:
+
+  1. Upgrade to Premium Archive ($99/year) - This includes up to 4,096 sites, plus full-text search and access to your complete story archive. You can upgrade here: https://newsblur.com/?next=premium
+
+  2. Choose which 1,024 sites to keep active - You can use the Mute Sites feature to select which sites you want to continue following.
+
+Until then, nothing changes for you. All {{ feed_count }} of your sites will continue working normally.
+
+Thanks for being a long-time NewsBlur subscriber. I really appreciate your support.
+
+- Samuel{% endblock body %}
+
+{% block resources_header %}{% endblock resources_header %}

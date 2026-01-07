@@ -123,7 +123,7 @@ def render_dashboard_river(context, dashboard_river):
 def render_account_module(context):
     user = get_user(context["user"])
     reasons = [
-        "Enable every site by going premium",
+        "Follow up to 1,024 sites",
         "Sites updated up to 5x more often",
         "Read the River of News (reading by folder)",
         "Search sites and folders",
@@ -166,6 +166,16 @@ def render_premium_archive_module(context):
         "user_profile": user.profile,
         "reason": reasons[rand_int],
         "rand_int": rand_int + 1 + 1,
+    }
+
+
+@register.inclusion_tag("reader/premium_trial_module.xhtml", takes_context=True)
+def render_premium_trial_module(context):
+    user = get_user(context["user"])
+
+    return {
+        "user": user,
+        "user_profile": user.profile,
     }
 
 
