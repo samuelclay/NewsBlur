@@ -559,6 +559,7 @@
                 .removeClass('NB-dashboard-columns-double')
                 .removeClass('NB-dashboard-columns-triple')
                 .toggleClass('NB-dashboard-columns-' + columns);
+            this.$s.$body.toggleClass('NB-disable-social', this.model.preference('disable_social'));
         },
 
         load_delayed_stylesheets: function () {

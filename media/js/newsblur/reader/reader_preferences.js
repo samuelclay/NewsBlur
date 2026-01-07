@@ -707,6 +707,35 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Discover sites'
                         ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-disablesocial' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-disablesocial-0', type: 'radio', name: 'disable_social', value: "false" }),
+                                $.make('label', { 'for': 'NB-preference-disablesocial-0' }, [
+                                    'Enable story sharing'
+                                ])
+                            ]),
+                            $.make('div', { className: 'NB-preference-disablesocial-features' }, [
+                                'Features enabled:',
+                                $.make('ul', [
+                                    $.make('li', 'Blurblogs'),
+                                    $.make('li', 'Sharing stories'),
+                                    $.make('li', 'Commenting on stories'),
+                                    $.make('li', 'Seeing what other users or readers have shared'),
+                                    $.make('li', 'Public comments')
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-disablesocial-1', type: 'radio', name: 'disable_social', value: "true" }),
+                                $.make('label', { 'for': 'NB-preference-disablesocial-1' }, [
+                                    'Disable all social features'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Sharing features'
+                        ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-stories' }, [
@@ -1053,6 +1082,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=show_discover]', $modal).each(function () {
             if ($(this).val() == "" + NEWSBLUR.Preferences.show_discover) {
+                $(this).prop('checked', true);
+                return false;
+            }
+        });
+        $('input[name=disable_social]', $modal).each(function () {
+            if ($(this).val() == "" + NEWSBLUR.Preferences.disable_social) {
                 $(this).prop('checked', true);
                 return false;
             }
