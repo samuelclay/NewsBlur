@@ -163,10 +163,12 @@ OAUTH2_PROVIDER = {
         "read": "View new unread stories, saved stories, and shared stories.",
         "write": "Create new saved stories, shared stories, and subscriptions.",
         "ifttt": "Pair your NewsBlur account with other services.",
+        "email": "Access your email address for account identification.",
     },
     "CLIENT_ID_GENERATOR_CLASS": "oauth2_provider.generators.ClientIdGenerator",
     "ACCESS_TOKEN_EXPIRE_SECONDS": 60 * 60 * 24 * 365 * 10,  # 10 years
     "AUTHORIZATION_CODE_EXPIRE_SECONDS": 60 * 60,  # 1 hour
+    "PKCE_REQUIRED": False,  # Allow legacy OAuth clients that don't support PKCE (e.g., Unread, other third-party apps)
 }
 
 # ===========

@@ -254,8 +254,14 @@ NEWSBLUR.log = function(msg) {
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/all-shares.svg';
                 if (feed_id == 'river:global')
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/global-shares.svg';
-                if (_.string.startsWith(feed_id, 'river:'))
+                if (_.string.startsWith(feed_id, 'river:')) {
+                    var folder_title = feed_id.substring('river:'.length);
+                    var folder_icon = NEWSBLUR.assets && NEWSBLUR.assets.get_folder_icon(folder_title);
+                    if (folder_icon && folder_icon.icon_type && folder_icon.icon_type !== 'none') {
+                        return $.make_folder_icon(folder_icon);
+                    }
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg';
+                }
                 if (feed_id == "read")
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/indicator-unread.svg';
                 if (feed_id == "starred")
@@ -270,7 +276,15 @@ NEWSBLUR.log = function(msg) {
                     return $.favicon(NEWSBLUR.assets.get_feed(feed_id));
             }
             
-            // Feed is a model
+            // Feed is a model - check for custom feed icon first
+            var feed_id = feed.id;
+            if (_.isNumber(feed_id)) {
+                var custom_feed_icon = NEWSBLUR.assets && NEWSBLUR.assets.get_feed_icon(feed_id);
+                if (custom_feed_icon && custom_feed_icon.icon_type && custom_feed_icon.icon_type !== 'none') {
+                    return $.make_feed_icon(custom_feed_icon);
+                }
+            }
+
             if (feed.get('favicon') && feed.get('favicon').length && feed.get('favicon').indexOf('data:image/png;base64,') != -1)
                 return feed.get('favicon');
             if (feed.get('favicon') && feed.get('favicon').length)
@@ -294,7 +308,178 @@ NEWSBLUR.log = function(msg) {
 
             return empty_icon;
         },
-        
+
+        make_folder_icon: function (folder_icon) {
+            if (folder_icon.icon_type === 'upload') {
+                return 'data:image/png;base64,' + folder_icon.icon_data;
+            } else if (folder_icon.icon_type === 'preset') {
+                var icon_set = folder_icon.icon_set || 'lucide';
+                return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/' + icon_set + '/' + folder_icon.icon_data + '.svg';
+            } else if (folder_icon.icon_type === 'emoji') {
+                // Return a special marker that folder_view.js will handle
+                return 'emoji:' + folder_icon.icon_data;
+            }
+            return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg';
+        },
+
+        make_feed_icon: function (feed_icon) {
+            if (feed_icon.icon_type === 'upload') {
+                return 'data:image/png;base64,' + feed_icon.icon_data;
+            } else if (feed_icon.icon_type === 'preset') {
+                var icon_set = feed_icon.icon_set || 'lucide';
+                return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/' + icon_set + '/' + feed_icon.icon_data + '.svg';
+            } else if (feed_icon.icon_type === 'emoji') {
+                // Return a special marker that feed_title_view.js will handle
+                return 'emoji:' + feed_icon.icon_data;
+            }
+            if (feed_icon.feed_id) {
+                return NEWSBLUR.URLs.favicon.replace('{id}', feed_icon.feed_id);
+            }
+            return null;
+        },
+
+        icon_url_is_preset: function (icon_url) {
+            return _.isString(icon_url) && (
+                icon_url.indexOf('/lucide/') !== -1 ||
+                icon_url.indexOf('/heroicons-solid/') !== -1
+            );
+        },
+
+        icon_url_is_custom: function (icon_url) {
+            return _.isString(icon_url) && (
+                _.string.startsWith(icon_url, 'emoji:') ||
+                _.string.startsWith(icon_url, 'data:') ||
+                $.icon_url_is_preset(icon_url)
+            );
+        },
+
+        is_hex_color: function (color) {
+            return _.isString(color) && !!color.match(/^#[0-9a-fA-F]{6}$/);
+        },
+
+        make_icon_element: function (options) {
+            options = options || {};
+            var icon_url = options.icon_url;
+            if (!icon_url) return null;
+
+            var icon_color = $.is_hex_color(options.icon_color) ? options.icon_color : null;
+            var is_preset = _.isBoolean(options.is_preset) ? options.is_preset : $.icon_url_is_preset(icon_url);
+            var role = options.role;
+
+            if (_.string.startsWith(icon_url, 'emoji:')) {
+                var emoji_class = options.emoji_class || '';
+                var emoji_attrs = { className: emoji_class };
+                if (role) emoji_attrs.role = role;
+                return $.make('span', emoji_attrs, icon_url.substring(6));
+            }
+
+            if (is_preset && icon_color && icon_color !== '#000000') {
+                var colored_class = options.colored_class || '';
+                var $colored = $.make('span', { className: colored_class });
+                if (role) $colored.attr('role', role);
+                $colored.css({
+                    'background-color': icon_color,
+                    '-webkit-mask-image': 'url(' + icon_url + ')',
+                    'mask-image': 'url(' + icon_url + ')'
+                });
+                return $colored;
+            }
+
+            var image_class = options.image_class || '';
+            var image_attrs = { src: icon_url };
+            if (image_class) image_attrs.className = image_class;
+            if (role) image_attrs.role = role;
+            return $.make('img', image_attrs);
+        },
+
+        favicon_el: function (feed, options) {
+            options = options || {};
+            var icon_url = $.favicon(feed);
+            if (!icon_url) return null;
+
+            var is_folder = _.isString(feed) && _.string.startsWith(feed, 'river:');
+            var icon_color = null;
+            var feed_id = null;
+            var feed_key = null;
+
+            if (is_folder) {
+                var folder_title = feed.substring('river:'.length);
+                var folder_icon = NEWSBLUR.assets && NEWSBLUR.assets.get_folder_icon(folder_title);
+                icon_color = folder_icon && folder_icon.icon_color;
+            } else if (_.isNumber(feed)) {
+                feed_id = feed;
+            } else if (_.isString(feed) && _.string.startsWith(feed, 'feed:')) {
+                feed_id = parseInt(feed.replace('feed:', ''), 10);
+            } else if (feed && _.isNumber(feed.id)) {
+                feed_id = feed.id;
+            } else if (feed && feed.get) {
+                feed_key = feed.get('feed_id');
+                if (_.isNumber(feed_key)) {
+                    feed_id = feed_key;
+                } else if (_.isString(feed_key) && _.string.startsWith(feed_key, 'feed:')) {
+                    var parsed_feed_id = parseInt(feed_key.replace('feed:', ''), 10);
+                    if (!isNaN(parsed_feed_id)) {
+                        feed_id = parsed_feed_id;
+                    }
+                }
+            }
+
+            if (_.isNumber(feed_id)) {
+                var feed_icon = NEWSBLUR.assets && NEWSBLUR.assets.get_feed_icon(feed_id);
+                icon_color = feed_icon && feed_icon.icon_color;
+            }
+            if (!icon_color && _.isString(feed_key) && _.string.startsWith(feed_key, 'river:')) {
+                var feed_folder_title = feed_key.substring('river:'.length);
+                var feed_folder_icon = NEWSBLUR.assets && NEWSBLUR.assets.get_folder_icon(feed_folder_title);
+                icon_color = feed_folder_icon && feed_folder_icon.icon_color;
+            }
+
+            var image_class = options.image_class || 'feed_favicon';
+            var emoji_class = options.emoji_class || (is_folder ? 'NB-folder-emoji' : 'feed_favicon NB-feed-emoji');
+            var colored_class = options.colored_class || (is_folder ? 'NB-folder-icon-colored' : 'feed_favicon NB-feed-icon-colored');
+
+            return $.make_icon_element({
+                icon_url: icon_url,
+                icon_color: icon_color,
+                image_class: image_class,
+                emoji_class: emoji_class,
+                colored_class: colored_class,
+                role: options.role
+            });
+        },
+
+        favicon_html: function (feed, options) {
+            var $icon = $.favicon_el(feed, options);
+            return $icon && $icon.length ? $icon.prop('outerHTML') : '';
+        },
+
+        favicon_is_custom: function (feed) {
+            return $.icon_url_is_custom($.favicon(feed));
+        },
+
+        favicon_image_url: function (feed, empty_on_missing) {
+            var icon_url = $.favicon(feed, empty_on_missing);
+            if (!_.isString(icon_url) || !_.string.startsWith(icon_url, 'emoji:')) {
+                return icon_url;
+            }
+
+            if (_.isNumber(feed)) {
+                return NEWSBLUR.URLs.favicon.replace('{id}', feed);
+            } else if (_.isString(feed)) {
+                if (_.string.startsWith(feed, 'feed:')) {
+                    return NEWSBLUR.URLs.favicon.replace('{id}', parseInt(feed.replace('feed:', ''), 10));
+                } else if (_.string.startsWith(feed, 'river:')) {
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/folder-open.svg';
+                }
+            } else if (feed && _.isNumber(feed.id)) {
+                return NEWSBLUR.URLs.favicon.replace('{id}', feed.id);
+            } else if (feed && feed.get && feed.get('favicon_url')) {
+                return feed.get('favicon_url');
+            }
+
+            return NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/world.svg';
+        },
+
         deepCopy: function(obj) {
             var type = $.typeOf(obj);
             switch (type) {

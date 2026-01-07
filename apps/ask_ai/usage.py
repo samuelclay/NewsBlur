@@ -6,9 +6,9 @@ from .models import MAITranscriptionUsage, MAskAIUsage
 
 
 class AskAIUsageTracker:
-    DAILY_LIMIT_PREMIUM = 3
+    WEEKLY_LIMIT_FREE = 1
+    WEEKLY_LIMIT_PREMIUM = 3
     DAILY_LIMIT_ARCHIVE = 100
-    WEEKLY_LIMIT_FREE = 3
 
     def __init__(self, user):
         self.user = user
@@ -16,21 +16,28 @@ class AskAIUsageTracker:
 
     # Public API -------------------------------------------------------------
     def can_use(self):
-        if self._is_premium_tier:
-            limit = self._daily_limit
+        # Archive/Pro users have daily limit
+        if self._is_archive_tier:
+            limit = self.DAILY_LIMIT_ARCHIVE
             used = self._daily_count()
             if used >= limit:
                 message = self._daily_limit_message(limit)
                 return False, message
             return True, None
 
-        # Free users have weekly limit
+        # Premium and free users have weekly limits
         weekly_usage = self._weekly_count()
-        if weekly_usage >= self.WEEKLY_LIMIT_FREE:
+        limit = self._weekly_limit
+        if weekly_usage >= limit:
             time_remaining = self._format_time_until_weekly_reset()
+            if self.profile.is_premium:
+                return (
+                    False,
+                    f"You've used all {limit} Ask AI requests this week. Your limit resets in {time_remaining}.\n\nUpgrade to Premium Archive for 100 requests per day.",
+                )
             return (
                 False,
-                f"You've used all {self.WEEKLY_LIMIT_FREE} free Ask AI requests this week. Your limit resets in {time_remaining}.\n\nUpgrade to Premium Archive for additional questions.",
+                f"You've used your free Ask AI request this week. Your limit resets in {time_remaining}.\n\nUpgrade to Premium for more questions.",
             )
         return True, None
 
@@ -61,55 +68,60 @@ class AskAIUsageTracker:
         return entry
 
     def get_usage_message(self):
-        if self._is_premium_tier:
-            limit = self._daily_limit
+        # Archive/Pro users have daily limit
+        if self._is_archive_tier:
+            limit = self.DAILY_LIMIT_ARCHIVE
             used = self._daily_count()
             remaining = max(0, limit - used)
 
-            upgrade_message = ""
-            show_message = True
-            if self.profile.is_archive or self.profile.is_pro:
-                show_message = remaining <= 3
-            else:
-                upgrade_message = "\n\nUpgrade to Premium Archive for 100 requests per day."
-
-            if not show_message:
+            # Only show message when running low
+            if remaining > 3:
                 return None
 
             time_remaining = self._format_time_until_reset()
             if remaining == 0:
                 return (
                     f"You've used all {limit} Ask AI requests today. "
-                    f"Your limit resets at midnight tonight, in {time_remaining}.{upgrade_message}"
+                    f"Your limit resets at midnight tonight, in {time_remaining}."
                 )
             return (
                 f"You have {remaining} Ask AI request{'s' if remaining != 1 else ''} remaining today "
+                f"(resets in {time_remaining})."
+            )
+
+        # Premium and free users have weekly limits
+        weekly_usage = self._weekly_count()
+        limit = self._weekly_limit
+        remaining = max(0, limit - weekly_usage)
+        time_remaining = self._format_time_until_weekly_reset()
+
+        if self.profile.is_premium:
+            upgrade_message = "\n\nUpgrade to Premium Archive for 100 requests per day."
+            if remaining == 0:
+                return f"You've used all {limit} Ask AI requests this week. Your limit resets in {time_remaining}.{upgrade_message}"
+            return (
+                f"You have {remaining} Ask AI request{'s' if remaining != 1 else ''} remaining this week "
                 f"(resets in {time_remaining}).{upgrade_message}"
             )
 
-        # Free users have weekly limit
-        weekly_usage = self._weekly_count()
-        remaining = max(0, self.WEEKLY_LIMIT_FREE - weekly_usage)
+        # Free users
+        upgrade_message = "\n\nUpgrade to Premium for more questions."
         if remaining == 0:
-            time_remaining = self._format_time_until_weekly_reset()
-            return f"You've used all {self.WEEKLY_LIMIT_FREE} free Ask AI requests this week. Your limit resets in {time_remaining}.\n\nUpgrade to Premium Archive for additional questions."
-
-        time_remaining = self._format_time_until_weekly_reset()
+            return f"You've used your free Ask AI request this week. Your limit resets in {time_remaining}.{upgrade_message}"
         return (
-            f"You have {remaining} Ask AI request{'s' if remaining != 1 else ''} remaining this week "
-            f"(resets in {time_remaining}).\n\n"
-            "Upgrade to Premium Archive for additional questions."
+            f"You have {remaining} free Ask AI request remaining this week "
+            f"(resets in {time_remaining}).{upgrade_message}"
         )
 
     @classmethod
     def get_usage_snapshot(cls):
-        """Return daily (for premium) and weekly (for free) usage counts keyed by user ID."""
+        """Return daily (for archive) and weekly (for premium/free) usage counts keyed by user ID."""
         collection = MAskAIUsage._get_collection()
         now = datetime.datetime.utcnow()
         last_day = now - datetime.timedelta(days=1)
         last_week = now - datetime.timedelta(days=7)
 
-        # Daily counts for premium users
+        # Daily counts for archive users
         daily_counts = {}
         for doc in collection.aggregate(
             [
@@ -119,7 +131,7 @@ class AskAIUsageTracker:
         ):
             daily_counts[doc["_id"]] = doc["count"]
 
-        # Weekly counts for free users
+        # Weekly counts for premium/free users
         weekly_counts = {}
         for doc in collection.aggregate(
             [
@@ -133,14 +145,14 @@ class AskAIUsageTracker:
 
     # Internal helpers -------------------------------------------------------
     @property
-    def _is_premium_tier(self):
-        return self.profile.is_premium or self.profile.is_archive or self.profile.is_pro
+    def _is_archive_tier(self):
+        return self.profile.is_archive or self.profile.is_pro
 
     @property
-    def _daily_limit(self):
-        if self.profile.is_archive or self.profile.is_pro:
-            return self.DAILY_LIMIT_ARCHIVE
-        return self.DAILY_LIMIT_PREMIUM
+    def _weekly_limit(self):
+        if self.profile.is_premium:
+            return self.WEEKLY_LIMIT_PREMIUM
+        return self.WEEKLY_LIMIT_FREE
 
     @property
     def _plan_tier(self):
@@ -275,27 +287,21 @@ class AskAIUsageTracker:
 
     def _daily_limit_message(self, limit):
         time_remaining = self._format_time_until_reset()
-        if self.profile.is_archive or self.profile.is_pro:
-            return (
-                f"You've reached your daily limit of {limit} Ask AI requests. "
-                f"Your limit resets at midnight tonight, in {time_remaining}."
-            )
         return (
             f"You've reached your daily limit of {limit} Ask AI requests. "
-            f"Your limit resets at midnight tonight, in {time_remaining}.\n\n"
-            "Upgrade to Premium Archive for 100 requests per day."
+            f"Your limit resets at midnight tonight, in {time_remaining}."
         )
 
 
 class TranscriptionUsageTracker:
     """
-    Track transcription usage with separate quotas (3x Ask AI quota).
+    Track transcription usage with separate quotas (Ask AI quota + 10 buffer).
     These higher quotas prevent abuse while allowing legitimate voice usage.
     """
 
-    DAILY_LIMIT_PREMIUM = 13  # Ask AI limit + 10
-    DAILY_LIMIT_ARCHIVE = 110  # Ask AI limit + 10
-    WEEKLY_LIMIT_FREE = 13  # Ask AI limit + 10
+    WEEKLY_LIMIT_FREE = 11  # Ask AI limit (1) + 10
+    WEEKLY_LIMIT_PREMIUM = 13  # Ask AI limit (3) + 10
+    DAILY_LIMIT_ARCHIVE = 110  # Ask AI limit (100) + 10
 
     def __init__(self, user):
         self.user = user
@@ -313,31 +319,31 @@ class TranscriptionUsageTracker:
         can_use_ask_ai, ask_ai_message = ask_ai_tracker.can_use()
 
         # Check transcription quota
-        if self._is_premium_tier:
-            limit = self._daily_limit
+        if self._is_archive_tier:
+            limit = self.DAILY_LIMIT_ARCHIVE
             used = self._daily_count()
             if used >= limit:
                 # Always return Ask AI quota message to hide transcription implementation
                 return False, ask_ai_message
             return True, None
 
-        # Free users have weekly limit
+        # Premium and free users have weekly limits
         weekly_usage = self._weekly_count()
-        if weekly_usage >= self.WEEKLY_LIMIT_FREE:
+        if weekly_usage >= self._weekly_limit:
             # Always return Ask AI quota message to hide transcription implementation
             return False, ask_ai_message
         return True, None
 
     def is_over_quota(self):
         """Check if user is over their transcription quota. Returns True if over quota."""
-        if self._is_premium_tier:
-            limit = self._daily_limit
+        if self._is_archive_tier:
+            limit = self.DAILY_LIMIT_ARCHIVE
             used = self._daily_count()
             return used >= limit
 
-        # Free users have weekly limit
+        # Premium and free users have weekly limits
         weekly_usage = self._weekly_count()
-        return weekly_usage >= self.WEEKLY_LIMIT_FREE
+        return weekly_usage >= self._weekly_limit
 
     def record_usage(
         self,
@@ -381,13 +387,13 @@ class TranscriptionUsageTracker:
 
     @classmethod
     def get_usage_snapshot(cls):
-        """Return daily (for premium) and weekly (for free) usage counts keyed by user ID."""
+        """Return daily (for archive) and weekly (for premium/free) usage counts keyed by user ID."""
         collection = MAITranscriptionUsage._get_collection()
         now = datetime.datetime.utcnow()
         last_day = now - datetime.timedelta(days=1)
         last_week = now - datetime.timedelta(days=7)
 
-        # Daily counts for premium users
+        # Daily counts for archive users
         daily_counts = {}
         for doc in collection.aggregate(
             [
@@ -397,7 +403,7 @@ class TranscriptionUsageTracker:
         ):
             daily_counts[doc["_id"]] = doc["count"]
 
-        # Weekly counts for free users
+        # Weekly counts for premium/free users
         weekly_counts = {}
         for doc in collection.aggregate(
             [
@@ -411,14 +417,14 @@ class TranscriptionUsageTracker:
 
     # Internal helpers -------------------------------------------------------
     @property
-    def _is_premium_tier(self):
-        return self.profile.is_premium or self.profile.is_archive or self.profile.is_pro
+    def _is_archive_tier(self):
+        return self.profile.is_archive or self.profile.is_pro
 
     @property
-    def _daily_limit(self):
-        if self.profile.is_archive or self.profile.is_pro:
-            return self.DAILY_LIMIT_ARCHIVE
-        return self.DAILY_LIMIT_PREMIUM
+    def _weekly_limit(self):
+        if self.profile.is_premium:
+            return self.WEEKLY_LIMIT_PREMIUM
+        return self.WEEKLY_LIMIT_FREE
 
     @property
     def _plan_tier(self):

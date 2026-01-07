@@ -426,15 +426,15 @@ class Feed(models.Model):
         return [f.pk for f in feeds]
 
     @classmethod
-    def autocomplete(self, prefix, limit=5):
-        results = SearchFeed.query(prefix)
-        feed_ids = [result["_source"]["feed_id"] for result in results[:5]]
+    def autocomplete(cls, prefix, limit=5):
+        # Fast text search first
+        results = SearchFeed.query(prefix, max_results=limit)
 
-        # results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
-        #
-        # if len(results) < limit:
-        #     results += SearchQuerySet().autocomplete(title=prefix).order_by('-num_subscribers')[:limit-len(results)]
-        #
+        # Fall back to hybrid (semantic) search if no text results
+        if not results:
+            results = SearchFeed.hybrid_query(prefix, max_results=limit)
+
+        feed_ids = [result["_source"]["feed_id"] for result in results[:limit]]
         return feed_ids
 
     @classmethod
@@ -1424,8 +1424,8 @@ class Feed(models.Model):
     def fake_user_agent(self):
         ua = (
             '("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
-            "AppleWebKit/605.1.15 (KHTML, like Gecko) "
-            'Version/14.0.1 Safari/605.1.15")'
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            'Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0")'
         )
 
         return ua
@@ -2464,6 +2464,37 @@ class Feed(models.Model):
             story["text"] = text
 
         return story
+
+    # Compiled regex for YouTube embed URL matching (used by apply_youtube_captions)
+    YOUTUBE_EMBED_RE = re.compile(
+        r'src=["\']https?://(?:www\.)?(?:youtube\.com|youtube-nocookie\.com)/embed/[^"\']*["\']'
+    )
+
+    @staticmethod
+    def apply_youtube_captions(story_content):
+        """
+        Transform YouTube embed URLs to enable captions by adding cc_load_policy=1.
+        This makes captions show by default when videos are played.
+        """
+        if not story_content:
+            return story_content
+
+        def add_captions_param(match):
+            url = match.group(0)
+            if "cc_load_policy" in url:
+                return url
+            if "?" in url:
+                if url.endswith('"') or url.endswith("'"):
+                    quote = url[-1]
+                    return url[:-1] + "&cc_load_policy=1" + quote
+                return url + "&cc_load_policy=1"
+            else:
+                if url.endswith('"') or url.endswith("'"):
+                    quote = url[-1]
+                    return url[:-1] + "?cc_load_policy=1" + quote
+                return url + "?cc_load_policy=1"
+
+        return Feed.YOUTUBE_EMBED_RE.sub(add_captions_param, story_content)
 
     @classmethod
     def secure_image_urls(cls, urls):

@@ -204,7 +204,11 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 feed = new NEWSBLUR.Models.Feed(feed);
                 var border = feed.get('favicon_color') || "707070";
                 return $.make("div", { className: "NB-category-feed", style: "border-left: 4px solid #" + border + "; border-right: 4px solid #" + border }, [
-                    $.make('img', { className: 'NB-category-feed-favicon', src: $.favicon(feed) }),
+                    $.favicon_el(feed, {
+                        image_class: 'NB-category-feed-favicon',
+                        emoji_class: 'NB-category-feed-favicon NB-feed-emoji',
+                        colored_class: 'NB-category-feed-favicon NB-feed-icon-colored'
+                    }),
                     $.make('div', { className: 'NB-category-feed-title' }, feed.get('feed_title'))
                 ]);
             }, this)));
