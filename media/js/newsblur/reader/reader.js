@@ -5948,7 +5948,7 @@
             }
             Push.create("NewsBlur", {
                 body: feed.get('feed_title') + " notifications are setup",
-                icon: $.favicon(feed),
+                icon: $.favicon_image_url(feed),
                 timeout: 3000,
                 onClick: function () {
                     window.focus();
@@ -5967,7 +5967,7 @@
 
             Push.create(feed.get('feed_title'), {
                 body: story_title,
-                icon: $.favicon(feed),
+                icon: $.favicon_image_url(feed),
                 timeout: 4000,
                 onClick: function () {
                     window.focus();
@@ -6340,7 +6340,14 @@
             feed = this.model.set_feed(feed_id, feed);
 
             $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(feed.get('feed_title'));
-            $('.NB-feeds-header-icon', this.$s.$tryfeed_header).attr('src', $.favicon(feed));
+            var $tryfeed_icon = $.favicon_el(feed, {
+                image_class: 'NB-feeds-header-icon',
+                emoji_class: 'NB-feeds-header-icon NB-feed-emoji',
+                colored_class: 'NB-feeds-header-icon NB-feed-icon-colored'
+            });
+            if ($tryfeed_icon) {
+                $('.NB-feeds-header-icon', this.$s.$tryfeed_header).replaceWith($tryfeed_icon);
+            }
 
             $tryfeed_container.slideDown(350, _.bind(function () {
                 options.force = true;
@@ -6368,7 +6375,14 @@
             this.reset_feed();
 
             $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(social_feed.get('username'));
-            $('.NB-feeds-header-icon', this.$s.$tryfeed_header).attr('src', $.favicon(social_feed));
+            var $tryfeed_icon = $.favicon_el(social_feed, {
+                image_class: 'NB-feeds-header-icon',
+                emoji_class: 'NB-feeds-header-icon NB-feed-emoji',
+                colored_class: 'NB-feeds-header-icon NB-feed-icon-colored'
+            });
+            if ($tryfeed_icon) {
+                $('.NB-feeds-header-icon', this.$s.$tryfeed_header).replaceWith($tryfeed_icon);
+            }
 
             $tryfeed_container.slideDown(350, _.bind(function () {
                 this.open_social_stories(social_feed.get('id'), options);

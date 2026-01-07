@@ -147,7 +147,18 @@
       COMMIT
       # END UFW AND DOCKER
   tags: docker ufw
-  notify: restart ufw
+
+# Always reload UFW to ensure DOCKER-USER rules are loaded into iptables.
+# Docker recreates an empty DOCKER-USER chain on restart, so we must reload
+# UFW every time Ansible runs, not just when after.rules changes.
+- name: Reload UFW to apply DOCKER-USER rules
+  become: yes
+  command: ufw reload
+  changed_when: false
+  tags:
+    - docker
+    - ufw
+    - ufw_reload
 
 - name: Start ufw
   become: yes
