@@ -15,7 +15,6 @@
     - { role: "dnsmasq", tags: "dnsmasq" }
     - { role: "consul", tags: "consul" }
     - { role: "consul-client", tags: "consul" }
-    - { role: "mongo-exporter", tags: "mongo-exporter" }
     - { role: "postgres-exporter", tags: "postgres-exporter" }
     - { role: "redis-exporter", tags: "redis-exporter" }
     - { role: "node-exporter", tags: ["node-exporter", "metrics"] }

@@ -296,7 +296,13 @@ class MUserSearch(mongo.Document):
         from apps.reader.models import UserSubscription
         from apps.rss_feeds.models import Feed
 
-        user = User.objects.get(pk=self.user_id)
+        try:
+            user = User.objects.get(pk=self.user_id)
+            username = user.username
+        except User.DoesNotExist:
+            user = None
+            username = f"deleted user #{self.user_id}"
+
         subscriptions = UserSubscription.objects.filter(user=self.user_id)
         total = subscriptions.count()
         removed = 0
@@ -321,10 +327,22 @@ class MUserSearch(mongo.Document):
             feed.save()
             removed += 1
 
-        logging.user(
-            user,
-            f"~FCRemoved ~SB{removed}/{total} feed's {'search' if search and not discover else 'discover' if discover and not search else 'search+discover' if search and discover else 'neither'} indexes~SN for ~SB~FB{user.username}~FC~SN.",
+        index_type = (
+            "search"
+            if search and not discover
+            else "discover"
+            if discover and not search
+            else "search+discover"
+            if search and discover
+            else "neither"
         )
+        log_msg = (
+            f"~FCRemoved ~SB{removed}/{total} feed's {index_type} indexes~SN for ~SB~FB{username}~FC~SN."
+        )
+        if user:
+            logging.user(user, log_msg)
+        else:
+            logging.debug(log_msg)
         self.delete()
 
 
@@ -358,7 +376,11 @@ class SearchStory:
             except elasticsearch.exceptions.NotFoundError:
                 logging.debug(f" ---> ~FBCan't delete {cls.index_name()} index, doesn't exist...")
 
-        if cls.ES().indices.exists(cls.index_name()):
+        try:
+            if cls.ES().indices.exists(cls.index_name()):
+                return
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for index mapping check: {e}")
             return
 
         mapping = {
@@ -431,11 +453,11 @@ class SearchStory:
             "date": story_date,
         }
         try:
-            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
+            cls.ES().create(
+                index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type(), ignore=409
+            )
         except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for story indexing: {e}")
-        except elasticsearch.exceptions.ConflictError as e:
-            logging.debug(f" ***> ~FBAlready indexed story: {e}")
         # if settings.DEBUG:
         #     logging.debug(f" ***> ~FBIndexed {story_hash}")
 
@@ -459,6 +481,20 @@ class SearchStory:
             logging.debug(" ***> ~FBNo index found, nothing to drop.")
 
     @classmethod
+    def _sanitize_query(cls, query):
+        """Escape unbalanced quotes to prevent Elasticsearch query_string errors.
+
+        Elasticsearch's query_string query requires balanced quotes for phrase searches.
+        If a user enters an odd number of quotes (e.g., 'hello "world'), this will
+        escape the last quote to prevent a parsing error.
+        """
+        quote_count = query.count('"')
+        if quote_count % 2 != 0:
+            last_quote_idx = query.rfind('"')
+            query = query[:last_quote_idx] + '\\"' + query[last_quote_idx + 1 :]
+        return query
+
+    @classmethod
     def query(cls, feed_ids, query, order, offset, limit, strip=False):
         try:
             cls.ES().indices.flush(cls.index_name())
@@ -467,8 +503,11 @@ class SearchStory:
             return []
 
         if strip:
-            query = re.sub(r"([^\s\w_\-])+", " ", query)  # Strip non-alphanumeric
+            query = re.sub(
+                r'([^\s\w_\-"])+', " ", query
+            )  # Strip non-alphanumeric, preserve quotes for phrases
         query = html.unescape(query)
+        query = cls._sanitize_query(query)
 
         body = {
             "query": {
@@ -526,8 +565,11 @@ class SearchStory:
         cls.ES().indices.flush()
 
         if strip:
-            query = re.sub(r"([^\s\w_\-])+", " ", query)  # Strip non-alphanumeric
+            query = re.sub(
+                r'([^\s\w_\-"])+', " ", query
+            )  # Strip non-alphanumeric, preserve quotes for phrases
         query = html.unescape(query)
+        query = cls._sanitize_query(query)
 
         body = {
             "query": {
@@ -703,7 +745,11 @@ class DiscoverStory:
             except elasticsearch.exceptions.NotFoundError:
                 logging.debug(f" ---> ~FBCan't delete {cls.index_name()} index, doesn't exist...")
 
-        if cls.ES().indices.exists(cls.index_name()):
+        try:
+            if cls.ES().indices.exists(cls.index_name()):
+                return
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for index mapping check: {e}")
             return
 
         mapping = {
@@ -749,17 +795,15 @@ class DiscoverStory:
     ):
         cls.create_elasticsearch_mapping()
 
+        # Check if already indexed to avoid expensive vector generation
         try:
-            record = cls.ES().get(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type())
-            if verbose:
-                logging.debug(f" ---> ~FBStory already indexed: {story_hash}")
-            return
-        except elasticsearch.exceptions.NotFoundError:
-            record = None
+            if cls.ES().exists(index=cls.index_name(), id=story_hash, doc_type=cls.doc_type()):
+                if verbose:
+                    logging.debug(f" ---> ~FBStory already indexed: {story_hash}")
+                return
         except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
-            logging.debug(f" ***> ~FRNo search server available for discover story indexing: {e}")
-        except elasticsearch.exceptions.ConflictError as e:
-            logging.debug(f" ***> ~FBAlready indexed discover story when getting: {e}")
+            logging.debug(f" ***> ~FRNo search server available for checking discover story: {e}")
+            return
 
         if not story_content_vector:
             story_content_vector = cls.generate_story_content_vector(story_hash)
@@ -774,17 +818,13 @@ class DiscoverStory:
             "content_vector": story_content_vector,
         }
         try:
-            if not record:
-                if verbose:
-                    logging.debug(f" ---> ~SN~FCIndexing discover story: ~SB~FC{story_hash}")
-                cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
-        except elasticsearch.exceptions.NotFoundError:
-            cls.ES().create(index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type())
-            logging.debug(f" ---> ~FCIndexing discover story: {story_hash}")
+            if verbose:
+                logging.debug(f" ---> ~SN~FCIndexing discover story: ~SB~FC{story_hash}")
+            cls.ES().create(
+                index=cls.index_name(), id=story_hash, body=doc, doc_type=cls.doc_type(), ignore=409
+            )
         except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for discover story indexing: {e}")
-        except elasticsearch.exceptions.ConflictError as e:
-            logging.debug(f" ***> ~FBAlready indexed discover story when creating: {e}")
         # if settings.DEBUG:
         #     logging.debug(f" ***> ~FBIndexed {story_hash}")
 
@@ -1048,7 +1088,11 @@ class SearchFeed:
             except elasticsearch.exceptions.NotFoundError:
                 logging.debug(f" ---> ~FBCan't delete {cls.index_name()} index, doesn't exist...")
 
-        if cls.ES().indices.exists(cls.index_name()):
+        try:
+            if cls.ES().indices.exists(cls.index_name()):
+                return
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for index mapping check: {e}")
             return
 
         index_settings = {
@@ -1127,7 +1171,7 @@ class SearchFeed:
             "content_vector": content_vector,
         }
         try:
-            cls.ES().create(index=cls.index_name(), id=feed_id, body=doc, doc_type=cls.doc_type())
+            cls.ES().create(index=cls.index_name(), id=feed_id, body=doc, doc_type=cls.doc_type(), ignore=409)
         except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available for feed indexing: {e}")
 
@@ -1139,75 +1183,85 @@ class SearchFeed:
             logging.debug(" ***> ~FBNo index found, nothing to drop.")
 
     @classmethod
-    def query(cls, text, max_subscribers=5):
+    def query(cls, text, max_results=20):
+        """
+        Search for feeds by text matching on title, feed_address, and link.
+
+        Uses a combination of:
+        - Exact match on title (highest weight)
+        - Wildcard matching on feed_address for URL substring matching
+        - Wildcard matching on link
+        - function_score to boost results by subscriber count while preserving relevance
+        """
         try:
             cls.ES().indices.flush(index=cls.index_name())
         except elasticsearch.exceptions.NotFoundError as e:
             logging.debug(f" ***> ~FRNo search server available: {e}")
             return []
 
-        if settings.DEBUG:
-            max_subscribers = 1
+        # Escape special characters for query_string wildcards
+        escaped_text = text.replace("\\", "\\\\").replace('"', '\\"')
 
         body = {
             "query": {
-                "bool": {
-                    "should": [
+                "function_score": {
+                    "query": {
+                        "bool": {
+                            "should": [
+                                # Title match with high boost (works well with snowball analyzer)
+                                {
+                                    "match": {
+                                        "title": {
+                                            "query": text,
+                                            "boost": 3,
+                                        }
+                                    }
+                                },
+                                # Wildcard on feed_address for URL substring matching
+                                # (snowball analyzer doesn't tokenize URLs well)
+                                {
+                                    "query_string": {
+                                        "query": f"*{escaped_text}*",
+                                        "fields": ["feed_address"],
+                                        "boost": 2,
+                                        "analyze_wildcard": True,
+                                    }
+                                },
+                                # Wildcard on link for site URL matching
+                                {
+                                    "query_string": {
+                                        "query": f"*{escaped_text}*",
+                                        "fields": ["link"],
+                                        "boost": 1.5,
+                                        "analyze_wildcard": True,
+                                    }
+                                },
+                            ],
+                            "minimum_should_match": 1,
+                        }
+                    },
+                    "functions": [
+                        # Boost by subscriber count using log scale to prevent high-subscriber
+                        # feeds from completely dominating relevance
                         {
-                            "match": {
-                                "address": {
-                                    "query": text,
-                                    "cutoff_frequency": "0.0005",
-                                    "minimum_should_match": "75%",
-                                }
+                            "field_value_factor": {
+                                "field": "num_subscribers",
+                                "factor": 1.2,
+                                "modifier": "log1p",
+                                "missing": 1,
                             }
-                        },
-                        {
-                            "match": {
-                                "title": {
-                                    "query": text,
-                                    "cutoff_frequency": "0.0005",
-                                    "minimum_should_match": "75%",
-                                }
-                            }
-                        },
-                        {
-                            "match": {
-                                "link": {
-                                    "query": text,
-                                    "cutoff_frequency": "0.0005",
-                                    "minimum_should_match": "75%",
-                                }
-                            }
-                        },
-                    ]
+                        }
+                    ],
+                    "boost_mode": "multiply",
                 }
             },
-            "sort": [{"num_subscribers": {"order": "desc"}}],
+            "size": max_results,
         }
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
         except elasticsearch.exceptions.RequestError as e:
             logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
             return []
-
-        # s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
-        # address = elasticsearch_dsl.Q('match', address=text)
-        # link = elasticsearch_dsl.Q('match', link=text)
-        # title = elasticsearch_dsl.Q('match', title=text)
-        # search_q = address | link | title
-        # s = s.query(search_q).extra(cutoff_frequency="0.0005", minimum_should_match="75%")
-        # s = s.sort("-num_subscribers")
-        # body = s.to_dict()
-        # print(f"Before: {body}")
-        # results = s.execute()
-
-        # q = pyes.query.BoolQuery()
-        # q.add_should(pyes.query.MatchQuery('address', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
-        # q.add_should(pyes.query.MatchQuery('link', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
-        # q.add_should(pyes.query.MatchQuery('title', text, analyzer="simple", cutoff_frequency=0.0005, minimum_should_match="75%"))
-        # q = pyes.Search(q, min_score=1)
-        # results = cls.ES().search(query=q, size=max_subscribers, sort="num_subscribers:desc")
 
         logging.info(
             "~FGSearch ~FCfeeds~FG: ~SB%s~SN, ~SB%s~SN results" % (text, len(results["hits"]["hits"]))
@@ -1256,6 +1310,89 @@ class SearchFeed:
         )
 
         return results["hits"]["hits"]
+
+    @classmethod
+    def hybrid_query(cls, text, max_results=20, text_weight=0.6, semantic_weight=0.4):
+        """
+        Hybrid search combining text matching with semantic similarity.
+
+        This provides better results for:
+        - Brand/name searches (e.g., "nytimes") - text matching dominates
+        - Topic searches (e.g., "cooking recipes") - semantic search finds related feeds
+
+        Args:
+            text: Search query
+            max_results: Maximum number of results to return
+            text_weight: Weight for text search scores (default 0.6)
+            semantic_weight: Weight for semantic search scores (default 0.4)
+
+        Returns:
+            List of feed results with combined scoring
+        """
+        from openai import OpenAI
+
+        results = {}
+
+        # Part 1: Text-based search
+        text_results = cls.query(text, max_results=max_results)
+        max_text_score = max((hit["_score"] for hit in text_results), default=1)
+
+        for hit in text_results:
+            fid = hit["_source"]["feed_id"]
+            # Normalize text score to 0-1 range
+            normalized_score = hit["_score"] / max_text_score if max_text_score > 0 else 0
+            results[fid] = {
+                "source": hit["_source"],
+                "text_score": normalized_score,
+                "semantic_score": 0,
+            }
+
+        # Part 2: Semantic search (generate embedding for query)
+        try:
+            client = OpenAI(api_key=settings.OPENAI_API_KEY)
+            response = client.embeddings.create(model="text-embedding-3-small", input=text.lower())
+            query_vector = response.data[0].embedding
+
+            semantic_results = cls.vector_query(query_vector, max_results=max_results)
+            for hit in semantic_results:
+                fid = hit["_source"]["feed_id"]
+                # Cosine similarity is already 0-1 (the +1 offset is in the score)
+                semantic_score = hit["_score"] - 1  # Remove the +1 offset from ES script
+
+                if fid in results:
+                    results[fid]["semantic_score"] = semantic_score
+                else:
+                    results[fid] = {
+                        "source": hit["_source"],
+                        "text_score": 0,
+                        "semantic_score": semantic_score,
+                    }
+        except Exception as e:
+            logging.debug(f" ***> ~FRSemantic search failed, using text-only: {e}")
+
+        # Combine scores and rank
+        combined = []
+        for fid, data in results.items():
+            combined_score = (data["text_score"] * text_weight) + (data["semantic_score"] * semantic_weight)
+            combined.append(
+                {
+                    "feed_id": fid,
+                    "_source": data["source"],
+                    "_score": combined_score,
+                    "text_score": data["text_score"],
+                    "semantic_score": data["semantic_score"],
+                }
+            )
+
+        # Sort by combined score descending
+        combined.sort(key=lambda x: -x["_score"])
+
+        logging.info(
+            f"~FGHybrid search ~FCfeeds~FG: ~SB{text}~SN, ~SB{len(combined[:max_results])}~SN results "
+            f"(text_weight={text_weight}, semantic_weight={semantic_weight})"
+        )
+
+        return combined[:max_results]
 
     @classmethod
     def fetch_feed_content_vector(cls, feed_id):

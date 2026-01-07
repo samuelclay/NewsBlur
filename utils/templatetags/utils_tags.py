@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 import random
 import re
@@ -15,6 +16,7 @@ from pipeline.templatetags.pipeline import (
     stylesheet,
 )
 
+from apps.ask_ai.prompts import get_prompts_for_frontend
 from apps.reader.forms import FeatureForm
 from apps.reader.models import Feature
 from apps.social.models import MSocialProfile
@@ -47,10 +49,12 @@ def localdatetime(context, date, date_format):
 def render_feeds_skeleton(context):
     user = get_user(context["user"])
     social_profile = MSocialProfile.get_user(user.pk)
+    ask_ai_prompts = get_prompts_for_frontend()
 
     return {
         "user": user,
         "social_profile": social_profile,
+        "ask_ai_prompts_json": json.dumps(ask_ai_prompts),
         "MEDIA_URL": settings.MEDIA_URL,
     }
 
@@ -128,6 +132,7 @@ def render_account_module(context):
         "Custom RSS feeds for saved stories",
         "Text view conveniently recreates the full story",
         "Discover related stories and sites",
+        "Ask AI questions about stories",
         f"You feed Lyric, NewsBlur's hungry hound, for 6 days<img class='NB-feedchooser-premium-poor-hungry-dog' src='{settings.MEDIA_URL}img/reader/lyric.jpg'>",
     ]
     rand_int = (datetime.datetime.now().timetuple().tm_yday) % len(reasons)
@@ -149,10 +154,12 @@ def render_premium_archive_module(context):
         "Stories can stay unread for however long you choose",
         "Every story from every site is archived and searchable forever",
         "Feeds that support paging are back-filled in for a complete archive",
+        "Train stories on full text content, not just titles and tags",
         "Export trained stories from folders as RSS feeds",
         "Choose when stories are automatically marked as read",
+        "Ask AI questions about stories",
     ]
-    rand_int = (datetime.datetime.now().timetuple().tm_yday) % len(reasons)
+    rand_int = (datetime.datetime.now().timetuple().tm_sec) % len(reasons)
 
     return {
         "user": user,
@@ -312,10 +319,25 @@ def smooth_timedelta(timedeltaobj):
     return timetot
 
 
+class DebugAssetsAwareJavascriptNode(JavascriptNode):
+    """JavascriptNode that respects DEBUG_ASSETS instead of DEBUG."""
+
+    def render(self, context):
+        # Temporarily override DEBUG setting for Pipeline to respect DEBUG_ASSETS
+        original_debug = settings.DEBUG
+        try:
+            if hasattr(settings, "DEBUG_ASSETS"):
+                settings.DEBUG = settings.DEBUG_ASSETS
+            return super().render(context)
+        finally:
+            settings.DEBUG = original_debug
+
+
 @register.tag
 def include_javascripts(parser, token):
     """Prints out a template of <script> tags based on an asset package name."""
-    return javascript(parser, token)
+    tag_name, name = token.split_contents()
+    return DebugAssetsAwareJavascriptNode(name)
     # asset_type = 'javascripts'
     # return mark_safe(settings.JAMMIT.render_tags(asset_type, asset_package))
 
@@ -362,9 +384,24 @@ def include_stylesheets_raw(parser, token):
     return scripts
 
 
+class DebugAssetsAwareStylesheetNode(StylesheetNode):
+    """StylesheetNode that respects DEBUG_ASSETS instead of DEBUG."""
+
+    def render(self, context):
+        # Temporarily override DEBUG setting for Pipeline to respect DEBUG_ASSETS
+        original_debug = settings.DEBUG
+        try:
+            if hasattr(settings, "DEBUG_ASSETS"):
+                settings.DEBUG = settings.DEBUG_ASSETS
+            return super().render(context)
+        finally:
+            settings.DEBUG = original_debug
+
+
 @register.tag
 def include_stylesheets(parser, token):
     """Prints out a template of <link> tags based on an asset package name."""
-    return stylesheet(parser, token)
+    tag_name, name = token.split_contents()
+    return DebugAssetsAwareStylesheetNode(name)
     # asset_type = 'stylesheets'
     # return mark_safe(settings.JAMMIT.render_tags(asset_type, asset_package))

@@ -117,9 +117,9 @@ struct CardView: View {
     
     var highlightColor: Color {
         if cache.isGrid {
-            return Color.themed([0xFDFCFA, 0xFFFDEF, 0x4F4F4F, 0x292B2C])
+            return Color.themed([0xFDFCFA, 0xFAF5ED, 0x4F4F4F, 0x292B2C])
         } else {
-            return Color.themed([0xFFFDEF, 0xEEECCD, 0x303A40, 0x303030])
+            return Color.themed([0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030])
         }
     }
     

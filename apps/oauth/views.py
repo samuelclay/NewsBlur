@@ -17,6 +17,7 @@ from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierText,
     MClassifierTitle,
     compute_story_score,
 )
@@ -237,6 +238,7 @@ def api_user_info(request):
             "data": {
                 "name": user.username,
                 "id": user.pk,
+                "email": user.email,
             }
         },
     )
@@ -408,6 +410,12 @@ def api_unread_story(request, trigger_slug=None):
             MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
         )
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+        if user.profile.premium_available_text_classifiers:
+            classifier_texts = list(
+                MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+        else:
+            classifier_texts = []
     feeds = dict(
         [
             (
@@ -434,6 +442,7 @@ def api_unread_story(request, trigger_slug=None):
                 classifier_titles=classifier_titles,
                 classifier_authors=classifier_authors,
                 classifier_tags=classifier_tags,
+                classifier_texts=classifier_texts,
                 classifier_feeds=classifier_feeds,
             )
             if score < 0:
@@ -582,6 +591,10 @@ def api_shared_story(request):
     classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, social_user_id__in=social_user_ids))
     classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, social_user_id__in=social_user_ids))
     classifier_tags = list(MClassifierTag.objects(user_id=user.pk, social_user_id__in=social_user_ids))
+    if user.profile.premium_available_text_classifiers:
+        classifier_texts = list(MClassifierText.objects(user_id=user.pk, social_user_id__in=social_user_ids))
+    else:
+        classifier_texts = []
     # Merge with feed specific classifiers
     classifier_feeds = classifier_feeds + list(
         MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids)
@@ -595,6 +608,12 @@ def api_shared_story(request):
     classifier_tags = classifier_tags + list(
         MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids)
     )
+    if user.profile.premium_available_text_classifiers:
+        classifier_texts = classifier_texts + list(
+            MClassifierText.objects(user_id=user.pk, feed_id__in=found_feed_ids)
+        )
+    else:
+        classifier_texts = []
 
     for story in stories:
         if before and int(story["shared_date"].strftime("%s")) > before:
@@ -606,6 +625,7 @@ def api_shared_story(request):
             classifier_titles=classifier_titles,
             classifier_authors=classifier_authors,
             classifier_tags=classifier_tags,
+            classifier_texts=classifier_texts,
             classifier_feeds=classifier_feeds,
         )
         if score < 0:
@@ -664,6 +684,9 @@ def api_share_new_story(request):
     story_title = fields.get("story_title", "")
     story_author = fields.get("story_author", "")
     comments = fields.get("comments", None)
+
+    if not story_url:
+        return {"errors": [{"message": "Invalid story URL"}]}
 
     logging.user(request.user, "~FBFinding feed (api_share_new_story): %s" % story_url)
     original_feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
@@ -777,6 +800,9 @@ def api_save_new_story(request):
     user_tags = fields.get("user_tags", "")
     story = None
 
+    if not story_url:
+        return {"errors": [{"message": "Invalid story URL"}]}
+
     logging.user(request.user, "~FBFinding feed (api_save_new_story): %s" % story_url)
     original_feed = Feed.get_feed_from_url(story_url)
     if not story_content or not story_title:
@@ -823,6 +849,9 @@ def api_save_new_subscription(request):
     fields = body.get("actionFields")
     url = urlnorm.normalize(fields["url"])
     folder = fields["folder"]
+
+    if not url:
+        return {"errors": [{"message": "Invalid URL"}]}
 
     if folder == "Top Level":
         folder = " "

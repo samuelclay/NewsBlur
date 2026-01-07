@@ -172,6 +172,8 @@ class OPMLImporter(Importer):
 
                 feed_address = urlnorm.normalize(feed.xmlUrl)
                 feed_link = urlnorm.normalize(feed.htmlUrl)
+                if not feed_address:
+                    continue
                 if len(feed_address) > Feed._meta.get_field("feed_address").max_length:
                     continue
                 if feed_link and len(feed_link) > Feed._meta.get_field("feed_link").max_length:
