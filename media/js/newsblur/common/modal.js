@@ -92,7 +92,12 @@ NEWSBLUR.Modal.prototype = {
 
         $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
         $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed.get('feed_title'));
-        $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true)).show();
+        // Hide subscriber count for starred/saved tags and social feeds
+        if (this.feed.is_starred() || this.feed.is_social()) {
+            $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).hide();
+        } else {
+            $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true)).show();
+        }
     },
 
     initialize_folder: function (folder_title) {
