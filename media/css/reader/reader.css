@@ -6489,6 +6489,26 @@ body {
     display: block;
 }
 
+/* ========================= */
+/* = Staff-Only Badge       = */
+/* ========================= */
+
+.NB-feeds-header-river-trending-container {
+    display: none;
+}
+
+.NB-staff-badge {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8B7355;
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
 /* ============================ */
 /* = Header - Starred Stories = */
 /* ============================ */
