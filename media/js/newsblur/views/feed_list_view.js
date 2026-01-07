@@ -191,7 +191,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             });
         }
 
-        if (NEWSBLUR.assets.preference('show_trending_sites')) {
+        if (NEWSBLUR.Globals.is_staff && NEWSBLUR.assets.preference('show_trending_sites')) {
             $('.NB-feeds-header-river-trending-container').css({
                 'display': 'block',
                 'opacity': 0
