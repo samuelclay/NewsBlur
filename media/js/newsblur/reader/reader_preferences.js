@@ -710,31 +710,31 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-disablesocial' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
+                            $.make('div', { className: 'NB-social-card NB-social-card-enable' }, [
                                 $.make('input', { id: 'NB-preference-disablesocial-0', type: 'radio', name: 'disable_social', value: "false" }),
-                                $.make('label', { 'for': 'NB-preference-disablesocial-0' }, [
-                                    'Enable story sharing'
+                                $.make('label', { 'for': 'NB-preference-disablesocial-0', className: 'NB-social-card-content' }, [
+                                    $.make('span', { className: 'NB-social-card-icon' }, ''),
+                                    $.make('span', { className: 'NB-social-card-title' }, 'Enable social features'),
+                                    $.make('ul', { className: 'NB-social-features-list' }, [
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Blurblogs']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Share stories']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Comment on stories']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'See shared stories']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Public comments'])
+                                    ])
                                 ])
                             ]),
-                            $.make('div', { className: 'NB-preference-disablesocial-features' }, [
-                                'Features enabled:',
-                                $.make('ul', [
-                                    $.make('li', 'Blurblogs'),
-                                    $.make('li', 'Sharing stories'),
-                                    $.make('li', 'Commenting on stories'),
-                                    $.make('li', 'Seeing what other users or readers have shared'),
-                                    $.make('li', 'Public comments')
-                                ])
-                            ]),
-                            $.make('div', [
+                            $.make('div', { className: 'NB-social-card NB-social-card-disable' }, [
                                 $.make('input', { id: 'NB-preference-disablesocial-1', type: 'radio', name: 'disable_social', value: "true" }),
-                                $.make('label', { 'for': 'NB-preference-disablesocial-1' }, [
-                                    'Disable all social features'
+                                $.make('label', { 'for': 'NB-preference-disablesocial-1', className: 'NB-social-card-content' }, [
+                                    $.make('span', { className: 'NB-social-card-icon' }, ''),
+                                    $.make('span', { className: 'NB-social-card-title' }, 'Disable social features'),
+                                    $.make('span', { className: 'NB-social-card-desc' }, 'Hide all sharing, comments, and blurblog features')
                                 ])
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
-                            'Sharing features'
+                            'Sharing'
                         ])
                     ])
                 ]),
@@ -1107,7 +1107,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             }
         });
         $('input[name=disable_social]', $modal).each(function () {
-            if ($(this).val() == "" + NEWSBLUR.Preferences.disable_social) {
+            if ($(this).val() == "" + (NEWSBLUR.Preferences.disable_social || false)) {
                 $(this).prop('checked', true);
                 return false;
             }
