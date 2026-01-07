@@ -17060,6 +17060,35 @@ form.opml_import_form input {
     clear: both;
 }
 
+/* Feed settings modal - match folder layout */
+.NB-modal-exception.NB-modal-feed-settings .NB-modal-subtitle {
+    display: inline-flex;
+    align-items: center;
+    background: transparent !important;
+    padding: 8px 0;
+    margin: 8px 0 0;
+    float: left;
+}
+
+.NB-modal-exception.NB-modal-feed-settings .NB-modal-tabs {
+    float: right;
+    margin: 12px 0 0;
+    position: relative;
+    bottom: auto;
+}
+
+.NB-modal-exception.NB-modal-feed-settings .NB-modal-feed-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 8px;
+}
+
+/* Clear floats before tab content */
+.NB-modal-exception.NB-modal-feed-settings .NB-tab {
+    clear: both;
+}
+
 /* Upload section margin */
 .NB-folder-icon-editor .NB-folder-icon-upload-section {
     margin-top: 8px;
@@ -17654,6 +17683,84 @@ form.opml_import_form input {
 .NB-dark .NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button:hover {
     background: #444;
     border-color: #666;
+}
+
+/* ========================== */
+/* = Custom Feed Icons = */
+/* ========================== */
+
+/* Feed emoji icon in feed list */
+.NB-feed-emoji {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.NB-feedlist .feed .NB-feed-emoji {
+    font-size: 13px;
+    line-height: 16px;
+    position: absolute;
+    top: 4px;
+    left: 6px;
+}
+
+.NB-feedlist .feed .NB-feed-icon-colored {
+    position: absolute;
+    top: 4px;
+    left: 6px;
+}
+
+.NB-density-compact .NB-feedlist .feed .NB-feed-emoji,
+.NB-density-compact .NB-feedlist .feed .NB-feed-icon-colored {
+    top: 1px;
+}
+
+.NB-theme-feed-size-m .NB-feedlist .feed .NB-feed-emoji,
+.NB-theme-feed-size-m .NB-feedlist .feed .NB-feed-icon-colored {
+    top: 6px;
+}
+
+.NB-density-compact.NB-theme-feed-size-m .NB-feedlist .feed .NB-feed-emoji,
+.NB-density-compact.NB-theme-feed-size-m .NB-feedlist .feed .NB-feed-icon-colored {
+    top: 4px;
+}
+
+/* Colored feed icon using mask-image */
+.NB-feed-icon-colored {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+/* Feed emoji/icon in feedbar */
+.NB-feedbar .NB-feed-emoji {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-feedbar .NB-feed-icon-colored {
+    width: 16px;
+    height: 16px;
+}
+
+/* Feed icon in modal header */
+.NB-modal-subtitle .NB-feed-emoji {
+    font-size: 16px;
+    vertical-align: middle;
+    margin-right: 8px;
 }
 
 /* ================= */

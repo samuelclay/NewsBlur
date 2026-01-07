@@ -62,6 +62,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.starred_stories = [];
         this.starred_count = 0;
         this.folder_icons = {};
+        this.feed_icons = {};
         this.flags = {
             'favicons_fetching': false,
             'has_chosen_feeds': false
@@ -564,6 +565,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.social_services = subscriptions.social_services;
             self.dashboard_rivers.reset(subscriptions.dashboard_rivers);
             self.folder_icons = subscriptions.folder_icons || {};
+            self.feed_icons = subscriptions.feed_icons || {};
 
             if (selected && self.feeds.get(selected)) {
                 self.feeds.get(selected).set('selected', true);
@@ -2011,6 +2013,52 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     remove_folder_icon: function (folder_title, callback, error_callback) {
         this.save_folder_icon(folder_title, 'none', null, null, null, callback, error_callback);
+    },
+
+    // ===================
+    // = Feed Icons =
+    // ===================
+
+    get_feed_icon: function (feed_id) {
+        return this.feed_icons[feed_id] || null;
+    },
+
+    save_feed_icon: function (feed_id, icon_type, icon_data, icon_color, icon_set, callback, error_callback) {
+        var self = this;
+        this.make_request('/reader/save_feed_icon', {
+            feed_id: feed_id,
+            icon_type: icon_type,
+            icon_data: icon_data,
+            icon_color: icon_color,
+            icon_set: icon_set
+        }, function (response) {
+            self.feed_icons = response.feed_icons || {};
+            callback && callback(response);
+        }, error_callback);
+    },
+
+    upload_feed_icon: function (feed_id, file, callback, error_callback) {
+        var self = this;
+        var formData = new FormData();
+        formData.append('feed_id', feed_id);
+        formData.append('photo', file);
+
+        $.ajax({
+            url: NEWSBLUR.URLs.reader + '/upload_feed_icon',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                self.feed_icons = response.feed_icons || {};
+                callback && callback(response);
+            },
+            error: error_callback
+        });
+    },
+
+    remove_feed_icon: function (feed_id, callback, error_callback) {
+        this.save_feed_icon(feed_id, 'none', null, null, null, callback, error_callback);
     },
 
     save_dashboard_river: function (river_id, river_side, river_order, callback, error_callback) {
