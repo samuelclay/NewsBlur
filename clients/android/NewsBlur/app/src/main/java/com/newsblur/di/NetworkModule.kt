@@ -102,8 +102,8 @@ object NetworkModule {
         NetworkClientImpl(
             context = context,
             client = apiOkHttpClient,
-            initialUserAgent = customUserAgent,
             prefsRepo = prefsRepo,
+            initialUserAgent = customUserAgent,
         )
 
     @Singleton

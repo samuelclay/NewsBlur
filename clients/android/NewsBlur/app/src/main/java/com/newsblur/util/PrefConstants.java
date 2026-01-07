@@ -8,8 +8,9 @@ public class PrefConstants {
 	public static final String PREF_COOKIE = "login_cookie";
 	public static final String PREF_UNIQUE_LOGIN = "login_unique";
     public static final String PREF_CUSTOM_SERVER = "custom_server";
-	
-	public final static String USER_USERNAME = "username";
+    public static final String PREF_CUSTOM_SERVER_CA_PEM = "custom_server_ca_pem";
+
+    public final static String USER_USERNAME = "username";
 	public final static String USER_WEBSITE = "website";
 	public final static String USER_BIO = "bio";
 	public final static String USER_FEED_ADDRESS = "feed_address";
