@@ -1202,12 +1202,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     apply_starred_story_selections: function (force) {
         var highlights = this.model.user_highlights();
         var text_classifiers = this.classifiers && this.classifiers.texts ? _.keys(this.classifiers.texts) : [];
+        var text_regex_classifiers = this.classifiers && this.classifiers.text_regex ? _.keys(this.classifiers.text_regex) : [];
+        // Support legacy 'regex' key for backward compatibility
+        var legacy_regex_classifiers = this.classifiers && this.classifiers.regex ? _.keys(this.classifiers.regex) : [];
         var search_query = NEWSBLUR.reader.flags.search;
 
         if (!force) {
-            if ((!highlights || !highlights.length) && !text_classifiers.length && !search_query) return;
+            if ((!highlights || !highlights.length) && !text_classifiers.length && !text_regex_classifiers.length && !legacy_regex_classifiers.length && !search_query) return;
         }
-        // console.log(['Applying highlights', highlights, 'text_classifiers', text_classifiers, 'search_query', search_query]);
 
         var $doc = this.$(".NB-feed-story-content");
         $doc.unmark();
@@ -1236,6 +1238,36 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 "acrossElements": true,
                 "caseSensitive": false
             });
+        }, this));
+
+        // Apply text regex classifier highlights
+        _.each(text_regex_classifiers, _.bind(function (pattern) {
+            try {
+                var classifier_score = this.classifiers.text_regex[pattern];
+                var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+                var regex = new RegExp(pattern, 'gi');
+                $doc.markRegExp(regex, {
+                    "className": className,
+                    "acrossElements": true
+                });
+            } catch (e) {
+                console.log(['Invalid regex pattern for highlighting', pattern, e]);
+            }
+        }, this));
+
+        // Apply legacy regex classifier highlights (backward compatibility)
+        _.each(legacy_regex_classifiers, _.bind(function (pattern) {
+            try {
+                var classifier_score = this.classifiers.regex[pattern];
+                var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+                var regex = new RegExp(pattern, 'gi');
+                $doc.markRegExp(regex, {
+                    "className": className,
+                    "acrossElements": true
+                });
+            } catch (e) {
+                console.log(['Invalid regex pattern for highlighting', pattern, e]);
+            }
         }, this));
 
         // Apply search highlights (last, so they appear on top)

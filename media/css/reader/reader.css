@@ -8753,14 +8753,104 @@ form.opml_import_form input {
     border: 1px dashed #7986CB;
 }
 
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-hover-like {
+    background-color: #C5CAE9;
+    border: 1px dashed #5C6BC0;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-hover-like label b,
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-hover-like label span {
+    color: #1A237E;
+    text-shadow: none;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-hover-dislike {
+    background-color: #FFCDD2;
+    border: 1px dashed #E57373;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-hover-dislike label b,
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-hover-dislike label span {
+    color: #B71C1C;
+    text-shadow: none;
+}
+
 .NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-like {
     background-color: #2E7D32;
     border: 1px solid #1B5E20;
 }
 
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-like.NB-classifier-hover-like {
+    background-color: #1B5E20;
+    border: 1px solid #0D3D12;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-like.NB-classifier-hover-like label b,
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-like.NB-classifier-hover-like label span {
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-like.NB-classifier-hover-dislike {
+    background-color: #C62828;
+    border: 1px solid #B71C1C;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-like.NB-classifier-hover-dislike label b,
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-like.NB-classifier-hover-dislike label span {
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
 .NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-dislike {
     background-color: #C62828;
     border: 1px solid #B71C1C;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-dislike.NB-classifier-hover-dislike {
+    background-color: #B71C1C;
+    border: 1px solid #8B0000;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-dislike.NB-classifier-hover-dislike label b,
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-dislike.NB-classifier-hover-dislike label span {
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-dislike.NB-classifier-hover-like {
+    background-color: #2E7D32;
+    border: 1px solid #1B5E20;
+}
+
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-dislike.NB-classifier-hover-like label b,
+.NB-classifiers .NB-classifier.NB-classifier-regex.NB-classifier-dislike.NB-classifier-hover-like label span {
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Regex badge inside classifier */
+.NB-classifier-regex-badge {
+    display: inline-block;
+    background: #7B68EE;
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+.NB-classifier-like .NB-classifier-regex-badge {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.NB-classifier-dislike .NB-classifier-regex-badge {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 /* PRO notice for regex */
@@ -8794,20 +8884,20 @@ form.opml_import_form input {
     margin-bottom: 8px;
 }
 
-/* Smaller section headers */
+/* Section headers - Title Case */
 .NB-modal-classifiers h5 {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin: 0 0 6px 0;
-    color: #666;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0;
+    margin: 0 0 8px 0;
+    color: #505050;
 }
 
-/* Combined content matching section */
+/* Content section help text */
 .NB-classifier-content-section .NB-classifier-help-text {
-    font-size: 10px;
-    margin: 0 0 6px 0;
-    padding: 4px 6px;
+    font-size: 12px;
+    margin: 0 0 8px 0;
+    padding: 6px 10px;
 }
 
 /* Compact stacked inputs */
@@ -8845,11 +8935,26 @@ form.opml_import_form input {
     overflow: hidden;
 }
 
-/* "This story" indicator - colored left border */
+/* Story-specific classifiers */
 .NB-classifier-this-story {
-    border-left: 3px solid #a0c6e8;
-    padding-left: 8px;
-    margin-bottom: 6px;
+    margin-bottom: 2px;
+}
+
+/* Feed items - subtle separator when both groups exist */
+.NB-classifier-this-story+.NB-classifier-feed-items {
+    padding-top: 4px;
+    border-top: 1px dashed #ddd;
+    margin-top: 4px;
+}
+
+.NB-classifier-this-story+.NB-classifier-feed-items::before {
+    content: 'More from this feed';
+    display: block;
+    font-size: 9px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 4px;
 }
 
 /* Feed items container */
@@ -8858,14 +8963,251 @@ form.opml_import_form input {
     overflow: hidden;
 }
 
-/* Smaller premium notice */
+/* Premium notice */
 .NB-modal-classifiers .NB-classifier-text-premium-notice {
-    margin-top: 6px;
+    margin-top: 8px;
 }
 
 .NB-modal-classifiers .NB-classifier-text-premium-notice-text {
+    font-size: 12px;
+    padding: 6px 10px;
+}
+
+/* ================================ */
+/* = Match Type Segmented Control = */
+/* ================================ */
+
+/* Input row - input and segmented control on same line */
+.NB-classifier-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.NB-modal-field .NB-classifier-input-row .NB-classifier-exact-input,
+.NB-modal-field .NB-classifier-input-row .NB-classifier-regex-input-inline {
+    flex: 1;
+    margin-bottom: 0;
+    padding: 5px 8px;
+    box-sizing: border-box;
+}
+
+.NB-classifier-match-type-control {
+    display: inline-flex;
+    background: #e8e8e8;
+    border-radius: 6px;
+    padding: 2px;
+    flex-shrink: 0;
+    height: 30px;
+    box-sizing: border-box;
+    align-items: center;
+}
+
+.NB-classifier-match-type-control .NB-match-type-option {
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.NB-classifier-match-type-control .NB-match-type-option:hover {
+    color: #444;
+}
+
+.NB-classifier-match-type-control .NB-match-type-option.NB-active {
+    background: white;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.NB-classifier-match-type-control .NB-match-type-option.NB-match-type-regex.NB-active {
+    background: #7B68EE;
+    color: white;
+}
+
+/* Regex tips panel */
+.NB-classifier-regex-tips {
+    display: none;
+    background: linear-gradient(135deg, #f8f7ff 0%, #f0edff 100%);
+    border: 1px solid #d8d4ff;
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 8px 0;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.NB-classifier-regex-tips.NB-visible {
+    display: block;
+}
+
+.NB-classifier-regex-tips-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.NB-classifier-regex-tips-header:hover {
+    opacity: 0.8;
+}
+
+.NB-classifier-regex-tips-title {
+    font-weight: 600;
+    color: #5a4fcf;
+    font-size: 12px;
+}
+
+.NB-classifier-regex-tips-toggle {
     font-size: 10px;
-    padding: 4px 8px;
+    color: #888;
+}
+
+.NB-classifier-regex-tips-content {
+    transition: max-height 0.2s ease;
+}
+
+.NB-classifier-regex-tips.NB-collapsed .NB-classifier-regex-tips-content {
+    display: none;
+}
+
+.NB-classifier-regex-tips.NB-collapsed .NB-classifier-regex-tips-header {
+    margin-bottom: 0;
+}
+
+.NB-classifier-regex-tips-columns {
+    display: flex;
+    gap: 20px;
+}
+
+.NB-classifier-regex-tips-column {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-regex-tip-category {
+    font-weight: 600;
+    color: #7B68EE;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 8px 0 4px;
+    padding-bottom: 2px;
+    border-bottom: 1px solid rgba(123, 104, 238, 0.2);
+}
+
+.NB-regex-tip-category:first-child {
+    margin-top: 0;
+}
+
+.NB-classifier-regex-tips-list {
+    margin: 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.NB-classifier-regex-tips-list li {
+    margin-bottom: 3px;
+    color: #555;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.NB-classifier-regex-tips-list code {
+    background: rgba(123, 104, 238, 0.15);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 9px;
+    color: #5a4fcf;
+    white-space: nowrap;
+}
+
+.NB-classifier-regex-tips-note {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(123, 104, 238, 0.2);
+    font-size: 10px;
+    color: #777;
+    font-style: italic;
+}
+
+/* Unified text/title input styling */
+.NB-classifier-text-input,
+.NB-classifier-title-input {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.NB-classifier-text-input:focus,
+.NB-classifier-title-input:focus {
+    border-color: #4A90D9;
+    outline: none;
+}
+
+/* Regex mode styling for inputs */
+.NB-classifier-input-regex-mode {
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    border: 1px solid #b8b0ff;
+    background: #fdfcff;
+}
+
+.NB-classifier-input-regex-mode:focus {
+    border-color: #7B68EE;
+    box-shadow: 0 0 0 2px rgba(123, 104, 238, 0.2);
+}
+
+/* Unified validation div styling */
+.NB-classifier-validation-inline {
+    font-size: 11px;
+    margin: 4px 0 6px;
+    min-height: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* Regex validation badges */
+.NB-regex-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.NB-regex-badge-valid {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.NB-regex-badge-match {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.NB-regex-badge-no-match {
+    background: #f5f5f5;
+    color: #757575;
+    border: 1px solid #e0e0e0;
+}
+
+.NB-regex-badge-error {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
 }
 
 /* =================== */
@@ -17645,6 +17987,7 @@ form.opml_import_form input {
         opacity: 0;
         transform: translateY(-8px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -17694,11 +18037,25 @@ form.opml_import_form input {
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-4px); }
-    40% { transform: translateX(4px); }
-    60% { transform: translateX(-4px); }
-    80% { transform: translateX(4px); }
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-4px);
+    }
+
+    40% {
+        transform: translateX(4px);
+    }
+
+    60% {
+        transform: translateX(-4px);
+    }
+
+    80% {
+        transform: translateX(4px);
+    }
 }
 
 .NB-folder-icon-editor .NB-modal-submit-save {

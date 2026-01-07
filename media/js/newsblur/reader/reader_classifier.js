@@ -427,10 +427,16 @@ var classifier_prototype = {
             ]),
             (this.options['feed_loaded'] &&
                 $.make('form', { method: 'post', className: 'NB-publisher' }, [
-                    (!_.isEmpty(this.user_classifiers.titles) && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
-                        $.make('h5', 'Titles and Phrases'),
+                    ((!_.isEmpty(this.user_classifiers.titles) || !_.isEmpty(this.user_classifiers.title_regex)) && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
+                        $.make('h5', 'Title Phrases'),
                         $.make('div', { className: 'NB-classifier-titles NB-fieldset-fields NB-classifiers' },
-                            this.make_user_titles()
+                            this.make_user_titles().concat(this.make_user_title_regex())
+                        )
+                    ])),
+                    ((!_.isEmpty(this.user_classifiers.texts) || !_.isEmpty(this.user_classifiers.text_regex) || !_.isEmpty(this.user_classifiers.regex)) && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
+                        $.make('h5', 'Text Phrases'),
+                        $.make('div', { className: 'NB-classifier-texts NB-fieldset-fields NB-classifiers' },
+                            this.make_user_texts().concat(this.make_user_text_regex())
                         )
                     ])),
                     (this.feed_authors.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifiers' }, [
@@ -507,10 +513,10 @@ var classifier_prototype = {
             ]),
             (this.options['feed_loaded'] &&
                 $.make('form', { method: 'post' }, [
-                    // Section 1: Combined Text/Title matching (compact stacked)
-                    this.make_content_matching_section(story_title, selected_text, story),
-                    // Section 2: Regex Filter
-                    this.make_regex_section(),
+                    // Section 1: Story Text
+                    this.make_story_text_section(selected_text, story),
+                    // Section 2: Story Title
+                    this.make_story_title_section(story_title, story),
                     // Section 3: Combined Authors (story author + feed authors)
                     this.make_combined_authors_section(story),
                     // Section 4: Combined Tags (story tags + feed tags)
@@ -531,31 +537,112 @@ var classifier_prototype = {
         ]);
     },
 
-    make_content_matching_section: function (story_title, selected_text, story) {
+    make_story_text_section: function (selected_text, story) {
         var self = this;
-        return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section' }, [
-            $.make('h5', 'Match Text or Title'),
+        var story_content = story.get('story_content') || '';
+
+        return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-text-section', 'data-section': 'text' }, [
+            $.make('h5', 'Story Text'),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $.make('div', { className: 'NB-classifier-help-text' }, 'Highlight words to train'),
-                $.make('div', { className: 'NB-classifier-content-inputs' }, [
-                    $.make('label', 'Title'),
-                    $.make('input', { type: 'text', value: story_title || '', className: 'NB-classifier-title-highlight' }),
-                    $.make('label', 'Content'),
-                    $.make('input', { type: 'text', value: selected_text, className: 'NB-classifier-text-highlight' })
+                $.make('div', { className: 'NB-classifier-input-row' }, [
+                    $.make('input', { type: 'text', value: selected_text || '', className: 'NB-classifier-text-input', placeholder: 'Enter text to match...' }),
+                    $.make('div', { className: 'NB-classifier-match-type-control' }, [
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, 'Exact phrase'),
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, 'Regex')
+                    ])
                 ]),
+                $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-text-validation' }),
+                this.make_regex_tips(),
                 $.make('div', { className: 'NB-classifier-content-classifiers' }, [
-                    this.make_classifier('<span class="NB-classifier-title-placeholder">Select title phrase</span>', '', 'title'),
-                    $.make('span', this.make_user_titles(story_title)),
-                    this.make_classifier('<span class="NB-classifier-text-placeholder">Select content text</span>', '', 'text'),
-                    $.make('span', this.make_user_texts(story.get('story_content')))
+                    this.make_classifier('<span class="NB-classifier-text-placeholder">Enter text above</span>', '', 'text'),
+                    $.make('span', this.make_user_texts(story_content)),
+                    $.make('span', this.make_user_text_regex())
                 ]),
                 (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && $.make('div', { className: 'NB-classifier-text-premium-notice' }, [
                     $.make('div', { className: 'NB-classifier-text-premium-notice-text' }, [
-                        'Text classifiers will be saved but not applied. ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Upgrade to Premium')
+                        'Text classifiers will be saved but not applied.',
+                        $.make('br'),
+                        'Upgrade to ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive or Premium Pro'),
+                        ' to use text classifiers.'
                     ])
                 ]))
             ])
+        ]);
+    },
+
+    make_story_title_section: function (story_title, story) {
+        var self = this;
+        return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-title-section', 'data-section': 'title' }, [
+            $.make('h5', 'Story Title'),
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                $.make('div', { className: 'NB-classifier-help-text' }, 'Highlight phrases in the title below to train on specific words'),
+                $.make('div', { className: 'NB-classifier-input-row' }, [
+                    $.make('input', { type: 'text', value: story_title || '', className: 'NB-classifier-title-input' }),
+                    $.make('div', { className: 'NB-classifier-match-type-control' }, [
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, 'Exact phrase'),
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, 'Regex')
+                    ])
+                ]),
+                $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-title-validation' }),
+                this.make_regex_tips(),
+                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
+                    this.make_classifier('<span class="NB-classifier-title-placeholder">Select title phrase</span>', '', 'title'),
+                    $.make('span', this.make_user_titles(story_title)),
+                    $.make('span', this.make_user_title_regex())
+                ])
+            ])
+        ]);
+    },
+
+    make_regex_tips: function () {
+        var is_collapsed = NEWSBLUR.assets.preference('regex_tips_collapsed');
+        return $.make('div', { className: 'NB-classifier-regex-tips' + (is_collapsed ? ' NB-collapsed' : '') }, [
+            $.make('div', { className: 'NB-classifier-regex-tips-header' }, [
+                $.make('span', { className: 'NB-classifier-regex-tips-title' }, 'Regex Pattern Guide'),
+                $.make('span', { className: 'NB-classifier-regex-tips-toggle' }, is_collapsed ? '▶ Show' : '▼ Hide')
+            ]),
+            $.make('div', { className: 'NB-classifier-regex-tips-content' }, [
+            $.make('div', { className: 'NB-classifier-regex-tips-columns' }, [
+                $.make('div', { className: 'NB-classifier-regex-tips-column' }, [
+                    $.make('div', { className: 'NB-regex-tip-category' }, 'Word Matching'),
+                    $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
+                        $.make('li', [$.make('code', '\\bcat\\b'), ' — Whole word "cat" only']),
+                        $.make('li', [$.make('code', '\\bthe cat\\b'), ' — Exact phrase "the cat"']),
+                        $.make('li', [$.make('code', 'cat|dog|bird'), ' — Any of these words']),
+                        $.make('li', [$.make('code', '\\b(new|latest) release\\b'), ' — "new release" or "latest release"']),
+                        $.make('li', [$.make('code', 'colou?r'), ' — "color" or "colour" (optional letter)'])
+                    ]),
+                    $.make('div', { className: 'NB-regex-tip-category' }, 'Position & Greedy'),
+                    $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
+                        $.make('li', [$.make('code', '^Breaking'), ' — Starts with "Breaking"']),
+                        $.make('li', [$.make('code', 'update$'), ' — Ends with "update"']),
+                        $.make('li', [$.make('code', '^\\[Video\\]'), ' — Starts with "[Video]"']),
+                        $.make('li', [$.make('code', 'breaking.*news'), ' — "breaking" then anything then "news"']),
+                        $.make('li', [$.make('code', '".*?"'), ' — Non-greedy: each quoted phrase'])
+                    ])
+                ]),
+                $.make('div', { className: 'NB-classifier-regex-tips-column' }, [
+                    $.make('div', { className: 'NB-regex-tip-category' }, 'Numbers & Symbols'),
+                    $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
+                        $.make('li', [$.make('code', 'v\\d+'), ' — "v" followed by numbers (v1, v2, v10)']),
+                        $.make('li', [$.make('code', '\\$\\d+'), ' — Dollar amounts ($5, $100)']),
+                        $.make('li', [$.make('code', '#\\w+'), ' — Hashtags (#news, #tech)']),
+                        $.make('li', [$.make('code', '@\\w+'), ' — Mentions (@user, @company)']),
+                        $.make('li', [$.make('code', '^\\d+\\.'), ' — Starts with number and period'])
+                    ]),
+                    $.make('div', { className: 'NB-regex-tip-category' }, 'Exclusions & Advanced'),
+                    $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
+                        $.make('li', [$.make('code', '^(?!.*sponsor)'), ' — NOT containing "sponsor"']),
+                        $.make('li', [$.make('code', '^(?!.*\\bad\\b)'), ' — NOT containing word "ad"']),
+                        $.make('li', [$.make('code', '\\d{4}'), ' — Exactly 4 digits (years)']),
+                        $.make('li', [$.make('code', '.{50,}'), ' — At least 50 characters']),
+                        $.make('li', [$.make('code', '[A-Z]{2,}'), ' — Two or more capital letters'])
+                    ])
+                ])
+            ]),
+            $.make('div', { className: 'NB-classifier-regex-tips-note' }, 'All patterns are case-insensitive by default. Use \\b for word boundaries to avoid partial matches.')
+            ]) // end content
         ]);
     },
 
@@ -687,7 +774,7 @@ var classifier_prototype = {
         var texts = _.keys(this.user_classifiers.texts || {});
 
         _.each(texts, _.bind(function (text) {
-            // Check if text is in the story content
+            // Check if text is in the story content (show all if no story_content provided)
             if (!story_content || story_content.toLowerCase().indexOf(text.toLowerCase()) != -1) {
                 var $text = this.make_classifier(text, text, 'text');
                 $texts.push($text);
@@ -695,6 +782,31 @@ var classifier_prototype = {
         }, this));
 
         return $texts;
+    },
+
+    make_user_title_regex: function () {
+        var $regexes = [];
+        var regex_classifiers = this.user_classifiers.title_regex || {};
+
+        _.each(_.keys(regex_classifiers), _.bind(function (pattern) {
+            var $regex = this.make_classifier(pattern, pattern, 'title', null, null, true);
+            $regexes.push($regex);
+        }, this));
+
+        return $regexes;
+    },
+
+    make_user_text_regex: function () {
+        var $regexes = [];
+        // Support both new 'text_regex' and legacy 'regex' storage
+        var regex_classifiers = this.user_classifiers.text_regex || this.user_classifiers.regex || {};
+
+        _.each(_.keys(regex_classifiers), _.bind(function (pattern) {
+            var $regex = this.make_classifier(pattern, pattern, 'text', null, null, true);
+            $regexes.push($regex);
+        }, this));
+
+        return $regexes;
     },
 
     make_authors: function (authors) {
@@ -778,11 +890,16 @@ var classifier_prototype = {
         return $publisher;
     },
 
-    make_classifier: function (classifier_title, classifier_value, classifier_type, classifier_count, classifier) {
+    make_classifier: function (classifier_title, classifier_value, classifier_type, classifier_count, classifier, is_regex) {
         var score = 0;
-        // Detect if this is a regex classifier type
-        var is_regex = classifier_type === 'regex';
-        var storage_key = is_regex ? 'regex' : classifier_type + 's';  // titles, texts, regex, etc.
+        // is_regex can be passed explicitly, or detected from classifier_type === 'regex'
+        if (is_regex === undefined) {
+            is_regex = classifier_type === 'regex';
+        }
+        // Storage key: regex classifiers use type + '_regex', others use type + 's'
+        var storage_key = is_regex ? classifier_type + '_regex' : classifier_type + 's';
+        // Input name: regex classifiers save as 'like_title_regex' or 'like_text_regex'
+        var input_type = is_regex ? classifier_type + '_regex' : classifier_type;
 
         // NEWSBLUR.log(['classifiers', this.user_classifiers, classifier_value, this.user_classifiers[classifier_type+'s']]);
         if (this.user_classifiers[storage_key] &&
@@ -790,12 +907,8 @@ var classifier_prototype = {
             score = this.user_classifiers[storage_key][classifier_value];
         }
 
-        var classifier_type_title;
-        if (is_regex) {
-            classifier_type_title = 'Regex';
-        } else {
-            classifier_type_title = Inflector.capitalize(classifier_type == 'feed' ? 'site' : classifier_type);
-        }
+        // Label shows the display type (Text, Title, etc.) not "Regex"
+        var classifier_type_title = Inflector.capitalize(classifier_type == 'feed' ? 'site' : classifier_type);
 
         var css_class = 'NB-classifier NB-classifier-' + classifier_type;
         if (is_regex) {
@@ -807,13 +920,13 @@ var classifier_prototype = {
                 $.make('input', {
                     type: 'checkbox',
                     className: 'NB-classifier-input-like',
-                    name: 'like_' + classifier_type,
+                    name: 'like_' + input_type,
                     value: classifier_value
                 }),
                 $.make('input', {
                     type: 'checkbox',
                     className: 'NB-classifier-input-dislike',
-                    name: 'dislike_' + classifier_type,
+                    name: 'dislike_' + input_type,
                     value: classifier_value
                 }),
                 $.make('div', { className: 'NB-classifier-icon-like' }),
@@ -823,6 +936,7 @@ var classifier_prototype = {
                 $.make('label', [
                     (classifier_type == 'feed' && $.favicon_el(classifier)),
                     $.make('b', classifier_type_title + ': '),
+                    (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
                     $.make('span', classifier_title)
                 ])
             ]),
@@ -908,178 +1022,247 @@ var classifier_prototype = {
     handle_text_highlight: function () {
         var self = this;
 
-        // Handle story text highlighting
-        var $text_highlight = $('.NB-classifier-text-highlight', this.$modal);
+        // Handle story text input - auto-update classifier as user types
+        var $text_section = $('.NB-classifier-text-section', this.$modal);
+        var $text_input = $('.NB-classifier-text-input', this.$modal);
         var $text_placeholder = $('.NB-classifier-text-placeholder', this.$modal);
         var $text_classifier = $text_placeholder.parents('.NB-classifier').eq(0);
-        var $text_checkboxs = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $text_classifier);
+        var $text_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $text_classifier);
+        var $text_validation = $('.NB-classifier-text-validation', this.$modal);
 
-        var last_text_selection = '';
-        var update_text = function (e) {
-            var text = $.trim($(this).getSelection().text);
+        var update_text_classifier = function () {
+            var text = $.trim($text_input.val());
+            var is_regex_mode = $text_section.hasClass('NB-classifier-section-regex-active');
+            $text_validation.empty();
 
-            // Only update when selection has actually changed (not on every mousemove/hover)
-            if (text.length && text != last_text_selection && $text_placeholder.text() != text) {
-                last_text_selection = text;
+            if (text.length) {
                 $text_placeholder.text(text);
                 $text_placeholder.css('font-style', 'normal');
-                $text_checkboxs.val(text);
+                $text_checkboxes.val(text);
+                // Auto thumbs-up if not already rated
                 if (!$text_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
                     self.change_classifier($text_classifier, 'like');
                 }
+
+                // Validate based on mode
+                if (self.story) {
+                    var story_content = $('<div>').html(self.story.get('story_content') || '').text();
+
+                    if (is_regex_mode) {
+                        // Regex validation
+                        var validation_result = self.validate_regex(text);
+                        if (validation_result.valid) {
+                            $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, '✓ Valid'));
+                            if (validation_result.regex.test(story_content)) {
+                                $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Matches story'));
+                            } else {
+                                $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'No match in story'));
+                            }
+                        } else {
+                            $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
+                        }
+                    } else {
+                        // Exact phrase validation
+                        if (story_content.toLowerCase().indexOf(text.toLowerCase()) !== -1) {
+                            $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Found in story'));
+                        } else {
+                            $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in story'));
+                        }
+                    }
+                }
+            } else {
+                $text_placeholder.text('Enter text above');
+                $text_placeholder.css('font-style', 'italic');
             }
         };
 
-        $text_highlight
-            .on('select keyup mouseup', update_text);
-        $text_checkboxs.val($text_highlight.val());
+        $text_input.on('input keyup', update_text_classifier);
 
-        // Auto-select text classifier as positive when selected_text is provided
-        var selected_text = this.options.selected_text || '';
-        if (selected_text && selected_text.length) {
-            // Only auto-select if this text is not already in the user's classifiers
-            var text_already_exists = this.user_classifiers.texts && (selected_text in this.user_classifiers.texts);
-            if (!text_already_exists) {
-                $text_placeholder.text(selected_text);
-                $text_checkboxs.val(selected_text);
-                self.change_classifier($text_classifier, 'like');
-            }
+        // If pre-populated (from selected text), trigger update immediately
+        if ($text_input.val()) {
+            update_text_classifier();
         }
 
-        // Clicking the placeholder does nothing - user must select text first
-        $text_placeholder.parents('.NB-classifier').bind('click', function (e) {
-            // Prevent default classifier toggle behavior if placeholder text is showing
-            if ($text_placeholder.text() === 'Select text above') {
-                e.preventDefault();
-                return false;
-            }
-        });
+        // Store update function for mode switching
+        this.update_text_classifier = update_text_classifier;
 
-        // Handle story title highlighting
-        var $title_highlight = $('.NB-classifier-title-highlight', this.$modal);
+        // Handle story title input
+        var $title_section = $('.NB-classifier-title-section', this.$modal);
+        var $title_input = $('.NB-classifier-title-input', this.$modal);
         var $title_placeholder = $('.NB-classifier-title-placeholder', this.$modal);
         var $title_classifier = $title_placeholder.parents('.NB-classifier').eq(0);
-        var $title_checkboxs = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $title_classifier);
+        var $title_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $title_classifier);
+        var $title_validation = $('.NB-classifier-title-validation', this.$modal);
 
         var last_title_selection = '';
         var update_title = function (e) {
-            var text = $.trim($(this).getSelection().text);
+            var text = $.trim($title_input.getSelection().text);
+            var is_regex_mode = $title_section.hasClass('NB-classifier-section-regex-active');
 
             // Only update when selection has actually changed (not on every mousemove/hover)
-            if (text.length && text != last_title_selection && $title_placeholder.text() != text) {
-                last_title_selection = text;
+            // For regex mode, also trigger on input events
+            if (is_regex_mode) {
+                text = $.trim($title_input.val());
+                // Clear the selection tracking for regex mode
+                last_title_selection = '';
+            }
+
+            if (text.length && (is_regex_mode || (text != last_title_selection && $title_placeholder.text() != text))) {
+                if (!is_regex_mode) {
+                    last_title_selection = text;
+                }
                 $title_placeholder.text(text);
                 $title_placeholder.css('font-style', 'normal');
-                $title_checkboxs.val(text);
+                $title_checkboxes.val(text);
                 if (!$title_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
                     self.change_classifier($title_classifier, 'like');
+                }
+
+                // Validate based on mode
+                $title_validation.empty();
+                var story_title = self.story ? self.story.get('story_title') || '' : '';
+
+                if (is_regex_mode) {
+                    // Regex validation
+                    var validation_result = self.validate_regex(text);
+                    if (validation_result.valid) {
+                        $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, '✓ Valid'));
+                        if (validation_result.regex.test(story_title)) {
+                            $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Matches title'));
+                        } else {
+                            $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'No match in title'));
+                        }
+                    } else {
+                        $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
+                    }
+                } else {
+                    // Exact phrase - only show badge when NOT found (since selected text is usually found)
+                    if (story_title.toLowerCase().indexOf(text.toLowerCase()) === -1) {
+                        $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in title'));
+                    }
                 }
             }
         };
 
-        $title_highlight
-            .on('select keyup mouseup', update_title);
-        $title_checkboxs.val($title_highlight.val());
+        $title_input
+            .on('select keyup mouseup input', update_title);
+        $title_checkboxes.val($title_input.val());
+
+        // Store update function for mode switching
+        this.update_title_classifier = update_title;
 
         // Clicking the placeholder does nothing - user must select text first
         $title_placeholder.parents('.NB-classifier').bind('click', function (e) {
             // Prevent default classifier toggle behavior if placeholder text is showing
-            if ($title_placeholder.text() === 'Select phrase above') {
+            if ($title_placeholder.text() === 'Select title phrase') {
                 e.preventDefault();
                 return false;
             }
         });
     },
 
-    // =================
-    // = Regex Filters =
-    // =================
+    // ================================
+    // = Segmented Control & Regex   =
+    // ================================
 
-    make_regex_section: function () {
+    handle_match_type_control: function () {
         var self = this;
-        var $section = $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-regex-section' }, [
-            $.make('h5', [
-                'Regex Filter',
-                (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-regex-pro-badge' }, 'PRO'))
-            ]),
-            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $.make('div', { className: 'NB-classifier-help-text' }, 'Match patterns against both story title and content'),
-                $.make('input', {
-                    type: 'text',
-                    className: 'NB-classifier-regex-input',
-                    placeholder: 'Enter regex pattern (e.g., \\bword\\b or trump|elon)'
-                }),
-                $.make('div', { className: 'NB-classifier-regex-validation' }),
-                $.make('div', { className: 'NB-classifier-regex-preview-container' }, [
-                    $.make('div', { className: 'NB-classifier-regex-preview-header' }, 'Preview matches:'),
-                    $.make('div', { className: 'NB-classifier-regex-preview-title' }),
-                    $.make('div', { className: 'NB-classifier-regex-preview-text' })
-                ]),
-                this.make_classifier('<span class="NB-classifier-regex-placeholder">Enter pattern above</span>', '', 'regex'),
-                $.make('span', this.make_user_regex()),
-                (!NEWSBLUR.Globals.is_pro && $.make('div', { className: 'NB-classifier-regex-pro-notice' }, [
-                    'Regex filters will be saved but only applied for ',
-                    $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'PRO subscribers'),
-                    '.'
-                ]))
-            ])
-        ]);
-        return $section;
-    },
+        var $modal = this.$modal;
 
-    make_user_regex: function () {
-        var $regexes = [];
-        var regex_classifiers = this.user_classifiers.regex || {};
+        // Handle segmented control clicks
+        $modal.on('click', '.NB-match-type-option', function (e) {
+            var $option = $(this);
+            var $section = $option.closest('.NB-classifier-content-section');
+            var section_type = $section.data('section');  // 'text' or 'title'
+            var match_type = $option.data('type');
+            // Only target the placeholder classifier, not existing user classifiers
+            var $placeholder = $section.find('.NB-classifier-' + section_type + '-placeholder');
+            var $classifier = $placeholder.closest('.NB-classifier');
+            var $label = $classifier.find('label');
+            var $input = $section.find('.NB-classifier-' + section_type + '-input');
 
-        _.each(_.keys(regex_classifiers), _.bind(function (pattern) {
-            var $regex = this.make_classifier(pattern, pattern, 'regex');
-            $regexes.push($regex);
-        }, this));
+            // Update active state
+            $section.find('.NB-match-type-option').removeClass('NB-active');
+            $option.addClass('NB-active');
 
-        return $regexes;
+            // Toggle section class for showing/hiding inputs (CSS controls visibility)
+            if (match_type === 'regex') {
+                $section.addClass('NB-classifier-section-regex-active');
+                $section.find('.NB-classifier-regex-tips').addClass('NB-visible');
+
+                // Update input styling for regex mode
+                $input.addClass('NB-classifier-input-regex-mode');
+                if (section_type === 'text') {
+                    $input.attr('placeholder', 'e.g., \\bcat\\b or dog|bird');
+                } else {
+                    $input.attr('placeholder', 'e.g., \\bbreaking\\b or urgent|alert');
+                }
+
+                // Change classifier to regex type for saving
+                $classifier.addClass('NB-classifier-regex');
+                var $like = $classifier.find('.NB-classifier-input-like');
+                var $dislike = $classifier.find('.NB-classifier-input-dislike');
+                $like.attr('name', 'like_' + section_type + '_regex');
+                $dislike.attr('name', 'dislike_' + section_type + '_regex');
+
+                // Add small "REGEX" badge after the label text (keep "Text:" or "Title:")
+                var $existing_badge = $label.find('.NB-classifier-regex-badge');
+                if (!$existing_badge.length) {
+                    $label.find('b').after($.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX'));
+                }
+            } else {
+                $section.removeClass('NB-classifier-section-regex-active');
+                $section.find('.NB-classifier-regex-tips').removeClass('NB-visible');
+
+                // Update input styling for exact mode
+                $input.removeClass('NB-classifier-input-regex-mode');
+                if (section_type === 'text') {
+                    $input.attr('placeholder', 'Enter text to match...');
+                } else {
+                    $input.attr('placeholder', '');
+                }
+
+                // Change classifier back to original type
+                $classifier.removeClass('NB-classifier-regex');
+                var $like = $classifier.find('.NB-classifier-input-like');
+                var $dislike = $classifier.find('.NB-classifier-input-dislike');
+                $like.attr('name', 'like_' + section_type);
+                $dislike.attr('name', 'dislike_' + section_type);
+
+                // Remove regex badge
+                $label.find('.NB-classifier-regex-badge').remove();
+            }
+
+            // Re-trigger validation with new mode
+            if (section_type === 'text' && self.update_text_classifier) {
+                self.update_text_classifier();
+            } else if (section_type === 'title' && self.update_title_classifier) {
+                self.update_title_classifier();
+            }
+        });
     },
 
     handle_regex_input: function () {
         var self = this;
         var $modal = this.$modal;
 
-        // Real-time regex validation
-        $modal.on('input', '.NB-classifier-regex-input', function () {
-            var $input = $(this);
-            var $section = $input.closest('.NB-classifier-regex-section');
-            var $validation = $section.find('.NB-classifier-regex-validation');
-            var $preview_title = $section.find('.NB-classifier-regex-preview-title');
-            var $preview_text = $section.find('.NB-classifier-regex-preview-text');
-            var $placeholder = $section.find('.NB-classifier-regex-placeholder');
-            var $checkboxes = $section.find('.NB-classifier-input-like, .NB-classifier-input-dislike');
-            var $classifier = $section.find('.NB-classifier').first();
+        // Handle match type segmented control
+        this.handle_match_type_control();
 
-            var pattern = $input.val();
-            var validation_result = self.validate_regex(pattern);
+        // Handle regex tips toggle
+        $modal.on('click', '.NB-classifier-regex-tips-header', function () {
+            var $tips = $(this).closest('.NB-classifier-regex-tips');
+            var $toggle = $tips.find('.NB-classifier-regex-tips-toggle');
+            var is_collapsed = $tips.hasClass('NB-collapsed');
 
-            if (validation_result.valid) {
-                $validation.removeClass('NB-error').addClass('NB-valid').text('Valid pattern');
-                $placeholder.text(pattern);
-                $checkboxes.val(pattern);
-
-                // Show preview for both title and text
-                var title_content = self.story ? self.story.get('story_title') : '';
-                var text_content = self.story ? self.story.get('story_content') : '';
-
-                var title_matches = self.get_regex_matches(validation_result.regex, title_content);
-                var text_matches = self.get_regex_matches(validation_result.regex, text_content);
-
-                self.render_regex_preview($preview_title, title_content, title_matches, 'Title');
-                self.render_regex_preview($preview_text, text_content, text_matches, 'Content');
-
-                // Auto-enable like if pattern is valid and not already set
-                if (pattern.length > 0 && !$classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
-                    self.change_classifier($classifier, 'like');
-                }
+            if (is_collapsed) {
+                $tips.removeClass('NB-collapsed');
+                $toggle.text('▼ Hide');
+                NEWSBLUR.assets.preference('regex_tips_collapsed', false);
             } else {
-                $validation.removeClass('NB-valid').addClass('NB-error').text(validation_result.error);
-                $preview_title.html('');
-                $preview_text.html('<span class="NB-no-matches">Fix pattern to see matches</span>');
+                $tips.addClass('NB-collapsed');
+                $toggle.text('▶ Show');
+                NEWSBLUR.assets.preference('regex_tips_collapsed', true);
             }
         });
     },
@@ -1204,12 +1387,19 @@ var classifier_prototype = {
         $.targetIs(e, { tagSelector: '.NB-classifier-icon-dislike' }, function ($t, $p) {
             e.preventDefault();
             stop = true;
-            self.change_classifier($t.closest('.NB-classifier'), 'dislike');
+            var $classifier = $t.closest('.NB-classifier');
+            var value = $('.NB-classifier-input-like', $classifier).val();
+            if (value) {
+                self.change_classifier($classifier, 'dislike');
+            }
         });
         if (stop) return;
         $.targetIs(e, { tagSelector: '.NB-classifier' }, function ($t, $p) {
             e.preventDefault();
-            self.change_classifier($t, 'like');
+            var value = $('.NB-classifier-input-like', $t).val();
+            if (value) {
+                self.change_classifier($t, 'like');
+            }
         });
     },
 
@@ -1277,16 +1467,21 @@ var classifier_prototype = {
                     self.model.classifiers[feed_id].tags[value] = score;
                 } else if (name == 'title') {
                     self.model.classifiers[feed_id].titles[value] = score;
+                } else if (name == 'title_regex') {
+                    if (!self.model.classifiers[feed_id].title_regex) {
+                        self.model.classifiers[feed_id].title_regex = {};
+                    }
+                    self.model.classifiers[feed_id].title_regex[value] = score;
                 } else if (name == 'text') {
                     if (!self.model.classifiers[feed_id].texts) {
                         self.model.classifiers[feed_id].texts = {};
                     }
                     self.model.classifiers[feed_id].texts[value] = score;
-                } else if (name == 'regex') {
-                    if (!self.model.classifiers[feed_id].regex) {
-                        self.model.classifiers[feed_id].regex = {};
+                } else if (name == 'text_regex') {
+                    if (!self.model.classifiers[feed_id].text_regex) {
+                        self.model.classifiers[feed_id].text_regex = {};
                     }
-                    self.model.classifiers[feed_id].regex[value] = score;
+                    self.model.classifiers[feed_id].text_regex[value] = score;
                 } else if (name == 'author') {
                     self.model.classifiers[feed_id].authors[value] = score;
                 } else if (name == 'feed') {
@@ -1297,10 +1492,12 @@ var classifier_prototype = {
                     delete self.model.classifiers[feed_id].tags[value];
                 } else if (name == 'title' && self.model.classifiers[feed_id].titles[value] == score) {
                     delete self.model.classifiers[feed_id].titles[value];
+                } else if (name == 'title_regex' && self.model.classifiers[feed_id].title_regex && self.model.classifiers[feed_id].title_regex[value] == score) {
+                    delete self.model.classifiers[feed_id].title_regex[value];
                 } else if (name == 'text' && self.model.classifiers[feed_id].texts && self.model.classifiers[feed_id].texts[value] == score) {
                     delete self.model.classifiers[feed_id].texts[value];
-                } else if (name == 'regex' && self.model.classifiers[feed_id].regex && self.model.classifiers[feed_id].regex[value] == score) {
-                    delete self.model.classifiers[feed_id].regex[value];
+                } else if (name == 'text_regex' && self.model.classifiers[feed_id].text_regex && self.model.classifiers[feed_id].text_regex[value] == score) {
+                    delete self.model.classifiers[feed_id].text_regex[value];
                 } else if (name == 'author' && self.model.classifiers[feed_id].authors[value] == score) {
                     delete self.model.classifiers[feed_id].authors[value];
                 } else if (name == 'feed' && self.model.classifiers[feed_id].feeds[feed_id] == score) {
