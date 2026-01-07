@@ -10,6 +10,12 @@
 - Close worktree: `make worktree-close` stops containers and removes worktree if clean (no uncommitted changes)
 - All worktrees share the same database services (postgres, mongo, redis, elasticsearch)
 
+### Container Names
+- **Main repo containers**: `newsblur_web`, `newsblur_celery`, `newsblur_node`, `newsblur_nginx`, `newsblur_haproxy`
+- **Worktree containers**: `newsblur_web_<worktree-name>`, `newsblur_celery_<worktree-name>`, `newsblur_node_<worktree-name>`, `newsblur_nginx_<worktree-name>`, `newsblur_haproxy_<worktree-name>`
+- **Find worktree containers**: `docker ps --format '{{.Names}}' | grep <worktree-name>`
+- The worktree name is the directory name (e.g., `search-by-phrase` → `newsblur_web_search-by-phrase`)
+
 ## Build & Test Commands
 - `make` - Smart default: starts/updates NewsBlur, applies migrations (safe to run after git pull)
 - `make rebuild` - Full rebuild with all images (for Docker config changes)
@@ -31,9 +37,12 @@
 Note: All docker commands must use `-t` instead of `-it` to avoid interactive mode issues when running through Claude.
 
 ## Python Environment
-- **Always run Python code and Django management commands inside the Docker container** - Use `docker exec newsblur_web bash -c "python <script>"`
-- **Run Django shell commands non-interactively**: `docker exec -t newsblur_web_newsblur python manage.py shell -c "<python code>"`
+- **Always run Python code and Django management commands inside the Docker container**
 - Do NOT use `uv run` or local Python environment - always use the Docker container
+- **Main repo**: `docker exec -t newsblur_web python manage.py <command>`
+- **Worktree**: `docker exec -t newsblur_web_<worktree-name> python manage.py <command>`
+- Example (main): `docker exec -t newsblur_web python manage.py shell -c "<python code>"`
+- Example (worktree): `docker exec -t newsblur_web_search-by-phrase python manage.py test apps`
 
 ## Deployment Commands
 - `aps` - Alias for `ansible-playbook ansible/setup.yml`
@@ -83,7 +92,7 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - With POST data: `make api URL=/reader/river_stories ARGS="-X POST -d 'feeds[]=1&feeds[]=2&feeds[]=3'"`
 
 ## Ask AI Development
-- **Restart Celery after changes**: Ask AI questions are processed asynchronously via Celery tasks. After modifying `apps/ask_ai/` (providers, tasks, models), restart celery: `docker restart newsblur_celery`
+- **Restart Celery after changes**: Ask AI questions are processed asynchronously via Celery tasks. After modifying `apps/ask_ai/` (providers, tasks, models), restart celery: `docker restart newsblur_celery` (or `newsblur_celery_<worktree-name>` in worktrees)
 - Provider implementations are in `apps/ask_ai/providers.py`
 - **Frontend model selectors**: Search for `data-model="gemini` to find all dropdown locations
 - **CSS for model pills**: Search for `NB-provider-` to find pill styles

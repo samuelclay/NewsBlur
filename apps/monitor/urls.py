@@ -17,6 +17,8 @@ from apps.monitor.views import (
     TasksPipeline,
     TasksServers,
     TasksTimes,
+    TrendingFeeds,
+    TrendingSubscriptions,
     Updates,
     Users,
     UserSearches,
@@ -41,4 +43,6 @@ urlpatterns = [
     url(r"^updates?$", Updates.as_view(), name="updates"),
     url(r"^users?$", Users.as_view(), name="users"),
     url(r"^user-searches?$", UserSearches.as_view(), name="user_searches"),
+    url(r"^trending-feeds?$", TrendingFeeds.as_view(), name="trending_feeds"),
+    url(r"^trending-subscriptions?$", TrendingSubscriptions.as_view(), name="trending_subscriptions"),
 ]

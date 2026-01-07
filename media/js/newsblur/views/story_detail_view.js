@@ -38,12 +38,15 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-train-selection": "train_selected_text",
         "click .NB-classifier-highlight-positive": "show_classifier_highlight_menu",
         "click .NB-classifier-highlight-negative": "show_classifier_highlight_menu",
+        "click .NB-search-highlight": "show_search_highlight_menu",
+        "click .NB-search-site-selection": "search_selected_text_site",
+        "click .NB-search-folder-selection": "search_selected_text_folder",
         "click .NB-feed-story-discover": "toggle_feed_story_discover_dialog",
         "click .NB-feed-story-ask-ai": "show_ask_ai_menu"
     },
 
     initialize: function () {
-        _.bindAll(this, 'mouseleave', 'mouseenter', 'mouseup_check_selection', 'highlight_selected_text', 'unhighlight_selected_text');
+        _.bindAll(this, 'mouseleave', 'mouseenter', 'mouseup_check_selection', 'highlight_selected_text', 'unhighlight_selected_text', 'search_selected_text_site', 'search_selected_text_folder');
         this.model.bind('change', this.toggle_classes, this);
         this.model.bind('change:read_status', this.toggle_read_status, this);
         this.model.bind('change:selected', this.toggle_selected, this);
@@ -240,11 +243,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_save: NEWSBLUR.assets.preference("show_sideoption_save"),
             show_sideoption_share: NEWSBLUR.assets.preference("show_sideoption_share"),
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
-            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai") && (
-                NEWSBLUR.Globals.is_staff ||
-                NEWSBLUR.Globals.is_archive ||
-                (NEWSBLUR.Globals.debug && NEWSBLUR.Globals.is_premium)
-            ),
+            show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai"),
             sharing_services: NEWSBLUR.assets.third_party_sharing_services,
         };
     },
@@ -253,7 +252,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         <div class="NB-feed-story-header-feed">\
             <% if (feed) { %>\
                 <div class="NB-feed-story-feed">\
-                    <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                    <%= $.favicon_html(feed) %>\
                     <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
                 </div>\
             <% } %>\
@@ -859,6 +858,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             // Let the click handler deal with classifier highlights
             return;
         }
+        if ($(e.target).hasClass("NB-search-highlight")) {
+            // Let the click handler deal with search highlights
+            return;
+        }
 
         if (!NEWSBLUR.assets.preference('highlights')) return;
 
@@ -901,7 +904,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             "done": _.bind(function () {
                 var $selection = $(".NB-starred-story-selection-highlight", $doc);
                 console.log(['$selection', $selection, $selection.first().get(0), $selection.last().get(0)]);
-                $selection.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span>");
+                $selection.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
                 var $t = tippy($selection.get(0), {
                     // delay: 100,
                     appendTo: this.el,
@@ -945,7 +948,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     show_unhighlight_tooltip: function ($highlight) {
         this.$highlight = $highlight;
-        $highlight.attr('title', "<div class='NB-unhighlight-selection'>Unhighlight</div>");
+        $highlight.attr('title', "<span class='NB-unhighlight-selection'>Unhighlight</span><span class='NB-train-selection'>Train</span><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
         var $t = tippy($highlight.get(0), {
             // delay: 100,
             appendTo: this.el,
@@ -984,8 +987,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             this.tooltip.tooltips[0].hide();
         }
 
-        // Show the highlight/train menu
-        $mark.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span>");
+        // Show the highlight/train/search menu
+        $mark.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
         var $t = tippy($mark.get(0), {
             appendTo: this.el,
             arrow: true,
@@ -1095,14 +1098,116 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return true;
     },
 
+    show_search_highlight_menu: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $mark = $(e.currentTarget);
+        var text = $mark.text();
+
+        // Set the serialized_highlight to the text from the mark
+        this.serialized_highlight = _.string.trim(text);
+
+        // Close any existing tooltip
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+
+        // Show the highlight/train/search menu
+        $mark.attr('title', "<span class='NB-highlight-selection'>Highlight</span><span class='NB-train-selection'>Train</span><span class='NB-search-site-selection'>Search site</span><span class='NB-search-folder-selection'>Search folder</span>");
+        var $t = tippy($mark.get(0), {
+            appendTo: this.el,
+            arrow: true,
+            arrowType: 'round',
+            size: 'large',
+            duration: 350,
+            animation: 'scale',
+            trigger: 'click',
+            interactive: true,
+            performance: true,
+            onHide: _.bind(function () {
+                // Cleanup if needed
+            }, this)
+        });
+        this.tooltip = $t;
+        _.defer(function () {
+            if ($t.tooltips && $t.tooltips.length) $t.tooltips[0].show();
+        });
+    },
+
+    search_selected_text_site: function () {
+        // Search current site/feed for the selected text
+        var search_text = this.serialized_highlight;
+        if (!search_text) return false;
+
+        // Wrap in quotes if it contains spaces (phrase search)
+        if (search_text.indexOf(' ') !== -1) {
+            search_text = '"' + search_text + '"';
+        }
+
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+
+        // Clear the temporary selection highlight
+        this.$(".NB-starred-story-selection-highlight").each(function () {
+            $(this).contents().unwrap();
+        });
+        this.$("[data-tippy]").each(function () {
+            $(this).contents().unwrap();
+        });
+
+        // Set search flags and reload current context (stays in current site/feed)
+        NEWSBLUR.reader.flags.searching = true;
+        NEWSBLUR.reader.flags.search = search_text;
+        window.history.pushState({}, "", $.updateQueryString('search', search_text, window.location.pathname));
+        NEWSBLUR.reader.reload_feed({ force: true, search: search_text });
+        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
+
+        return true;
+    },
+
+    search_selected_text_folder: function () {
+        // Search all site stories (folder-level) for the selected text
+        var search_text = this.serialized_highlight;
+        if (!search_text) return false;
+
+        // Wrap in quotes if it contains spaces (phrase search)
+        if (search_text.indexOf(' ') !== -1) {
+            search_text = '"' + search_text + '"';
+        }
+
+        if (this.tooltip && this.tooltip.tooltips && this.tooltip.tooltips.length) {
+            this.tooltip.tooltips[0].hide();
+        }
+
+        // Clear the temporary selection highlight
+        this.$(".NB-starred-story-selection-highlight").each(function () {
+            $(this).contents().unwrap();
+        });
+        this.$("[data-tippy]").each(function () {
+            $(this).contents().unwrap();
+        });
+
+        // Open river stories (all site stories / folder-level) with search query
+        NEWSBLUR.reader.flags.searching = true;
+        NEWSBLUR.reader.flags.search = search_text;
+        window.history.pushState({}, "", $.updateQueryString('search', search_text, window.location.pathname));
+        NEWSBLUR.reader.open_river_stories(null, null, { force: true, search: search_text });
+        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
+
+        return true;
+    },
+
     apply_starred_story_selections: function (force) {
         var highlights = this.model.user_highlights();
         var text_classifiers = this.classifiers && this.classifiers.texts ? _.keys(this.classifiers.texts) : [];
+        var search_query = NEWSBLUR.reader.flags.search;
 
         if (!force) {
-            if ((!highlights || !highlights.length) && !text_classifiers.length) return;
+            if ((!highlights || !highlights.length) && !text_classifiers.length && !search_query) return;
         }
-        // console.log(['Applying highlights', highlights, 'text_classifiers', text_classifiers]);
+        // console.log(['Applying highlights', highlights, 'text_classifiers', text_classifiers, 'search_query', search_query]);
 
         var $doc = this.$(".NB-feed-story-content");
         $doc.unmark();
@@ -1128,11 +1233,94 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             $doc.mark(classifier_text, {
                 "className": className,
                 "separateWordSearch": false,
-                "acrossElements": true
+                "acrossElements": true,
+                "caseSensitive": false
             });
         }, this));
 
+        // Apply search highlights (last, so they appear on top)
+        if (search_query) {
+            var search_terms = this.parse_search_query(search_query);
+            _.each(search_terms, _.bind(function (term) {
+                $doc.mark(term, {
+                    "className": "NB-search-highlight",
+                    "separateWordSearch": false,
+                    "acrossElements": true,
+                    "caseSensitive": false
+                });
+            }, this));
+        }
+
         $doc.removeAttr('id');
+    },
+
+    parse_search_query: function (query) {
+        // Extract quoted phrases and generate n-grams from unquoted terms
+        // Returns terms ordered longest-first for progressive highlighting
+        var terms = [];
+        var remaining = query;
+
+        // Common English stop words that shouldn't be highlighted individually
+        // These are only filtered for single-word terms, not phrases
+        var stop_words = [
+            'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+            'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been',
+            'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would',
+            'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need',
+            'it', 'its', 'this', 'that', 'these', 'those', 'i', 'you', 'he',
+            'she', 'we', 'they', 'what', 'which', 'who', 'whom', 'when', 'where',
+            'why', 'how', 'all', 'each', 'every', 'both', 'few', 'more', 'most',
+            'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same',
+            'so', 'than', 'too', 'very', 'just', 'also', 'now', 'here', 'there',
+            'then', 'once', 'if', 'about', 'into', 'through', 'during', 'before',
+            'after', 'above', 'below', 'between', 'under', 'again', 'further',
+            'any', 'because', 'being', 'get', 'got', 'him', 'her', 'his', 'hers',
+            'me', 'my', 'our', 'ours', 'their', 'them', 'up', 'down', 'out', 'off'
+        ];
+
+        // Extract quoted phrases first (strip the quotes)
+        // Handle straight quotes (") and curly/smart quotes (" ")
+        var phrase_regex = /[""\u201C\u201D]([^""\u201C\u201D]+)[""\u201C\u201D]/g;
+        var match;
+        while ((match = phrase_regex.exec(query)) !== null) {
+            terms.push(match[1]); // match[1] is the content without quotes
+            remaining = remaining.replace(match[0], '');
+        }
+
+        // Get individual words from remaining text, filtering out operators
+        var operators = ['AND', 'OR', 'NOT'];
+        var words = [];
+        var rawWords = remaining.trim().split(/\s+/);
+        _.each(rawWords, function (word) {
+            word = word.trim();
+            if (word && operators.indexOf(word.toUpperCase()) === -1) {
+                words.push(word);
+            }
+        });
+
+        // Generate all contiguous n-grams from longest to shortest
+        // For "a b c d e", generate: "a b c d e", then "a b c d", "b c d e",
+        // then "a b c", "b c d", "c d e", etc.
+        // Single-word stop words are filtered out to avoid highlighting common words
+        if (words.length > 1) {
+            for (var n = words.length; n >= 1; n--) {
+                for (var i = 0; i <= words.length - n; i++) {
+                    var ngram = words.slice(i, i + n).join(' ');
+                    // Filter out single-word stop words
+                    if (n === 1 && stop_words.indexOf(ngram.toLowerCase()) !== -1) {
+                        continue;
+                    }
+                    terms.push(ngram);
+                }
+            }
+        } else if (words.length === 1) {
+            // Only add single word if it's not a stop word
+            if (stop_words.indexOf(words[0].toLowerCase()) === -1) {
+                terms.push(words[0]);
+            }
+        }
+
+        return terms;
     },
 
     show_manage_menu_rightclick: function (e) {

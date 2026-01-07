@@ -87,6 +87,10 @@ NEEDS_SETUP=false
 if [ ! -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" ]; then
     NEEDS_SETUP=true
 fi
+# Also run setup if SSL certificates are missing
+if [ ! -f "config/certificates/localhost.pem" ]; then
+    NEEDS_SETUP=true
+fi
 
 # Run setup if needed
 if [ "$NEEDS_SETUP" = true ]; then
@@ -172,8 +176,9 @@ if [ "$NEEDS_SETUP" = true ]; then
     if [ ! -f "config/certificates/localhost.pem" ]; then
         # Check if we can copy from parent repo (handle both regular repo and worktree)
         PARENT_CERTS=""
-        if [ -d "../../../config/certificates" ] && [ -f "../../../config/certificates/localhost.pem" ]; then
-            PARENT_CERTS="../../../config/certificates"
+        if [ -d "../../config/certificates" ] && [ -f "../../config/certificates/localhost.pem" ]; then
+            # Worktree is at .worktree/<name>, so ../../ gets to main repo
+            PARENT_CERTS="../../config/certificates"
         elif [ -d "/srv/newsblur/config/certificates" ] && [ -f "/srv/newsblur/config/certificates/localhost.pem" ]; then
             PARENT_CERTS="/srv/newsblur/config/certificates"
         fi
@@ -278,10 +283,7 @@ if [ "$NEEDS_SETUP" = true ]; then
     # Set environment variables for the workspace
     export COMPOSE_PROJECT_NAME="${WORKSPACE_NAME}"
 
-    # Stop any existing containers first to avoid name conflicts
-    docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" down 2>/dev/null || true
-
-    # Start workspace containers using the standalone compose file
+    # Start workspace containers (docker compose up -d is idempotent for running containers)
     docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d --remove-orphans
 
     # Wait for workspace web container
@@ -358,39 +360,24 @@ if [ "$NEEDS_SETUP" = true ]; then
     fi
 fi
 
-# Sync .claude permissions from parent repo (always runs, idempotent)
-if [ -d "../../.claude" ]; then
-    CLAUDE_UPDATED=false
-    mkdir -p .claude
-    # Always copy settings.local.json from parent (source of truth)
-    if [ -f "../../.claude/settings.local.json" ]; then
-        if ! cmp -s "../../.claude/settings.local.json" ".claude/settings.local.json" 2>/dev/null; then
-            cp "../../.claude/settings.local.json" ".claude/settings.local.json"
-            CLAUDE_UPDATED=true
+# Sync .claude permissions bidirectionally (worktree ↔ parent)
+make worktree-permissions
+
+# Copy skills directory from parent if it exists (exclude .git directories)
+if [ -d "../../.claude/skills" ]; then
+    mkdir -p .claude/skills
+    if ! diff -rq --exclude='.git' "../../.claude/skills" ".claude/skills" &>/dev/null; then
+        if command -v rsync &>/dev/null; then
+            rsync -a --exclude='.git' "../../.claude/skills/" ".claude/skills/" 2>/dev/null
+        else
+            find "../../.claude/skills" -maxdepth 1 -type d ! -name '.git' ! -path "../../.claude/skills" -exec basename {} \; 2>/dev/null | while read skill_dir; do
+                if [ -d "../../.claude/skills/$skill_dir" ]; then
+                    rm -rf ".claude/skills/$skill_dir"
+                    cp -r "../../.claude/skills/$skill_dir" ".claude/skills/" 2>/dev/null
+                fi
+            done
         fi
-    fi
-    # Copy skills directory if it exists in parent (exclude .git directories)
-    if [ -d "../../.claude/skills" ]; then
-        # Check if skills differ before copying
-        if ! diff -rq --exclude='.git' "../../.claude/skills" ".claude/skills" &>/dev/null; then
-            # Use rsync to copy skills, excluding .git directories
-            if command -v rsync &>/dev/null; then
-                rsync -a --exclude='.git' "../../.claude/skills/" ".claude/skills/" 2>/dev/null
-            else
-                # Fallback: copy without .git directories
-                mkdir -p .claude/skills
-                find "../../.claude/skills" -maxdepth 1 -type d ! -name '.git' ! -path "../../.claude/skills" -exec basename {} \; 2>/dev/null | while read skill_dir; do
-                    if [ -d "../../.claude/skills/$skill_dir" ]; then
-                        rm -rf ".claude/skills/$skill_dir"
-                        cp -r "../../.claude/skills/$skill_dir" ".claude/skills/" 2>/dev/null
-                    fi
-                done
-            fi
-            CLAUDE_UPDATED=true
-        fi
-    fi
-    if [ "$CLAUDE_UPDATED" = true ]; then
-        echo -e "${GREEN}✓ Synced .claude permissions from parent repo${NC}"
+        echo -e "${GREEN}✓ Synced .claude skills from parent repo${NC}"
     fi
 fi
 

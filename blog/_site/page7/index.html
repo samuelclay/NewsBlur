@@ -66,6 +66,65 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Nov 18, 2014</span>
+          <h3>
+            <a class="post-link" href="/2014/11/18/offline-reading-and-a-dark-theme-on-the-android/">
+              Offline reading and a dark theme on the Android app
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>This is a huge release for the NewsBlur Android app. So much has happened in the last six months. We’ve had a big backend rewrite that makes the app feel like new. It’s faster, which is necessary to make the new offline reading feature really shine. Now you can read on your Android phone or tablet while on the train, underground, or just in airplane mode to save battery.</p>
+
+<p>Better yet, not only can you read while offline, but you can better read at night with the new dark theme. Take a look.</p>
+
+<figure class="tmblr-full" data-orig-height="1920" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android%20v4.png"><img data-orig-height="1920" data-orig-width="1200" src="https://s3.amazonaws.com/static.newsblur.com/blog/android%20v4.png" /></figure>
+
+<p>Here’s what’s new in version 4.0:</p>
+
+<ul>
+  <li>Offline reading and story syncing. Stories read while offline will sync as soon as you’re back online.</li>
+  <li>Option to also store images from stories for offline reading. They do take space, though.</li>
+  <li>A dark theme for reading at night.</li>
+  <li>The Text mode can be set to automatically fetch, so you can get to the full text quicker.</li>
+  <li>An option to mark stories newer than a story as read.</li>
+  <li>Major backend improvements for faster story loading and transitions. This app should feel like new.</li>
+</ul>
+
+<p>The NewsBlur Android app is a <a href="https://www.newsblur.com/android">free download</a>. And as always, there’s more big ticket features coming soon for Android.</p>
+
+
+        </div>
+      </li><li><div class="post-header-sticky">
+          <span class="post-meta">Oct 31, 2014</span>
+          <h3>
+            <a class="post-link" href="/2014/10/31/a-new-way-to-use-the-story-view-while-on-https/">
+              A new way to use the Story view while on https (SSL)
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Modern browsers are taking your privacy and security seriously with new restrictions for sites that use https. You can choose to use NewsBlur over https, which will encrypt your communications with NewsBlur and prevent eavesdroppers—hackers, the government, other people on the same wireless network as you—from seeing what you see. While that’s not necessary for everybody, SSL/https is a priority for some and NewsBlur supports this beautifully.</p>
+
+<p><a href="https://www.ssllabs.com/ssltest/analyze.html?d=newsblur.com"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/SSL%20labs.png" alt="" /></a></p>
+
+<p>However, what modern browsers like Chrome and Firefox do is not allow you to embed an insecure http-only site in an iframe from a secure https site. That means that the Story view in NewsBlur does not load a thing for many users who are reading NewsBlur over an https connection.</p>
+
+<p>Today I’m launching a fix for this. It’s not perfect, but this will allow you to still get at some of the content while getting around the https-only issue. This feature will proxy http-only sites in the Story view, resulting in a hacked-together but workable view of the original story.</p>
+
+<p>At best, the Story view will look like this:</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Story%20Proxy%20view.png" alt="" /></p>
+
+<p>At worst, the Story view will look like this:</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/Story%20Proxy%20view%20truncated.png" alt="" /></p>
+
+<p>While it’s not ideal, it’s a whole lot better than a blank page. Let me know how this new proxied Story view works for you. And if you want it to work flawlessly and are willing to use an unencrypted connection, just use the http version of NewsBlur instead of the https version.</p>
+
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Oct 15, 2014</span>
           <h3>
             <a class="post-link" href="/2014/10/15/newsblur-ios-v45-iphone-6-and-ios-8-full-bleed/">
@@ -265,63 +324,6 @@
 <p>The neat thing about this new view is that it works for folders, too. If you click on a containing folder, you’ll see the saved stories from all of the sites inside that folder. And thanks to last month’s full text search, you can search all of these saved stories.</p>
 
 <p>And you should expect that these features will eventually make their way to iOS and Android.</p>
-
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Apr 29, 2014</span>
-          <h3>
-            <a class="post-link" href="/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/">
-              Full text search across all of your subscriptions and folders 
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>Last Summer <a href="http://blog.newsblur.com/2021/06/21/2013-07-30-simple-search-for-feeds-saved-stories-and-blurblogs.html">Simple Search was launched</a>, giving you the ability to search a single feed at a time. Obviously not ideal, but it was far less effort than the big enchilada: full text search across every site you subscribe to. It took a few months to come back to attack the full problem, but that means I could also take the time to do it right.</p>
-
-<p>Full text search works just like the old simple search did. Open a folder or site and search at the top of the screen. Results come back instantly as you type. And this will automatically search in story titles, full text content, authors, and tags.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/search%20screenshot.jpg" alt="" /></p>
-
-<p>Because you’re searching for a story, hidden stories are also shown in the results, albeit with a red unread mark (as shown above). Also, in order to handle the demands of full text search, the first time you perform a search the system will index all of your feeds, which can take a couple minutes. It’s a one time process and you will see a progress bar that will update automatically when finished.</p>
-
-<p>Since this was one of the most requested features since day one, I’m now looking to decide on the next big feature. There’s a few big ones to hit: an organizer that surfaces inactive feeds that no longer get read, a discovery platform that helps you find users, stories, and feeds related to what you like and what you may not even know you like yet, and porting many of these web-only features to Android and iOS.</p>
-
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Apr 24, 2014</span>
-          <h3>
-            <a class="post-link" href="/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support/">
-              Unread is a new iOS app with NewsBlur support
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>NewsBlur has a <a href="http://www.newsblur.com/api">free and open API</a> that all of the native mobile apps and website are built on. But the API is not just for official apps. Numerous third-party developers have built apps on the API and today I’m proud to announce a new native iOS app has launched with NewsBlur support.</p>
-
-<p><a href="http://jaredsinclair.com/unread/"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/unread_app_logo.png" alt="" /></a></p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/unread_app_screenshot.jpeg" alt="" /></p>
-
-<p><a href="http://jaredsinclair.com/unread/">Unread</a>, by <a href="https://twitter.com/jaredsinclair">Jared Sinclair</a>, is a unique RSS reader, with a focus on simplicity and cleanliness. Sinclair built Unread because he wanted to see a different kind of reading experience, one where he could focus more on reading well written stories than consuming lots of content. Unread app has a different feel than any other news reader I’ve seen and I think many of the choices made by Sinclair work in a quiet harmony.</p>
-
-<p>In Sinclair’s own words:</p>
-
-<blockquote>
-  <p>Most RSS apps are patterned after email. Noisy parades of dots, dates, and tags trample over their screens. Their source lists look like overflowing inboxes instead of stately tables of contents. Toolbars bristling with options obscure the text. Putting it bluntly, using these apps feels like work.</p>
-</blockquote>
-
-<p>NewsBlur’s native iOS app certainly does fit this description. And if you want an incredibly well-made alternative, look no further than Unread, <a href="https://itunes.apple.com/us/app/unread-an-rss-reader/id754143884">available on the App Store</a>.</p>
-
-<style>
-.NB-unread-app-post p {
-clear: none;
-}
-.NB-unread-app-post blockquote {
-color: #606060;
-}
-</style>
 
 
         </div>

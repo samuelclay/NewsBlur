@@ -1543,6 +1543,13 @@ background-color: #5d8392;
     cursor: pointer;
 }
 
+.NB-dark .NB-feed-story-content .NB-search-highlight {
+    background-color: #5E4A6E;
+    color: #f3f3f3;
+    padding: 2px 5px;
+    cursor: pointer;
+}
+
 /* Link color */
 .NB-dark .NB-feed-story a {
     color: #83b4e0;
@@ -2928,4 +2935,110 @@ a.mention, a.mention-group {
 .NB-dark .NB-provider-button-change:hover {
     background: #4b5563 !important;
     border-color: #6b7280 !important;
+}
+
+/* ========================== */
+/* = Custom Folder Icons    = */
+/* ========================== */
+
+.NB-dark .NB-modal-folder-settings .NB-folder-icon-current-preview {
+    background: #333;
+    border-color: #444;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-preset:hover,
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-emoji-option:hover {
+    background: #404040;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-preset.NB-active,
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-emoji-option.NB-active {
+    background: #2A4A6A;
+    border-color: #4A9FFF;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-preset-label,
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-filled-label,
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-emoji-label {
+    color: #777;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-color.NB-active {
+    border-color: #FFF;
+    box-shadow: 0 0 0 1px #000;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-section {
+    border-bottom-color: #444;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button {
+    background: #2A2A2A;
+    border-color: #4A4A4A;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button::before {
+    background: linear-gradient(135deg, rgba(74, 144, 217, 0.08) 0%, rgba(74, 144, 217, 0) 60%);
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button:hover {
+    background: #333;
+    border-color: #5A9FE8;
+    box-shadow: 0 2px 8px rgba(74, 144, 217, 0.2);
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button.NB-uploading {
+    background: #1E3A50;
+    border-color: #4A90D9;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-icon {
+    background: linear-gradient(135deg, #5A9FE8 0%, #4A8FD8 100%);
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-label {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview {
+    background: linear-gradient(135deg, #1B3D1F 0%, #243D27 100%);
+    border-color: #2E5233;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview img {
+    border-color: #333;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview span {
+    color: #81C784;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview span::before {
+    background-color: #81C784;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-error {
+    background: linear-gradient(135deg, #3D1B1B 0%, #4A2020 100%);
+    border-color: #5D2A2A;
+    color: #EF9A9A;
+}
+
+.NB-dark .NB-popover-section-folder-icon {
+    border-bottom-color: #444;
+}
+
+.NB-dark .NB-popover-section-folder-icon .NB-folder-icon-current-preview {
+    background: #333;
+    border-color: #444;
+}
+
+.NB-dark .NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button {
+    background: #333;
+    border-color: #555;
+    color: #DDD;
+}
+
+.NB-dark .NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button:hover {
+    background: #444;
+    border-color: #666;
 }
