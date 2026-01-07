@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2025-12-22T12:20:55-05:00</updated>
+  <updated>2026-01-06T23:39:17-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,61 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Custom icons for folders and feeds</title>
+    <link href="https://blog.newsblur.com/2026/01/07/custom-icons/" rel="alternate" type="text/html" title="Custom icons for folders and feeds" />
+    <published>2026-01-07T00:00:00-05:00</published>
+    <updated>2026-01-07T00:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2026/01/07/custom-icons</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/01/07/custom-icons/">
+      <![CDATA[<p>I have a lot of folders. Over the years I’ve organized my feeds into categories like News, Tech, Cooking, and Comics. But when I’m scanning my feed list, they all look the same—just folder icons with text. I wanted a way to make certain folders stand out at a glance, especially the ones I check most often.</p>
+
+<p>That’s why I built custom icons for both folders and feeds. You can now personalize any folder or feed with an emoji, a preset icon in any color, or even upload your own image.</p>
+
+<p><img src="/assets/custom-icons-folder-list.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Right-click on any folder or feed in your feed list and select “Folder settings” or “Site settings”. You’ll see a new “Folder Icon” or “Feed Icon” tab where you can customize the icon.</p>
+
+<p><img src="/assets/custom-icons-colors.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>There are three ways to set a custom icon:</p>
+
+<p><strong>Preset icons</strong>: Pick from over 240 icons (a mix of outline and filled styles) and colorize them with any of 84 colors organized by hue. Want a red heart for your favorites folder? A blue code bracket for programming feeds? It’s all there.</p>
+
+<p><img src="/assets/custom-icons-preset.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" />
+<img src="/assets/custom-icons-preset2.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Emoji</strong>: Choose from 180 emojis organized by category. A basketball for sports feeds, a fork and knife for cooking, a newspaper for news—you get the idea.</p>
+
+<p><img src="/assets/custom-icons-emoji.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Upload your own</strong>: Have a specific image in mind? Upload any image and it will be automatically resized to fit perfectly in your feed list.</p>
+
+<p><img src="/assets/custom-icons-upload.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="great-for-feeds-without-icons">Great for feeds without icons</h3>
+
+<p>Many feeds don’t have favicons, or they have generic RSS icons that all look the same. Custom feed icons let you give these feeds distinctive icons so you can spot them instantly. I’ve been using this to add icons to older blogs and newsletters that never bothered setting up a proper favicon.</p>
+
+<p>Custom icons are available now on the web for all NewsBlur users. Folders and feeds both support the same icon options of emoji, preset icons with colors, or uploaded images.</p>
+
+<p>If you have feedback or ideas for additional icon options, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[I have a lot of folders. Over the years I’ve organized my feeds into categories like News, Tech, Cooking, and Comics. But when I’m scanning my feed list, they all look the same—just folder icons with text. I wanted a way to make certain folders stand out at a glance,...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Auto-enable captions on YouTube videos</title>
@@ -1271,45 +1326,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     
     <summary type="html">
       <![CDATA[It’s about time NewsBlur had more control of its own support forums. For the past 7 years (to the week!), NewsBlur has been using Get Satisfaction for support, ideas, questions, and praise.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Intelligence training comes to NewsBlur’s Android app</title>
-    <link href="https://blog.newsblur.com/2017/12/11/intelligence-training-comes-to-newsblurs-android/" rel="alternate" type="text/html" title="Intelligence training comes to NewsBlur’s Android app" />
-    <published>2017-12-11T08:00:13-05:00</published>
-    <updated>2017-12-11T08:00:13-05:00</updated>
-    <id>https://blog.newsblur.com/2017/12/11/intelligence-training-comes-to-newsblurs-android</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2017/12/11/intelligence-training-comes-to-newsblurs-android/">
-      <![CDATA[<p>This is a big deal for Android users. The NewsBlur Android app now fully supports intelligence training and filtering, letting you filter out the stories you don’t want to read while highlighting the stories you do want by letting you filter titles, authors, tags, and the publisher.</p>
-
-<p><img src="http://s3.amazonaws.com/static.newsblur.com/blog/android-training.png" alt="" /></p>
-
-<p>You used to be able to train by tapping on authors and tags right from the story, but that didn’t give you a bird’s eye view of an entire feed. You can now clear / modify old intelligence training without going back to the story that set it. And until now you had to use the web or iOS app to train on titles and the publisher itself. Now you can do it all from all of the apps. <a href="https://www.newsblur.com/faq">Check the FAQ</a> for ideas on how to make use of the intelligence trainer.</p>
-
-<p>Here’s a list of all the new features in version 7.0 of the Android app:</p>
-
-<ul>
-  <li>New Intelligence Trainer. You can train feeds and individual stories: titles, authors, tags, and publishers.</li>
-  <li>New Infrequent Site Stories view. It’s configurable and will show up on iOS and the web soon.</li>
-  <li>Titles with intelligence training are now highlighted.</li>
-  <li>You can now switch between light and dark themes from any view.</li>
-</ul>
-
-<p>This is a huge release and we hope you’ll find that it makes the NewsBlur reading experience that much better.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[This is a big deal for Android users. The NewsBlur Android app now fully supports intelligence training and filtering, letting you filter out the stories you don’t want to read while highlighting the stories you do want by letting you filter titles, authors, tags, and the publisher.
 ]]>
     </summary>
     

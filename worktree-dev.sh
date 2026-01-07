@@ -283,10 +283,7 @@ if [ "$NEEDS_SETUP" = true ]; then
     # Set environment variables for the workspace
     export COMPOSE_PROJECT_NAME="${WORKSPACE_NAME}"
 
-    # Stop any existing containers first to avoid name conflicts
-    docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" down 2>/dev/null || true
-
-    # Start workspace containers using the standalone compose file
+    # Start workspace containers (docker compose up -d is idempotent for running containers)
     docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d --remove-orphans
 
     # Wait for workspace web container
