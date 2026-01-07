@@ -653,12 +653,14 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var $settings_tab = $('.NB-tab-settings', this.$modal);
         var $feed_icon_tab = $('.NB-tab-feed-icon', this.$modal);
 
-        // Move all feed-specific content into the Settings tab
+        // Move all feed-specific content into the Settings tab in correct order
         var $view_settings = $('.NB-exception-option-view', this.$modal).detach();
         var $retry_option = $('.NB-exception-option-retry', this.$modal).detach();
         var $feed_option = $('.NB-exception-option-feed', this.$modal).detach();
         var $page_option = $('.NB-exception-option-page', this.$modal).detach();
-        $settings_tab.append($view_settings).append($feed_option).append($page_option).append($retry_option);
+        var $delete_option = $('.NB-exception-option-delete', this.$modal).detach();
+        // Order: view settings, then Option 1 (retry), Option 2 (feed), Option 3 (page), Option 4 (delete)
+        $settings_tab.append($view_settings).append($retry_option).append($feed_option).append($page_option).append($delete_option);
 
         // Skip icon tab setup for starred/saved story tags and social/shared feeds
         if (this.feed.is_starred() || this.feed.is_social()) return;
