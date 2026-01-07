@@ -222,11 +222,11 @@ fieldset legend {
     font-weight: bold;
     padding: 0 4px;
     text-transform: uppercase;
-    overflow: hidden;
     border-radius: 3px;
     -moz-border-radius: 3px;
     text-shadow: none;
     float: left;
+    white-space: nowrap;
 }
 
 .NB-modal .NB-modal-feed-heading {
