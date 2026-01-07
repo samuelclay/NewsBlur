@@ -753,7 +753,9 @@ def stripe_form(request):
 
 @login_required
 def switch_stripe_subscription(request):
-    plan = request.POST["plan"]
+    plan = request.POST.get("plan")
+    if not plan:
+        return HttpResponseRedirect(reverse("index"))
     if plan == "change_stripe":
         return stripe_checkout(request)
     elif plan == "change_paypal":
@@ -775,7 +777,9 @@ def switch_stripe_subscription(request):
 
 
 def switch_paypal_subscription(request):
-    plan = request.POST["plan"]
+    plan = request.POST.get("plan")
+    if not plan:
+        return HttpResponseRedirect(reverse("index"))
     if plan == "change_stripe":
         return stripe_checkout(request)
     elif plan == "change_paypal":
@@ -803,7 +807,9 @@ def switch_paypal_subscription(request):
 def stripe_checkout(request):
     stripe.api_key = settings.STRIPE_SECRET
     domain = Site.objects.get_current().domain
-    plan = request.POST["plan"]
+    plan = request.POST.get("plan")
+    if not plan:
+        return HttpResponseRedirect(reverse("index"))
 
     if plan == "change_stripe":
         checkout_session = stripe.billing_portal.Session.create(

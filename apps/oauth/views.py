@@ -238,6 +238,7 @@ def api_user_info(request):
             "data": {
                 "name": user.username,
                 "id": user.pk,
+                "email": user.email,
             }
         },
     )

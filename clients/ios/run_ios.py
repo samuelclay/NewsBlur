@@ -24,11 +24,11 @@ Environment:
     IOS_APP_PATH     - Path to the built .app for install
 """
 
+import os
+import shlex
 import subprocess
 import sys
 import time
-import os
-import shlex
 
 # Configuration
 UDID = os.environ.get("IOS_SIM_UDID", "542DF8D3-CAB2-40BE-8DB2-9CBB864F2881")
