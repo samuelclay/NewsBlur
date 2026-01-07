@@ -138,7 +138,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                     <div class="NB-feedbar-discover-icon"></div>\
                     <% if (feed.get("similar_feeds") && feed.get("similar_feeds").length) { %>\
                         <% _.map(feed.get("similar_feeds"), (feed_id) => { %>\
-                            <img class="feed_favicon" src="<%= $.favicon(feed_id) %>">\
+                            <%= $.favicon_html(feed_id) %>\
                         <% }); %>\
                     <% } else { %>\
                         <span class="NB-feedbar-discover-text">Related</span>\
@@ -147,18 +147,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                 </div>\
               <% } %>\
           <% } %>\
-          <% var feed_icon_url = $.favicon(feed); %>\
-          <% var feed_icon = NEWSBLUR.assets.get_feed_icon(feed.id); %>\
-          <% var feed_icon_color = feed_icon && feed_icon.icon_color; %>\
-          <% var feed_has_color = feed_icon_color && feed_icon_color !== "#000000"; %>\
-          <% var feed_is_preset = feed_icon_url && (feed_icon_url.indexOf("/lucide/") !== -1 || feed_icon_url.indexOf("/heroicons-solid/") !== -1); %>\
-          <% if (feed_icon_url && feed_icon_url.indexOf("emoji:") === 0) { %>\
-              <span class="feed_favicon NB-feed-emoji" <% if (type == "story") { %>role="button"<% } %>><%= feed_icon_url.substring(6) %></span>\
-          <% } else if (feed_is_preset && feed_has_color) { %>\
-              <span class="feed_favicon NB-feed-icon-colored" style="background-color: <%= feed_icon_color %>; -webkit-mask-image: url(<%= feed_icon_url %>); mask-image: url(<%= feed_icon_url %>);" <% if (type == "story") { %>role="button"<% } %>></span>\
-          <% } else { %>\
-              <img class="feed_favicon" src="<%= feed_icon_url %>" <% if (type == "story") { %>role="button"<% } %>>\
-          <% } %>\
+          <%= $.favicon_html(feed, { role: type == "story" ? "button" : null }) %>\
           <span class="feed_title">\
             <%= feed.get("feed_title") %>\
           </span>\

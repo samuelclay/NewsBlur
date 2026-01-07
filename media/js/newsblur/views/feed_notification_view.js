@@ -34,7 +34,7 @@ NEWSBLUR.Views.FeedNotificationView = Backbone.View.extend({
                 </ul>\
             </div>\
             <% if (!popover) { %>\
-                <img class="NB-feed-icon" src="<%= $.favicon(feed) %>">\
+                <%= $.favicon_html(feed, { image_class: 'NB-feed-icon', emoji_class: 'NB-feed-icon NB-feed-emoji', colored_class: 'NB-feed-icon NB-feed-icon-colored' }) %>\
                 <div class="NB-feed-title"><%= feed.get("feed_title") %></div>\
                 <div class="NB-feed-frequency-icon"></div>\
                 <div class="NB-feed-frequency"><%= frequency %></div>\

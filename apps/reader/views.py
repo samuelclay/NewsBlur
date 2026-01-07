@@ -2990,6 +2990,105 @@ def move_feeds_by_folder_to_folder(request):
     return dict(code=1, folders=json.decode(user_sub_folders.folders))
 
 
+ICON_TYPES = {"upload", "preset", "emoji", "none"}
+ICON_SETS = {"lucide", "heroicons-solid"}
+ICON_COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
+ICON_NAME_RE = re.compile(r"^[a-z0-9-]+$")
+MAX_ICON_DATA_LENGTH = 120000
+MAX_EMOJI_LENGTH = 16
+MAX_ICON_UPLOAD_BYTES = 5 * 1024 * 1024
+ICON_UPLOAD_FORMATS = {"PNG", "JPEG", "GIF", "WEBP"}
+
+
+def _clean_icon_payload(icon_type, icon_data, icon_color, icon_set):
+    icon_type = (icon_type or "none").strip()
+    icon_color = icon_color.strip() if icon_color else None
+    icon_set = icon_set.strip() if icon_set else None
+
+    if icon_type not in ICON_TYPES:
+        return None, "Invalid icon type"
+
+    if icon_color and not ICON_COLOR_RE.match(icon_color):
+        return None, "Invalid icon color"
+
+    if icon_type == "none":
+        payload = {"icon_type": "none", "icon_data": None, "icon_color": None, "icon_set": None}
+        return payload, None
+
+    if icon_type == "preset":
+        if not icon_data:
+            return None, "Icon name required"
+        if not ICON_NAME_RE.match(icon_data):
+            return None, "Invalid icon name"
+        icon_set = icon_set or "lucide"
+        if icon_set not in ICON_SETS:
+            return None, "Invalid icon set"
+        payload = {
+            "icon_type": icon_type,
+            "icon_data": icon_data,
+            "icon_color": icon_color,
+            "icon_set": icon_set,
+        }
+        return payload, None
+
+    if icon_type == "emoji":
+        if not icon_data:
+            return None, "Emoji required"
+        if len(icon_data) > MAX_EMOJI_LENGTH:
+            return None, "Emoji is too long"
+        payload = {"icon_type": icon_type, "icon_data": icon_data, "icon_color": None, "icon_set": None}
+        return payload, None
+
+    if icon_type == "upload":
+        if not icon_data:
+            return None, "Icon data required"
+        if len(icon_data) > MAX_ICON_DATA_LENGTH:
+            return None, "Icon data is too large"
+        payload = {"icon_type": icon_type, "icon_data": icon_data, "icon_color": None, "icon_set": None}
+        return payload, None
+
+    return None, "Invalid icon type"
+
+
+def _process_icon_upload(photo):
+    from io import BytesIO
+
+    from PIL import Image
+
+    if photo.size > MAX_ICON_UPLOAD_BYTES:
+        return None, "Image must be smaller than 5MB"
+
+    photo_body = photo.read()
+    if len(photo_body) > MAX_ICON_UPLOAD_BYTES:
+        return None, "Image must be smaller than 5MB"
+
+    try:
+        image_file = BytesIO(photo_body)
+        image = Image.open(image_file)
+        image.verify()
+        image_file.seek(0)
+        image = Image.open(image_file)
+    except Exception:
+        return None, "Invalid image file"
+
+    if image.format not in ICON_UPLOAD_FORMATS:
+        return None, "Invalid image format"
+
+    if image.mode not in ("RGBA", "RGB"):
+        image = image.convert("RGBA")
+
+    image.thumbnail((128, 128), Image.LANCZOS)
+
+    canvas = Image.new("RGBA", (128, 128), (255, 255, 255, 0))
+    offset = ((128 - image.width) // 2, (128 - image.height) // 2)
+    canvas.paste(image, offset)
+
+    buffer = BytesIO()
+    canvas.save(buffer, format="PNG")
+    icon_data = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    return icon_data, None
+
+
 @ajax_login_required
 @json.json_view
 def save_folder_icon(request):
@@ -3002,6 +3101,15 @@ def save_folder_icon(request):
 
     if not folder_title:
         return {"code": -1, "message": "Folder title required"}
+
+    icon_payload, error_message = _clean_icon_payload(icon_type, icon_data, icon_color, icon_set)
+    if error_message:
+        return {"code": -1, "message": error_message}
+
+    icon_type = icon_payload["icon_type"]
+    icon_data = icon_payload["icon_data"]
+    icon_color = icon_payload["icon_color"]
+    icon_set = icon_payload["icon_set"]
 
     if icon_type == "none":
         MFolderIcon.delete_folder_icon(request.user.pk, folder_title)
@@ -3028,10 +3136,6 @@ def save_folder_icon(request):
 @json.json_view
 def upload_folder_icon(request):
     """Handle file upload for custom folder icons"""
-    from io import BytesIO
-
-    from PIL import Image
-
     folder_title = request.POST.get("folder_title", "").replace("river:", "")
     photo = request.FILES.get("photo")
 
@@ -3039,27 +3143,9 @@ def upload_folder_icon(request):
         return {"code": -1, "message": "Folder title and photo required"}
 
     try:
-        # Read and validate image
-        photo_body = photo.read()
-        image_file = BytesIO(photo_body)
-        image = Image.open(image_file)
-
-        # Convert to RGBA if needed (for PNG with transparency)
-        if image.mode not in ("RGBA", "RGB"):
-            image = image.convert("RGBA")
-
-        # Resize to 128x128 with aspect ratio preserved, then crop to center
-        image.thumbnail((128, 128), Image.LANCZOS)
-
-        # Create a 128x128 canvas and paste the thumbnail centered
-        canvas = Image.new("RGBA", (128, 128), (255, 255, 255, 0))
-        offset = ((128 - image.width) // 2, (128 - image.height) // 2)
-        canvas.paste(image, offset)
-
-        # Convert to base64
-        buffer = BytesIO()
-        canvas.save(buffer, format="PNG")
-        icon_data = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        icon_data, error_message = _process_icon_upload(photo)
+        if error_message:
+            return {"code": -1, "message": error_message}
 
         MFolderIcon.save_folder_icon(
             request.user.pk,
@@ -3100,6 +3186,15 @@ def save_feed_icon(request):
     except (ValueError, TypeError):
         return {"code": -1, "message": "Invalid feed ID"}
 
+    icon_payload, error_message = _clean_icon_payload(icon_type, icon_data, icon_color, icon_set)
+    if error_message:
+        return {"code": -1, "message": error_message}
+
+    icon_type = icon_payload["icon_type"]
+    icon_data = icon_payload["icon_data"]
+    icon_color = icon_payload["icon_color"]
+    icon_set = icon_payload["icon_set"]
+
     if icon_type == "none":
         MCustomFeedIcon.delete_feed_icon(request.user.pk, feed_id)
         logging.user(request, "~FRRemoving feed icon: ~SB%s" % feed_id)
@@ -3125,10 +3220,6 @@ def save_feed_icon(request):
 @json.json_view
 def upload_feed_icon(request):
     """Handle file upload for custom feed icons"""
-    from io import BytesIO
-
-    from PIL import Image
-
     feed_id = request.POST.get("feed_id")
     photo = request.FILES.get("photo")
 
@@ -3141,27 +3232,9 @@ def upload_feed_icon(request):
         return {"code": -1, "message": "Invalid feed ID"}
 
     try:
-        # Read and validate image
-        photo_body = photo.read()
-        image_file = BytesIO(photo_body)
-        image = Image.open(image_file)
-
-        # Convert to RGBA if needed (for PNG with transparency)
-        if image.mode not in ("RGBA", "RGB"):
-            image = image.convert("RGBA")
-
-        # Resize to 128x128 with aspect ratio preserved, then crop to center
-        image.thumbnail((128, 128), Image.LANCZOS)
-
-        # Create a 128x128 canvas and paste the thumbnail centered
-        canvas = Image.new("RGBA", (128, 128), (255, 255, 255, 0))
-        offset = ((128 - image.width) // 2, (128 - image.height) // 2)
-        canvas.paste(image, offset)
-
-        # Convert to base64
-        buffer = BytesIO()
-        canvas.save(buffer, format="PNG")
-        icon_data = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        icon_data, error_message = _process_icon_upload(photo)
+        if error_message:
+            return {"code": -1, "message": error_message}
 
         MCustomFeedIcon.save_feed_icon(
             request.user.pk,

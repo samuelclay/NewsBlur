@@ -151,7 +151,11 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             return $.make('li', [
                 $.make('a', [
                     $.make('div', { className: 'NB-add-autocomplete-subscribers' }, Inflector.pluralize(' subscriber', item.num_subscribers, true)),
-                    $.make('img', { className: 'NB-add-autocomplete-favicon', src: $.favicon(feed) }),
+                    $.favicon_el(feed, {
+                        image_class: 'NB-add-autocomplete-favicon',
+                        emoji_class: 'NB-add-autocomplete-favicon NB-feed-emoji',
+                        colored_class: 'NB-add-autocomplete-favicon NB-feed-icon-colored'
+                    }),
                     $.make('div', { className: 'NB-add-autocomplete-title' }, item.label),
                     $.make('div', { className: 'NB-add-autocomplete-address' }, item.value)
                 ])

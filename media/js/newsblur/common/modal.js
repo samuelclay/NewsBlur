@@ -90,7 +90,19 @@ NEWSBLUR.Modal.prototype = {
         }
         this.options.social_feed = this.feed && this.feed.is_social();
 
-        $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
+        var $feed_icon = $.favicon_el(this.feed, {
+            image_class: 'NB-modal-feed-image feed_favicon',
+            emoji_class: 'NB-modal-feed-image NB-feed-emoji',
+            colored_class: 'NB-modal-feed-image NB-feed-icon-colored'
+        });
+        var $feed_icon_container = $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).first();
+        if ($feed_icon) {
+            if ($feed_icon_container.length) {
+                $feed_icon_container.replaceWith($feed_icon);
+            } else {
+                $('.NB-modal-subtitle', this.$modal).prepend($feed_icon);
+            }
+        }
         $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed.get('feed_title'));
         // Hide subscriber count for starred/saved tags and social feeds
         if (this.feed.is_starred() || this.feed.is_social()) {
@@ -104,7 +116,19 @@ NEWSBLUR.Modal.prototype = {
         this.folder_title = folder_title;
         this.folder = this.model.get_folder(folder_title);
 
-        $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', NEWSBLUR.Globals.MEDIA_URL + '/img/icons/nouns/folder-open.svg');
+        var $folder_icon = $.favicon_el('river:' + folder_title, {
+            image_class: 'NB-modal-feed-image feed_favicon',
+            emoji_class: 'NB-modal-feed-image NB-folder-emoji',
+            colored_class: 'NB-modal-feed-image NB-folder-icon-colored'
+        });
+        var $folder_icon_container = $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).first();
+        if ($folder_icon) {
+            if ($folder_icon_container.length) {
+                $folder_icon_container.replaceWith($folder_icon);
+            } else {
+                $('.NB-modal-subtitle', this.$modal).prepend($folder_icon);
+            }
+        }
         $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.folder_title);
         $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).hide();
     },

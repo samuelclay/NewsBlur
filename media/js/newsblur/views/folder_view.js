@@ -205,21 +205,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                     <% } %>\
                 <% } %>\
                 <% var icon_url = $.favicon("river:"+folder_title); %>\
-                <% var folder_icon = NEWSBLUR.assets.get_folder_icon(folder_title); %>\
-                <% var icon_color = folder_icon && folder_icon.icon_color; %>\
-                <% var has_color = icon_color && icon_color !== "#000000"; %>\
-                <% var is_preset = icon_url && (icon_url.indexOf("/lucide/") !== -1 || icon_url.indexOf("/heroicons-solid/") !== -1); %>\
-                <% var is_custom = icon_url && (icon_url.indexOf("emoji:") === 0 || is_preset || icon_url.indexOf("data:") === 0); %>\
+                <% var is_custom = $.icon_url_is_custom(icon_url); %>\
                 <div class="NB-folder-icon<% if (is_custom) { %> NB-has-custom-icon<% } %>">\
-                    <% if (is_custom) { %>\
-                        <% if (icon_url.indexOf("emoji:") === 0) { %>\
-                            <span class="NB-folder-emoji"><%= icon_url.substring(6) %></span>\
-                        <% } else if (is_preset && has_color) { %>\
-                            <span class="NB-folder-icon-colored" style="background-color: <%= icon_color %>; -webkit-mask-image: url(<%= icon_url %>); mask-image: url(<%= icon_url %>);"></span>\
-                        <% } else { %>\
-                            <img class="feed_favicon" src="<%= icon_url %>">\
-                        <% } %>\
-                    <% } %>\
+                    <%= $.favicon_html("river:"+folder_title) %>\
                 </div>\
                 <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
                 <div class="NB-feedlist-manage-icon" role="button"></div>\
