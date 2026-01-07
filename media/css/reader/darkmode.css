@@ -2477,6 +2477,10 @@ a.mention, a.mention-group {
     border-color: #5c6b80;
 }
 
+.NB-dark .NB-classifier-regex-badge {
+    background: #9B88FE;
+}
+
 .NB-dark .NB-classifier-regex-pro-notice {
     background-color: #3d3a20;
     border-color: #5a5530;
@@ -2509,9 +2513,109 @@ a.mention, a.mention-group {
     border-color: #4A90D9;
 }
 
-/* "This story" indicator - dark mode blue border */
-.NB-dark .NB-classifier-this-story {
-    border-left-color: #5080b0;
+/* Feed items separator - dark mode */
+.NB-dark .NB-classifier-this-story + .NB-classifier-feed-items {
+    border-top-color: #444;
+}
+
+.NB-dark .NB-classifier-this-story + .NB-classifier-feed-items::before {
+    color: #777;
+}
+
+/* Match type segmented control - dark mode */
+.NB-dark .NB-classifier-match-type-control {
+    background: #3a3c3e;
+}
+
+.NB-dark .NB-classifier-match-type-control .NB-match-type-option {
+    color: #999;
+}
+
+.NB-dark .NB-classifier-match-type-control .NB-match-type-option:hover {
+    color: #ccc;
+}
+
+.NB-dark .NB-classifier-match-type-control .NB-match-type-option.NB-active {
+    background: #505254;
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-classifier-match-type-control .NB-match-type-option.NB-match-type-regex.NB-active {
+    background: #5a4fcf;
+    color: white;
+}
+
+/* Regex tips - dark mode */
+.NB-dark .NB-classifier-regex-tips {
+    background: linear-gradient(135deg, #2a2a3a 0%, #252535 100%);
+    border-color: #4a4a6a;
+}
+
+.NB-dark .NB-classifier-regex-tips-title {
+    color: #9890e0;
+}
+
+.NB-dark .NB-regex-tip-category {
+    color: #9890e0;
+    border-bottom-color: rgba(123, 104, 238, 0.3);
+}
+
+.NB-dark .NB-classifier-regex-tips-list li {
+    color: #aaa;
+}
+
+.NB-dark .NB-classifier-regex-tips-list code {
+    background: rgba(123, 104, 238, 0.25);
+    color: #b0a8f0;
+}
+
+.NB-dark .NB-classifier-regex-tips-note {
+    color: #888;
+    border-top-color: rgba(123, 104, 238, 0.3);
+}
+
+/* Unified text/title input - dark mode */
+.NB-dark .NB-classifier-text-input,
+.NB-dark .NB-classifier-title-input {
+    background: #2a2c2e;
+    border-color: #4a4c4e;
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-classifier-text-input:focus,
+.NB-dark .NB-classifier-title-input:focus {
+    border-color: #4A90D9;
+}
+
+/* Regex mode styling - dark mode */
+.NB-dark .NB-classifier-input-regex-mode {
+    background: #2a2a3a;
+    border-color: #5a5a8a;
+}
+
+.NB-dark .NB-classifier-input-regex-mode:focus {
+    border-color: #7B68EE;
+    box-shadow: 0 0 0 2px rgba(123, 104, 238, 0.3);
+}
+
+/* Regex validation badges - dark mode */
+.NB-dark .NB-regex-badge-valid,
+.NB-dark .NB-regex-badge-match {
+    background: #1b3a1b;
+    color: #6fcf6f;
+    border-color: #2e5a2e;
+}
+
+.NB-dark .NB-regex-badge-no-match {
+    background: #2a2a2a;
+    color: #888;
+    border-color: #404040;
+}
+
+.NB-dark .NB-regex-badge-error {
+    background: #3a1b1b;
+    color: #ef6f6f;
+    border-color: #5a2e2e;
 }
 
 /* ========================== */

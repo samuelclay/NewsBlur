@@ -51,7 +51,9 @@ from apps.analyzer.models import (
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
+    apply_classifier_text_regex,
     apply_classifier_texts,
+    apply_classifier_title_regex,
     apply_classifier_titles,
     get_classifiers_for_user,
     sort_classifiers_by_feed,
@@ -996,8 +998,14 @@ def load_single_feed(request, feed_id):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
+            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
             "text": (
                 apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
+            "text_regex": (
+                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
@@ -1363,7 +1371,9 @@ def load_starred_stories(request):
             "author": 0,
             "tags": 0,
             "title": 0,
+            "title_regex": 0,
             "text": 0,
+            "text_regex": 0,
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True
@@ -1574,8 +1584,14 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
+            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
             "text": (
                 apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
+            "text_regex": (
+                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
@@ -1763,7 +1779,9 @@ def load_read_stories(request):
             "author": 0,
             "tags": 0,
             "title": 0,
+            "title_regex": 0,
             "text": 0,
+            "text_regex": 0,
         }
         if story["story_hash"] in starred_stories:
             story["starred"] = True
@@ -2015,8 +2033,14 @@ def load_river_stories__redis(request):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
+            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
             "text": (
                 apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
+            "text_regex": (
+                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),

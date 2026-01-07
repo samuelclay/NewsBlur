@@ -26,7 +26,9 @@ from apps.analyzer.models import (
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
+    apply_classifier_text_regex,
     apply_classifier_texts,
+    apply_classifier_title_regex,
     apply_classifier_titles,
 )
 from apps.analyzer.tfidf import tfidf
@@ -1235,12 +1237,14 @@ class UserSubscription(models.Model):
                         "author": apply_classifier_authors(classifier_authors, story),
                         "tags": apply_classifier_tags(classifier_tags, story),
                         "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
+                        "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
                         "text": apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro),
+                        "text_regex": apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro),
                     }
                 )
 
-                max_score = max(scores["author"], scores["tags"], scores["title"], scores["text"])
-                min_score = min(scores["author"], scores["tags"], scores["title"], scores["text"])
+                max_score = max(scores["author"], scores["tags"], scores["title"], scores["title_regex"], scores["text"], scores["text_regex"])
+                min_score = min(scores["author"], scores["tags"], scores["title"], scores["title_regex"], scores["text"], scores["text_regex"])
                 if max_score > 0:
                     feed_scores["positive"] += 1
                 elif min_score < 0:
@@ -1323,8 +1327,22 @@ class UserSubscription(models.Model):
 
     @staticmethod
     def score_story(scores):
-        max_score = max(scores["author"], scores["tags"], scores["title"], scores.get("text", 0))
-        min_score = min(scores["author"], scores["tags"], scores["title"], scores.get("text", 0))
+        max_score = max(
+            scores["author"],
+            scores["tags"],
+            scores["title"],
+            scores.get("title_regex", 0),
+            scores.get("text", 0),
+            scores.get("text_regex", 0),
+        )
+        min_score = min(
+            scores["author"],
+            scores["tags"],
+            scores["title"],
+            scores.get("title_regex", 0),
+            scores.get("text", 0),
+            scores.get("text_regex", 0),
+        )
 
         if max_score > 0:
             return 1

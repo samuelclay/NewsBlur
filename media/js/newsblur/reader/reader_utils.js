@@ -14,13 +14,17 @@ NEWSBLUR.utils = {
         var intelligence = story.get('intelligence');
         if (!intelligence) return score;
         var score_max = Math.max(intelligence['title'],
+            intelligence['title_regex'] || 0,
             intelligence['author'],
             intelligence['tags'],
-            intelligence['text'] || 0);
+            intelligence['text'] || 0,
+            intelligence['text_regex'] || 0);
         var score_min = Math.min(intelligence['title'],
+            intelligence['title_regex'] || 0,
             intelligence['author'],
             intelligence['tags'],
-            intelligence['text'] || 0);
+            intelligence['text'] || 0,
+            intelligence['text_regex'] || 0);
         if (score_max > 0) score = score_max;
         else if (score_min < 0) score = score_min;
 

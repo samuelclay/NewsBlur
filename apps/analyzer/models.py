@@ -258,8 +258,9 @@ def compute_story_score(
         "author": apply_classifier_authors(classifier_authors, story),
         "tags": apply_classifier_tags(classifier_tags, story),
         "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
+        "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
         "text": apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro),
-        "regex": apply_classifier_regex(classifier_texts, story, user_is_pro=user_is_pro),
+        "text_regex": apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro),
     }
 
     # Include AI prompt classifier score if provided
@@ -273,8 +274,8 @@ def compute_story_score(
         return intelligence["prompt"]
 
     # Otherwise use the traditional classifier logic
-    score_max = max(intelligence["title"], intelligence["author"], intelligence["tags"], intelligence["text"], intelligence["regex"])
-    score_min = min(intelligence["title"], intelligence["author"], intelligence["tags"], intelligence["text"], intelligence["regex"])
+    score_max = max(intelligence["title"], intelligence["title_regex"], intelligence["author"], intelligence["tags"], intelligence["text"], intelligence["text_regex"])
+    score_min = min(intelligence["title"], intelligence["title_regex"], intelligence["author"], intelligence["tags"], intelligence["text"], intelligence["text_regex"])
     if score_max > 0:
         score = score_max
     elif score_min < 0:
@@ -358,46 +359,82 @@ def apply_classifier_texts(classifiers, story, user_is_pro=False):
     return score
 
 
-def apply_classifier_regex(classifiers, story, user_is_pro=False):
+def apply_classifier_title_regex(classifiers, story, user_is_pro=False):
     """
-    Apply regex classifiers to a story. Regex patterns match against BOTH title AND content.
+    Apply title regex classifiers to a story. Matches title only.
 
     Args:
-        classifiers: List of MClassifierText objects with is_regex=True
-        story: Story dict with 'story_feed_id', 'story_title', and 'story_content'
+        classifiers: List of MClassifierTitle objects with is_regex=True
+        story: Story dict with 'story_feed_id' and 'story_title'
         user_is_pro: Whether the user has PRO subscription (required for regex filters)
 
     Returns:
         Score (1 for like, -1 for dislike, 0 for neutral)
     """
-    # Regex filters only apply for PRO users
     if not user_is_pro:
         return 0
 
     score = 0
     story_title = story.get("story_title", "")
-    story_content = story.get("story_content", "")
+    if not story_title:
+        return score
 
     for classifier in classifiers:
         if classifier.feed_id != story["story_feed_id"]:
             continue
 
-        # Only process regex classifiers
         if not getattr(classifier, "is_regex", False):
             continue
 
-        pattern = classifier.text
-
-        # Match against title OR content
-        title_match = story_title and safe_regex_match(pattern, story_title)
-        content_match = story_content and safe_regex_match(pattern, story_content)
-
-        if title_match or content_match:
+        if safe_regex_match(classifier.title, story_title):
             score = classifier.score
             if score > 0:
                 return score
 
     return score
+
+
+def apply_classifier_text_regex(classifiers, story, user_is_pro=False):
+    """
+    Apply text regex classifiers to a story. Matches content only.
+
+    Args:
+        classifiers: List of MClassifierText objects with is_regex=True
+        story: Story dict with 'story_feed_id' and 'story_content'
+        user_is_pro: Whether the user has PRO subscription (required for regex filters)
+
+    Returns:
+        Score (1 for like, -1 for dislike, 0 for neutral)
+    """
+    if not user_is_pro:
+        return 0
+
+    score = 0
+    story_content = story.get("story_content", "")
+    if not story_content:
+        return score
+
+    for classifier in classifiers:
+        if classifier.feed_id != story["story_feed_id"]:
+            continue
+
+        if not getattr(classifier, "is_regex", False):
+            continue
+
+        if safe_regex_match(classifier.text, story_content):
+            score = classifier.score
+            if score > 0:
+                return score
+
+    return score
+
+
+def apply_classifier_regex(classifiers, story, user_is_pro=False):
+    """
+    Apply text regex classifiers to a story (backward compatibility wrapper).
+    Use apply_classifier_text_regex for new code.
+    """
+    return apply_classifier_text_regex(classifiers, story, user_is_pro)
 
 
 def apply_classifier_authors(classifiers, story):
@@ -636,30 +673,30 @@ def get_classifiers_for_user(
 
     # Build titles dict - only non-regex patterns
     titles_dict = {}
+    title_regex_dict = {}
     for t in classifier_titles:
-        if not getattr(t, "is_regex", False):
+        if getattr(t, "is_regex", False):
+            title_regex_dict[t.title] = t.score
+        else:
             titles_dict[t.title] = t.score
 
     # Build texts dict - only non-regex patterns
     texts_dict = {}
-    for t in classifier_texts:
-        if not getattr(t, "is_regex", False):
-            texts_dict[t.text] = t.score
-
-    # Build regex dict - patterns stored in MClassifierText with is_regex=True
-    # These apply to both title AND content
-    regex_dict = {}
+    text_regex_dict = {}
     for t in classifier_texts:
         if getattr(t, "is_regex", False):
-            regex_dict[t.text] = t.score
+            text_regex_dict[t.text] = t.score
+        else:
+            texts_dict[t.text] = t.score
 
     payload = {
         "feeds": dict(feeds),
         "authors": dict([(a.author, a.score) for a in classifier_authors]),
         "titles": titles_dict,
+        "title_regex": title_regex_dict,
         "tags": dict([(t.tag, t.score) for t in classifier_tags]),
         "texts": texts_dict,
-        "regex": regex_dict,
+        "text_regex": text_regex_dict,
     }
 
     return payload

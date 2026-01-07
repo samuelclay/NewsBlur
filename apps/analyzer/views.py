@@ -75,14 +75,14 @@ def save_classifier(request):
             "remove_like_" + content_type: (0, False),
             "remove_dislike_" + content_type: (0, False),
         }
-        # Add unified regex classifier (stored in text table, applies to both title and content)
-        if content_type == "text":
+        # Add regex classifier for title and text types
+        if content_type in ("title", "text"):
             classifiers.update(
                 {
-                    "like_regex": (1, True),
-                    "dislike_regex": (-1, True),
-                    "remove_like_regex": (0, True),
-                    "remove_dislike_regex": (0, True),
+                    "like_" + content_type + "_regex": (1, True),
+                    "dislike_" + content_type + "_regex": (-1, True),
+                    "remove_like_" + content_type + "_regex": (0, True),
+                    "remove_dislike_" + content_type + "_regex": (0, True),
                 }
             )
 
