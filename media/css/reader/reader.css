@@ -17046,3 +17046,17 @@ form.opml_import_form input {
     background-color: rgba(255, 255, 255, .4);
     list-style: none;
 }
+
+/* Disable social features */
+.NB-disable-social .NB-feeds-header-river-blurblogs-container,
+.NB-disable-social .NB-socialfeeds-folder,
+.NB-disable-social .NB-feed-story-comments-container,
+.NB-disable-social .NB-feed-story-shares-container,
+.NB-disable-social .NB-feed-story-share,
+.NB-disable-social .NB-story-share,
+.NB-disable-social .NB-story-share-button,
+.NB-disable-social .NB-story-comments,
+.NB-disable-social .NB-story-comments-label,
+.NB-disable-social .NB-story-comments-public-teaser {
+    display: none !important;
+}
