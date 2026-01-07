@@ -30,7 +30,7 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
 
         this.$el.html($.make('div', { className: 'NB-feed-badge-inner' }, [
             $.make('div', { className: "NB-feed-badge-title" }, [
-                $.make('img', { src: $.favicon(this.model) }),
+                $.favicon_el(this.model, { image_class: '', emoji_class: 'NB-feed-emoji', colored_class: 'NB-feed-icon-colored' }),
                 this.model.get('feed_title')
             ]),
             $.make('div', { className: "NB-feed-badge-tagline" }, this.model.get('tagline')),

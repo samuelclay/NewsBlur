@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Image frame -->
+  <rect x="8" y="28" width="72" height="64" rx="6" ry="6" fill="none" stroke="#95968e" stroke-width="6"/>
+  <!-- Mountain/landscape icon -->
+  <path d="M16 76 L32 52 L46 68 L54 58 L72 82 L16 82 Z" fill="#95968e"/>
+  <!-- Sun circle -->
+  <circle cx="60" cy="44" r="8" fill="#95968e"/>
+  <!-- Upload arrow background circle -->
+  <circle cx="96" cy="64" r="28" fill="#fff"/>
+  <!-- Upload arrow -->
+  <path d="M96 44 L76 64 L86 64 L86 84 L106 84 L106 64 L116 64 Z" fill="#95968e"/>
+</svg>

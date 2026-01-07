@@ -87,6 +87,10 @@ NEEDS_SETUP=false
 if [ ! -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" ]; then
     NEEDS_SETUP=true
 fi
+# Also run setup if SSL certificates are missing
+if [ ! -f "config/certificates/localhost.pem" ]; then
+    NEEDS_SETUP=true
+fi
 
 # Run setup if needed
 if [ "$NEEDS_SETUP" = true ]; then
@@ -172,8 +176,9 @@ if [ "$NEEDS_SETUP" = true ]; then
     if [ ! -f "config/certificates/localhost.pem" ]; then
         # Check if we can copy from parent repo (handle both regular repo and worktree)
         PARENT_CERTS=""
-        if [ -d "../../../config/certificates" ] && [ -f "../../../config/certificates/localhost.pem" ]; then
-            PARENT_CERTS="../../../config/certificates"
+        if [ -d "../../config/certificates" ] && [ -f "../../config/certificates/localhost.pem" ]; then
+            # Worktree is at .worktree/<name>, so ../../ gets to main repo
+            PARENT_CERTS="../../config/certificates"
         elif [ -d "/srv/newsblur/config/certificates" ] && [ -f "/srv/newsblur/config/certificates/localhost.pem" ]; then
             PARENT_CERTS="/srv/newsblur/config/certificates"
         fi
@@ -278,10 +283,7 @@ if [ "$NEEDS_SETUP" = true ]; then
     # Set environment variables for the workspace
     export COMPOSE_PROJECT_NAME="${WORKSPACE_NAME}"
 
-    # Stop any existing containers first to avoid name conflicts
-    docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" down 2>/dev/null || true
-
-    # Start workspace containers using the standalone compose file
+    # Start workspace containers (docker compose up -d is idempotent for running containers)
     docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d --remove-orphans
 
     # Wait for workspace web container
