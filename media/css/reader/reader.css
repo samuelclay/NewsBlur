@@ -669,7 +669,8 @@ hr {
     background: none !important;
 }
 
-.NB-feedlist li.folder .NB-folder-icon .feed_favicon {
+.NB-feedlist li.folder .NB-folder-icon .feed_favicon,
+.NB-feedlist li.folder .NB-folder-icon img.feed_favicon {
     width: 16px;
     height: 16px;
     display: block;
@@ -17089,6 +17090,18 @@ form.opml_import_form input {
     clear: both;
 }
 
+/* Icon editor tab overflow - allow x overflow for hover effects */
+.NB-tab-folder-icon,
+.NB-tab-feed-icon {
+    overflow-x: visible !important;
+    overflow-y: auto;
+}
+
+/* Icon editor container min-height for better screenshots */
+.NB-folder-icon-editor {
+    min-height: 500px;
+}
+
 /* Upload section margin */
 .NB-folder-icon-editor .NB-folder-icon-upload-section {
     margin-top: 8px;
@@ -17209,7 +17222,7 @@ form.opml_import_form input {
 .NB-folder-icon-editor .NB-folder-icon-filled-row,
 .NB-folder-icon-editor .NB-folder-icon-emoji-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 8px;
 }
 
@@ -17224,6 +17237,7 @@ form.opml_import_form input {
     letter-spacing: 0.5px;
     text-align: right;
     flex-shrink: 0;
+    padding-top: 8px;
 }
 
 .NB-dark .NB-folder-icon-editor .NB-folder-icon-preset-label,
@@ -17236,7 +17250,7 @@ form.opml_import_form input {
 .NB-folder-icon-editor .NB-folder-icon-filled-items,
 .NB-folder-icon-editor .NB-folder-icon-emoji-items {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 2px;
 }
 
@@ -17245,6 +17259,7 @@ form.opml_import_form input {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     gap: 6px 12px;
+    padding: 6px 8px;
 }
 
 .NB-folder-icon-editor .NB-folder-icon-color {
