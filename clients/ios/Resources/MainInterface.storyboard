@@ -226,7 +226,7 @@
                             <constraint firstItem="hRx-bd-6Da" firstAttribute="trailing" secondItem="zHe-OK-YwO" secondAttribute="trailing" id="uwt-28-3hy"/>
                             <constraint firstItem="hRx-bd-6Da" firstAttribute="leading" secondItem="zHe-OK-YwO" secondAttribute="leading" id="vxe-gN-94P"/>
                             <constraint firstItem="hRx-bd-6Da" firstAttribute="bottom" secondItem="B68-yP-FpJ" secondAttribute="bottom" id="tbl-bot-saf"/>
-                            <constraint firstItem="pWr-U1-GMQ" firstAttribute="bottom" secondItem="zHe-OK-YwO" secondAttribute="bottom" id="znm-Mg-YTQ"/>
+                            <constraint firstItem="pWr-U1-GMQ" firstAttribute="bottom" secondItem="zHe-OK-YwO" secondAttribute="bottom" constant="-8" id="znm-Mg-YTQ"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="ejU-V5-SiF"/>
