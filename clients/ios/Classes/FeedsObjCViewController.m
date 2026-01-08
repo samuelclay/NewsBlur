@@ -2499,21 +2499,74 @@ heightForHeaderInSection:(NSInteger)section {
     [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:button.tag]
                         withRowAnimation:UITableViewRowAnimationFade];
     [self.feedTitlesTable endUpdates];
-    
-//    // Scroll to section header if collapse causes it to scroll far off screen
-//    NSArray *indexPathsVisibleCells = [self.feedTitlesTable indexPathsForVisibleRows];
-//    BOOL firstFeedInFolderVisible = NO;
-//    for (NSIndexPath *indexPath in indexPathsVisibleCells) {
-//        if (indexPath.row == 0 && indexPath.section == button.tag) {
-//            firstFeedInFolderVisible = YES;
-//        }
-//    }
-//    if (!firstFeedInFolderVisible) {
-//        CGRect headerRect = [self.feedTitlesTable rectForHeaderInSection:button.tag];
-//        CGPoint headerPoint = CGPointMake(headerRect.origin.x, headerRect.origin.y);
-////        [self.feedTitlesTable setContentOffset:headerPoint animated:YES];
-//    }
-    
+
+    [self updateAllStoriesCollapseButton];
+}
+
+- (BOOL)anyFolderExpanded {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    for (NSString *folderName in appDelegate.dictFoldersArray) {
+        // Skip special folders that don't have collapse functionality
+        if ([folderName isEqualToString:@"dashboard"] ||
+            [folderName isEqualToString:@"everything"] ||
+            [folderName isEqualToString:@"infrequent"] ||
+            [folderName isEqualToString:@"saved_stories"] ||
+            [folderName isEqualToString:@"saved_searches"] ||
+            [folderName isEqualToString:@"read_stories"] ||
+            [folderName isEqualToString:@"interactions"] ||
+            [folderName isEqualToString:@"river_global"] ||
+            [folderName isEqualToString:@"river_blurblogs"] ||
+            [folderName isEqualToString:@"widget_stories"]) {
+            continue;
+        }
+
+        NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
+        if (![userPreferences boolForKey:collapseKey]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (void)didToggleAllFolders:(UIButton *)button {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL shouldCollapse = [self anyFolderExpanded];
+    NSMutableIndexSet *sectionsToReload = [NSMutableIndexSet indexSet];
+
+    for (NSInteger i = 0; i < appDelegate.dictFoldersArray.count; i++) {
+        NSString *folderName = appDelegate.dictFoldersArray[i];
+        // Skip special folders that don't have collapse functionality
+        if ([folderName isEqualToString:@"dashboard"] ||
+            [folderName isEqualToString:@"everything"] ||
+            [folderName isEqualToString:@"infrequent"] ||
+            [folderName isEqualToString:@"saved_stories"] ||
+            [folderName isEqualToString:@"saved_searches"] ||
+            [folderName isEqualToString:@"read_stories"] ||
+            [folderName isEqualToString:@"interactions"] ||
+            [folderName isEqualToString:@"river_global"] ||
+            [folderName isEqualToString:@"river_blurblogs"] ||
+            [folderName isEqualToString:@"widget_stories"]) {
+            continue;
+        }
+
+        NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
+        [userPreferences setBool:shouldCollapse forKey:collapseKey];
+        [sectionsToReload addIndex:i];
+    }
+    [userPreferences synchronize];
+    appDelegate.collapsedFolders = nil;
+
+    [self resetRowHeights];
+    [self.feedTitlesTable beginUpdates];
+    [self.feedTitlesTable reloadSections:sectionsToReload withRowAnimation:UITableViewRowAnimationFade];
+    [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:NewsBlurTopSectionAllStories]
+                        withRowAnimation:UITableViewRowAnimationNone];
+    [self.feedTitlesTable endUpdates];
+}
+
+- (void)updateAllStoriesCollapseButton {
+    [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:NewsBlurTopSectionAllStories]
+                        withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)expandFolderIfNecessary:(NSString *)folderName {
