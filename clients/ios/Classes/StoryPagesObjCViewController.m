@@ -275,7 +275,15 @@
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 titleImage = [UIImage imageNamed:@"saved-stories"];
             } else if (appDelegate.storiesCollection.isRiverView) {
-                titleImage = [UIImage imageNamed:@"folder-open"];
+                // Check for custom folder icon
+                NSString *folderName = appDelegate.storiesCollection.activeFolder;
+                NSDictionary *customIcon = appDelegate.dictFolderIcons[folderName];
+                if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                    titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(22, 22)];
+                }
+                if (!titleImage) {
+                    titleImage = [UIImage imageNamed:@"folder-open"];
+                }
             } else {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                        [appDelegate.activeStory objectForKey:@"story_feed_id"]];

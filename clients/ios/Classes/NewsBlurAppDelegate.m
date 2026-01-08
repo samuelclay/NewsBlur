@@ -261,7 +261,7 @@
     }
     
     [self registerBackgroundTask];
-    
+
     return YES;
 }
 
@@ -3960,7 +3960,15 @@
         } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
             titleImage = [UIImage imageNamed:@"saved-stories"];
         } else if (storiesCollection.isRiverView) {
-            titleImage = [UIImage imageNamed:@"folder-open"];
+            // Check for custom folder icon
+            NSString *folderName = storiesCollection.activeFolder;
+            NSDictionary *customIcon = self.dictFolderIcons[folderName];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+            }
+            if (!titleImage) {
+                titleImage = [UIImage imageNamed:@"folder-open"];
+            }
         } else {
             titleImage = [self getFavicon:feedIdStr];
         }
@@ -4017,6 +4025,14 @@
     } else if ([folder isEqualToString:@"saved_stories"]) {
         return [UIImage imageNamed:@"saved-stories"];
     } else {
+        // Check for custom folder icon
+        NSDictionary *customIcon = self.dictFolderIcons[folder];
+        if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+            UIImage *customImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(20, 20)];
+            if (customImage) {
+                return customImage;
+            }
+        }
         return [UIImage imageNamed:@"folder-open"];
     }
 }

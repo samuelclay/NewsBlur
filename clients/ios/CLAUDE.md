@@ -29,6 +29,11 @@ xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -
 ### Language Mix
 The app uses **Objective-C** as the primary language with **Swift** for newer components. Swift-ObjC bridging is done through `Other Sources/BridgingHeader.h`.
 
+**IMPORTANT: All new files must be written in Swift, not Objective-C.** When creating new classes:
+- Use Swift with `@objc` and `@objcMembers` annotations if the class needs to be called from ObjC code
+- Swift classes are automatically available to ObjC via the generated `NewsBlur-Swift.h` header
+- Only modify existing ObjC files; never create new `.h`/`.m` files
+
 ### Key Classes
 
 - **NewsBlurAppDelegate** (`Classes/NewsBlurAppDelegate.h/m`): Central singleton managing app state, navigation, feeds data, offline storage, and network operations. Access via `NewsBlurAppDelegate.shared`.
