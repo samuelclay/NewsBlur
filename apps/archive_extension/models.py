@@ -138,6 +138,9 @@ class MArchivedStory(mongo.Document):
 
         parsed = urlparse(url)
         domain = parsed.netloc.lower()
+        # Remove port if present
+        if ":" in domain:
+            domain = domain.split(":")[0]
         if domain.startswith("www."):
             domain = domain[4:]
         return domain
