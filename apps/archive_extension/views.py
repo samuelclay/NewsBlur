@@ -89,8 +89,8 @@ def ingest(request):
     content = request.POST.get("content", "")
     favicon_url = request.POST.get("favicon_url", "")
     time_on_page = int(request.POST.get("time_on_page", 0))
-    browser = request.POST.get("browser", "")
-    extension_version = request.POST.get("extension_version", "")
+    browser = request.POST.get("browser", "") or None
+    extension_version = request.POST.get("extension_version", "") or None
 
     if not url:
         return _error_response("URL is required")
@@ -227,8 +227,8 @@ def batch_ingest(request):
                 content_length=len(content) if content else 0,
                 favicon_url=archive_data.get("favicon_url", ""),
                 time_on_page=int(archive_data.get("time_on_page", 0)),
-                browser=archive_data.get("browser", ""),
-                extension_version=archive_data.get("extension_version", ""),
+                browser=archive_data.get("browser", "") or None,
+                extension_version=archive_data.get("extension_version", "") or None,
             )
 
             results.append(
