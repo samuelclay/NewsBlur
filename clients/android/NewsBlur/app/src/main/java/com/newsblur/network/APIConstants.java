@@ -132,7 +132,8 @@ public class APIConstants {
     public static final String PARAMETER_TAG = "tag";
     public static final String PARAMETER_APPROVED_FEEDS = "approved_feeds";
     public static final String PARAMETER_NOTIFICATION_TYPES = "notification_types";
-	public static final String PAREMETER_USER_TAGS = "user_tags";
+	public static final String PARAMETER_USER_TAGS = "user_tags";
+    public static final String PARAMETER_HIGHLIGHTS = "highlights";
 	public static final String PARAMETER_NOTIFICATION_FILTER = "notification_filter";
     public static final String PARAMETER_RESET_FETCH = "reset_fetch";
     public static final String PARAMETER_INFREQUENT = "infrequent";
@@ -151,6 +152,8 @@ public class APIConstants {
     public static final String VALUE_TRUE = "true";
     public static final String VALUE_FALSE = "false";
     public static final String VALUE_STARRED = "starred";
-	
+
 	public static final String S3_URL_FEED_ICONS = "https://s3.amazonaws.com/icons.newsblur.com/";
+
+    public static final String NULL_STORY_TEXT = "__NULL_STORY_TEXT__";
 }

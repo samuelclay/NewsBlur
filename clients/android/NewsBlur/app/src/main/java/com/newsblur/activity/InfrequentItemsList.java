@@ -6,7 +6,6 @@ import android.view.MenuItem;
 import com.newsblur.R;
 import com.newsblur.fragment.InfrequentCutoffDialogFragment;
 import com.newsblur.fragment.InfrequentCutoffDialogFragment.InfrequentCutoffChangedListener;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
 public class InfrequentItemsList extends ItemsList implements InfrequentCutoffChangedListener {
@@ -21,7 +20,7 @@ public class InfrequentItemsList extends ItemsList implements InfrequentCutoffCh
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_infrequent_cutoff) {
-			InfrequentCutoffDialogFragment dialog = InfrequentCutoffDialogFragment.newInstance(PrefsUtils.getInfrequentCutoff(this));
+			InfrequentCutoffDialogFragment dialog = InfrequentCutoffDialogFragment.newInstance(prefsRepo.getInfrequentCutoff());
 			dialog.show(getSupportFragmentManager(), InfrequentCutoffDialogFragment.class.getName());
 			return true;
         } else {
@@ -31,7 +30,7 @@ public class InfrequentItemsList extends ItemsList implements InfrequentCutoffCh
 
     @Override
     public void infrequentCutoffChanged(int newValue) {
-        PrefsUtils.setInfrequentCutoff(this, newValue);
+        prefsRepo.setInfrequentCutoff(newValue);
         dbHelper.clearInfrequentSession();
         restartReadingSession();
     }

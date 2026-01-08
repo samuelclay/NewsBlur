@@ -24,6 +24,7 @@ from apps.reader.models import UserSubscription
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, MFeedIcon, MFetchHistory, MStory, merge_feeds
 from apps.search.models import MUserSearch
+from apps.statistics.rtrending_subscriptions import RTrendingSubscription
 from utils import feedfinder_forman as feedfinder
 from utils import json_functions as json
 from utils import log as logging
@@ -709,3 +710,56 @@ def discover_stories(request, story_hash):
     feeds = {feed.pk: feed.canonical(include_favicon=False) for feed in feeds}
 
     return {"discover_stories": stories, "feeds": feeds}
+
+
+@json.json_view
+def trending_sites(request):
+    """
+    Returns trending feeds with their recent stories for the Trending Sites feature.
+    Uses subscription velocity from RTrendingSubscription to determine trending feeds.
+    """
+    page = int(request.GET.get("page", 1))
+    days = int(request.GET.get("days", 7))
+    limit = 10
+    offset = (page - 1) * limit
+
+    # Validate days parameter
+    if days not in [1, 7, 30]:
+        days = 7
+
+    # Get trending feed IDs from subscription velocity
+    # In DEBUG mode, use min_subscribers=1 to show results with limited data
+    min_subs = 1 if settings.DEBUG else RTrendingSubscription.MIN_SUBSCRIBERS_THRESHOLD
+    trending_data = RTrendingSubscription.get_trending_feeds(
+        days=days,
+        limit=limit + offset + 10,  # Get extra to account for filtering
+        min_subscribers=min_subs,
+    )
+
+    # Slice for pagination
+    trending_feed_ids = [int(feed_id) for feed_id, score in trending_data[offset : offset + limit]]
+
+    if not trending_feed_ids:
+        return {"trending_feeds": {}, "has_more": False}
+
+    # Build response with feed details and stories
+    feeds = Feed.objects.filter(pk__in=trending_feed_ids)
+    feeds_dict = {feed.pk: feed for feed in feeds}
+
+    # Build ordered response preserving trending order
+    trending_feeds = {}
+    for feed_id in trending_feed_ids:
+        if feed_id in feeds_dict:
+            feed = feeds_dict[feed_id]
+            # Find score for this feed
+            score = next((s for fid, s in trending_data if int(fid) == feed_id), 0)
+            trending_feeds[feed_id] = {
+                "feed": feed.canonical(include_favicon=False),
+                "stories": feed.get_stories(limit=5),
+                "trending_score": score,
+            }
+
+    has_more = len(trending_data) > offset + limit
+
+    logging.user(request, "~FCTrending sites (page %s, %sd): ~SB%s feeds" % (page, days, len(trending_feeds)))
+    return {"trending_feeds": trending_feeds, "has_more": has_more}

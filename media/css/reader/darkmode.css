@@ -1312,6 +1312,11 @@ border-bottom: 1px solid #222d31;
 }
 */
 
+/* Staff-Only Badge - Dark Mode */
+.NB-dark .NB-staff-badge {
+    color: #7a6a5a;
+}
+
 /*
 .NB-dark .NB-feeds-header-starred.NB-feeds-header {
 border-top: 1px solid #222d31;
@@ -2432,4 +2437,156 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-story-ask-ai-voice-button:hover .NB-story-ask-ai-voice-icon {
     filter: grayscale(0%) brightness(1.1);
+}
+
+/* ================= */
+/* = Trending Sites = */
+/* ================= */
+
+.NB-dark .NB-trending-sites-view {
+    background-color: #191b1c;
+    background: linear-gradient(180deg, #1e2022 0%, #191b1c 100%);
+}
+
+.NB-dark .NB-trending-header {
+    background: linear-gradient(180deg, #1e2022 0%, #1e2022 80%, rgba(30, 32, 34, 0) 100%);
+}
+
+.NB-dark .NB-trending-header-title {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-trending-subtitle {
+    color: #808080;
+}
+
+.NB-dark .NB-trending-feed-badge {
+    background: #252D30;
+    border: 1px solid #3a4245;
+}
+
+.NB-dark .NB-trending-feed-badge:hover {
+    border-color: #4a5255;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-trending-feed-badge .NB-feed-badge {
+    background: linear-gradient(180deg, #303739 0%, #282d30 100%);
+    border-bottom: 1px solid #3a4245;
+}
+
+.NB-dark .NB-trending-time-selector {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-trending-error {
+    color: #E08080;
+    background-color: #2D2020;
+    border: 1px solid #4D3030;
+}
+
+/* ========================== */
+/* = Custom Folder Icons    = */
+/* ========================== */
+
+.NB-dark .NB-modal-folder-settings .NB-folder-icon-current-preview {
+    background: #333;
+    border-color: #444;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-preset:hover,
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-emoji-option:hover {
+    background: #404040;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-preset.NB-active,
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-emoji-option.NB-active {
+    background: #2A4A6A;
+    border-color: #4A9FFF;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-preset-label,
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-filled-label,
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-emoji-label {
+    color: #777;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-color.NB-active {
+    border-color: #FFF;
+    box-shadow: 0 0 0 1px #000;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-section {
+    border-bottom-color: #444;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button {
+    background: #2A2A2A;
+    border-color: #4A4A4A;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button::before {
+    background: linear-gradient(135deg, rgba(74, 144, 217, 0.08) 0%, rgba(74, 144, 217, 0) 60%);
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button:hover {
+    background: #333;
+    border-color: #5A9FE8;
+    box-shadow: 0 2px 8px rgba(74, 144, 217, 0.2);
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-button.NB-uploading {
+    background: #1E3A50;
+    border-color: #4A90D9;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-icon {
+    background: linear-gradient(135deg, #5A9FE8 0%, #4A8FD8 100%);
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-label {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview {
+    background: linear-gradient(135deg, #1B3D1F 0%, #243D27 100%);
+    border-color: #2E5233;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview img {
+    border-color: #333;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview span {
+    color: #81C784;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-preview span::before {
+    background-color: #81C784;
+}
+
+.NB-dark .NB-folder-icon-editor .NB-folder-icon-upload-error {
+    background: linear-gradient(135deg, #3D1B1B 0%, #4A2020 100%);
+    border-color: #5D2A2A;
+    color: #EF9A9A;
+}
+
+.NB-dark .NB-popover-section-folder-icon {
+    border-bottom-color: #444;
+}
+
+.NB-dark .NB-popover-section-folder-icon .NB-folder-icon-current-preview {
+    background: #333;
+    border-color: #444;
+}
+
+.NB-dark .NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button {
+    background: #333;
+    border-color: #555;
+    color: #DDD;
+}
+
+.NB-dark .NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button:hover {
+    background: #444;
+    border-color: #666;
 }
