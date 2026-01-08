@@ -781,25 +781,28 @@
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
     self.userProfileNavigationController = navController;
     self.userProfileNavigationController.navigationBar.translucent = NO;
-    
-    
-    // adding Done button
-    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Close"
-                                   style:UIBarButtonItemStyleDone
-                                   target:self
-                                   action:@selector(hideUserProfileModal)];
-    
-    newUserProfile.navigationItem.rightBarButtonItem = donebutton;
+
     newUserProfile.navigationItem.title = self.activeUserProfileName;
     newUserProfile.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [newUserProfile getUserProfile];
     if (!self.isPhone) {
+        // iPad: show as popover with Close button
+        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
+                                       initWithTitle:@"Close"
+                                       style:UIBarButtonItemStyleDone
+                                       target:self
+                                       action:@selector(hideUserProfileModal)];
+        newUserProfile.navigationItem.rightBarButtonItem = donebutton;
         [self showPopoverWithViewController:self.userProfileNavigationController contentSize:CGSizeMake(320, 454) sender:sender];
     } else {
+        // iPhone: show as sheet with grabber, no Close button needed
+        navController.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (navController.sheetPresentationController) {
+            navController.sheetPresentationController.prefersGrabberVisible = YES;
+        }
         [self.feedsNavigationController presentViewController:navController animated:YES completion:nil];
     }
-    
+
 }
 
 - (void)pushUserProfile {
