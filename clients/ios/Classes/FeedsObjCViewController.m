@@ -227,7 +227,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (@available(iOS 15.0, *)) {
         self.feedTitlesTable.sectionHeaderTopPadding = 0;
     }
-    
+
     self.currentRowAtIndexPath = nil;
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -332,6 +332,23 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.searchBar setShowsCancelButton:self.searchBar.text.length > 0 animated:YES];
     
 //    NSLog(@"Feed List timing 2: %f", [NSDate timeIntervalSinceReferenceDate] - start);
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+
+    // iOS 26+: Set content inset so feed list can scroll behind the transparent toolbar
+    if (@available(iOS 26.0, *)) {
+        CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
+        CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
+        CGFloat totalBottomInset = toolbarHeight + safeAreaBottom;
+
+        UIEdgeInsets currentInset = self.feedTitlesTable.contentInset;
+        if (currentInset.bottom != totalBottomInset) {
+            self.feedTitlesTable.contentInset = UIEdgeInsetsMake(currentInset.top, currentInset.left, totalBottomInset, currentInset.right);
+            self.feedTitlesTable.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, totalBottomInset, 0);
+        }
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -706,21 +723,23 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    settingsButton.accessibilityLabel = @"Settings";
 //    [settingsBarButton setCustomView:settingsButton];
     
-    UIImage *activityImage = [Utilities templateImageNamed:@"dialog-notifications" sized:32];
-    [self.activityButton removeFromSuperview];
-    self.activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    self.activityButton.accessibilityLabel = @"Activities";
-    [self.activityButton setImage:activityImage forState:UIControlStateNormal];
-    self.activityButton.tintColor = UIColorFromRGB(0x8F918B);
-    [self.activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
-    [self.activityButton addTarget:self
-                       action:@selector(showInteractionsPopover:)
-             forControlEvents:UIControlEventTouchUpInside];
-    activitiesButton = [[UIBarButtonItem alloc]
-                        initWithCustomView:self.activityButton];
-    activitiesButton.width = 32;
-//    self.activityButton.backgroundColor = UIColor.redColor;
-    self.navigationItem.rightBarButtonItem = activitiesButton;
+    // Activity button moved to sidebar as "Interactions" folder
+    // Keeping code commented for reference:
+    // UIImage *activityImage = [Utilities templateImageNamed:@"dialog-notifications" sized:32];
+    // [self.activityButton removeFromSuperview];
+    // self.activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+    // self.activityButton.accessibilityLabel = @"Activities";
+    // [self.activityButton setImage:activityImage forState:UIControlStateNormal];
+    // self.activityButton.tintColor = UIColorFromRGB(0x8F918B);
+    // [self.activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
+    // [self.activityButton addTarget:self
+    //                    action:@selector(showInteractionsPopover:)
+    //          forControlEvents:UIControlEventTouchUpInside];
+    // activitiesButton = [[UIBarButtonItem alloc]
+    //                     initWithCustomView:self.activityButton];
+    // activitiesButton.width = 32;
+    // self.navigationItem.rightBarButtonItem = activitiesButton;
+    self.navigationItem.rightBarButtonItem = nil;
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
@@ -871,7 +890,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     // Add Read Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"read_stories"];
     [appDelegate.dictFoldersArray addObject:@"read_stories"];
-    
+
     // Add Global Shared Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"river_global"];
     [appDelegate.dictFoldersArray addObject:@"river_global"];
@@ -1127,7 +1146,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [viewController addTitle:@"Notifications" iconName:@"dialog-notifications" iconColor:UIColorFromRGB(0xD58B4F) selectionShouldDismiss:YES handler:^{
         [self.appDelegate openNotificationsWithFeed:nil];
     }];
-    
+
+    [viewController addTitle:@"Interactions" iconName:@"icons8-activity-history-100.png" selectionShouldDismiss:YES handler:^{
+        [self showInteractionsPopover:nil];
+    }];
+
     [viewController addTitle:@"Find Friends" iconName:@"followers" iconColor:UIColorFromRGB(0x5FA1E7) selectionShouldDismiss:YES handler:^{
         [self.appDelegate showFindFriends];
     }];
@@ -1222,12 +1245,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
         return;
     }
-    
+
     CGSize size = CGSizeMake(self.view.frame.size.width - 36,
                              self.view.frame.size.height - 60);
-    
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.activitiesButton];
-    
+
+    // Use settings button as the popover anchor since activities button was removed from nav bar
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.settingsBarButton];
+
     [appDelegate.activitiesViewController refreshInteractions];
     [appDelegate.activitiesViewController refreshActivity];
 }
@@ -1343,8 +1367,20 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
     self.navigationController.toolbar.tintColor = [UIToolbar appearance].tintColor;
     self.navigationController.toolbar.barTintColor = [UIToolbar appearance].barTintColor;
-    self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
-    self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    if (@available(iOS 26.0, *)) {
+        // iOS 26 liquid glass style - transparent toolbar with blur effect
+        self.feedViewToolbar.translucent = YES;
+        UIToolbarAppearance *toolbarAppearance = [[UIToolbarAppearance alloc] init];
+        [toolbarAppearance configureWithTransparentBackground];
+        toolbarAppearance.backgroundEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
+        self.feedViewToolbar.standardAppearance = toolbarAppearance;
+        self.feedViewToolbar.scrollEdgeAppearance = toolbarAppearance;
+        self.feedViewToolbar.compactAppearance = toolbarAppearance;
+        self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
+    } else {
+        self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
+        self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    }
     self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
     self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
 #if TARGET_OS_MACCATALYST
@@ -2041,7 +2077,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     [self clearDashboard];
-    
+
     if ([folder isEqualToString:@"dashboard"]) {
         appDelegate.detailViewController.storyTitlesInDashboard = YES;
         [self loadDashboard];
