@@ -1,0 +1,18 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ktlint-gradle-check
+        name: ktlint (Gradle) - check
+        language: system
+        pass_filenames: false
+        entry: bash -c 'cd clients/android/NewsBlur && ./gradlew -q ktlintCheck'
+        files: ^clients/android/NewsBlur/.*\.(kt|kts)$
+
+      # Optional: run manually when you want auto-formatting
+      - id: ktlint-gradle-format
+        name: ktlint (Gradle) - format
+        language: system
+        pass_filenames: false
+        entry: bash -c 'cd clients/android/NewsBlur && ./gradlew -q ktlintFormat'
+        files: ^clients/android/NewsBlur/.*\.(kt|kts)$
+        stages: [manual]

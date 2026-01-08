@@ -12,32 +12,34 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class SampledQueue(
-        intervalMillis: Long = 250,
-        capacity: Int = 5,
-        scope: CoroutineScope = NBScope) {
-
+    intervalMillis: Long = 250,
+    capacity: Int = 5,
+    scope: CoroutineScope = NBScope,
+) {
     private val mutex = Mutex()
     private val queue = MutableSharedFlow<() -> Unit>(extraBufferCapacity = capacity, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     private var isOpen = true
 
     init {
-        queue.sample(intervalMillis)
-                .map { it }
-                .launchIn(scope)
+        queue
+            .sample(intervalMillis)
+            .map { it }
+            .launchIn(scope)
     }
 
-    fun add(action: () -> Unit) = runBlocking {
-        mutex.withLock {
-            if (!isOpen) return@runBlocking
-            queue.emit(action)
+    fun add(action: () -> Unit) =
+        runBlocking {
+            mutex.withLock {
+                if (!isOpen) return@runBlocking
+                queue.emit(action)
+            }
         }
-    }
 
-    fun close(): Unit = runBlocking {
-        mutex.withLock {
-            if (!isOpen) return@runBlocking
-            isOpen = false
+    fun close(): Unit =
+        runBlocking {
+            mutex.withLock {
+                if (!isOpen) return@runBlocking
+                isOpen = false
+            }
         }
-    }
-
 }

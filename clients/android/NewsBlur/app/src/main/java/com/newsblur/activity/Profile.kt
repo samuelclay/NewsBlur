@@ -8,9 +8,9 @@ import com.newsblur.R
 import com.newsblur.databinding.ActivityProfileBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.fragment.ProfileDetailsFragment
-import com.newsblur.network.APIManager
+import com.newsblur.network.UserApi
+import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.ImageLoader
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,9 +18,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class Profile : NbActivity() {
-
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var userApi: UserApi
 
     @Inject
     @IconLoader
@@ -36,15 +35,15 @@ class Profile : NbActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyView(binding)
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.profile), true)
 
-        userId = if (savedInstanceState == null) {
-            intent.getStringExtra(USER_ID)
-        } else {
-            savedInstanceState.getString(USER_ID)
-        }
-
+        userId =
+            if (savedInstanceState == null) {
+                intent.getStringExtra(USER_ID)
+            } else {
+                savedInstanceState.getString(USER_ID)
+            }
 
         if (supportFragmentManager.findFragmentByTag(detailsTag) == null) {
             val detailsTransaction = supportFragmentManager.beginTransaction()
@@ -65,38 +64,38 @@ class Profile : NbActivity() {
         userId?.let { savedInstanceState.putString(USER_ID, it) }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
             android.R.id.home -> {
                 finish()
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
-    }
 
     private fun loadUserDetails() {
         lifecycleScope.executeAsyncTask(
-                onPreExecute = {
-                    if (TextUtils.isEmpty(userId) && detailsFragment != null) {
-                        detailsFragment!!.setUser(this, PrefsUtils.getUserDetails(this), true)
-                    }
-                },
-                doInBackground = {
-                    if (!TextUtils.isEmpty(userId)) {
-                        val intentUserId = intent.getStringExtra(USER_ID)
-                        apiManager.getUser(intentUserId).user
-                    } else {
-                        apiManager.updateUserProfile()
-                        PrefsUtils.getUserDetails(this)
-                    }
-                },
-                onPostExecute = { userDetails ->
-                    if (userDetails != null && detailsFragment != null && activityDetailsPagerAdapter != null) {
-                        detailsFragment!!.setUser(this, userDetails, TextUtils.isEmpty(userId))
-                        activityDetailsPagerAdapter!!.setUser(userDetails, iconLoader)
-                    }
+            onPreExecute = {
+                if (userId.isNullOrEmpty() && detailsFragment != null) {
+                    detailsFragment!!.setUser(prefsRepo.getUserDetails(), true)
                 }
+            },
+            doInBackground = {
+                if (!userId.isNullOrEmpty()) {
+                    val intentUserId = intent.getStringExtra(USER_ID)
+                    userApi.getUser(intentUserId)?.user
+                } else {
+                    userApi.updateUserProfile()
+                    prefsRepo.getUserDetails()
+                }
+            },
+            onPostExecute = { userDetails ->
+                if (userDetails != null && detailsFragment != null && activityDetailsPagerAdapter != null) {
+                    detailsFragment!!.setUser(userDetails, TextUtils.isEmpty(userId))
+                    activityDetailsPagerAdapter!!.setUser(userDetails, iconLoader)
+                }
+            },
         )
     }
 

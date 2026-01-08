@@ -6,13 +6,16 @@ import android.app.job.JobScheduler
 import android.app.job.JobService
 import android.content.ComponentName
 import android.content.Context
+import com.newsblur.network.UserApi
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.subscription.SubscriptionsListener
 import com.newsblur.util.AppConstants
 import com.newsblur.util.Log
 import com.newsblur.util.NBScope
-import com.newsblur.util.PrefsUtils
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Service to sync user subscription with NewsBlur backend.
@@ -22,31 +25,48 @@ import kotlinx.coroutines.launch
  * This could occur when the user has renewed the subscription
  * via Play Store.
  */
+@AndroidEntryPoint
 class SubscriptionSyncService : JobService() {
+    @Inject
+    lateinit var userApi: UserApi
+
+    @Inject
+    lateinit var prefsRepo: PrefsRepo
+
+    @Inject
+    lateinit var syncServiceState: SyncServiceState
 
     override fun onStartJob(params: JobParameters?): Boolean {
         Log.d(this, "onStartJob")
-        if (!PrefsUtils.hasCookie(this)) {
+        if (!prefsRepo.hasCookie()) {
             // no user authenticated
             return false
         }
 
-        val subscriptionManager = SubscriptionManagerImpl(this@SubscriptionSyncService)
-        subscriptionManager.startBillingConnection(object : SubscriptionsListener {
-            override fun onBillingConnectionReady() {
-                NBScope.launch {
-                    subscriptionManager.syncActiveSubscription()
-                    Log.d(this, "sync active subscription completed.")
-                    // manually call jobFinished after work is done
+        val subscriptionManager =
+            SubscriptionManagerImpl(
+                context = this@SubscriptionSyncService,
+                syncServiceState = syncServiceState,
+                userApi = userApi,
+                prefRepository = prefsRepo,
+            )
+        subscriptionManager.startBillingConnection(
+            object : SubscriptionsListener {
+                override fun onBillingConnectionReady() {
+                    NBScope.launch {
+                        subscriptionManager.syncActiveSubscription()
+                        Log.d(this, "sync active subscription completed.")
+                        // manually call jobFinished after work is done
+                        jobFinished(params, false)
+                    }
+                }
+
+                override fun onBillingConnectionError(message: String?) {
+                    // manually call jobFinished on error
                     jobFinished(params, false)
                 }
-            }
-
-            override fun onBillingConnectionError(message: String?) {
-                // manually call jobFinished on error
-                jobFinished(params, false)
-            }
-        })
+            },
+        )
 
         return true // returning true due to background thread work
     }
@@ -54,12 +74,14 @@ class SubscriptionSyncService : JobService() {
     override fun onStopJob(params: JobParameters?): Boolean = false
 
     companion object {
-
         private const val JOB_ID = 2021
 
-        private fun createJobInfo(context: Context): JobInfo = JobInfo.Builder(JOB_ID,
-                ComponentName(context, SubscriptionSyncService::class.java))
-                .apply {
+        private fun createJobInfo(context: Context): JobInfo =
+            JobInfo
+                .Builder(
+                    JOB_ID,
+                    ComponentName(context, SubscriptionSyncService::class.java),
+                ).apply {
                     // sync every 24 hours
                     setPeriodic(AppConstants.BG_SUBSCRIPTION_SYNC_CYCLE_MILLIS)
                     setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
@@ -68,7 +90,7 @@ class SubscriptionSyncService : JobService() {
                 }.build()
 
         fun schedule(context: Context) {
-            val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            val jobScheduler = context.getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
             val job = jobScheduler.allPendingJobs.find { it.id == JOB_ID }
             if (job == null) {
                 val result: Int = jobScheduler.schedule(createJobInfo(context))
@@ -78,7 +100,7 @@ class SubscriptionSyncService : JobService() {
 
         @JvmStatic
         fun cancel(context: Context) {
-            val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            val jobScheduler = context.getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
             jobScheduler.allPendingJobs.find { it.id == JOB_ID }?.let {
                 jobScheduler.cancel(JOB_ID)
                 Log.d(this, "Cancel sync job.")

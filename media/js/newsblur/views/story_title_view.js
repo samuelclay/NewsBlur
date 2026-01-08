@@ -27,7 +27,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     render: function () {
         var template_name = 'template';
         var story_layout = this.options.override_layout || NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
-        var pane_anchor = this.options.override_layout ? "west" : NEWSBLUR.assets.preference('story_pane_anchor');
+        var pane_anchor = this.options.pane_anchor || (this.options.override_layout ? "west" : NEWSBLUR.assets.preference('story_pane_anchor'));
 
         if (this.options.is_list) template_name = "list_template";
         if (story_layout == 'split' && _.contains(['north', 'south'], pane_anchor)) template_name = "list_template";;
@@ -48,7 +48,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             show_content_preview: this.show_content_preview(template_name),
             show_image_preview: this.show_image_preview(),
             show_inline_author: story_layout == "list",
-            pane_anchor: this.options.override_layout ? "west" : NEWSBLUR.assets.preference('story_pane_anchor')
+            pane_anchor: this.options.pane_anchor || (this.options.override_layout ? "west" : NEWSBLUR.assets.preference('story_pane_anchor'))
         }));
         this.$st = this.$(".NB-story-title");
         this.toggle_classes();
@@ -76,7 +76,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <% } %>\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
-                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                        <%= $.favicon_html(feed) %>\
                         <span class="feed_title"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
@@ -125,7 +125,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <% } %>\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
-                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                        <%= $.favicon_html(feed) %>\
                         <span class="feed_title"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
@@ -166,7 +166,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             <div class="NB-storytitles-content">\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
-                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                        <%= $.favicon_html(feed) %>\
                         <span class="feed_title"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
@@ -209,7 +209,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             <div class="NB-storytitles-content">\
                 <% if (feed) { %>\
                     <div class="NB-story-feed">\
-                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                        <%= $.favicon_html(feed) %>\
                         <span class="feed_title"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
@@ -633,6 +633,23 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             if (this.options.in_popover && this.options.in_popover.close) {
                 this.options.in_popover.close();
             }
+        } else if (this.options.on_trending_feed) {
+            console.log(['clicked story in trending feed', this.model, this.options.on_trending_feed, this.options.in_trending_view]);
+            var feed = this.options.on_trending_feed.get("feed");
+            var is_subscribed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
+            if (is_subscribed) {
+                NEWSBLUR.reader.open_feed(this.model.get('story_feed_id'), {
+                    'story_id': this.model.get('story_hash'),
+                    'story_title': this.model.get('story_title')
+                });
+            } else {
+                NEWSBLUR.reader.load_feed_in_tryfeed_view(this.model.get('story_feed_id'), {
+                    'feed': feed,
+                    'select_story_in_feed': this.model.get('story_hash'),
+                    'story_title': this.model.get('story_title')
+                });
+            }
+            return;
         }
 
         if (_.contains(['list', 'grid', 'magazine'], this.options.override_layout ||

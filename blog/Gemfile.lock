@@ -36,6 +36,8 @@ GEM
       safe_yaml (~> 1.0)
       terminal-table (>= 1.8, < 4.0)
       webrick (~> 1.7)
+    jekyll-auto-image (1.1.3)
+      jekyll
     jekyll-feed (0.17.0)
       jekyll (>= 3.7, < 5.0)
     jekyll-paginate (1.1.0)
@@ -87,6 +89,7 @@ DEPENDENCIES
   bigdecimal (~> 3.1)
   csv (~> 3.3)
   jekyll (~> 4.3.4)
+  jekyll-auto-image
   jekyll-paginate (~> 1.1)
   jekyll-redirect-from (~> 0.16)
   logger (~> 1.6)

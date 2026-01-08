@@ -48,16 +48,12 @@ public class AppConstants {
     public static final long API_BACKGROUND_BACKOFF_MILLIS = 5L * 60L * 1000L;
 
     // timeouts for API calls, set to something more sane than the default of infinity
-    public static final long API_CONN_TIMEOUT_SECONDS = 30L;
-    public static final long API_READ_TIMEOUT_SECONDS = 120L;
+    public static final long API_CONN_TIMEOUT_SECONDS = 20L;
+    public static final long API_READ_TIMEOUT_SECONDS = 30L;
 
     // timeouts for image prefetching, which are a bit tighter, since they are only for caching
     public static final long IMAGE_PREFETCH_CONN_TIMEOUT_SECONDS = 10L;
     public static final long IMAGE_PREFETCH_READ_TIMEOUT_SECONDS = 30L;
-
-    // when generating a request for multiple feeds, limit the total number requested to prevent
-    // unworkably long URLs
-    public static final int MAX_FEED_LIST_SIZE = 250;
 
     // when reading stories, how many stories worth of buffer to keep loaded ahead of the user
     public static final int READING_STORY_PRELOAD = 10;
@@ -71,23 +67,16 @@ public class AppConstants {
     // link to app feedback page
     public static final String FEEDBACK_URL = "https://forum.newsblur.com/new-topic?title=Android%3A+&body=";
 
-    // how long to wait for sync threads to shutdown. ideally we would wait the max network timeout,
-    // but the system like to force-kill terminating services that take too long, so it is often
-    // moot to tune.
-    public final static long SHUTDOWN_SLACK_SECONDS = 60L;
-
-    // the maximum duty cycle for expensive background tasks. Tune to <1.0 to force sync loops
-    // to pause periodically and yield network/CPU to the foreground UI
-    public final static double MAX_BG_DUTY_CYCLE = 0.8;
-
-    // cap duty cycle backoffs to prevent unnecessarily large backoffs
-    public final static long DUTY_CYCLE_BACKOFF_CAP_MILLIS = 5L * 1000L;
-
     // link to the web-based forgot password flow
     public final static String FORGOT_PASWORD_URL = "http://www.newsblur.com/folder_rss/forgot_password";
 
     // Shiloh photo
     public final static String LYRIC_PHOTO_URL = "https://newsblur.com/media//img/reader/lyric.jpg";
+
+    public final static String READING_BASE_URL = "https://appassets.androidplatform.net/assets/";
+    public final static String READING_IMAGES_PATH = "/images/";
+    public final static String READING_ASSETS_PATH = "/assets/";
+    public final static String READING_RES_PATH = "/res/";
 
     // Subscription SKU
     public final static String PREMIUM_SUB_ID = "nb.premium.36";
@@ -110,5 +99,7 @@ public class AppConstants {
     public static final String READ_STORIES_GROUP_KEY = "READ_STORIES_GROUP_KEY";
     public static final String SAVED_STORIES_GROUP_KEY = "SAVED_STORIES_GROUP_KEY";
     public static final String SAVED_SEARCHES_GROUP_KEY = "SAVED_SEARCHES_GROUP_KEY";
+
+    public static final String CLASSIFIERS_FEED_ID_PLACEHOLDER = "-1";
 
 }
