@@ -95,6 +95,41 @@ body {
     background: #4A78B8;
 }
 
+.login-button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 240px;
+}
+
+.login-input {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.login-input:focus {
+    border-color: #5C89C9;
+}
+
+.login-error {
+    color: #d32f2f;
+    font-size: 12px;
+    text-align: center;
+    padding: 8px;
+    background: #ffebee;
+    border-radius: 4px;
+}
+
 /* Main Section */
 .main-section {
     flex: 1;
@@ -389,6 +424,30 @@ body {
 
 .footer-divider {
     color: #ddd;
+}
+
+/* Server Badge */
+.server-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #888;
+    cursor: default;
+}
+
+.server-icon {
+    color: #43a047;
+    font-size: 8px;
+}
+
+.server-badge.custom .server-icon {
+    color: #ff9800;
+}
+
+.server-name {
+    font-family: monospace;
+    font-size: 10px;
 }
 
 /* Scrollbar styling */

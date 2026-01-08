@@ -20272,6 +20272,30 @@ form.opml_import_form input {
     color: #5C89C9;
 }
 
+.NB-archive-item-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+}
+
+.NB-archive-item-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.NB-archive-stat-value {
+    font-weight: 500;
+    color: #666;
+}
+
+.NB-archive-item-stat.NB-no-content {
+    color: #999;
+    font-style: italic;
+}
+
 .NB-archive-item-categories {
     display: flex;
     gap: 6px;
@@ -20533,6 +20557,14 @@ form.opml_import_form input {
 
 .NB-dark .NB-archive-item-category {
     background: #333;
+}
+
+.NB-dark .NB-archive-item-stats {
+    color: #888;
+}
+
+.NB-dark .NB-archive-stat-value {
+    color: #AAA;
 }
 
 .NB-dark .NB-archive-load-more {

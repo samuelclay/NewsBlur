@@ -16,6 +16,7 @@ from django.views.decorators.http import require_http_methods
 from apps.archive_extension.blocklist import get_blocked_domains, get_blocked_patterns, is_blocked
 from apps.archive_extension.matching import match_and_process
 from apps.archive_extension.models import MArchivedStory, MArchiveUserSettings
+from apps.archive_extension.tasks import index_archive_for_search
 from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
@@ -126,6 +127,9 @@ def ingest(request):
             user_settings.total_archived = (user_settings.total_archived or 0) + 1
             user_settings.last_archive_date = datetime.now()
             user_settings.save()
+
+        # Queue Elasticsearch indexing for full-text search
+        index_archive_for_search.delay(str(result["archive"].id))
 
         return _json_response(
             {
@@ -243,6 +247,9 @@ def batch_ingest(request):
             processed += 1
             if result["created"]:
                 created_count += 1
+
+            # Queue Elasticsearch indexing for full-text search
+            index_archive_for_search.delay(str(result["archive"].id))
 
         except Exception as e:
             logging.error(f"Error ingesting archive {url}: {e}")
@@ -670,6 +677,24 @@ def export_archives(request):
 
 def _serialize_archive(archive, include_content=False):
     """Serialize an MArchivedStory to a dict for JSON response."""
+    # Calculate word count from content length (rough estimate: ~5 chars per word)
+    word_count = 0
+    if archive.content_length:
+        word_count = archive.content_length // 5
+
+    # Calculate file size (compressed content + metadata overhead)
+    file_size_bytes = 0
+    if archive.content_z:
+        file_size_bytes = len(archive.content_z)
+
+    # Format file size for display
+    if file_size_bytes < 1024:
+        file_size_display = f"{file_size_bytes} B"
+    elif file_size_bytes < 1024 * 1024:
+        file_size_display = f"{file_size_bytes / 1024:.1f} KB"
+    else:
+        file_size_display = f"{file_size_bytes / (1024 * 1024):.1f} MB"
+
     data = {
         "id": str(archive.id),
         "url": archive.url,
@@ -682,6 +707,12 @@ def _serialize_archive(archive, include_content=False):
         "visit_count": archive.visit_count,
         "time_on_page_seconds": archive.time_on_page_seconds,
         "content_length": archive.content_length,
+        "content_length_display": f"{archive.content_length:,}" if archive.content_length else "0",
+        "word_count": word_count,
+        "word_count_display": f"{word_count:,}" if word_count else "0",
+        "file_size_bytes": file_size_bytes,
+        "file_size_display": file_size_display,
+        "has_content": bool(archive.content_z),
         "matched": archive.matched_story_hash is not None,
         "matched_story_hash": archive.matched_story_hash,
         "matched_feed_id": archive.matched_feed_id,

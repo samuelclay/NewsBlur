@@ -153,5 +153,30 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true; // Keep message channel open for async response
 });
 
+// Listen for OAuth token messages from the callback page
+window.addEventListener('message', (event) => {
+    // Only accept messages from the same frame
+    if (event.source !== window) return;
+
+    // Check if this is our OAuth token message
+    if (event.data && event.data.type === 'NEWSBLUR_ARCHIVE_TOKEN') {
+        console.log('NewsBlur Archive: Received token from callback page');
+
+        // Relay the token to the service worker
+        chrome.runtime.sendMessage({
+            action: 'setToken',
+            token: event.data.accessToken,
+            refreshToken: event.data.refreshToken,
+            expiresIn: event.data.expiresIn
+        }, (response) => {
+            if (response && response.success) {
+                console.log('NewsBlur Archive: Token saved successfully');
+            } else {
+                console.error('NewsBlur Archive: Failed to save token');
+            }
+        });
+    }
+});
+
 // Log that the content script is loaded
 console.log('NewsBlur Archive: Content script loaded');

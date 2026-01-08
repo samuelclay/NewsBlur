@@ -7,12 +7,15 @@
     "storage",
     "tabs",
     "activeTab",
-    "alarms"
+    "alarms",
+    "webNavigation",
+    "identity"
   ],
   "host_permissions": [
     "https://newsblur.com/*",
     "https://*.newsblur.com/*",
     "https://localhost/*",
+    "http://localhost/*",
     "<all_urls>"
   ],
   "background": {

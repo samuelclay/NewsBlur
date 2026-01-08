@@ -1,6 +1,6 @@
 // NewsBlur Archive Extension - Options Page Script
 
-import { API_BASE_URL, OAUTH_CONFIG, DEFAULT_BLOCKED_DOMAINS, STORAGE_KEYS } from '../shared/constants.js';
+import { DEFAULT_SERVER_URL, OAUTH_CONFIG, DEFAULT_BLOCKED_DOMAINS, STORAGE_KEYS, getOAuthAuthorizeUrl } from '../shared/constants.js';
 import { extractDomain, getExtensionAPI, getExtensionVersion } from '../shared/utils.js';
 import { NewsBlurAPI } from '../lib/api.js';
 import { Storage } from '../lib/storage.js';
@@ -18,6 +18,7 @@ let elements = {};
 async function init() {
     cacheElements();
     setupEventListeners();
+    await loadServerConfig();
     await loadSettings();
     await loadAccountStatus();
     await loadBlocklist();
@@ -30,6 +31,13 @@ async function init() {
  */
 function cacheElements() {
     elements = {
+        // Server
+        serverProduction: document.getElementById('serverProduction'),
+        serverCustom: document.getElementById('serverCustom'),
+        customServerRow: document.getElementById('customServerRow'),
+        customServerUrl: document.getElementById('customServerUrl'),
+        currentServerDisplay: document.getElementById('currentServerDisplay'),
+
         // Account
         accountStatus: document.getElementById('accountStatus'),
         connectButton: document.getElementById('connectButton'),
@@ -59,6 +67,12 @@ function cacheElements() {
  * Set up event listeners
  */
 function setupEventListeners() {
+    // Server configuration
+    elements.serverProduction.addEventListener('change', handleServerModeChange);
+    elements.serverCustom.addEventListener('change', handleServerModeChange);
+    elements.customServerUrl.addEventListener('change', handleCustomUrlChange);
+    elements.customServerUrl.addEventListener('blur', handleCustomUrlChange);
+
     // Account buttons
     elements.connectButton.addEventListener('click', handleConnect);
     elements.disconnectButton.addEventListener('click', handleDisconnect);
@@ -79,6 +93,91 @@ function setupEventListeners() {
     // Data actions
     elements.syncNow.addEventListener('click', handleSyncNow);
     elements.clearData.addEventListener('click', handleClearData);
+}
+
+/**
+ * Load server configuration
+ */
+async function loadServerConfig() {
+    const useCustom = await storage.getUseCustomServer();
+    const customUrl = await storage.getCustomServerUrl();
+
+    if (useCustom) {
+        elements.serverCustom.checked = true;
+        elements.customServerRow.classList.remove('hidden');
+    } else {
+        elements.serverProduction.checked = true;
+        elements.customServerRow.classList.add('hidden');
+    }
+
+    if (customUrl) {
+        elements.customServerUrl.value = customUrl;
+    }
+
+    updateServerDisplay();
+}
+
+/**
+ * Update the server display text
+ */
+async function updateServerDisplay() {
+    const serverUrl = await storage.getServerUrl();
+    try {
+        const url = new URL(serverUrl);
+        elements.currentServerDisplay.textContent = url.host;
+    } catch (e) {
+        elements.currentServerDisplay.textContent = serverUrl;
+    }
+}
+
+/**
+ * Handle server mode change (production vs custom)
+ */
+async function handleServerModeChange(event) {
+    const useCustom = event.target.value === 'custom';
+
+    if (useCustom) {
+        elements.customServerRow.classList.remove('hidden');
+    } else {
+        elements.customServerRow.classList.add('hidden');
+    }
+
+    await storage.setUseCustomServer(useCustom);
+    await updateServerDisplay();
+
+    // Notify background script of server change
+    extApi.runtime.sendMessage({
+        action: 'serverChanged'
+    });
+}
+
+/**
+ * Handle custom URL change
+ */
+async function handleCustomUrlChange() {
+    let url = elements.customServerUrl.value.trim();
+
+    if (!url) {
+        return;
+    }
+
+    // Add https:// if no protocol
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+        elements.customServerUrl.value = url;
+    }
+
+    // Remove trailing slash
+    url = url.replace(/\/+$/, '');
+    elements.customServerUrl.value = url;
+
+    await storage.setCustomServerUrl(url);
+    await updateServerDisplay();
+
+    // Notify background script of server change
+    extApi.runtime.sendMessage({
+        action: 'serverChanged'
+    });
 }
 
 /**
@@ -229,8 +328,9 @@ async function handleConnect() {
         elements.connectButton.disabled = true;
         elements.connectButton.textContent = 'Connecting...';
 
+        const serverUrl = await storage.getServerUrl();
         const redirectUri = extApi.identity.getRedirectURL();
-        const authUrl = new URL(OAUTH_CONFIG.AUTHORIZE_URL);
+        const authUrl = new URL(getOAuthAuthorizeUrl(serverUrl));
         authUrl.searchParams.set('client_id', OAUTH_CONFIG.CLIENT_ID);
         authUrl.searchParams.set('redirect_uri', redirectUri);
         authUrl.searchParams.set('response_type', 'token');

@@ -63,7 +63,7 @@ export function extractDomain(url) {
     try {
         const urlObj = new URL(url);
         return urlObj.hostname.toLowerCase();
-    } catch {
+    } catch (e) {
         return '';
     }
 }
@@ -141,7 +141,7 @@ export function normalizeUrl(url) {
         }
 
         return urlObj.toString();
-    } catch {
+    } catch (e) {
         return url;
     }
 }
