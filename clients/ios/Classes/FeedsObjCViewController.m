@@ -3029,7 +3029,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     int xOffset = 50;
-    int yOffset = isShort ? 0 : 6;
+    int yOffset = isShort ? 0 : 12;
     
     self.userInfoView = [[UIView alloc]
                          initWithFrame:CGRectMake(0, 0,
@@ -3053,6 +3053,9 @@ heightForHeaderInSection:(NSInteger)section {
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
     UIEdgeInsets insets = UIEdgeInsetsMake(0, -10, 10, 0);
     userAvatarButton.contentEdgeInsets = insets;
+    CGRect avatarFrame = userAvatarButton.frame;
+    avatarFrame.origin.y = yOffset;
+    userAvatarButton.frame = avatarFrame;
 #endif
 //    userAvatarButton.backgroundColor = UIColor.blueColor;
     
