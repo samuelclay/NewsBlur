@@ -261,7 +261,7 @@
     }
     
     [self registerBackgroundTask];
-    
+
     return YES;
 }
 
@@ -781,25 +781,28 @@
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
     self.userProfileNavigationController = navController;
     self.userProfileNavigationController.navigationBar.translucent = NO;
-    
-    
-    // adding Done button
-    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Close"
-                                   style:UIBarButtonItemStyleDone
-                                   target:self
-                                   action:@selector(hideUserProfileModal)];
-    
-    newUserProfile.navigationItem.rightBarButtonItem = donebutton;
+
     newUserProfile.navigationItem.title = self.activeUserProfileName;
     newUserProfile.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [newUserProfile getUserProfile];
     if (!self.isPhone) {
+        // iPad: show as popover with Close button
+        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
+                                       initWithTitle:@"Close"
+                                       style:UIBarButtonItemStyleDone
+                                       target:self
+                                       action:@selector(hideUserProfileModal)];
+        newUserProfile.navigationItem.rightBarButtonItem = donebutton;
         [self showPopoverWithViewController:self.userProfileNavigationController contentSize:CGSizeMake(320, 454) sender:sender];
     } else {
+        // iPhone: show as sheet with grabber, no Close button needed
+        navController.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (navController.sheetPresentationController) {
+            navController.sheetPresentationController.prefersGrabberVisible = YES;
+        }
         [self.feedsNavigationController presentViewController:navController animated:YES completion:nil];
     }
-    
+
 }
 
 - (void)pushUserProfile {
@@ -3960,9 +3963,24 @@
         } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
             titleImage = [UIImage imageNamed:@"saved-stories"];
         } else if (storiesCollection.isRiverView) {
-            titleImage = [UIImage imageNamed:@"folder-open"];
+            // Check for custom folder icon
+            NSString *folderName = storiesCollection.activeFolder;
+            NSDictionary *customIcon = self.dictFolderIcons[folderName];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+            }
+            if (!titleImage) {
+                titleImage = [UIImage imageNamed:@"folder-open"];
+            }
         } else {
-            titleImage = [self getFavicon:feedIdStr];
+            // Check for custom feed icon
+            NSDictionary *customIcon = self.dictFeedIcons[feedIdStr];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+            }
+            if (!titleImage) {
+                titleImage = [self getFavicon:feedIdStr];
+            }
         }
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
@@ -4017,6 +4035,14 @@
     } else if ([folder isEqualToString:@"saved_stories"]) {
         return [UIImage imageNamed:@"saved-stories"];
     } else {
+        // Check for custom folder icon
+        NSDictionary *customIcon = self.dictFolderIcons[folder];
+        if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+            UIImage *customImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(20, 20)];
+            if (customImage) {
+                return customImage;
+            }
+        }
         return [UIImage imageNamed:@"folder-open"];
     }
 }

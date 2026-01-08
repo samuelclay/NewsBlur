@@ -46,7 +46,7 @@
     self.profileTable.delegate = self;
     self.profileTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.profileTable.backgroundView = nil;
-    self.profileTable.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.profileTable.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x333333, 0x111111);
     
 //    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     ProfileBadge *badge = [[ProfileBadge alloc] init];
@@ -60,9 +60,15 @@
     self.view.frame = vb;
     self.profileTable.frame = vb;
     self.profileBadge.frame = CGRectMake(0, 0, vb.size.width, 140);
-    
-    self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
-    self.profileTable.backgroundColor = UIColorFromRGB(0xd7dadf);
+
+    self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xd7dadf, 0xE8DED0, 0x333333, 0x111111);
+    self.profileTable.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xd7dadf, 0xE8DED0, 0x333333, 0x111111);
+
+    // Fix white bar above navigation bar (same fix as DetailViewController.tidyNavigationController)
+    UIView *navBarFirstSubview = self.navigationController.navigationBar.subviews.firstObject;
+    if (navBarFirstSubview) {
+        navBarFirstSubview.backgroundColor = [UINavigationBar appearance].backgroundColor;
+    }
 }
 
 //- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -210,6 +216,14 @@
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         [cell refreshWithWidth:vb.size.width];
         return cell;
+    }
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayHeaderView:(UIView *)view forSection:(NSInteger)section {
+    if ([view isKindOfClass:[UITableViewHeaderFooterView class]]) {
+        UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)view;
+        header.contentView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xf4f4f4, 0xF3E2CB, 0x333333, 0x222222);
+        header.textLabel.textColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
     }
 }
 

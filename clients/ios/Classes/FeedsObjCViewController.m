@@ -227,7 +227,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (@available(iOS 15.0, *)) {
         self.feedTitlesTable.sectionHeaderTopPadding = 0;
     }
-    
+
     self.currentRowAtIndexPath = nil;
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -334,6 +334,23 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    NSLog(@"Feed List timing 2: %f", [NSDate timeIntervalSinceReferenceDate] - start);
 }
 
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+
+    // iOS 26+: Set content inset so feed list can scroll behind the transparent toolbar
+    if (@available(iOS 26.0, *)) {
+        CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
+        CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
+        CGFloat totalBottomInset = toolbarHeight + safeAreaBottom;
+
+        UIEdgeInsets currentInset = self.feedTitlesTable.contentInset;
+        if (currentInset.bottom != totalBottomInset) {
+            self.feedTitlesTable.contentInset = UIEdgeInsetsMake(currentInset.top, currentInset.left, totalBottomInset, currentInset.right);
+            self.feedTitlesTable.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, totalBottomInset, 0);
+        }
+    }
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 //    self.navigationController.navigationBar.backItem.title = @"All Sites";
@@ -374,7 +391,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
 //    NSLog(@"Show feeds after being read (%@): %d / %@ -> %@", feedIdStr, [preferences boolForKey:@"show_feeds_after_being_read"], [self.stillVisibleFeeds objectForKey:feedIdStr], self.stillVisibleFeeds);
-    NSIndexPath *visiblePath = [self.stillVisibleFeeds objectForKey:feedIdStr];
+    id visiblePathValue = [self.stillVisibleFeeds objectForKey:feedIdStr];
+    // Ensure visiblePath is actually an NSIndexPath (not a boolean marker from NewsBlurAppDelegate)
+    NSIndexPath *visiblePath = [visiblePathValue isKindOfClass:[NSIndexPath class]] ? visiblePathValue : nil;
     if (visiblePath) {
         [self.feedTitlesTable beginUpdates];
         NSMutableArray *paths = (indexPath.section == visiblePath.section &&
@@ -507,6 +526,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (BOOL)canBecomeFirstResponder {
     return YES;
 }
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+    [super buildMenuWithBuilder:builder];
+}
+
 
 #pragma mark -
 #pragma mark State Restoration
@@ -699,21 +723,23 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    settingsButton.accessibilityLabel = @"Settings";
 //    [settingsBarButton setCustomView:settingsButton];
     
-    UIImage *activityImage = [Utilities templateImageNamed:@"dialog-notifications" sized:32];
-    [self.activityButton removeFromSuperview];
-    self.activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    self.activityButton.accessibilityLabel = @"Activities";
-    [self.activityButton setImage:activityImage forState:UIControlStateNormal];
-    self.activityButton.tintColor = UIColorFromRGB(0x8F918B);
-    [self.activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
-    [self.activityButton addTarget:self
-                       action:@selector(showInteractionsPopover:)
-             forControlEvents:UIControlEventTouchUpInside];
-    activitiesButton = [[UIBarButtonItem alloc]
-                        initWithCustomView:self.activityButton];
-    activitiesButton.width = 32;
-//    self.activityButton.backgroundColor = UIColor.redColor;
-    self.navigationItem.rightBarButtonItem = activitiesButton;
+    // Activity button moved to sidebar as "Interactions" folder
+    // Keeping code commented for reference:
+    // UIImage *activityImage = [Utilities templateImageNamed:@"dialog-notifications" sized:32];
+    // [self.activityButton removeFromSuperview];
+    // self.activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+    // self.activityButton.accessibilityLabel = @"Activities";
+    // [self.activityButton setImage:activityImage forState:UIControlStateNormal];
+    // self.activityButton.tintColor = UIColorFromRGB(0x8F918B);
+    // [self.activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
+    // [self.activityButton addTarget:self
+    //                    action:@selector(showInteractionsPopover:)
+    //          forControlEvents:UIControlEventTouchUpInside];
+    // activitiesButton = [[UIBarButtonItem alloc]
+    //                     initWithCustomView:self.activityButton];
+    // activitiesButton.width = 32;
+    // self.navigationItem.rightBarButtonItem = activitiesButton;
+    self.navigationItem.rightBarButtonItem = nil;
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
@@ -782,7 +808,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [appDelegate.dictFeeds addEntriesFromDictionary:appDelegate.dictInactiveFeeds];
     [appDelegate populateDictUnreadCounts];
     [appDelegate populateDictTextFeeds];
-    
+
+    // Store custom folder and feed icons
+    appDelegate.dictFolderIcons = [results objectForKey:@"folder_icons"];
+    appDelegate.dictFeedIcons = [results objectForKey:@"feed_icons"];
+
     NSString *sortOrder = [userPreferences stringForKey:@"feed_list_sort_order"];
     BOOL sortByMostUsed = [sortOrder isEqualToString:@"usage"];
     
@@ -860,7 +890,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     // Add Read Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"read_stories"];
     [appDelegate.dictFoldersArray addObject:@"read_stories"];
-    
+
     // Add Global Shared Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"river_global"];
     [appDelegate.dictFoldersArray addObject:@"river_global"];
@@ -1116,7 +1146,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [viewController addTitle:@"Notifications" iconName:@"dialog-notifications" iconColor:UIColorFromRGB(0xD58B4F) selectionShouldDismiss:YES handler:^{
         [self.appDelegate openNotificationsWithFeed:nil];
     }];
-    
+
+    [viewController addTitle:@"Interactions" iconName:@"icons8-activity-history-100.png" selectionShouldDismiss:YES handler:^{
+        [self showInteractionsPopover:nil];
+    }];
+
     [viewController addTitle:@"Find Friends" iconName:@"followers" iconColor:UIColorFromRGB(0x5FA1E7) selectionShouldDismiss:YES handler:^{
         [self.appDelegate showFindFriends];
     }];
@@ -1211,12 +1245,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
         return;
     }
-    
+
     CGSize size = CGSizeMake(self.view.frame.size.width - 36,
                              self.view.frame.size.height - 60);
-    
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.activitiesButton];
-    
+
+    // Use settings button as the popover anchor since activities button was removed from nav bar
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.settingsBarButton];
+
     [appDelegate.activitiesViewController refreshInteractions];
     [appDelegate.activitiesViewController refreshActivity];
 }
@@ -1332,10 +1367,22 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
     self.navigationController.toolbar.tintColor = [UIToolbar appearance].tintColor;
     self.navigationController.toolbar.barTintColor = [UIToolbar appearance].barTintColor;
-    self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
-    self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
-    self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
-    self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
+    if (@available(iOS 26.0, *)) {
+        // iOS 26 liquid glass style - transparent toolbar with blur effect
+        self.feedViewToolbar.translucent = YES;
+        UIToolbarAppearance *toolbarAppearance = [[UIToolbarAppearance alloc] init];
+        [toolbarAppearance configureWithTransparentBackground];
+        toolbarAppearance.backgroundEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
+        self.feedViewToolbar.standardAppearance = toolbarAppearance;
+        self.feedViewToolbar.scrollEdgeAppearance = toolbarAppearance;
+        self.feedViewToolbar.compactAppearance = toolbarAppearance;
+        self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
+    } else {
+        self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
+        self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    }
+    self.addBarButton.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xcccccc, 0x8F918B);
+    self.settingsBarButton.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xcccccc, 0x8F918B);
 #if TARGET_OS_MACCATALYST
     if (ThemeManager.themeManager.isLikeSystem) {
         self.view.backgroundColor = UIColor.clearColor;
@@ -1629,7 +1676,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
                          [appDelegate.dictSavedStoryTags objectForKey:feedIdStr] :
                          [appDelegate.dictFeeds objectForKey:feedIdStr];
     NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
-    cell.feedFavicon = [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
+
+    // Check for custom feed icon (only for regular feeds, not social or saved)
+    UIImage *customFeedIcon = nil;
+    if (!isSocial && !isSaved) {
+        NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+        if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+            customFeedIcon = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+        }
+    }
+    cell.feedFavicon = customFeedIcon ?: [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
+
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.isSocial      = isSocial;
     cell.isSearch      = isSavedSearch;
@@ -2020,7 +2077,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     [self clearDashboard];
-    
+
     if ([folder isEqualToString:@"dashboard"]) {
         appDelegate.detailViewController.storyTitlesInDashboard = YES;
         [self loadDashboard];
@@ -2442,21 +2499,74 @@ heightForHeaderInSection:(NSInteger)section {
     [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:button.tag]
                         withRowAnimation:UITableViewRowAnimationFade];
     [self.feedTitlesTable endUpdates];
-    
-//    // Scroll to section header if collapse causes it to scroll far off screen
-//    NSArray *indexPathsVisibleCells = [self.feedTitlesTable indexPathsForVisibleRows];
-//    BOOL firstFeedInFolderVisible = NO;
-//    for (NSIndexPath *indexPath in indexPathsVisibleCells) {
-//        if (indexPath.row == 0 && indexPath.section == button.tag) {
-//            firstFeedInFolderVisible = YES;
-//        }
-//    }
-//    if (!firstFeedInFolderVisible) {
-//        CGRect headerRect = [self.feedTitlesTable rectForHeaderInSection:button.tag];
-//        CGPoint headerPoint = CGPointMake(headerRect.origin.x, headerRect.origin.y);
-////        [self.feedTitlesTable setContentOffset:headerPoint animated:YES];
-//    }
-    
+
+    [self updateAllStoriesCollapseButton];
+}
+
+- (BOOL)anyFolderExpanded {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    for (NSString *folderName in appDelegate.dictFoldersArray) {
+        // Skip special folders that don't have collapse functionality
+        if ([folderName isEqualToString:@"dashboard"] ||
+            [folderName isEqualToString:@"everything"] ||
+            [folderName isEqualToString:@"infrequent"] ||
+            [folderName isEqualToString:@"saved_stories"] ||
+            [folderName isEqualToString:@"saved_searches"] ||
+            [folderName isEqualToString:@"read_stories"] ||
+            [folderName isEqualToString:@"interactions"] ||
+            [folderName isEqualToString:@"river_global"] ||
+            [folderName isEqualToString:@"river_blurblogs"] ||
+            [folderName isEqualToString:@"widget_stories"]) {
+            continue;
+        }
+
+        NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
+        if (![userPreferences boolForKey:collapseKey]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (void)didToggleAllFolders:(UIButton *)button {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL shouldCollapse = [self anyFolderExpanded];
+    NSMutableIndexSet *sectionsToReload = [NSMutableIndexSet indexSet];
+
+    for (NSInteger i = 0; i < appDelegate.dictFoldersArray.count; i++) {
+        NSString *folderName = appDelegate.dictFoldersArray[i];
+        // Skip special folders that don't have collapse functionality
+        if ([folderName isEqualToString:@"dashboard"] ||
+            [folderName isEqualToString:@"everything"] ||
+            [folderName isEqualToString:@"infrequent"] ||
+            [folderName isEqualToString:@"saved_stories"] ||
+            [folderName isEqualToString:@"saved_searches"] ||
+            [folderName isEqualToString:@"read_stories"] ||
+            [folderName isEqualToString:@"interactions"] ||
+            [folderName isEqualToString:@"river_global"] ||
+            [folderName isEqualToString:@"river_blurblogs"] ||
+            [folderName isEqualToString:@"widget_stories"]) {
+            continue;
+        }
+
+        NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
+        [userPreferences setBool:shouldCollapse forKey:collapseKey];
+        [sectionsToReload addIndex:i];
+    }
+    [userPreferences synchronize];
+    appDelegate.collapsedFolders = nil;
+
+    [self resetRowHeights];
+    [self.feedTitlesTable beginUpdates];
+    [self.feedTitlesTable reloadSections:sectionsToReload withRowAnimation:UITableViewRowAnimationFade];
+    [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:NewsBlurTopSectionAllStories]
+                        withRowAnimation:UITableViewRowAnimationNone];
+    [self.feedTitlesTable endUpdates];
+}
+
+- (void)updateAllStoriesCollapseButton {
+    [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:NewsBlurTopSectionAllStories]
+                        withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)expandFolderIfNecessary:(NSString *)folderName {
@@ -3008,7 +3118,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     int xOffset = 50;
-    int yOffset = isShort ? 0 : 6;
+    int yOffset = isShort ? 0 : 12;
     
     self.userInfoView = [[UIView alloc]
                          initWithFrame:CGRectMake(0, 0,
@@ -3032,6 +3142,9 @@ heightForHeaderInSection:(NSInteger)section {
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
     UIEdgeInsets insets = UIEdgeInsetsMake(0, -10, 10, 0);
     userAvatarButton.contentEdgeInsets = insets;
+    CGRect avatarFrame = userAvatarButton.frame;
+    avatarFrame.origin.y = yOffset;
+    userAvatarButton.frame = avatarFrame;
 #endif
 //    userAvatarButton.backgroundColor = UIColor.blueColor;
     

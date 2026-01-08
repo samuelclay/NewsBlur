@@ -275,11 +275,26 @@
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 titleImage = [UIImage imageNamed:@"saved-stories"];
             } else if (appDelegate.storiesCollection.isRiverView) {
-                titleImage = [UIImage imageNamed:@"folder-open"];
+                // Check for custom folder icon
+                NSString *folderName = appDelegate.storiesCollection.activeFolder;
+                NSDictionary *customIcon = appDelegate.dictFolderIcons[folderName];
+                if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                    titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(22, 22)];
+                }
+                if (!titleImage) {
+                    titleImage = [UIImage imageNamed:@"folder-open"];
+                }
             } else {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                        [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-                titleImage = [appDelegate getFavicon:feedIdStr];
+                // Check for custom feed icon
+                NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+                if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                    titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+                }
+                if (!titleImage) {
+                    titleImage = [appDelegate getFavicon:feedIdStr];
+                }
             }
             
             UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
@@ -300,7 +315,15 @@
         } else {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                    [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
-            UIImage *titleImage  = [appDelegate getFavicon:feedIdStr];
+            UIImage *titleImage = nil;
+            // Check for custom feed icon
+            NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(28, 28)];
+            }
+            if (!titleImage) {
+                titleImage = [appDelegate getFavicon:feedIdStr];
+            }
             titleImage = [Utilities roundCorneredImage:titleImage radius:6];
             
             UIImageView *titleImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -729,7 +752,7 @@
     [super updateTheme];
     
     self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
-    self.navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x222222, 0x111111);
+    self.navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x222222, 0x111111);
     self.navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
     self.view.backgroundColor = UIColorFromLightDarkRGB(0xe0e0e0, 0x111111);
     
