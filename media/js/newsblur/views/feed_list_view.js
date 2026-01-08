@@ -62,6 +62,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         $('.NB-feeds-header-read .NB-feeds-header-icon').attr('src', $.favicon('read'));
         $('.NB-feeds-header-searches .NB-feeds-header-icon').attr('src', $.favicon('searches'));
         $('.NB-feeds-header-starred .NB-feeds-header-icon').attr('src', $.favicon('starred'));
+        $('.NB-feeds-header-archive .NB-feeds-header-icon').attr('src', $.favicon('archive'));
     },
 
     make_feeds: function (options) {
@@ -198,6 +199,19 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             }).animate({ 'opacity': 1 }, { 'duration': 700 });
         } else {
             $('.NB-feeds-header-river-trending-container').css({
+                'display': 'none',
+                'opacity': 0
+            });
+        }
+
+        // Show Archive folder for premium archive users
+        if (NEWSBLUR.Globals.is_archive) {
+            $('.NB-feeds-header-archive-container').css({
+                'display': 'block',
+                'opacity': 0
+            }).animate({ 'opacity': 1 }, { 'duration': 700 });
+        } else {
+            $('.NB-feeds-header-archive-container').css({
                 'display': 'none',
                 'opacity': 0
             });

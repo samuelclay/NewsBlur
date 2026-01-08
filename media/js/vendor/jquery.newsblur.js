@@ -270,6 +270,8 @@ NEWSBLUR.log = function(msg) {
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/saved-stories.svg';
                 if (feed_id == "searches")
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/search.svg';
+                if (feed_id == "archive")
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/archive.svg';
                 if (_.string.startsWith(feed_id, 'starred:'))
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/tag.svg';
                 if (_.string.startsWith(feed_id, 'feed:'))

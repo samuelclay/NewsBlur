@@ -49,6 +49,7 @@
                 $river_blurblogs_header: $('.NB-feeds-header-river-blurblogs'),
                 $river_global_header: $('.NB-feeds-header-river-global'),
                 $river_trending_header: $('.NB-feeds-header-river-trending'),
+                $archive_header: $('.NB-feeds-header-archive'),
                 $starred_header: $('.NB-feeds-header-starred'),
                 $searches_header: $('.NB-feeds-header-searches'),
                 $read_header: $('.NB-feeds-header-read'),
@@ -562,6 +563,11 @@
                 .removeClass('NB-dashboard-columns-double')
                 .removeClass('NB-dashboard-columns-triple')
                 .toggleClass('NB-dashboard-columns-' + columns);
+
+            // Show Archive folder for users with archive access
+            if (NEWSBLUR.Globals.is_archive) {
+                $('.NB-feeds-header-archive-container').removeClass('NB-hidden');
+            }
         },
 
         load_delayed_stylesheets: function () {
@@ -1413,6 +1419,7 @@
             this.$s.$river_blurblogs_header.removeClass('NB-selected');
             this.$s.$river_global_header.removeClass('NB-selected');
             this.$s.$river_trending_header.removeClass('NB-selected');
+            this.$s.$archive_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
             this.$s.$layout.removeClass('NB-view-river');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
@@ -1444,6 +1451,12 @@
                 this.trending_sites_view = null;
             }
             this.flags['trending_view'] = false;
+
+            if (this.archive_view) {
+                this.archive_view.close();
+                this.archive_view = null;
+            }
+            this.flags['archive_view'] = false;
 
             this.active_folder = null;
             this.active_feed = null;
@@ -2381,6 +2394,45 @@
 
             // Update URL
             NEWSBLUR.router.navigate('/trending');
+
+            this.make_feed_title_in_stories();
+        },
+
+        // ===================
+        // = Archive Feature =
+        // ===================
+
+        open_archive: function (options) {
+            options = options || {};
+
+            // Check if user has archive access (Premium Archive tier)
+            if (!NEWSBLUR.Globals.is_archive) {
+                this.open_feedchooser_modal({ premium_only: true });
+                return;
+            }
+
+            this.reset_feed(options);
+            this.hide_splash_page();
+
+            this.active_feed = 'archive';
+            this.active_folder = new Backbone.Model({
+                id: 'archive',
+                folder_title: "Archive",
+                fake: true,
+                show_options: false
+            });
+
+            this.flags['archive_view'] = true;
+
+            this.$s.$archive_header.addClass('NB-selected');
+            this.$s.$layout.addClass('NB-view-river');
+
+            // Create and append archive view to content pane
+            this.archive_view = new NEWSBLUR.Views.ArchiveView();
+            this.$s.$content_pane.append(this.archive_view.$el);
+
+            // Update URL
+            NEWSBLUR.router.navigate('/archive');
 
             this.make_feed_title_in_stories();
         },

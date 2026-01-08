@@ -162,6 +162,7 @@ OAUTH2_PROVIDER = {
         "write": "Create new saved stories, shared stories, and subscriptions.",
         "ifttt": "Pair your NewsBlur account with other services.",
         "email": "Access your email address for account identification.",
+        "archive": "Archive your browsing history and query it with AI.",
     },
     "CLIENT_ID_GENERATOR_CLASS": "oauth2_provider.generators.ClientIdGenerator",
     "ACCESS_TOKEN_EXPIRE_SECONDS": 60 * 60 * 24 * 365 * 10,  # 10 years
@@ -360,6 +361,8 @@ INSTALLED_APPS = (
     "apps.search",
     "apps.categories",
     "apps.ask_ai",
+    "apps.archive_extension",
+    "apps.archive_assistant",
     "utils",  # missing models so no migrations
     "vendor",
     "typogrify",
@@ -456,6 +459,8 @@ CELERY_IMPORTS = (
     "apps.search.tasks",
     "apps.statistics.tasks",
     "apps.ask_ai.tasks",
+    "apps.archive_extension.tasks",
+    "apps.archive_assistant.tasks",
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
