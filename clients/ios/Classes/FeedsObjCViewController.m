@@ -374,7 +374,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
 //    NSLog(@"Show feeds after being read (%@): %d / %@ -> %@", feedIdStr, [preferences boolForKey:@"show_feeds_after_being_read"], [self.stillVisibleFeeds objectForKey:feedIdStr], self.stillVisibleFeeds);
-    NSIndexPath *visiblePath = [self.stillVisibleFeeds objectForKey:feedIdStr];
+    id visiblePathValue = [self.stillVisibleFeeds objectForKey:feedIdStr];
+    // Ensure visiblePath is actually an NSIndexPath (not a boolean marker from NewsBlurAppDelegate)
+    NSIndexPath *visiblePath = [visiblePathValue isKindOfClass:[NSIndexPath class]] ? visiblePathValue : nil;
     if (visiblePath) {
         [self.feedTitlesTable beginUpdates];
         NSMutableArray *paths = (indexPath.section == visiblePath.section &&

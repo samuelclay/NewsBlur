@@ -287,7 +287,14 @@
             } else {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                        [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-                titleImage = [appDelegate getFavicon:feedIdStr];
+                // Check for custom feed icon
+                NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+                if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                    titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+                }
+                if (!titleImage) {
+                    titleImage = [appDelegate getFavicon:feedIdStr];
+                }
             }
             
             UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
@@ -308,7 +315,15 @@
         } else {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                    [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
-            UIImage *titleImage  = [appDelegate getFavicon:feedIdStr];
+            UIImage *titleImage = nil;
+            // Check for custom feed icon
+            NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(28, 28)];
+            }
+            if (!titleImage) {
+                titleImage = [appDelegate getFavicon:feedIdStr];
+            }
             titleImage = [Utilities roundCorneredImage:titleImage radius:6];
             
             UIImageView *titleImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
