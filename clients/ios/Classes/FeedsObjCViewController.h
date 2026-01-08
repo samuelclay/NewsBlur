@@ -119,6 +119,9 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)markEverythingReadWithDays:(NSInteger)days;
 - (void)markVisibleStoriesRead;
 - (void)didCollapseFolder:(UIButton *)button;
+- (void)didToggleAllFolders:(UIButton *)button;
+- (BOOL)anyFolderExpanded;
+- (void)updateAllStoriesCollapseButton;
 - (BOOL)isFeedVisible:(id)feedId;
 - (void)changeToAllMode;
 - (void)calculateFeedLocations;
