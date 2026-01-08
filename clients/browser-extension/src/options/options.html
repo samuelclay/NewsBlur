@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsBlur Archive Settings</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <div class="options-container">
+        <header class="options-header">
+            <img src="../../icons/icon-48.png" alt="NewsBlur Archive" class="options-logo">
+            <h1>NewsBlur Archive Settings</h1>
+        </header>
+
+        <main class="options-main">
+            <!-- Account Section -->
+            <section class="options-section">
+                <h2>Account</h2>
+                <div class="account-status" id="accountStatus">
+                    <span class="status-indicator disconnected"></span>
+                    <span class="status-text">Not connected</span>
+                </div>
+                <div class="account-actions">
+                    <button class="button primary" id="connectButton">Connect Account</button>
+                    <button class="button danger hidden" id="disconnectButton">Disconnect</button>
+                </div>
+            </section>
+
+            <!-- General Settings -->
+            <section class="options-section">
+                <h2>General</h2>
+                <div class="setting-row">
+                    <label class="setting-label">
+                        <input type="checkbox" id="enabled" checked>
+                        <span>Enable archiving</span>
+                    </label>
+                    <p class="setting-description">Automatically archive pages you visit</p>
+                </div>
+                <div class="setting-row">
+                    <label class="setting-label">
+                        <input type="checkbox" id="syncEnabled" checked>
+                        <span>Enable sync</span>
+                    </label>
+                    <p class="setting-description">Automatically sync archives to NewsBlur</p>
+                </div>
+                <div class="setting-row">
+                    <label class="setting-label">
+                        <span>Minimum time on page</span>
+                        <select id="minTimeOnPage">
+                            <option value="3">3 seconds</option>
+                            <option value="5" selected>5 seconds</option>
+                            <option value="10">10 seconds</option>
+                            <option value="15">15 seconds</option>
+                            <option value="30">30 seconds</option>
+                        </select>
+                    </label>
+                    <p class="setting-description">Only archive pages viewed for at least this long</p>
+                </div>
+            </section>
+
+            <!-- Blocklist Section -->
+            <section class="options-section">
+                <h2>Blocked Domains</h2>
+                <p class="section-description">
+                    These domains will never be archived. Many sensitive domains (banking, medical, email) are blocked by default.
+                </p>
+                <div class="blocklist-input-row">
+                    <input type="text" id="newBlockedDomain" placeholder="example.com" class="blocklist-input">
+                    <button class="button" id="addBlockedDomain">Add Domain</button>
+                </div>
+                <div class="blocklist" id="blocklist">
+                    <div class="loading">Loading...</div>
+                </div>
+            </section>
+
+            <!-- Data Section -->
+            <section class="options-section">
+                <h2>Data</h2>
+                <div class="data-stats" id="dataStats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="pendingArchives">0</span>
+                        <span class="stat-label">Pending archives</span>
+                    </div>
+                </div>
+                <div class="data-actions">
+                    <button class="button" id="syncNow">Sync Now</button>
+                    <button class="button danger" id="clearData">Clear Local Data</button>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section class="options-section">
+                <h2>About</h2>
+                <p class="about-text">
+                    NewsBlur Archive automatically captures your browsing history, enabling AI-powered search across everything you've read.
+                </p>
+                <div class="about-links">
+                    <a href="https://newsblur.com/archive" target="_blank">Open Archive in NewsBlur</a>
+                    <a href="https://newsblur.com/about" target="_blank">About NewsBlur</a>
+                    <a href="https://newsblur.com/privacy" target="_blank">Privacy Policy</a>
+                </div>
+                <p class="version">Version <span id="version">1.0.0</span></p>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="options.js"></script>
+</body>
+</html>
