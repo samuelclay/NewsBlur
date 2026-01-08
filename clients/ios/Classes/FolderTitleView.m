@@ -211,9 +211,10 @@
     UIImage *folderImage;
     int folderImageViewX = 10;
     BOOL allowLongPress = NO;
+    BOOL hasCustomIcon = NO;
     int width = 20;
     int height = 20;
-    
+
     if (section == NewsBlurTopSectionDashboard) {
         folderImage = [UIImage imageNamed:@"saved-stories"];
         if (!appDelegate.isPhone) {
@@ -281,10 +282,23 @@
             folderImageViewX = 7;
         }
     } else {
-        if (isFolderCollapsed) {
-            folderImage = [UIImage imageNamed:@"folder-closed"];
-        } else {
-            folderImage = [UIImage imageNamed:@"folder-open"];
+        // Check for custom folder icon first
+        NSDictionary *customIcon = appDelegate.dictFolderIcons[folderName];
+        if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+            UIImage *customImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(width, height)];
+            if (customImage) {
+                folderImage = customImage;
+                hasCustomIcon = YES;
+            }
+        }
+
+        // Fall back to default folder icon if no custom icon
+        if (!folderImage) {
+            if (isFolderCollapsed) {
+                folderImage = [UIImage imageNamed:@"folder-closed"];
+            } else {
+                folderImage = [UIImage imageNamed:@"folder-open"];
+            }
         }
         if (!appDelegate.isPhone) {
         } else {
@@ -292,8 +306,11 @@
         }
         allowLongPress = YES;
     }
-    
-    folderImage = [folderImage imageWithTintColor:UIColorFromLightDarkRGB(0x95968F, 0x95968F)];
+
+    // Only tint default icons, not custom icons (custom icons already have their color applied)
+    if (!hasCustomIcon) {
+        folderImage = [folderImage imageWithTintColor:UIColorFromLightDarkRGB(0x95968F, 0x95968F)];
+    }
     
     [folderImage drawInRect:CGRectMake(rect.origin.x + folderImageViewX, CGRectGetMidY(rect)-height/2, width, height)];
     

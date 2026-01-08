@@ -272,6 +272,8 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSMutableArray *dictFoldersArray;
 @property (nonatomic) NSArray *notificationFeedIds;
 @property (nonatomic) NSArray *dashboardArray;
+@property (nonatomic) NSDictionary *dictFolderIcons;
+@property (nonatomic) NSDictionary *dictFeedIcons;
 
 @property (nonatomic, readonly) NSString *widgetFolder;
 @property (nonatomic, strong) NSString *pendingFolder;

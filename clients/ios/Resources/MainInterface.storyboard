@@ -249,8 +249,8 @@
             </objects>
             <point key="canvasLocation" x="180.90452261306532" y="285.61151079136692"/>
         </scene>
-        <!--Root-->
-        <scene sceneID="eNE-X1-NXV">
+        <!--Root menu scene removed for iOS 26 compatibility-->
+        <scene sceneID="eNE-X1-NXV-REMOVED">
             <objects>
                 <menu isSystemItem="YES" title="Root" identifier="com.apple.menu.root" id="YWi-Ju-M3z" sceneMemberID="viewController">
                     <children>

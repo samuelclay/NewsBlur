@@ -508,6 +508,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     return YES;
 }
 
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+    [super buildMenuWithBuilder:builder];
+}
+
+
 #pragma mark -
 #pragma mark State Restoration
 
@@ -782,7 +787,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [appDelegate.dictFeeds addEntriesFromDictionary:appDelegate.dictInactiveFeeds];
     [appDelegate populateDictUnreadCounts];
     [appDelegate populateDictTextFeeds];
-    
+
+    // Store custom folder and feed icons
+    appDelegate.dictFolderIcons = [results objectForKey:@"folder_icons"];
+    appDelegate.dictFeedIcons = [results objectForKey:@"feed_icons"];
+
     NSString *sortOrder = [userPreferences stringForKey:@"feed_list_sort_order"];
     BOOL sortByMostUsed = [sortOrder isEqualToString:@"usage"];
     
@@ -1629,7 +1638,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
                          [appDelegate.dictSavedStoryTags objectForKey:feedIdStr] :
                          [appDelegate.dictFeeds objectForKey:feedIdStr];
     NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
-    cell.feedFavicon = [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
+
+    // Check for custom feed icon (only for regular feeds, not social or saved)
+    UIImage *customFeedIcon = nil;
+    if (!isSocial && !isSaved) {
+        NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+        if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+            customFeedIcon = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+        }
+    }
+    cell.feedFavicon = customFeedIcon ?: [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
+
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.isSocial      = isSocial;
     cell.isSearch      = isSavedSearch;

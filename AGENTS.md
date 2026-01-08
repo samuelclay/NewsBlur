@@ -2,6 +2,7 @@
 
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
+  - **All new iOS files must be written in Swift** (not Objective-C)
 
 ## Git Worktree Development
 - **Use git worktrees for parallel development**: Run `make worktree` in a worktree to start workspace-specific services
