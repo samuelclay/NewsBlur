@@ -3970,7 +3970,14 @@
                 titleImage = [UIImage imageNamed:@"folder-open"];
             }
         } else {
-            titleImage = [self getFavicon:feedIdStr];
+            // Check for custom feed icon
+            NSDictionary *customIcon = self.dictFeedIcons[feedIdStr];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+            }
+            if (!titleImage) {
+                titleImage = [self getFavicon:feedIdStr];
+            }
         }
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
