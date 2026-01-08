@@ -194,8 +194,8 @@
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Em8-Dp-DwK"/>
                                     <barButtonItem id="ohG-9s-dlt">
-                                        <segmentedControl key="customView" contentMode="center" contentHorizontalAlignment="left" contentVerticalAlignment="top" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" selectedSegmentIndex="0" id="ADC-ot-Aao">
-                                            <rect key="frame" x="52" y="-1.9999999999999973" width="240" height="48"/>
+                                        <segmentedControl key="customView" contentMode="center" contentHorizontalAlignment="left" contentVerticalAlignment="center" apportionsSegmentWidthsByContent="YES" segmentControlStyle="plain" selectedSegmentIndex="0" id="ADC-ot-Aao">
+                                            <rect key="frame" x="52" y="5" width="240" height="34"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <segments>
                                                 <segment title="" image="all.png" width="36"/>
