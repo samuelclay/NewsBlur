@@ -8,6 +8,7 @@ the user's browsing archive.
 from datetime import datetime, timedelta
 
 from apps.archive_extension.models import MArchivedStory
+from apps.archive_extension.search import SearchArchive
 
 # Tool definitions for Claude API
 ARCHIVE_TOOLS = [
@@ -118,53 +119,90 @@ def execute_tool(tool_name, tool_input, user_id):
 def _search_archives(
     user_id, query=None, date_from=None, date_to=None, domains=None, categories=None, limit=10
 ):
-    """Search user's archives with filters."""
+    """Search user's archives with filters using Elasticsearch for full-text search."""
     limit = min(limit or 10, 50)
 
-    # Build query
-    mongo_query = {"user_id": user_id, "deleted": False}
-
+    # Parse date filters
+    parsed_date_from = None
+    parsed_date_to = None
     if date_from:
         try:
-            mongo_query["archived_date__gte"] = datetime.fromisoformat(date_from)
+            parsed_date_from = datetime.fromisoformat(date_from)
         except ValueError:
             pass
-
     if date_to:
         try:
-            mongo_query["archived_date__lte"] = datetime.fromisoformat(date_to)
+            parsed_date_to = datetime.fromisoformat(date_to)
         except ValueError:
             pass
 
-    if domains:
-        mongo_query["domain__in"] = domains
+    archive_ids = []
 
-    if categories:
-        mongo_query["ai_categories__in"] = categories
-
-    # Text search on title if query provided
+    # Use Elasticsearch for text search if query is provided
     if query:
-        mongo_query["title__icontains"] = query
+        # Use domain filter (single domain for ES)
+        domain_filter = domains[0] if domains and len(domains) == 1 else None
 
-    archives = MArchivedStory.objects(**mongo_query).limit(limit)
-
-    results = []
-    for archive in archives:
-        content = archive.get_content()
-        excerpt = content[:500] + "..." if len(content) > 500 else content
-
-        results.append(
-            {
-                "id": str(archive.id),
-                "title": archive.title,
-                "url": archive.url,
-                "domain": archive.domain,
-                "excerpt": excerpt,
-                "archived_date": archive.archived_date.isoformat() if archive.archived_date else None,
-                "categories": archive.ai_categories or [],
-                "visit_count": archive.visit_count,
-            }
+        archive_ids = SearchArchive.search(
+            user_id=user_id,
+            query=query,
+            limit=limit,
+            domain=domain_filter,
+            categories=categories,
+            date_from=parsed_date_from,
+            date_to=parsed_date_to,
         )
+
+        if not archive_ids:
+            # Fallback to MongoDB title search if ES returns no results
+            mongo_query = {"user_id": user_id, "deleted": False, "title__icontains": query}
+            if parsed_date_from:
+                mongo_query["archived_date__gte"] = parsed_date_from
+            if parsed_date_to:
+                mongo_query["archived_date__lte"] = parsed_date_to
+            if domains:
+                mongo_query["domain__in"] = domains
+            if categories:
+                mongo_query["ai_categories__in"] = categories
+            archives = MArchivedStory.objects(**mongo_query).limit(limit)
+            archive_ids = [str(a.id) for a in archives]
+    else:
+        # No text query, just filter with MongoDB
+        mongo_query = {"user_id": user_id, "deleted": False}
+        if parsed_date_from:
+            mongo_query["archived_date__gte"] = parsed_date_from
+        if parsed_date_to:
+            mongo_query["archived_date__lte"] = parsed_date_to
+        if domains:
+            mongo_query["domain__in"] = domains
+        if categories:
+            mongo_query["ai_categories__in"] = categories
+
+        archives = MArchivedStory.objects(**mongo_query).order_by("-archived_date").limit(limit)
+        archive_ids = [str(a.id) for a in archives]
+
+    # Fetch the actual archive documents
+    results = []
+    for archive_id in archive_ids:
+        try:
+            archive = MArchivedStory.objects.get(id=archive_id, user_id=user_id, deleted=False)
+            content = archive.get_content()
+            excerpt = content[:500] + "..." if len(content) > 500 else content
+
+            results.append(
+                {
+                    "id": str(archive.id),
+                    "title": archive.title,
+                    "url": archive.url,
+                    "domain": archive.domain,
+                    "excerpt": excerpt,
+                    "archived_date": archive.archived_date.isoformat() if archive.archived_date else None,
+                    "categories": archive.ai_categories or [],
+                    "visit_count": archive.visit_count,
+                }
+            )
+        except MArchivedStory.DoesNotExist:
+            continue
 
     return {
         "count": len(results),

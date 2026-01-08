@@ -1,32 +1,71 @@
 // NewsBlur API Client for Archive Extension
 
-import { API_BASE_URL, API_ENDPOINTS, STORAGE_KEYS } from '../shared/constants.js';
+import { DEFAULT_SERVER_URL, API_ENDPOINTS, STORAGE_KEYS } from '../shared/constants.js';
 import { getExtensionAPI } from '../shared/utils.js';
 
 class NewsBlurAPI {
     constructor() {
-        this.baseUrl = API_BASE_URL;
+        this.baseUrl = DEFAULT_SERVER_URL;
         this.token = null;
     }
 
     /**
-     * Initialize the API client, loading token from storage
+     * Initialize the API client, loading token and server URL from storage
      */
     async init() {
         const api = getExtensionAPI();
-        const result = await api.storage.local.get(STORAGE_KEYS.AUTH_TOKEN);
+        const result = await api.storage.local.get([
+            STORAGE_KEYS.AUTH_TOKEN,
+            STORAGE_KEYS.USE_CUSTOM_SERVER,
+            STORAGE_KEYS.SERVER_URL
+        ]);
         this.token = result[STORAGE_KEYS.AUTH_TOKEN] || null;
+
+        // Load server URL
+        if (result[STORAGE_KEYS.USE_CUSTOM_SERVER] && result[STORAGE_KEYS.SERVER_URL]) {
+            this.baseUrl = result[STORAGE_KEYS.SERVER_URL];
+        } else {
+            this.baseUrl = DEFAULT_SERVER_URL;
+        }
+
         return this.token !== null;
     }
 
     /**
-     * Set the authentication token
-     * @param {string} token - OAuth token
+     * Update the base URL (called when server settings change)
+     * @param {string} url - New base URL
      */
-    async setToken(token) {
+    setBaseUrl(url) {
+        this.baseUrl = url;
+    }
+
+    /**
+     * Get the current base URL
+     * @returns {string} Current base URL
+     */
+    getBaseUrl() {
+        return this.baseUrl;
+    }
+
+    /**
+     * Set the authentication token and related data
+     * @param {string} token - OAuth access token
+     * @param {string} refreshToken - OAuth refresh token (optional)
+     * @param {number} expiresIn - Token expiry in seconds (optional)
+     */
+    async setToken(token, refreshToken = null, expiresIn = null) {
         this.token = token;
         const api = getExtensionAPI();
-        await api.storage.local.set({ [STORAGE_KEYS.AUTH_TOKEN]: token });
+
+        const data = { [STORAGE_KEYS.AUTH_TOKEN]: token };
+        if (refreshToken) {
+            data.refreshToken = refreshToken;
+        }
+        if (expiresIn) {
+            data.tokenExpiry = Date.now() + (expiresIn * 1000);
+        }
+
+        await api.storage.local.set(data);
     }
 
     /**
@@ -47,13 +86,28 @@ class NewsBlurAPI {
     }
 
     /**
+     * Check if running in a service worker context
+     * @returns {boolean} True if in service worker
+     */
+    isServiceWorker() {
+        return typeof ServiceWorkerGlobalScope !== 'undefined' && self instanceof ServiceWorkerGlobalScope;
+    }
+
+    /**
      * Make an API request
      * @param {string} endpoint - API endpoint path
      * @param {object} options - Fetch options
      * @returns {Promise<object>} Response data
      */
     async request(endpoint, options = {}) {
-        const url = `${this.baseUrl}${endpoint}`;
+        let url = `${this.baseUrl}${endpoint}`;
+
+        // In service worker context, localhost HTTPS fails due to self-signed certs
+        // Try HTTP instead for localhost
+        if (this.isServiceWorker() && url.startsWith('https://localhost')) {
+            url = url.replace('https://', 'http://');
+            console.log('NewsBlur Archive: Using HTTP for localhost in service worker:', url);
+        }
 
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -180,6 +234,7 @@ class NewsBlurAPI {
     }
 }
 
-// Export singleton instance
+// Export singleton instance and class
 export const api = new NewsBlurAPI();
+export { NewsBlurAPI };
 export default api;

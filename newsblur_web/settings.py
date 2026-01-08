@@ -399,6 +399,10 @@ CELERY_TASK_ROUTES = {
         "queue": "discover_indexer",
         "binding_key": "discover_indexer",
     },
+    "archive-categorize": {"queue": "archive_queue", "binding_key": "archive_queue"},
+    "archive-index-elasticsearch": {"queue": "archive_queue", "binding_key": "archive_queue"},
+    "archive-process-batch": {"queue": "archive_queue", "binding_key": "archive_queue"},
+    "archive-cleanup-old": {"queue": "archive_queue", "binding_key": "archive_queue"},
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {
@@ -445,6 +449,11 @@ CELERY_TASK_QUEUES = {
         "exchange": "ask_ai",
         "exchange_type": "direct",
         "binding_key": "ask_ai",
+    },
+    "archive_queue": {
+        "exchange": "archive_queue",
+        "exchange_type": "direct",
+        "binding_key": "archive_queue",
     },
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"
@@ -825,6 +834,8 @@ CELERY_BROKER_URL = "redis://%s:%s/%s" % (
     CELERY_REDIS_DB_NUM,
 )
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_WORKER_LOG_FORMAT = "%(message)s"
+CELERY_WORKER_TASK_LOG_FORMAT = "%(message)s"
 BROKER_TRANSPORT_OPTIONS = {
     "max_retries": 3,
     "interval_start": 0,
@@ -1033,3 +1044,13 @@ def monkey_patched_get_user(request):
 
 
 auth.get_user = monkey_patched_get_user
+
+# Patch Django's HttpResponseRedirect to allow chrome-extension:// URLs
+# This is needed for browser extension OAuth flows
+from django.http import HttpResponseRedirect
+
+if "chrome-extension" not in HttpResponseRedirect.allowed_schemes:
+    HttpResponseRedirect.allowed_schemes = list(HttpResponseRedirect.allowed_schemes) + [
+        "chrome-extension",
+        "moz-extension",
+    ]

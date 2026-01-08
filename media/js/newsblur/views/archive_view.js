@@ -383,6 +383,23 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             });
         }
 
+        // Build stats display (word count, file size)
+        var stats_items = [];
+        if (archive.word_count_display) {
+            stats_items.push($.make('span', { className: 'NB-archive-item-stat' }, [
+                $.make('span', { className: 'NB-archive-stat-value' }, archive.word_count_display),
+                ' words'
+            ]));
+        }
+        if (archive.file_size_display) {
+            stats_items.push($.make('span', { className: 'NB-archive-item-stat' }, [
+                $.make('span', { className: 'NB-archive-stat-value' }, archive.file_size_display)
+            ]));
+        }
+        if (archive.has_content === false) {
+            stats_items.push($.make('span', { className: 'NB-archive-item-stat NB-no-content' }, 'No content'));
+        }
+
         return $.make('div', { className: 'NB-archive-item', 'data-id': archive.id }, [
             $.make('div', { className: 'NB-archive-item-favicon' }, [
                 archive.favicon_url ?
@@ -395,6 +412,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     $.make('span', { className: 'NB-archive-item-domain' }, archive.domain || ''),
                     $.make('span', { className: 'NB-archive-item-date' }, date_str)
                 ]),
+                stats_items.length > 0 ? $.make('div', { className: 'NB-archive-item-stats' }, stats_items) : '',
                 $.make('div', { className: 'NB-archive-item-categories' }, categories_html)
             ]),
             archive.matched_feed_id ? $.make('div', { className: 'NB-archive-item-badge NB-newsblur' }, 'NewsBlur') : ''

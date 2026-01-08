@@ -16,12 +16,48 @@ import {
     getExtensionAPI
 } from '../shared/utils.js';
 
-// Track active page visits
-const pageVisits = new Map(); // tabId -> { url, startTime, title, faviconUrl }
+// Track active page visits (also persisted to storage for service worker recovery)
+const pageVisits = new Map(); // tabId -> { url, startTime, title, faviconUrl, domain, initialArchived }
+
+// Track archive timers
+const archiveTimers = new Map(); // tabId -> timeoutId
 
 // Sync state
 let syncTimeout = null;
 let isSyncing = false;
+
+/**
+ * Persist page visits to storage for service worker recovery
+ */
+async function persistPageVisits() {
+    const visits = Object.fromEntries(pageVisits);
+    await storage.set('activePageVisits', visits);
+}
+
+/**
+ * Recover page visits from storage after service worker restart
+ */
+async function recoverPageVisits() {
+    const visits = await storage.get('activePageVisits', {});
+    const now = Date.now();
+
+    for (const [tabIdStr, visit] of Object.entries(visits)) {
+        const tabId = parseInt(tabIdStr, 10);
+        const timeOnPage = Math.round((now - visit.startTime) / 1000);
+
+        // If enough time has passed and not yet archived, archive it
+        if (!visit.initialArchived && timeOnPage >= TIME_THRESHOLDS.MIN_TIME_ON_PAGE / 1000) {
+            console.log('NewsBlur Archive: Recovering unarchived visit:', visit.url, timeOnPage + 's');
+            visit.initialArchived = true;
+            await archivePage(visit, timeOnPage);
+        }
+
+        // Re-add to memory if the tab might still be open
+        pageVisits.set(tabId, visit);
+    }
+
+    await persistPageVisits();
+}
 
 /**
  * Initialize the extension
@@ -32,6 +68,9 @@ async function initialize() {
     // Initialize API client
     const isAuthenticated = await api.init();
     console.log('NewsBlur Archive: Authenticated:', isAuthenticated);
+
+    // Recover any page visits that were tracked before service worker restart
+    await recoverPageVisits();
 
     // Set up alarms for periodic sync
     const extApi = getExtensionAPI();
@@ -73,37 +112,78 @@ async function handleTabUpdated(tabId, changeInfo, tab) {
         return;
     }
 
+    // Clear any existing timer for this tab
+    if (archiveTimers.has(tabId)) {
+        clearTimeout(archiveTimers.get(tabId));
+        archiveTimers.delete(tabId);
+    }
+
     // Record visit start
     const normalizedUrl = normalizeUrl(tab.url);
-    pageVisits.set(tabId, {
+    const visit = {
         url: normalizedUrl,
         originalUrl: tab.url,
         startTime: Date.now(),
         title: tab.title || '',
         faviconUrl: tab.favIconUrl || '',
-        domain: extractDomain(tab.url)
-    });
+        domain: extractDomain(tab.url),
+        initialArchived: false
+    };
+    pageVisits.set(tabId, visit);
+
+    // Persist to storage for service worker recovery
+    await persistPageVisits();
 
     console.log('NewsBlur Archive: Started tracking:', normalizedUrl);
+
+    // Set timer for initial archive after MIN_TIME_ON_PAGE
+    const timerId = setTimeout(async () => {
+        const currentVisit = pageVisits.get(tabId);
+        if (currentVisit && currentVisit.url === normalizedUrl && !currentVisit.initialArchived) {
+            console.log('NewsBlur Archive: Initial archive after', TIME_THRESHOLDS.MIN_TIME_ON_PAGE / 1000, 'seconds:', normalizedUrl);
+            currentVisit.initialArchived = true;
+            await persistPageVisits();
+            const timeOnPage = Math.round((Date.now() - currentVisit.startTime) / 1000);
+            await archivePage(currentVisit, timeOnPage);
+        }
+        archiveTimers.delete(tabId);
+    }, TIME_THRESHOLDS.MIN_TIME_ON_PAGE);
+
+    archiveTimers.set(tabId, timerId);
 }
 
 /**
  * Handle tab removal (tab closed)
  */
 async function handleTabRemoved(tabId) {
+    // Clear any pending archive timer
+    if (archiveTimers.has(tabId)) {
+        clearTimeout(archiveTimers.get(tabId));
+        archiveTimers.delete(tabId);
+    }
+
     const visit = pageVisits.get(tabId);
     if (!visit) return;
 
     pageVisits.delete(tabId);
+    await persistPageVisits();
 
     const timeOnPage = Math.round((Date.now() - visit.startTime) / 1000);
 
-    // Skip if not enough time on page
+    // If already archived, send update with final time
+    if (visit.initialArchived) {
+        console.log('NewsBlur Archive: Final update on close:', visit.url, timeOnPage + 's');
+        await archivePage(visit, timeOnPage);
+        return;
+    }
+
+    // Skip if not enough time on page (never got initial archive)
     if (timeOnPage < TIME_THRESHOLDS.MIN_TIME_ON_PAGE / 1000) {
         console.log('NewsBlur Archive: Skipped (too short):', visit.url, timeOnPage + 's');
         return;
     }
 
+    // Archive now (edge case: timer didn't fire but enough time passed)
     await archivePage(visit, timeOnPage);
 }
 
@@ -117,16 +197,31 @@ async function handleBeforeNavigate(details) {
     const visit = pageVisits.get(details.tabId);
     if (!visit || visit.url === normalizeUrl(details.url)) return;
 
+    // Clear any pending archive timer
+    if (archiveTimers.has(details.tabId)) {
+        clearTimeout(archiveTimers.get(details.tabId));
+        archiveTimers.delete(details.tabId);
+    }
+
     pageVisits.delete(details.tabId);
+    await persistPageVisits();
 
     const timeOnPage = Math.round((Date.now() - visit.startTime) / 1000);
 
-    // Skip if not enough time on page
+    // If already archived, send update with final time
+    if (visit.initialArchived) {
+        console.log('NewsBlur Archive: Final update on navigate:', visit.url, timeOnPage + 's');
+        await archivePage(visit, timeOnPage);
+        return;
+    }
+
+    // Skip if not enough time on page (never got initial archive)
     if (timeOnPage < TIME_THRESHOLDS.MIN_TIME_ON_PAGE / 1000) {
         console.log('NewsBlur Archive: Skipped (too short):', visit.url, timeOnPage + 's');
         return;
     }
 
+    // Archive now (edge case: timer didn't fire but enough time passed)
     await archivePage(visit, timeOnPage);
 }
 
@@ -205,6 +300,14 @@ async function syncPendingArchives() {
         return;
     }
 
+    // Skip sync in service worker for localhost (SSL cert issues)
+    // The popup will handle syncing for localhost
+    const serverUrl = api.getBaseUrl();
+    if (serverUrl.includes('localhost')) {
+        console.log('NewsBlur Archive: Skipping service worker sync for localhost (popup will sync)');
+        return;
+    }
+
     // Check if sync is enabled
     const settings = await storage.getSettings();
     if (!settings.syncEnabled) {
@@ -258,6 +361,27 @@ function handleAlarm(alarm) {
 }
 
 /**
+ * Handle OAuth callback - clean up OAuth state after authentication
+ * Token exchange is now handled by the callback page itself
+ */
+async function handleOAuthCallback(details) {
+    // Only handle main frame
+    if (details.frameId !== 0) return;
+
+    // Get the stored callback URL
+    const data = await storage.get(['oauthCallbackUrl', 'authTabId']);
+    if (!data.oauthCallbackUrl) return;
+
+    // Check if this URL matches our OAuth callback
+    if (!details.url.startsWith(data.oauthCallbackUrl)) return;
+
+    console.log('NewsBlur Archive: OAuth callback page loaded');
+
+    // Clear OAuth state (token exchange is handled by the page)
+    await storage.remove(['oauthCallbackUrl', 'oauthServerUrl', 'authTabId']);
+}
+
+/**
  * Handle messages from popup or content scripts
  */
 async function handleMessage(message, sender, sendResponse) {
@@ -283,7 +407,10 @@ async function handleMessage(message, sender, sendResponse) {
             break;
 
         case 'setToken':
-            await api.setToken(message.token);
+            await api.setToken(message.token, message.refreshToken, message.expiresIn);
+            // Reinitialize API to pick up token and server URL
+            await api.init();
+            console.log('NewsBlur Archive: Token set, authenticated:', api.isAuthenticated());
             sendResponse({ success: true });
             break;
 
@@ -358,6 +485,35 @@ async function handleMessage(message, sender, sendResponse) {
             }
             break;
 
+        case 'serverChanged':
+            // Reinitialize API with new server URL
+            console.log('NewsBlur Archive: Server changed, reinitializing API...');
+            await api.init();
+            sendResponse({ success: true });
+            break;
+
+        case 'syncNow':
+            // Force sync pending archives
+            try {
+                await syncPendingArchives();
+                sendResponse({ success: true });
+            } catch (error) {
+                sendResponse({ success: false, error: error.message });
+            }
+            break;
+
+        case 'settingsChanged':
+            // Settings were changed in options page
+            console.log('NewsBlur Archive: Settings changed');
+            sendResponse({ success: true });
+            break;
+
+        case 'blocklistChanged':
+            // Blocklist was changed in options page
+            console.log('NewsBlur Archive: Blocklist changed');
+            sendResponse({ success: true });
+            break;
+
         default:
             sendResponse({ error: 'Unknown action' });
     }
@@ -371,6 +527,7 @@ const extApi = getExtensionAPI();
 extApi.tabs.onUpdated.addListener(handleTabUpdated);
 extApi.tabs.onRemoved.addListener(handleTabRemoved);
 extApi.webNavigation.onBeforeNavigate.addListener(handleBeforeNavigate);
+extApi.webNavigation.onCompleted.addListener(handleOAuthCallback); // OAuth callback interception
 extApi.alarms.onAlarm.addListener(handleAlarm);
 extApi.runtime.onMessage.addListener(handleMessage);
 

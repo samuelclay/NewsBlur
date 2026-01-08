@@ -14,6 +14,33 @@
         </header>
 
         <main class="options-main">
+            <!-- Server Configuration -->
+            <section class="options-section">
+                <h2>Server</h2>
+                <p class="section-description">
+                    Connect to NewsBlur production or a custom development server.
+                </p>
+                <div class="setting-row">
+                    <label class="setting-label radio-label">
+                        <input type="radio" name="serverMode" id="serverProduction" value="production" checked>
+                        <span>Production (newsblur.com)</span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <label class="setting-label radio-label">
+                        <input type="radio" name="serverMode" id="serverCustom" value="custom">
+                        <span>Custom server</span>
+                    </label>
+                </div>
+                <div class="setting-row custom-server-row" id="customServerRow">
+                    <input type="text" id="customServerUrl" placeholder="https://localhost:9381" class="server-url-input">
+                    <p class="setting-description">Enter the full URL including protocol (https://)</p>
+                </div>
+                <div class="server-status" id="serverStatus">
+                    <span class="server-url-display">Connected to: <strong id="currentServerDisplay">newsblur.com</strong></span>
+                </div>
+            </section>
+
             <!-- Account Section -->
             <section class="options-section">
                 <h2>Account</h2>

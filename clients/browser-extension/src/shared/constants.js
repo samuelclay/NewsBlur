@@ -1,6 +1,11 @@
 // NewsBlur Archive Extension Constants
 
-export const API_BASE_URL = 'https://newsblur.com';
+// Default production URL
+export const DEFAULT_SERVER_URL = 'https://newsblur.com';
+
+// Kept for backwards compatibility - use getServerUrl() from storage for dynamic URL
+export const API_BASE_URL = DEFAULT_SERVER_URL;
+
 export const API_ENDPOINTS = {
     INGEST: '/api/archive/ingest',
     BATCH_INGEST: '/api/archive/batch_ingest',
@@ -10,18 +15,25 @@ export const API_ENDPOINTS = {
     BLOCKLIST: '/api/archive/blocklist'
 };
 
+// OAuth config is built dynamically based on server URL
 export const OAUTH_CONFIG = {
     CLIENT_ID: 'newsblur-archive-extension',
-    AUTHORIZE_URL: `${API_BASE_URL}/oauth/authorize`,
     SCOPE: 'archive'
 };
+
+// Helper to build OAuth authorize URL
+export function getOAuthAuthorizeUrl(serverUrl) {
+    return `${serverUrl}/oauth/authorize`;
+}
 
 export const STORAGE_KEYS = {
     AUTH_TOKEN: 'authToken',
     USER_BLOCKLIST: 'userBlocklist',
     PENDING_ARCHIVES: 'pendingArchives',
     LAST_SYNC: 'lastSync',
-    SETTINGS: 'settings'
+    SETTINGS: 'settings',
+    SERVER_URL: 'serverUrl',
+    USE_CUSTOM_SERVER: 'useCustomServer'
 };
 
 // Time thresholds in milliseconds

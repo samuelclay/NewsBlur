@@ -1,9 +1,16 @@
 // NewsBlur Archive Extension - Popup Script
 
-import { API_BASE_URL, OAUTH_CONFIG } from '../shared/constants.js';
+import { DEFAULT_SERVER_URL, OAUTH_CONFIG, getOAuthAuthorizeUrl } from '../shared/constants.js';
 import { formatRelativeTime, truncateText, getExtensionAPI } from '../shared/utils.js';
+import { storage } from '../lib/storage.js';
+
+console.log('NewsBlur Archive: Popup script loaded');
 
 const extApi = getExtensionAPI();
+console.log('NewsBlur Archive: Extension API:', extApi ? 'available' : 'NOT FOUND');
+
+// Current server URL (loaded from storage)
+let currentServerUrl = DEFAULT_SERVER_URL;
 
 // DOM Elements
 const loginSection = document.getElementById('loginSection');
@@ -27,10 +34,23 @@ const lastSync = document.getElementById('lastSync');
 
 const recentList = document.getElementById('recentList');
 
+// Footer elements
+const serverBadge = document.getElementById('serverBadge');
+const serverName = document.getElementById('serverName');
+const searchArchivesLink = document.getElementById('searchArchivesLink');
+const openArchiveLink = document.getElementById('openArchiveLink');
+const aboutLink = document.getElementById('aboutLink');
+
 /**
  * Initialize the popup
  */
 async function init() {
+    console.log('NewsBlur Archive: init() called');
+
+    // Load server configuration first
+    await loadServerConfig();
+    console.log('NewsBlur Archive: Server config loaded');
+
     // Get status from background
     const status = await sendMessage({ action: 'getStatus' });
 
@@ -46,6 +66,31 @@ async function init() {
 
     // Set up event listeners
     setupEventListeners();
+}
+
+/**
+ * Load server configuration and update display
+ */
+async function loadServerConfig() {
+    currentServerUrl = await storage.getServerUrl();
+    const useCustom = await storage.getUseCustomServer();
+
+    // Update server badge display
+    try {
+        const url = new URL(currentServerUrl);
+        serverName.textContent = url.host;
+    } catch (e) {
+        serverName.textContent = currentServerUrl;
+    }
+
+    // Add custom class if using custom server
+    if (useCustom) {
+        serverBadge.classList.add('custom');
+        serverBadge.title = 'Connected to custom server';
+    } else {
+        serverBadge.classList.remove('custom');
+        serverBadge.title = 'Connected to NewsBlur';
+    }
 }
 
 /**
@@ -204,11 +249,15 @@ function renderArchives(archives) {
  * Set up event listeners
  */
 function setupEventListeners() {
+    console.log('NewsBlur Archive: Setting up event listeners');
+    console.log('NewsBlur Archive: settingsButton:', settingsButton);
+
     // Login button
     loginButton.addEventListener('click', handleLogin);
 
     // Settings button
     settingsButton.addEventListener('click', () => {
+        console.log('NewsBlur Archive: Settings button clicked');
         extApi.runtime.openOptionsPage();
     });
 
@@ -216,6 +265,22 @@ function setupEventListeners() {
     saveButton.addEventListener('click', handleSave);
     shareButton.addEventListener('click', handleShare);
     subscribeButton.addEventListener('click', handleSubscribe);
+
+    // Footer links
+    searchArchivesLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        extApi.tabs.create({ url: `${currentServerUrl}/archive` });
+    });
+
+    openArchiveLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        extApi.tabs.create({ url: `${currentServerUrl}/archive` });
+    });
+
+    aboutLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        extApi.tabs.create({ url: `${currentServerUrl}/about` });
+    });
 }
 
 /**
@@ -224,7 +289,7 @@ function setupEventListeners() {
 async function handleLogin() {
     try {
         const redirectUri = extApi.identity.getRedirectURL();
-        const authUrl = new URL(OAUTH_CONFIG.AUTHORIZE_URL);
+        const authUrl = new URL(getOAuthAuthorizeUrl(currentServerUrl));
         authUrl.searchParams.set('client_id', OAUTH_CONFIG.CLIENT_ID);
         authUrl.searchParams.set('redirect_uri', redirectUri);
         authUrl.searchParams.set('response_type', 'token');
@@ -261,7 +326,7 @@ async function handleSave() {
         const [tab] = await extApi.tabs.query({ active: true, currentWindow: true });
         if (tab) {
             // Open NewsBlur save popup
-            const saveUrl = `${API_BASE_URL}/api/add_url?url=${encodeURIComponent(tab.url)}`;
+            const saveUrl = `${currentServerUrl}/api/add_url?url=${encodeURIComponent(tab.url)}`;
             extApi.tabs.create({ url: saveUrl });
         }
     } catch (error) {
@@ -277,7 +342,7 @@ async function handleShare() {
         const [tab] = await extApi.tabs.query({ active: true, currentWindow: true });
         if (tab) {
             // Open NewsBlur share popup
-            const shareUrl = `${API_BASE_URL}/api/share_story?url=${encodeURIComponent(tab.url)}`;
+            const shareUrl = `${currentServerUrl}/api/share_story?url=${encodeURIComponent(tab.url)}`;
             extApi.tabs.create({ url: shareUrl });
         }
     } catch (error) {
@@ -293,7 +358,7 @@ async function handleSubscribe() {
         const [tab] = await extApi.tabs.query({ active: true, currentWindow: true });
         if (tab) {
             // Open NewsBlur add feed page
-            const addUrl = `${API_BASE_URL}/add?url=${encodeURIComponent(tab.url)}`;
+            const addUrl = `${currentServerUrl}/add?url=${encodeURIComponent(tab.url)}`;
             extApi.tabs.create({ url: addUrl });
         }
     } catch (error) {
@@ -302,4 +367,6 @@ async function handleSubscribe() {
 }
 
 // Initialize popup
+console.log('NewsBlur Archive: Adding DOMContentLoaded listener');
 document.addEventListener('DOMContentLoaded', init);
+console.log('NewsBlur Archive: Script fully loaded');

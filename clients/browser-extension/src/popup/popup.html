@@ -91,7 +91,7 @@
             </div>
 
             <!-- Search Link -->
-            <a href="https://newsblur.com/archive" target="_blank" class="search-link">
+            <a href="#" class="search-link" id="searchArchivesLink">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                     <path d="M11.5 6.5a5 5 0 11-10 0 5 5 0 0110 0zm-1 5l4 4"/>
                 </svg>
@@ -101,12 +101,17 @@
 
         <!-- Footer -->
         <div class="popup-footer">
-            <a href="https://newsblur.com" target="_blank" class="footer-link">NewsBlur</a>
+            <span class="server-badge" id="serverBadge" title="Connected server">
+                <span class="server-icon">●</span>
+                <span class="server-name" id="serverName">newsblur.com</span>
+            </span>
             <span class="footer-divider">|</span>
-            <a href="https://newsblur.com/about" target="_blank" class="footer-link">About</a>
+            <a href="#" class="footer-link" id="openArchiveLink">Archive</a>
+            <span class="footer-divider">|</span>
+            <a href="#" class="footer-link" id="aboutLink">About</a>
         </div>
     </div>
 
-    <script type="module" src="popup.js"></script>
+    <script src="popup-simple.js"></script>
 </body>
 </html>
