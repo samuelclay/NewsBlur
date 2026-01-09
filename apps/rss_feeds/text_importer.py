@@ -278,6 +278,8 @@ class TextImporter:
             headers["content-type"] = "application/json"
             headers["x-api-key"] = mercury_api_key
             domain = Site.objects.get_current().domain
+            if "staging" in settings.SERVER_NAME:
+                domain = "staging.newsblur.com"
             protocol = "https"
             if settings.DOCKERBUILD:
                 domain = "haproxy"
