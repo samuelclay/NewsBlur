@@ -46,40 +46,21 @@ else
     HAPROXY_STATS_PORT=$((1936 + PORT_OFFSET))
 fi
 
-# Helper function to render Jinja2 templates
+# Helper function to render templates using sed (no external dependencies)
 render_template() {
     local template_file=$1
     local output_file=$2
 
-    python3 << EOF
-import sys
-from jinja2 import Template
+    sed -e "s/{{ workspace_name }}/${WORKSPACE_NAME}/g" \
+        -e "s/{{ web_port }}/${WEB_PORT}/g" \
+        -e "s/{{ node_port }}/${NODE_PORT}/g" \
+        -e "s/{{ nginx_port }}/${NGINX_PORT}/g" \
+        -e "s/{{ haproxy_http_port }}/${HAPROXY_HTTP_PORT}/g" \
+        -e "s/{{ haproxy_https_port }}/${HAPROXY_HTTPS_PORT}/g" \
+        -e "s/{{ haproxy_stats_port }}/${HAPROXY_STATS_PORT}/g" \
+        "$template_file" > "$output_file"
 
-template_path = "${template_file}"
-output_path = "${output_file}"
-
-with open(template_path, 'r') as f:
-    template = Template(f.read())
-
-rendered = template.render(
-    workspace_name="${WORKSPACE_NAME}",
-    web_port=${WEB_PORT},
-    node_port=${NODE_PORT},
-    nginx_port=${NGINX_PORT},
-    haproxy_http_port=${HAPROXY_HTTP_PORT},
-    haproxy_https_port=${HAPROXY_HTTPS_PORT},
-    haproxy_stats_port=${HAPROXY_STATS_PORT}
-)
-
-# Ensure file ends with newline
-if not rendered.endswith('\n'):
-    rendered += '\n'
-
-with open(output_path, 'w') as f:
-    f.write(rendered)
-
-print(f"✓ Rendered {template_path} -> {output_path}")
-EOF
+    echo "✓ Rendered ${template_file} -> ${output_file}"
 }
 
 # Check if setup has been run
@@ -122,18 +103,6 @@ if [ "$NEEDS_SETUP" = true ]; then
     if ! command -v docker compose &> /dev/null; then
         echo -e "${RED}ERROR: Docker Compose is not available${NC}"
         echo "Please install Docker Compose v2"
-        exit 1
-    fi
-
-    if ! command -v python3 &> /dev/null; then
-        echo -e "${RED}ERROR: Python 3 is not installed${NC}"
-        exit 1
-    fi
-
-    # Check for Jinja2
-    if ! python3 -c "import jinja2" 2>/dev/null; then
-        echo -e "${RED}ERROR: Python Jinja2 module is not installed${NC}"
-        echo "Install with: pip3 install jinja2"
         exit 1
     fi
 
