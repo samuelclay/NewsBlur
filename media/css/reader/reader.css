@@ -20551,20 +20551,25 @@ form.opml_import_form input {
     border-radius: 4px;
 }
 
-.NB-archive-item-badge {
-    font-size: 10px;
-    font-weight: 600;
-    padding: 4px 8px;
-    background: #F0F4F8;
-    color: #5C89C9;
+.NB-archive-item-newsblur-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
     border-radius: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.15s ease, background 0.15s ease;
 }
 
-.NB-archive-item-badge.NB-newsblur {
-    background: #FFEEE5;
-    color: #D95C33;
+.NB-archive-item-newsblur-link:hover {
+    opacity: 1;
+    background: rgba(217, 92, 51, 0.1);
+}
+
+.NB-archive-item-newsblur-icon {
+    width: 20px;
+    height: 20px;
 }
 
 /* Empty State */

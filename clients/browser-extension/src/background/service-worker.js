@@ -26,6 +26,9 @@ const archiveTimers = new Map(); // tabId -> timeoutId
 let syncTimeout = null;
 let isSyncing = false;
 
+// Connected popup ports for real-time updates
+const popupPorts = new Set();
+
 /**
  * Persist page visits to storage for service worker recovery
  */
@@ -76,7 +79,44 @@ async function initialize() {
     const extApi = getExtensionAPI();
     extApi.alarms.create('periodicSync', { periodInMinutes: 5 });
 
+    // Set up port listener for popup connections
+    setupPopupPortListener();
+
     console.log('NewsBlur Archive: Initialized');
+}
+
+/**
+ * Set up listener for popup port connections
+ * Allows real-time updates to be sent to connected popups
+ */
+function setupPopupPortListener() {
+    const extApi = getExtensionAPI();
+
+    extApi.runtime.onConnect.addListener((port) => {
+        if (port.name === 'popup') {
+            console.log('NewsBlur Archive: Popup connected');
+            popupPorts.add(port);
+
+            port.onDisconnect.addListener(() => {
+                console.log('NewsBlur Archive: Popup disconnected');
+                popupPorts.delete(port);
+            });
+        }
+    });
+}
+
+/**
+ * Notify all connected popups about an event
+ */
+function notifyPopups(event, data) {
+    popupPorts.forEach(port => {
+        try {
+            port.postMessage({ type: event, data });
+        } catch (e) {
+            // Port may have been closed
+            popupPorts.delete(port);
+        }
+    });
 }
 
 /**
@@ -300,14 +340,6 @@ async function syncPendingArchives() {
         return;
     }
 
-    // Skip sync in service worker for localhost (SSL cert issues)
-    // The popup will handle syncing for localhost
-    const serverUrl = api.getBaseUrl();
-    if (serverUrl.includes('localhost')) {
-        console.log('NewsBlur Archive: Skipping service worker sync for localhost (popup will sync)');
-        return;
-    }
-
     // Check if sync is enabled
     const settings = await storage.getSettings();
     if (!settings.syncEnabled) {
@@ -331,6 +363,16 @@ async function syncPendingArchives() {
         if (response.code === 0) {
             console.log('NewsBlur Archive: Sync successful');
             await storage.setLastSync();
+
+            // Notify connected popups about new archives
+            const successfulArchives = response.results ?
+                response.results.filter(r => r.archive_id && !r.error) : [];
+            if (successfulArchives.length > 0) {
+                notifyPopups('archive:new', {
+                    archives: successfulArchives,
+                    count: successfulArchives.length
+                });
+            }
         } else {
             console.error('NewsBlur Archive: Sync failed:', response.message);
             // Return archives to queue

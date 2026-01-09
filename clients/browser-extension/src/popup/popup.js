@@ -1,6 +1,6 @@
 // NewsBlur Archive Extension - Popup Script
 
-import { DEFAULT_SERVER_URL, OAUTH_CONFIG, getOAuthAuthorizeUrl } from '../shared/constants.js';
+import { DEFAULT_SERVER_URL, OAUTH_CONFIG, getOAuthAuthorizeUrl, BATCH_CONFIG } from '../shared/constants.js';
 import { formatRelativeTime, truncateText, getExtensionAPI } from '../shared/utils.js';
 import { storage } from '../lib/storage.js';
 
@@ -11,6 +11,12 @@ console.log('NewsBlur Archive: Extension API:', extApi ? 'available' : 'NOT FOUN
 
 // Current server URL (loaded from storage)
 let currentServerUrl = DEFAULT_SERVER_URL;
+
+// Localhost sync interval
+let localhostSyncInterval = null;
+
+// Port connection for real-time updates from service worker
+let serviceWorkerPort = null;
 
 // DOM Elements
 const loginSection = document.getElementById('loginSection');
@@ -57,6 +63,10 @@ async function init() {
     if (status.authenticated) {
         showMainSection();
         await loadData(status);
+        // Set up real-time connection for updates
+        setupRealtimeConnection();
+        // Set up localhost sync (popup handles sync for localhost servers)
+        await setupLocalhostSync();
     } else {
         showLoginSection();
     }
@@ -66,6 +76,203 @@ async function init() {
 
     // Set up event listeners
     setupEventListeners();
+}
+
+/**
+ * Set up port connection to service worker for real-time updates
+ */
+function setupRealtimeConnection() {
+    try {
+        serviceWorkerPort = extApi.runtime.connect({ name: 'popup' });
+
+        serviceWorkerPort.onMessage.addListener((message) => {
+            console.log('NewsBlur Archive: Received message from service worker:', message.type);
+
+            if (message.type === 'archive:new') {
+                handleNewArchives(message.data);
+            }
+        });
+
+        serviceWorkerPort.onDisconnect.addListener(() => {
+            console.log('NewsBlur Archive: Port disconnected, reconnecting...');
+            // Reconnect after a short delay
+            setTimeout(setupRealtimeConnection, 1000);
+        });
+
+        console.log('NewsBlur Archive: Real-time connection established');
+    } catch (error) {
+        console.error('NewsBlur Archive: Failed to setup real-time connection:', error);
+    }
+}
+
+/**
+ * Check if we're using a localhost server
+ */
+function isLocalhostServer() {
+    return currentServerUrl.includes('localhost') || currentServerUrl.includes('127.0.0.1');
+}
+
+/**
+ * Setup localhost sync - the popup handles syncing for localhost servers
+ * because service workers have SSL certificate issues with localhost
+ */
+async function setupLocalhostSync() {
+    if (!isLocalhostServer()) {
+        console.log('NewsBlur Archive: Not localhost, service worker handles sync');
+        return;
+    }
+
+    console.log('NewsBlur Archive: Localhost detected, popup will handle sync');
+
+    // Sync immediately on popup open
+    await syncPendingArchivesFromPopup();
+
+    // Set up periodic sync while popup is open (every 3 seconds)
+    localhostSyncInterval = setInterval(async () => {
+        await syncPendingArchivesFromPopup();
+    }, 3000);
+}
+
+/**
+ * Sync pending archives directly from popup (for localhost)
+ */
+async function syncPendingArchivesFromPopup() {
+    try {
+        const archives = await storage.popPendingArchives(BATCH_CONFIG.MAX_BATCH_SIZE);
+
+        if (archives.length === 0) {
+            return;
+        }
+
+        console.log('NewsBlur Archive: Popup syncing', archives.length, 'archives to localhost');
+
+        const token = await storage.getToken();
+        if (!token) {
+            console.log('NewsBlur Archive: No token, returning archives to queue');
+            await storage.returnPendingArchives(archives);
+            return;
+        }
+
+        const response = await fetch(`${currentServerUrl}/api/archive/batch_ingest`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ archives })
+        });
+
+        const result = await response.json();
+
+        if (result.code === 0) {
+            console.log('NewsBlur Archive: Popup sync successful');
+            await storage.setLastSync();
+
+            // Handle new archives in the popup UI
+            const successfulArchives = result.results ?
+                result.results.filter(r => r.archive_id && !r.error) : [];
+            if (successfulArchives.length > 0) {
+                handleNewArchives({ archives: successfulArchives });
+            }
+
+            // Update pending count
+            pendingCount.textContent = (await storage.getPendingArchives()).length;
+        } else {
+            console.error('NewsBlur Archive: Popup sync failed:', result.message);
+            await storage.returnPendingArchives(archives);
+        }
+    } catch (error) {
+        console.error('NewsBlur Archive: Popup sync error:', error);
+    }
+}
+
+/**
+ * Handle new archives received from service worker
+ */
+function handleNewArchives(data) {
+    const newArchives = data.archives || [];
+
+    if (newArchives.length === 0) return;
+
+    console.log('NewsBlur Archive: Received', newArchives.length, 'new archives in real-time');
+
+    // Prepend new archives to the recent list
+    prependArchives(newArchives);
+
+    // Update stats
+    loadStats();
+
+    // Update pending count (likely decreased since sync completed)
+    sendMessage({ action: 'getStatus' }).then(status => {
+        pendingCount.textContent = status.pendingCount || 0;
+        if (status.lastSync) {
+            lastSync.textContent = formatRelativeTime(status.lastSync);
+        }
+    });
+}
+
+/**
+ * Prepend new archives to the recent list
+ */
+function prependArchives(archives) {
+    archives.forEach(archive => {
+        // Normalize the ID field
+        if (archive.archive_id && !archive.id) {
+            archive.id = archive.archive_id;
+        }
+
+        const item = document.createElement('div');
+        item.className = 'recent-item';
+        item.dataset.url = archive.url;
+
+        const faviconHtml = archive.favicon_url
+            ? `<img class="recent-favicon" src="${archive.favicon_url}" alt="">`
+            : '<div class="recent-favicon-placeholder"></div>';
+
+        const categoriesHtml = archive.ai_categories && archive.ai_categories.length > 0
+            ? `<div class="recent-categories">
+                ${archive.ai_categories.slice(0, 2).map(cat =>
+                `<span class="category-pill">${cat}</span>`
+            ).join('')}
+               </div>`
+            : '';
+
+        const timeAgo = 'Just now';
+
+        item.innerHTML = `
+            ${faviconHtml}
+            <div class="recent-content">
+                <div class="recent-title">${truncateText(archive.title || 'Untitled', 60)}</div>
+                <div class="recent-meta">
+                    <span class="recent-domain">${archive.domain || ''}</span>
+                    <span class="recent-time">${timeAgo}</span>
+                </div>
+                ${categoriesHtml}
+            </div>
+        `;
+
+        item.addEventListener('click', () => {
+            extApi.tabs.create({ url: archive.url });
+        });
+
+        // Insert at the beginning
+        if (recentList.firstChild) {
+            recentList.insertBefore(item, recentList.firstChild);
+        } else {
+            recentList.appendChild(item);
+        }
+    });
+
+    // Remove excess items (keep max 10)
+    while (recentList.children.length > 10) {
+        recentList.removeChild(recentList.lastChild);
+    }
+
+    // Remove any "loading" or "empty" messages
+    const loadingMsg = recentList.querySelector('.loading');
+    const emptyMsg = recentList.querySelector('.empty-message');
+    if (loadingMsg) loadingMsg.remove();
+    if (emptyMsg) emptyMsg.remove();
 }
 
 /**

@@ -195,6 +195,29 @@
               return;
             }
           }
+          // Handle archive extension real-time events (archive:new, archive:deleted)
+          if (typeof message.startsWith === "function" ? message.startsWith('archive:') : void 0) {
+            log.debug(username, "Routing to archive handler");
+            try {
+              const payload = message.substring('archive:'.length);
+              const data = JSON.parse(payload);
+              if (data.type === 'new') {
+                socket.emit('archive:new', {
+                  archives: data.archives,
+                  count: data.count
+                });
+                log.info(username, `Archive: Emitted archive:new with ${data.count} archives`);
+              } else if (data.type === 'deleted') {
+                socket.emit('archive:deleted', {
+                  archive_ids: data.archives.map(a => a.archive_id)
+                });
+                log.info(username, `Archive: Emitted archive:deleted`);
+              }
+            } catch (e) {
+              log.debug(username, `Invalid archive payload: ${e}`);
+            }
+            return;
+          }
           // Handle standard feed/user update messages
           event_name = 'feed:update';
           if (channel === username) {
