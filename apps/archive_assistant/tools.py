@@ -143,7 +143,7 @@ def _search_archives(
         # Use domain filter (single domain for ES)
         domain_filter = domains[0] if domains and len(domains) == 1 else None
 
-        archive_ids = SearchArchive.search(
+        archive_ids = SearchArchive.query(
             user_id=user_id,
             query=query,
             limit=limit,
