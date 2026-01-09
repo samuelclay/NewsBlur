@@ -19636,7 +19636,9 @@ form.opml_import_form input {
 .NB-disable-social .NB-story-share-button,
 .NB-disable-social .NB-story-comments,
 .NB-disable-social .NB-story-comments-label,
-.NB-disable-social .NB-story-comments-public-teaser {
+.NB-disable-social .NB-story-comments-public-teaser,
+.NB-disable-social .NB-story-comments-shares-teaser-wrapper,
+.NB-disable-social .NB-storytitles-shares {
     display: none !important;
 }
 
