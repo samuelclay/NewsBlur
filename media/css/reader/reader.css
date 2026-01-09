@@ -4638,12 +4638,21 @@ body {
 }
 
 .NB-pref-story-position-center .NB-story-content-expander {
+    left: 28px;
+    right: 236px;
     margin-left: auto;
     margin-right: auto;
 }
 
 .NB-pref-story-position-right .NB-story-content-expander {
+    left: 28px;
+    right: 236px;
     margin-left: auto;
+}
+
+.NB-narrow-content.NB-pref-story-position-center .NB-story-content-expander,
+.NB-narrow-content.NB-pref-story-position-right .NB-story-content-expander {
+    right: 28px;
 }
 
 .NB-pref-story-position-stretch .NB-feed-story .NB-story-content-positioning-wrapper,
