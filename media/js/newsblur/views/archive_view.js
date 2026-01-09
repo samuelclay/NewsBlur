@@ -11,7 +11,21 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         "click .NB-archive-item-newsblur-link": "open_story_in_newsblur",
         "keypress .NB-archive-assistant-input": "handle_assistant_keypress",
         "click .NB-archive-assistant-send": "submit_assistant_query",
-        "click .NB-archive-suggestion": "use_suggestion"
+        "click .NB-archive-suggestion": "use_suggestion",
+        "click .NB-archive-assistant-voice-button": "start_voice_recording",
+        // Category management events
+        "click .NB-archive-manage-categories": "open_category_manager",
+        "click .NB-category-manager-close": "close_category_manager",
+        "click .NB-category-manager-overlay": "close_category_manager",
+        "change .NB-category-checkbox": "handle_category_selection",
+        "click .NB-category-merge-btn": "merge_selected_categories",
+        "click .NB-category-rename-btn": "show_rename_dialog",
+        "click .NB-category-split-btn": "show_split_dialog",
+        "click .NB-category-bulk-btn": "bulk_categorize",
+        "click .NB-merge-suggestion-apply": "apply_merge_suggestion",
+        "click .NB-inline-action-confirm": "confirm_inline_action",
+        "click .NB-inline-action-cancel": "cancel_inline_action",
+        "keypress .NB-inline-action-input": "handle_inline_action_keypress"
     },
 
     initialize: function (options) {
@@ -37,6 +51,13 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.tool_status = null;
         this.websocket_timeout = null;
         this.response_completed = false;
+        // Category management state
+        this.selected_categories = [];
+        this.category_manager_open = false;
+        this.merge_suggestions = [];
+        this.uncategorized_count = 0;
+        this.inline_action = null;  // Tracks current inline action: 'merge', 'rename', 'split'
+        this.inline_action_data = null;  // Data for current inline action
 
         this.fetch_initial_data();
     },
@@ -241,6 +262,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Input area
         elements.push($.make('div', { className: 'NB-archive-assistant-input-wrapper' }, [
+            $.make('div', { className: 'NB-archive-assistant-voice-button', title: 'Record voice question' }, [
+                $.make('img', { src: '/media/img/icons/nouns/microphone.svg', className: 'NB-archive-assistant-voice-icon' })
+            ]),
             $.make('input', {
                 type: 'text',
                 className: 'NB-archive-assistant-input',
@@ -311,9 +335,14 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Filters sidebar
         elements.push($.make('div', { className: 'NB-archive-filters' }, [
-            // Categories
+            // Categories with manage button
             $.make('div', { className: 'NB-archive-filter-section' }, [
-                $.make('div', { className: 'NB-archive-filter-title' }, 'Categories'),
+                $.make('div', { className: 'NB-archive-filter-header' }, [
+                    $.make('div', { className: 'NB-archive-filter-title' }, 'Categories'),
+                    $.make('div', { className: 'NB-archive-manage-categories', title: 'Manage Categories' }, [
+                        $.make('img', { src: '/media/img/icons/nouns/settings.svg', className: 'NB-manage-icon' })
+                    ])
+                ]),
                 $.make('div', { className: 'NB-archive-filter-list NB-archive-categories' },
                     this.render_category_filters()
                 )
@@ -562,6 +591,97 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         this.$('.NB-archive-assistant-input').val(query);
         this.submit_assistant_query();
+    },
+
+    start_voice_recording: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        var self = this;
+        var $voice_button = this.$('.NB-archive-assistant-voice-button');
+        var $input = this.$('.NB-archive-assistant-input');
+
+        // Get or create recorder instance for this view
+        if (!this.voice_recorder) {
+            this.voice_recorder = new NEWSBLUR.VoiceRecorder({
+                on_recording_start: function () {
+                    $voice_button.addClass('NB-recording');
+                    $input.attr('placeholder', 'Recording...');
+                    $voice_button.attr('title', 'Stop recording');
+                },
+                on_recording_stop: function () {
+                    $voice_button.removeClass('NB-recording');
+                    $voice_button.addClass('NB-transcribing');
+                    $voice_button.css('transform', '');
+                    $input.attr('placeholder', 'Transcribing...');
+                    $voice_button.attr('title', 'Transcribing audio');
+                },
+                on_recording_cancel: function () {
+                    $voice_button.removeClass('NB-recording NB-transcribing');
+                    $voice_button.css('transform', '');
+                    $voice_button.attr('title', 'Record voice question');
+                    $input.attr('placeholder', 'Ask about your browsing history...');
+                },
+                on_transcription_start: function () {
+                    // Already showing transcribing state
+                },
+                on_transcription_complete: function (text) {
+                    $voice_button.removeClass('NB-transcribing');
+                    $voice_button.css('transform', '');
+                    $voice_button.attr('title', 'Record voice question');
+                    $input.attr('placeholder', 'Ask about your browsing history...');
+
+                    // Set the transcribed text and submit the question automatically
+                    $input.val(text);
+
+                    // Auto-submit the question
+                    _.delay(function () {
+                        self.submit_assistant_query();
+                    }, 100);
+                },
+                on_transcription_error: function (error) {
+                    $voice_button.removeClass('NB-recording NB-transcribing');
+                    $voice_button.css('transform', '');
+
+                    // Check error type
+                    var is_quota_error = error && (error.includes('limit') || error.includes('used all') || error.includes('reached'));
+                    var is_permission_error = error && (error.includes('microphone') || error.includes('permission') || error.includes('denied') || error.includes('not found'));
+
+                    if (is_quota_error) {
+                        // Show quota error as assistant error message
+                        $voice_button.attr('title', 'Record voice question');
+                        $input.attr('placeholder', 'Ask about your browsing history...');
+                        self.handle_assistant_error(error);
+                    } else if (is_permission_error) {
+                        // Show permission error with helpful tooltip and placeholder
+                        $voice_button.attr('title', 'Microphone blocked - click the lock icon in your browser\'s address bar to enable');
+                        $input.attr('placeholder', 'Enable microphone in browser settings to use voice input');
+                    } else {
+                        // Show other errors in placeholder temporarily
+                        $voice_button.attr('title', 'Record voice question');
+                        $input.attr('placeholder', error || 'Voice recording failed. Please try again.');
+                        // Reset placeholder after 3 seconds
+                        setTimeout(function () {
+                            $input.attr('placeholder', 'Ask about your browsing history...');
+                        }, 3000);
+                    }
+                },
+                on_audio_level: function (level) {
+                    // Scale button based on audio level (1.0 to 1.3)
+                    var scale = 1 + (level * 0.3);
+                    $voice_button.css('transform', 'scale(' + scale + ')');
+                }
+            });
+        }
+
+        // Toggle recording
+        if (this.voice_recorder.is_recording) {
+            this.voice_recorder.stop_recording();
+        } else {
+            this.voice_recorder.start_recording();
+        }
     },
 
     handle_assistant_keypress: function (e) {
@@ -986,8 +1106,538 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         NEWSBLUR.log(['Archive: ' + count + ' new page(s) archived in real-time']);
     },
 
+    // ==========================
+    // = Category Management =
+    // ==========================
+
+    open_category_manager: function (e) {
+        if (e) e.stopPropagation();
+        var self = this;
+
+        this.category_manager_open = true;
+        this.selected_categories = [];
+
+        // Fetch merge suggestions
+        this.fetch_merge_suggestions();
+
+        // Count uncategorized
+        this.model.make_request('/api/archive/categories/bulk-categorize', { limit: 0 }, function (data) {
+            if (data.total_uncategorized !== undefined) {
+                self.uncategorized_count = data.total_uncategorized;
+            }
+            self.render_category_manager();
+        }, function () {
+            self.render_category_manager();
+        }, { method: 'POST' });
+    },
+
+    close_category_manager: function (e) {
+        if (e) e.stopPropagation();
+        this.category_manager_open = false;
+        this.selected_categories = [];
+        this.inline_action = null;
+        this.inline_action_data = null;
+        this.$('.NB-category-manager-overlay, .NB-category-manager-modal').remove();
+    },
+
+    fetch_merge_suggestions: function () {
+        var self = this;
+        this.model.make_request('/api/archive/categories/suggest-merges', {}, function (data) {
+            if (data.code === 0) {
+                self.merge_suggestions = data.suggestions || [];
+                self.render_merge_suggestions();
+            }
+        }, function () {
+            self.merge_suggestions = [];
+        }, { request_type: 'GET' });
+    },
+
+    render_category_manager: function () {
+        // Remove existing modal if any
+        this.$('.NB-category-manager-overlay, .NB-category-manager-modal').remove();
+
+        // Create overlay
+        var $overlay = $.make('div', { className: 'NB-category-manager-overlay' });
+
+        // Create modal
+        var $modal = $.make('div', { className: 'NB-category-manager-modal' }, [
+            // Header
+            $.make('div', { className: 'NB-category-manager-header' }, [
+                $.make('h3', 'Manage Categories'),
+                $.make('div', { className: 'NB-category-manager-close' }, '×')
+            ]),
+
+            // Status message area (hidden by default)
+            $.make('div', { className: 'NB-category-manager-status NB-hidden' }),
+
+            // Inline action panel (hidden by default)
+            $.make('div', { className: 'NB-category-manager-inline-action NB-hidden' }),
+
+            // Actions bar
+            $.make('div', { className: 'NB-category-manager-actions' }, [
+                $.make('button', {
+                    className: 'NB-category-merge-btn NB-button NB-disabled',
+                    disabled: true
+                }, 'Merge Selected'),
+                $.make('button', {
+                    className: 'NB-category-bulk-btn NB-button' + (this.uncategorized_count === 0 ? ' NB-disabled' : '')
+                }, this.uncategorized_count > 0 ?
+                    'Categorize ' + this.uncategorized_count + ' Uncategorized' :
+                    'All Categorized')
+            ]),
+
+            // Merge suggestions section
+            $.make('div', { className: 'NB-category-manager-suggestions' }, [
+                $.make('div', { className: 'NB-category-manager-section-title' }, 'Suggested Merges'),
+                $.make('div', { className: 'NB-merge-suggestions-list' },
+                    this.render_merge_suggestions_content()
+                )
+            ]),
+
+            // Category list
+            $.make('div', { className: 'NB-category-manager-list-wrapper' }, [
+                $.make('div', { className: 'NB-category-manager-section-title' },
+                    'All Categories (' + this.categories.length + ')'),
+                $.make('div', { className: 'NB-category-manager-list' },
+                    this.render_category_list_for_management()
+                )
+            ])
+        ]);
+
+        this.$el.append($overlay).append($modal);
+    },
+
+    show_category_status: function (message, type) {
+        // type: 'success', 'error', 'info'
+        var $status = this.$('.NB-category-manager-status');
+        $status.removeClass('NB-hidden NB-success NB-error NB-info')
+            .addClass('NB-' + (type || 'info'))
+            .text(message);
+
+        // Auto-hide success messages after 3 seconds
+        if (type === 'success') {
+            var self = this;
+            setTimeout(function () {
+                self.hide_category_status();
+            }, 3000);
+        }
+    },
+
+    hide_category_status: function () {
+        this.$('.NB-category-manager-status').addClass('NB-hidden').text('');
+    },
+
+    show_inline_action: function (action_type, data) {
+        this.inline_action = action_type;
+        this.inline_action_data = data;
+        this.hide_category_status();
+
+        var $panel = this.$('.NB-category-manager-inline-action');
+        var content;
+
+        if (action_type === 'merge') {
+            content = $.make('div', { className: 'NB-inline-action-content' }, [
+                $.make('span', { className: 'NB-inline-action-label' },
+                    'Merge ' + data.categories.length + ' categories into:'),
+                $.make('input', {
+                    type: 'text',
+                    className: 'NB-inline-action-input',
+                    value: data.default_target || '',
+                    placeholder: 'Target category name'
+                }),
+                $.make('div', { className: 'NB-inline-action-buttons' }, [
+                    $.make('button', { className: 'NB-inline-action-confirm NB-button NB-primary' }, 'Merge'),
+                    $.make('button', { className: 'NB-inline-action-cancel NB-button' }, 'Cancel')
+                ])
+            ]);
+        } else if (action_type === 'rename') {
+            content = $.make('div', { className: 'NB-inline-action-content' }, [
+                $.make('span', { className: 'NB-inline-action-label' },
+                    'Rename "' + data.old_name + '" to:'),
+                $.make('input', {
+                    type: 'text',
+                    className: 'NB-inline-action-input',
+                    value: data.old_name,
+                    placeholder: 'New category name'
+                }),
+                $.make('div', { className: 'NB-inline-action-buttons' }, [
+                    $.make('button', { className: 'NB-inline-action-confirm NB-button NB-primary' }, 'Rename'),
+                    $.make('button', { className: 'NB-inline-action-cancel NB-button' }, 'Cancel')
+                ])
+            ]);
+        } else if (action_type === 'split') {
+            var suggestions_html = _.map(data.suggestions, function (s, i) {
+                return $.make('div', { className: 'NB-split-suggestion-item' }, [
+                    $.make('span', { className: 'NB-split-suggestion-num' }, (i + 1) + '.'),
+                    $.make('span', { className: 'NB-split-suggestion-name' }, s.name),
+                    $.make('span', { className: 'NB-split-suggestion-count' },
+                        '(' + (s.items ? s.items.length : 0) + ' items)')
+                ]);
+            });
+
+            content = $.make('div', { className: 'NB-inline-action-content NB-split-content' }, [
+                $.make('div', { className: 'NB-inline-action-label' },
+                    'Split "' + data.category + '" (' + data.total_stories + ' stories) into:'),
+                $.make('div', { className: 'NB-split-suggestions' }, suggestions_html),
+                $.make('div', { className: 'NB-inline-action-buttons' }, [
+                    $.make('button', { className: 'NB-inline-action-confirm NB-button NB-primary' }, 'Apply Split'),
+                    $.make('button', { className: 'NB-inline-action-cancel NB-button' }, 'Cancel')
+                ])
+            ]);
+        }
+
+        $panel.removeClass('NB-hidden').html(content);
+
+        // Focus the input if there is one
+        $panel.find('.NB-inline-action-input').focus().select();
+    },
+
+    hide_inline_action: function () {
+        this.inline_action = null;
+        this.inline_action_data = null;
+        this.$('.NB-category-manager-inline-action').addClass('NB-hidden').html('');
+    },
+
+    handle_inline_action_keypress: function (e) {
+        if (e.which === 13) {  // Enter key
+            e.preventDefault();
+            this.confirm_inline_action();
+        } else if (e.which === 27) {  // Escape key
+            e.preventDefault();
+            this.cancel_inline_action();
+        }
+    },
+
+    confirm_inline_action: function () {
+        if (!this.inline_action) return;
+
+        if (this.inline_action === 'merge') {
+            this.execute_merge();
+        } else if (this.inline_action === 'rename') {
+            this.execute_rename();
+        } else if (this.inline_action === 'split') {
+            this.execute_split();
+        }
+    },
+
+    cancel_inline_action: function () {
+        this.hide_inline_action();
+    },
+
+    render_merge_suggestions_content: function () {
+        if (this.merge_suggestions.length === 0) {
+            return $.make('div', { className: 'NB-merge-suggestions-empty' }, 'No merge suggestions');
+        }
+
+        return _.map(this.merge_suggestions.slice(0, 5), function (suggestion) {
+            return $.make('div', { className: 'NB-merge-suggestion' }, [
+                $.make('div', { className: 'NB-merge-suggestion-categories' },
+                    _.map(suggestion.categories, function (cat) {
+                        var count = suggestion.counts ? suggestion.counts[cat] : '';
+                        return $.make('span', { className: 'NB-merge-suggestion-pill' }, cat + (count ? ' (' + count + ')' : ''));
+                    })
+                ),
+                $.make('span', { className: 'NB-merge-suggestion-arrow' }, '→'),
+                $.make('span', { className: 'NB-merge-suggestion-target' }, suggestion.suggested_target),
+                $.make('button', {
+                    className: 'NB-merge-suggestion-apply NB-button',
+                    'data-categories': JSON.stringify(suggestion.categories),
+                    'data-target': suggestion.suggested_target
+                }, 'Apply')
+            ]);
+        });
+    },
+
+    render_merge_suggestions: function () {
+        var $list = this.$('.NB-merge-suggestions-list');
+        if ($list.length) {
+            $list.html(this.render_merge_suggestions_content());
+        }
+    },
+
+    render_category_list_for_management: function () {
+        var self = this;
+        return _.map(this.categories, function (cat) {
+            var is_selected = _.contains(self.selected_categories, cat._id);
+            return $.make('div', {
+                className: 'NB-category-item' + (is_selected ? ' NB-selected' : ''),
+                'data-category': cat._id
+            }, [
+                $.make('input', {
+                    type: 'checkbox',
+                    className: 'NB-category-checkbox',
+                    checked: is_selected
+                }),
+                $.make('span', { className: 'NB-category-name' }, cat._id),
+                $.make('span', { className: 'NB-category-count' }, cat.count),
+                $.make('div', { className: 'NB-category-actions' }, [
+                    $.make('button', {
+                        className: 'NB-category-rename-btn',
+                        'data-category': cat._id,
+                        title: 'Rename'
+                    }, '✏️'),
+                    $.make('button', {
+                        className: 'NB-category-split-btn',
+                        'data-category': cat._id,
+                        title: 'Split with AI'
+                    }, '✂️')
+                ])
+            ]);
+        });
+    },
+
+    handle_category_selection: function (e) {
+        var $checkbox = $(e.currentTarget);
+        var $item = $checkbox.closest('.NB-category-item');
+        var category = $item.data('category');
+
+        if ($checkbox.is(':checked')) {
+            if (!_.contains(this.selected_categories, category)) {
+                this.selected_categories.push(category);
+            }
+            $item.addClass('NB-selected');
+        } else {
+            this.selected_categories = _.without(this.selected_categories, category);
+            $item.removeClass('NB-selected');
+        }
+
+        // Enable/disable merge button based on selection
+        var $merge_btn = this.$('.NB-category-merge-btn');
+        if (this.selected_categories.length >= 2) {
+            $merge_btn.removeClass('NB-disabled').prop('disabled', false);
+        } else {
+            $merge_btn.addClass('NB-disabled').prop('disabled', true);
+        }
+    },
+
+    merge_selected_categories: function (e) {
+        if (e) e.stopPropagation();
+
+        if (this.selected_categories.length < 2) {
+            return;
+        }
+
+        // Show inline action panel for merge
+        this.show_inline_action('merge', {
+            categories: this.selected_categories.slice(),
+            default_target: this.selected_categories[0]
+        });
+    },
+
+    execute_merge: function () {
+        var self = this;
+        var data = this.inline_action_data;
+        var target = this.$('.NB-inline-action-input').val().trim();
+
+        if (!target) {
+            this.show_category_status('Please enter a target category name', 'error');
+            return;
+        }
+
+        // Disable buttons during request
+        this.$('.NB-inline-action-confirm').prop('disabled', true).text('Merging...');
+
+        this.model.make_request('/api/archive/categories/merge', {
+            source_categories: JSON.stringify(data.categories),
+            target_category: target
+        }, function (response) {
+            if (response.code === 0) {
+                NEWSBLUR.log(['Merged', response.merged_count, 'stories into', target]);
+                self.hide_inline_action();
+                self.show_category_status('Merged ' + response.merged_count + ' stories into "' + target + '"', 'success');
+                // Refresh categories
+                self.fetch_filters(function () {
+                    self.selected_categories = [];
+                    self.render_category_manager();
+                    // Also refresh the main category list
+                    self.$('.NB-archive-categories').html(self.render_category_filters());
+                });
+            } else {
+                self.show_category_status('Error: ' + (response.message || 'Unknown error'), 'error');
+                self.$('.NB-inline-action-confirm').prop('disabled', false).text('Merge');
+            }
+        }, function () {
+            self.show_category_status('Failed to merge categories', 'error');
+            self.$('.NB-inline-action-confirm').prop('disabled', false).text('Merge');
+        }, { method: 'POST' });
+    },
+
+    apply_merge_suggestion: function (e) {
+        e.stopPropagation();
+        var self = this;
+        var $btn = $(e.currentTarget);
+        var categories = JSON.parse($btn.data('categories'));
+        var target = $btn.data('target');
+
+        $btn.text('Merging...').prop('disabled', true);
+
+        this.model.make_request('/api/archive/categories/merge', {
+            source_categories: JSON.stringify(categories),
+            target_category: target
+        }, function (data) {
+            if (data.code === 0) {
+                NEWSBLUR.log(['Merged', data.merged_count, 'stories into', target]);
+                self.show_category_status('Merged ' + data.merged_count + ' stories into "' + target + '"', 'success');
+                // Refresh everything
+                self.fetch_filters(function () {
+                    self.fetch_merge_suggestions();
+                    self.render_category_manager();
+                    self.$('.NB-archive-categories').html(self.render_category_filters());
+                });
+            } else {
+                $btn.text('Apply').prop('disabled', false);
+                self.show_category_status('Error: ' + (data.message || 'Unknown error'), 'error');
+            }
+        }, function () {
+            $btn.text('Apply').prop('disabled', false);
+            self.show_category_status('Failed to merge categories', 'error');
+        }, { method: 'POST' });
+    },
+
+    show_rename_dialog: function (e) {
+        e.stopPropagation();
+        var $btn = $(e.currentTarget);
+        var old_name = $btn.data('category');
+
+        // Show inline action panel for rename
+        this.show_inline_action('rename', {
+            old_name: old_name
+        });
+    },
+
+    execute_rename: function () {
+        var self = this;
+        var data = this.inline_action_data;
+        var new_name = this.$('.NB-inline-action-input').val().trim();
+
+        if (!new_name) {
+            this.show_category_status('Please enter a new category name', 'error');
+            return;
+        }
+
+        if (new_name === data.old_name) {
+            this.hide_inline_action();
+            return;
+        }
+
+        // Disable buttons during request
+        this.$('.NB-inline-action-confirm').prop('disabled', true).text('Renaming...');
+
+        this.model.make_request('/api/archive/categories/rename', {
+            old_name: data.old_name,
+            new_name: new_name
+        }, function (response) {
+            if (response.code === 0) {
+                NEWSBLUR.log(['Renamed', response.renamed_count, 'stories from', data.old_name, 'to', new_name]);
+                self.hide_inline_action();
+                self.show_category_status('Renamed ' + response.renamed_count + ' stories to "' + new_name + '"', 'success');
+                // Refresh categories
+                self.fetch_filters(function () {
+                    self.render_category_manager();
+                    self.$('.NB-archive-categories').html(self.render_category_filters());
+                });
+            } else {
+                self.show_category_status('Error: ' + (response.message || 'Unknown error'), 'error');
+                self.$('.NB-inline-action-confirm').prop('disabled', false).text('Rename');
+            }
+        }, function () {
+            self.show_category_status('Failed to rename category', 'error');
+            self.$('.NB-inline-action-confirm').prop('disabled', false).text('Rename');
+        }, { method: 'POST' });
+    },
+
+    show_split_dialog: function (e) {
+        e.stopPropagation();
+        var self = this;
+        var $btn = $(e.currentTarget);
+        var category = $btn.data('category');
+
+        // Show loading state
+        $btn.text('⏳').prop('disabled', true);
+        this.show_category_status('Getting AI suggestions for "' + category + '"...', 'info');
+
+        // Get AI suggestions for split
+        this.model.make_request('/api/archive/categories/split', {
+            category: category,
+            action: 'suggest'
+        }, function (data) {
+            $btn.text('✂️').prop('disabled', false);
+            self.hide_category_status();
+
+            if (data.code === 0 && data.suggestions && data.suggestions.length > 0) {
+                // Show inline action panel for split
+                self.show_inline_action('split', {
+                    category: category,
+                    suggestions: data.suggestions,
+                    total_stories: data.total_stories
+                });
+            } else {
+                self.show_category_status('No split suggestions available for this category', 'info');
+            }
+        }, function () {
+            $btn.text('✂️').prop('disabled', false);
+            self.show_category_status('Failed to get split suggestions', 'error');
+        }, { method: 'POST' });
+    },
+
+    execute_split: function () {
+        var self = this;
+
+        // Disable buttons during request
+        this.$('.NB-inline-action-confirm').prop('disabled', true).text('Applying...');
+        this.show_category_status('Split functionality coming soon', 'info');
+
+        // For now, just hide the panel after a short delay
+        setTimeout(function () {
+            self.hide_inline_action();
+        }, 1500);
+    },
+
+    bulk_categorize: function (e) {
+        if (e) e.stopPropagation();
+        var self = this;
+        var $btn = $(e.currentTarget);
+
+        if (this.uncategorized_count === 0) return;
+
+        $btn.text('Categorizing...').prop('disabled', true);
+        this.show_category_status('Starting categorization...', 'info');
+
+        this.model.make_request('/api/archive/categories/bulk-categorize', {
+            limit: 100
+        }, function (data) {
+            if (data.code === 0) {
+                var msg = 'Queued ' + data.queued_count + ' stories for categorization';
+                if (data.total_uncategorized > data.queued_count) {
+                    msg += ' (' + (data.total_uncategorized - data.queued_count) + ' remaining)';
+                }
+                NEWSBLUR.log([msg]);
+                self.show_category_status(msg + '. Categories will appear as stories are processed.', 'success');
+
+                // Update uncategorized count
+                self.uncategorized_count = Math.max(0, self.uncategorized_count - data.queued_count);
+                $btn.text(self.uncategorized_count > 0 ?
+                    'Categorize ' + self.uncategorized_count + ' Uncategorized' :
+                    'All Categorized');
+                $btn.prop('disabled', self.uncategorized_count === 0);
+                if (self.uncategorized_count === 0) {
+                    $btn.addClass('NB-disabled');
+                }
+            } else {
+                $btn.text('Categorize ' + self.uncategorized_count + ' Uncategorized').prop('disabled', false);
+                self.show_category_status('Error: ' + (data.message || 'Unknown error'), 'error');
+            }
+        }, function () {
+            $btn.text('Categorize ' + self.uncategorized_count + ' Uncategorized').prop('disabled', false);
+            self.show_category_status('Failed to start categorization', 'error');
+        }, { method: 'POST' });
+    },
+
     close: function () {
         this.clear_websocket_timeout();
+        if (this.voice_recorder) {
+            this.voice_recorder.cleanup();
+        }
         this.$el.off('scroll');
         this.remove();
     }

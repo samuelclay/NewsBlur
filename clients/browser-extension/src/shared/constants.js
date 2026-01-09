@@ -12,7 +12,13 @@ export const API_ENDPOINTS = {
     LIST: '/api/archive/list',
     CATEGORIES: '/api/archive/categories',
     STATS: '/api/archive/stats',
-    BLOCKLIST: '/api/archive/blocklist'
+    BLOCKLIST: '/api/archive/blocklist',
+    // Category management
+    CATEGORIES_MERGE: '/api/archive/categories/merge',
+    CATEGORIES_RENAME: '/api/archive/categories/rename',
+    CATEGORIES_SPLIT: '/api/archive/categories/split',
+    CATEGORIES_SUGGEST_MERGES: '/api/archive/categories/suggest-merges',
+    CATEGORIES_BULK_CATEGORIZE: '/api/archive/categories/bulk-categorize'
 };
 
 // OAuth config is built dynamically based on server URL

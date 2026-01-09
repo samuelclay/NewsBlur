@@ -20293,7 +20293,7 @@ form.opml_import_form input {
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 6px 4px 16px;
+    padding: 4px 6px 4px 6px;
     margin: 16px 0 24px;
     background: #FFF;
     border: 1px solid #D0D0D0;
@@ -20304,6 +20304,53 @@ form.opml_import_form input {
 
 .NB-archive-assistant-input-wrapper:focus-within {
     border-color: #5C89C9;
+}
+
+.NB-archive-assistant-voice-button {
+    min-width: 32px;
+    height: 32px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.05s ease-out;
+    flex-shrink: 0;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.NB-archive-assistant-voice-button:hover {
+    background-color: #F4F6F3;
+}
+
+.NB-archive-assistant-voice-button.NB-recording {
+    background-color: #FF6B6B;
+    /* Audio level provides live feedback via transform scale */
+}
+
+.NB-archive-assistant-voice-button.NB-transcribing {
+    background-color: #4ECDC4;
+}
+
+.NB-archive-assistant-voice-icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+    opacity: 0.5;
+}
+
+.NB-archive-assistant-voice-button:hover .NB-archive-assistant-voice-icon {
+    opacity: 0.8;
+}
+
+.NB-archive-assistant-voice-button.NB-recording .NB-archive-assistant-voice-icon,
+.NB-archive-assistant-voice-button.NB-transcribing .NB-archive-assistant-voice-icon {
+    filter: brightness(0) invert(1);
+    opacity: 1;
 }
 
 .NB-archive-assistant-input {
@@ -20656,6 +20703,390 @@ form.opml_import_form input {
     border: 1px solid #F0D6D6;
 }
 
+/* Category Filter Header */
+.NB-archive-filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.NB-archive-filter-header .NB-archive-filter-title {
+    margin-bottom: 0;
+}
+
+.NB-archive-manage-categories {
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+    padding: 4px;
+}
+
+.NB-archive-manage-categories:hover {
+    opacity: 1;
+}
+
+.NB-manage-icon {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) saturate(100%) invert(51%) sepia(9%) saturate(8%) hue-rotate(8deg) brightness(96%) contrast(88%);
+}
+
+.NB-archive-manage-categories:hover .NB-manage-icon {
+    filter: brightness(0) saturate(100%) invert(44%) sepia(52%) saturate(485%) hue-rotate(175deg) brightness(90%) contrast(92%);
+}
+
+/* Category Manager Modal */
+.NB-category-manager-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+}
+
+.NB-category-manager-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    max-width: 90vw;
+    max-height: 80vh;
+    background: #FFF;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.NB-category-manager-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #E0E0E0;
+    background: #F8F8F8;
+}
+
+.NB-category-manager-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.NB-category-manager-close {
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.15s ease;
+}
+
+.NB-category-manager-close:hover {
+    color: #333;
+}
+
+.NB-category-manager-actions {
+    display: flex;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #E0E0E0;
+    background: #FAFAFA;
+}
+
+.NB-category-manager-actions .NB-button {
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 6px;
+}
+
+.NB-category-manager-actions .NB-button.NB-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Status message area */
+.NB-category-manager-status {
+    padding: 12px 20px;
+    font-size: 13px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.NB-category-manager-status.NB-hidden {
+    display: none;
+}
+
+.NB-category-manager-status.NB-success {
+    background: #E8F5E9;
+    color: #2E7D32;
+    border-color: #A5D6A7;
+}
+
+.NB-category-manager-status.NB-error {
+    background: #FFEBEE;
+    color: #C62828;
+    border-color: #EF9A9A;
+}
+
+.NB-category-manager-status.NB-info {
+    background: #E3F2FD;
+    color: #1565C0;
+    border-color: #90CAF9;
+}
+
+/* Inline action panel */
+.NB-category-manager-inline-action {
+    padding: 16px 20px;
+    background: #FFF3E0;
+    border-bottom: 1px solid #FFE0B2;
+}
+
+.NB-category-manager-inline-action.NB-hidden {
+    display: none;
+}
+
+.NB-inline-action-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.NB-inline-action-content.NB-split-content {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.NB-inline-action-label {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+}
+
+.NB-inline-action-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #E0E0E0;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+}
+
+.NB-inline-action-input:focus {
+    border-color: #707070;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.NB-inline-action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.NB-inline-action-buttons .NB-button {
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 6px;
+}
+
+.NB-inline-action-buttons .NB-button.NB-primary {
+    background: #707070;
+    color: white;
+    border: none;
+}
+
+.NB-inline-action-buttons .NB-button.NB-primary:hover {
+    background: #505050;
+}
+
+/* Split suggestions in inline panel */
+.NB-split-suggestions {
+    width: 100%;
+    margin: 8px 0;
+}
+
+.NB-split-suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: #FFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+.NB-split-suggestion-num {
+    color: #999;
+    width: 20px;
+}
+
+.NB-split-suggestion-name {
+    flex: 1;
+    font-weight: 500;
+    color: #333;
+}
+
+.NB-split-suggestion-count {
+    color: #888;
+    font-size: 12px;
+}
+
+.NB-category-manager-suggestions {
+    padding: 16px 20px;
+    border-bottom: 1px solid #E0E0E0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.NB-category-manager-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.NB-merge-suggestions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.NB-merge-suggestions-empty {
+    font-size: 13px;
+    color: #999;
+    font-style: italic;
+}
+
+.NB-merge-suggestion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #FFF8E1;
+    border: 1px solid #FFE082;
+    border-radius: 8px;
+}
+
+.NB-merge-suggestion-categories {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.NB-merge-suggestion-pill {
+    padding: 4px 10px;
+    background: #FFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #666;
+}
+
+.NB-merge-suggestion-arrow {
+    color: #888;
+    font-size: 14px;
+}
+
+.NB-merge-suggestion-target {
+    font-weight: 500;
+    color: #333;
+    font-size: 13px;
+}
+
+.NB-merge-suggestion-apply {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.NB-category-manager-list-wrapper {
+    flex: 1;
+    padding: 16px 20px;
+    overflow-y: auto;
+}
+
+.NB-category-manager-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.NB-category-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #FFF;
+    border: 1px solid #E8E8E8;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.NB-category-item:hover {
+    background: #F8F8F8;
+    border-color: #D0D0D0;
+}
+
+.NB-category-item.NB-selected {
+    background: #E3F2FD;
+    border-color: #5C89C9;
+}
+
+.NB-category-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.NB-category-name {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-category-count {
+    font-size: 12px;
+    color: #888;
+    background: #E8E8E8;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.NB-category-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.NB-category-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    opacity: 0.4;
+    transition: opacity 0.15s ease;
+    font-size: 14px;
+}
+
+.NB-category-actions button:hover {
+    opacity: 1;
+}
+
+.NB-category-actions button:disabled {
+    cursor: wait;
+}
+
 /* Dark mode adjustments */
 .NB-dark .NB-archive-view {
     background: #1a1a1a;
@@ -20729,6 +21160,23 @@ form.opml_import_form input {
 
 .NB-dark .NB-archive-assistant-send:hover {
     background: #3a3a3a;
+}
+
+.NB-dark .NB-archive-assistant-voice-button:hover {
+    background-color: #3a3a3a;
+}
+
+.NB-dark .NB-archive-assistant-voice-icon {
+    filter: brightness(0) invert(0.6);
+}
+
+.NB-dark .NB-archive-assistant-voice-button:hover .NB-archive-assistant-voice-icon {
+    filter: brightness(0) invert(0.8);
+}
+
+.NB-dark .NB-archive-assistant-voice-button.NB-recording .NB-archive-assistant-voice-icon,
+.NB-dark .NB-archive-assistant-voice-button.NB-transcribing .NB-archive-assistant-voice-icon {
+    filter: brightness(0) invert(1);
 }
 
 .NB-dark .NB-archive-assistant-input-wrapper:focus-within .NB-archive-assistant-send::before {
