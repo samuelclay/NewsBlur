@@ -1423,6 +1423,7 @@
             this.$s.$archive_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
             this.$s.$layout.removeClass('NB-view-river');
+            this.$s.$layout.removeClass('NB-archive-active');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_story', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-task-return');
@@ -1454,6 +1455,15 @@
             this.flags['trending_view'] = false;
 
             if (this.archive_view) {
+                // Restore story titles pane and taskbars that were hidden for archive view
+                var story_anchor = this.model.preference('story_pane_anchor');
+                if (this.layout.contentLayout) {
+                    this.layout.contentLayout.open(story_anchor);
+                }
+                if (this.layout.rightLayout) {
+                    this.layout.rightLayout.open('north');
+                    this.layout.rightLayout.open('south');
+                }
                 this.archive_view.close();
                 this.archive_view = null;
             }
@@ -2428,6 +2438,17 @@
 
             this.$s.$archive_header.addClass('NB-selected');
             this.$s.$layout.addClass('NB-view-river');
+            this.$s.$layout.addClass('NB-archive-active');
+
+            // Hide story titles pane and taskbars to give archive view full width
+            var story_anchor = this.model.preference('story_pane_anchor');
+            if (this.layout.contentLayout) {
+                this.layout.contentLayout.hide(story_anchor);
+            }
+            if (this.layout.rightLayout) {
+                this.layout.rightLayout.hide('north');
+                this.layout.rightLayout.hide('south');
+            }
 
             // Create and append archive view to content pane
             this.archive_view = new NEWSBLUR.Views.ArchiveView();
