@@ -19962,6 +19962,13 @@ form.opml_import_form input {
    Archive View Styles
    =================== */
 
+/* Hide story titles pane and taskbars when archive is active */
+.NB-archive-active #story_titles,
+.NB-archive-active .content-north,
+.NB-archive-active .content-south {
+    display: none !important;
+}
+
 .NB-archive-view {
     position: absolute;
     top: 0;
@@ -20071,10 +20078,15 @@ form.opml_import_form input {
     height: 100%;
 }
 
-.NB-archive-assistant-tab.NB-active,
-.NB-archive-browser-tab.NB-active {
+.NB-archive-assistant-tab.NB-active {
     display: flex;
     flex-direction: column;
+}
+
+.NB-archive-browser-tab.NB-active {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
 }
 
 /* Archive Assistant Tab */
@@ -20269,7 +20281,7 @@ form.opml_import_form input {
 
 /* Archive Browser Tab */
 .NB-archive-browser-tab {
-    flex-direction: row;
+    overflow-x: hidden;
 }
 
 .NB-archive-filters {
@@ -20558,64 +20570,6 @@ form.opml_import_form input {
     border: 1px solid #F0D6D6;
 }
 
-/* Archive Sidebar Header */
-.NB-feeds-header-archive-container {
-    margin-bottom: 8px;
-}
-
-.NB-feeds-header-archive {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background 0.15s ease;
-}
-
-.NB-feeds-header-archive:hover {
-    background: rgba(0,0,0,0.05);
-}
-
-.NB-feeds-header-archive.NB-selected {
-    background: #5C89C9;
-    color: #FFF;
-}
-
-.NB-feeds-header-archive .NB-feeds-header-icon {
-    width: 16px;
-    height: 16px;
-    opacity: 0.6;
-}
-
-.NB-feeds-header-archive.NB-selected .NB-feeds-header-icon {
-    filter: brightness(0) invert(1);
-    opacity: 1;
-}
-
-.NB-feeds-header-archive .NB-feeds-header-title {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.NB-archive-badge {
-    font-size: 9px;
-    font-weight: 600;
-    padding: 2px 6px;
-    background: #5C89C9;
-    color: #FFF;
-    border-radius: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-left: auto;
-}
-
-.NB-feeds-header-archive.NB-selected .NB-archive-badge {
-    background: rgba(255,255,255,0.2);
-}
-
 /* Dark mode adjustments */
 .NB-dark .NB-archive-view {
     background: #1a1a1a;
@@ -20674,6 +20628,10 @@ form.opml_import_form input {
 
 .NB-dark .NB-archive-assistant-input-wrapper {
     border-color: #333;
+}
+
+.NB-dark .NB-archive-assistant-send {
+    color: #FFF;
 }
 
 .NB-dark .NB-archive-suggestions {

@@ -373,6 +373,8 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 $.make('div', { className: 'NB-archive-empty-subtitle' },
                     'Install the NewsBlur Archive browser extension to start building your browsing history.')
             ]));
+            // Hide load more button when empty
+            this.$('.NB-archive-load-more').hide();
             return;
         }
 
