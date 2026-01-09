@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-07T12:33:57-05:00</updated>
+  <updated>2026-01-08T18:50:17-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,33 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Disable social features for a distraction-free reading experience</title>
+    <link href="https://blog.newsblur.com/2026/01/09/disable-social-features/" rel="alternate" type="text/html" title="Disable social features for a distraction-free reading experience" />
+    <published>2026-01-09T00:00:00-05:00</published>
+    <updated>2026-01-09T00:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2026/01/09/disable-social-features</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/01/09/disable-social-features/">
+      <![CDATA[<p>A common feature request over the years has been the ability to turn off NewsBlur’s social features entirely. For readers who just want to focus on their feeds without blurblogs, shared stories, or public comments, this is now possible with a single preference.</p>
+
+<p><img src="/assets/disable-social-preference.png" style="width: 100%; border: 1px solid #A0A0A0; margin: 24px auto; display: block;" /></p>
+
+<p>Head to Preferences &gt; Feeds and look for the new “Sharing” option at the bottom. Choose “Disable social features” and all sharing, comments, and blurblog features will be hidden from your NewsBlur interface. The Global Shared Stories folder disappears, share buttons are removed from stories, and the sidebar is cleaned up. If you ever want to re-enable social features, just flip the preference back.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[A common feature request over the years has been the ability to turn off NewsBlur’s social features entirely. For readers who just want to focus on their feeds without blurblogs, shared stories, or public comments, this is now possible with a single preference.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Custom icons for folders and feeds</title>
@@ -1286,46 +1313,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     
     <summary type="html">
       <![CDATA[Long popular on the NewsBlur web app, the Grid view has now come to the Android app. Have a look for yourself…
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Moving to a better support forum at forum.newsblur.com</title>
-    <link href="https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at/" rel="alternate" type="text/html" title="Moving to a better support forum at forum.newsblur.com" />
-    <published>2018-04-17T17:22:11-04:00</published>
-    <updated>2018-04-17T17:22:11-04:00</updated>
-    <id>https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at/">
-      <![CDATA[<p>It’s about time NewsBlur had more control of its own support forums. For the past 7 years (to the week!), NewsBlur has been using Get Satisfaction for support, ideas, questions, and praise.</p>
-
-<p>In that time the forums have hosted 6,959 conversations with 6,432 members. And all of that has been imported into the new support forum at <a href="https://forum.newsblur.com">https://forum.newsblur.com</a>.</p>
-
-<figure class="tmblr-full" data-orig-height="2590" data-orig-width="2074" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/forum.png"><img width="650" data-orig-height="2590" data-orig-width="2074" src="https://s3.amazonaws.com/static.newsblur.com/blog/forum.png" /></figure>
-
-<p>Every topic, every post, every like, and every user is still there. The URLs have changed but the search function is alive and well.</p>
-
-<p>Here’s the story with your account. It’s still there and you can inherit all of your posting history. But to use your account you will have to go through the forgot password flow, as the passwords were not able to be imported.</p>
-
-<p>Or create a new account. The point of the forum is to post ideas and questions and problems, so if your posting history doesn’t come with you, it’s not a big deal. It’s not like anybody answering the forums looks at your post count and decides whether or not to dive deeper into your question.</p>
-
-<p>I try to do my best in answering every single support thread. At the rates we’ve seen with nearly 7,000 posts in 7 years, that’s an average of 3 per day. Let’s keep the posts coming!</p>
-
-<p>And if you’re wondering about why I decided to upgrade, the answer is that the new forum software, <a href="https://discourse.org">Discourse</a>, is open-source and allows me to better integrate the forums into other parts of NewsBlur. I have plans to build out the staff in the coming weeks and part of that includes a better support system.</p>
-
-<p>Thanks to Get Satisfaction for all the years of service. You and your cupcake avatars will be missed.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[It’s about time NewsBlur had more control of its own support forums. For the past 7 years (to the week!), NewsBlur has been using Get Satisfaction for support, ideas, questions, and praise.
 ]]>
     </summary>
     
