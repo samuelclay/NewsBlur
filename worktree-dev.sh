@@ -458,10 +458,7 @@ echo ""
 # Set environment for docker compose
 export COMPOSE_PROJECT_NAME="${WORKSPACE_NAME}"
 
-# Stop any existing containers first to avoid name conflicts
-docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" down 2>/dev/null || true
-
-# Start the containers
+# Start the containers (idempotent - won't restart already running containers)
 docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d --remove-orphans
 
 echo ""
