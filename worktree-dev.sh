@@ -458,6 +458,26 @@ echo ""
 # Set environment for docker compose
 export COMPOSE_PROJECT_NAME="${WORKSPACE_NAME}"
 
+# Check for and remove containers with broken network references
+# This can happen when Docker networks are recreated but old containers still reference the old network ID
+WORKSPACE_CONTAINERS=$(docker ps -a --filter "name=${WORKSPACE_NAME}" --format "{{.Names}}" 2>/dev/null | grep -E "newsblur_(web|node|celery|nginx|haproxy)_${WORKSPACE_NAME}$" || true)
+if [ -n "$WORKSPACE_CONTAINERS" ]; then
+    # Check if any container is in Exited state (potential broken network)
+    EXITED_CONTAINER=$(docker ps -a --filter "name=${WORKSPACE_NAME}" --filter "status=exited" --format "{{.Names}}" 2>/dev/null | grep -E "newsblur_(web|node|celery|nginx|haproxy)_${WORKSPACE_NAME}$" | head -1 || true)
+    if [ -n "$EXITED_CONTAINER" ]; then
+        # Try starting it to check if network is broken
+        START_OUTPUT=$(docker start "$EXITED_CONTAINER" 2>&1 || true)
+        if echo "$START_OUTPUT" | grep -q "network.*not found"; then
+            # Network is broken, remove all workspace containers so they can be recreated
+            echo -e "${YELLOW}Detected broken network reference, removing stale containers...${NC}"
+            for container in $WORKSPACE_CONTAINERS; do
+                docker rm -f "$container" 2>/dev/null || true
+            done
+            echo -e "${GREEN}✓ Stale containers removed${NC}"
+        fi
+    fi
+fi
+
 # Start the containers (idempotent - won't restart already running containers)
 docker compose -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" up -d --remove-orphans
 
