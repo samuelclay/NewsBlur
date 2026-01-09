@@ -19971,12 +19971,6 @@ form.opml_import_form input {
    Archive View Styles
    =================== */
 
-/* Hide story titles pane and taskbars when archive is active */
-.NB-archive-active #story_titles,
-.NB-archive-active .content-north,
-.NB-archive-active .content-south {
-    display: none !important;
-}
 
 .NB-archive-view {
     position: absolute;
@@ -19994,9 +19988,11 @@ form.opml_import_form input {
     display: flex;
     flex-direction: column;
     height: 100%;
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 24px;
+    box-sizing: border-box;
 }
 
 .NB-pref-story-position-stretch .NB-archive-container {
