@@ -105,9 +105,12 @@ fun LoginScreen(
                 onAuthCompleted()
             }
 
-            is SignedUp -> onAuthCompleted
+            is SignedUp -> {
+                onAuthCompleted()
+            }
 
-            else -> Unit
+            else -> {
+            }
         }
     }
 
@@ -123,24 +126,12 @@ fun LoginScreen(
             val value = customServerValue.trim()
             if (value.isNotEmpty()) {
                 if (value.startsWith("https://")) {
-                    try {
-                        viewModel.saveCustomServer(value)
-
-                        val pem = customServerCaPem.trim()
-                        if (pem.isNotEmpty()) {
-                            viewModel.saveCustomServerCaPem(pem)
-                        } else {
-                            viewModel.clearCustomServerCaPem()
-                        }
-                    } catch (e: IllegalArgumentException) {
-                        Toast
-                            .makeText(
-                                context,
-                                e.message
-                                    ?: context.getString(R.string.login_message_error), // TODO error message
-                                Toast.LENGTH_LONG,
-                            ).show()
-                        return false
+                    viewModel.saveCustomServer(value)
+                    val pem = customServerCaPem.trim()
+                    if (pem.isNotEmpty()) {
+                        viewModel.saveCustomServerCaPem(pem)
+                    } else {
+                        viewModel.clearCustomServerCaPem()
                     }
                 } else {
                     Toast
@@ -263,10 +254,20 @@ fun LoginScreen(
                     }
                 }
 
-                is SignedIn -> SignedInUi(userImage = s.userImage)
-                SigningIn -> AuthInProgress(text = stringResource(R.string.login_logging_in))
-                SigningUp -> AuthInProgress(text = stringResource(R.string.registering))
-                else -> Unit
+                is SignedIn -> {
+                    SignedInUi(userImage = s.userImage)
+                }
+
+                SigningIn -> {
+                    AuthInProgress(text = stringResource(R.string.login_logging_in))
+                }
+
+                SigningUp -> {
+                    AuthInProgress(text = stringResource(R.string.registering))
+                }
+
+                else -> {
+                }
             }
         }
     }
