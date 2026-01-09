@@ -9,6 +9,8 @@ archived pages.
 import json
 from datetime import datetime
 
+import redis
+from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -21,6 +23,23 @@ from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import ajax_login_required, get_user
+
+
+def _publish_archive_event(user, archives_data, event_type="new"):
+    """
+    Publish archive events via Redis PubSub for real-time WebSocket updates.
+
+    Args:
+        user: The user object
+        archives_data: List of archive data dicts to include in the event
+        event_type: Type of event ("new" or "deleted")
+    """
+    try:
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        payload = json.encode({"type": event_type, "archives": archives_data, "count": len(archives_data)})
+        r.publish(user.username, f"archive:{payload}")
+    except Exception as e:
+        logging.error(f"Error publishing archive event: {e}")
 
 
 def _check_archive_access(user):
@@ -131,6 +150,17 @@ def ingest(request):
         # Queue Elasticsearch indexing for full-text search
         index_archive_for_search.delay(str(result["archive"].id))
 
+        # Publish WebSocket event for real-time updates
+        archive_data = {
+            "archive_id": str(result["archive"].id),
+            "url": url,
+            "title": title,
+            "domain": result["archive"].domain,
+            "matched": result["matched"],
+            "created": result["created"],
+        }
+        _publish_archive_event(user, [archive_data])
+
         return _json_response(
             {
                 "code": 0,
@@ -235,12 +265,31 @@ def batch_ingest(request):
                 extension_version=archive_data.get("extension_version", "") or None,
             )
 
+            # Calculate display fields for WebSocket event
+            archive_obj = result["archive"]
+            content_len = archive_obj.content_length or 0
+            word_count = content_len // 5 if content_len else 0
+            file_size_bytes = len(archive_obj.content_z) if archive_obj.content_z else 0
+            if file_size_bytes < 1024:
+                file_size_display = f"{file_size_bytes} B"
+            elif file_size_bytes < 1024 * 1024:
+                file_size_display = f"{file_size_bytes / 1024:.1f} KB"
+            else:
+                file_size_display = f"{file_size_bytes / (1024 * 1024):.1f} MB"
+
             results.append(
                 {
                     "url": url,
                     "archive_id": str(result["archive"].id),
+                    "title": title,
+                    "domain": result["archive"].domain,
                     "matched": result["matched"],
                     "created": result["created"],
+                    "content_length": content_len,
+                    "word_count": word_count,
+                    "word_count_display": f"{word_count:,}" if word_count else "0",
+                    "file_size_bytes": file_size_bytes,
+                    "file_size_display": file_size_display,
                     "error": None,
                 }
             )
@@ -261,6 +310,12 @@ def batch_ingest(request):
         user_settings.total_archived = (user_settings.total_archived or 0) + created_count
         user_settings.last_archive_date = datetime.now()
         user_settings.save()
+
+    # Publish WebSocket event for real-time updates
+    if processed > 0:
+        successful_archives = [r for r in results if r.get("archive_id") and not r.get("error")]
+        if successful_archives:
+            _publish_archive_event(user, successful_archives)
 
     return _json_response(
         {
@@ -342,14 +397,18 @@ def list_archives(request):
 @require_http_methods(["GET"])
 def get_categories(request):
     """
-    Get breakdown of archives by AI-generated categories.
+    Get breakdown of archives by AI-generated categories and domains.
 
     Returns:
         {
             code: 0,
             categories: [
-                {category: "Research", count: 42},
-                {category: "Shopping", count: 15},
+                {_id: "Research", count: 42},
+                {_id: "Shopping", count: 15},
+                ...
+            ],
+            domains: [
+                {_id: "nytimes.com", count: 42},
                 ...
             ]
         }
@@ -359,12 +418,14 @@ def get_categories(request):
     if not has_access:
         return _error_response(error, status=403)
 
-    breakdown = MArchivedStory.get_category_breakdown(user.pk)
+    category_breakdown = MArchivedStory.get_category_breakdown(user.pk)
+    domain_breakdown = MArchivedStory.get_domain_breakdown(user.pk, limit=20)
 
     return _json_response(
         {
             "code": 0,
-            "categories": [{"category": item["_id"], "count": item["count"]} for item in breakdown],
+            "categories": [{"_id": item["_id"], "count": item["count"]} for item in category_breakdown],
+            "domains": [{"_id": item["_id"], "count": item["count"]} for item in domain_breakdown],
         }
     )
 
@@ -502,15 +563,21 @@ def delete_archives(request):
         return _error_response("archive_ids must be an array")
 
     deleted_count = 0
+    deleted_ids = []
     for archive_id in archive_ids:
         try:
             archive = MArchivedStory.objects.get(id=archive_id, user_id=user.pk)
             archive.soft_delete()
             deleted_count += 1
+            deleted_ids.append(archive_id)
         except MArchivedStory.DoesNotExist:
             pass
         except Exception as e:
             logging.error(f"Error deleting archive {archive_id}: {e}")
+
+    # Publish WebSocket event for real-time updates
+    if deleted_ids:
+        _publish_archive_event(user, [{"archive_id": aid} for aid in deleted_ids], event_type="deleted")
 
     return _json_response({"code": 0, "deleted": deleted_count})
 

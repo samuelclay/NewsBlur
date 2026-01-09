@@ -5651,6 +5651,13 @@
                 this.socket.removeAllListeners('archive_assistant:error');
                 this.socket.on('archive_assistant:error', _.bind(this.handle_archive_assistant_error, this));
 
+                // Archive Extension real-time event listeners
+                this.socket.removeAllListeners('archive:new');
+                this.socket.on('archive:new', _.bind(this.handle_archive_new, this));
+
+                this.socket.removeAllListeners('archive:deleted');
+                this.socket.on('archive:deleted', _.bind(this.handle_archive_deleted, this));
+
                 this.socket.on('disconnect', _.bind(function (reason) {
                     NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);
                     this.flags.feed_refreshing_in_realtime = false;
@@ -5871,6 +5878,34 @@
                 if (view && view.active_query_id === query_id) {
                     return view;
                 }
+            }
+            return null;
+        },
+
+        // ==========================
+        // = Archive Extension Real-time =
+        // ==========================
+
+        handle_archive_new: function (data) {
+            NEWSBLUR.log(['Archive: New archives received via WebSocket', data.count]);
+            var view = this.find_archive_view();
+            if (view && view.handle_archive_new) {
+                view.handle_archive_new(data);
+            }
+        },
+
+        handle_archive_deleted: function (data) {
+            NEWSBLUR.log(['Archive: Archives deleted via WebSocket', data.archive_ids]);
+            var view = this.find_archive_view();
+            if (view && view.handle_archive_deleted) {
+                view.handle_archive_deleted(data);
+            }
+        },
+
+        find_archive_view: function () {
+            var $archive_view = $('.NB-archive-view');
+            if ($archive_view.length) {
+                return $archive_view.data('view');
             }
             return null;
         },

@@ -200,6 +200,10 @@ class MArchivedStory(mongo.Document):
             existing.visit_count += 1
             existing.time_on_page_seconds += time_on_page
 
+            # Set domain if missing
+            if not existing.domain:
+                existing.domain = domain
+
             # Update title if we have a better one
             if title and (not existing.title or len(title) > len(existing.title)):
                 existing.title = title

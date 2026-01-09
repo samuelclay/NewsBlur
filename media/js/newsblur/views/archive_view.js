@@ -8,6 +8,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         "click .NB-archive-domain-filter": "toggle_domain_filter",
         "click .NB-archive-load-more": "load_more_archives",
         "click .NB-archive-item": "open_archive_item",
+        "click .NB-archive-item-newsblur-link": "open_story_in_newsblur",
         "keypress .NB-archive-assistant-input": "handle_assistant_keypress",
         "click .NB-archive-assistant-send": "submit_assistant_query",
         "click .NB-archive-suggestion": "use_suggestion"
@@ -408,6 +409,22 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             stats_items.push($.make('span', { className: 'NB-archive-item-stat NB-no-content' }, 'No content'));
         }
 
+        // Create NewsBlur link if matched to a feed
+        var newsblur_link = '';
+        if (archive.matched_feed_id) {
+            var link_attrs = {
+                className: 'NB-archive-item-newsblur-link',
+                'data-feed-id': archive.matched_feed_id,
+                title: 'Open in NewsBlur'
+            };
+            if (archive.matched_story_hash) {
+                link_attrs['data-story-hash'] = archive.matched_story_hash;
+            }
+            newsblur_link = $.make('div', link_attrs, [
+                $.make('img', { src: '/media/img/favicon_32.png', className: 'NB-archive-item-newsblur-icon' })
+            ]);
+        }
+
         return $.make('div', { className: 'NB-archive-item', 'data-id': archive.id }, [
             $.make('div', { className: 'NB-archive-item-favicon' }, [
                 archive.favicon_url ?
@@ -423,7 +440,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 stats_items.length > 0 ? $.make('div', { className: 'NB-archive-item-stats' }, stats_items) : '',
                 $.make('div', { className: 'NB-archive-item-categories' }, categories_html)
             ]),
-            archive.matched_feed_id ? $.make('div', { className: 'NB-archive-item-badge NB-newsblur' }, 'NewsBlur') : ''
+            newsblur_link
         ]);
     },
 
@@ -518,6 +535,24 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         if (archive && archive.url) {
             window.open(archive.url, '_blank');
+        }
+    },
+
+    open_story_in_newsblur: function (e) {
+        e.stopPropagation();  // Prevent opening the archive URL
+
+        var $link = $(e.currentTarget);
+        var feed_id = $link.data('feed-id');
+        var story_hash = $link.data('story-hash');
+
+        if (feed_id && NEWSBLUR.reader) {
+            var options = {
+                router: true
+            };
+            if (story_hash) {
+                options.story_id = story_hash;
+            }
+            NEWSBLUR.reader.open_feed(feed_id, options);
         }
     },
 
@@ -856,6 +891,99 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
 
         return text;
+    },
+
+    // ==========================
+    // = Real-time WebSocket Updates =
+    // ==========================
+
+    handle_archive_new: function (data) {
+        var self = this;
+        var new_archives = data.archives || [];
+
+        if (new_archives.length === 0) return;
+
+        NEWSBLUR.log(['Archive View: Received', new_archives.length, 'new archives via WebSocket']);
+
+        // Prepend new archives to the list (check for duplicates by archive_id)
+        new_archives.forEach(function (archive) {
+            // Normalize the ID field (backend sends archive_id, frontend expects id)
+            if (archive.archive_id && !archive.id) {
+                archive.id = archive.archive_id;
+            }
+
+            var exists = _.find(self.archives, function (a) {
+                return a.id === archive.id || a.id === archive.archive_id;
+            });
+
+            if (!exists) {
+                self.archives.unshift(archive);
+                self.update_sidebar_for_archive(archive);
+            }
+        });
+
+        // Re-render if on browser tab
+        if (this.active_tab === 'browser') {
+            this.render_archives();
+        }
+
+        // Show notification
+        this.show_archive_notification(new_archives.length);
+    },
+
+    update_sidebar_for_archive: function (archive) {
+        // Update domain count
+        var domain = archive.domain;
+        if (domain) {
+            var existing_domain = _.find(this.domains, function (d) { return d._id === domain; });
+            if (existing_domain) {
+                existing_domain.count++;
+            } else {
+                this.domains.unshift({ _id: domain, count: 1 });
+            }
+            // Re-sort domains by count
+            this.domains = _.sortBy(this.domains, function (d) { return -d.count; });
+            this.$('.NB-archive-domains').html(this.render_domain_filters());
+        }
+
+        // Update categories (if present in the archive data)
+        var categories = archive.ai_categories || [];
+        if (categories.length > 0) {
+            categories.forEach(function (cat) {
+                var existing_cat = _.find(this.categories, function (c) { return c._id === cat; });
+                if (existing_cat) {
+                    existing_cat.count++;
+                } else {
+                    this.categories.push({ _id: cat, count: 1 });
+                }
+            }, this);
+            // Re-sort categories by count
+            this.categories = _.sortBy(this.categories, function (c) { return -c.count; });
+            this.$('.NB-archive-categories').html(this.render_category_filters());
+        }
+    },
+
+    handle_archive_deleted: function (data) {
+        var ids = data.archive_ids || [];
+
+        if (ids.length === 0) return;
+
+        NEWSBLUR.log(['Archive View: Received delete for', ids.length, 'archives via WebSocket']);
+
+        // Remove deleted archives from the list
+        this.archives = _.reject(this.archives, function (a) {
+            return _.contains(ids, a.id) || _.contains(ids, a.archive_id);
+        });
+
+        // Re-render if on browser tab
+        if (this.active_tab === 'browser') {
+            this.render_archives();
+        }
+    },
+
+    show_archive_notification: function (count) {
+        // Log notification (could be enhanced to show a toast)
+        NEWSBLUR.log(['Archive: ' + count + ' new page(s) archived in real-time']);
     },
 
     close: function () {

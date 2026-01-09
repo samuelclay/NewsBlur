@@ -103,9 +103,17 @@ class NewsBlurAPI {
         let url = `${this.baseUrl}${endpoint}`;
 
         // In service worker context, localhost HTTPS fails due to self-signed certs
-        // Try HTTP instead for localhost
+        // Convert to HTTP and adjust port for Django direct access
+        // Worktree ports: HTTPS = 8443 + offset, Django HTTP = 8000 + offset
+        // So HTTP_PORT = HTTPS_PORT - 443
         if (this.isServiceWorker() && url.startsWith('https://localhost')) {
-            url = url.replace('https://', 'http://');
+            const urlObj = new URL(url);
+            const httpsPort = parseInt(urlObj.port) || 443;
+            // Calculate Django direct HTTP port
+            const httpPort = httpsPort === 443 ? 80 : httpsPort - 443;
+            urlObj.protocol = 'http:';
+            urlObj.port = httpPort.toString();
+            url = urlObj.toString();
             console.log('NewsBlur Archive: Using HTTP for localhost in service worker:', url);
         }
 
