@@ -19625,6 +19625,146 @@ form.opml_import_form input {
     list-style: none;
 }
 
+/* Disable social features */
+.NB-disable-social .NB-feeds-header-river-blurblogs-container,
+.NB-disable-social .NB-feeds-header-river-global-container,
+.NB-disable-social .NB-socialfeeds-folder,
+.NB-disable-social .NB-feed-story-comments-container,
+.NB-disable-social .NB-feed-story-shares-container,
+.NB-disable-social .NB-feed-story-share,
+.NB-disable-social .NB-story-share,
+.NB-disable-social .NB-story-share-button,
+.NB-disable-social .NB-story-comments,
+.NB-disable-social .NB-story-comments-label,
+.NB-disable-social .NB-story-comments-public-teaser {
+    display: none !important;
+}
+
+/* Social features preference cards */
+.NB-preference-disablesocial .NB-preference-options {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    align-items: stretch;
+}
+
+.NB-social-card {
+    flex: 1;
+    position: relative;
+    display: flex;
+}
+
+.NB-social-card input[type="radio"] {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.NB-social-card-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 16px 18px 16px 40px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: #f8f8f8;
+}
+
+/* Override inherited label padding from .NB-modal-preferences .NB-preference .NB-preference-options label */
+.NB-modal-preferences .NB-preference .NB-preference-options label.NB-social-card-content {
+    padding: 16px 18px 16px 40px;
+}
+
+.NB-social-card input[type="radio"]:checked + .NB-social-card-content {
+    border-color: #5c89b2;
+    background: #f0f7fc;
+}
+
+.NB-social-card-content:hover {
+    border-color: #b0c4d8;
+    background: #f0f0f0;
+}
+
+.NB-social-card input[type="radio"]:checked + .NB-social-card-content:hover {
+    background: #e8f2f8;
+}
+
+.NB-social-card-icon {
+    display: none;
+}
+
+.NB-social-card-title {
+    display: block;
+    font-weight: 500;
+    font-size: 13px;
+    color: #303030;
+    margin-bottom: 6px;
+}
+
+.NB-social-card-desc {
+    display: block;
+    font-size: 12px;
+    color: #606060;
+    line-height: 1.4;
+}
+
+.NB-social-features-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.NB-social-features-list li {
+    font-size: 12px;
+    color: #505050;
+    padding: 3px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.NB-feature-check {
+    color: #5a9e5a;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+/* Dark mode support */
+.NB-dark .NB-social-card-content {
+    border-color: #444;
+    background: #2a2a2a;
+}
+
+.NB-dark .NB-social-card input[type="radio"]:checked + .NB-social-card-content {
+    border-color: #5c89b2;
+    background: #2d3a47;
+}
+
+.NB-dark .NB-social-card-content:hover {
+    border-color: #555;
+    background: #333;
+}
+
+.NB-dark .NB-social-card-title {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-social-card-desc {
+    color: #999;
+}
+
+.NB-dark .NB-social-features-list li {
+    color: #bbb;
+}
+
+.NB-dark .NB-feature-check {
+    color: #7ac47a;
+}
+
 /* =================== */
 /* = Trending Sites  = */
 /* =================== */
