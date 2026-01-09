@@ -245,7 +245,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 className: 'NB-archive-assistant-input',
                 placeholder: 'Ask about your browsing history...'
             }),
-            $.make('div', { className: 'NB-archive-assistant-send NB-button' }, 'Send')
+            $.make('div', { className: 'NB-archive-assistant-send' })
         ]));
 
         return elements;
@@ -762,33 +762,100 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     },
 
     markdown_to_html: function (text) {
-        // Simple markdown to HTML converter
-        var html = text;
+        // Markdown to HTML converter
+        var self = this;
+        var lines = text.split('\n');
+        var html_lines = [];
+        var list_type = null;  // 'ul' or 'ol'
 
-        // Escape HTML
-        html = html.replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
+        var close_list = function () {
+            if (list_type) {
+                html_lines.push('</' + list_type + '>');
+                list_type = null;
+            }
+        };
 
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+
+            // Escape HTML
+            line = line.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            // Headings (## and ###)
+            if (line.match(/^### (.+)$/)) {
+                close_list();
+                line = '<h4>' + self.apply_inline_formatting(line.replace(/^### (.+)$/, '$1')) + '</h4>';
+                html_lines.push(line);
+                continue;
+            }
+            if (line.match(/^## (.+)$/)) {
+                close_list();
+                line = '<h3>' + self.apply_inline_formatting(line.replace(/^## (.+)$/, '$1')) + '</h3>';
+                html_lines.push(line);
+                continue;
+            }
+
+            // Ordered list items (1. 2. 3.)
+            if (line.match(/^\d+\. (.+)$/)) {
+                if (list_type !== 'ol') {
+                    close_list();
+                    html_lines.push('<ol class="NB-markdown-list">');
+                    list_type = 'ol';
+                }
+                var content = line.replace(/^\d+\. (.+)$/, '$1');
+                content = self.apply_inline_formatting(content);
+                html_lines.push('<li>' + content + '</li>');
+                continue;
+            }
+
+            // Unordered list items (- item)
+            if (line.match(/^- (.+)$/)) {
+                if (list_type !== 'ul') {
+                    close_list();
+                    html_lines.push('<ul class="NB-markdown-list">');
+                    list_type = 'ul';
+                }
+                var content = line.replace(/^- (.+)$/, '$1');
+                content = self.apply_inline_formatting(content);
+                html_lines.push('<li>' + content + '</li>');
+                continue;
+            }
+
+            // Close list if we hit non-list content
+            if (list_type && line.trim() !== '') {
+                close_list();
+            }
+
+            // Empty lines
+            if (line.trim() === '') {
+                close_list();
+                continue;
+            }
+
+            // Regular paragraph text
+            line = self.apply_inline_formatting(line);
+            html_lines.push('<p>' + line + '</p>');
+        }
+
+        close_list();
+        return html_lines.join('');
+    },
+
+    apply_inline_formatting: function (text) {
         // Bold
-        html = html.replace(/\*\*([^\n]+?)\*\*/g, '<strong>$1</strong>');
-        html = html.replace(/__([^\n]+?)__/g, '<strong>$1</strong>');
+        text = text.replace(/\*\*([^\n]+?)\*\*/g, '<strong>$1</strong>');
+        text = text.replace(/__([^\n]+?)__/g, '<strong>$1</strong>');
 
         // Italic
-        html = html.replace(/\*([^\n*]+?)\*/g, '<em>$1</em>');
-        html = html.replace(/_([^\n_]+?)_/g, '<em>$1</em>');
+        text = text.replace(/\*([^\n*]+?)\*/g, '<em>$1</em>');
+        text = text.replace(/_([^\n_]+?)_/g, '<em>$1</em>');
 
         // Links - convert [text](url) to clickable links
-        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+        text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
 
-        // Line breaks
-        html = html.replace(/\n/g, '<br>');
-
-        // Lists (simple)
-        html = html.replace(/^- (.+)/gm, '<li>$1</li>');
-        html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-
-        return html;
+        return text;
     },
 
     close: function () {
