@@ -240,6 +240,81 @@ class NewsBlurAPI {
             body: body.toString()
         });
     }
+
+    // Category Management Methods
+
+    /**
+     * Merge multiple categories into one target category
+     * @param {string[]} sourceCategories - Categories to merge
+     * @param {string} targetCategory - Target category name
+     * @returns {Promise<object>} Response data
+     */
+    async mergeCategories(sourceCategories, targetCategory) {
+        const body = new URLSearchParams();
+        body.append('source_categories', JSON.stringify(sourceCategories));
+        body.append('target_category', targetCategory);
+
+        return this.request(API_ENDPOINTS.CATEGORIES_MERGE, {
+            method: 'POST',
+            body: body.toString()
+        });
+    }
+
+    /**
+     * Rename a category
+     * @param {string} oldName - Current category name
+     * @param {string} newName - New category name
+     * @returns {Promise<object>} Response data
+     */
+    async renameCategory(oldName, newName) {
+        const body = new URLSearchParams();
+        body.append('old_name', oldName);
+        body.append('new_name', newName);
+
+        return this.request(API_ENDPOINTS.CATEGORIES_RENAME, {
+            method: 'POST',
+            body: body.toString()
+        });
+    }
+
+    /**
+     * Get AI suggestions for splitting a category
+     * @param {string} category - Category to split
+     * @returns {Promise<object>} Response data with suggestions
+     */
+    async getSplitSuggestions(category) {
+        const body = new URLSearchParams();
+        body.append('category', category);
+        body.append('action', 'suggest');
+
+        return this.request(API_ENDPOINTS.CATEGORIES_SPLIT, {
+            method: 'POST',
+            body: body.toString()
+        });
+    }
+
+    /**
+     * Get suggested category merges based on similarity
+     * @returns {Promise<object>} Response data with merge suggestions
+     */
+    async getSuggestedMerges() {
+        return this.request(API_ENDPOINTS.CATEGORIES_SUGGEST_MERGES);
+    }
+
+    /**
+     * Trigger bulk categorization of uncategorized archives
+     * @param {number} limit - Max stories to process (default 100)
+     * @returns {Promise<object>} Response data
+     */
+    async bulkCategorize(limit = 100) {
+        const body = new URLSearchParams();
+        body.append('limit', limit.toString());
+
+        return this.request(API_ENDPOINTS.CATEGORIES_BULK_CATEGORIZE, {
+            method: 'POST',
+            body: body.toString()
+        });
+    }
 }
 
 // Export singleton instance and class

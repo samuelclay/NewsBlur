@@ -18,7 +18,7 @@ from django.views.decorators.http import require_http_methods
 from apps.archive_extension.blocklist import get_blocked_domains, get_blocked_patterns, is_blocked
 from apps.archive_extension.matching import match_and_process
 from apps.archive_extension.models import MArchivedStory, MArchiveUserSettings
-from apps.archive_extension.tasks import index_archive_for_search
+from apps.archive_extension.tasks import categorize_archives, index_archive_for_search
 from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
@@ -150,6 +150,10 @@ def ingest(request):
         # Queue Elasticsearch indexing for full-text search
         index_archive_for_search.delay(str(result["archive"].id))
 
+        # Queue AI categorization (only if content was stored)
+        if result["content_stored"]:
+            categorize_archives.delay(user.pk, archive_ids=[str(result["archive"].id)])
+
         # Publish WebSocket event for real-time updates
         archive_data = {
             "archive_id": str(result["archive"].id),
@@ -236,6 +240,7 @@ def batch_ingest(request):
     processed = 0
     errors = 0
     created_count = 0
+    archives_with_content = []  # Track archives that need categorization
 
     for archive_data in archives:
         url = archive_data.get("url", "").strip()
@@ -300,10 +305,18 @@ def batch_ingest(request):
             # Queue Elasticsearch indexing for full-text search
             index_archive_for_search.delay(str(result["archive"].id))
 
+            # Track archives with content for categorization
+            if result["content_stored"]:
+                archives_with_content.append(str(result["archive"].id))
+
         except Exception as e:
             logging.error(f"Error ingesting archive {url}: {e}")
             results.append({"url": url, "error": str(e)})
             errors += 1
+
+    # Queue AI categorization for all archives with content (batch for efficiency)
+    if archives_with_content:
+        categorize_archives.delay(user.pk, archive_ids=archives_with_content)
 
     # Update user stats
     if created_count > 0:
@@ -740,6 +753,394 @@ def export_archives(request):
         response = HttpResponse(json.encode(data, indent=2), content_type="application/json")
         response["Content-Disposition"] = 'attachment; filename="newsblur_archives.json"'
         return response
+
+
+# ===================
+# Category Management
+# ===================
+
+
+@csrf_exempt
+@ajax_login_required
+@require_http_methods(["POST"])
+def merge_categories(request):
+    """
+    Merge multiple categories into one target category.
+
+    All stories with source categories will have those categories replaced
+    with the target category.
+
+    POST params:
+        source_categories: JSON array of category names to merge
+        target_category: Target category name
+
+    Returns:
+        {
+            code: 0,
+            merged_count: int,
+            target_category: str
+        }
+    """
+    user = get_user(request)
+    has_access, error = _check_archive_access(user)
+    if not has_access:
+        return _error_response(error, status=403)
+
+    source_categories_json = request.POST.get("source_categories", "[]")
+    target_category = request.POST.get("target_category", "").strip()
+
+    try:
+        source_categories = json.decode(source_categories_json)
+    except Exception:
+        return _error_response("Invalid source_categories JSON")
+
+    if not isinstance(source_categories, list) or not source_categories:
+        return _error_response("source_categories must be a non-empty array")
+    if not target_category:
+        return _error_response("target_category is required")
+
+    merged_count = 0
+    for source in source_categories:
+        if source == target_category:
+            continue
+
+        # Update all stories: remove source category, add target category
+        count = MArchivedStory.objects(user_id=user.pk, ai_categories=source).update(
+            pull__ai_categories=source, add_to_set__ai_categories=target_category
+        )
+        merged_count += count
+
+    # Update Elasticsearch index for affected stories
+    if merged_count > 0:
+        _reindex_categories_async(user.pk, source_categories, target_category)
+
+    return _json_response(
+        {
+            "code": 0,
+            "merged_count": merged_count,
+            "target_category": target_category,
+        }
+    )
+
+
+@csrf_exempt
+@ajax_login_required
+@require_http_methods(["POST"])
+def rename_category(request):
+    """
+    Rename a category.
+
+    POST params:
+        old_name: Current category name
+        new_name: New category name
+
+    Returns:
+        {
+            code: 0,
+            renamed_count: int
+        }
+    """
+    user = get_user(request)
+    has_access, error = _check_archive_access(user)
+    if not has_access:
+        return _error_response(error, status=403)
+
+    old_name = request.POST.get("old_name", "").strip()
+    new_name = request.POST.get("new_name", "").strip()
+
+    if not old_name or not new_name:
+        return _error_response("old_name and new_name are required")
+    if old_name == new_name:
+        return _error_response("old_name and new_name must be different")
+
+    # Update all stories with this category
+    renamed_count = MArchivedStory.objects(user_id=user.pk, ai_categories=old_name).update(
+        pull__ai_categories=old_name, add_to_set__ai_categories=new_name
+    )
+
+    # Update Elasticsearch index
+    if renamed_count > 0:
+        _reindex_categories_async(user.pk, [old_name], new_name)
+
+    return _json_response(
+        {
+            "code": 0,
+            "renamed_count": renamed_count,
+        }
+    )
+
+
+@csrf_exempt
+@ajax_login_required
+@require_http_methods(["POST"])
+def split_category(request):
+    """
+    Split a category into multiple categories using AI suggestions.
+
+    POST params:
+        category: Category to split
+        action: "suggest" to get AI suggestions, "apply" to apply a split
+
+    For action="suggest":
+        Returns AI-suggested split targets based on story content.
+
+    For action="apply":
+        split_rules: JSON array of {new_category: str, story_ids: [str]}
+
+    Returns:
+        {
+            code: 0,
+            suggestions: [...] (for suggest)
+            or
+            applied_count: int (for apply)
+        }
+    """
+    user = get_user(request)
+    has_access, error = _check_archive_access(user)
+    if not has_access:
+        return _error_response(error, status=403)
+
+    category = request.POST.get("category", "").strip()
+    action = request.POST.get("action", "suggest")
+
+    if not category:
+        return _error_response("category is required")
+
+    if action == "suggest":
+        # Get sample stories from this category
+        stories = list(
+            MArchivedStory.objects(user_id=user.pk, ai_categories=category, deleted=False).limit(20)
+        )
+
+        if not stories:
+            return _json_response({"code": 0, "suggestions": []})
+
+        # Build AI prompt for split suggestions
+        story_summaries = "\n".join([f"- {s.title} ({s.domain})" for s in stories])
+
+        try:
+            import anthropic
+
+            client = anthropic.Anthropic()
+
+            prompt = f"""Analyze these items currently in the "{category}" category and suggest how to split them into 2-4 more specific categories.
+
+Items:
+{story_summaries}
+
+For each suggested new category, list which items (by title) would fit there.
+Return ONLY valid JSON (no markdown code blocks):
+[
+  {{"name": "New Category Name", "items": ["title1", "title2"]}}
+]"""
+
+            response = client.messages.create(
+                model="claude-3-5-haiku-20241022", max_tokens=500, messages=[{"role": "user", "content": prompt}]
+            )
+
+            result_text = response.content[0].text.strip()
+            # Remove markdown code block if present
+            if result_text.startswith("```"):
+                result_text = result_text.split("\n", 1)[1]
+                if result_text.endswith("```"):
+                    result_text = result_text.rsplit("```", 1)[0]
+
+            suggestions = json.decode(result_text)
+
+            return _json_response(
+                {
+                    "code": 0,
+                    "original_category": category,
+                    "suggestions": suggestions,
+                    "total_stories": len(stories),
+                }
+            )
+
+        except Exception as e:
+            logging.error(f"AI split suggestion failed: {e}")
+            return _error_response(f"Failed to generate suggestions: {str(e)}")
+
+    elif action == "apply":
+        # Apply the split based on provided rules
+        split_rules_json = request.POST.get("split_rules", "[]")
+        try:
+            split_rules = json.decode(split_rules_json)
+        except Exception:
+            return _error_response("Invalid split_rules JSON")
+
+        applied_count = 0
+        for rule in split_rules:
+            new_category = rule.get("new_category", "").strip()
+            story_ids = rule.get("story_ids", [])
+
+            if not new_category or not story_ids:
+                continue
+
+            # Update stories: remove old category, add new category
+            for story_id in story_ids:
+                try:
+                    MArchivedStory.objects(id=story_id, user_id=user.pk).update(
+                        pull__ai_categories=category, add_to_set__ai_categories=new_category
+                    )
+                    applied_count += 1
+                except Exception as e:
+                    logging.error(f"Error applying split to story {story_id}: {e}")
+
+        return _json_response(
+            {
+                "code": 0,
+                "applied_count": applied_count,
+            }
+        )
+
+    return _error_response("Invalid action. Use 'suggest' or 'apply'")
+
+
+@ajax_login_required
+@require_http_methods(["GET"])
+def suggest_category_merges(request):
+    """
+    Get AI-suggested category merges based on name similarity.
+
+    Returns categories that might be duplicates or could be merged.
+
+    Returns:
+        {
+            code: 0,
+            suggestions: [
+                {
+                    categories: ["AI", "Artificial Intelligence"],
+                    suggested_target: "AI & Machine Learning",
+                    confidence: 0.85,
+                    reason: "Similar category names"
+                }
+            ]
+        }
+    """
+    from difflib import SequenceMatcher
+
+    user = get_user(request)
+    has_access, error = _check_archive_access(user)
+    if not has_access:
+        return _error_response(error, status=403)
+
+    # Get all categories with counts
+    categories = MArchivedStory.get_category_breakdown(user.pk)
+
+    if len(categories) < 2:
+        return _json_response({"code": 0, "suggestions": []})
+
+    suggestions = []
+    category_names = [c["_id"] for c in categories]
+    category_counts = {c["_id"]: c["count"] for c in categories}
+
+    # Find similar category names
+    checked = set()
+    for i, cat1 in enumerate(category_names):
+        for cat2 in category_names[i + 1 :]:
+            pair = tuple(sorted([cat1, cat2]))
+            if pair in checked:
+                continue
+            checked.add(pair)
+
+            # Check string similarity
+            ratio = SequenceMatcher(None, cat1.lower(), cat2.lower()).ratio()
+
+            if ratio > 0.6:  # Similar names
+                # Suggest the category with higher count as target
+                if category_counts[cat1] >= category_counts[cat2]:
+                    suggested_target = cat1
+                else:
+                    suggested_target = cat2
+
+                suggestions.append(
+                    {
+                        "categories": [cat1, cat2],
+                        "suggested_target": suggested_target,
+                        "confidence": round(ratio, 2),
+                        "reason": "Similar category names",
+                        "counts": {cat1: category_counts[cat1], cat2: category_counts[cat2]},
+                    }
+                )
+
+    # Sort by confidence
+    suggestions.sort(key=lambda x: -x["confidence"])
+
+    return _json_response(
+        {
+            "code": 0,
+            "suggestions": suggestions[:10],  # Top 10 suggestions
+        }
+    )
+
+
+@csrf_exempt
+@ajax_login_required
+@require_http_methods(["POST"])
+def bulk_categorize(request):
+    """
+    Trigger bulk categorization of uncategorized archives.
+
+    POST params:
+        limit: Max stories to process (default 100, max 500)
+
+    Returns:
+        {
+            code: 0,
+            queued_count: int,
+            task_id: str
+        }
+    """
+    from apps.archive_extension.tasks import bulk_categorize_archives
+
+    user = get_user(request)
+    has_access, error = _check_archive_access(user)
+    if not has_access:
+        return _error_response(error, status=403)
+
+    limit = min(int(request.POST.get("limit", 100)), 500)
+
+    # Count uncategorized archives
+    uncategorized_count = MArchivedStory.objects(
+        user_id=user.pk, deleted=False, ai_categorized_date=None, content_z__ne=None
+    ).count()
+
+    if uncategorized_count == 0:
+        return _json_response(
+            {
+                "code": 0,
+                "queued_count": 0,
+                "message": "No uncategorized archives found",
+            }
+        )
+
+    # Queue the task
+    task = bulk_categorize_archives.delay(user.pk, limit=min(limit, uncategorized_count))
+
+    return _json_response(
+        {
+            "code": 0,
+            "queued_count": min(limit, uncategorized_count),
+            "task_id": str(task.id),
+            "total_uncategorized": uncategorized_count,
+        }
+    )
+
+
+def _reindex_categories_async(user_id, old_categories, new_category):
+    """
+    Queue reindexing of stories affected by category changes.
+
+    This updates the Elasticsearch index for all stories that had
+    categories changed.
+    """
+    from apps.archive_extension.tasks import index_archive_for_search
+
+    # Find all stories that now have the new category
+    stories = MArchivedStory.objects(user_id=user_id, ai_categories=new_category).only("id")
+
+    for story in stories:
+        index_archive_for_search.delay(str(story.id))
 
 
 def _serialize_archive(archive, include_content=False):
