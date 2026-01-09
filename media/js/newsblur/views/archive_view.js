@@ -32,6 +32,10 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.is_streaming = false;
         this.response_text = '';
         this.usage = null;
+        this.active_query_id = null;
+        this.tool_status = null;
+        this.websocket_timeout = null;
+        this.response_completed = false;
 
         this.fetch_initial_data();
     },
@@ -207,6 +211,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.throttled_check_scroll = _.throttle(_.bind(this.check_scroll, this), 100);
         this.$el.on('scroll', this.throttled_check_scroll);
 
+        // Store view reference for WebSocket event lookup
+        this.$el.data('view', this);
+
         return this;
     },
 
@@ -269,19 +276,31 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             });
         }
 
-        // Show streaming response
-        if (this.is_streaming && this.response_text) {
-            elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant NB-streaming' }, [
-                $.make('div', { className: 'NB-archive-message-content' }, this.markdown_to_html(this.response_text))
-            ]));
-        } else if (this.is_streaming) {
-            elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant NB-thinking' }, [
-                $.make('div', { className: 'NB-archive-message-thinking' }, [
-                    $.make('span', { className: 'NB-thinking-dot' }),
-                    $.make('span', { className: 'NB-thinking-dot' }),
-                    $.make('span', { className: 'NB-thinking-dot' })
-                ])
-            ]));
+        // Show streaming response or tool status
+        if (this.is_streaming) {
+            if (this.tool_status) {
+                // Show tool call status (e.g., "Searching your archive...")
+                elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant NB-tool-status' }, [
+                    $.make('div', { className: 'NB-archive-message-tool' }, [
+                        $.make('span', { className: 'NB-tool-icon' }),
+                        this.tool_status
+                    ])
+                ]));
+            } else if (this.response_text) {
+                // Show streaming text
+                elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant NB-streaming' }, [
+                    $.make('div', { className: 'NB-archive-message-content' }, this.markdown_to_html(this.response_text))
+                ]));
+            } else {
+                // Show thinking animation
+                elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant NB-thinking' }, [
+                    $.make('div', { className: 'NB-archive-message-thinking' }, [
+                        $.make('span', { className: 'NB-thinking-dot' }),
+                        $.make('span', { className: 'NB-thinking-dot' }),
+                        $.make('span', { className: 'NB-thinking-dot' })
+                    ])
+                ]));
+            }
         }
 
         return elements;
@@ -575,13 +594,22 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.model.make_request('/archive-assistant/query', params, function (data) {
             if (data.code === 0) {
                 self.active_conversation = data.conversation_id;
-                // Response will come via streaming/websocket
-                // For now, poll for response
-                self.poll_for_response(data.query_id);
+                self.active_query_id = data.query_id;
+                self.response_completed = false;
+
+                // Response will come via WebSocket
+                // Set a timeout fallback in case WebSocket fails
+                self.websocket_timeout = setTimeout(function () {
+                    if (self.is_streaming && self.active_query_id === data.query_id) {
+                        // Fallback to polling if no WebSocket response after 5 seconds
+                        NEWSBLUR.log(['Archive Assistant: WebSocket timeout, falling back to polling']);
+                        self.poll_for_response(data.query_id);
+                    }
+                }, 5000);
             } else {
                 self.handle_assistant_error(data.message || 'Failed to submit query');
             }
-        }, function (error) {
+        }, function () {
             self.handle_assistant_error('Failed to connect to server');
         }, { method: 'POST' });
     },
@@ -592,6 +620,12 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         var max_polls = 60;  // 30 seconds max
 
         var poll = function () {
+            // Stop polling if response was already completed via WebSocket
+            if (self.response_completed) {
+                NEWSBLUR.log(['Archive Assistant: Polling stopped - response already completed via WebSocket']);
+                return;
+            }
+
             if (poll_count >= max_polls) {
                 self.handle_assistant_error('Request timed out');
                 return;
@@ -600,10 +634,18 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             poll_count++;
 
             self.model.make_request('/archive-assistant/conversation/' + self.active_conversation, {}, function (data) {
+                // Check again in case WebSocket completed while request was in flight
+                if (self.response_completed) {
+                    NEWSBLUR.log(['Archive Assistant: Polling stopped - response completed during request']);
+                    return;
+                }
+
                 if (data.code === 0 && data.queries && data.queries.length > 0) {
                     var query = _.find(data.queries, function (q) { return q.id === query_id; });
 
                     if (query && query.response) {
+                        // Mark as completed to prevent WebSocket from duplicating
+                        self.response_completed = true;
                         self.is_streaming = false;
                         self.response_text = '';
 
@@ -635,6 +677,14 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     handle_assistant_error: function (message) {
         this.is_streaming = false;
         this.response_text = '';
+        this.tool_status = null;
+        this.active_query_id = null;
+
+        // Clear the fallback timeout
+        if (this.websocket_timeout) {
+            clearTimeout(this.websocket_timeout);
+            this.websocket_timeout = null;
+        }
 
         // Add error message
         this.conversation_history.push({
@@ -644,6 +694,80 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         this.render_assistant_messages();
         this.scroll_to_bottom();
+    },
+
+    // ===================
+    // = WebSocket Handlers =
+    // ===================
+
+    handle_stream_start: function (data) {
+        // Clear the fallback timeout since WebSocket is working
+        if (this.websocket_timeout) {
+            clearTimeout(this.websocket_timeout);
+            this.websocket_timeout = null;
+        }
+        NEWSBLUR.log(['Archive Assistant: WebSocket stream started', data.query_id]);
+    },
+
+    append_chunk: function (content) {
+        this.response_text += content;
+        this.tool_status = null;  // Clear tool status when content arrives
+        this.render_assistant_messages();
+        this.scroll_to_bottom();
+    },
+
+    show_tool_call: function (tool_name, tool_input) {
+        // Map tool names to user-friendly status messages
+        var status_messages = {
+            'search_archives': 'Searching your archive...',
+            'search_by_date': 'Searching by date...',
+            'get_page_content': 'Retrieving page content...',
+            'search_by_domain': 'Searching domain...',
+            'list_categories': 'Loading categories...'
+        };
+
+        this.tool_status = status_messages[tool_name] || 'Processing...';
+        NEWSBLUR.log(['Archive Assistant: Tool call', tool_name, tool_input]);
+        this.render_assistant_messages();
+        this.scroll_to_bottom();
+    },
+
+    complete_response: function (data) {
+        NEWSBLUR.log(['Archive Assistant: Response complete', data]);
+
+        // Prevent duplicate responses from WebSocket and polling
+        if (this.response_completed) {
+            NEWSBLUR.log(['Archive Assistant: Response already completed, skipping']);
+            return;
+        }
+        this.response_completed = true;
+
+        this.is_streaming = false;
+        this.tool_status = null;
+        this.active_query_id = null;
+
+        // Clear the fallback timeout
+        if (this.websocket_timeout) {
+            clearTimeout(this.websocket_timeout);
+            this.websocket_timeout = null;
+        }
+
+        // Add assistant response to history
+        if (this.response_text) {
+            this.conversation_history.push({
+                role: 'assistant',
+                content: this.response_text
+            });
+        }
+
+        this.response_text = '';
+        this.render_assistant_messages();
+        this.scroll_to_bottom();
+    },
+
+    show_error: function (error_message) {
+        NEWSBLUR.log(['Archive Assistant: Error', error_message]);
+        this.handle_assistant_error(error_message);
     },
 
     render_assistant_messages: function () {
@@ -694,6 +818,11 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     },
 
     close: function () {
+        // Clear WebSocket fallback timeout
+        if (this.websocket_timeout) {
+            clearTimeout(this.websocket_timeout);
+            this.websocket_timeout = null;
+        }
         this.$el.off('scroll');
         this.remove();
     }

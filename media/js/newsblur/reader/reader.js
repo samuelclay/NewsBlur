@@ -2424,6 +2424,7 @@
             });
 
             this.flags['archive_view'] = true;
+            this.flags['river_view'] = true;  // Needed for fake folder header rendering
 
             this.$s.$archive_header.addClass('NB-selected');
             this.$s.$layout.addClass('NB-view-river');
@@ -3213,7 +3214,9 @@
             }
             var feed_title;
 
-            if (feed_id == 'river:') {
+            if (feed_id == 'archive') {
+                feed_title = "Archive";
+            } else if (feed_id == 'river:') {
                 feed_title = "All Site Stories";
             } else if (feed_id == 'river:global') {
                 feed_title = "Global Shared Stories";
@@ -5609,6 +5612,22 @@
                 this.socket.removeAllListeners('ask_ai:usage');
                 this.socket.on('ask_ai:usage', _.bind(this.handle_ask_ai_usage, this));
 
+                // Archive Assistant streaming event listeners
+                this.socket.removeAllListeners('archive_assistant:start');
+                this.socket.on('archive_assistant:start', _.bind(this.handle_archive_assistant_start, this));
+
+                this.socket.removeAllListeners('archive_assistant:chunk');
+                this.socket.on('archive_assistant:chunk', _.bind(this.handle_archive_assistant_chunk, this));
+
+                this.socket.removeAllListeners('archive_assistant:tool_call');
+                this.socket.on('archive_assistant:tool_call', _.bind(this.handle_archive_assistant_tool_call, this));
+
+                this.socket.removeAllListeners('archive_assistant:complete');
+                this.socket.on('archive_assistant:complete', _.bind(this.handle_archive_assistant_complete, this));
+
+                this.socket.removeAllListeners('archive_assistant:error');
+                this.socket.on('archive_assistant:error', _.bind(this.handle_archive_assistant_error, this));
+
                 this.socket.on('disconnect', _.bind(function (reason) {
                     NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);
                     this.flags.feed_refreshing_in_realtime = false;
@@ -5779,6 +5798,56 @@
                 }
                 // No request_id from server, match first view for this story/question
                 return view;
+            }
+            return null;
+        },
+
+        // ===================
+        // = Archive Assistant =
+        // ===================
+
+        handle_archive_assistant_start: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view) {
+                view.handle_stream_start(data);
+            }
+        },
+
+        handle_archive_assistant_chunk: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view && data.content) {
+                view.append_chunk(data.content);
+            }
+        },
+
+        handle_archive_assistant_tool_call: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view) {
+                view.show_tool_call(data.tool, data.input);
+            }
+        },
+
+        handle_archive_assistant_complete: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view) {
+                view.complete_response(data);
+            }
+        },
+
+        handle_archive_assistant_error: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view) {
+                view.show_error(data.error);
+            }
+        },
+
+        find_archive_view_for_query: function (query_id) {
+            var $archive_view = $('.NB-archive-view');
+            if ($archive_view.length) {
+                var view = $archive_view.data('view');
+                if (view && view.active_query_id === query_id) {
+                    return view;
+                }
             }
             return null;
         },

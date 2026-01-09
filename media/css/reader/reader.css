@@ -20236,9 +20236,15 @@ form.opml_import_form input {
     padding: 12px 16px;
     border: 1px solid #D0D0D0;
     border-radius: 8px;
+    font-family: "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 14px;
     outline: none;
     transition: border-color 0.15s ease;
+}
+
+.NB-archive-assistant-input::placeholder {
+    color: #888;
+    font-style: normal;
 }
 
 .NB-archive-assistant-input:focus {
@@ -20660,6 +20666,10 @@ form.opml_import_form input {
     background: #2a2a2a;
     border-color: #444;
     color: #DDD;
+}
+
+.NB-dark .NB-archive-assistant-input::placeholder {
+    color: #777;
 }
 
 .NB-dark .NB-archive-assistant-input-wrapper {

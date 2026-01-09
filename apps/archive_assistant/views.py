@@ -108,13 +108,16 @@ def submit_query(request):
     )
     query.save()
 
-    # Queue async processing
-    process_archive_query.delay(
-        user_id=user.pk,
-        conversation_id=str(conversation.id),
-        query_id=str(query.id),
-        query_text=query_text,
-        model=model,
+    # Queue async processing (route to archive_queue for worktree celery)
+    process_archive_query.apply_async(
+        kwargs={
+            "user_id": user.pk,
+            "conversation_id": str(conversation.id),
+            "query_id": str(query.id),
+            "query_text": query_text,
+            "model": model,
+        },
+        queue="archive_queue",
     )
 
     return _json_response(

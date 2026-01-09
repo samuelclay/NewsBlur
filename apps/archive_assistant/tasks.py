@@ -11,6 +11,7 @@ from datetime import datetime
 import redis
 from celery import shared_task
 from django.conf import settings
+from django.contrib.auth.models import User
 
 from apps.archive_assistant.models import MArchiveConversation, MArchiveQuery, MArchiveAssistantUsage
 from apps.archive_assistant.prompts import ARCHIVE_ASSISTANT_SYSTEM_PROMPT
@@ -43,28 +44,37 @@ def process_archive_query(user_id, conversation_id, query_id, query_text, model=
         model: Claude model to use
     """
     r = get_redis_pubsub_connection()
-    channel = f"archive_assistant:{user_id}"
+
+    # Get username for Redis channel (Socket.IO subscribes to username channel)
+    try:
+        user = User.objects.get(pk=user_id)
+        channel = user.username
+    except User.DoesNotExist:
+        logging.error(f"Archive Assistant: User {user_id} not found")
+        return
+
+    def publish_event(event_type, extra=None):
+        """Publish event with archive_assistant: prefix for Node.js routing."""
+        payload = {
+            "type": event_type,
+            "query_id": query_id,
+            "conversation_id": conversation_id,
+        }
+        if extra:
+            payload.update(extra)
+        r.publish(channel, f"archive_assistant:{json.dumps(payload, ensure_ascii=False)}")
 
     start_time = time.time()
 
     try:
         # Publish start event
-        r.publish(
-            channel,
-            json.dumps(
-                {
-                    "type": "start",
-                    "query_id": query_id,
-                    "conversation_id": conversation_id,
-                }
-            ),
-        )
+        publish_event("start")
 
         # Get the query object
         try:
             query = MArchiveQuery.objects.get(id=query_id)
         except MArchiveQuery.DoesNotExist:
-            _publish_error(r, channel, query_id, "Query not found")
+            publish_event("error", {"error": "Query not found"})
             return
 
         # Get conversation history for context
@@ -75,7 +85,7 @@ def process_archive_query(user_id, conversation_id, query_id, query_text, model=
 
         # Call Claude with tools
         response_text, tool_calls, tokens_used = _call_claude_with_tools(
-            user_id, messages, model, r, channel, query_id
+            user_id, messages, model, publish_event
         )
 
         # Calculate duration
@@ -103,21 +113,11 @@ def process_archive_query(user_id, conversation_id, query_id, query_text, model=
         MArchiveAssistantUsage.record_usage(user_id, model, tokens_used, source="live")
 
         # Publish complete event
-        r.publish(
-            channel,
-            json.dumps(
-                {
-                    "type": "complete",
-                    "query_id": query_id,
-                    "duration_ms": duration_ms,
-                    "tokens_used": tokens_used,
-                }
-            ),
-        )
+        publish_event("complete", {"duration_ms": duration_ms, "tokens_used": tokens_used})
 
     except Exception as e:
         logging.error(f"Archive Assistant query error: {e}")
-        _publish_error(r, channel, query_id, str(e))
+        publish_event("error", {"error": str(e)})
 
         # Save error to query
         try:
@@ -144,15 +144,21 @@ def _get_conversation_history(conversation_id, limit=10):
     return messages
 
 
-def _call_claude_with_tools(user_id, messages, model, redis_conn, channel, query_id):
+def _call_claude_with_tools(user_id, messages, model, publish_event):
     """
     Call Claude API with tools and handle tool execution loop.
+
+    Args:
+        user_id: User ID for tool execution
+        messages: Conversation messages
+        model: Claude model to use
+        publish_event: Callback to publish events (type, extra_dict)
 
     Returns tuple: (response_text, tool_calls, tokens_used)
     """
     import anthropic
 
-    client = anthropic.Anthropic()
+    client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
     tool_calls = []
     tokens_used = 0
@@ -181,17 +187,7 @@ def _call_claude_with_tools(user_id, messages, model, redis_conn, channel, query
             tool_input = tool_block.input
 
             # Publish tool call event
-            redis_conn.publish(
-                channel,
-                json.dumps(
-                    {
-                        "type": "tool_call",
-                        "query_id": query_id,
-                        "tool": tool_name,
-                        "input": tool_input,
-                    }
-                ),
-            )
+            publish_event("tool_call", {"tool": tool_name, "input": tool_input})
 
             # Execute tool
             result = execute_tool(tool_name, tool_input, user_id)
@@ -235,32 +231,9 @@ def _call_claude_with_tools(user_id, messages, model, redis_conn, channel, query
             full_response += chunk
 
             # Stream the chunk
-            redis_conn.publish(
-                channel,
-                json.dumps(
-                    {
-                        "type": "chunk",
-                        "query_id": query_id,
-                        "content": chunk,
-                    }
-                ),
-            )
+            publish_event("chunk", {"content": chunk})
 
     return full_response, tool_calls, tokens_used
-
-
-def _publish_error(redis_conn, channel, query_id, error_message):
-    """Publish an error event."""
-    redis_conn.publish(
-        channel,
-        json.dumps(
-            {
-                "type": "error",
-                "query_id": query_id,
-                "error": error_message,
-            }
-        ),
-    )
 
 
 def _generate_conversation_title(query_text):
