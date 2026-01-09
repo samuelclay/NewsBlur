@@ -629,6 +629,12 @@ def load_feeds_flat(request):
     saved_searches = MSavedSearch.user_searches(user.pk)
     dashboard_rivers = MDashboardRiver.get_user_rivers(user.pk)
 
+    folder_icons = MFolderIcon.get_folder_icons_for_user(user.pk)
+    folder_icons_dict = {fi.folder_title: fi.to_json() for fi in folder_icons}
+
+    feed_icons = MCustomFeedIcon.get_feed_icons_for_user(user.pk)
+    feed_icons_dict = {str(fi.feed_id): fi.to_json() for fi in feed_icons}
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s"
@@ -661,6 +667,8 @@ def load_feeds_flat(request):
         "starred_counts": starred_counts,
         "saved_searches": saved_searches,
         "dashboard_rivers": dashboard_rivers,
+        "folder_icons": folder_icons_dict,
+        "feed_icons": feed_icons_dict,
         "share_ext_token": user.profile.secret_token,
     }
     return data

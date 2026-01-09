@@ -28,6 +28,7 @@ public class PrefConstants {
 
 	public static final String IS_PREMIUM = "is_premium";
 	public static final String IS_ARCHIVE = "is_archive";
+    public static final String IS_STAFF = "is_staff";
     // don't update key value for backward compat
 	public static final String SUBSCRIPTION_EXPIRE = "premium_expire";
 
@@ -72,7 +73,6 @@ public class PrefConstants {
 
     public static final String ENABLE_OFFLINE = "enable_offline";
     public static final String ENABLE_IMAGE_PREFETCH = "enable_image_prefetch";
-    public static final String ENABLE_TEXT_PREFETCH = "enable_text_prefetch";
     public static final String NETWORK_SELECT = "offline_network_select";
     public static final String KEEP_OLD_STORIES = "keep_old_stories";
     public static final String CACHE_AGE_SELECT = "cache_age_select";
