@@ -2440,16 +2440,6 @@
             this.$s.$layout.addClass('NB-view-river');
             this.$s.$layout.addClass('NB-archive-active');
 
-            // Hide story titles pane and taskbars to give archive view full width
-            var story_anchor = this.model.preference('story_pane_anchor');
-            if (this.layout.contentLayout) {
-                this.layout.contentLayout.hide(story_anchor);
-            }
-            if (this.layout.rightLayout) {
-                this.layout.rightLayout.hide('north');
-                this.layout.rightLayout.hide('south');
-            }
-
             // Create and append archive view to content pane
             this.archive_view = new NEWSBLUR.Views.ArchiveView();
             this.$s.$content_pane.append(this.archive_view.$el);
@@ -2458,6 +2448,18 @@
             NEWSBLUR.router.navigate('/archive');
 
             this.make_feed_title_in_stories();
+
+            // Hide story titles pane and taskbars to give archive view full width
+            // Must be after make_feed_title_in_stories which may affect layout
+            var story_anchor = this.model.preference('story_pane_anchor');
+            if (this.layout.contentLayout) {
+                this.layout.contentLayout.hide(story_anchor);
+            }
+            if (this.layout.rightLayout) {
+                this.layout.rightLayout.hide('north');
+                this.layout.rightLayout.hide('south');
+                this.layout.rightLayout.resizeAll();
+            }
         },
 
         // ==================

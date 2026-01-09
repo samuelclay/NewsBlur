@@ -166,9 +166,8 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
     render: function () {
         var self = this;
-        var pane_anchor = NEWSBLUR.assets.preference('story_pane_anchor');
 
-        this.$el.html($.make('div', { className: 'NB-archive-container NB-story-pane-' + pane_anchor }, [
+        this.$el.html($.make('div', { className: 'NB-archive-container' }, [
             // Header with tabs
             $.make('div', { className: 'NB-archive-header' }, [
                 $.make('div', { className: 'NB-archive-tabs' }, [
@@ -337,27 +336,24 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     },
 
     render_category_filters: function () {
-        var self = this;
-        return _.map(this.categories.slice(0, 10), function (cat) {
-            return $.make('div', {
-                className: 'NB-archive-category-filter' + (self.active_category === cat._id ? ' NB-active' : ''),
-                'data-category': cat._id
-            }, [
-                $.make('span', { className: 'NB-archive-filter-name' }, cat._id),
-                $.make('span', { className: 'NB-archive-filter-count' }, cat.count)
-            ]);
-        });
+        return this.render_filters(this.categories, 'category', this.active_category);
     },
 
     render_domain_filters: function () {
-        var self = this;
-        return _.map(this.domains.slice(0, 10), function (domain) {
-            return $.make('div', {
-                className: 'NB-archive-domain-filter' + (self.active_domain === domain._id ? ' NB-active' : ''),
-                'data-domain': domain._id
-            }, [
-                $.make('span', { className: 'NB-archive-filter-name' }, domain._id),
-                $.make('span', { className: 'NB-archive-filter-count' }, domain.count)
+        return this.render_filters(this.domains, 'domain', this.active_domain);
+    },
+
+    render_filters: function (items, filter_type, active_value) {
+        return _.map(items.slice(0, 10), function (item) {
+            var is_active = active_value === item._id;
+            var attrs = {
+                className: 'NB-archive-' + filter_type + '-filter' + (is_active ? ' NB-active' : '')
+            };
+            attrs['data-' + filter_type] = item._id;
+
+            return $.make('div', attrs, [
+                $.make('span', { className: 'NB-archive-filter-name' }, item._id),
+                $.make('span', { className: 'NB-archive-filter-count' }, item.count)
             ]);
         });
     },
@@ -365,6 +361,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     render_archives: function () {
         var self = this;
         var $list = this.$('.NB-archive-list');
+        var $load_more = this.$('.NB-archive-load-more');
 
         if (this.archives.length === 0) {
             $list.html($.make('div', { className: 'NB-archive-empty' }, [
@@ -373,8 +370,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 $.make('div', { className: 'NB-archive-empty-subtitle' },
                     'Install the NewsBlur Archive browser extension to start building your browsing history.')
             ]));
-            // Hide load more button when empty
-            this.$('.NB-archive-load-more').hide();
+            $load_more.hide();
             return;
         }
 
@@ -383,26 +379,17 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         });
 
         $list.html(items);
-
-        // Update load more button
-        var $load_more = this.$('.NB-archive-load-more');
-        if (this.has_more) {
-            $load_more.show();
-        } else {
-            $load_more.hide();
-        }
+        $load_more.toggle(this.has_more);
     },
 
     render_archive_item: function (archive) {
         var date = archive.archived_date ? new Date(archive.archived_date) : null;
         var date_str = date ? this.format_relative_date(date) : '';
 
-        var categories_html = '';
-        if (archive.ai_categories && archive.ai_categories.length > 0) {
-            categories_html = _.map(archive.ai_categories.slice(0, 2), function (cat) {
-                return $.make('span', { className: 'NB-archive-item-category' }, cat);
-            });
-        }
+        var categories = archive.ai_categories || [];
+        var categories_html = _.map(categories.slice(0, 2), function (cat) {
+            return $.make('span', { className: 'NB-archive-item-category' }, cat);
+        });
 
         // Build stats display (word count, file size)
         var stats_items = [];
@@ -478,31 +465,25 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     },
 
     toggle_category_filter: function (e) {
-        var $filter = $(e.currentTarget);
-        var category = $filter.data('category');
-
-        if (this.active_category === category) {
-            this.active_category = null;
-            $filter.removeClass('NB-active');
-        } else {
-            this.$('.NB-archive-category-filter').removeClass('NB-active');
-            this.active_category = category;
-            $filter.addClass('NB-active');
-        }
-
-        this.fetch_archives(true);
+        this.toggle_filter(e, 'category');
     },
 
     toggle_domain_filter: function (e) {
-        var $filter = $(e.currentTarget);
-        var domain = $filter.data('domain');
+        this.toggle_filter(e, 'domain');
+    },
 
-        if (this.active_domain === domain) {
-            this.active_domain = null;
+    toggle_filter: function (e, filter_type) {
+        var $filter = $(e.currentTarget);
+        var value = $filter.data(filter_type);
+        var active_property = 'active_' + filter_type;
+        var filter_class = '.NB-archive-' + filter_type + '-filter';
+
+        if (this[active_property] === value) {
+            this[active_property] = null;
             $filter.removeClass('NB-active');
         } else {
-            this.$('.NB-archive-domain-filter').removeClass('NB-active');
-            this.active_domain = domain;
+            this.$(filter_class).removeClass('NB-active');
+            this[active_property] = value;
             $filter.addClass('NB-active');
         }
 
@@ -681,14 +662,8 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.response_text = '';
         this.tool_status = null;
         this.active_query_id = null;
+        this.clear_websocket_timeout();
 
-        // Clear the fallback timeout
-        if (this.websocket_timeout) {
-            clearTimeout(this.websocket_timeout);
-            this.websocket_timeout = null;
-        }
-
-        // Add error message
         this.conversation_history.push({
             role: 'assistant',
             content: '**Error:** ' + message
@@ -698,16 +673,19 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.scroll_to_bottom();
     },
 
+    clear_websocket_timeout: function () {
+        if (this.websocket_timeout) {
+            clearTimeout(this.websocket_timeout);
+            this.websocket_timeout = null;
+        }
+    },
+
     // ===================
     // = WebSocket Handlers =
     // ===================
 
     handle_stream_start: function (data) {
-        // Clear the fallback timeout since WebSocket is working
-        if (this.websocket_timeout) {
-            clearTimeout(this.websocket_timeout);
-            this.websocket_timeout = null;
-        }
+        this.clear_websocket_timeout();
         NEWSBLUR.log(['Archive Assistant: WebSocket stream started', data.query_id]);
     },
 
@@ -747,14 +725,8 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.is_streaming = false;
         this.tool_status = null;
         this.active_query_id = null;
+        this.clear_websocket_timeout();
 
-        // Clear the fallback timeout
-        if (this.websocket_timeout) {
-            clearTimeout(this.websocket_timeout);
-            this.websocket_timeout = null;
-        }
-
-        // Add assistant response to history
         if (this.response_text) {
             this.conversation_history.push({
                 role: 'assistant',
@@ -820,11 +792,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     },
 
     close: function () {
-        // Clear WebSocket fallback timeout
-        if (this.websocket_timeout) {
-            clearTimeout(this.websocket_timeout);
-            this.websocket_timeout = null;
-        }
+        this.clear_websocket_timeout();
         this.$el.off('scroll');
         this.remove();
     }
