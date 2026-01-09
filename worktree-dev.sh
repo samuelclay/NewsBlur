@@ -175,30 +175,34 @@ if [ "$NEEDS_SETUP" = true ]; then
     # Check if shared services are already running (using original container names)
     echo -e "${YELLOW}Checking for shared service containers...${NC}"
 
+    SHARED_SERVICES="newsblur_db_postgres newsblur_db_mongo newsblur_db_redis newsblur_db_elasticsearch newsblur_imageproxy newsblur_dejavu"
     SHARED_SERVICES_RUNNING=true
 
-    if ! docker ps --filter "name=newsblur_db_postgres" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_postgres"; then
-        SHARED_SERVICES_RUNNING=false
-    fi
-
-    if ! docker ps --filter "name=newsblur_db_mongo" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_mongo"; then
-        SHARED_SERVICES_RUNNING=false
-    fi
-
-    if ! docker ps --filter "name=newsblur_db_redis" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_redis"; then
-        SHARED_SERVICES_RUNNING=false
-    fi
-
-    if ! docker ps --filter "name=newsblur_db_elasticsearch" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_elasticsearch"; then
-        SHARED_SERVICES_RUNNING=false
-    fi
+    for container in $SHARED_SERVICES; do
+        if ! docker ps --filter "name=^${container}$" --filter "status=running" --format "{{.Names}}" | grep -q "^${container}$"; then
+            SHARED_SERVICES_RUNNING=false
+            break
+        fi
+    done
 
     if [ "$SHARED_SERVICES_RUNNING" = false ]; then
         echo -e "${YELLOW}Shared services not running. Starting them...${NC}"
 
-        # Start only the shared services (databases and imageproxy)
-        # Using the standard docker-compose.yml which already has the correct names and ports
-        docker compose -f docker-compose.yml up -d newsblur_db_postgres newsblur_db_mongo newsblur_db_redis newsblur_db_elasticsearch imageproxy dejavu
+        # First try to start existing containers, then create any missing ones
+        for container in $SHARED_SERVICES; do
+            if docker ps -a --filter "name=^${container}$" --format "{{.Names}}" | grep -q "^${container}$"; then
+                # Container exists, just start it
+                docker start "$container" 2>/dev/null || true
+            fi
+        done
+
+        # Create any missing containers using docker compose from main repo
+        # Use the main repo's docker-compose.yml to avoid namespace conflicts
+        if [ -f "../../docker-compose.yml" ]; then
+            (cd ../../ && docker compose up -d newsblur_db_postgres newsblur_db_mongo newsblur_db_redis newsblur_db_elasticsearch imageproxy dejavu 2>/dev/null) || true
+        else
+            docker compose -f docker-compose.yml up -d newsblur_db_postgres newsblur_db_mongo newsblur_db_redis newsblur_db_elasticsearch imageproxy dejavu 2>/dev/null || true
+        fi
 
         echo -e "${YELLOW}Waiting for shared services to be ready...${NC}"
 
@@ -353,30 +357,33 @@ fi
 # Check if shared services are already running
 echo -e "${YELLOW}Checking for shared service containers...${NC}"
 
+SHARED_SERVICES="newsblur_db_postgres newsblur_db_mongo newsblur_db_redis newsblur_db_elasticsearch newsblur_imageproxy newsblur_dejavu"
 SHARED_SERVICES_RUNNING=true
 
-if ! docker ps --filter "name=newsblur_db_postgres" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_postgres"; then
-    SHARED_SERVICES_RUNNING=false
-fi
-
-if ! docker ps --filter "name=newsblur_db_mongo" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_mongo"; then
-    SHARED_SERVICES_RUNNING=false
-fi
-
-if ! docker ps --filter "name=newsblur_db_redis" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_redis"; then
-    SHARED_SERVICES_RUNNING=false
-fi
-
-if ! docker ps --filter "name=newsblur_db_elasticsearch" --filter "status=running" --format "{{.Names}}" | grep -q "newsblur_db_elasticsearch"; then
-    SHARED_SERVICES_RUNNING=false
-fi
+for container in $SHARED_SERVICES; do
+    if ! docker ps --filter "name=^${container}$" --filter "status=running" --format "{{.Names}}" | grep -q "^${container}$"; then
+        SHARED_SERVICES_RUNNING=false
+        break
+    fi
+done
 
 if [ "$SHARED_SERVICES_RUNNING" = false ]; then
     echo -e "${YELLOW}Shared services not running. Starting them...${NC}"
 
-    # Start only the shared services (databases and imageproxy)
-    # Using the standard docker-compose.yml which already has the correct names and ports
-    docker compose -f docker-compose.yml up -d newsblur_db_postgres newsblur_db_mongo newsblur_db_redis newsblur_db_elasticsearch imageproxy dejavu
+    # First try to start existing containers, then create any missing ones
+    for container in $SHARED_SERVICES; do
+        if docker ps -a --filter "name=^${container}$" --format "{{.Names}}" | grep -q "^${container}$"; then
+            # Container exists, just start it
+            docker start "$container" 2>/dev/null || true
+        fi
+    done
+
+    # Create any missing containers using docker compose from main repo
+    if [ -f "../../docker-compose.yml" ]; then
+        (cd ../../ && docker compose up -d newsblur_db_postgres newsblur_db_mongo newsblur_db_redis newsblur_db_elasticsearch imageproxy dejavu 2>/dev/null) || true
+    else
+        docker compose -f docker-compose.yml up -d newsblur_db_postgres newsblur_db_mongo newsblur_db_redis newsblur_db_elasticsearch imageproxy dejavu 2>/dev/null || true
+    fi
 
     echo -e "${YELLOW}Waiting for shared services to be ready...${NC}"
 
@@ -387,7 +394,7 @@ if [ "$SHARED_SERVICES_RUNNING" = false ]; then
         fi
         if [ $i -eq 30 ]; then
             echo -e "${RED}ERROR: PostgreSQL failed to start${NC}"
-            docker compose -f docker-compose.yml logs newsblur_db_postgres
+            docker logs newsblur_db_postgres 2>&1 | tail -20
             exit 1
         fi
         sleep 2
@@ -400,7 +407,7 @@ if [ "$SHARED_SERVICES_RUNNING" = false ]; then
         fi
         if [ $i -eq 30 ]; then
             echo -e "${RED}ERROR: MongoDB failed to start${NC}"
-            docker compose -f docker-compose.yml logs newsblur_db_mongo
+            docker logs newsblur_db_mongo 2>&1 | tail -20
             exit 1
         fi
         sleep 2
@@ -413,7 +420,7 @@ if [ "$SHARED_SERVICES_RUNNING" = false ]; then
         fi
         if [ $i -eq 30 ]; then
             echo -e "${RED}ERROR: Redis failed to start${NC}"
-            docker compose -f docker-compose.yml logs newsblur_db_redis
+            docker logs newsblur_db_redis 2>&1 | tail -20
             exit 1
         fi
         sleep 2
