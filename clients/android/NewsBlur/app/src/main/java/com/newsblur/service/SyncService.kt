@@ -471,6 +471,10 @@ open class SyncService :
 
             dbHelper.setFeedsFolders(folderValues, feedValues, socialFeedValues, starredCountValues, savedSearchesValues)
 
+            // Store custom icons in memory and SQLite
+            dbHelper.setFolderIcons(feedResponse.folderIcons)
+            dbHelper.setFeedIcons(feedResponse.feedIcons)
+
             Log.i(this.javaClass.name, "got feed list")
 
             unreadsSubService.doMetadata()

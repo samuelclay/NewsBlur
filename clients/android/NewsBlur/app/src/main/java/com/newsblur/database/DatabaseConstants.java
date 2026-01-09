@@ -173,6 +173,14 @@ public class DatabaseConstants {
     public static final String SYNC_METADATA_KEY = "key";
     public static final String SYNC_METADATA_VALUE = "value";
 
+    public static final String CUSTOM_ICON_TABLE = "custom_icons";
+    public static final String CUSTOM_ICON_ID = "icon_id";           // folder name or feed ID
+    public static final String CUSTOM_ICON_IS_FEED = "is_feed";      // 1 for feed, 0 for folder
+    public static final String CUSTOM_ICON_TYPE = "icon_type";       // preset, emoji, upload, none
+    public static final String CUSTOM_ICON_DATA = "icon_data";       // icon name, emoji, or base64
+    public static final String CUSTOM_ICON_COLOR = "icon_color";     // hex color
+    public static final String CUSTOM_ICON_SET = "icon_set";         // lucide or heroicons-solid
+
 	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
 		FOLDER_NAME + TEXT + " PRIMARY KEY, " +  
         FOLDER_PARENT_NAMES + TEXT + ", " +
@@ -340,6 +348,16 @@ public class DatabaseConstants {
     static final String SYNC_METADATA_SQL = "CREATE TABLE " + SYNC_METADATA_TABLE + " (" +
         SYNC_METADATA_KEY + TEXT + " PRIMARY KEY, " +
         SYNC_METADATA_VALUE + TEXT +
+        ")";
+
+    static final String CUSTOM_ICON_SQL = "CREATE TABLE " + CUSTOM_ICON_TABLE + " (" +
+        CUSTOM_ICON_ID + TEXT + ", " +
+        CUSTOM_ICON_IS_FEED + INTEGER + ", " +
+        CUSTOM_ICON_TYPE + TEXT + ", " +
+        CUSTOM_ICON_DATA + TEXT + ", " +
+        CUSTOM_ICON_COLOR + TEXT + ", " +
+        CUSTOM_ICON_SET + TEXT + ", " +
+        "PRIMARY KEY (" + CUSTOM_ICON_ID + ", " + CUSTOM_ICON_IS_FEED + ")" +
         ")";
 
 	private static final String[] BASE_STORY_COLUMNS = {

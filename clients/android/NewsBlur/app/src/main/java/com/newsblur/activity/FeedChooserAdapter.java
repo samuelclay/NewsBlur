@@ -1,5 +1,6 @@
 package com.newsblur.activity;
 
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -12,7 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.newsblur.R;
+import com.newsblur.database.BlurDatabaseHelper;
+import com.newsblur.domain.CustomIcon;
 import com.newsblur.domain.Feed;
+import com.newsblur.util.CustomIconRenderer;
+import com.newsblur.util.UIUtils;
 import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedOrderFilter;
@@ -106,6 +111,19 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
             TextView textName = convertView.findViewById(R.id.text_folder_name);
             textName.setTextSize(textSize * defaultTextSizeGroup);
             textName.setText(folderName);
+
+            // Check for custom folder icon
+            ImageView folderIcon = convertView.findViewById(R.id.img_folder);
+            if (folderIcon != null) {
+                CustomIcon customIcon = BlurDatabaseHelper.getFolderIcon(folderName);
+                if (customIcon != null) {
+                    int iconSize = UIUtils.dp2px(parent.getContext(), 19);
+                    Bitmap iconBitmap = CustomIconRenderer.renderIcon(parent.getContext(), customIcon, iconSize);
+                    if (iconBitmap != null) {
+                        folderIcon.setImageBitmap(iconBitmap);
+                    }
+                }
+            }
         }
 
         ((ExpandableListView) parent).expandGroup(groupPosition);
@@ -147,7 +165,19 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
             }
         }
 
-        iconLoader.displayImage(feed.faviconUrl, img, img.getHeight(), true);
+        // Check for custom feed icon
+        CustomIcon customFeedIcon = BlurDatabaseHelper.getFeedIcon(feed.feedId);
+        if (customFeedIcon != null) {
+            int iconSize = UIUtils.dp2px(parent.getContext(), 19);
+            Bitmap iconBitmap = CustomIconRenderer.renderIcon(parent.getContext(), customFeedIcon, iconSize);
+            if (iconBitmap != null) {
+                img.setImageBitmap(iconBitmap);
+            } else {
+                iconLoader.displayImage(feed.faviconUrl, img, img.getHeight(), true);
+            }
+        } else {
+            iconLoader.displayImage(feed.faviconUrl, img, img.getHeight(), true);
+        }
         return convertView;
     }
 

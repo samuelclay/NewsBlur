@@ -38,7 +38,9 @@ import com.newsblur.databinding.ReadingItemActionsBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.di.StoryImageCache
 import com.newsblur.domain.Classifier
+import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
+import com.newsblur.util.CustomIconRenderer
 import com.newsblur.keyboard.KeyboardManager
 import com.newsblur.network.APIConstants.NULL_STORY_TEXT
 import com.newsblur.network.StoryApi
@@ -679,7 +681,19 @@ class ReadingItemFragment :
             binding.readingFeedTitle.visibility = View.GONE
             binding.readingFeedIcon.visibility = View.GONE
         } else {
-            iconLoader.displayImage(feedIconUrl, binding.readingFeedIcon)
+            // Check for custom feed icon
+            val customFeedIcon: CustomIcon? = story?.feedId?.let { BlurDatabaseHelper.getFeedIcon(it) }
+            if (customFeedIcon != null) {
+                val iconSize = UIUtils.dp2px(requireContext(), 17)
+                val iconBitmap = CustomIconRenderer.renderIcon(requireContext(), customFeedIcon, iconSize)
+                if (iconBitmap != null) {
+                    binding.readingFeedIcon.setImageBitmap(iconBitmap)
+                } else {
+                    iconLoader.displayImage(feedIconUrl, binding.readingFeedIcon)
+                }
+            } else {
+                iconLoader.displayImage(feedIconUrl, binding.readingFeedIcon)
+            }
             binding.readingFeedTitle.text = feedTitle
         }
 

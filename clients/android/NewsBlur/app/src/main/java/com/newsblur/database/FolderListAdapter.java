@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +37,9 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.newsblur.R;
+import com.newsblur.domain.CustomIcon;
 import com.newsblur.domain.Feed;
+import com.newsblur.util.CustomIconRenderer;
 import com.newsblur.domain.FeedQueryResult;
 import com.newsblur.domain.Folder;
 import com.newsblur.domain.FolderQueryResult;
@@ -207,7 +210,18 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
             ImageView folderIconView = v.findViewById(R.id.row_folder_icon);
             if ( folderIconView != null ) {
-                folderIconView.setImageResource(isExpanded ? R.drawable.ic_folder : R.drawable.ic_folder_closed);
+                CustomIcon customIcon = BlurDatabaseHelper.getFolderIcon(folderName);
+                if (customIcon != null) {
+                    int iconSize = UIUtils.dp2px(context, 19);
+                    Bitmap iconBitmap = CustomIconRenderer.renderIcon(context, customIcon, iconSize);
+                    if (iconBitmap != null) {
+                        folderIconView.setImageBitmap(iconBitmap);
+                    } else {
+                        folderIconView.setImageResource(isExpanded ? R.drawable.ic_folder : R.drawable.ic_folder_closed);
+                    }
+                } else {
+                    folderIconView.setImageResource(isExpanded ? R.drawable.ic_folder : R.drawable.ic_folder_closed);
+                }
             }
 		}
 
@@ -317,8 +331,20 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             nameView.setTextSize(textSize * defaultTextSize_childName);
             nameView.setPadding(nameView.getPaddingLeft(), titleVerticalPadding, nameView.getPaddingRight(), titleVerticalPadding);
             ImageView iconView = v.findViewById(R.id.row_feedfavicon);
-            iconLoader.preCheck(f.faviconUrl, iconView);
-            iconLoader.displayImage(f.faviconUrl, iconView);
+            CustomIcon customFeedIcon = BlurDatabaseHelper.getFeedIcon(f.feedId);
+            if (customFeedIcon != null) {
+                int iconSize = UIUtils.dp2px(context, 19);
+                Bitmap iconBitmap = CustomIconRenderer.renderIcon(context, customFeedIcon, iconSize);
+                if (iconBitmap != null) {
+                    iconView.setImageBitmap(iconBitmap);
+                } else {
+                    iconLoader.preCheck(f.faviconUrl, iconView);
+                    iconLoader.displayImage(f.faviconUrl, iconView);
+                }
+            } else {
+                iconLoader.preCheck(f.faviconUrl, iconView);
+                iconLoader.displayImage(f.faviconUrl, iconView);
+            }
             TextView neutCounter = v.findViewById(R.id.row_feedneutral);
             TextView posCounter = v.findViewById(R.id.row_feedpositive);
             TextView savedCounter = v.findViewById(R.id.row_feedsaved);

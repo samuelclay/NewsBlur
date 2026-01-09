@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class BlurDatabase extends SQLiteOpenHelper {
 
 	public final static String DB_NAME = "blur.db";
-	private final static int VERSION = 2;
+	private final static int VERSION = 3;
 
 	public BlurDatabase(Context context) {
 		super(context, DB_NAME, null, VERSION);
@@ -33,6 +33,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
         db.execSQL(DatabaseConstants.FEED_TAGS_SQL);
         db.execSQL(DatabaseConstants.FEED_AUTHORS_SQL);
         db.execSQL(DatabaseConstants.SYNC_METADATA_SQL);
+        db.execSQL(DatabaseConstants.CUSTOM_ICON_SQL);
 	}
 
 	@Override
@@ -62,13 +63,18 @@ public class BlurDatabase extends SQLiteOpenHelper {
         db.execSQL(drop + DatabaseConstants.FEED_TAGS_TABLE);
         db.execSQL(drop + DatabaseConstants.FEED_AUTHORS_TABLE);
         db.execSQL(drop + DatabaseConstants.SYNC_METADATA_TABLE);
-		
+        db.execSQL(drop + DatabaseConstants.CUSTOM_ICON_TABLE);
+
 		onCreate(db);
 	}
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int previousVersion, int nextVersion) {
-        // note: we drop all tables and recreate any time the schema changes on app upgrade
+        // Handle migrations
+        if (previousVersion < 3) {
+            // Add custom icons table in version 3
+            db.execSQL(DatabaseConstants.CUSTOM_ICON_SQL);
+        }
     }
 
     public SQLiteDatabase getRO() {
