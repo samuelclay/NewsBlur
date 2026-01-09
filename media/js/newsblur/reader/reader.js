@@ -563,6 +563,7 @@
                 .removeClass('NB-dashboard-columns-double')
                 .removeClass('NB-dashboard-columns-triple')
                 .toggleClass('NB-dashboard-columns-' + columns);
+            this.$s.$body.toggleClass('NB-disable-social', this.model.preference('disable_social') === true || this.model.preference('disable_social') === 'true');
 
             // Show Archive folder for users with archive access
             if (NEWSBLUR.Globals.is_archive) {

@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-07T12:33:57-05:00</updated>
+  <updated>2026-01-08T18:50:17-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,46 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Moving to a better support forum at forum.newsblur.com</title>
+    <link href="https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at/" rel="alternate" type="text/html" title="Moving to a better support forum at forum.newsblur.com" />
+    <published>2018-04-17T17:22:11-04:00</published>
+    <updated>2018-04-17T17:22:11-04:00</updated>
+    <id>https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at/">
+      <![CDATA[<p>It’s about time NewsBlur had more control of its own support forums. For the past 7 years (to the week!), NewsBlur has been using Get Satisfaction for support, ideas, questions, and praise.</p>
+
+<p>In that time the forums have hosted 6,959 conversations with 6,432 members. And all of that has been imported into the new support forum at <a href="https://forum.newsblur.com">https://forum.newsblur.com</a>.</p>
+
+<figure class="tmblr-full" data-orig-height="2590" data-orig-width="2074" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/forum.png"><img width="650" data-orig-height="2590" data-orig-width="2074" src="https://s3.amazonaws.com/static.newsblur.com/blog/forum.png" /></figure>
+
+<p>Every topic, every post, every like, and every user is still there. The URLs have changed but the search function is alive and well.</p>
+
+<p>Here’s the story with your account. It’s still there and you can inherit all of your posting history. But to use your account you will have to go through the forgot password flow, as the passwords were not able to be imported.</p>
+
+<p>Or create a new account. The point of the forum is to post ideas and questions and problems, so if your posting history doesn’t come with you, it’s not a big deal. It’s not like anybody answering the forums looks at your post count and decides whether or not to dive deeper into your question.</p>
+
+<p>I try to do my best in answering every single support thread. At the rates we’ve seen with nearly 7,000 posts in 7 years, that’s an average of 3 per day. Let’s keep the posts coming!</p>
+
+<p>And if you’re wondering about why I decided to upgrade, the answer is that the new forum software, <a href="https://discourse.org">Discourse</a>, is open-source and allows me to better integrate the forums into other parts of NewsBlur. I have plans to build out the staff in the coming weeks and part of that includes a better support system.</p>
+
+<p>Thanks to Get Satisfaction for all the years of service. You and your cupcake avatars will be missed.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[It’s about time NewsBlur had more control of its own support forums. For the past 7 years (to the week!), NewsBlur has been using Get Satisfaction for support, ideas, questions, and praise.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Intelligence training comes to NewsBlur’s Android app</title>
@@ -1061,44 +1101,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[That’s why I’m pleased to introduce more advanced statistics for every single feed. The Statistics dialog now shows a heat graph of the times of day that stories are published as well as the days of the weeks.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Better embeds for Twitter, Instagram, and Imgur</title>
-    <link href="https://blog.newsblur.com/2015/12/10/better-embeds-for-twitter-instagram-and-imgur/" rel="alternate" type="text/html" title="Better embeds for Twitter, Instagram, and Imgur" />
-    <published>2015-12-10T12:38:56-05:00</published>
-    <updated>2015-12-10T12:38:56-05:00</updated>
-    <id>https://blog.newsblur.com/2015/12/10/better-embeds-for-twitter-instagram-and-imgur</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2015/12/10/better-embeds-for-twitter-instagram-and-imgur/">
-      <![CDATA[<p>Every NewsBlur client, from the three official clients (web, iOS, and Android) to all third-party clients, should now be showing better embeds for Twitter, Instagram, and Imgur. Just take a look at these screenshots.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android_oembed_instagram.png" alt="" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios_oembed_instagram.png" alt="" /></p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android_oembed_twitter.png" alt="" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios_oembed_twitter.png" alt="" /></p>
-
-<p>And don’t forget that even YouTube gets special treatment on all three platforms. Here on the web, you can see that YouTube videos are automatically expanded to fill the screen.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/oembed_web_youtube.png" alt="" /></p>
-
-<p>So there you go, enjoy the new embeds (also called oEmbeds, whatever that means). And if you have any suggestions for new embeds, just submit an idea to <a href="http://getsatisfaction.com/newsblur.">http://getsatisfaction.com/newsblur.</a></p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    <category term="ios" />
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[Every NewsBlur client, from the three official clients (web, iOS, and Android) to all third-party clients, should now be showing better embeds for Twitter, Instagram, and Imgur. Just take a look at these screenshots.
 ]]>
     </summary>
     
