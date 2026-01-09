@@ -14,7 +14,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.newsblur.R
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.service.NBSyncService
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedUtils.Companion.triggerSync
 import com.newsblur.util.NotificationUtils
 import com.newsblur.util.PrefConstants
@@ -23,18 +23,26 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat() {
-
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
 
-    private val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-        if (!isGranted) Toast
-                .makeText(requireContext(), R.string.notification_permissions_context, Toast.LENGTH_SHORT)
-                .show()
-        checkEnableNotifications(isGranted)
-    }
+    @Inject
+    lateinit var syncServiceState: SyncServiceState
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (!isGranted) {
+                Toast
+                    .makeText(requireContext(), R.string.notification_permissions_context, Toast.LENGTH_SHORT)
+                    .show()
+            }
+            checkEnableNotifications(isGranted)
+        }
+
+    override fun onCreatePreferences(
+        savedInstanceState: Bundle?,
+        rootKey: String?,
+    ) {
         val preferenceManager = preferenceManager
         preferenceManager.sharedPreferencesName = PrefConstants.PREFERENCES
         setPreferencesFromResource(R.xml.activity_settings, rootKey)
@@ -60,7 +68,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setTitle(R.string.menu_delete_offline_stories_confirmation)
         }
         dbHelper.deleteStories()
-        NBSyncService.forceFeedsFolders()
+        syncServiceState.forceFeedsFolders()
         triggerSync(requireContext())
     }
 
@@ -85,14 +93,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun showNotificationRationaleDialog() {
-        AlertDialog.Builder(requireContext())
-                .setTitle(R.string.settings_enable_notifications)
-                .setMessage(R.string.notification_permissions_rationale)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
-                    openAppSettings()
-                }
-                .show()
+        AlertDialog
+            .Builder(requireContext())
+            .setTitle(R.string.settings_enable_notifications)
+            .setMessage(R.string.notification_permissions_rationale)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                openAppSettings()
+            }.show()
     }
 
     private fun openAppSettings() {

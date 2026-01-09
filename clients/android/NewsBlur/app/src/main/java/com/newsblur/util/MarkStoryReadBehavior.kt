@@ -14,14 +14,15 @@ enum class MarkStoryReadBehavior {
     MANUALLY,
     ;
 
-    fun getDelayMillis(): Long = when (this) {
-        IMMEDIATELY -> 0
-        SECONDS_5 -> 5_000
-        SECONDS_10 -> 10_000
-        SECONDS_20 -> 20_000
-        SECONDS_30 -> 30_000
-        SECONDS_45 -> 40_000
-        SECONDS_60 -> 50_000
-        MANUALLY -> -1
-    }
+    fun getDelayMillis(): Long =
+        when (this) {
+            IMMEDIATELY -> 0
+            SECONDS_5 -> 5_000
+            SECONDS_10 -> 10_000
+            SECONDS_20 -> 20_000
+            SECONDS_30 -> 30_000
+            SECONDS_45 -> 40_000
+            SECONDS_60 -> 50_000
+            MANUALLY -> -1
+        }
 }

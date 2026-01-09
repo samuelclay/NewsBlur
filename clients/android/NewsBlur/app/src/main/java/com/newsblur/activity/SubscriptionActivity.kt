@@ -13,12 +13,20 @@ import com.newsblur.databinding.ActivitySubscriptionBinding
 import com.newsblur.databinding.ViewArchiveSubscriptionBinding
 import com.newsblur.databinding.ViewPremiumSubscriptionBinding
 import com.newsblur.di.IconLoader
+import com.newsblur.network.UserApi
 import com.newsblur.subscription.SubscriptionManager
 import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.subscription.SubscriptionsListener
-import com.newsblur.util.*
+import com.newsblur.util.AppConstants
+import com.newsblur.util.BetterLinkMovementMethod
+import com.newsblur.util.EdgeToEdgeUtil.applyView
+import com.newsblur.util.ImageLoader
+import com.newsblur.util.UIUtils
+import com.newsblur.util.setViewGone
+import com.newsblur.util.setViewVisible
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Currency
+import java.util.Locale
 import javax.inject.Inject
 
 /**
@@ -31,41 +39,47 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class SubscriptionActivity : NbActivity() {
-
     @IconLoader
     @Inject
     lateinit var iconLoader: ImageLoader
+
+    @Inject
+    lateinit var userApi: UserApi
 
     private lateinit var binding: ActivitySubscriptionBinding
     private lateinit var bindingPremium: ViewPremiumSubscriptionBinding
     private lateinit var bindingArchive: ViewArchiveSubscriptionBinding
     private lateinit var subscriptionManager: SubscriptionManager
 
-    private val subscriptionManagerListener = object : SubscriptionsListener {
+    private val subscriptionManagerListener =
+        object : SubscriptionsListener {
+            override fun onActiveSubscription(
+                renewalMessage: String?,
+                isPremium: Boolean,
+                isArchive: Boolean,
+            ) {
+                showActiveSubscriptionDetails(renewalMessage, isPremium, isArchive)
+            }
 
-        override fun onActiveSubscription(renewalMessage: String?, isPremium: Boolean, isArchive: Boolean) {
-            showActiveSubscriptionDetails(renewalMessage, isPremium, isArchive)
-        }
+            override fun onAvailableSubscriptions(productDetails: List<ProductDetails>) {
+                showAvailableSubscriptionDetails(productDetails)
+            }
 
-        override fun onAvailableSubscriptions(productDetails: List<ProductDetails>) {
-            showAvailableSubscriptionDetails(productDetails)
-        }
+            override fun onBillingConnectionReady() {
+                subscriptionManager.syncSubscriptionState()
+            }
 
-        override fun onBillingConnectionReady() {
-            subscriptionManager.syncSubscriptionState()
+            override fun onBillingConnectionError(message: String?) {
+                showSubscriptionDetailsError(message)
+            }
         }
-
-        override fun onBillingConnectionError(message: String?) {
-            showSubscriptionDetailsError(message)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySubscriptionBinding.inflate(layoutInflater)
         bindingPremium = ViewPremiumSubscriptionBinding.bind(binding.containerPremiumSubscription.root)
         bindingArchive = ViewArchiveSubscriptionBinding.bind(binding.containerArchiveSubscription.root)
-        setContentView(binding.root)
+        applyView(binding)
         setupUI()
         setupBilling()
     }
@@ -74,17 +88,25 @@ class SubscriptionActivity : NbActivity() {
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.subscription_toolbar_title), true)
 
         // linkify before setting the string resource
-        BetterLinkMovementMethod.linkify(Linkify.WEB_URLS, binding.textPolicies)
-                .setOnLinkClickListener { _: TextView?, url: String? ->
-                    UIUtils.handleUri(this@SubscriptionActivity, Uri.parse(url))
-                    true
-                }
+        BetterLinkMovementMethod
+            .linkify(Linkify.WEB_URLS, binding.textPolicies)
+            .setOnLinkClickListener { _: TextView?, url: String? ->
+                UIUtils.handleUri(this@SubscriptionActivity, prefsRepo, Uri.parse(url))
+                true
+            }
         binding.textPolicies.text = UIUtils.fromHtml(getString(R.string.premium_policies))
         iconLoader.displayImage(AppConstants.LYRIC_PHOTO_URL, bindingPremium.imgShiloh)
     }
 
     private fun setupBilling() {
-        subscriptionManager = SubscriptionManagerImpl(this, lifecycleScope)
+        subscriptionManager =
+            SubscriptionManagerImpl(
+                context = this,
+                userApi = userApi,
+                prefRepository = prefsRepo,
+                syncServiceState = syncServiceState,
+                scope = lifecycleScope,
+            )
         subscriptionManager.startBillingConnection(subscriptionManagerListener)
     }
 
@@ -104,10 +126,12 @@ class SubscriptionActivity : NbActivity() {
         productDetails.find { it.productId == AppConstants.PREMIUM_SUB_ID }?.let {
             showPremiumSubscription(it)
         } ?: hidePremiumSubscription()
-        // TODO enabled once upgrades and downgrades are supported
+
         /*productDetails.find { it.productId == AppConstants.PREMIUM_ARCHIVE_SUB_ID }?.let {
             showArchiveSubscription(it)
-        } ?: */hideArchiveSubscription()
+        } ?: */
+
+        hideArchiveSubscription()
 
         if (!bindingPremium.root.isVisible && !bindingArchive.root.isVisible) {
             binding.textNoSubscriptions.setViewVisible()
@@ -152,7 +176,11 @@ class SubscriptionActivity : NbActivity() {
         bindingArchive.root.visibility = View.GONE
     }
 
-    private fun showActiveSubscriptionDetails(renewalMessage: String?, isPremium: Boolean, isArchive: Boolean) {
+    private fun showActiveSubscriptionDetails(
+        renewalMessage: String?,
+        isPremium: Boolean,
+        isArchive: Boolean,
+    ) {
         if (isPremium) {
             bindingPremium.containerPrice.setViewGone()
             bindingPremium.containerActivated.setViewVisible()
@@ -173,12 +201,13 @@ class SubscriptionActivity : NbActivity() {
         val price = (pricing.priceAmountMicros / 1000f / 1000f).toDouble()
         val currency = Currency.getInstance(pricing.priceCurrencyCode)
         val currencySymbol = currency.getSymbol(Locale.getDefault())
-        return StringBuilder().apply {
-            append(String.format(Locale.getDefault(), "%.2f", price))
-            append(" per year (")
-            append(currencySymbol)
-            append(String.format(Locale.getDefault(), "%.2f", price / 12))
-            append("/month)")
-        }.toString()
+        return StringBuilder()
+            .apply {
+                append(String.format(Locale.getDefault(), "%.2f", price))
+                append(" per year (")
+                append(currencySymbol)
+                append(String.format(Locale.getDefault(), "%.2f", price / 12))
+                append("/month)")
+            }.toString()
     }
 }
