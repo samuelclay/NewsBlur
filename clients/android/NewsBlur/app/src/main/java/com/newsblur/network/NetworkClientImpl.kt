@@ -229,7 +229,7 @@ class NetworkClientImpl(
             selfHostedClient = built
             built
         } catch (_: Exception) {
-            // Fail safe: return default; the request will fail with normal TLS error instead of crashing
+            // fallback
             client
         }
     }

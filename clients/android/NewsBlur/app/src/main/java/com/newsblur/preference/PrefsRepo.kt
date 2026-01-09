@@ -72,7 +72,7 @@ class PrefsRepo(
 
     fun saveCustomServerCaPem(pem: String?) {
         if (pem.isNullOrBlank()) return
-        prefs.edit { putString(PrefConstants.PREF_CUSTOM_SERVER_CA_PEM, pem.trim()) }
+        prefs.edit { putString(PrefConstants.PREF_CUSTOM_SERVER_CA_PEM, pem) }
     }
 
     fun clearCustomServerCaPem() {
