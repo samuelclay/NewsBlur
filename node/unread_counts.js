@@ -195,7 +195,7 @@
               return;
             }
           }
-          // Handle archive extension real-time events (archive:new, archive:deleted)
+          // Handle archive extension real-time events (archive:new, archive:deleted, archive:categories)
           if (typeof message.startsWith === "function" ? message.startsWith('archive:') : void 0) {
             log.debug(username, "Routing to archive handler");
             try {
@@ -212,6 +212,12 @@
                   archive_ids: data.archives.map(a => a.archive_id)
                 });
                 log.info(username, `Archive: Emitted archive:deleted`);
+              } else if (data.type === 'categories') {
+                socket.emit('archive:categories', {
+                  archive_id: data.archive_id,
+                  categories: data.categories
+                });
+                log.info(username, `Archive: Emitted archive:categories for ${data.archive_id}`);
               }
             } catch (e) {
               log.debug(username, `Invalid archive payload: ${e}`);

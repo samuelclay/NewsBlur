@@ -29,7 +29,11 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         // Conversation history sidebar events
         "click .NB-archive-conversation-item": "handle_conversation_click",
         "click .NB-archive-new-conversation": "start_new_conversation",
-        "click .NB-archive-sidebar-toggle": "toggle_sidebar"
+        "click .NB-archive-sidebar-toggle": "toggle_sidebar",
+        // Search events
+        "input .NB-archive-search-input": "handle_search_input",
+        "click .NB-archive-search-clear": "clear_search",
+        "keydown .NB-archive-search-input": "handle_search_keydown"
     },
 
     initialize: function (options) {
@@ -66,6 +70,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.conversations_loaded = false;
         this.conversations_loading = false;
         this.sidebar_collapsed = false;
+        // Search state
+        this.search_query = '';
+        this.search_debounced = _.debounce(_.bind(this.perform_search, this), 300);
 
         this.fetch_initial_data();
     },
@@ -166,6 +173,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         }
         if (this.active_domain) {
             params.domain = this.active_domain;
+        }
+        if (this.search_query) {
+            params.search = this.search_query;
         }
 
         this.model.make_request('/api/archive/list', params, function (data) {
@@ -470,6 +480,27 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     render_browser_tab: function () {
         var elements = [];
 
+        // Search bar at top
+        var search_wrapper_class = 'NB-archive-search-wrapper';
+        if (this.search_query) {
+            search_wrapper_class += ' NB-has-query';
+        }
+        elements.push($.make('div', { className: 'NB-archive-search-container' }, [
+            $.make('div', { className: search_wrapper_class }, [
+                $.make('div', { className: 'NB-archive-search-icon' }),
+                $.make('input', {
+                    type: 'text',
+                    className: 'NB-archive-search-input',
+                    placeholder: 'Search archives by title, content, URL...',
+                    value: this.search_query || ''
+                }),
+                $.make('div', {
+                    className: 'NB-archive-search-clear',
+                    title: 'Clear search'
+                })
+            ])
+        ]));
+
         // Filters sidebar
         elements.push($.make('div', { className: 'NB-archive-filters' }, [
             // Categories with manage button
@@ -628,14 +659,38 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         }
         meta_items.push($.make('span', { className: 'NB-archive-item-date' }, date_str));
 
+        // Title - use highlighted version if available
+        var $title = $.make('div', { className: 'NB-archive-item-title' });
+        if (archive.highlights && archive.highlights.title && archive.highlights.title.length > 0) {
+            $title.html(archive.highlights.title[0]);
+        } else {
+            $title.text(archive.title || 'Untitled');
+        }
+
+        // Content preview - show highlighted content when searching, otherwise plain preview
+        var $content_preview = null;
+        if (archive.highlights && archive.highlights.content && archive.highlights.content.length > 0) {
+            var highlighted_content = archive.highlights.content.join(' ... ');
+            $content_preview = $.make('div', { className: 'NB-archive-item-content-preview NB-highlighted' });
+            $content_preview.html(highlighted_content);
+        } else if (archive.content_preview) {
+            $content_preview = $.make('div', { className: 'NB-archive-item-content-preview' }, archive.content_preview);
+        }
+
+        var content_elements = [
+            $title,
+            $.make('div', { className: 'NB-archive-item-meta' }, meta_items),
+            stats_items.length > 0 ? $.make('div', { className: 'NB-archive-item-stats' }, stats_items) : '',
+            $.make('div', { className: 'NB-archive-item-categories' }, categories_html)
+        ];
+
+        if ($content_preview) {
+            content_elements.push($content_preview);
+        }
+
         return $.make('div', { className: 'NB-archive-item', 'data-id': archive.id }, [
             $.make('div', { className: 'NB-archive-item-favicon' }, [$favicon]),
-            $.make('div', { className: 'NB-archive-item-content' }, [
-                $.make('div', { className: 'NB-archive-item-title' }, archive.title || 'Untitled'),
-                $.make('div', { className: 'NB-archive-item-meta' }, meta_items),
-                stats_items.length > 0 ? $.make('div', { className: 'NB-archive-item-stats' }, stats_items) : '',
-                $.make('div', { className: 'NB-archive-item-categories' }, categories_html)
-            ]),
+            $.make('div', { className: 'NB-archive-item-content' }, content_elements),
             newsblur_link
         ]);
     },
@@ -2038,6 +2093,41 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             $btn.text('Categorize ' + self.uncategorized_count + ' Uncategorized').prop('disabled', false);
             self.show_category_status('Failed to start categorization', 'error');
         }, { method: 'POST' });
+    },
+
+    // ===================
+    // = Search Handlers =
+    // ===================
+
+    handle_search_input: function (e) {
+        var query = $(e.currentTarget).val();
+        this.search_debounced(query);
+    },
+
+    handle_search_keydown: function (e) {
+        if (e.which === 27) {
+            this.clear_search();
+            e.preventDefault();
+        }
+    },
+
+    perform_search: function (query) {
+        this.search_query = query;
+        this.fetch_archives(true);
+
+        // Update clear button visibility
+        if (query) {
+            this.$('.NB-archive-search-wrapper').addClass('NB-has-query');
+        } else {
+            this.$('.NB-archive-search-wrapper').removeClass('NB-has-query');
+        }
+    },
+
+    clear_search: function () {
+        this.search_query = '';
+        this.$('.NB-archive-search-input').val('');
+        this.$('.NB-archive-search-wrapper').removeClass('NB-has-query');
+        this.fetch_archives(true);
     },
 
     close: function () {
