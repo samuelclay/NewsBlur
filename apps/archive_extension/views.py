@@ -108,6 +108,7 @@ def ingest(request):
     title = request.POST.get("title", "").strip()
     content = request.POST.get("content", "")
     favicon_url = request.POST.get("favicon_url", "")
+    author = request.POST.get("author", "").strip() or None
     time_on_page = int(request.POST.get("time_on_page", 0))
     browser = request.POST.get("browser", "") or None
     extension_version = request.POST.get("extension_version", "") or None
@@ -136,6 +137,7 @@ def ingest(request):
             content=content,
             content_length=len(content) if content else 0,
             favicon_url=favicon_url,
+            author=author,
             time_on_page=time_on_page,
             browser=browser,
             extension_version=extension_version,
@@ -258,6 +260,7 @@ def batch_ingest(request):
 
         try:
             content = archive_data.get("content", "")
+            author = archive_data.get("author", "").strip() or None
             result = match_and_process(
                 user=user,
                 url=url,
@@ -265,6 +268,7 @@ def batch_ingest(request):
                 content=content,
                 content_length=len(content) if content else 0,
                 favicon_url=archive_data.get("favicon_url", ""),
+                author=author,
                 time_on_page=int(archive_data.get("time_on_page", 0)),
                 browser=archive_data.get("browser", "") or None,
                 extension_version=archive_data.get("extension_version", "") or None,
@@ -288,6 +292,7 @@ def batch_ingest(request):
                     "archive_id": str(result["archive"].id),
                     "title": title,
                     "domain": result["archive"].domain,
+                    "author": result["archive"].author,
                     "matched": result["matched"],
                     "created": result["created"],
                     "content_length": content_len,
@@ -1168,6 +1173,7 @@ def _serialize_archive(archive, include_content=False):
         "url": archive.url,
         "title": archive.title,
         "domain": archive.domain,
+        "author": archive.author,
         "favicon_url": archive.favicon_url,
         "archived_date": archive.archived_date.isoformat() if archive.archived_date else None,
         "first_visited": archive.first_visited.isoformat() if archive.first_visited else None,

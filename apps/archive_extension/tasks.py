@@ -7,9 +7,35 @@ These tasks handle async processing of archived pages, including:
 - Batch processing
 """
 
+import redis
 from celery import shared_task
+from django.conf import settings
+from django.contrib.auth.models import User
 
+from utils import json_functions as json
 from utils import log as logging
+
+
+def _publish_category_update(user_id, archive_id, categories):
+    """
+    Publish category update event via Redis PubSub for real-time WebSocket updates.
+
+    Args:
+        user_id: The user ID
+        archive_id: The archive ID that was categorized
+        categories: List of categories assigned to the archive
+    """
+    try:
+        user = User.objects.get(pk=user_id)
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        payload = json.encode({
+            "type": "categories",
+            "archive_id": str(archive_id),
+            "categories": categories
+        })
+        r.publish(user.username, f"archive:{payload}")
+    except Exception as e:
+        logging.error(f"Error publishing category update event: {e}")
 
 
 @shared_task(name="archive-categorize")
@@ -61,6 +87,10 @@ def categorize_archives(user_id, archive_ids=None, limit=100):
             archive.save()
             processed += 1
 
+            # Publish real-time update for category addition
+            if categories:
+                _publish_category_update(user_id, archive.id, categories)
+
             # Track new categories for subsequent items in this batch
             for cat in categories:
                 if cat not in user_categories:
@@ -109,6 +139,10 @@ def bulk_categorize_archives(user_id, limit=100):
 
             # Update Elasticsearch index
             _index_archive(archive)
+
+            # Publish real-time update for category addition
+            if categories:
+                _publish_category_update(user_id, archive.id, categories)
 
             processed += 1
 

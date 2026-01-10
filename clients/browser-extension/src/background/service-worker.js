@@ -274,6 +274,7 @@ async function archivePage(visit, timeOnPage) {
     // Try to extract content from the page
     let content = '';
     let contentLength = 0;
+    let author = '';
 
     try {
         const extApi = getExtensionAPI();
@@ -286,6 +287,7 @@ async function archivePage(visit, timeOnPage) {
             if (response) {
                 content = response.content || '';
                 contentLength = response.contentLength || content.length;
+                author = response.author || '';
             }
         }
     } catch (error) {
@@ -297,6 +299,7 @@ async function archivePage(visit, timeOnPage) {
         title: visit.title,
         content: content,
         contentLength: contentLength,
+        author: author,
         faviconUrl: visit.faviconUrl,
         domain: visit.domain,
         timeOnPage: timeOnPage,
