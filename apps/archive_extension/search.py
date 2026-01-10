@@ -99,7 +99,7 @@ class SearchArchive:
                 cls.index_name(),
                 body={
                     "mappings": {
-                        "_source": {"enabled": False},
+                        "_source": {"enabled": True},
                         "properties": mapping,
                     }
                 },
@@ -318,6 +318,123 @@ class SearchArchive:
             return []
 
         return result_ids
+
+    @classmethod
+    def query_with_highlights(
+        cls,
+        user_id,
+        query,
+        order="newest",
+        offset=0,
+        limit=20,
+        domain=None,
+        categories=None,
+        date_from=None,
+        date_to=None,
+        strip=False,
+        highlight_fragment_size=150,
+    ):
+        """
+        Search archives with highlighted result snippets.
+
+        Args:
+            user_id: User ID to search archives for
+            query: Search query string
+            order: Sort order ("newest" or "oldest")
+            offset: Pagination offset
+            limit: Maximum results to return
+            domain: Optional domain filter
+            categories: Optional list of categories to filter by
+            date_from: Optional start date filter
+            date_to: Optional end date filter
+            strip: Whether to strip special characters from query
+            highlight_fragment_size: Size of content highlight fragments
+
+        Returns:
+            List of dicts with: archive_id, highlights (dict of field->snippets), score
+        """
+        try:
+            cls.ES().indices.flush(cls.index_name())
+        except elasticsearch.exceptions.NotFoundError as e:
+            logging.debug(f" ***> ~FRNo search server available: {e}")
+            return []
+
+        if strip:
+            query = re.sub(r'([^\s\w_\-"])+', " ", query)
+        query = html.unescape(query)
+        query = cls._sanitize_query(query)
+
+        # Build the query
+        must_clauses = [
+            {"query_string": {"query": query, "default_operator": "AND", "fields": ["title^2", "content"]}},
+            {"term": {"user_id": user_id}},
+        ]
+
+        # Add optional filters
+        if domain:
+            must_clauses.append({"term": {"domain": domain}})
+
+        if categories:
+            must_clauses.append({"terms": {"categories": categories}})
+
+        # Date range filter
+        if date_from or date_to:
+            date_range = {}
+            if date_from:
+                date_range["gte"] = date_from.isoformat() if hasattr(date_from, "isoformat") else date_from
+            if date_to:
+                date_range["lte"] = date_to.isoformat() if hasattr(date_to, "isoformat") else date_to
+            must_clauses.append({"range": {"archived_date": date_range}})
+
+        body = {
+            "query": {"bool": {"must": must_clauses}},
+            "sort": [{"archived_date": {"order": "desc" if order == "newest" else "asc"}}],
+            "from": offset,
+            "size": limit,
+            "highlight": {
+                "fields": {
+                    "title": {"number_of_fragments": 0},
+                    "content": {
+                        "fragment_size": highlight_fragment_size,
+                        "number_of_fragments": 3,
+                    },
+                    "url": {"number_of_fragments": 0},
+                    "domain": {"number_of_fragments": 0},
+                },
+                "pre_tags": ["<mark>"],
+                "post_tags": ["</mark>"],
+                "require_field_match": False,
+            },
+        }
+
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRSearch query error: %s" % e)
+            return []
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError) as e:
+            logging.debug(f" ***> ~FRNo search server available for archive query: {e}")
+            return []
+
+        logging.info(
+            " ---> ~FG~SNSearch ~FCarchives~FG (with highlights) for user ~SB%s~SN: ~SB%s~SN, ~SB%s~SN results"
+            % (user_id, query, len(results["hits"]["hits"]))
+        )
+
+        try:
+            result_list = []
+            for hit in results["hits"]["hits"]:
+                result_list.append(
+                    {
+                        "archive_id": hit["_id"],
+                        "highlights": hit.get("highlight", {}),
+                        "score": hit.get("_score", 0),
+                    }
+                )
+            return result_list
+        except Exception as e:
+            logging.info(' ---> ~FRInvalid archive search query "%s": %s' % (query, e))
+            return []
 
     @classmethod
     def get_user_archive_count(cls, user_id):

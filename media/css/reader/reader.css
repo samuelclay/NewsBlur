@@ -20862,17 +20862,18 @@ form.opml_import_form input {
         max-height: 0;
         padding-top: 0;
         padding-bottom: 0;
-        margin-bottom: 0;
+        border-width: 0;
     }
-    50% {
-        opacity: 0.5;
+    60% {
+        opacity: 1;
+        border-width: 1px;
     }
     100% {
         opacity: 1;
         max-height: 200px;
         padding-top: 16px;
         padding-bottom: 16px;
-        margin-bottom: 12px;
+        border-width: 1px;
     }
 }
 
@@ -20904,6 +20905,104 @@ form.opml_import_form input {
 .NB-archive-item-author:before {
     content: "by ";
     color: #999;
+}
+
+/* Archive Search Bar */
+.NB-archive-search-container {
+    padding: 16px 24px;
+    background: #FFF;
+    border-bottom: 1px solid #E0E0E0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.NB-archive-search-wrapper {
+    display: flex;
+    align-items: center;
+    background: #F5F5F5;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: all 0.15s ease;
+}
+
+.NB-archive-search-wrapper:focus-within {
+    background: #FFF;
+    border-color: #5C89C9;
+    box-shadow: 0 0 0 2px rgba(92, 137, 201, 0.15);
+}
+
+.NB-archive-search-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    background: url('/media/img/icons/nouns/search.svg') no-repeat center;
+    background-size: contain;
+    opacity: 0.5;
+    flex-shrink: 0;
+}
+
+.NB-archive-search-wrapper:focus-within .NB-archive-search-icon {
+    opacity: 0.8;
+}
+
+.NB-archive-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+}
+
+.NB-archive-search-input::placeholder {
+    color: #999;
+}
+
+.NB-archive-search-clear {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    background: url('/media/img/icons/nouns/close.svg') no-repeat center;
+    background-size: 12px;
+    flex-shrink: 0;
+}
+
+.NB-archive-search-wrapper.NB-has-query .NB-archive-search-clear {
+    opacity: 0.5;
+}
+
+.NB-archive-search-wrapper.NB-has-query .NB-archive-search-clear:hover {
+    opacity: 1;
+}
+
+/* Content Preview Styles */
+.NB-archive-item-content-preview {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.5;
+    margin-top: 8px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.NB-archive-item-content-preview.NB-highlighted {
+    color: #444;
+}
+
+/* Search Highlight Marks */
+.NB-archive-item-content-preview mark,
+.NB-archive-item-title mark {
+    background: #FFF3CD;
+    color: #333;
+    padding: 1px 2px;
+    border-radius: 2px;
+    font-weight: 500;
 }
 
 /* Empty State */
@@ -21587,6 +21686,53 @@ form.opml_import_form input {
 
 .NB-dark .NB-archive-stat-value {
     color: #AAA;
+}
+
+/* Dark Mode - Search Bar */
+.NB-dark .NB-archive-search-container {
+    background: #1a1a1a;
+    border-color: #333;
+}
+
+.NB-dark .NB-archive-search-wrapper {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+.NB-dark .NB-archive-search-wrapper:focus-within {
+    background: #1a1a1a;
+    border-color: #5C89C9;
+}
+
+.NB-dark .NB-archive-search-input {
+    color: #DDD;
+}
+
+.NB-dark .NB-archive-search-input::placeholder {
+    color: #666;
+}
+
+.NB-dark .NB-archive-search-icon {
+    filter: invert(0.6);
+}
+
+.NB-dark .NB-archive-search-clear {
+    filter: invert(0.6);
+}
+
+/* Dark Mode - Content Preview */
+.NB-dark .NB-archive-item-content-preview {
+    color: #999;
+}
+
+.NB-dark .NB-archive-item-content-preview.NB-highlighted {
+    color: #BBB;
+}
+
+.NB-dark .NB-archive-item-content-preview mark,
+.NB-dark .NB-archive-item-title mark {
+    background: #5C4800;
+    color: #FFE082;
 }
 
 /* Mobile - Conversation Sidebar */

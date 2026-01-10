@@ -356,7 +356,7 @@ def list_archives(request):
         offset: Pagination offset (default 0)
         domain: Filter by domain
         category: Filter by AI category
-        search: Search query (searches title)
+        search: Search query (full-text search via Elasticsearch)
         include_deleted: Include soft-deleted archives (default false)
 
     Returns:
@@ -367,6 +367,8 @@ def list_archives(request):
             has_more: bool
         }
     """
+    from apps.archive_extension.search import SearchArchive
+
     user = get_user(request)
     has_access, error = _check_archive_access(user)
     if not has_access:
@@ -379,7 +381,52 @@ def list_archives(request):
     search = request.GET.get("search", "").strip()
     include_deleted = request.GET.get("include_deleted", "").lower() == "true"
 
-    # Build query
+    if search:
+        # Use Elasticsearch for full-text search with highlights
+        es_results = SearchArchive.query_with_highlights(
+            user_id=user.pk,
+            query=search,
+            order="newest",
+            offset=offset,
+            limit=limit + 1,
+            domain=domain if domain else None,
+            categories=[category] if category else None,
+        )
+
+        # Fetch archives by IDs while preserving search result order
+        archive_ids = [r["archive_id"] for r in es_results]
+        archives_by_id = {}
+        if archive_ids:
+            for archive in MArchivedStory.objects(id__in=archive_ids, user_id=user.pk, deleted=False):
+                archives_by_id[str(archive.id)] = archive
+
+        # Build response with highlights, preserving search order
+        serialized_list = []
+        for es_result in es_results:
+            archive = archives_by_id.get(es_result["archive_id"])
+            if archive:
+                serialized = _serialize_archive(archive)
+                serialized["highlights"] = es_result["highlights"]
+                serialized["search_score"] = es_result["score"]
+                serialized_list.append(serialized)
+
+        has_more = len(serialized_list) > limit
+        if has_more:
+            serialized_list = serialized_list[:limit]
+
+        # Get approximate total from ES count
+        total = len(serialized_list) + (1 if has_more else 0)
+
+        return _json_response(
+            {
+                "code": 0,
+                "archives": serialized_list,
+                "total": total,
+                "has_more": has_more,
+            }
+        )
+
+    # No search - use MongoDB with content preview
     query = {"user_id": user.pk}
     if not include_deleted:
         query["deleted"] = False
@@ -387,8 +434,6 @@ def list_archives(request):
         query["domain"] = domain
     if category:
         query["ai_categories"] = category
-    if search:
-        query["title__icontains"] = search
 
     # Get total count
     total = MArchivedStory.objects(**query).count()
@@ -401,10 +446,17 @@ def list_archives(request):
     if has_more:
         archives_list = archives_list[:limit]
 
+    # Serialize with content preview
+    serialized_list = []
+    for archive in archives_list:
+        serialized = _serialize_archive(archive)
+        serialized["content_preview"] = _get_content_preview(archive)
+        serialized_list.append(serialized)
+
     return _json_response(
         {
             "code": 0,
-            "archives": [_serialize_archive(a) for a in archives_list],
+            "archives": serialized_list,
             "total": total,
             "has_more": has_more,
         }
@@ -1146,6 +1198,25 @@ def _reindex_categories_async(user_id, old_categories, new_category):
 
     for story in stories:
         index_archive_for_search.delay(str(story.id))
+
+
+def _get_content_preview(archive, max_chars=100):
+    """Get truncated content preview for display."""
+    content = archive.get_content()
+    if not content:
+        return None
+
+    content = content.strip()
+    if len(content) <= max_chars:
+        return content
+
+    # Find word boundary
+    truncated = content[:max_chars]
+    last_space = truncated.rfind(" ")
+    if last_space > max_chars * 0.7:
+        truncated = truncated[:last_space]
+
+    return truncated + "..."
 
 
 def _serialize_archive(archive, include_content=False):
