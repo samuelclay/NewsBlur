@@ -154,6 +154,39 @@ class MUserFeedNotification(mongo.Document):
         return notifications_by_feed
 
     @classmethod
+    def switch_feed(cls, original_feed_id, duplicate_feed_id):
+        """Migrate notification settings from duplicate feed to original feed."""
+        duplicate_notifications = cls.objects.filter(feed_id=duplicate_feed_id)
+        count = duplicate_notifications.count()
+        if count:
+            logging.info(
+                " ---> Switching %s notification settings from feed %s to %s"
+                % (count, duplicate_feed_id, original_feed_id)
+            )
+            for notification in duplicate_notifications:
+                # Check if user already has notifications for the original feed
+                try:
+                    existing = cls.objects.get(user_id=notification.user_id, feed_id=original_feed_id)
+                    # Merge notification settings - keep any enabled setting
+                    existing.is_email = existing.is_email or notification.is_email
+                    existing.is_web = existing.is_web or notification.is_web
+                    existing.is_ios = existing.is_ios or notification.is_ios
+                    existing.is_android = existing.is_android or notification.is_android
+                    existing.is_focus = existing.is_focus or notification.is_focus
+                    # Merge iOS tokens
+                    if notification.ios_tokens:
+                        existing_tokens = set(existing.ios_tokens or [])
+                        existing_tokens.update(notification.ios_tokens)
+                        existing.ios_tokens = list(existing_tokens)
+                    existing.save()
+                    notification.delete()
+                except cls.DoesNotExist:
+                    # No existing notification, just update feed_id
+                    notification.feed_id = original_feed_id
+                    notification.save()
+        return count
+
+    @classmethod
     def push_feed_notifications(cls, feed_id, new_stories, force=False):
         feed = Feed.get_by_id(feed_id)
         notifications = MUserFeedNotification.users_for_feed(feed.pk)
