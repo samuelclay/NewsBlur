@@ -25,6 +25,7 @@ class MArchivedStory(mongo.Document):
     title = mongo.StringField(max_length=1024)
     favicon_url = mongo.StringField(max_length=2048)
     domain = mongo.StringField(max_length=255)
+    author = mongo.StringField(max_length=255)
 
     # Content (compressed with zlib)
     content_z = mongo.BinaryField()  # zlib-compressed extracted text
@@ -172,6 +173,7 @@ class MArchivedStory(mongo.Document):
         title,
         content=None,
         favicon_url=None,
+        author=None,
         time_on_page=0,
         browser=None,
         extension_version=None,
@@ -208,6 +210,10 @@ class MArchivedStory(mongo.Document):
             if title and (not existing.title or len(title) > len(existing.title)):
                 existing.title = title
 
+            # Update author if we have one and existing doesn't
+            if author and not existing.author:
+                existing.author = author
+
             # Update content if new content is longer
             if content and len(content) > (existing.content_length or 0):
                 existing.set_content(content)
@@ -234,6 +240,7 @@ class MArchivedStory(mongo.Document):
                 url_hash=url_hash,
                 title=title,
                 domain=domain,
+                author=author,
                 favicon_url=favicon_url,
                 first_visited=now,
                 last_visited=now,

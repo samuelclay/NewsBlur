@@ -20850,6 +20850,62 @@ form.opml_import_form input {
     height: 14px;
 }
 
+/* Archive Item Animation - height-based expansion for smooth push-down effect */
+.NB-archive-item-entering {
+    animation: archive-expand-in 0.4s ease-out forwards;
+    overflow: hidden;
+}
+
+@keyframes archive-expand-in {
+    0% {
+        opacity: 0;
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+        max-height: 200px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+        margin-bottom: 12px;
+    }
+}
+
+/* Category animation - fade in when tags are added */
+.NB-archive-item-category {
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.NB-archive-item-category.NB-category-entering {
+    animation: category-pop-in 0.3s ease-out forwards;
+}
+
+@keyframes category-pop-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Author styling */
+.NB-archive-item-author {
+    color: #666;
+}
+
+.NB-archive-item-author:before {
+    content: "by ";
+    color: #999;
+}
+
 /* Empty State */
 .NB-archive-empty {
     display: flex;
@@ -20881,31 +20937,17 @@ form.opml_import_form input {
     line-height: 1.5;
 }
 
-/* Load More Button */
-.NB-archive-load-more {
-    display: block;
-    width: 100%;
+/* Archive End Line (loading and end state) */
+.NB-archive-browser-content .NB-end-line {
     margin-top: 16px;
-    padding: 12px;
-    background: #FFF;
-    border: 1px solid #D0D0D0;
     border-radius: 8px;
-    text-align: center;
-    font-size: 14px;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.15s ease;
+    border: none;
 }
 
-.NB-archive-load-more:hover {
-    background: #F8F8F8;
-    border-color: #5C89C9;
-    color: #5C89C9;
-}
-
-.NB-archive-load-more.NB-loading {
-    pointer-events: none;
-    opacity: 0.7;
+.NB-archive-browser-content .NB-end-line.NB-load-line.NB-short {
+    height: 8px;
+    min-height: 8px;
+    border-radius: 4px;
 }
 
 /* Archive Loading */
@@ -21545,16 +21587,6 @@ form.opml_import_form input {
 
 .NB-dark .NB-archive-stat-value {
     color: #AAA;
-}
-
-.NB-dark .NB-archive-load-more {
-    background: #2a2a2a;
-    border-color: #444;
-    color: #AAA;
-}
-
-.NB-dark .NB-archive-load-more:hover {
-    background: #333;
 }
 
 /* Mobile - Conversation Sidebar */

@@ -6,7 +6,6 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         "click .NB-archive-tab": "switch_tab",
         "click .NB-archive-category-filter": "toggle_category_filter",
         "click .NB-archive-domain-filter": "toggle_domain_filter",
-        "click .NB-archive-load-more": "load_more_archives",
         "click .NB-archive-item": "open_archive_item",
         "click .NB-archive-item-newsblur-link": "open_story_in_newsblur",
         "keypress .NB-archive-assistant-input": "handle_assistant_keypress",
@@ -199,17 +198,17 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     },
 
     show_archive_loading: function () {
-        var $loading = this.$('.NB-archive-load-more');
-        if ($loading.length) {
-            $loading.addClass('NB-loading').text('Loading...');
-        }
+        var $content = this.$('.NB-archive-browser-content');
+        // Remove any existing end line
+        $content.find('.NB-end-line').remove();
+        // Add pulsing loading bar
+        var $endline = $.make('div', { className: 'NB-end-line NB-load-line NB-short' });
+        $content.append($endline);
     },
 
     hide_archive_loading: function () {
-        var $loading = this.$('.NB-archive-load-more');
-        if ($loading.length) {
-            $loading.removeClass('NB-loading').text('Load More');
-        }
+        var $content = this.$('.NB-archive-browser-content');
+        $content.find('.NB-end-line.NB-load-line').remove();
     },
 
     show_archive_error: function (message) {
@@ -258,7 +257,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Set up scroll handler for infinite scroll in browser tab
         this.throttled_check_scroll = _.throttle(_.bind(this.check_scroll, this), 100);
-        this.$el.on('scroll', this.throttled_check_scroll);
+        this.$('.NB-archive-browser-content').on('scroll', this.throttled_check_scroll);
 
         // Store view reference for WebSocket event lookup
         this.$el.data('view', this);
@@ -496,8 +495,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Archive list
         elements.push($.make('div', { className: 'NB-archive-browser-content' }, [
-            $.make('div', { className: 'NB-archive-list' }),
-            $.make('div', { className: 'NB-archive-load-more NB-button' }, 'Load Archives')
+            $.make('div', { className: 'NB-archive-list' })
         ]));
 
         return elements;
@@ -529,16 +527,18 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     render_archives: function () {
         var self = this;
         var $list = this.$('.NB-archive-list');
-        var $load_more = this.$('.NB-archive-load-more');
+        var $content = this.$('.NB-archive-browser-content');
 
-        if (this.archives.length === 0) {
+        // Remove any existing end line
+        $content.find('.NB-end-line').remove();
+
+        if (this.archives.length === 0 && !this.is_loading) {
             $list.html($.make('div', { className: 'NB-archive-empty' }, [
                 $.make('img', { src: '/media/img/icons/nouns/archive.svg', className: 'NB-archive-empty-icon' }),
                 $.make('div', { className: 'NB-archive-empty-title' }, 'No archived pages yet'),
                 $.make('div', { className: 'NB-archive-empty-subtitle' },
                     'Install the NewsBlur Archive browser extension to start building your browsing history.')
             ]));
-            $load_more.hide();
             return;
         }
 
@@ -547,7 +547,14 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         });
 
         $list.html(items);
-        $load_more.toggle(this.has_more);
+
+        // Add end line with fleuron if no more archives, otherwise nothing (loading bar added separately)
+        if (!this.has_more && this.archives.length > 0) {
+            var $end_line = $.make('div', { className: 'NB-end-line' }, [
+                $.make('div', { className: 'NB-fleuron' })
+            ]);
+            $content.append($end_line);
+        }
     },
 
     get_favicon_url: function (archive) {
@@ -567,17 +574,12 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             return $.make('span', { className: 'NB-archive-item-category' }, cat);
         });
 
-        // Build stats display (word count, file size)
+        // Build stats display (word count only)
         var stats_items = [];
         if (archive.word_count_display) {
             stats_items.push($.make('span', { className: 'NB-archive-item-stat' }, [
                 $.make('span', { className: 'NB-archive-stat-value' }, archive.word_count_display),
                 ' words'
-            ]));
-        }
-        if (archive.file_size_display) {
-            stats_items.push($.make('span', { className: 'NB-archive-item-stat' }, [
-                $.make('span', { className: 'NB-archive-stat-value' }, archive.file_size_display)
             ]));
         }
         if (archive.has_content === false) {
@@ -619,14 +621,18 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             });
         }
 
+        // Build meta line: domain, author (if available), date
+        var meta_items = [$.make('span', { className: 'NB-archive-item-domain' }, archive.domain || '')];
+        if (archive.author) {
+            meta_items.push($.make('span', { className: 'NB-archive-item-author' }, archive.author));
+        }
+        meta_items.push($.make('span', { className: 'NB-archive-item-date' }, date_str));
+
         return $.make('div', { className: 'NB-archive-item', 'data-id': archive.id }, [
             $.make('div', { className: 'NB-archive-item-favicon' }, [$favicon]),
             $.make('div', { className: 'NB-archive-item-content' }, [
                 $.make('div', { className: 'NB-archive-item-title' }, archive.title || 'Untitled'),
-                $.make('div', { className: 'NB-archive-item-meta' }, [
-                    $.make('span', { className: 'NB-archive-item-domain' }, archive.domain || ''),
-                    $.make('span', { className: 'NB-archive-item-date' }, date_str)
-                ]),
+                $.make('div', { className: 'NB-archive-item-meta' }, meta_items),
                 stats_items.length > 0 ? $.make('div', { className: 'NB-archive-item-stats' }, stats_items) : '',
                 $.make('div', { className: 'NB-archive-item-categories' }, categories_html)
             ]),
@@ -635,18 +641,28 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     },
 
     format_relative_date: function (date) {
+        if (!date || isNaN(date.getTime())) return '';
+
         var now = new Date();
         var diff = now - date;
+
+        // Handle future dates or invalid timestamps
+        if (diff < 0) return date.toLocaleDateString();
+
         var minutes = Math.floor(diff / 60000);
         var hours = Math.floor(diff / 3600000);
-        var days = Math.floor(diff / 86400000);
 
+        // Show relative only for < 24 hours
         if (minutes < 1) return 'Just now';
         if (minutes < 60) return minutes + 'm ago';
         if (hours < 24) return hours + 'h ago';
-        if (days < 7) return days + 'd ago';
-        if (days < 30) return Math.floor(days / 7) + 'w ago';
-        return date.toLocaleDateString();
+
+        // For >= 24 hours, show absolute date in user's locale
+        return date.toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
     },
 
     switch_tab: function (e) {
@@ -697,21 +713,16 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.fetch_archives(true);
     },
 
-    load_more_archives: function () {
-        if (this.archives.length === 0) {
-            this.fetch_archives(true);
-        } else if (this.has_more) {
-            this.fetch_archives(false);
-        }
-    },
-
     check_scroll: function () {
         if (this.active_tab !== 'browser') return;
         if (this.is_loading || !this.has_more) return;
 
-        var container_height = this.$el.height();
-        var scroll_top = this.$el.scrollTop();
-        var scroll_height = this.$el[0].scrollHeight;
+        var $content = this.$('.NB-archive-browser-content');
+        if (!$content.length) return;
+
+        var container_height = $content.height();
+        var scroll_top = $content.scrollTop();
+        var scroll_height = $content[0].scrollHeight;
 
         if (scroll_height - (scroll_top + container_height) < 200) {
             this.fetch_archives(false);
@@ -1342,6 +1353,8 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         NEWSBLUR.log(['Archive View: Received', new_archives.length, 'new archives via WebSocket']);
 
+        var new_items_added = [];
+
         // Prepend new archives to the list (check for duplicates by archive_id)
         new_archives.forEach(function (archive) {
             // Normalize the ID field (backend sends archive_id, frontend expects id)
@@ -1356,12 +1369,29 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             if (!exists) {
                 self.archives.unshift(archive);
                 self.update_sidebar_for_archive(archive);
+                new_items_added.push(archive);
             }
         });
 
-        // Re-render if on browser tab
-        if (this.active_tab === 'browser') {
-            this.render_archives();
+        // Animate in new items if on browser tab
+        if (this.active_tab === 'browser' && new_items_added.length > 0) {
+            var $list = this.$('.NB-archive-list');
+            if ($list.length) {
+                // Prepend new items with animation class (in reverse order so newest is on top)
+                _.each(new_items_added.reverse(), function (archive) {
+                    var $item = self.render_archive_item(archive);
+                    $item.addClass('NB-archive-item-entering');
+                    $list.prepend($item);
+
+                    // Remove animation class after animation completes (400ms)
+                    setTimeout(function () {
+                        $item.removeClass('NB-archive-item-entering');
+                    }, 400);
+                });
+            } else {
+                // If list doesn't exist yet, do full render
+                this.render_archives();
+            }
         }
 
         // Show notification
@@ -1416,6 +1446,66 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         if (this.active_tab === 'browser') {
             this.render_archives();
         }
+    },
+
+    handle_archive_categories: function (data) {
+        var archive_id = data.archive_id;
+        var categories = data.categories || [];
+
+        if (!archive_id || categories.length === 0) return;
+
+        NEWSBLUR.log(['Archive View: Received categories for', archive_id, categories]);
+
+        // Update the archive in our local data
+        var archive = _.find(this.archives, function (a) {
+            return a.id === archive_id || a.archive_id === archive_id;
+        });
+
+        if (archive) {
+            archive.ai_categories = categories;
+        }
+
+        // Find the DOM element and update categories with animation
+        var $item = this.$('.NB-archive-item[data-id="' + archive_id + '"]');
+        if ($item.length) {
+            var $categories_container = $item.find('.NB-archive-item-categories');
+            if ($categories_container.length) {
+                // Create new category elements with animation class
+                var categories_html = _.map(categories.slice(0, 2), function (cat) {
+                    var $cat = $.make('span', { className: 'NB-archive-item-category NB-category-entering' }, cat);
+                    return $cat;
+                });
+
+                // Clear and append new categories
+                $categories_container.empty().append(categories_html);
+
+                // Remove animation class after animation completes
+                setTimeout(function () {
+                    $categories_container.find('.NB-category-entering').removeClass('NB-category-entering');
+                }, 300);
+            }
+        }
+
+        // Update sidebar category counts
+        this.update_sidebar_for_categories(categories);
+    },
+
+    update_sidebar_for_categories: function (categories) {
+        var self = this;
+
+        // Update category counts in sidebar
+        _.each(categories, function (cat) {
+            var existing = _.find(self.categories, function (c) { return c._id === cat; });
+            if (existing) {
+                existing.count++;
+            } else {
+                self.categories.push({ _id: cat, count: 1 });
+            }
+        });
+
+        // Re-sort categories by count and re-render
+        this.categories = _.sortBy(this.categories, function (c) { return -c.count; });
+        this.$('.NB-archive-categories').html(this.render_category_filters());
     },
 
     show_archive_notification: function (count) {
@@ -1955,7 +2045,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         if (this.voice_recorder) {
             this.voice_recorder.cleanup();
         }
-        this.$el.off('scroll');
+        this.$('.NB-archive-browser-content').off('scroll');
         this.remove();
     }
 

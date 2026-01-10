@@ -97,6 +97,16 @@ function extractContent() {
     const ogTitle = document.querySelector('meta[property="og:title"]')?.content || '';
     const ogDescription = document.querySelector('meta[property="og:description"]')?.content || '';
 
+    // Extract author from multiple sources (in priority order)
+    const author =
+        document.querySelector('meta[name="author"]')?.content ||
+        document.querySelector('meta[property="article:author"]')?.content ||
+        document.querySelector('meta[name="dc.creator"]')?.content ||
+        document.querySelector('[rel="author"]')?.textContent?.trim() ||
+        document.querySelector('.byline')?.textContent?.trim() ||
+        document.querySelector('.author')?.textContent?.trim() ||
+        '';
+
     // Use best available title and description
     const bestTitle = ogTitle || title;
     const bestDescription = ogDescription || description;
@@ -105,7 +115,8 @@ function extractContent() {
         title: bestTitle,
         content: textContent,
         contentLength: textContent.length,
-        excerpt: bestDescription || textContent.substring(0, 300)
+        excerpt: bestDescription || textContent.substring(0, 300),
+        author: author
     };
 }
 

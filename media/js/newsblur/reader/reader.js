@@ -5661,6 +5661,9 @@
                 this.socket.removeAllListeners('archive:deleted');
                 this.socket.on('archive:deleted', _.bind(this.handle_archive_deleted, this));
 
+                this.socket.removeAllListeners('archive:categories');
+                this.socket.on('archive:categories', _.bind(this.handle_archive_categories, this));
+
                 this.socket.on('disconnect', _.bind(function (reason) {
                     NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);
                     this.flags.feed_refreshing_in_realtime = false;
@@ -5909,6 +5912,14 @@
             var view = this.find_archive_view();
             if (view && view.handle_archive_deleted) {
                 view.handle_archive_deleted(data);
+            }
+        },
+
+        handle_archive_categories: function (data) {
+            NEWSBLUR.log(['Archive: Categories updated via WebSocket', data.archive_id, data.categories]);
+            var view = this.find_archive_view();
+            if (view && view.handle_archive_categories) {
+                view.handle_archive_categories(data);
             }
         },
 
