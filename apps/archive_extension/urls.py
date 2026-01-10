@@ -23,6 +23,7 @@ urlpatterns = [
     path("categories/split", views.split_category, name="archive-categories-split"),
     path("categories/suggest-merges", views.suggest_category_merges, name="archive-categories-suggest-merges"),
     path("categories/bulk-categorize", views.bulk_categorize, name="archive-categories-bulk"),
+    path("recategorize", views.recategorize_archives, name="archive-recategorize"),
     # Management
     path("delete", views.delete_archives, name="archive-delete"),
     # Blocklist management

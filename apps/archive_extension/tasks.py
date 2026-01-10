@@ -231,20 +231,22 @@ def _build_categorization_prompt(title, domain, content, existing_categories):
     """
     Build the categorization prompt with hybrid approach.
 
-    If user has existing categories, instructs AI to prefer them.
+    If user has existing categories, instructs AI to reuse them only when accurate.
     Otherwise, allows AI to create appropriate categories.
     """
     if existing_categories:
         existing_list = ", ".join(existing_categories[:30])
-        return f"""Analyze this web page and assign 1-3 categories.
+        return f"""Analyze this web page and assign 1-3 accurate categories.
 
-EXISTING USER CATEGORIES (prefer these when relevant):
+YOUR EXISTING CATEGORIES:
 {existing_list}
 
 INSTRUCTIONS:
-1. First, check if any existing categories fit well. Use them if they match.
-2. If no existing category fits, create a NEW concise category (2-4 words max).
-3. Categories should be specific but not too narrow.
+1. Accuracy is paramount. Categories must precisely describe the content.
+2. Reuse an existing category ONLY if it's a strong, accurate match.
+3. DO NOT stretch categories to fit - create a new one if nothing matches well.
+4. Geographic categories (e.g., "Middle East reporting") should ONLY apply to content actually about that region.
+5. Categories should be specific but not too narrow (2-4 words).
 
 Page Details:
 Title: {title}
@@ -253,9 +255,9 @@ Content (truncated):
 {content}
 
 Return ONLY a comma-separated list of 1-3 categories. Example responses:
-- "Machine Learning, Research" (using existing)
-- "Cooking Recipes, Food" (mixing existing with new)
-- "Vintage Watches" (new category when nothing fits)
+- "Latin America, Politics" (accurate geographic + topic)
+- "US Energy Policy" (specific new category)
+- "Technology, Machine Learning" (reusing when accurate)
 
 Categories:"""
     else:

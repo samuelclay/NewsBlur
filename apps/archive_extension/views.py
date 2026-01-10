@@ -286,20 +286,27 @@ def batch_ingest(request):
             else:
                 file_size_display = f"{file_size_bytes / (1024 * 1024):.1f} MB"
 
+            # Get content preview for display
+            archive_obj = result["archive"]
+            content_preview = _get_content_preview(archive_obj) if content else None
+
             results.append(
                 {
                     "url": url,
-                    "archive_id": str(result["archive"].id),
+                    "archive_id": str(archive_obj.id),
                     "title": title,
-                    "domain": result["archive"].domain,
-                    "author": result["archive"].author,
+                    "domain": archive_obj.domain,
+                    "author": archive_obj.author,
+                    "favicon_url": archive_obj.favicon_url,
+                    "archived_date": archive_obj.archived_date.isoformat() if archive_obj.archived_date else None,
                     "matched": result["matched"],
+                    "matched_feed_id": archive_obj.matched_feed_id,
                     "created": result["created"],
                     "content_length": content_len,
                     "word_count": word_count,
                     "word_count_display": f"{word_count:,}" if word_count else "0",
-                    "file_size_bytes": file_size_bytes,
-                    "file_size_display": file_size_display,
+                    "content_preview": content_preview,
+                    "has_content": bool(content),
                     "error": None,
                 }
             )
@@ -1180,6 +1187,61 @@ def bulk_categorize(request):
             "queued_count": min(limit, uncategorized_count),
             "task_id": str(task.id),
             "total_uncategorized": uncategorized_count,
+        }
+    )
+
+
+@csrf_exempt
+@ajax_login_required
+@require_http_methods(["POST"])
+def recategorize_archives(request):
+    """
+    Re-categorize specific archives by clearing their categories
+    and queuing them for fresh AI categorization.
+
+    POST params:
+        archive_ids: JSON array of archive IDs to re-categorize
+
+    Returns:
+        {
+            code: 0,
+            queued_count: int,
+            task_id: str
+        }
+    """
+    import json
+
+    from apps.archive_extension.tasks import categorize_archives
+
+    user = get_user(request)
+    has_access, error = _check_archive_access(user)
+    if not has_access:
+        return _error_response(error, status=403)
+
+    try:
+        archive_ids = json.loads(request.POST.get("archive_ids", "[]"))
+    except json.JSONDecodeError:
+        return _error_response("Invalid archive_ids format", status=400)
+
+    if not archive_ids:
+        return _error_response("No archive IDs provided", status=400)
+
+    # Clear categories for specified archives owned by this user
+    result = MArchivedStory.objects(user_id=user.pk, id__in=archive_ids).update(
+        set__ai_categories=[], set__ai_categorized_date=None
+    )
+
+    if result == 0:
+        return _error_response("No matching archives found", status=404)
+
+    # Queue for re-categorization
+    task = categorize_archives.delay(user.pk, archive_ids=archive_ids)
+
+    return _json_response(
+        {
+            "code": 0,
+            "queued_count": result,
+            "task_id": str(task.id),
         }
     )
 

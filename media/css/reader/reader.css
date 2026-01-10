@@ -20852,7 +20852,7 @@ form.opml_import_form input {
 
 /* Archive Item Animation - height-based expansion for smooth push-down effect */
 .NB-archive-item-entering {
-    animation: archive-expand-in 0.4s ease-out forwards;
+    animation: archive-expand-in 0.5s ease-in forwards;
     overflow: hidden;
 }
 
@@ -20864,8 +20864,8 @@ form.opml_import_form input {
         padding-bottom: 0;
         border-width: 0;
     }
-    60% {
-        opacity: 1;
+    40% {
+        opacity: 0.3;
         border-width: 1px;
     }
     100% {
@@ -20877,24 +20877,50 @@ form.opml_import_form input {
     }
 }
 
-/* Category animation - fade in when tags are added */
-.NB-archive-item-category {
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-}
-
+/* Category animation - fade and slide in when tags are added */
 .NB-archive-item-category.NB-category-entering {
-    animation: category-pop-in 0.3s ease-out forwards;
+    animation: category-slide-in 0.4s ease-out forwards;
 }
 
-@keyframes category-pop-in {
+@keyframes category-slide-in {
     0% {
         opacity: 0;
-        transform: scale(0.8);
+        transform: translateY(-8px) scale(0.9);
     }
     100% {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(0) scale(1);
     }
+}
+
+/* Re-categorize button */
+.NB-archive-item-recategorize {
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    padding: 2px 6px;
+    color: #888;
+    font-size: 12px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.NB-archive-item:hover .NB-archive-item-recategorize {
+    opacity: 1;
+}
+
+.NB-archive-item-recategorize:hover {
+    color: #5C89C9;
+}
+
+.NB-archive-item-category.NB-pending {
+    background: #F0F0F0;
+    color: #888;
+    font-style: italic;
+}
+
+.NB-archive-item.NB-recategorizing {
+    opacity: 0.7;
 }
 
 /* Author styling */
@@ -20909,12 +20935,9 @@ form.opml_import_form input {
 
 /* Archive Search Bar */
 .NB-archive-search-container {
-    padding: 16px 24px;
-    background: #FFF;
+    padding: 0 0 12px 0;
+    margin-bottom: 8px;
     border-bottom: 1px solid #E0E0E0;
-    position: sticky;
-    top: 0;
-    z-index: 10;
 }
 
 .NB-archive-search-wrapper {
@@ -20922,8 +20945,8 @@ form.opml_import_form input {
     align-items: center;
     background: #F5F5F5;
     border: 1px solid #E0E0E0;
-    border-radius: 8px;
-    padding: 8px 12px;
+    border-radius: 6px;
+    padding: 6px 10px;
     transition: all 0.15s ease;
 }
 
@@ -21680,6 +21703,19 @@ form.opml_import_form input {
     background: #333;
 }
 
+.NB-dark .NB-archive-item-recategorize {
+    color: #666;
+}
+
+.NB-dark .NB-archive-item-recategorize:hover {
+    color: #7AA3D9;
+}
+
+.NB-dark .NB-archive-item-category.NB-pending {
+    background: #2a2a2a;
+    color: #666;
+}
+
 .NB-dark .NB-archive-item-stats {
     color: #888;
 }
@@ -21690,12 +21726,12 @@ form.opml_import_form input {
 
 /* Dark Mode - Search Bar */
 .NB-dark .NB-archive-search-container {
-    background: #1a1a1a;
-    border-color: #333;
+    border-color: #444;
+    background: transparent;
 }
 
 .NB-dark .NB-archive-search-wrapper {
-    background: #2a2a2a;
+    background: #222;
     border-color: #444;
 }
 
