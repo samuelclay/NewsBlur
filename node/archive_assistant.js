@@ -67,6 +67,14 @@
           error: data.error || 'Unknown error'
         });
         break;
+      case 'truncated':
+        log.debug(`archive_assistant:truncated ${query_id}`);
+        socket.emit('archive_assistant:truncated', {
+          query_id: query_id,
+          conversation_id: conversation_id,
+          reason: data.reason || 'premium_required'
+        });
+        break;
       default:
         log.debug(`Unknown archive_assistant message type: ${message_type}`);
     }

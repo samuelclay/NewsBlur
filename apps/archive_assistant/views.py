@@ -22,18 +22,6 @@ from utils import log as logging
 from utils.user_functions import ajax_login_required, get_user
 
 
-def _check_archive_access(user):
-    """Check if user has access to Archive Assistant."""
-    if not user.is_authenticated:
-        return False, "Authentication required"
-
-    profile = Profile.objects.get(user=user)
-    if not profile.is_archive:
-        return False, "Archive Assistant requires a Premium Archive subscription"
-
-    return True, None
-
-
 def _json_response(data, status=200):
     """Return a JSON response."""
     return HttpResponse(
@@ -68,13 +56,11 @@ def submit_query(request):
         }
 
     The actual response will be streamed via WebSocket/Redis PubSub.
+    Non-premium users get truncated responses.
     """
     user = get_user(request)
-    has_access, error = _check_archive_access(user)
-    if not has_access:
-        return _error_response(error, status=403)
 
-    # Check usage limits
+    # Check usage limits (now allows non-premium with lower daily limit)
     can_use, limit_error = MArchiveAssistantUsage.can_use(user)
     if not can_use:
         return _error_response(limit_error, status=429)
@@ -82,6 +68,10 @@ def submit_query(request):
     query_text = request.POST.get("query", "").strip()
     conversation_id = request.POST.get("conversation_id", "").strip()
     model = request.POST.get("model", "claude-sonnet-4-20250514")
+
+    # Check if user has premium archive for full responses
+    profile = Profile.objects.get(user=user)
+    is_premium_archive = profile.is_archive
 
     if not query_text:
         return _error_response("Query is required")
@@ -116,6 +106,7 @@ def submit_query(request):
             "query_id": str(query.id),
             "query_text": query_text,
             "model": model,
+            "is_premium_archive": is_premium_archive,
         },
         queue="archive_queue",
     )
@@ -147,9 +138,6 @@ def get_conversations(request):
         }
     """
     user = get_user(request)
-    has_access, error = _check_archive_access(user)
-    if not has_access:
-        return _error_response(error, status=403)
 
     limit = min(int(request.GET.get("limit", 20)), 100)
     offset = int(request.GET.get("offset", 0))
@@ -192,9 +180,6 @@ def get_conversation(request, conversation_id):
         }
     """
     user = get_user(request)
-    has_access, error = _check_archive_access(user)
-    if not has_access:
-        return _error_response(error, status=403)
 
     try:
         conversation = MArchiveConversation.objects.get(id=conversation_id, user_id=user.pk)
@@ -240,9 +225,6 @@ def delete_conversation(request, conversation_id):
         {code: 0}
     """
     user = get_user(request)
-    has_access, error = _check_archive_access(user)
-    if not has_access:
-        return _error_response(error, status=403)
 
     try:
         conversation = MArchiveConversation.objects.get(id=conversation_id, user_id=user.pk)
@@ -267,9 +249,6 @@ def get_suggestions(request):
         }
     """
     user = get_user(request)
-    has_access, error = _check_archive_access(user)
-    if not has_access:
-        return _error_response(error, status=403)
 
     # Get user's top categories
     categories = MArchivedStory.get_category_breakdown(user.pk)
@@ -306,9 +285,10 @@ def get_usage(request):
         }
     """
     user = get_user(request)
-    has_access, error = _check_archive_access(user)
-    if not has_access:
-        return _error_response(error, status=403)
+
+    # Get user's subscription level for limit display
+    profile = Profile.objects.get(user=user)
+    daily_limit = 100 if profile.is_archive else 20
 
     today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     today_count = MArchiveAssistantUsage.objects(
@@ -322,8 +302,9 @@ def get_usage(request):
             "code": 0,
             "usage": {
                 "queries_today": today_count,
-                "queries_limit": 100,
+                "queries_limit": daily_limit,
                 "can_query": can_use,
+                "is_premium_archive": profile.is_archive,
             },
         }
     )

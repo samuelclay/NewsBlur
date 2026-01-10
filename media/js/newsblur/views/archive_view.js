@@ -13,6 +13,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         "click .NB-archive-assistant-send": "submit_assistant_query",
         "click .NB-archive-suggestion": "use_suggestion",
         "click .NB-archive-assistant-voice-button": "start_voice_recording",
+        "click .NB-archive-assistant-premium-only .NB-premium-link": "open_premium_modal",
         // Category management events
         "click .NB-archive-manage-categories": "open_category_manager",
         "click .NB-category-manager-close": "close_category_manager",
@@ -25,7 +26,11 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         "click .NB-merge-suggestion-apply": "apply_merge_suggestion",
         "click .NB-inline-action-confirm": "confirm_inline_action",
         "click .NB-inline-action-cancel": "cancel_inline_action",
-        "keypress .NB-inline-action-input": "handle_inline_action_keypress"
+        "keypress .NB-inline-action-input": "handle_inline_action_keypress",
+        // Conversation history sidebar events
+        "click .NB-archive-conversation-item": "handle_conversation_click",
+        "click .NB-archive-new-conversation": "start_new_conversation",
+        "click .NB-archive-sidebar-toggle": "toggle_sidebar"
     },
 
     initialize: function (options) {
@@ -41,7 +46,6 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.active_category = null;
         this.active_domain = null;
         this.suggestions = [];
-        this.conversations = [];
         this.active_conversation = null;
         this.conversation_history = [];
         this.is_streaming = false;
@@ -58,6 +62,11 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.uncategorized_count = 0;
         this.inline_action = null;  // Tracks current inline action: 'merge', 'rename', 'split'
         this.inline_action_data = null;  // Data for current inline action
+        // Conversation history sidebar state
+        this.past_conversations = [];
+        this.conversations_loaded = false;
+        this.conversations_loading = false;
+        this.sidebar_collapsed = false;
 
         this.fetch_initial_data();
     },
@@ -65,10 +74,10 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     fetch_initial_data: function () {
         var self = this;
 
-        // Fetch suggestions, usage, and recent archives in parallel
+        // Fetch suggestions, usage, conversations, and filters in parallel
         this.show_loading();
 
-        var fetch_count = 3;
+        var fetch_count = 4;
         var completed = 0;
 
         var check_complete = function () {
@@ -97,6 +106,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Fetch categories and domains
         this.fetch_filters(check_complete);
+
+        // Fetch past conversations
+        this.fetch_conversations(check_complete);
     },
 
     fetch_filters: function (callback) {
@@ -109,6 +121,26 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             }
             if (callback) callback();
         }, callback, { request_type: 'GET' });
+    },
+
+    fetch_conversations: function (callback) {
+        var self = this;
+        this.conversations_loading = true;
+
+        this.model.make_request('/archive-assistant/conversations', {
+            limit: 50,
+            active_only: true
+        }, function (data) {
+            self.conversations_loading = false;
+            self.conversations_loaded = true;
+            if (data.code === 0) {
+                self.past_conversations = data.conversations || [];
+            }
+            if (callback) callback();
+        }, function () {
+            self.conversations_loading = false;
+            if (callback) callback();
+        }, { request_type: 'GET' });
     },
 
     fetch_archives: function (reset) {
@@ -207,11 +239,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                         $.make('img', { src: '/media/img/icons/nouns/archive.svg', className: 'NB-archive-tab-icon' }),
                         'Browse Archives'
                     ])
-                ]),
-                this.usage ? $.make('div', { className: 'NB-archive-usage' }, [
-                    $.make('span', { className: 'NB-archive-usage-count' }, this.usage.queries_today + '/' + this.usage.queries_limit),
-                    ' queries today'
-                ]) : ''
+                ])
             ]),
 
             // Tab content
@@ -239,10 +267,18 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     },
 
     render_assistant_tab: function () {
-        var elements = [];
+        var self = this;
+
+        // Check localStorage for sidebar state
+        try {
+            this.sidebar_collapsed = localStorage.getItem('NB:archive_sidebar_collapsed') === 'true';
+        } catch (e) {}
+
+        // Build main chat area elements
+        var main_elements = [];
 
         // Chat history
-        elements.push($.make('div', { className: 'NB-archive-assistant-chat' }, [
+        main_elements.push($.make('div', { className: 'NB-archive-assistant-chat' }, [
             $.make('div', { className: 'NB-archive-assistant-messages' },
                 this.render_conversation_messages()
             )
@@ -254,14 +290,14 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 return $.make('div', { className: 'NB-archive-suggestion' }, suggestion);
             });
 
-            elements.push($.make('div', { className: 'NB-archive-suggestions' }, [
+            main_elements.push($.make('div', { className: 'NB-archive-suggestions' }, [
                 $.make('div', { className: 'NB-archive-suggestions-title' }, 'Suggested questions'),
                 $.make('div', { className: 'NB-archive-suggestions-list' }, suggestion_elements)
             ]));
         }
 
         // Input area
-        elements.push($.make('div', { className: 'NB-archive-assistant-input-wrapper' }, [
+        main_elements.push($.make('div', { className: 'NB-archive-assistant-input-wrapper' }, [
             $.make('div', { className: 'NB-archive-assistant-voice-button', title: 'Record voice question' }, [
                 $.make('img', { src: '/media/img/icons/nouns/microphone.svg', className: 'NB-archive-assistant-voice-icon' })
             ]),
@@ -273,7 +309,94 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             $.make('div', { className: 'NB-archive-assistant-send' })
         ]));
 
-        return elements;
+        // Return main area + sidebar (sidebar on right)
+        var sidebar_elements = [];
+
+        if (!this.sidebar_collapsed) {
+            // Sidebar header with new conversation button and toggle
+            sidebar_elements.push($.make('div', { className: 'NB-archive-sidebar-header' }, [
+                $.make('div', { className: 'NB-archive-new-conversation' }, [
+                    $.make('img', { src: '/media/img/icons/nouns/add.svg', className: 'NB-new-chat-icon' }),
+                    'New Chat'
+                ]),
+                $.make('div', {
+                    className: 'NB-archive-sidebar-toggle',
+                    title: 'Hide history'
+                })
+            ]));
+            // Conversation list
+            sidebar_elements.push($.make('div', { className: 'NB-archive-conversation-list' },
+                this.render_conversation_list_items()
+            ));
+        }
+
+        return [
+            // Main chat area (with floating toggle when collapsed)
+            $.make('div', { className: 'NB-archive-assistant-main' }, [
+                this.sidebar_collapsed ? $.make('div', {
+                    className: 'NB-archive-sidebar-toggle NB-collapsed',
+                    title: 'Show history'
+                }) : '',
+                main_elements
+            ].flat().filter(Boolean)),
+
+            // Conversation Sidebar (on right)
+            $.make('div', {
+                className: 'NB-archive-conversation-sidebar' + (this.sidebar_collapsed ? ' NB-collapsed' : '')
+            }, sidebar_elements)
+        ];
+    },
+
+    render_conversation_list_items: function () {
+        var self = this;
+
+        if (this.conversations_loading) {
+            return $.make('div', { className: 'NB-archive-conversations-loading' }, [
+                $.make('div', { className: 'NB-loading NB-active' })
+            ]);
+        }
+
+        if (this.past_conversations.length === 0) {
+            return $.make('div', { className: 'NB-archive-conversations-empty' },
+                'No past conversations');
+        }
+
+        return _.map(this.past_conversations, function (conv) {
+            var is_active = self.active_conversation === conv.id;
+            var date_str = self.format_relative_date(new Date(conv.last_activity));
+
+            return $.make('div', {
+                className: 'NB-archive-conversation-item' + (is_active ? ' NB-active' : ''),
+                'data-conversation-id': conv.id
+            }, [
+                $.make('div', { className: 'NB-archive-conversation-title' },
+                    conv.title || 'New Conversation'),
+                $.make('div', { className: 'NB-archive-conversation-date' }, date_str)
+            ]);
+        });
+    },
+
+    format_relative_date: function (date) {
+        if (!date || isNaN(date.getTime())) return '';
+
+        var now = new Date();
+        var diff = now - date;
+        var seconds = Math.floor(diff / 1000);
+        var minutes = Math.floor(seconds / 60);
+        var hours = Math.floor(minutes / 60);
+        var days = Math.floor(hours / 24);
+
+        if (days > 7) {
+            return date.toLocaleDateString();
+        } else if (days > 0) {
+            return days === 1 ? 'Yesterday' : days + ' days ago';
+        } else if (hours > 0) {
+            return hours === 1 ? '1 hour ago' : hours + ' hours ago';
+        } else if (minutes > 0) {
+            return minutes === 1 ? '1 minute ago' : minutes + ' minutes ago';
+        } else {
+            return 'Just now';
+        }
     },
 
     render_conversation_messages: function () {
@@ -290,12 +413,27 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         } else {
             _.each(this.conversation_history, function (message, index) {
                 var is_user = message.role === 'user';
+                var message_class = 'NB-archive-assistant-message' + (is_user ? ' NB-user' : ' NB-assistant');
+                if (!is_user && message.truncated) {
+                    message_class += ' NB-archive-assistant-premium-only';
+                }
                 var $message = $.make('div', {
-                    className: 'NB-archive-assistant-message' + (is_user ? ' NB-user' : ' NB-assistant')
+                    className: message_class
                 }, [
                     $.make('div', { className: 'NB-archive-message-content' },
                         is_user ? message.content : self.markdown_to_html(message.content))
                 ]);
+
+                // Add fade and upgrade notice for truncated messages
+                if (!is_user && message.truncated) {
+                    $message.append($.make('div', { className: 'NB-archive-assistant-premium-fade' }));
+                    $message.append($.make('div', { className: 'NB-archive-assistant-premium-notice' }, [
+                        'Full Archive Assistant responses are a ',
+                        $.make('a', { href: '#', className: 'NB-splash-link NB-premium-link' }, 'premium archive feature'),
+                        '.'
+                    ]));
+                }
+
                 elements.push($message);
             });
         }
@@ -412,6 +550,14 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         $load_more.toggle(this.has_more);
     },
 
+    get_favicon_url: function (archive) {
+        // Fallback chain: favicon_url -> NewsBlur feed icon -> Google Favicon API
+        if (archive.favicon_url) return archive.favicon_url;
+        if (archive.matched_feed_id) return '/rss_feeds/icon/' + archive.matched_feed_id;
+        if (archive.domain) return 'https://www.google.com/s2/favicons?domain=' + archive.domain + '&sz=32';
+        return null;
+    },
+
     render_archive_item: function (archive) {
         var date = archive.archived_date ? new Date(archive.archived_date) : null;
         var date_str = date ? this.format_relative_date(date) : '';
@@ -438,28 +584,43 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             stats_items.push($.make('span', { className: 'NB-archive-item-stat NB-no-content' }, 'No content'));
         }
 
-        // Create NewsBlur link if matched to a feed
+        // Create NewsBlur badge if matched to a feed
         var newsblur_link = '';
         if (archive.matched_feed_id) {
             var link_attrs = {
                 className: 'NB-archive-item-newsblur-link',
                 'data-feed-id': archive.matched_feed_id,
-                title: 'Open in NewsBlur'
+                title: 'Open this story in NewsBlur'
             };
             if (archive.matched_story_hash) {
                 link_attrs['data-story-hash'] = archive.matched_story_hash;
             }
             newsblur_link = $.make('div', link_attrs, [
-                $.make('img', { src: '/media/img/favicon_32.png', className: 'NB-archive-item-newsblur-icon' })
+                $.make('span', { className: 'NB-archive-newsblur-text' }, 'In NewsBlur'),
+                $.make('img', { src: '/media/img/favicon_16.png', className: 'NB-archive-newsblur-icon' })
             ]);
         }
 
+        // Build favicon with fallback chain
+        var favicon_url = this.get_favicon_url(archive);
+        var favicon_fallback = archive.domain ? 'https://www.google.com/s2/favicons?domain=' + archive.domain + '&sz=32' : null;
+        var $favicon = favicon_url ?
+            $.make('img', {
+                src: favicon_url,
+                className: 'NB-archive-item-favicon-img'
+            }) :
+            $.make('div', { className: 'NB-archive-item-favicon-placeholder' });
+
+        // Add error handler to fall back to Google Favicon API
+        if (favicon_url && favicon_fallback && favicon_url !== favicon_fallback) {
+            $favicon.on('error', function () {
+                this.onerror = null;
+                this.src = favicon_fallback;
+            });
+        }
+
         return $.make('div', { className: 'NB-archive-item', 'data-id': archive.id }, [
-            $.make('div', { className: 'NB-archive-item-favicon' }, [
-                archive.favicon_url ?
-                    $.make('img', { src: archive.favicon_url, className: 'NB-archive-item-favicon-img' }) :
-                    $.make('div', { className: 'NB-archive-item-favicon-placeholder' })
-            ]),
+            $.make('div', { className: 'NB-archive-item-favicon' }, [$favicon]),
             $.make('div', { className: 'NB-archive-item-content' }, [
                 $.make('div', { className: 'NB-archive-item-title' }, archive.title || 'Untitled'),
                 $.make('div', { className: 'NB-archive-item-meta' }, [
@@ -558,11 +719,31 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     },
 
     open_archive_item: function (e) {
+        // Don't trigger if clicking the NewsBlur link directly
+        if ($(e.target).closest('.NB-archive-item-newsblur-link').length) return;
+
         var $item = $(e.currentTarget);
         var id = $item.data('id');
         var archive = _.find(this.archives, function (a) { return a.id === id; });
 
-        if (archive && archive.url) {
+        if (!archive) return;
+
+        if (archive.matched_feed_id && NEWSBLUR.reader) {
+            // Open in NewsBlur
+            var options = { router: true };
+            if (archive.matched_story_hash) {
+                options.story_id = archive.matched_story_hash;
+            }
+
+            var feed = NEWSBLUR.assets.get_feed(archive.matched_feed_id);
+            if (feed && !feed.get('temp')) {
+                NEWSBLUR.reader.open_feed(archive.matched_feed_id, options);
+            } else {
+                // Not subscribed - use tryfeed view
+                NEWSBLUR.reader.load_feed_in_tryfeed_view(archive.matched_feed_id, options);
+            }
+        } else if (archive.url) {
+            // No NewsBlur match - open original URL
             window.open(archive.url, '_blank');
         }
     },
@@ -575,13 +756,19 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         var story_hash = $link.data('story-hash');
 
         if (feed_id && NEWSBLUR.reader) {
-            var options = {
-                router: true
-            };
+            var options = { router: true };
             if (story_hash) {
                 options.story_id = story_hash;
             }
-            NEWSBLUR.reader.open_feed(feed_id, options);
+
+            var feed = NEWSBLUR.assets.get_feed(feed_id);
+            if (feed && !feed.get('temp')) {
+                // User is subscribed - open directly
+                NEWSBLUR.reader.open_feed(feed_id, options);
+            } else {
+                // Not subscribed - use tryfeed view
+                NEWSBLUR.reader.load_feed_in_tryfeed_view(feed_id, options);
+            }
         }
     },
 
@@ -683,6 +870,101 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             this.voice_recorder.start_recording();
         }
     },
+
+    // ==================
+    // Conversation History Sidebar Methods
+    // ==================
+
+    handle_conversation_click: function (e) {
+        var $item = $(e.currentTarget);
+        var conversation_id = $item.data('conversation-id');
+
+        if (conversation_id && conversation_id !== this.active_conversation) {
+            this.load_conversation(conversation_id);
+        }
+    },
+
+    load_conversation: function (conversation_id) {
+        var self = this;
+
+        // Clear current conversation state
+        this.conversation_history = [];
+        this.active_conversation = conversation_id;
+        this.is_streaming = false;
+        this.response_text = '';
+        this.tool_status = null;
+
+        // Show loading state
+        this.render_assistant_messages();
+
+        this.model.make_request('/archive-assistant/conversation/' + conversation_id, {}, function (data) {
+            if (data.code === 0 && data.queries) {
+                // Rebuild conversation history from queries
+                _.each(data.queries, function (query) {
+                    self.conversation_history.push({
+                        role: 'user',
+                        content: query.query_text
+                    });
+                    if (query.response) {
+                        self.conversation_history.push({
+                            role: 'assistant',
+                            content: query.response
+                        });
+                    }
+                });
+            }
+            self.render_assistant_messages();
+            self.scroll_to_bottom();
+            self.render_conversation_sidebar();
+        }, function () {
+            self.handle_assistant_error('Failed to load conversation');
+        }, { request_type: 'GET' });
+    },
+
+    start_new_conversation: function () {
+        this.active_conversation = null;
+        this.conversation_history = [];
+        this.is_streaming = false;
+        this.response_text = '';
+        this.tool_status = null;
+
+        this.render_assistant_messages();
+        this.render_conversation_sidebar();
+
+        // Show suggestions again
+        this.$('.NB-archive-suggestions').show();
+
+        // Focus input
+        this.$('.NB-archive-assistant-input').focus();
+    },
+
+    toggle_sidebar: function () {
+        this.sidebar_collapsed = !this.sidebar_collapsed;
+
+        // Persist preference
+        try {
+            localStorage.setItem('NB:archive_sidebar_collapsed', this.sidebar_collapsed);
+        } catch (e) {}
+
+        // Re-render the assistant tab to properly move toggle button
+        var $tab = this.$('.NB-archive-assistant-tab');
+        var new_content = this.render_assistant_tab();
+        $tab.empty().append(new_content);
+
+        // Re-render messages if we have conversation history
+        if (this.conversation_history.length > 0) {
+            this.render_assistant_messages();
+        }
+    },
+
+    render_conversation_sidebar: function () {
+        var $list = this.$('.NB-archive-conversation-list');
+        $list.html(this.render_conversation_list_items());
+    },
+
+    // ==================
+    // Assistant Query Methods
+    // ==================
 
     handle_assistant_keypress: function (e) {
         if (e.which === 13) {  // Enter key
@@ -892,11 +1174,46 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.response_text = '';
         this.render_assistant_messages();
         this.scroll_to_bottom();
+
+        // Refresh conversations list to update titles for new conversations
+        if (this.conversation_history.length <= 2) {
+            var self = this;
+            this.fetch_conversations(function () {
+                self.render_conversation_sidebar();
+            });
+        }
     },
 
     show_error: function (error_message) {
         NEWSBLUR.log(['Archive Assistant: Error', error_message]);
         this.handle_assistant_error(error_message);
+    },
+
+    handle_truncation: function (data) {
+        NEWSBLUR.log(['Archive Assistant: Response truncated', data]);
+
+        this.is_streaming = false;
+        this.tool_status = null;
+        this.active_query_id = null;
+        this.clear_websocket_timeout();
+
+        // Add truncated response to history with premium notice
+        if (this.response_text) {
+            this.conversation_history.push({
+                role: 'assistant',
+                content: this.response_text,
+                truncated: true
+            });
+        }
+
+        this.response_text = '';
+        this.render_assistant_messages();
+        this.scroll_to_bottom();
+    },
+
+    open_premium_modal: function (e) {
+        e.preventDefault();
+        NEWSBLUR.reader.open_feedchooser_modal({ 'premium_only': true });
     },
 
     render_assistant_messages: function () {

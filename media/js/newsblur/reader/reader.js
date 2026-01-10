@@ -5651,6 +5651,9 @@
                 this.socket.removeAllListeners('archive_assistant:error');
                 this.socket.on('archive_assistant:error', _.bind(this.handle_archive_assistant_error, this));
 
+                this.socket.removeAllListeners('archive_assistant:truncated');
+                this.socket.on('archive_assistant:truncated', _.bind(this.handle_archive_assistant_truncated, this));
+
                 // Archive Extension real-time event listeners
                 this.socket.removeAllListeners('archive:new');
                 this.socket.on('archive:new', _.bind(this.handle_archive_new, this));
@@ -5868,6 +5871,13 @@
             var view = this.find_archive_view_for_query(data.query_id);
             if (view) {
                 view.show_error(data.error);
+            }
+        },
+
+        handle_archive_assistant_truncated: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view) {
+                view.handle_truncation(data);
             }
         },
 
