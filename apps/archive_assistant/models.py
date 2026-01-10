@@ -122,25 +122,24 @@ class MArchiveAssistantUsage(mongo.Document):
     def can_use(cls, user):
         """
         Check if user can make an Archive Assistant query.
-        Archive Assistant is only available to Archive tier subscribers.
+        All users can query, but non-premium users have a lower daily limit
+        and get truncated responses.
         """
         from apps.profile.models import Profile
 
         profile = Profile.objects.get(user=user)
 
-        if not profile.is_archive:
-            return False, "Archive Assistant requires a Premium Archive subscription"
-
-        # Archive users get 100 queries per day
-        from datetime import timedelta
+        # Different daily limits based on subscription
+        # Premium archive: 100 queries/day, Non-premium: 20 queries/day
+        daily_limit = 100 if profile.is_archive else 20
 
         today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         today_count = cls.objects(
             user_id=user.pk, query_date__gte=today_start, source__in=["live", "cache"]
         ).count()
 
-        if today_count >= 100:
-            return False, "Daily query limit reached (100 queries per day)"
+        if today_count >= daily_limit:
+            return False, f"Daily query limit reached ({daily_limit} queries per day)"
 
         return True, None
 

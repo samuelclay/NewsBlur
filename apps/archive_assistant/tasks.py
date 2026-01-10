@@ -18,6 +18,9 @@ from apps.archive_assistant.prompts import ARCHIVE_ASSISTANT_SYSTEM_PROMPT
 from apps.archive_assistant.tools import ARCHIVE_TOOLS, execute_tool
 from utils import log as logging
 
+# Character limit for non-premium users before truncation
+FREE_RESPONSE_CHAR_LIMIT = 300
+
 
 def get_redis_pubsub_connection():
     """Get Redis connection for pubsub."""
@@ -25,7 +28,9 @@ def get_redis_pubsub_connection():
 
 
 @shared_task(name="archive-assistant-query")
-def process_archive_query(user_id, conversation_id, query_id, query_text, model="claude-sonnet-4-20250514"):
+def process_archive_query(
+    user_id, conversation_id, query_id, query_text, model="claude-sonnet-4-20250514", is_premium_archive=True
+):
     """
     Process an Archive Assistant query using Claude with tools.
 
@@ -42,6 +47,7 @@ def process_archive_query(user_id, conversation_id, query_id, query_text, model=
         query_id: Query ID (ObjectId as string)
         query_text: The user's question
         model: Claude model to use
+        is_premium_archive: Whether user has premium archive subscription (full responses)
     """
     r = get_redis_pubsub_connection()
 
@@ -83,9 +89,9 @@ def process_archive_query(user_id, conversation_id, query_id, query_text, model=
         # Build messages for Claude
         messages = history_messages + [{"role": "user", "content": query_text}]
 
-        # Call Claude with tools
-        response_text, tool_calls, tokens_used = _call_claude_with_tools(
-            user_id, messages, model, publish_event
+        # Call Claude with tools (truncates response for non-premium users)
+        response_text, tool_calls, tokens_used, was_truncated = _call_claude_with_tools(
+            user_id, messages, model, publish_event, is_premium_archive
         )
 
         # Calculate duration
@@ -112,8 +118,9 @@ def process_archive_query(user_id, conversation_id, query_id, query_text, model=
         # Record usage
         MArchiveAssistantUsage.record_usage(user_id, model, tokens_used, source="live")
 
-        # Publish complete event
-        publish_event("complete", {"duration_ms": duration_ms, "tokens_used": tokens_used})
+        # Publish complete event (only if not truncated - truncated event acts as completion)
+        if not was_truncated:
+            publish_event("complete", {"duration_ms": duration_ms, "tokens_used": tokens_used})
 
     except Exception as e:
         logging.error(f"Archive Assistant query error: {e}")
@@ -144,7 +151,7 @@ def _get_conversation_history(conversation_id, limit=10):
     return messages
 
 
-def _call_claude_with_tools(user_id, messages, model, publish_event):
+def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_archive=True):
     """
     Call Claude API with tools and handle tool execution loop.
 
@@ -153,8 +160,9 @@ def _call_claude_with_tools(user_id, messages, model, publish_event):
         messages: Conversation messages
         model: Claude model to use
         publish_event: Callback to publish events (type, extra_dict)
+        is_premium_archive: Whether user has premium archive (no truncation)
 
-    Returns tuple: (response_text, tool_calls, tokens_used)
+    Returns tuple: (response_text, tool_calls, tokens_used, was_truncated)
     """
     import anthropic
 
@@ -163,6 +171,7 @@ def _call_claude_with_tools(user_id, messages, model, publish_event):
     tool_calls = []
     tokens_used = 0
     full_response = ""
+    was_truncated = False
 
     # Initial request with tools
     response = client.messages.create(
@@ -224,16 +233,39 @@ def _call_claude_with_tools(user_id, messages, model, publish_event):
 
         tokens_used += response.usage.input_tokens + response.usage.output_tokens
 
-    # Extract final text response
+    # Extract final text response (with truncation for non-premium users)
+    total_chars = 0
     for block in response.content:
         if hasattr(block, "text"):
             chunk = block.text
-            full_response += chunk
 
-            # Stream the chunk
+            # For non-premium users, enforce character limit
+            if not is_premium_archive:
+                remaining = FREE_RESPONSE_CHAR_LIMIT - total_chars
+                if remaining <= 0:
+                    # Already at limit, publish truncated and stop
+                    publish_event("truncated", {"reason": "premium_required"})
+                    was_truncated = True
+                    break
+                elif len(chunk) > remaining:
+                    # Truncate at word boundary
+                    truncated_chunk = chunk[:remaining]
+                    # Try to cut at a word boundary
+                    last_space = truncated_chunk.rfind(" ")
+                    if last_space > remaining // 2:
+                        truncated_chunk = truncated_chunk[:last_space]
+                    full_response += truncated_chunk
+                    total_chars += len(truncated_chunk)
+                    publish_event("chunk", {"content": truncated_chunk})
+                    publish_event("truncated", {"reason": "premium_required"})
+                    was_truncated = True
+                    break
+
+            full_response += chunk
+            total_chars += len(chunk)
             publish_event("chunk", {"content": chunk})
 
-    return full_response, tool_calls, tokens_used
+    return full_response, tool_calls, tokens_used, was_truncated
 
 
 def _generate_conversation_title(query_text):

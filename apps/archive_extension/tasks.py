@@ -246,12 +246,21 @@ def _parse_category_response(response):
 
     Handles various response formats and cleans up the output.
     """
+    # Strip any reasoning/explanation text that might follow
+    if "\n" in response:
+        response = response.split("\n")[0]
+    if "Reasoning:" in response:
+        response = response.split("Reasoning:")[0]
+
     categories = [c.strip() for c in response.split(",")]
 
     cleaned = []
     for cat in categories:
         # Remove quotes and extra whitespace
         cat = cat.strip('"\'').strip()
+        # Skip categories with line breaks or explanations
+        if "\n" in cat:
+            cat = cat.split("\n")[0].strip()
         # Limit length
         if len(cat) > 64:
             cat = cat[:64]
