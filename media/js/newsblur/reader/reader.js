@@ -4930,17 +4930,11 @@
         },
 
         manage_menu_mute_feed: function (feed_id, unmute) {
-            var approve_list = _.pluck(NEWSBLUR.assets.feeds.filter(function (feed) {
-                if (unmute) {
-                    return feed.get('active') || feed.get('id') == feed_id;
-                }
-                return feed.get('active') && feed.get('id') != feed_id;
-            }), 'id');
-
-            console.log(["Saving", approve_list, feed_id]);
+            var mute = !unmute;
+            console.log(["Muting feed", feed_id, "mute:", mute]);
 
             NEWSBLUR.reader.flags['reloading_feeds'] = true;
-            this.model.save_feed_chooser(approve_list, _.bind(function () {
+            this.model.set_feed_mute(feed_id, mute, _.bind(function () {
                 this.flags['has_saved'] = true;
                 NEWSBLUR.reader.flags['reloading_feeds'] = false;
                 NEWSBLUR.reader.hide_feed_chooser_button();
