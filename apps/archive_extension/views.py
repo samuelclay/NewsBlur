@@ -869,11 +869,16 @@ def merge_categories(request):
         if source == target_category:
             continue
 
-        # Update all stories: remove source category, add target category
-        count = MArchivedStory.objects(user_id=user.pk, ai_categories=source).update(
-            pull__ai_categories=source, add_to_set__ai_categories=target_category
-        )
-        merged_count += count
+        # Get stories with source category
+        stories = MArchivedStory.objects(user_id=user.pk, ai_categories=source)
+        count = stories.count()
+
+        # Update stories: first add target, then remove source
+        # MongoDB doesn't allow pull and add_to_set on same field in one update
+        if count > 0:
+            stories.update(add_to_set__ai_categories=target_category)
+            MArchivedStory.objects(user_id=user.pk, ai_categories=source).update(pull__ai_categories=source)
+            merged_count += count
 
     # Update Elasticsearch index for affected stories
     if merged_count > 0:
@@ -972,19 +977,19 @@ def split_category(request):
         return _error_response("category is required")
 
     if action == "suggest":
-        # Get sample stories from this category
+        # Get ALL stories from this category (up to 100)
         stories = list(
-            MArchivedStory.objects(user_id=user.pk, ai_categories=category, deleted=False).limit(20)
+            MArchivedStory.objects(user_id=user.pk, ai_categories=category, deleted=False).limit(100)
         )
 
         if not stories:
             return _json_response({"code": 0, "suggestions": []})
 
-        # Build a mapping of title to story ID for later lookup
-        title_to_id = {s.title: str(s.id) for s in stories}
+        # Build a mapping of story ID to story for lookup
+        id_to_story = {str(s.id): s for s in stories}
 
-        # Build AI prompt for split suggestions
-        story_summaries = "\n".join([f"- {s.title} ({s.domain})" for s in stories])
+        # Build AI prompt with story IDs so we can map back directly
+        story_summaries = "\n".join([f"[{s.id}] {s.title}" for s in stories])
 
         try:
             import anthropic
@@ -995,19 +1000,20 @@ def split_category(request):
 
             client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
-            prompt = f"""Analyze these items currently in the "{category}" category and suggest how to split them into 2-4 more specific categories.
+            prompt = f"""Analyze these {len(stories)} items currently in the "{category}" category and split them into 2-4 more specific categories.
 
-Items:
+IMPORTANT: You MUST assign EVERY item to at least one category. Each item can belong to multiple categories if relevant.
+
+Items (format: [ID] Title):
 {story_summaries}
 
-For each suggested new category, list which items (by title) would fit there.
-Return ONLY valid JSON (no markdown code blocks):
+Return ONLY valid JSON with the exact IDs from above:
 [
-  {{"name": "New Category Name", "items": ["title1", "title2"]}}
+  {{"name": "Category Name", "ids": ["id1", "id2", ...]}}
 ]"""
 
             response = client.messages.create(
-                model="claude-3-5-haiku-20241022", max_tokens=500, messages=[{"role": "user", "content": prompt}]
+                model="claude-3-5-haiku-20241022", max_tokens=2000, messages=[{"role": "user", "content": prompt}]
             )
 
             result_text = response.content[0].text.strip()
@@ -1019,14 +1025,13 @@ Return ONLY valid JSON (no markdown code blocks):
 
             suggestions = json.decode(result_text)
 
-            # Map titles back to story IDs for each suggestion
+            # Map IDs from AI response - AI returns "ids" field with story IDs
             for suggestion in suggestions:
-                items = suggestion.get("items", [])
-                story_ids = []
-                for title in items:
-                    if title in title_to_id:
-                        story_ids.append(title_to_id[title])
-                suggestion["story_ids"] = story_ids
+                # AI returns ids directly now
+                ids = suggestion.get("ids", [])
+                # Validate that these IDs exist in our stories
+                valid_ids = [sid for sid in ids if sid in id_to_story]
+                suggestion["story_ids"] = valid_ids
 
             return _json_response(
                 {
@@ -1042,34 +1047,35 @@ Return ONLY valid JSON (no markdown code blocks):
             return _error_response(f"Failed to generate suggestions: {str(e)}")
 
     elif action == "apply":
-        # Apply the split based on provided rules
-        split_rules_json = request.POST.get("split_rules", "[]")
+        # Apply the split - supports both individual params and split_rules array
+        new_category = request.POST.get("new_category", "").strip()
+        story_ids_json = request.POST.get("story_ids", "[]")
+
+        # Parse story_ids
         try:
-            split_rules = json.decode(split_rules_json)
+            story_ids = json.decode(story_ids_json) if story_ids_json else []
         except Exception:
-            return _error_response("Invalid split_rules JSON")
+            return _error_response("Invalid story_ids JSON")
+
+        if not new_category:
+            return _error_response("new_category is required")
+        if not story_ids:
+            return _error_response("story_ids is required")
 
         applied_count = 0
-        for rule in split_rules:
-            new_category = rule.get("new_category", "").strip()
-            story_ids = rule.get("story_ids", [])
-
-            if not new_category or not story_ids:
-                continue
-
-            # Update stories: remove old category, add new category
-            # Note: MongoDB doesn't allow pull and add_to_set on same field in one update
-            for story_id in story_ids:
-                try:
-                    # First remove the old category
-                    MArchivedStory.objects(id=story_id, user_id=user.pk).update(pull__ai_categories=category)
-                    # Then add the new category
-                    MArchivedStory.objects(id=story_id, user_id=user.pk).update(
-                        add_to_set__ai_categories=new_category
-                    )
-                    applied_count += 1
-                except Exception as e:
-                    logging.error(f"Error applying split to story {story_id}: {e}")
+        # Update stories: remove old category, add new category
+        # Note: MongoDB doesn't allow pull and add_to_set on same field in one update
+        for story_id in story_ids:
+            try:
+                # First remove the old category
+                MArchivedStory.objects(id=story_id, user_id=user.pk).update(pull__ai_categories=category)
+                # Then add the new category
+                MArchivedStory.objects(id=story_id, user_id=user.pk).update(
+                    add_to_set__ai_categories=new_category
+                )
+                applied_count += 1
+            except Exception as e:
+                logging.error(f"Error applying split to story {story_id}: {e}")
 
         return _json_response(
             {

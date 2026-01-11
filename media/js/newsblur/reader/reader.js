@@ -5869,7 +5869,7 @@
         handle_archive_assistant_tool_result: function (data) {
             var view = this.find_archive_view_for_query(data.query_id);
             if (view) {
-                view.show_tool_result(data.tool, data.summary);
+                view.show_tool_result(data.tool, data.summary, data.preview);
             }
         },
 
