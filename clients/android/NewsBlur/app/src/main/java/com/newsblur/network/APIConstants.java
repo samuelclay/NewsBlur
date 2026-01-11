@@ -71,6 +71,7 @@ public class APIConstants {
     public static final String PATH_READ_STORIES = "/reader/read_stories";
     public static final String PATH_MOVE_FEED_TO_FOLDERS = "/reader/move_feed_to_folders";
     public static final String PATH_SAVE_FEED_CHOOSER = "/reader/save_feed_chooser";
+    public static final String PATH_SET_FEED_MUTE = "/reader/set_feed_mute";
     public static final String PATH_SET_NOTIFICATIONS = "/notifications/feed/";
     public static final String PATH_INSTA_FETCH = "/rss_feeds/exception_retry";
     public static final String PATH_RENAME_FEED = "/reader/rename_feed";
@@ -108,6 +109,7 @@ public class APIConstants {
     public static final String PARAMETER_REPLY_ID = "reply_id";
 	public static final String PARAMETER_COMMENT_USERID = "comment_user_id";
 	public static final String PARAMETER_FEEDID = "feed_id";
+	public static final String PARAMETER_MUTE = "mute";
 	public static final String PARAMETER_REPLY_TEXT = "reply_comments";
 	public static final String PARAMETER_STORY_FEEDID = "story_feed_id";
 	public static final String PARAMETER_SHARE_COMMENT = "comments";
