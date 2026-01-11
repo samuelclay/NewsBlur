@@ -2918,19 +2918,13 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Muting...";
-    
-    NSMutableArray *activeIdentifiers = [self.appDelegate.dictFeeds.allKeys mutableCopy];
-    NSString *thisIdentifier = [NSString stringWithFormat:@"%@", storiesCollection.activeFeed[@"id"]];
-    [activeIdentifiers removeObject:thisIdentifier];
-    
-    for (NSString *feedId in self.appDelegate.dictInactiveFeeds.allKeys) {
-        [activeIdentifiers removeObject:feedId];
-    }
-    
+
+    NSString *feedId = [NSString stringWithFormat:@"%@", storiesCollection.activeFeed[@"id"]];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_feed_chooser", self.appDelegate.url];
-    
-    [params setObject:activeIdentifiers forKey:@"approved_feeds"];
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/set_feed_mute", self.appDelegate.url];
+
+    [params setObject:feedId forKey:@"feed_id"];
+    [params setObject:@"true" forKey:@"mute"];
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
         [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"muteSite"];
