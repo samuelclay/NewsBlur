@@ -2154,6 +2154,24 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, pre_callback, error_callback);
     },
 
+    count_saved_stories: function (timestamp, callback, error_callback) {
+        this.make_request('/profile/count_starred_stories', {
+            timestamp: timestamp
+        }, callback, error_callback);
+    },
+
+    count_shared_stories: function (timestamp, callback, error_callback) {
+        this.make_request('/profile/count_shared_stories', {
+            timestamp: timestamp
+        }, callback, error_callback);
+    },
+
+    delete_shared_stories: function (timestamp, callback, error_callback) {
+        this.make_request('/profile/delete_shared_stories', {
+            timestamp: timestamp
+        }, callback, error_callback);
+    },
+
     delete_all_sites: function (callback, error_callback) {
         this.make_request('/profile/delete_all_sites', {}, callback, error_callback);
     },

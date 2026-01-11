@@ -15849,8 +15849,56 @@ form.opml_import_form input {
     margin-top: 0;
 }
 
-.NB-modal-account .NB-preference-saved-stories-date {
+.NB-modal-account .NB-preference-saved-stories-date,
+.NB-modal-account .NB-preference-shared-stories-date {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.NB-modal-account .NB-preference-saved-stories-date span,
+.NB-modal-account .NB-preference-shared-stories-date span {
+    font-weight: 500;
+    color: #606060;
+    white-space: nowrap;
+}
+
+.NB-modal-account .NB-preference-saved-stories-date select,
+.NB-modal-account .NB-preference-shared-stories-date select {
+    padding: 4px 8px;
+    border: 1px solid #c0c0c0;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.NB-modal-account .NB-preference-saved-stories-date select:hover,
+.NB-modal-account .NB-preference-shared-stories-date select:hover {
+    border-color: #909090;
+}
+
+.NB-modal-account .NB-preference-stories-count {
+    padding: 8px 12px;
     margin-bottom: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    background: #f0f7f0;
+    color: #2a6a2a;
+    border: 1px solid #c0e0c0;
+}
+
+.NB-modal-account .NB-preference-stories-count:empty {
+    display: none;
+}
+
+.NB-modal-account .NB-preference-delete-saved .NB-preference-options,
+.NB-modal-account .NB-preference-delete-shared .NB-preference-options {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 /* ================ */

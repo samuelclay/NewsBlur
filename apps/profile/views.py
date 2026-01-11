@@ -49,7 +49,7 @@ from apps.profile.models import (
 from apps.reader.forms import LoginForm, SignupForm
 from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
-from apps.social.models import MActivity, MSocialProfile, MSocialServices
+from apps.social.models import MActivity, MSharedStory, MSocialProfile, MSocialServices, MSocialSubscription
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import ajax_login_required, get_user
@@ -1071,6 +1071,68 @@ def delete_starred_stories(request):
     return dict(
         code=1, stories_deleted=stories_deleted, starred_counts=starred_counts, starred_count=starred_count
     )
+
+
+@ajax_login_required
+@json.json_view
+def count_starred_stories(request):
+    timestamp = request.POST.get("timestamp", None)
+    if timestamp:
+        delete_date = datetime.datetime.fromtimestamp(int(timestamp))
+    else:
+        delete_date = datetime.datetime.now()
+    count = MStarredStory.objects.filter(user_id=request.user.pk, starred_date__lte=delete_date).count()
+    return dict(code=1, count=count)
+
+
+@ajax_login_required
+@json.json_view
+def count_shared_stories(request):
+    timestamp = request.POST.get("timestamp", None)
+    if timestamp:
+        delete_date = datetime.datetime.fromtimestamp(int(timestamp))
+    else:
+        delete_date = datetime.datetime.now()
+    count = MSharedStory.objects.filter(user_id=request.user.pk, shared_date__lte=delete_date).count()
+    return dict(code=1, count=count)
+
+
+@ajax_login_required
+@json.json_view
+def delete_shared_stories(request):
+    timestamp = request.POST.get("timestamp", None)
+    if timestamp:
+        delete_date = datetime.datetime.fromtimestamp(int(timestamp))
+    else:
+        delete_date = datetime.datetime.now()
+
+    shared_stories = MSharedStory.objects.filter(user_id=request.user.pk, shared_date__lte=delete_date)
+    stories_deleted = shared_stories.count()
+
+    # Mark social subscriptions for unread recalculation
+    socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk, needs_unread_recalc=False)
+    for socialsub in socialsubs:
+        socialsub.needs_unread_recalc = True
+        socialsub.save()
+
+    # Delete each story (triggers cleanup: removes from Redis, removes activity)
+    for story in shared_stories:
+        story.delete()
+
+    # Update shared stories count in profile
+    try:
+        profile = MSocialProfile.objects.get(user_id=request.user.pk)
+        profile.count_follows()
+        shared_stories_count = profile.shared_stories_count
+    except MSocialProfile.DoesNotExist:
+        shared_stories_count = 0
+
+    logging.user(
+        request.user,
+        "~BC~FRDeleting %s/%s shared stories (%s)" % (stories_deleted, stories_deleted + shared_stories_count, delete_date),
+    )
+
+    return dict(code=1, stories_deleted=stories_deleted, shared_stories_count=shared_stories_count)
 
 
 @ajax_login_required
