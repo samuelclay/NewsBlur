@@ -19,6 +19,7 @@ from apps.archive_extension.blocklist import get_blocked_domains, get_blocked_pa
 from apps.archive_extension.matching import match_and_process
 from apps.archive_extension.models import MArchivedStory, MArchiveUserSettings
 from apps.archive_extension.tasks import categorize_archives, index_archive_for_search
+from apps.archive_extension.utils import format_datetime_utc
 from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
@@ -298,7 +299,7 @@ def batch_ingest(request):
                     "domain": archive_obj.domain,
                     "author": archive_obj.author,
                     "favicon_url": archive_obj.favicon_url,
-                    "archived_date": (archive_obj.archived_date.isoformat() + "Z") if archive_obj.archived_date else None,
+                    "archived_date": format_datetime_utc(archive_obj.archived_date),
                     "matched": result["matched"],
                     "matched_feed_id": archive_obj.matched_feed_id,
                     "created": result["created"],
@@ -540,7 +541,7 @@ def get_domains(request):
                 {
                     "domain": item["_id"],
                     "count": item["count"],
-                    "last_visit": (item["last_visit"].isoformat() + "Z") if item.get("last_visit") else None,
+                    "last_visit": format_datetime_utc(item.get("last_visit")),
                 }
                 for item in breakdown
             ],
@@ -602,7 +603,7 @@ def get_stats(request):
                 "archives_today": today,
                 "archives_this_week": week,
                 "last_archive_date": (
-                    (settings.last_archive_date.isoformat() + "Z") if settings.last_archive_date else None
+                    format_datetime_utc(settings.last_archive_date)
                 ),
             },
         }
@@ -797,9 +798,9 @@ def export_archives(request):
                 archive.url,
                 archive.title,
                 archive.domain,
-                (archive.archived_date.isoformat() + "Z") if archive.archived_date else "",
-                (archive.first_visited.isoformat() + "Z") if archive.first_visited else "",
-                (archive.last_visited.isoformat() + "Z") if archive.last_visited else "",
+                format_datetime_utc(archive.archived_date) or "",
+                format_datetime_utc(archive.first_visited) or "",
+                format_datetime_utc(archive.last_visited) or "",
                 archive.visit_count,
                 ",".join(archive.ai_categories or []),
                 archive.matched_story_hash or "",
@@ -1308,9 +1309,9 @@ def _serialize_archive(archive, include_content=False):
         "domain": archive.domain,
         "author": archive.author,
         "favicon_url": archive.favicon_url,
-        "archived_date": (archive.archived_date.isoformat() + "Z") if archive.archived_date else None,
-        "first_visited": (archive.first_visited.isoformat() + "Z") if archive.first_visited else None,
-        "last_visited": (archive.last_visited.isoformat() + "Z") if archive.last_visited else None,
+        "archived_date": format_datetime_utc(archive.archived_date),
+        "first_visited": format_datetime_utc(archive.first_visited),
+        "last_visited": format_datetime_utc(archive.last_visited),
         "visit_count": archive.visit_count,
         "time_on_page_seconds": archive.time_on_page_seconds,
         "content_length": archive.content_length,
