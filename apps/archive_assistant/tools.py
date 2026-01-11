@@ -1,8 +1,10 @@
 """
 Tool definitions for the Archive Assistant.
 
-These tools allow Claude to search and retrieve content from
-the user's browsing archive.
+These tools allow Claude to search and retrieve content from:
+- User's browsing archive (from browser extension)
+- Starred/saved RSS stories
+- Feed stories via search
 """
 
 from datetime import datetime, timedelta
@@ -10,6 +12,10 @@ from datetime import datetime, timedelta
 from apps.archive_extension.models import MArchivedStory
 from apps.archive_extension.search import SearchArchive
 from apps.archive_extension.utils import format_datetime_utc
+from apps.reader.models import UserSubscription
+from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts, Feed
+from apps.search.models import SearchStory
+from utils import log as logging
 
 # Tool definitions for Claude API
 ARCHIVE_TOOLS = [
@@ -90,6 +96,88 @@ ARCHIVE_TOOLS = [
             "required": [],
         },
     },
+    # RSS Feed Story Tools
+    {
+        "name": "search_starred_stories",
+        "description": "Search the user's saved/starred RSS stories. These are stories they explicitly saved from their RSS feeds with optional tags, notes, and highlights. Use this when asking about saved articles, reading lists, or stories they've bookmarked.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Search query to match against titles and content.",
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Filter by user-assigned tags (e.g., ['to-read', 'research', 'recipes'])",
+                },
+                "feed_title": {
+                    "type": "string",
+                    "description": "Filter to stories from feeds matching this title",
+                },
+                "date_from": {
+                    "type": "string",
+                    "description": "Start date (ISO format: YYYY-MM-DD)",
+                },
+                "date_to": {
+                    "type": "string",
+                    "description": "End date (ISO format: YYYY-MM-DD)",
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum results (default: 10, max: 50)",
+                },
+            },
+            "required": [],
+        },
+    },
+    {
+        "name": "get_starred_story_content",
+        "description": "Get the full content of a specific starred story by its hash. Use this to read the complete article text including user notes and highlights.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "story_hash": {
+                    "type": "string",
+                    "description": "The story hash ID (from search results)",
+                }
+            },
+            "required": ["story_hash"],
+        },
+    },
+    {
+        "name": "get_starred_summary",
+        "description": "Get a summary of the user's starred stories - total count, their tags, top feeds, and recent saves. Use this to understand what they've saved before searching.",
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+        },
+    },
+    {
+        "name": "search_feed_stories",
+        "description": "Search across all stories from the user's subscribed RSS feeds using full-text search. This searches their entire reading history, not just saved stories. Use this for broad searches about what they've read.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Search query for full-text search across feed stories",
+                },
+                "feed_ids": {
+                    "type": "array",
+                    "items": {"type": "integer"},
+                    "description": "Optional: limit search to specific feed IDs",
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum results (default: 10, max: 30)",
+                },
+            },
+            "required": ["query"],
+        },
+    },
 ]
 
 
@@ -105,6 +193,7 @@ def execute_tool(tool_name, tool_input, user_id):
     Returns:
         dict: Tool result with content
     """
+    # Browsing archive tools
     if tool_name == "search_archives":
         return _search_archives(user_id, **tool_input)
     elif tool_name == "get_archive_content":
@@ -113,6 +202,15 @@ def execute_tool(tool_name, tool_input, user_id):
         return _get_archive_summary(user_id)
     elif tool_name == "get_recent_archives":
         return _get_recent_archives(user_id, **tool_input)
+    # RSS feed story tools
+    elif tool_name == "search_starred_stories":
+        return _search_starred_stories(user_id, **tool_input)
+    elif tool_name == "get_starred_story_content":
+        return _get_starred_story_content(user_id, tool_input.get("story_hash"))
+    elif tool_name == "get_starred_summary":
+        return _get_starred_summary(user_id)
+    elif tool_name == "search_feed_stories":
+        return _search_feed_stories(user_id, **tool_input)
     else:
         return {"error": f"Unknown tool: {tool_name}"}
 
@@ -316,4 +414,292 @@ def _get_recent_archives(user_id, limit=10, days=7):
         "count": len(results),
         "days": days,
         "archives": results,
+    }
+
+
+# RSS Feed Story Tools
+
+def _search_starred_stories(user_id, query=None, tags=None, feed_title=None, date_from=None, date_to=None, limit=10):
+    """Search user's starred/saved RSS stories."""
+    limit = min(limit or 10, 50)
+
+    # Build query
+    mongo_query = {"user_id": user_id}
+
+    # Date filters
+    if date_from:
+        try:
+            mongo_query["starred_date__gte"] = datetime.fromisoformat(date_from)
+        except ValueError:
+            pass
+    if date_to:
+        try:
+            mongo_query["starred_date__lte"] = datetime.fromisoformat(date_to)
+        except ValueError:
+            pass
+
+    # Tag filter
+    if tags:
+        mongo_query["user_tags__in"] = tags
+
+    # Text search in title
+    if query:
+        mongo_query["story_title__icontains"] = query
+
+    # Feed filter - need to look up feed IDs
+    if feed_title:
+        matching_feeds = Feed.objects.filter(feed_title__icontains=feed_title).values_list("id", flat=True)[:20]
+        if matching_feeds:
+            mongo_query["story_feed_id__in"] = list(matching_feeds)
+
+    stories = MStarredStory.objects(**mongo_query).order_by("-starred_date").limit(limit)
+
+    results = []
+    for story in stories:
+        # Get content from compressed field if available
+        content = ""
+        if story.story_content:
+            content = story.story_content
+        elif story.story_content_z:
+            import zlib
+            try:
+                content = zlib.decompress(story.story_content_z).decode("utf-8")
+            except Exception:
+                content = ""
+
+        excerpt = content[:400] + "..." if len(content) > 400 else content
+
+        # Get feed title
+        feed_title_str = ""
+        try:
+            feed = Feed.objects.get(pk=story.story_feed_id)
+            feed_title_str = feed.feed_title
+        except Feed.DoesNotExist:
+            pass
+
+        results.append({
+            "story_hash": story.story_hash,
+            "title": story.story_title,
+            "url": story.story_permalink,
+            "feed": feed_title_str,
+            "author": story.story_author_name,
+            "excerpt": excerpt,
+            "starred_date": format_datetime_utc(story.starred_date),
+            "story_date": format_datetime_utc(story.story_date) if story.story_date else None,
+            "user_tags": story.user_tags or [],
+            "user_notes": story.user_notes or "",
+            "has_highlights": bool(story.highlights),
+        })
+
+    return {
+        "count": len(results),
+        "total": MStarredStory.objects(user_id=user_id).count(),
+        "stories": results,
+        "filters": {
+            "query": query,
+            "tags": tags,
+            "feed_title": feed_title,
+            "date_from": date_from,
+            "date_to": date_to,
+        },
+    }
+
+
+def _get_starred_story_content(user_id, story_hash):
+    """Get full content of a specific starred story."""
+    if not story_hash:
+        return {"error": "story_hash is required"}
+
+    try:
+        story = MStarredStory.objects.get(user_id=user_id, story_hash=story_hash)
+    except MStarredStory.DoesNotExist:
+        return {"error": f"Starred story not found: {story_hash}"}
+
+    # Get content from compressed field if available
+    content = ""
+    if story.story_content:
+        content = story.story_content
+    elif story.story_content_z:
+        import zlib
+        try:
+            content = zlib.decompress(story.story_content_z).decode("utf-8")
+        except Exception:
+            content = ""
+
+    # Try original text if available
+    if not content and story.original_text_z:
+        import zlib
+        try:
+            content = zlib.decompress(story.original_text_z).decode("utf-8")
+        except Exception:
+            pass
+
+    # Get feed title
+    feed_title = ""
+    try:
+        feed = Feed.objects.get(pk=story.story_feed_id)
+        feed_title = feed.feed_title
+    except Feed.DoesNotExist:
+        pass
+
+    return {
+        "story_hash": story.story_hash,
+        "title": story.story_title,
+        "url": story.story_permalink,
+        "feed": feed_title,
+        "author": story.story_author_name,
+        "content": content,
+        "content_length": len(content),
+        "starred_date": format_datetime_utc(story.starred_date),
+        "story_date": format_datetime_utc(story.story_date) if story.story_date else None,
+        "user_tags": story.user_tags or [],
+        "user_notes": story.user_notes or "",
+        "highlights": story.highlights or [],
+        "story_tags": story.story_tags or [],
+    }
+
+
+def _get_starred_summary(user_id):
+    """Get summary of user's starred stories."""
+    total = MStarredStory.objects(user_id=user_id).count()
+
+    if total == 0:
+        return {
+            "total_starred": 0,
+            "message": "No starred stories yet. Star stories in NewsBlur to save them.",
+        }
+
+    # Get tag counts (filter out None and empty string tags)
+    from mongoengine.queryset.visitor import Q
+
+    tag_counts = MStarredStoryCounts.objects(user_id=user_id).filter(
+        Q(tag__ne=None) & Q(tag__ne="")
+    ).order_by("-count")[:15]
+    tags = [{"name": tc.tag, "count": tc.count} for tc in tag_counts]
+
+    # Get feed counts
+    feed_counts = MStarredStoryCounts.objects(user_id=user_id, feed_id__ne=None, tag=None).order_by("-count")[:10]
+    feeds = []
+    for fc in feed_counts:
+        try:
+            feed = Feed.objects.get(pk=fc.feed_id)
+            feeds.append({"name": feed.feed_title, "count": fc.count, "feed_id": fc.feed_id})
+        except Feed.DoesNotExist:
+            pass
+
+    # Get date range
+    oldest = MStarredStory.objects(user_id=user_id).order_by("starred_date").first()
+    newest = MStarredStory.objects(user_id=user_id).order_by("-starred_date").first()
+
+    # Recent activity
+    week_ago = datetime.now() - timedelta(days=7)
+    recent_count = MStarredStory.objects(user_id=user_id, starred_date__gte=week_ago).count()
+
+    # Count with highlights
+    with_highlights = MStarredStory.objects(user_id=user_id, highlights__ne=[]).count()
+
+    # Count with notes
+    with_notes = MStarredStory.objects(user_id=user_id).filter(
+        Q(user_notes__ne=None) & Q(user_notes__ne="")
+    ).count()
+
+    return {
+        "total_starred": total,
+        "starred_this_week": recent_count,
+        "with_highlights": with_highlights,
+        "with_notes": with_notes,
+        "user_tags": tags,
+        "top_feeds": feeds,
+        "date_range": {
+            "oldest": format_datetime_utc(oldest.starred_date) if oldest else None,
+            "newest": format_datetime_utc(newest.starred_date) if newest else None,
+        },
+    }
+
+
+def _search_feed_stories(user_id, query, feed_ids=None, limit=10):
+    """Search user's feed stories using Elasticsearch."""
+    limit = min(limit or 10, 30)
+
+    if not query:
+        return {"error": "query is required for feed story search"}
+
+    # Get the user's subscribed feed IDs if not provided
+    if not feed_ids:
+        feed_ids = list(UserSubscription.objects.filter(user_id=user_id).values_list("feed_id", flat=True))
+
+    if not feed_ids:
+        return {
+            "count": 0,
+            "stories": [],
+            "query": query,
+            "message": "No subscribed feeds to search.",
+        }
+
+    try:
+        # SearchStory.query signature: (feed_ids, query, order, offset, limit, strip=False)
+        story_hashes = SearchStory.query(
+            feed_ids=feed_ids,
+            query=query,
+            order="newest",
+            offset=0,
+            limit=limit,
+        )
+    except Exception as e:
+        logging.error(f"Feed story search error: {e}")
+        return {"error": f"Search failed: {str(e)}", "count": 0, "stories": []}
+
+    if not story_hashes:
+        return {
+            "count": 0,
+            "stories": [],
+            "query": query,
+            "message": "No matching stories found in your feeds.",
+        }
+
+    # Fetch story details
+    from apps.rss_feeds.models import MStory
+
+    results = []
+    for story_hash in story_hashes:
+        try:
+            story = MStory.objects.get(story_hash=story_hash)
+            # Get content
+            content = ""
+            if story.story_content:
+                content = story.story_content
+            elif story.story_content_z:
+                import zlib
+                try:
+                    content = zlib.decompress(story.story_content_z).decode("utf-8")
+                except Exception:
+                    content = ""
+
+            excerpt = content[:400] + "..." if len(content) > 400 else content
+
+            # Get feed title
+            feed_title = ""
+            try:
+                feed = Feed.objects.get(pk=story.story_feed_id)
+                feed_title = feed.feed_title
+            except Feed.DoesNotExist:
+                pass
+
+            results.append({
+                "story_hash": story.story_hash,
+                "title": story.story_title,
+                "url": story.story_permalink,
+                "feed": feed_title,
+                "author": story.story_author_name,
+                "excerpt": excerpt,
+                "story_date": format_datetime_utc(story.story_date),
+                "tags": story.story_tags or [],
+            })
+        except MStory.DoesNotExist:
+            continue
+
+    return {
+        "count": len(results),
+        "stories": results,
+        "query": query,
     }

@@ -50,6 +50,15 @@
           input: data.input || {}
         });
         break;
+      case 'tool_result':
+        log.debug(`archive_assistant:tool_result ${query_id} ${data.tool}: ${data.summary}`);
+        socket.emit('archive_assistant:tool_result', {
+          query_id: query_id,
+          conversation_id: conversation_id,
+          tool: data.tool || '',
+          summary: data.summary || ''
+        });
+        break;
       case 'complete':
         log.debug(`archive_assistant:complete ${query_id}`);
         socket.emit('archive_assistant:complete', {

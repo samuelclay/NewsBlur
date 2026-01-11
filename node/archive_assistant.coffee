@@ -44,6 +44,15 @@ handle_archive_assistant_message = (socket, channel, message) =>
                 input: data.input or {}
             }
 
+        when 'tool_result'
+            log.debug "archive_assistant:tool_result #{query_id} #{data.tool}: #{data.summary}"
+            socket.emit 'archive_assistant:tool_result', {
+                query_id: query_id,
+                conversation_id: conversation_id,
+                tool: data.tool or '',
+                summary: data.summary or ''
+            }
+
         when 'complete'
             log.debug "archive_assistant:complete #{query_id}"
             socket.emit 'archive_assistant:complete', {
@@ -59,6 +68,14 @@ handle_archive_assistant_message = (socket, channel, message) =>
                 query_id: query_id,
                 conversation_id: conversation_id,
                 error: data.error or 'Unknown error'
+            }
+
+        when 'truncated'
+            log.debug "archive_assistant:truncated #{query_id}"
+            socket.emit 'archive_assistant:truncated', {
+                query_id: query_id,
+                conversation_id: conversation_id,
+                reason: data.reason or 'premium_required'
             }
 
         else
