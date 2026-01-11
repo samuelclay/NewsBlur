@@ -980,13 +980,20 @@ def split_category(request):
         if not stories:
             return _json_response({"code": 0, "suggestions": []})
 
+        # Build a mapping of title to story ID for later lookup
+        title_to_id = {s.title: str(s.id) for s in stories}
+
         # Build AI prompt for split suggestions
         story_summaries = "\n".join([f"- {s.title} ({s.domain})" for s in stories])
 
         try:
             import anthropic
+            from django.conf import settings
 
-            client = anthropic.Anthropic()
+            if not getattr(settings, "ANTHROPIC_API_KEY", None):
+                return _error_response("ANTHROPIC_API_KEY not configured")
+
+            client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
             prompt = f"""Analyze these items currently in the "{category}" category and suggest how to split them into 2-4 more specific categories.
 
@@ -1011,6 +1018,15 @@ Return ONLY valid JSON (no markdown code blocks):
                     result_text = result_text.rsplit("```", 1)[0]
 
             suggestions = json.decode(result_text)
+
+            # Map titles back to story IDs for each suggestion
+            for suggestion in suggestions:
+                items = suggestion.get("items", [])
+                story_ids = []
+                for title in items:
+                    if title in title_to_id:
+                        story_ids.append(title_to_id[title])
+                suggestion["story_ids"] = story_ids
 
             return _json_response(
                 {
@@ -1042,10 +1058,14 @@ Return ONLY valid JSON (no markdown code blocks):
                 continue
 
             # Update stories: remove old category, add new category
+            # Note: MongoDB doesn't allow pull and add_to_set on same field in one update
             for story_id in story_ids:
                 try:
+                    # First remove the old category
+                    MArchivedStory.objects(id=story_id, user_id=user.pk).update(pull__ai_categories=category)
+                    # Then add the new category
                     MArchivedStory.objects(id=story_id, user_id=user.pk).update(
-                        pull__ai_categories=category, add_to_set__ai_categories=new_category
+                        add_to_set__ai_categories=new_category
                     )
                     applied_count += 1
                 except Exception as e:

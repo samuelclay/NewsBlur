@@ -58,6 +58,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.usage = null;
         this.active_query_id = null;
         this.tool_status = null;
+        this.current_tool_calls = [];  // Track tool calls for process log
         this.websocket_timeout = null;
         this.response_completed = false;
         // Category management state
@@ -432,6 +433,17 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         } else {
             _.each(this.conversation_history, function (message, index) {
                 var is_user = message.role === 'user';
+
+                // Render process log before assistant messages with tool calls
+                if (!is_user && message.tool_calls && message.tool_calls.length > 0) {
+                    var tool_elements = _.map(message.tool_calls, function (tool_call) {
+                        return $.make('div', { className: 'NB-archive-tool-status NB-complete' }, [
+                            $.make('span', { className: 'NB-tool-message' }, tool_call.summary)
+                        ]);
+                    });
+                    elements.push($.make('div', { className: 'NB-archive-process-log' }, tool_elements));
+                }
+
                 var message_class = 'NB-archive-assistant-message' + (is_user ? ' NB-user' : ' NB-assistant');
                 if (!is_user && message.truncated) {
                     message_class += ' NB-archive-assistant-premium-only';
@@ -1251,16 +1263,28 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         // Map tool names to user-friendly status messages
         var status_messages = {
             'search_archives': 'Searching your archive...',
-            'search_by_date': 'Searching by date...',
-            'get_page_content': 'Retrieving page content...',
-            'search_by_domain': 'Searching domain...',
-            'list_categories': 'Loading categories...'
+            'get_archive_content': 'Reading article...',
+            'get_archive_summary': 'Analyzing your archive...',
+            'get_recent_archives': 'Checking recent pages...',
+            'search_starred_stories': 'Searching saved stories...',
+            'get_starred_story_content': 'Reading saved story...',
+            'get_starred_summary': 'Analyzing saved stories...',
+            'search_feed_stories': 'Searching RSS feeds...'
         };
 
         this.tool_status = status_messages[tool_name] || 'Processing...';
         NEWSBLUR.log(['Archive Assistant: Tool call', tool_name, tool_input]);
         this.render_assistant_messages();
         this.scroll_to_bottom();
+    },
+
+    show_tool_result: function (tool_name, summary) {
+        // Store completed tool call for the process log
+        this.current_tool_calls.push({
+            tool: tool_name,
+            summary: summary
+        });
+        NEWSBLUR.log(['Archive Assistant: Tool result', tool_name, summary]);
     },
 
     complete_response: function (data) {
@@ -1281,11 +1305,13 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         if (this.response_text) {
             this.conversation_history.push({
                 role: 'assistant',
-                content: this.response_text
+                content: this.response_text,
+                tool_calls: this.current_tool_calls || []
             });
         }
 
         this.response_text = '';
+        this.current_tool_calls = [];
         this.render_assistant_messages();
         this.scroll_to_bottom();
 

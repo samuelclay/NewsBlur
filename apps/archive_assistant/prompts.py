@@ -14,26 +14,65 @@ Your role:
 4. Help them recall and organize their research
 5. Provide insights and summaries across topics they've explored
 
-Guidelines:
+Tool Usage Guidelines:
+- ALWAYS use tools before answering - never guess what's in the archive
+- You have access to TWO data sources: browsing archive (web pages) AND RSS feed stories
+
+Browsing Archive Tools (from browser extension):
+- Use get_archive_summary first for broad questions about browsing history
+- Use search_archives to find specific web pages by topic, date, or keyword
+- Use get_archive_content to retrieve full article text for summarization
+- Use get_recent_archives to see what they've been reading lately
+
+RSS Feed Story Tools (from NewsBlur feeds):
+- Use get_starred_summary to see their saved/starred stories overview
+- Use search_starred_stories to find saved stories by tag, feed, or keyword
+- Use get_starred_story_content to read a full starred story with notes/highlights
+- Use search_feed_stories for broad full-text search across ALL their feed stories
+
+Multi-Tool Strategy:
+- For complex questions, use MULTIPLE tools: search first, then retrieve full content
+- When comparing topics, search for each topic separately
+- Check BOTH browsing archive AND starred stories for comprehensive answers
+- User tags on starred stories are personal categorization - use them to understand interests
+
+Response Guidelines:
 - Always cite sources by including the page title and domain when referencing archived content
+- Format citations as links when possible: [Article Title](domain.com)
 - Be concise but thorough in your responses
 - If asked about topics not in their archives, clearly state that you couldn't find relevant archived pages
 - When multiple archives are relevant, synthesize the information rather than just listing them
 - If the user asks about recent browsing, focus on the most recently archived pages
 - Respect that some information may be incomplete if page content wasn't fully captured
-
-You have access to tools to search the user's archive. Use them to find relevant content before answering questions.
+- Use markdown formatting for readability: headers, bullet points, bold for emphasis
 """
 
 SUGGESTED_QUESTIONS = [
+    # Discovery & Overview
     "What topics have I been researching lately?",
-    "Summarize what I've been reading about {topic}",
-    "What are the key points from the articles I saved about {topic}?",
+    "Give me a summary of everything I've read this week",
+    "What are the main themes across my recent reading?",
+    # Recall & Search
+    "Find that article I read about...",
+    "What did I read from {domain} recently?",
+    "Show me articles I saved in the last few days",
+    # Analysis & Synthesis
     "Compare the different perspectives I've read on {topic}",
-    "What shopping research have I done recently?",
-    "What news stories have I been following?",
-    "Find articles I read about {topic} last week",
-    "What were the main arguments in the articles about {topic}?",
+    "What are the key takeaways from my reading about {topic}?",
+    "Summarize the arguments for and against {topic}",
+    # Time-based
+    "What was I researching last month?",
+    "How has my reading about {topic} evolved over time?",
+    "What news stories have I been following this week?",
+    # Category-specific
+    "What technical articles have I saved?",
+    "Summarize my product research",
+    "What recipes or cooking content have I archived?",
+    "What travel planning have I done?",
+    # Deep dives
+    "Pick the most interesting article I've read and summarize it",
+    "What's the longest article I've archived? Summarize it.",
+    "Find articles that mention {person} and summarize them",
 ]
 
 
@@ -50,32 +89,49 @@ def get_suggested_questions(categories=None, recent_domains=None):
     """
     suggestions = []
 
-    # Generic suggestions
+    # Always start with broad discovery questions
     suggestions.append("What topics have I been researching lately?")
-    suggestions.append("Summarize my recent reading activity")
+    suggestions.append("Give me a summary of everything I've read this week")
 
-    # Category-based suggestions
+    # Category-based suggestions - personalized to their actual reading
     if categories:
-        for category in categories[:3]:
-            suggestions.append(f"What have I been reading about {category}?")
+        for category in categories[:2]:
+            suggestions.append(f"Summarize what I've read about {category}")
+        if len(categories) >= 2:
+            suggestions.append(f"Compare my reading on {categories[0]} vs {categories[1]}")
 
     # Domain-based suggestions
     if recent_domains:
-        if any("news" in d or "times" in d or "post" in d for d in recent_domains):
-            suggestions.append("What news stories have I been following?")
-        if any("amazon" in d or "shop" in d or "store" in d for d in recent_domains):
-            suggestions.append("What products have I been researching?")
-        if any("github" in d or "stackoverflow" in d for d in recent_domains):
+        news_domains = [d for d in recent_domains if any(x in d.lower() for x in ["news", "times", "post", "bbc", "cnn", "npr"])]
+        if news_domains:
+            suggestions.append("What news stories have I been following this week?")
+
+        shopping_domains = [d for d in recent_domains if any(x in d.lower() for x in ["amazon", "shop", "store", "ebay", "etsy"])]
+        if shopping_domains:
+            suggestions.append("Summarize my recent product research")
+
+        tech_domains = [d for d in recent_domains if any(x in d.lower() for x in ["github", "stackoverflow", "dev", "medium", "hackernews"])]
+        if tech_domains:
             suggestions.append("What technical topics have I been exploring?")
 
-    # Ensure we have at least 5 suggestions
+        recipe_domains = [d for d in recent_domains if any(x in d.lower() for x in ["recipe", "food", "cooking", "allrecipes", "epicurious"])]
+        if recipe_domains:
+            suggestions.append("What recipes have I been looking at?")
+
+    # Ensure variety with default suggestions
     default_suggestions = [
-        "What are the most interesting articles I've read this week?",
-        "Help me find an article I read recently about...",
-        "What research have I done on...",
+        "Pick the most interesting article I've read and summarize it",
+        "What are the main themes across my recent reading?",
+        "Find that article I read about...",
+        "Show me articles I saved in the last few days",
+        "What did I read last month?",
     ]
 
-    while len(suggestions) < 5 and default_suggestions:
-        suggestions.append(default_suggestions.pop(0))
+    # Fill remaining slots with defaults
+    for suggestion in default_suggestions:
+        if len(suggestions) >= 8:
+            break
+        if suggestion not in suggestions:
+            suggestions.append(suggestion)
 
-    return suggestions[:8]  # Return max 8 suggestions
+    return suggestions[:8]

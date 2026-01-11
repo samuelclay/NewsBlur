@@ -201,13 +201,37 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
             # Execute tool
             result = execute_tool(tool_name, tool_input, user_id)
 
+            # Build result summary for user visibility
+            if tool_name == "search_archives":
+                result_summary = f"Found {result.get('count', 0)} matching articles"
+            elif tool_name == "get_archive_content":
+                content_len = len(result.get("content", ""))
+                result_summary = f"Retrieved content ({content_len} chars)"
+            elif tool_name == "get_archive_summary":
+                result_summary = f"Archive: {result.get('total_archives', 0)} pages"
+            elif tool_name == "get_recent_archives":
+                result_summary = f"Found {len(result.get('archives', []))} recent pages"
+            # RSS feed story tools
+            elif tool_name == "search_starred_stories":
+                result_summary = f"Found {result.get('count', 0)} of {result.get('total', 0)} starred stories"
+            elif tool_name == "get_starred_story_content":
+                content_len = len(result.get("content", ""))
+                result_summary = f"Retrieved starred story ({content_len} chars)"
+            elif tool_name == "get_starred_summary":
+                result_summary = f"Starred: {result.get('total_starred', 0)} stories, {len(result.get('user_tags', []))} tags"
+            elif tool_name == "search_feed_stories":
+                result_summary = f"Found {result.get('count', 0)} stories in feeds"
+            else:
+                result_summary = "Retrieved content"
+
+            # Publish tool result event
+            publish_event("tool_result", {"tool": tool_name, "summary": result_summary})
+
             tool_calls.append(
                 {
                     "tool": tool_name,
                     "input": tool_input,
-                    "result_summary": f"Found {result.get('count', 0)} results"
-                    if "count" in result
-                    else "Retrieved content",
+                    "result_summary": result_summary,
                 }
             )
 

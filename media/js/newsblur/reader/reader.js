@@ -5645,6 +5645,9 @@
                 this.socket.removeAllListeners('archive_assistant:tool_call');
                 this.socket.on('archive_assistant:tool_call', _.bind(this.handle_archive_assistant_tool_call, this));
 
+                this.socket.removeAllListeners('archive_assistant:tool_result');
+                this.socket.on('archive_assistant:tool_result', _.bind(this.handle_archive_assistant_tool_result, this));
+
                 this.socket.removeAllListeners('archive_assistant:complete');
                 this.socket.on('archive_assistant:complete', _.bind(this.handle_archive_assistant_complete, this));
 
@@ -5860,6 +5863,13 @@
             var view = this.find_archive_view_for_query(data.query_id);
             if (view) {
                 view.show_tool_call(data.tool, data.input);
+            }
+        },
+
+        handle_archive_assistant_tool_result: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view) {
+                view.show_tool_result(data.tool, data.summary);
             }
         },
 
