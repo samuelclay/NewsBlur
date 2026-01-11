@@ -298,7 +298,7 @@ def batch_ingest(request):
                     "domain": archive_obj.domain,
                     "author": archive_obj.author,
                     "favicon_url": archive_obj.favicon_url,
-                    "archived_date": archive_obj.archived_date.isoformat() if archive_obj.archived_date else None,
+                    "archived_date": (archive_obj.archived_date.isoformat() + "Z") if archive_obj.archived_date else None,
                     "matched": result["matched"],
                     "matched_feed_id": archive_obj.matched_feed_id,
                     "created": result["created"],
@@ -540,7 +540,7 @@ def get_domains(request):
                 {
                     "domain": item["_id"],
                     "count": item["count"],
-                    "last_visit": item["last_visit"].isoformat() if item.get("last_visit") else None,
+                    "last_visit": (item["last_visit"].isoformat() + "Z") if item.get("last_visit") else None,
                 }
                 for item in breakdown
             ],
@@ -602,7 +602,7 @@ def get_stats(request):
                 "archives_today": today,
                 "archives_this_week": week,
                 "last_archive_date": (
-                    settings.last_archive_date.isoformat() if settings.last_archive_date else None
+                    (settings.last_archive_date.isoformat() + "Z") if settings.last_archive_date else None
                 ),
             },
         }
@@ -797,9 +797,9 @@ def export_archives(request):
                 archive.url,
                 archive.title,
                 archive.domain,
-                archive.archived_date.isoformat() if archive.archived_date else "",
-                archive.first_visited.isoformat() if archive.first_visited else "",
-                archive.last_visited.isoformat() if archive.last_visited else "",
+                (archive.archived_date.isoformat() + "Z") if archive.archived_date else "",
+                (archive.first_visited.isoformat() + "Z") if archive.first_visited else "",
+                (archive.last_visited.isoformat() + "Z") if archive.last_visited else "",
                 archive.visit_count,
                 ",".join(archive.ai_categories or []),
                 archive.matched_story_hash or "",
@@ -1308,9 +1308,9 @@ def _serialize_archive(archive, include_content=False):
         "domain": archive.domain,
         "author": archive.author,
         "favicon_url": archive.favicon_url,
-        "archived_date": archive.archived_date.isoformat() if archive.archived_date else None,
-        "first_visited": archive.first_visited.isoformat() if archive.first_visited else None,
-        "last_visited": archive.last_visited.isoformat() if archive.last_visited else None,
+        "archived_date": (archive.archived_date.isoformat() + "Z") if archive.archived_date else None,
+        "first_visited": (archive.first_visited.isoformat() + "Z") if archive.first_visited else None,
+        "last_visited": (archive.last_visited.isoformat() + "Z") if archive.last_visited else None,
         "visit_count": archive.visit_count,
         "time_on_page_seconds": archive.time_on_page_seconds,
         "content_length": archive.content_length,
