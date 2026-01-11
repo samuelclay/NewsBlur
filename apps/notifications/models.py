@@ -173,6 +173,13 @@ class MUserFeedNotification(mongo.Document):
                     existing.is_ios = existing.is_ios or notification.is_ios
                     existing.is_android = existing.is_android or notification.is_android
                     existing.is_focus = existing.is_focus or notification.is_focus
+                    if notification.frequency and not existing.frequency:
+                        existing.frequency = notification.frequency
+                    if notification.last_notification_date and (
+                        not existing.last_notification_date
+                        or notification.last_notification_date > existing.last_notification_date
+                    ):
+                        existing.last_notification_date = notification.last_notification_date
                     # Merge iOS tokens
                     if notification.ios_tokens:
                         existing_tokens = set(existing.ios_tokens or [])

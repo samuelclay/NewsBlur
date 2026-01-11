@@ -1381,6 +1381,9 @@ class UserSubscription(models.Model):
             if self.active and not existing_sub.active:
                 existing_sub.active = True
 
+            if self.user_title and not existing_sub.user_title:
+                existing_sub.user_title = self.user_title
+
             # Sum feed_opens to preserve engagement history
             existing_sub.feed_opens += self.feed_opens
 

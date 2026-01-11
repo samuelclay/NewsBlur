@@ -3440,6 +3440,12 @@ def set_feed_mute(request):
     except UserSubscription.DoesNotExist:
         return {"code": -1, "message": "You are not subscribed to this feed"}
 
+    is_premium = request.user.profile.is_premium
+    if not mute and not is_premium and not sub.active:
+        active_count = UserSubscription.objects.filter(user=request.user, active=True).count()
+        if active_count >= 64:
+            return {"code": -1, "message": "Free accounts are limited to 64 active sites."}
+
     if mute:
         if sub.active:
             sub.active = False
