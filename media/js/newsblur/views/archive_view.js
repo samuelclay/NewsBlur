@@ -17,6 +17,31 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         "click .NB-archive-manage-categories": "open_category_manager",
         "click .NB-category-manager-close": "close_category_manager",
         "click .NB-category-manager-overlay": "close_category_manager",
+        "click .NB-category-manager-tab": "switch_category_manager_tab",
+        // Merge tab events
+        "click .NB-merge-group-apply": "apply_single_merge",
+        "click .NB-merge-group-delete": "delete_merge_group",
+        "click .NB-apply-all-merges": "apply_all_merges",
+        "click .NB-merge-pill-exclude": "exclude_from_merge",
+        "input .NB-merge-target-input": "update_merge_target",
+        "dragstart .NB-merge-pill": "handle_pill_dragstart",
+        "dragend .NB-merge-pill": "handle_pill_dragend",
+        "dragover .NB-merge-group-pills": "handle_merge_dragover",
+        "dragleave .NB-merge-group-pills": "handle_merge_dragleave",
+        "drop .NB-merge-group-pills": "handle_merge_drop",
+        "dragover .NB-unassigned-drop-zone": "handle_merge_dragover",
+        "dragleave .NB-unassigned-drop-zone": "handle_merge_dragleave",
+        "drop .NB-unassigned-drop-zone": "handle_unassigned_drop",
+        // Split tab events
+        "click .NB-split-candidate": "select_split_candidate",
+        "click .NB-split-apply": "apply_split",
+        "click .NB-split-cancel": "cancel_split",
+        // All categories tab events
+        "click .NB-all-category-edit": "start_inline_rename",
+        "click .NB-inline-rename-save": "save_inline_rename",
+        "click .NB-inline-rename-cancel": "cancel_inline_rename",
+        "keypress .NB-inline-rename-input": "handle_inline_rename_keypress",
+        // Legacy events (keep for compatibility)
         "change .NB-category-checkbox": "handle_category_selection",
         "click .NB-category-merge-btn": "merge_selected_categories",
         "click .NB-category-rename-btn": "show_rename_dialog",
@@ -68,6 +93,14 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.uncategorized_count = 0;
         this.inline_action = null;  // Tracks current inline action: 'merge', 'rename', 'split'
         this.inline_action_data = null;  // Data for current inline action
+        // Tabbed category manager state
+        this.category_manager_tab = 'merge';  // 'merge', 'split', 'all'
+        this.merge_groups = [];  // Editable merge groups derived from suggestions
+        this.unassigned_categories = [];  // Categories removed from merge groups
+        this.split_candidates = [];  // Categories with 10+ stories
+        this.split_suggestions = null;  // Current split suggestions from AI
+        this.split_loading = false;  // Loading state for split AI request
+        this.selected_split_category = null;  // Category being split
         // Conversation history sidebar state
         this.past_conversations = [];
         this.conversations_loaded = false;
@@ -471,27 +504,37 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Show streaming response or tool status
         if (this.is_streaming) {
+            // Show completed tool calls with optional preview items
+            _.each(this.current_tool_calls, function (tool_call) {
+                // Tool call header line with checkmark
+                elements.push($.make('div', { className: 'NB-archive-tool-line NB-complete' }, [
+                    $.make('span', { className: 'NB-tool-icon NB-tool-check' }, '\u2713'),
+                    $.make('span', { className: 'NB-tool-message' }, tool_call.summary)
+                ]));
+                // Preview items indented below
+                if (tool_call.preview && tool_call.preview.length > 0) {
+                    _.each(tool_call.preview, function (title) {
+                        elements.push($.make('div', { className: 'NB-archive-tool-preview' }, title));
+                    });
+                }
+            });
+
             if (this.tool_status) {
-                // Show tool call status (e.g., "Searching your archive...")
-                elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant NB-tool-status' }, [
-                    $.make('div', { className: 'NB-archive-message-tool' }, [
-                        $.make('span', { className: 'NB-tool-icon' }),
-                        this.tool_status
-                    ])
+                // Show current active tool call with spinner
+                elements.push($.make('div', { className: 'NB-archive-tool-line NB-active' }, [
+                    $.make('span', { className: 'NB-tool-icon NB-tool-spinner' }),
+                    $.make('span', { className: 'NB-tool-message' }, this.tool_status)
                 ]));
             } else if (this.response_text) {
                 // Show streaming text
                 elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant NB-streaming' }, [
                     $.make('div', { className: 'NB-archive-message-content' }, this.markdown_to_html(this.response_text))
                 ]));
-            } else {
-                // Show thinking animation
-                elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant NB-thinking' }, [
-                    $.make('div', { className: 'NB-archive-message-thinking' }, [
-                        $.make('span', { className: 'NB-thinking-dot' }),
-                        $.make('span', { className: 'NB-thinking-dot' }),
-                        $.make('span', { className: 'NB-thinking-dot' })
-                    ])
+            } else if (this.current_tool_calls.length === 0) {
+                // Show thinking animation only if no tool calls yet
+                elements.push($.make('div', { className: 'NB-archive-tool-line NB-thinking' }, [
+                    $.make('span', { className: 'NB-tool-icon NB-tool-spinner' }),
+                    $.make('span', { className: 'NB-tool-message' }, 'Thinking...')
                 ]));
             }
         }
@@ -565,7 +608,31 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     },
 
     render_filters: function (items, filter_type, active_value) {
-        return _.map(items.slice(0, 10), function (item) {
+        var visible_items = items.slice(0, 10);
+
+        // Ensure active filter is always visible, even if not in top 10
+        if (active_value) {
+            var active_in_list = _.find(visible_items, function (item) {
+                return item._id === active_value;
+            });
+            if (!active_in_list) {
+                // Find it in the full list or create a placeholder
+                var active_item = _.find(items, function (item) {
+                    return item._id === active_value;
+                });
+                if (active_item) {
+                    // Insert at top, remove last to keep 10
+                    visible_items.unshift(active_item);
+                    visible_items = visible_items.slice(0, 10);
+                } else {
+                    // Not in list at all (edge case), add placeholder at top
+                    visible_items.unshift({ _id: active_value, count: '?' });
+                    visible_items = visible_items.slice(0, 10);
+                }
+            }
+        }
+
+        return _.map(visible_items, function (item) {
             var is_active = active_value === item._id;
             var attrs = {
                 className: 'NB-archive-' + filter_type + '-filter' + (is_active ? ' NB-active' : '')
@@ -792,6 +859,13 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             this.$(filter_class).removeClass('NB-active');
             this[active_property] = value;
             $filter.addClass('NB-active');
+        }
+
+        // Clear search when clicking a filter to avoid conflicting constraints
+        if (this.search_query) {
+            this.search_query = '';
+            this.$('.NB-archive-search-input').val('');
+            this.restore_full_sidebar();
         }
 
         this.fetch_archives(true);
@@ -1278,13 +1352,19 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.scroll_to_bottom();
     },
 
-    show_tool_result: function (tool_name, summary) {
-        // Store completed tool call for the process log
+    show_tool_result: function (tool_name, summary, preview) {
+        // Store completed tool call for display
         this.current_tool_calls.push({
             tool: tool_name,
-            summary: summary
+            summary: summary,
+            preview: preview || null
         });
-        NEWSBLUR.log(['Archive Assistant: Tool result', tool_name, summary]);
+        // Clear active tool status since this one completed
+        this.tool_status = null;
+        NEWSBLUR.log(['Archive Assistant: Tool result', tool_name, summary, preview]);
+        // Re-render to show the completed tool call
+        this.render_assistant_messages();
+        this.scroll_to_bottom();
     },
 
     complete_response: function (data) {
@@ -1664,16 +1744,30 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             }
         });
 
-        // Convert to arrays sorted by count
+        // Convert to arrays sorted by relevance (exact match first, then by count)
+        var search_lower = (this.search_query || '').toLowerCase();
         this.categories = _.map(categories_in_results, function (count, name) {
             return { _id: name, count: count };
         });
-        this.categories = _.sortBy(this.categories, function (c) { return -c.count; });
+        this.categories = _.sortBy(this.categories, function (c) {
+            // Exact match gets highest priority (sort value 0)
+            // Partial match gets medium priority (sort value 1)
+            // No match sorted by count (sort value 2+)
+            var name_lower = c._id.toLowerCase();
+            if (name_lower === search_lower) return -1000000 + (-c.count);
+            if (name_lower.indexOf(search_lower) !== -1) return -500000 + (-c.count);
+            return -c.count;
+        });
 
         this.domains = _.map(domains_in_results, function (count, name) {
             return { _id: name, count: count };
         });
-        this.domains = _.sortBy(this.domains, function (d) { return -d.count; });
+        this.domains = _.sortBy(this.domains, function (d) {
+            var name_lower = d._id.toLowerCase();
+            if (name_lower === search_lower) return -1000000 + (-d.count);
+            if (name_lower.indexOf(search_lower) !== -1) return -500000 + (-d.count);
+            return -d.count;
+        });
 
         // Re-render sidebar
         this.$('.NB-archive-categories').html(this.render_category_filters());
@@ -1751,10 +1845,20 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         // Remove existing modal if any
         this.$('.NB-category-manager-overlay, .NB-category-manager-modal').remove();
 
+        // Initialize merge groups from suggestions if not already done
+        if (this.merge_groups.length === 0 && this.merge_suggestions.length > 0) {
+            this.init_merge_groups();
+        }
+
+        // Initialize split candidates (categories with 10+ stories)
+        this.split_candidates = _.filter(this.categories, function (cat) {
+            return cat.count >= 10;
+        });
+
         // Create overlay
         var $overlay = $.make('div', { className: 'NB-category-manager-overlay' });
 
-        // Create modal
+        // Create modal with tabs
         var $modal = $.make('div', { className: 'NB-category-manager-modal' }, [
             // Header
             $.make('div', { className: 'NB-category-manager-header' }, [
@@ -1762,44 +1866,255 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 $.make('div', { className: 'NB-category-manager-close' }, '×')
             ]),
 
+            // Tabs
+            $.make('div', { className: 'NB-category-manager-tabs' }, [
+                $.make('div', {
+                    className: 'NB-category-manager-tab' + (this.category_manager_tab === 'merge' ? ' NB-active' : ''),
+                    'data-tab': 'merge'
+                }, 'Merge'),
+                $.make('div', {
+                    className: 'NB-category-manager-tab' + (this.category_manager_tab === 'split' ? ' NB-active' : ''),
+                    'data-tab': 'split'
+                }, 'Split'),
+                $.make('div', {
+                    className: 'NB-category-manager-tab' + (this.category_manager_tab === 'all' ? ' NB-active' : ''),
+                    'data-tab': 'all'
+                }, 'All Categories')
+            ]),
+
             // Status message area (hidden by default)
             $.make('div', { className: 'NB-category-manager-status NB-hidden' }),
 
-            // Inline action panel (hidden by default)
-            $.make('div', { className: 'NB-category-manager-inline-action NB-hidden' }),
-
-            // Actions bar
-            $.make('div', { className: 'NB-category-manager-actions' }, [
-                $.make('button', {
-                    className: 'NB-category-merge-btn NB-button NB-disabled',
-                    disabled: true
-                }, 'Merge Selected'),
-                $.make('button', {
-                    className: 'NB-category-bulk-btn NB-button' + (this.uncategorized_count === 0 ? ' NB-disabled' : '')
-                }, this.uncategorized_count > 0 ?
-                    'Categorize ' + this.uncategorized_count + ' Uncategorized' :
-                    'All Categorized')
-            ]),
-
-            // Merge suggestions section
-            $.make('div', { className: 'NB-category-manager-suggestions' }, [
-                $.make('div', { className: 'NB-category-manager-section-title' }, 'Suggested Merges'),
-                $.make('div', { className: 'NB-merge-suggestions-list' },
-                    this.render_merge_suggestions_content()
-                )
-            ]),
-
-            // Category list
-            $.make('div', { className: 'NB-category-manager-list-wrapper' }, [
-                $.make('div', { className: 'NB-category-manager-section-title' },
-                    'All Categories (' + this.categories.length + ')'),
-                $.make('div', { className: 'NB-category-manager-list' },
-                    this.render_category_list_for_management()
-                )
-            ])
+            // Tab content container
+            $.make('div', { className: 'NB-category-manager-tab-content' })
         ]);
 
         this.$el.append($overlay).append($modal);
+
+        // Render the active tab content
+        this.render_active_tab();
+    },
+
+    init_merge_groups: function () {
+        var self = this;
+        this.merge_groups = _.map(this.merge_suggestions, function (suggestion) {
+            return {
+                id: _.uniqueId('merge_group_'),
+                target: suggestion.suggested_target,
+                categories: _.map(suggestion.categories, function (cat) {
+                    var catData = _.find(self.categories, function (c) { return c._id === cat; });
+                    return {
+                        name: cat,
+                        count: catData ? catData.count : 0
+                    };
+                })
+            };
+        });
+        this.unassigned_categories = [];
+    },
+
+    switch_category_manager_tab: function (e) {
+        var tab = $(e.currentTarget).data('tab');
+        if (tab === this.category_manager_tab) return;
+
+        this.category_manager_tab = tab;
+        this.$('.NB-category-manager-tab').removeClass('NB-active');
+        $(e.currentTarget).addClass('NB-active');
+
+        // Clear split state when switching away from split tab
+        if (tab !== 'split') {
+            this.split_suggestions = null;
+            this.selected_split_category = null;
+        }
+
+        this.render_active_tab();
+    },
+
+    render_active_tab: function () {
+        var $content = this.$('.NB-category-manager-tab-content');
+        $content.empty();
+
+        if (this.category_manager_tab === 'merge') {
+            $content.append(this.render_merge_tab());
+        } else if (this.category_manager_tab === 'split') {
+            $content.append(this.render_split_tab());
+        } else if (this.category_manager_tab === 'all') {
+            $content.append(this.render_all_categories_tab());
+        }
+    },
+
+    render_merge_tab: function () {
+        var $container = $.make('div', { className: 'NB-merge-tab' });
+
+        // Apply All button
+        if (this.merge_groups.length > 0) {
+            $container.append($.make('div', { className: 'NB-merge-tab-actions' }, [
+                $.make('button', { className: 'NB-apply-all-merges NB-button NB-primary' }, 'Apply All Merges')
+            ]));
+        }
+
+        // Merge groups
+        if (this.merge_groups.length === 0) {
+            $container.append($.make('div', { className: 'NB-merge-empty' }, 'No merge suggestions available'));
+        } else {
+            _.each(this.merge_groups, function (group) {
+                var $group = $.make('div', { className: 'NB-merge-group', 'data-group-id': group.id }, [
+                    $.make('div', { className: 'NB-merge-group-header' }, [
+                        $.make('span', { className: 'NB-merge-group-label' }, 'Merge into:'),
+                        $.make('input', {
+                            type: 'text',
+                            className: 'NB-merge-target-input',
+                            value: group.target,
+                            'data-group-id': group.id
+                        }),
+                        $.make('button', {
+                            className: 'NB-merge-group-apply NB-button',
+                            'data-group-id': group.id
+                        }, 'Apply'),
+                        $.make('button', {
+                            className: 'NB-merge-group-delete',
+                            'data-group-id': group.id,
+                            title: 'Remove this merge group'
+                        }, '×')
+                    ]),
+                    $.make('div', { className: 'NB-merge-group-pills', 'data-group-id': group.id },
+                        _.map(group.categories, function (cat) {
+                            return $.make('div', {
+                                className: 'NB-merge-pill',
+                                draggable: 'true',
+                                'data-category': cat.name,
+                                'data-group-id': group.id
+                            }, [
+                                $.make('span', { className: 'NB-merge-pill-name' }, cat.name),
+                                $.make('span', { className: 'NB-merge-pill-count' }, cat.count),
+                                $.make('span', {
+                                    className: 'NB-merge-pill-exclude',
+                                    'data-category': cat.name,
+                                    'data-group-id': group.id,
+                                    title: 'Exclude from merge'
+                                }, '×')
+                            ]);
+                        })
+                    )
+                ]);
+                $container.append($group);
+            });
+        }
+
+        // Unassigned categories drop zone
+        $container.append($.make('div', { className: 'NB-unassigned-section' }, [
+            $.make('div', { className: 'NB-unassigned-title' }, 'EXCLUDED FROM MERGES'),
+            $.make('div', { className: 'NB-unassigned-drop-zone' },
+                this.unassigned_categories.length > 0 ?
+                    _.map(this.unassigned_categories, function (cat) {
+                        return $.make('div', {
+                            className: 'NB-merge-pill NB-unassigned',
+                            draggable: 'true',
+                            'data-category': cat.name
+                        }, [
+                            $.make('span', { className: 'NB-merge-pill-name' }, cat.name),
+                            $.make('span', { className: 'NB-merge-pill-count' }, cat.count)
+                        ]);
+                    }) :
+                    $.make('span', { className: 'NB-unassigned-placeholder' }, 'Drag categories here to exclude them')
+            )
+        ]));
+
+        return $container;
+    },
+
+    render_split_tab: function () {
+        var self = this;
+        var $container = $.make('div', { className: 'NB-split-tab' });
+
+        // Split candidates list
+        $container.append($.make('div', { className: 'NB-split-candidates-title' },
+            'CATEGORIES WITH 10+ STORIES (' + this.split_candidates.length + ')'));
+
+        var $list = $.make('div', { className: 'NB-split-candidates-list' });
+        _.each(this.split_candidates, function (cat) {
+            var is_selected = self.selected_split_category === cat._id;
+            $list.append($.make('div', {
+                className: 'NB-split-candidate' + (is_selected ? ' NB-selected' : ''),
+                'data-category': cat._id
+            }, [
+                $.make('span', { className: 'NB-split-candidate-name' }, cat._id),
+                $.make('span', { className: 'NB-split-candidate-count' }, cat.count + ' stories'),
+                $.make('span', { className: 'NB-split-candidate-action' }, 'Get AI Suggestions →')
+            ]));
+        });
+        $container.append($list);
+
+        // Split suggestions panel (shown when a category is selected)
+        if (this.split_loading) {
+            $container.append($.make('div', { className: 'NB-split-suggestions-panel NB-loading' }, [
+                $.make('span', { className: 'NB-split-loading-icon' }, '⏳'),
+                $.make('span', 'Getting AI suggestions for "' + this.selected_split_category + '"...')
+            ]));
+        } else if (this.split_suggestions) {
+            var $panel = $.make('div', { className: 'NB-split-suggestions-panel' }, [
+                $.make('div', { className: 'NB-split-suggestions-header' },
+                    'Split "' + this.selected_split_category + '" into:')
+            ]);
+
+            var $suggestions = $.make('div', { className: 'NB-split-suggestions-list' });
+            _.each(this.split_suggestions.suggestions, function (suggestion, i) {
+                $suggestions.append($.make('div', { className: 'NB-split-suggestion-item' }, [
+                    $.make('input', {
+                        type: 'checkbox',
+                        className: 'NB-split-suggestion-checkbox',
+                        checked: true,
+                        'data-index': i
+                    }),
+                    $.make('input', {
+                        type: 'text',
+                        className: 'NB-split-suggestion-name-input',
+                        value: suggestion.name,
+                        'data-index': i
+                    }),
+                    $.make('span', { className: 'NB-split-suggestion-count' },
+                        (suggestion.story_ids ? suggestion.story_ids.length : 0) + ' stories')
+                ]));
+            });
+            $panel.append($suggestions);
+
+            $panel.append($.make('div', { className: 'NB-split-actions' }, [
+                $.make('button', { className: 'NB-split-apply NB-button NB-primary' }, 'Apply Split'),
+                $.make('button', { className: 'NB-split-cancel NB-button' }, 'Cancel')
+            ]));
+
+            $container.append($panel);
+        }
+
+        return $container;
+    },
+
+    render_all_categories_tab: function () {
+        var $container = $.make('div', { className: 'NB-all-categories-tab' });
+
+        $container.append($.make('div', { className: 'NB-all-categories-title' },
+            'ALL CATEGORIES (' + this.categories.length + ')'));
+
+        var $list = $.make('div', { className: 'NB-all-categories-list' });
+        var sorted_categories = _.sortBy(this.categories, function (c) { return -c.count; });
+
+        _.each(sorted_categories, function (cat) {
+            $list.append($.make('div', {
+                className: 'NB-all-category-item',
+                'data-category': cat._id
+            }, [
+                $.make('span', { className: 'NB-all-category-name' }, cat._id),
+                $.make('span', { className: 'NB-all-category-count' }, cat.count),
+                $.make('button', {
+                    className: 'NB-all-category-edit',
+                    'data-category': cat._id,
+                    title: 'Rename'
+                }, '✏️')
+            ]));
+        });
+        $container.append($list);
+
+        return $container;
     },
 
     show_category_status: function (message, type) {
@@ -2226,6 +2541,492 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             $btn.text('Categorize ' + self.uncategorized_count + ' Uncategorized').prop('disabled', false);
             self.show_category_status('Failed to start categorization', 'error');
         }, { method: 'POST' });
+    },
+
+    // ================================
+    // = Merge Tab Drag-Drop Handlers =
+    // ================================
+
+    handle_pill_dragstart: function (e) {
+        var $pill = $(e.currentTarget);
+        var category = $pill.data('category');
+        var group_id = $pill.closest('.NB-merge-group').data('group-id');
+
+        e.originalEvent.dataTransfer.setData('text/plain', JSON.stringify({
+            category: category,
+            source_group_id: group_id
+        }));
+        e.originalEvent.dataTransfer.effectAllowed = 'move';
+
+        $pill.addClass('NB-dragging');
+        this.$('.NB-merge-group-pills, .NB-unassigned-drop-zone').addClass('NB-drop-target');
+    },
+
+    handle_pill_dragend: function (e) {
+        $(e.currentTarget).removeClass('NB-dragging');
+        this.$('.NB-merge-group-pills, .NB-unassigned-drop-zone').removeClass('NB-drop-target NB-drag-over');
+    },
+
+    handle_merge_dragover: function (e) {
+        e.preventDefault();
+        e.originalEvent.dataTransfer.dropEffect = 'move';
+        $(e.currentTarget).addClass('NB-drag-over');
+    },
+
+    handle_merge_dragleave: function (e) {
+        $(e.currentTarget).removeClass('NB-drag-over');
+    },
+
+    handle_merge_drop: function (e) {
+        e.preventDefault();
+        $(e.currentTarget).removeClass('NB-drag-over');
+
+        var data = JSON.parse(e.originalEvent.dataTransfer.getData('text/plain'));
+        var $target_group = $(e.currentTarget).closest('.NB-merge-group');
+        var target_group_id = $target_group.data('group-id');
+
+        if (data.source_group_id === target_group_id) return;
+
+        this.move_category_to_group(data.category, data.source_group_id, target_group_id);
+    },
+
+    handle_unassigned_drop: function (e) {
+        e.preventDefault();
+        $(e.currentTarget).removeClass('NB-drag-over');
+
+        var data = JSON.parse(e.originalEvent.dataTransfer.getData('text/plain'));
+        this.move_category_to_unassigned(data.category, data.source_group_id);
+    },
+
+    move_category_to_group: function (category, source_group_id, target_group_id) {
+        // Remove from source (either a group or unassigned)
+        if (source_group_id === 'unassigned') {
+            this.unassigned_categories = _.reject(this.unassigned_categories, function (c) {
+                return c.name === category;
+            });
+        } else {
+            var source_group = _.find(this.merge_groups, function (g) {
+                return g.id === source_group_id;
+            });
+            if (source_group) {
+                source_group.categories = _.reject(source_group.categories, function (c) {
+                    return c.name === category;
+                });
+                // Remove empty groups
+                if (source_group.categories.length === 0) {
+                    this.merge_groups = _.reject(this.merge_groups, function (g) {
+                        return g.id === source_group_id;
+                    });
+                }
+            }
+        }
+
+        // Add to target group
+        var target_group = _.find(this.merge_groups, function (g) {
+            return g.id === target_group_id;
+        });
+        if (target_group) {
+            // Get count for the category
+            var cat_data = _.find(this.categories, function (c) { return c._id === category; });
+            target_group.categories.push({
+                name: category,
+                count: cat_data ? cat_data.count : 0
+            });
+        }
+
+        this.render_active_tab();
+    },
+
+    move_category_to_unassigned: function (category, source_group_id) {
+        // Remove from source group
+        var source_group = _.find(this.merge_groups, function (g) {
+            return g.id === source_group_id;
+        });
+        if (source_group) {
+            source_group.categories = _.reject(source_group.categories, function (c) {
+                return c.name === category;
+            });
+            // Remove empty groups
+            if (source_group.categories.length === 0) {
+                this.merge_groups = _.reject(this.merge_groups, function (g) {
+                    return g.id === source_group_id;
+                });
+            }
+        }
+
+        // Add to unassigned
+        var cat_data = _.find(this.categories, function (c) { return c._id === category; });
+        this.unassigned_categories.push({
+            name: category,
+            count: cat_data ? cat_data.count : 0
+        });
+
+        this.render_active_tab();
+    },
+
+    // ============================
+    // = Merge Tab Action Handlers =
+    // ============================
+
+    update_merge_target: function (e) {
+        var $input = $(e.currentTarget);
+        var group_id = $input.closest('.NB-merge-group').data('group-id');
+        var new_target = $input.val().trim();
+
+        var group = _.find(this.merge_groups, function (g) {
+            return g.id === group_id;
+        });
+        if (group) {
+            group.target = new_target;
+        }
+    },
+
+    exclude_from_merge: function (e) {
+        e.stopPropagation();
+        var $pill = $(e.currentTarget).closest('.NB-merge-pill');
+        var category = $pill.data('category');
+        var group_id = $pill.closest('.NB-merge-group').data('group-id');
+
+        this.move_category_to_unassigned(category, group_id);
+    },
+
+    delete_merge_group: function (e) {
+        e.stopPropagation();
+        var $group = $(e.currentTarget).closest('.NB-merge-group');
+        var group_id = $group.data('group-id');
+
+        // Move all categories to unassigned
+        var group = _.find(this.merge_groups, function (g) {
+            return g.id === group_id;
+        });
+        if (group) {
+            this.unassigned_categories = this.unassigned_categories.concat(group.categories);
+        }
+
+        // Remove the group
+        this.merge_groups = _.reject(this.merge_groups, function (g) {
+            return g.id === group_id;
+        });
+
+        this.render_active_tab();
+    },
+
+    apply_single_merge: function (e) {
+        e.stopPropagation();
+        var self = this;
+        var $btn = $(e.currentTarget);
+        var $group = $btn.closest('.NB-merge-group');
+        var group_id = $group.data('group-id');
+
+        var group = _.find(this.merge_groups, function (g) {
+            return g.id === group_id;
+        });
+        if (!group || group.categories.length < 2) {
+            this.show_category_status('Need at least 2 categories to merge', 'error');
+            return;
+        }
+
+        var target = group.target;
+        if (!target) {
+            this.show_category_status('Please enter a target category name', 'error');
+            return;
+        }
+
+        var categories = _.pluck(group.categories, 'name');
+        $btn.text('Merging...').prop('disabled', true);
+
+        this.model.make_request('/api/archive/categories/merge', {
+            source_categories: JSON.stringify(categories),
+            target_category: target
+        }, function (response) {
+            if (response.code === 0) {
+                self.show_category_status('Merged ' + response.merged_count + ' stories into "' + target + '"', 'success');
+                // Remove this group from the list
+                self.merge_groups = _.reject(self.merge_groups, function (g) {
+                    return g.id === group_id;
+                });
+                // Refresh categories
+                self.fetch_filters(function () {
+                    self.render_active_tab();
+                    self.$('.NB-archive-categories').html(self.render_category_filters());
+                });
+            } else {
+                self.show_category_status('Error: ' + (response.message || 'Unknown error'), 'error');
+                $btn.text('Apply').prop('disabled', false);
+            }
+        }, function () {
+            self.show_category_status('Failed to merge categories', 'error');
+            $btn.text('Apply').prop('disabled', false);
+        }, { method: 'POST' });
+    },
+
+    apply_all_merges: function (e) {
+        e.stopPropagation();
+        var self = this;
+        var $btn = $(e.currentTarget);
+
+        // Filter to groups with 2+ categories and a target
+        var valid_groups = _.filter(this.merge_groups, function (g) {
+            return g.categories.length >= 2 && g.target && g.target.trim();
+        });
+
+        if (valid_groups.length === 0) {
+            this.show_category_status('No valid merge groups to apply', 'error');
+            return;
+        }
+
+        $btn.text('Applying...').prop('disabled', true);
+        var completed = 0;
+        var total = valid_groups.length;
+        var total_merged = 0;
+
+        _.each(valid_groups, function (group) {
+            var categories = _.pluck(group.categories, 'name');
+            self.model.make_request('/api/archive/categories/merge', {
+                source_categories: JSON.stringify(categories),
+                target_category: group.target
+            }, function (response) {
+                completed++;
+                if (response.code === 0) {
+                    total_merged += response.merged_count;
+                    // Remove this group
+                    self.merge_groups = _.reject(self.merge_groups, function (g) {
+                        return g.id === group.id;
+                    });
+                }
+                if (completed === total) {
+                    self.show_category_status('Applied ' + total + ' merges (' + total_merged + ' stories)', 'success');
+                    self.fetch_filters(function () {
+                        self.render_active_tab();
+                        self.$('.NB-archive-categories').html(self.render_category_filters());
+                    });
+                    $btn.text('Apply All Merges').prop('disabled', false);
+                }
+            }, function () {
+                completed++;
+                if (completed === total) {
+                    $btn.text('Apply All Merges').prop('disabled', false);
+                }
+            }, { method: 'POST' });
+        });
+    },
+
+    // ============================
+    // = Split Tab Action Handlers =
+    // ============================
+
+    select_split_candidate: function (e) {
+        var self = this;
+        var $item = $(e.currentTarget);
+        var category = $item.data('category');
+
+        // Already selected - do nothing
+        if (this.selected_split_category === category && this.split_suggestions) {
+            return;
+        }
+
+        // Update selection
+        this.selected_split_category = category;
+        this.split_suggestions = null;
+        this.split_loading = true;
+        this.render_active_tab();
+
+        // Fetch AI suggestions
+        this.model.make_request('/api/archive/categories/split', {
+            category: category,
+            action: 'suggest'
+        }, function (data) {
+            self.split_loading = false;
+            if (data.code === 0 && data.suggestions && data.suggestions.length > 0) {
+                self.split_suggestions = {
+                    category: category,
+                    suggestions: data.suggestions,
+                    total_stories: data.total_stories
+                };
+            } else {
+                self.show_category_status('No split suggestions available', 'info');
+            }
+            self.render_active_tab();
+        }, function () {
+            self.split_loading = false;
+            self.show_category_status('Failed to get split suggestions', 'error');
+            self.render_active_tab();
+        }, { method: 'POST' });
+    },
+
+    cancel_split: function (e) {
+        if (e) e.stopPropagation();
+        this.selected_split_category = null;
+        this.split_suggestions = null;
+        this.split_loading = false;
+        this.render_active_tab();
+    },
+
+    apply_split: function (e) {
+        if (e) e.stopPropagation();
+        var self = this;
+        var $btn = $(e.currentTarget);
+
+        if (!this.split_suggestions) return;
+
+        // Gather checked suggestions with their (possibly edited) names
+        var $panel = this.$('.NB-split-suggestions-panel');
+        var suggestions_to_apply = [];
+
+        $panel.find('.NB-split-suggestion-item').each(function () {
+            var $item = $(this);
+            var $checkbox = $item.find('.NB-split-suggestion-checkbox');
+            var $input = $item.find('.NB-split-suggestion-name-input');
+            var index = $input.data('index');
+
+            if ($checkbox.is(':checked')) {
+                var original = self.split_suggestions.suggestions[index];
+                suggestions_to_apply.push({
+                    name: $input.val().trim(),
+                    story_ids: original.story_ids
+                });
+            }
+        });
+
+        if (suggestions_to_apply.length === 0) {
+            this.show_category_status('Please select at least one category to split into', 'error');
+            return;
+        }
+
+        $btn.text('Applying...').prop('disabled', true);
+
+        // Apply each split sequentially
+        var category = this.split_suggestions.category;
+        var completed = 0;
+        var total = suggestions_to_apply.length;
+        var total_applied = 0;
+
+        _.each(suggestions_to_apply, function (suggestion) {
+            self.model.make_request('/api/archive/categories/split', {
+                category: category,
+                action: 'apply',
+                new_category: suggestion.name,
+                story_ids: JSON.stringify(suggestion.story_ids)
+            }, function (response) {
+                completed++;
+                if (response.code === 0) {
+                    total_applied += response.applied_count || 0;
+                }
+                if (completed === total) {
+                    self.show_category_status('Split complete: ' + total_applied + ' stories recategorized', 'success');
+                    self.cancel_split();
+                    self.fetch_filters(function () {
+                        // Refresh split candidates
+                        self.split_candidates = _.filter(self.categories, function (c) {
+                            return c.count >= 10;
+                        });
+                        self.render_active_tab();
+                        self.$('.NB-archive-categories').html(self.render_category_filters());
+                    });
+                }
+            }, function () {
+                completed++;
+                if (completed === total) {
+                    self.show_category_status('Some splits may have failed', 'error');
+                    $btn.text('Apply Split').prop('disabled', false);
+                }
+            }, { method: 'POST' });
+        });
+    },
+
+    // =====================================
+    // = All Categories Tab Inline Rename =
+    // =====================================
+
+    start_inline_rename: function (e) {
+        e.stopPropagation();
+        var $btn = $(e.currentTarget);
+        var category = $btn.data('category');
+        var $item = $btn.closest('.NB-all-category-item');
+
+        // Replace the name span with an input
+        var $name = $item.find('.NB-all-category-name');
+        $name.replaceWith($.make('div', { className: 'NB-inline-rename-wrapper' }, [
+            $.make('input', {
+                type: 'text',
+                className: 'NB-inline-rename-input',
+                value: category,
+                'data-original': category
+            }),
+            $.make('button', { className: 'NB-inline-rename-save NB-button NB-primary' }, '✓'),
+            $.make('button', { className: 'NB-inline-rename-cancel NB-button' }, '✕')
+        ]));
+
+        // Focus and select
+        $item.find('.NB-inline-rename-input').focus().select();
+
+        // Hide the edit button
+        $btn.hide();
+    },
+
+    cancel_inline_rename: function (e) {
+        e.stopPropagation();
+        var $btn = $(e.currentTarget);
+        var $wrapper = $btn.closest('.NB-inline-rename-wrapper');
+        var $item = $wrapper.closest('.NB-all-category-item');
+        var original = $wrapper.find('.NB-inline-rename-input').data('original');
+
+        // Restore original name
+        $wrapper.replaceWith($.make('span', { className: 'NB-all-category-name' }, original));
+        $item.find('.NB-all-category-edit').show();
+    },
+
+    save_inline_rename: function (e) {
+        e.stopPropagation();
+        var self = this;
+        var $btn = $(e.currentTarget);
+        var $wrapper = $btn.closest('.NB-inline-rename-wrapper');
+        var $item = $wrapper.closest('.NB-all-category-item');
+        var $input = $wrapper.find('.NB-inline-rename-input');
+        var old_name = $input.data('original');
+        var new_name = $input.val().trim();
+
+        if (!new_name || new_name === old_name) {
+            this.cancel_inline_rename(e);
+            return;
+        }
+
+        $btn.text('...').prop('disabled', true);
+
+        this.model.make_request('/api/archive/categories/rename', {
+            old_name: old_name,
+            new_name: new_name
+        }, function (response) {
+            if (response.code === 0) {
+                self.show_category_status('Renamed ' + response.renamed_count + ' stories to "' + new_name + '"', 'success');
+                // Update the item
+                $wrapper.replaceWith($.make('span', { className: 'NB-all-category-name' }, new_name));
+                $item.data('category', new_name);
+                $item.find('.NB-all-category-edit').data('category', new_name).show();
+                // Refresh filters
+                self.fetch_filters(function () {
+                    self.$('.NB-archive-categories').html(self.render_category_filters());
+                });
+            } else {
+                self.show_category_status('Error: ' + (response.message || 'Unknown error'), 'error');
+                $btn.text('✓').prop('disabled', false);
+            }
+        }, function () {
+            self.show_category_status('Failed to rename category', 'error');
+            $btn.text('✓').prop('disabled', false);
+        }, { method: 'POST' });
+    },
+
+    handle_inline_rename_keypress: function (e) {
+        if (e.which === 13) {  // Enter
+            e.preventDefault();
+            var $wrapper = $(e.currentTarget).closest('.NB-inline-rename-wrapper');
+            $wrapper.find('.NB-inline-rename-save').click();
+        } else if (e.which === 27) {  // Escape
+            e.preventDefault();
+            var $wrapper = $(e.currentTarget).closest('.NB-inline-rename-wrapper');
+            $wrapper.find('.NB-inline-rename-cancel').click();
+        }
     },
 
     // ===================

@@ -201,31 +201,55 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
             # Execute tool
             result = execute_tool(tool_name, tool_input, user_id)
 
-            # Build result summary for user visibility
+            # Build result summary and preview for user visibility
+            preview = None
             if tool_name == "search_archives":
-                result_summary = f"Found {result.get('count', 0)} matching articles"
+                count = result.get("count", 0)
+                result_summary = f"Found {count} matching articles"
+                # Preview: first 3 article titles
+                archives = result.get("archives", [])[:3]
+                if archives:
+                    preview = [a.get("title", "Untitled")[:60] for a in archives]
             elif tool_name == "get_archive_content":
-                content_len = len(result.get("content", ""))
-                result_summary = f"Retrieved content ({content_len} chars)"
+                title = result.get("title", "article")
+                result_summary = f"Reading: {title[:50]}"
             elif tool_name == "get_archive_summary":
                 result_summary = f"Archive: {result.get('total_archives', 0)} pages"
             elif tool_name == "get_recent_archives":
-                result_summary = f"Found {len(result.get('archives', []))} recent pages"
+                count = len(result.get("archives", []))
+                result_summary = f"Found {count} recent pages"
+                # Preview: first 3 recent titles
+                archives = result.get("archives", [])[:3]
+                if archives:
+                    preview = [a.get("title", "Untitled")[:60] for a in archives]
             # RSS feed story tools
             elif tool_name == "search_starred_stories":
-                result_summary = f"Found {result.get('count', 0)} of {result.get('total', 0)} starred stories"
+                count = result.get("count", 0)
+                result_summary = f"Found {count} starred stories"
+                # Preview: first 3 story titles
+                stories = result.get("stories", [])[:3]
+                if stories:
+                    preview = [s.get("title", "Untitled")[:60] for s in stories]
             elif tool_name == "get_starred_story_content":
-                content_len = len(result.get("content", ""))
-                result_summary = f"Retrieved starred story ({content_len} chars)"
+                title = result.get("title", "story")
+                result_summary = f"Reading: {title[:50]}"
             elif tool_name == "get_starred_summary":
-                result_summary = f"Starred: {result.get('total_starred', 0)} stories, {len(result.get('user_tags', []))} tags"
+                result_summary = f"Starred: {result.get('total_starred', 0)} stories"
             elif tool_name == "search_feed_stories":
-                result_summary = f"Found {result.get('count', 0)} stories in feeds"
+                count = result.get("count", 0)
+                result_summary = f"Found {count} feed stories"
+                # Preview: first 3 story titles
+                stories = result.get("stories", [])[:3]
+                if stories:
+                    preview = [s.get("title", "Untitled")[:60] for s in stories]
             else:
                 result_summary = "Retrieved content"
 
-            # Publish tool result event
-            publish_event("tool_result", {"tool": tool_name, "summary": result_summary})
+            # Publish tool result event with optional preview
+            event_data = {"tool": tool_name, "summary": result_summary}
+            if preview:
+                event_data["preview"] = preview
+            publish_event("tool_result", event_data)
 
             tool_calls.append(
                 {

@@ -56,7 +56,8 @@
           query_id: query_id,
           conversation_id: conversation_id,
           tool: data.tool || '',
-          summary: data.summary || ''
+          summary: data.summary || '',
+          preview: data.preview || null
         });
         break;
       case 'complete':
