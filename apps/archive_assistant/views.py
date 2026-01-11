@@ -16,6 +16,7 @@ from apps.archive_assistant.models import MArchiveConversation, MArchiveQuery, M
 from apps.archive_assistant.prompts import get_suggested_questions
 from apps.archive_assistant.tasks import process_archive_query
 from apps.archive_extension.models import MArchivedStory
+from apps.archive_extension.utils import format_datetime_utc
 from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
@@ -156,8 +157,8 @@ def get_conversations(request):
                 {
                     "id": str(c.id),
                     "title": c.title or "New Conversation",
-                    "created_date": (c.created_date.isoformat() + "Z") if c.created_date else None,
-                    "last_activity": (c.last_activity.isoformat() + "Z") if c.last_activity else None,
+                    "created_date": format_datetime_utc(c.created_date),
+                    "last_activity": format_datetime_utc(c.last_activity),
                     "is_active": c.is_active,
                 }
                 for c in conversations
@@ -194,16 +195,16 @@ def get_conversation(request, conversation_id):
             "conversation": {
                 "id": str(conversation.id),
                 "title": conversation.title or "New Conversation",
-                "created_date": (conversation.created_date.isoformat() + "Z") if conversation.created_date else None,
-                "last_activity": (conversation.last_activity.isoformat() + "Z") if conversation.last_activity else None,
+                "created_date": format_datetime_utc(conversation.created_date),
+                "last_activity": format_datetime_utc(conversation.last_activity),
             },
             "queries": [
                 {
                     "id": str(q.id),
                     "query_text": q.query_text,
                     "response": q.get_response(),
-                    "query_date": (q.query_date.isoformat() + "Z") if q.query_date else None,
-                    "response_date": (q.response_date.isoformat() + "Z") if q.response_date else None,
+                    "query_date": format_datetime_utc(q.query_date),
+                    "response_date": format_datetime_utc(q.response_date),
                     "model": q.model,
                     "duration_ms": q.duration_ms,
                     "error": q.error,
