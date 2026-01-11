@@ -196,7 +196,7 @@ def _search_archives(
                     "url": archive.url,
                     "domain": archive.domain,
                     "excerpt": excerpt,
-                    "archived_date": archive.archived_date.isoformat() if archive.archived_date else None,
+                    "archived_date": (archive.archived_date.isoformat() + "Z") if archive.archived_date else None,
                     "categories": archive.ai_categories or [],
                     "visit_count": archive.visit_count,
                 }
@@ -236,9 +236,9 @@ def _get_archive_content(user_id, archive_id):
         "domain": archive.domain,
         "content": content,
         "content_length": len(content),
-        "archived_date": archive.archived_date.isoformat() if archive.archived_date else None,
-        "first_visited": archive.first_visited.isoformat() if archive.first_visited else None,
-        "last_visited": archive.last_visited.isoformat() if archive.last_visited else None,
+        "archived_date": (archive.archived_date.isoformat() + "Z") if archive.archived_date else None,
+        "first_visited": (archive.first_visited.isoformat() + "Z") if archive.first_visited else None,
+        "last_visited": (archive.last_visited.isoformat() + "Z") if archive.last_visited else None,
         "visit_count": archive.visit_count,
         "categories": archive.ai_categories or [],
         "matched_to_feed": archive.matched_story_hash is not None,
@@ -277,8 +277,8 @@ def _get_archive_summary(user_id):
         "categories": [{"name": c["_id"], "count": c["count"]} for c in categories[:10]],
         "top_domains": [{"domain": d["_id"], "count": d["count"]} for d in domains],
         "date_range": {
-            "oldest": oldest.archived_date.isoformat() if oldest else None,
-            "newest": newest.archived_date.isoformat() if newest else None,
+            "oldest": (oldest.archived_date.isoformat() + "Z") if oldest else None,
+            "newest": (newest.archived_date.isoformat() + "Z") if newest else None,
         },
     }
 
@@ -306,7 +306,7 @@ def _get_recent_archives(user_id, limit=10, days=7):
                 "url": archive.url,
                 "domain": archive.domain,
                 "excerpt": excerpt,
-                "archived_date": archive.archived_date.isoformat() if archive.archived_date else None,
+                "archived_date": (archive.archived_date.isoformat() + "Z") if archive.archived_date else None,
                 "categories": archive.ai_categories or [],
             }
         )
