@@ -51,7 +51,7 @@
         });
         break;
       case 'tool_result':
-        log.debug(`archive_assistant:tool_result ${query_id} ${data.tool}: ${data.summary}`);
+        log.debug(`archive_assistant:tool_result ${query_id} ${data.tool}: ${data.summary}, preview=${data.preview ? data.preview.length + ' items' : 'none'}`);
         socket.emit('archive_assistant:tool_result', {
           query_id: query_id,
           conversation_id: conversation_id,

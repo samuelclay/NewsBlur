@@ -5895,12 +5895,9 @@
         },
 
         find_archive_view_for_query: function (query_id) {
-            var $archive_view = $('.NB-archive-view');
-            if ($archive_view.length) {
-                var view = $archive_view.data('view');
-                if (view && view.active_query_id === query_id) {
-                    return view;
-                }
+            // Use the archive_view reference directly instead of jQuery data lookup
+            if (this.archive_view && this.archive_view.active_query_id === query_id) {
+                return this.archive_view;
             }
             return null;
         },

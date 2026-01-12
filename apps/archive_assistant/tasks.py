@@ -205,7 +205,7 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
             preview = None
             if tool_name == "search_archives":
                 count = result.get("count", 0)
-                result_summary = f"Found {count} matching articles"
+                result_summary = f"Found {count} matching {'article' if count == 1 else 'articles'}"
                 # Preview: first 3 article titles
                 archives = result.get("archives", [])[:3]
                 if archives:
@@ -214,18 +214,21 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
                 title = result.get("title", "article")
                 result_summary = f"Reading: {title[:50]}"
             elif tool_name == "get_archive_summary":
-                result_summary = f"Archive: {result.get('total_archives', 0)} pages"
+                archive_count = result.get('total_archives', 0)
+                result_summary = f"Archive: {archive_count} {'page' if archive_count == 1 else 'pages'}"
             elif tool_name == "get_recent_archives":
                 count = len(result.get("archives", []))
-                result_summary = f"Found {count} recent pages"
+                result_summary = f"Found {count} recent {'page' if count == 1 else 'pages'}"
                 # Preview: first 3 recent titles
                 archives = result.get("archives", [])[:3]
+                logging.debug(f"get_recent_archives: {count} total, {len(archives)} for preview")
                 if archives:
                     preview = [a.get("title", "Untitled")[:60] for a in archives]
+                    logging.debug(f"Preview titles: {preview}")
             # RSS feed story tools
             elif tool_name == "search_starred_stories":
                 count = result.get("count", 0)
-                result_summary = f"Found {count} starred stories"
+                result_summary = f"Found {count} starred {'story' if count == 1 else 'stories'}"
                 # Preview: first 3 story titles
                 stories = result.get("stories", [])[:3]
                 if stories:
@@ -234,10 +237,11 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
                 title = result.get("title", "story")
                 result_summary = f"Reading: {title[:50]}"
             elif tool_name == "get_starred_summary":
-                result_summary = f"Starred: {result.get('total_starred', 0)} stories"
+                starred_count = result.get('total_starred', 0)
+                result_summary = f"Starred: {starred_count} {'story' if starred_count == 1 else 'stories'}"
             elif tool_name == "search_feed_stories":
                 count = result.get("count", 0)
-                result_summary = f"Found {count} feed stories"
+                result_summary = f"Found {count} feed {'story' if count == 1 else 'stories'}"
                 # Preview: first 3 story titles
                 stories = result.get("stories", [])[:3]
                 if stories:
@@ -249,15 +253,17 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
             event_data = {"tool": tool_name, "summary": result_summary}
             if preview:
                 event_data["preview"] = preview
+            logging.info(f"Publishing tool_result: {tool_name}, preview={preview is not None}, data_keys={list(event_data.keys())}")
             publish_event("tool_result", event_data)
 
-            tool_calls.append(
-                {
-                    "tool": tool_name,
-                    "input": tool_input,
-                    "result_summary": result_summary,
-                }
-            )
+            tool_call_data = {
+                "tool": tool_name,
+                "input": tool_input,
+                "result_summary": result_summary,
+            }
+            if preview:
+                tool_call_data["preview"] = preview
+            tool_calls.append(tool_call_data)
 
             tool_results.append(
                 {

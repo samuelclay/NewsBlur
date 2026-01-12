@@ -467,14 +467,23 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             _.each(this.conversation_history, function (message, index) {
                 var is_user = message.role === 'user';
 
-                // Render process log before assistant messages with tool calls
+                // Render tool calls before assistant messages (same structure as streaming)
                 if (!is_user && message.tool_calls && message.tool_calls.length > 0) {
-                    var tool_elements = _.map(message.tool_calls, function (tool_call) {
-                        return $.make('div', { className: 'NB-archive-tool-status NB-complete' }, [
-                            $.make('span', { className: 'NB-tool-message' }, tool_call.summary)
-                        ]);
+                    _.each(message.tool_calls, function (tool_call) {
+                        // Support both 'summary' (live WebSocket) and 'result_summary' (saved history)
+                        var summary_text = tool_call.summary || tool_call.result_summary || '';
+                        // Tool call line with checkmark - same as streaming completed
+                        elements.push($.make('div', { className: 'NB-archive-tool-line NB-complete' }, [
+                            $.make('span', { className: 'NB-tool-icon NB-tool-check' }),
+                            $.make('span', { className: 'NB-tool-message' }, summary_text)
+                        ]));
+                        // Preview items indented below
+                        if (tool_call.preview && tool_call.preview.length > 0) {
+                            _.each(tool_call.preview, function (title) {
+                                elements.push($.make('div', { className: 'NB-archive-tool-preview' }, title));
+                            });
+                        }
                     });
-                    elements.push($.make('div', { className: 'NB-archive-process-log' }, tool_elements));
                 }
 
                 var message_class = 'NB-archive-assistant-message' + (is_user ? ' NB-user' : ' NB-assistant');
@@ -508,7 +517,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             _.each(this.current_tool_calls, function (tool_call) {
                 // Tool call header line with checkmark
                 elements.push($.make('div', { className: 'NB-archive-tool-line NB-complete' }, [
-                    $.make('span', { className: 'NB-tool-icon NB-tool-check' }, '\u2713'),
+                    $.make('span', { className: 'NB-tool-icon NB-tool-check' }),
                     $.make('span', { className: 'NB-tool-message' }, tool_call.summary)
                 ]));
                 // Preview items indented below
@@ -530,8 +539,8 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant NB-streaming' }, [
                     $.make('div', { className: 'NB-archive-message-content' }, this.markdown_to_html(this.response_text))
                 ]));
-            } else if (this.current_tool_calls.length === 0) {
-                // Show thinking animation only if no tool calls yet
+            } else {
+                // Show thinking animation while waiting for next action
                 elements.push($.make('div', { className: 'NB-archive-tool-line NB-thinking' }, [
                     $.make('span', { className: 'NB-tool-icon NB-tool-spinner' }),
                     $.make('span', { className: 'NB-tool-message' }, 'Thinking...')
@@ -1296,15 +1305,27 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
     handle_assistant_error: function (message) {
         this.is_streaming = false;
-        this.response_text = '';
         this.tool_status = null;
         this.active_query_id = null;
         this.clear_websocket_timeout();
 
+        // Build error content, preserving any partial response
+        var error_content = '';
+        if (this.response_text) {
+            error_content = this.response_text + '\n\n';
+        }
+        error_content += '**Error:** ' + message;
+
+        // Save to history with any tool calls that were completed
         this.conversation_history.push({
             role: 'assistant',
-            content: '**Error:** ' + message
+            content: error_content,
+            tool_calls: this.current_tool_calls || []
         });
+
+        // Clear streaming state after preserving
+        this.response_text = '';
+        this.current_tool_calls = [];
 
         this.render_assistant_messages();
         this.scroll_to_bottom();
@@ -1803,21 +1824,15 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         if (e) e.stopPropagation();
         var self = this;
 
-        this.category_manager_open = true;
-        this.selected_categories = [];
+        // Initialize merge groups if not already done
+        if (this.merge_groups.length === 0 && this.merge_suggestions.length > 0) {
+            this.init_merge_groups();
+        }
 
-        // Fetch merge suggestions
-        this.fetch_merge_suggestions();
-
-        // Count uncategorized
-        this.model.make_request('/api/archive/categories/bulk-categorize', { limit: 0 }, function (data) {
-            if (data.total_uncategorized !== undefined) {
-                self.uncategorized_count = data.total_uncategorized;
-            }
-            self.render_category_manager();
-        }, function () {
-            self.render_category_manager();
-        }, { method: 'POST' });
+        // Open the modal
+        NEWSBLUR.category_manager = new NEWSBLUR.ReaderCategoryManager({
+            archive_view: this
+        });
     },
 
     close_category_manager: function (e) {
@@ -1835,6 +1850,12 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             if (data.code === 0) {
                 self.merge_suggestions = data.suggestions || [];
                 self.render_merge_suggestions();
+                if (self.category_manager_open && self.merge_groups.length === 0 && self.merge_suggestions.length > 0) {
+                    self.init_merge_groups();
+                    if (self.category_manager_tab === 'merge') {
+                        self.render_active_tab();
+                    }
+                }
             }
         }, function () {
             self.merge_suggestions = [];
@@ -2550,7 +2571,8 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     handle_pill_dragstart: function (e) {
         var $pill = $(e.currentTarget);
         var category = $pill.data('category');
-        var group_id = $pill.closest('.NB-merge-group').data('group-id');
+        var $group = $pill.closest('.NB-merge-group');
+        var group_id = $group.length ? $group.data('group-id') : 'unassigned';
 
         e.originalEvent.dataTransfer.setData('text/plain', JSON.stringify({
             category: category,
@@ -2779,6 +2801,37 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         var completed = 0;
         var total = valid_groups.length;
         var total_merged = 0;
+        var failed = 0;
+
+        var finish_merges = function () {
+            if (completed !== total) return;
+
+            var succeeded = total - failed;
+            if (failed > 0) {
+                self.show_category_status(
+                    'Applied ' + succeeded + ' of ' + total + ' merges (' + total_merged + ' stories)',
+                    'error'
+                );
+            } else {
+                self.show_category_status('Applied ' + total + ' merges (' + total_merged + ' stories)', 'success');
+            }
+
+            var refresh = function () {
+                self.split_candidates = _.filter(self.categories, function (c) {
+                    return c.count >= 10;
+                });
+                self.render_active_tab();
+                self.$('.NB-archive-categories').html(self.render_category_filters());
+            };
+
+            if (total_merged > 0) {
+                self.fetch_filters(refresh);
+            } else {
+                refresh();
+            }
+
+            $btn.text('Apply All Merges').prop('disabled', false);
+        };
 
         _.each(valid_groups, function (group) {
             var categories = _.pluck(group.categories, 'name');
@@ -2793,20 +2846,14 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     self.merge_groups = _.reject(self.merge_groups, function (g) {
                         return g.id === group.id;
                     });
+                } else {
+                    failed++;
                 }
-                if (completed === total) {
-                    self.show_category_status('Applied ' + total + ' merges (' + total_merged + ' stories)', 'success');
-                    self.fetch_filters(function () {
-                        self.render_active_tab();
-                        self.$('.NB-archive-categories').html(self.render_category_filters());
-                    });
-                    $btn.text('Apply All Merges').prop('disabled', false);
-                }
+                finish_merges();
             }, function () {
                 completed++;
-                if (completed === total) {
-                    $btn.text('Apply All Merges').prop('disabled', false);
-                }
+                failed++;
+                finish_merges();
             }, { method: 'POST' });
         });
     },
@@ -2883,7 +2930,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 var original = self.split_suggestions.suggestions[index];
                 suggestions_to_apply.push({
                     name: $input.val().trim(),
-                    story_ids: original.story_ids
+                    story_ids: original.story_ids || []
                 });
             }
         });
@@ -2893,13 +2940,53 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             return;
         }
 
+        var invalid = _.find(suggestions_to_apply, function (suggestion) {
+            return !suggestion.name || !suggestion.story_ids.length;
+        });
+        if (invalid) {
+            this.show_category_status('Each selected split needs a name and at least one story', 'error');
+            return;
+        }
+
         $btn.text('Applying...').prop('disabled', true);
 
-        // Apply each split sequentially
+        // Apply each split
         var category = this.split_suggestions.category;
         var completed = 0;
         var total = suggestions_to_apply.length;
         var total_applied = 0;
+        var failed = 0;
+
+        var finish_splits = function () {
+            if (completed !== total) return;
+
+            if (total_applied > 0) {
+                if (failed > 0) {
+                    self.show_category_status(
+                        'Split partially applied: ' + total_applied + ' stories recategorized',
+                        'error'
+                    );
+                } else {
+                    self.show_category_status(
+                        'Split complete: ' + total_applied + ' stories recategorized',
+                        'success'
+                    );
+                }
+                self.cancel_split();
+                self.fetch_filters(function () {
+                    // Refresh split candidates
+                    self.split_candidates = _.filter(self.categories, function (c) {
+                        return c.count >= 10;
+                    });
+                    self.render_active_tab();
+                    self.$('.NB-archive-categories').html(self.render_category_filters());
+                });
+            } else {
+                self.show_category_status('Split failed to apply', 'error');
+            }
+
+            $btn.text('Apply Split').prop('disabled', false);
+        };
 
         _.each(suggestions_to_apply, function (suggestion) {
             self.model.make_request('/api/archive/categories/split', {
@@ -2911,25 +2998,14 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 completed++;
                 if (response.code === 0) {
                     total_applied += response.applied_count || 0;
+                } else {
+                    failed++;
                 }
-                if (completed === total) {
-                    self.show_category_status('Split complete: ' + total_applied + ' stories recategorized', 'success');
-                    self.cancel_split();
-                    self.fetch_filters(function () {
-                        // Refresh split candidates
-                        self.split_candidates = _.filter(self.categories, function (c) {
-                            return c.count >= 10;
-                        });
-                        self.render_active_tab();
-                        self.$('.NB-archive-categories').html(self.render_category_filters());
-                    });
-                }
+                finish_splits();
             }, function () {
                 completed++;
-                if (completed === total) {
-                    self.show_category_status('Some splits may have failed', 'error');
-                    $btn.text('Apply Split').prop('disabled', false);
-                }
+                failed++;
+                finish_splits();
             }, { method: 'POST' });
         });
     },
