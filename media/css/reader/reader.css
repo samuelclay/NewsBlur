@@ -22514,6 +22514,27 @@ form.opml_import_form input {
     font-weight: 600;
     color: #333;
     margin-bottom: 6px;
+    position: relative;
+}
+
+.NB-archive-assistant-extensions-close {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+    background-image: url('/media/img/icons/nouns/close-circle.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.NB-archive-assistant-extensions-close:hover {
+    opacity: 0.8;
 }
 
 .NB-assistant-ext-header-icon {
@@ -24018,6 +24039,10 @@ button.NB-merge-group-apply.NB-button:hover {
 }
 
 .NB-dark .NB-assistant-ext-header-icon {
+    filter: brightness(0) invert(0.7);
+}
+
+.NB-dark .NB-archive-assistant-extensions-close {
     filter: brightness(0) invert(0.7);
 }
 
