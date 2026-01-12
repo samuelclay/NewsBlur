@@ -923,10 +923,12 @@ def rename_category(request):
     if old_name == new_name:
         return _error_response("old_name and new_name must be different")
 
-    # Update all stories with this category
-    renamed_count = MArchivedStory.objects(user_id=user.pk, ai_categories=old_name).update(
-        pull__ai_categories=old_name, add_to_set__ai_categories=new_name
-    )
+    stories = MArchivedStory.objects(user_id=user.pk, ai_categories=old_name)
+    renamed_count = stories.count()
+
+    if renamed_count > 0:
+        stories.update(add_to_set__ai_categories=new_name)
+        MArchivedStory.objects(user_id=user.pk, ai_categories=old_name).update(pull__ai_categories=old_name)
 
     # Update Elasticsearch index
     if renamed_count > 0:
@@ -956,6 +958,7 @@ def split_category(request):
 
     For action="apply":
         split_rules: JSON array of {new_category: str, story_ids: [str]}
+        or new_category + story_ids for a single split
 
     Returns:
         {
@@ -1047,35 +1050,49 @@ Return ONLY valid JSON with the exact IDs from above:
             return _error_response(f"Failed to generate suggestions: {str(e)}")
 
     elif action == "apply":
-        # Apply the split - supports both individual params and split_rules array
-        new_category = request.POST.get("new_category", "").strip()
-        story_ids_json = request.POST.get("story_ids", "[]")
+        split_rules_json = request.POST.get("split_rules", "").strip()
+        if split_rules_json:
+            try:
+                split_rules = json.decode(split_rules_json)
+            except Exception:
+                return _error_response("Invalid split_rules JSON")
+        else:
+            new_category = request.POST.get("new_category", "").strip()
+            story_ids_json = request.POST.get("story_ids", "[]")
 
-        # Parse story_ids
-        try:
-            story_ids = json.decode(story_ids_json) if story_ids_json else []
-        except Exception:
-            return _error_response("Invalid story_ids JSON")
+            try:
+                story_ids = json.decode(story_ids_json) if story_ids_json else []
+            except Exception:
+                return _error_response("Invalid story_ids JSON")
 
-        if not new_category:
-            return _error_response("new_category is required")
-        if not story_ids:
-            return _error_response("story_ids is required")
+            if not new_category:
+                return _error_response("new_category is required")
+            if not story_ids:
+                return _error_response("story_ids is required")
+
+            split_rules = [{"new_category": new_category, "story_ids": story_ids}]
 
         applied_count = 0
         # Update stories: remove old category, add new category
         # Note: MongoDB doesn't allow pull and add_to_set on same field in one update
-        for story_id in story_ids:
-            try:
-                # First remove the old category
-                MArchivedStory.objects(id=story_id, user_id=user.pk).update(pull__ai_categories=category)
-                # Then add the new category
-                MArchivedStory.objects(id=story_id, user_id=user.pk).update(
-                    add_to_set__ai_categories=new_category
-                )
-                applied_count += 1
-            except Exception as e:
-                logging.error(f"Error applying split to story {story_id}: {e}")
+        for rule in split_rules:
+            new_category = (rule.get("new_category") or "").strip()
+            story_ids = rule.get("story_ids") or []
+
+            if not new_category or not story_ids:
+                continue
+
+            for story_id in story_ids:
+                try:
+                    # First remove the old category
+                    MArchivedStory.objects(id=story_id, user_id=user.pk).update(pull__ai_categories=category)
+                    # Then add the new category
+                    MArchivedStory.objects(id=story_id, user_id=user.pk).update(
+                        add_to_set__ai_categories=new_category
+                    )
+                    applied_count += 1
+                except Exception as e:
+                    logging.error(f"Error applying split to story {story_id}: {e}")
 
         return _json_response(
             {

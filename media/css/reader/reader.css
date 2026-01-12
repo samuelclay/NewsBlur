@@ -20510,7 +20510,7 @@ form.opml_import_form input {
     align-items: center;
     gap: 8px;
     padding: 6px 0;
-    font-size: 12px;
+    font-size: 13px;
     color: #888;
 }
 
@@ -20524,6 +20524,13 @@ form.opml_import_form input {
 }
 
 .NB-archive-tool-line .NB-tool-check {
+    border: none;
+    animation: none;
+    border-radius: 0;
+}
+
+.NB-archive-tool-line .NB-tool-check::before {
+    content: "\2713";
     color: rgba(80, 160, 80, 0.8);
     font-size: 12px;
     font-weight: 600;
@@ -20542,14 +20549,22 @@ form.opml_import_form input {
     flex: 1;
 }
 
-/* Preview items - indented under tool call */
+/* Preview items - indented under tool call with fade effect */
 .NB-archive-tool-preview {
-    padding: 2px 0 2px 22px;
+    padding: 0 0 0 30px;
+    margin: 0;
     font-size: 11px;
-    color: #aaa;
+    line-height: 1.25;
+    color: #777;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    max-width: 100%;
+    -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
+    mask-image: linear-gradient(to right, black 80%, transparent 100%);
+}
+
+.NB-archive-tool-preview:first-of-type {
+    margin-top: -3px;
 }
 
 /* Process Log Container - groups completed tool calls in history */
@@ -21317,42 +21332,48 @@ form.opml_import_form input {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px;
-    border-bottom: 1px solid #E0E0E0;
-    background: #F8F8F8;
+    padding: 20px 28px 16px;
+    background: #FAFAFA;
 }
 
 .NB-category-manager-header h3 {
     margin: 0;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
     color: #333;
 }
 
 .NB-category-manager-close {
-    font-size: 24px;
+    font-size: 20px;
     line-height: 1;
     cursor: pointer;
-    color: #888;
+    color: #AAA;
     transition: color 0.15s ease;
+    padding: 4px;
 }
 
 .NB-category-manager-close:hover {
-    color: #333;
+    color: #666;
 }
 
 .NB-category-manager-actions {
-    display: flex;
-    gap: 12px;
-    padding: 16px 20px;
-    border-bottom: 1px solid #E0E0E0;
-    background: #FAFAFA;
+    display: none;
 }
 
 .NB-category-manager-actions .NB-button {
-    padding: 8px 16px;
+    padding: 8px 18px;
     font-size: 13px;
     border-radius: 6px;
+    border: none;
+    background: #5C89C9;
+    color: #FFF;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.NB-category-manager-actions .NB-button:hover {
+    background: #4A77B7;
 }
 
 .NB-category-manager-actions .NB-button.NB-disabled {
@@ -21360,11 +21381,13 @@ form.opml_import_form input {
     cursor: not-allowed;
 }
 
-/* Status message area */
+/* Status message area - cleaner */
 .NB-category-manager-status {
-    padding: 12px 20px;
+    padding: 10px 20px;
     font-size: 13px;
-    border-bottom: 1px solid #E0E0E0;
+    border: none;
+    margin: 0 20px;
+    border-radius: 6px;
 }
 
 .NB-category-manager-status.NB-hidden {
@@ -21374,19 +21397,16 @@ form.opml_import_form input {
 .NB-category-manager-status.NB-success {
     background: #E8F5E9;
     color: #2E7D32;
-    border-color: #A5D6A7;
 }
 
 .NB-category-manager-status.NB-error {
     background: #FFEBEE;
     color: #C62828;
-    border-color: #EF9A9A;
 }
 
 .NB-category-manager-status.NB-info {
     background: #E3F2FD;
     color: #1565C0;
-    border-color: #90CAF9;
 }
 
 /* Inline action panel */
@@ -21642,38 +21662,42 @@ form.opml_import_form input {
 
 /* Increase modal width for drag-drop interface */
 .NB-category-manager-modal {
-    width: 600px;
+    width: 720px;
+    height: 600px;
     max-height: 85vh;
 }
 
-/* Tab bar */
+/* Tab bar - Clean, borderless design */
 .NB-category-manager-tabs {
     display: flex;
-    border-bottom: 1px solid #E0E0E0;
-    background: #F8F8F8;
-    padding: 0 16px;
+    background: #FAFAFA;
+    padding: 12px 28px 0;
+    gap: 6px;
 }
 
 .NB-category-manager-tab {
-    padding: 12px 20px;
+    padding: 10px 18px;
     font-size: 13px;
     font-weight: 500;
-    color: #666;
+    color: #888;
     cursor: pointer;
-    border-bottom: 2px solid transparent;
+    background: transparent;
+    border: none;
     transition: all 0.15s ease;
-    margin-bottom: -1px;
+    border-radius: 6px 6px 0 0;
+    position: relative;
 }
 
 .NB-category-manager-tab:hover {
-    color: #333;
-    background: #EFEFEF;
+    color: #555;
+    background: rgba(0, 0, 0, 0.04);
 }
 
 .NB-category-manager-tab.NB-active {
     color: #333;
-    border-bottom-color: #5C89C9;
     background: #FFF;
+    font-weight: 600;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
 }
 
 /* Tab content container */
@@ -21690,8 +21714,9 @@ form.opml_import_form input {
     display: none;
     flex: 1;
     overflow-y: auto;
-    padding: 16px 20px;
+    padding: 24px 32px;
     flex-direction: column;
+    background: #FFF;
 }
 
 .NB-category-manager-merge-tab.NB-active,
@@ -21700,13 +21725,14 @@ form.opml_import_form input {
     display: flex;
 }
 
-/* Section title (reused across tabs) */
+/* Section title (reused across tabs) - subtle, no border */
 .NB-section-title {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    color: #888;
-    margin-bottom: 12px;
+    letter-spacing: 0.8px;
+    color: #999;
+    margin-bottom: 16px;
 }
 
 /* ==================== */
@@ -21716,9 +21742,7 @@ form.opml_import_form input {
 .NB-merge-actions-bar {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #E8E8E8;
+    margin-bottom: 20px;
 }
 
 .NB-merge-groups-container {
@@ -21735,48 +21759,49 @@ form.opml_import_form input {
 }
 
 .NB-merge-group {
-    background: #FFF;
-    border: 1px solid #E0E0E0;
-    border-radius: 8px;
-    margin-bottom: 12px;
-    transition: box-shadow 0.15s ease;
+    background: #F8F9FA;
+    border: none;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    transition: all 0.15s ease;
 }
 
 .NB-merge-group.NB-drag-over {
-    box-shadow: 0 0 0 2px #5C89C9;
-    border-color: #5C89C9;
+    background: #EDF4FC;
+    box-shadow: inset 0 0 0 2px #5C89C9;
 }
 
 .NB-merge-group-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 16px;
-    border-bottom: 1px solid #E8E8E8;
-    background: #FAFAFA;
-    border-radius: 8px 8px 0 0;
+    padding: 16px 20px 12px;
 }
 
 .NB-merge-group-label {
-    font-size: 12px;
-    color: #666;
+    font-size: 11px;
+    color: #888;
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     white-space: nowrap;
 }
 
 .NB-merge-group-target-input {
     flex: 1;
-    padding: 6px 10px;
-    border: 1px solid #D0D0D0;
-    border-radius: 4px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
+    color: #333;
+    background: #FFF;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .NB-merge-group-target-input:focus {
-    border-color: #5C89C9;
     outline: none;
-    box-shadow: 0 0 0 2px rgba(92, 137, 201, 0.2);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 0 0 2px rgba(92, 137, 201, 0.3);
 }
 
 .NB-merge-group-actions {
@@ -21803,35 +21828,38 @@ form.opml_import_form input {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    padding: 12px 16px;
+    padding: 8px 20px 16px;
     min-height: 48px;
     transition: background 0.15s ease;
 }
 
 .NB-merge-group-categories.NB-drop-target {
-    background: #F8F8F8;
+    background: transparent;
 }
 
 .NB-merge-group-categories.NB-drag-over {
-    background: #E3F2FD;
+    background: rgba(92, 137, 201, 0.06);
+    border-radius: 0 0 12px 12px;
 }
 
-/* Draggable category pills */
+/* Draggable category pills - clean, subtle shadow only */
 .NB-merge-category-pill {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
-    background: #F5F5F5;
-    border: 1px solid #E0E0E0;
-    border-radius: 16px;
+    padding: 7px 12px;
+    background: #FFF;
+    border: none;
+    border-radius: 6px;
     cursor: grab;
     transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .NB-merge-category-pill:hover {
-    background: #EBEBEB;
-    border-color: #D0D0D0;
+    background: #FFF;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
 }
 
 .NB-merge-category-pill.NB-dragging {
@@ -21841,15 +21869,15 @@ form.opml_import_form input {
 
 .NB-pill-name {
     font-size: 13px;
-    color: #333;
+    color: #444;
+    font-weight: 500;
 }
 
 .NB-pill-count {
     font-size: 11px;
-    color: #888;
-    background: #E0E0E0;
-    padding: 2px 6px;
-    border-radius: 10px;
+    color: #777;
+    background: transparent;
+    padding: 0;
 }
 
 .NB-pill-exclude {
@@ -21874,18 +21902,18 @@ form.opml_import_form input {
     color: #C62828;
 }
 
-/* Unassigned area */
+/* Unassigned area - subtle, clean */
 .NB-merge-unassigned-area {
-    margin-top: 16px;
+    margin-top: 20px;
     padding-top: 16px;
-    border-top: 1px dashed #D0D0D0;
 }
 
 .NB-merge-unassigned-title {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    color: #888;
+    letter-spacing: 0.8px;
+    color: #999;
     margin-bottom: 12px;
 }
 
@@ -21894,26 +21922,72 @@ form.opml_import_form input {
     flex-wrap: wrap;
     gap: 8px;
     min-height: 48px;
-    padding: 12px;
-    background: #FAFAFA;
-    border: 2px dashed #E0E0E0;
-    border-radius: 8px;
+    padding: 16px;
+    background: #F5F6F7;
+    border: none;
+    border-radius: 10px;
     transition: all 0.15s ease;
 }
 
 .NB-merge-unassigned-list.NB-drop-target {
-    border-color: #D0D0D0;
+    background: #F0F1F2;
 }
 
 .NB-merge-unassigned-list.NB-drag-over {
     background: #E8F5E9;
-    border-color: #81C784;
 }
 
 .NB-unassigned-hint {
     color: #AAA;
     font-size: 13px;
     font-style: italic;
+}
+
+/* Merge tab buttons - clean solid style */
+.NB-merge-tab-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+.NB-apply-all-merges {
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    background: linear-gradient(135deg, #5C89C9 0%, #4A77B7 100%);
+    color: #FFF;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(92, 137, 201, 0.3);
+}
+
+.NB-apply-all-merges:hover {
+    background: linear-gradient(135deg, #4A77B7 0%, #3A67A7 100%);
+    box-shadow: 0 3px 10px rgba(92, 137, 201, 0.4);
+    transform: translateY(-1px);
+}
+
+button.NB-merge-group-apply,
+button.NB-merge-group-apply.NB-button {
+    padding: 6px 14px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    background: #F0F4F8 !important;
+    color: #5C89C9 !important;
+    border: none !important;
+    border-radius: 5px !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    box-shadow: none !important;
+    text-transform: none !important;
+    margin: 0 !important;
+}
+
+button.NB-merge-group-apply:hover,
+button.NB-merge-group-apply.NB-button:hover {
+    background: #E3EBF3 !important;
 }
 
 /* ==================== */
@@ -21931,46 +22005,46 @@ form.opml_import_form input {
 .NB-split-candidates-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .NB-split-candidate {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 14px;
-    background: #FFF;
-    border: 1px solid #E8E8E8;
-    border-radius: 6px;
+    padding: 12px 16px;
+    background: #F8F9FA;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
 .NB-split-candidate:hover {
-    background: #F8F8F8;
-    border-color: #D0D0D0;
+    background: #EEF0F2;
 }
 
 .NB-split-candidate.NB-selected {
     background: #E3F2FD;
-    border-color: #5C89C9;
 }
 
 .NB-split-candidate-name {
     font-size: 14px;
     color: #333;
+    font-weight: 500;
     flex: 1;
 }
 
 .NB-split-candidate-count {
     font-size: 12px;
-    color: #888;
+    color: #777;
     margin-right: 12px;
 }
 
 .NB-split-candidate-action {
     font-size: 12px;
     color: #5C89C9;
+    font-weight: 500;
     opacity: 0;
     transition: opacity 0.15s ease;
 }
@@ -22071,22 +22145,22 @@ form.opml_import_form input {
 .NB-all-categories-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .NB-all-category-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 14px;
-    background: #FFF;
-    border: 1px solid #E8E8E8;
-    border-radius: 6px;
+    padding: 12px 16px;
+    background: #F8F9FA;
+    border: none;
+    border-radius: 8px;
     transition: all 0.15s ease;
 }
 
 .NB-all-category-item:hover {
-    background: #F8F8F8;
+    background: #EEF0F2;
 }
 
 .NB-all-category-name {
@@ -22098,15 +22172,18 @@ form.opml_import_form input {
 .NB-all-category-text {
     font-size: 14px;
     color: #333;
+    font-weight: 500;
 }
 
 .NB-all-category-input {
     flex: 1;
     padding: 6px 10px;
-    border: 1px solid #5C89C9;
+    border: none;
     border-radius: 4px;
     font-size: 14px;
     outline: none;
+    background: #FFF;
+    box-shadow: 0 0 0 2px rgba(92, 137, 201, 0.3);
 }
 
 .NB-all-category-input.NB-hidden {
@@ -22119,10 +22196,9 @@ form.opml_import_form input {
 
 .NB-all-category-count {
     font-size: 12px;
-    color: #888;
-    background: #E8E8E8;
-    padding: 2px 10px;
-    border-radius: 12px;
+    color: #777;
+    background: transparent;
+    padding: 0;
 }
 
 .NB-all-category-actions {
@@ -22148,6 +22224,276 @@ form.opml_import_form input {
     display: none;
 }
 
+/* ================================ */
+/* Category Manager Dark Mode */
+/* ================================ */
+
+.NB-dark .NB-category-manager-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.NB-dark .NB-category-manager-modal {
+    background: #1E1E1E;
+    box-shadow: 0 16px 64px rgba(0, 0, 0, 0.6);
+    border: none;
+}
+
+.NB-dark .NB-category-manager-header {
+    background: #252525;
+    border-bottom: 1px solid #333;
+}
+
+.NB-dark .NB-category-manager-header h3 {
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-category-manager-close {
+    color: #666;
+}
+
+.NB-dark .NB-category-manager-close:hover {
+    color: #AAA;
+}
+
+/* Dark mode tabs */
+.NB-dark .NB-category-manager-tabs {
+    background: #252525;
+    border-bottom: 1px solid #333;
+}
+
+.NB-dark .NB-category-manager-tab {
+    color: #888;
+    background: transparent;
+}
+
+.NB-dark .NB-category-manager-tab:hover {
+    color: #BBB;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-category-manager-tab.NB-active {
+    color: #E0E0E0;
+    background: #1E1E1E;
+    box-shadow: none;
+}
+
+/* Dark mode tab content */
+.NB-dark .NB-category-manager-tab-content {
+    background: #1E1E1E;
+}
+
+.NB-dark .NB-category-manager-merge-tab,
+.NB-dark .NB-category-manager-split-tab,
+.NB-dark .NB-category-manager-all-tab {
+    background: #1E1E1E;
+}
+
+/* Dark mode merge groups */
+.NB-dark .NB-merge-group {
+    background: #2A2A2A;
+    border: 1px solid #3A3A3A;
+}
+
+.NB-dark .NB-merge-group:hover {
+    border-color: #444;
+}
+
+.NB-dark .NB-merge-group-target-input {
+    background: #1E1E1E;
+    color: #E0E0E0;
+    border: 1px solid #444;
+    box-shadow: none;
+}
+
+.NB-dark .NB-merge-group-target-input:focus {
+    border-color: #5C89C9;
+    outline: none;
+}
+
+/* Dark mode category pills */
+.NB-dark .NB-merge-category-pill {
+    background: #333;
+    color: #DDD;
+    border: 1px solid #444;
+    box-shadow: none;
+}
+
+.NB-dark .NB-merge-category-pill:hover {
+    background: #3D3D3D;
+    border-color: #555;
+}
+
+.NB-dark .NB-merge-category-pill.NB-dragging {
+    background: #4A6A9E;
+    border-color: #5C89C9;
+}
+
+.NB-dark .NB-pill-name {
+    color: #DDD;
+}
+
+.NB-dark .NB-pill-count {
+    color: #888;
+}
+
+.NB-dark .NB-pill-exclude {
+    color: #666;
+}
+
+.NB-dark .NB-pill-exclude:hover {
+    color: #E57373;
+}
+
+/* Dark mode merge group apply button */
+.NB-dark button.NB-merge-group-apply,
+.NB-dark button.NB-merge-group-apply.NB-button {
+    background: #333 !important;
+    color: #8AB4F8 !important;
+    border: 1px solid #444 !important;
+}
+
+.NB-dark button.NB-merge-group-apply:hover,
+.NB-dark button.NB-merge-group-apply.NB-button:hover {
+    background: #3D3D3D !important;
+    border-color: #5C89C9 !important;
+}
+
+/* Dark mode unassigned area */
+.NB-dark .NB-unassigned-categories {
+    background: #252525;
+    border: 1px dashed #444;
+}
+
+.NB-dark .NB-unassigned-categories.NB-drop-active {
+    background: #2A3A4A;
+    border-color: #5C89C9;
+}
+
+.NB-dark .NB-unassigned-label {
+    color: #666;
+}
+
+/* Dark mode Apply All Merges button */
+.NB-dark .NB-apply-all-merges {
+    background: linear-gradient(135deg, #4A6A9E 0%, #3D5A80 100%);
+    color: #FFF;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-apply-all-merges:hover {
+    background: linear-gradient(135deg, #5A7AAE 0%, #4A6A9E 100%);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Dark mode status messages */
+.NB-dark .NB-category-manager-status {
+    background: #252525;
+    color: #AAA;
+}
+
+.NB-dark .NB-category-manager-status.NB-success {
+    background: rgba(76, 175, 80, 0.15);
+    color: #81C784;
+}
+
+.NB-dark .NB-category-manager-status.NB-error {
+    background: rgba(244, 67, 54, 0.15);
+    color: #E57373;
+}
+
+/* Dark mode split tab */
+.NB-dark .NB-split-candidate {
+    background: #2A2A2A;
+    border: 1px solid #3A3A3A;
+}
+
+.NB-dark .NB-split-candidate:hover {
+    background: #333;
+    border-color: #444;
+}
+
+.NB-dark .NB-split-candidate.NB-selected {
+    background: #2D3A4D;
+    border-color: #5C89C9;
+}
+
+.NB-dark .NB-split-candidate-name {
+    color: #DDD;
+}
+
+.NB-dark .NB-split-candidate-count {
+    color: #888;
+}
+
+.NB-dark .NB-split-loading {
+    color: #888;
+}
+
+.NB-dark .NB-split-suggestions-panel {
+    background: #252525;
+    border: 1px solid #3A3A3A;
+}
+
+.NB-dark .NB-split-suggestion {
+    background: #2A2A2A;
+    border: 1px solid #3A3A3A;
+}
+
+.NB-dark .NB-split-suggestion:hover {
+    background: #333;
+    border-color: #444;
+}
+
+.NB-dark .NB-split-suggestion-name {
+    color: #DDD;
+}
+
+.NB-dark .NB-split-suggestion-name input {
+    background: #1E1E1E;
+    color: #E0E0E0;
+    border: 1px solid #444;
+}
+
+/* Dark mode all categories tab */
+.NB-dark .NB-all-category-item {
+    background: #2A2A2A;
+    border: 1px solid #3A3A3A;
+}
+
+.NB-dark .NB-all-category-item:hover {
+    background: #333;
+    border-color: #444;
+}
+
+.NB-dark .NB-all-category-name {
+    color: #DDD;
+}
+
+.NB-dark .NB-all-category-name input {
+    background: #1E1E1E;
+    color: #E0E0E0;
+    border: 1px solid #444;
+}
+
+.NB-dark .NB-all-category-count {
+    color: #888;
+}
+
+.NB-dark .NB-all-category-actions button {
+    color: #AAA;
+}
+
+.NB-dark .NB-all-category-actions button:hover {
+    color: #E0E0E0;
+}
+
+/* Dark mode no suggestions message */
+.NB-dark .NB-merge-no-suggestions,
+.NB-dark .NB-split-no-candidates {
+    color: #666;
+}
+
 /* Dark mode adjustments */
 .NB-dark .NB-archive-view {
     background: #1a1a1a;
@@ -22166,6 +22512,12 @@ form.opml_import_form input {
     background: #2a2a2a;
     border-color: #555;
     color: #CCC;
+}
+
+.NB-dark .NB-archive-tab.NB-active {
+    background: #5C89C9;
+    border-color: #5C89C9;
+    color: #FFF;
 }
 
 /* Dark mode - Conversation Sidebar */
@@ -22316,7 +22668,7 @@ form.opml_import_form input {
     color: #777;
 }
 
-.NB-dark .NB-archive-tool-line .NB-tool-check {
+.NB-dark .NB-archive-tool-line .NB-tool-check::before {
     color: rgba(100, 180, 100, 0.7);
 }
 
@@ -22326,7 +22678,7 @@ form.opml_import_form input {
 }
 
 .NB-dark .NB-archive-tool-preview {
-    color: #666;
+    color: #555;
 }
 
 .NB-dark .NB-archive-process-log .NB-archive-tool-status {
@@ -22824,4 +23176,652 @@ form.opml_import_form input {
     background: #222;
     border-color: #5C89C9;
     color: #DDD;
+}
+
+/* ============================================= */
+/* = Category Manager Modal (Standard Pattern) = */
+/* ============================================= */
+
+/* Override SimpleModal container for this modal */
+#simplemodal-container:has(.NB-modal-category-manager) {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.NB-modal.NB-modal-category-manager {
+    padding: 0;
+    min-width: 700px;
+    max-width: 800px;
+}
+
+/* Title and header */
+.NB-modal-category-manager .NB-modal-title {
+    padding: 20px 24px 16px;
+    background: #FAFAFA;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.NB-modal-category-manager .NB-modal-title .NB-icon {
+    display: none;
+}
+
+.NB-modal-category-manager .NB-modal-title .NB-icon-dropdown {
+    display: none;
+}
+
+/* Tabs - cleaner style without heavy borders */
+.NB-modal-category-manager .NB-modal-tabs {
+    float: none;
+    display: flex;
+    background: #FAFAFA;
+    padding: 0 24px;
+    gap: 4px;
+    margin: 0;
+    position: static;
+}
+
+.NB-modal-category-manager .NB-modal-tabs .NB-modal-loading {
+    position: absolute;
+    right: 24px;
+    top: 24px;
+}
+
+.NB-modal-category-manager .NB-modal-tab {
+    float: none;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    background: transparent;
+    border: none;
+    border-radius: 6px 6px 0 0;
+    cursor: pointer;
+    margin: 0;
+    box-shadow: none;
+    transition: all 0.15s ease;
+}
+
+.NB-modal-category-manager .NB-modal-tab:hover {
+    color: #333;
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.NB-modal-category-manager .NB-modal-tab.NB-active {
+    color: #333;
+    background: #FFF;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.NB-modal-category-manager .NB-modal-tab:first-child,
+.NB-modal-category-manager .NB-modal-tab:last-child {
+    border: none;
+    border-radius: 6px 6px 0 0;
+}
+
+/* Modal content area */
+.NB-modal-category-manager .NB-modal-content {
+    background: #FFF;
+}
+
+/* Tab content panels */
+.NB-modal-category-manager .NB-tab {
+    display: none;
+    padding: 24px;
+    height: auto;
+    max-height: 500px;
+    overflow-y: auto;
+    border: none;
+    background: #FFF;
+}
+
+.NB-modal-category-manager .NB-tab.NB-active {
+    display: block;
+}
+
+/* Empty state message */
+.NB-modal-category-manager .NB-category-empty {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    padding: 40px 20px;
+    font-style: italic;
+}
+
+/* ==================== */
+/* = Merge Tab Styles = */
+/* ==================== */
+
+.NB-modal-category-manager .NB-merge-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.NB-modal-category-manager .NB-merge-group {
+    background: #F8F9FA;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.NB-modal-category-manager .NB-merge-group-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+}
+
+.NB-modal-category-manager .NB-merge-target-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    background: #FFF;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.NB-modal-category-manager .NB-merge-target-input:focus {
+    outline: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 0 0 2px rgba(92, 137, 201, 0.3);
+}
+
+.NB-modal-category-manager .NB-merge-group-remove {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #999;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.NB-modal-category-manager .NB-merge-group-remove:hover {
+    color: #C62828;
+    background: rgba(198, 40, 40, 0.1);
+}
+
+.NB-modal-category-manager .NB-merge-group-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 16px 14px;
+    min-height: 40px;
+}
+
+.NB-modal-category-manager .NB-merge-group-pills.NB-drop-target {
+    background: rgba(92, 137, 201, 0.08);
+    border-radius: 0 0 10px 10px;
+}
+
+/* Category pills - clean, no borders */
+.NB-modal-category-manager .NB-category-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #FFF;
+    border-radius: 6px;
+    cursor: grab;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.NB-modal-category-manager .NB-category-pill:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.NB-modal-category-manager .NB-category-pill.NB-dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.NB-modal-category-manager .NB-pill-name {
+    font-size: 13px;
+    color: #444;
+    font-weight: 500;
+}
+
+.NB-modal-category-manager .NB-pill-count {
+    font-size: 11px;
+    color: #888;
+    background: #F0F0F0;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+/* Unassigned zone */
+.NB-modal-category-manager .NB-unassigned-zone {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #EEE;
+}
+
+.NB-modal-category-manager .NB-unassigned-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.NB-modal-category-manager .NB-unassigned-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 48px;
+    padding: 14px;
+    background: #F5F6F7;
+    border-radius: 8px;
+}
+
+.NB-modal-category-manager .NB-unassigned-pills.NB-drop-target {
+    background: #E8F5E9;
+}
+
+.NB-modal-category-manager .NB-unassigned-hint {
+    color: #AAA;
+    font-size: 13px;
+    font-style: italic;
+}
+
+/* Merge footer with summary and button */
+.NB-modal-category-manager .NB-merge-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: #F8F9FA;
+    border-radius: 8px;
+}
+
+.NB-modal-category-manager .NB-merge-summary {
+    font-size: 14px;
+    color: #555;
+}
+
+.NB-modal-category-manager .NB-merge-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* ==================== */
+/* = Split Tab Styles = */
+/* ==================== */
+
+.NB-modal-category-manager .NB-split-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.NB-modal-category-manager .NB-split-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background: #F8F9FA;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.NB-modal-category-manager .NB-split-item:hover {
+    background: #EEF0F2;
+}
+
+.NB-modal-category-manager .NB-split-item.NB-selected {
+    background: #E3F2FD;
+}
+
+.NB-modal-category-manager .NB-split-item-name {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.NB-modal-category-manager .NB-split-item-count {
+    font-size: 12px;
+    color: #777;
+    margin-right: 12px;
+}
+
+.NB-modal-category-manager .NB-split-item-action {
+    font-size: 12px;
+    color: #5C89C9;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.NB-modal-category-manager .NB-split-item:hover .NB-split-item-action {
+    opacity: 1;
+}
+
+/* Split panel */
+.NB-modal-category-manager .NB-split-panel {
+    margin-top: 20px;
+    padding: 16px;
+    background: #FFF8E1;
+    border-radius: 8px;
+}
+
+.NB-modal-category-manager .NB-split-panel.NB-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 30px;
+    color: #666;
+}
+
+.NB-modal-category-manager .NB-split-panel-header {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.NB-modal-category-manager .NB-split-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.NB-modal-category-manager .NB-split-suggestion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #FFF;
+    border-radius: 6px;
+}
+
+.NB-modal-category-manager .NB-split-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.NB-modal-category-manager .NB-split-name-input {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.NB-modal-category-manager .NB-split-name-input:focus {
+    border-color: #5C89C9;
+    outline: none;
+}
+
+.NB-modal-category-manager .NB-split-count {
+    font-size: 12px;
+    color: #888;
+}
+
+.NB-modal-category-manager .NB-split-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    justify-content: flex-end;
+}
+
+/* ============================ */
+/* = All Categories Tab Styles = */
+/* ============================ */
+
+.NB-modal-category-manager .NB-all-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.NB-modal-category-manager .NB-all-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #F8F9FA;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.NB-modal-category-manager .NB-all-item:hover {
+    background: #EEF0F2;
+}
+
+.NB-modal-category-manager .NB-all-item-name {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.NB-modal-category-manager .NB-all-item-count {
+    font-size: 12px;
+    color: #777;
+}
+
+.NB-modal-category-manager .NB-all-item-edit {
+    font-size: 12px;
+    color: #5C89C9;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.NB-modal-category-manager .NB-all-item:hover .NB-all-item-edit {
+    opacity: 1;
+}
+
+.NB-modal-category-manager .NB-all-rename-input {
+    flex: 1;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #FFF;
+    box-shadow: 0 0 0 2px rgba(92, 137, 201, 0.3);
+    outline: none;
+}
+
+/* ===================================== */
+/* = Category Manager Modal Dark Mode = */
+/* ===================================== */
+
+.NB-dark #simplemodal-container:has(.NB-modal-category-manager) {
+    background-color: #1E1E1E;
+}
+
+.NB-dark .NB-modal-category-manager .NB-modal-title {
+    background: #252525;
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-modal-category-manager .NB-modal-tabs {
+    background: #252525;
+}
+
+.NB-dark .NB-modal-category-manager .NB-modal-tab {
+    color: #888;
+}
+
+.NB-dark .NB-modal-category-manager .NB-modal-tab:hover {
+    color: #CCC;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-modal-category-manager .NB-modal-tab.NB-active {
+    color: #E0E0E0;
+    background: #1E1E1E;
+    box-shadow: none;
+}
+
+.NB-dark .NB-modal-category-manager .NB-modal-content,
+.NB-dark .NB-modal-category-manager .NB-tab {
+    background: #1E1E1E;
+}
+
+.NB-dark .NB-modal-category-manager .NB-category-empty {
+    color: #666;
+}
+
+/* Dark mode merge groups */
+.NB-dark .NB-modal-category-manager .NB-merge-group {
+    background: #2A2A2A;
+}
+
+.NB-dark .NB-modal-category-manager .NB-merge-target-input {
+    background: #1E1E1E;
+    color: #E0E0E0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-modal-category-manager .NB-merge-group-remove {
+    color: #666;
+}
+
+.NB-dark .NB-modal-category-manager .NB-merge-group-remove:hover {
+    color: #E57373;
+    background: rgba(229, 115, 115, 0.1);
+}
+
+.NB-dark .NB-modal-category-manager .NB-merge-group-pills.NB-drop-target {
+    background: rgba(92, 137, 201, 0.15);
+}
+
+/* Dark mode pills */
+.NB-dark .NB-modal-category-manager .NB-category-pill {
+    background: #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-modal-category-manager .NB-category-pill:hover {
+    background: #3D3D3D;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-modal-category-manager .NB-pill-name {
+    color: #DDD;
+}
+
+.NB-dark .NB-modal-category-manager .NB-pill-count {
+    background: #444;
+    color: #AAA;
+}
+
+/* Dark mode unassigned */
+.NB-dark .NB-modal-category-manager .NB-unassigned-zone {
+    border-top-color: #333;
+}
+
+.NB-dark .NB-modal-category-manager .NB-unassigned-label {
+    color: #666;
+}
+
+.NB-dark .NB-modal-category-manager .NB-unassigned-pills {
+    background: #252525;
+}
+
+.NB-dark .NB-modal-category-manager .NB-unassigned-pills.NB-drop-target {
+    background: rgba(129, 199, 132, 0.15);
+}
+
+.NB-dark .NB-modal-category-manager .NB-unassigned-hint {
+    color: #555;
+}
+
+/* Dark mode footer */
+.NB-dark .NB-modal-category-manager .NB-merge-footer {
+    background: #252525;
+}
+
+.NB-dark .NB-modal-category-manager .NB-merge-summary {
+    color: #AAA;
+}
+
+/* Dark mode split tab */
+.NB-dark .NB-modal-category-manager .NB-split-item {
+    background: #2A2A2A;
+}
+
+.NB-dark .NB-modal-category-manager .NB-split-item:hover {
+    background: #333;
+}
+
+.NB-dark .NB-modal-category-manager .NB-split-item.NB-selected {
+    background: #2D3A4D;
+}
+
+.NB-dark .NB-modal-category-manager .NB-split-item-name {
+    color: #DDD;
+}
+
+.NB-dark .NB-modal-category-manager .NB-split-item-count {
+    color: #777;
+}
+
+.NB-dark .NB-modal-category-manager .NB-split-panel {
+    background: #2A2A2A;
+}
+
+.NB-dark .NB-modal-category-manager .NB-split-panel.NB-loading {
+    color: #888;
+}
+
+.NB-dark .NB-modal-category-manager .NB-split-panel-header {
+    color: #DDD;
+}
+
+.NB-dark .NB-modal-category-manager .NB-split-suggestion {
+    background: #333;
+}
+
+.NB-dark .NB-modal-category-manager .NB-split-name-input {
+    background: #1E1E1E;
+    border-color: #444;
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-modal-category-manager .NB-split-count {
+    color: #777;
+}
+
+/* Dark mode all categories tab */
+.NB-dark .NB-modal-category-manager .NB-all-item {
+    background: #2A2A2A;
+}
+
+.NB-dark .NB-modal-category-manager .NB-all-item:hover {
+    background: #333;
+}
+
+.NB-dark .NB-modal-category-manager .NB-all-item-name {
+    color: #DDD;
+}
+
+.NB-dark .NB-modal-category-manager .NB-all-item-count {
+    color: #777;
+}
+
+.NB-dark .NB-modal-category-manager .NB-all-rename-input {
+    background: #1E1E1E;
+    color: #E0E0E0;
+    box-shadow: 0 0 0 2px rgba(92, 137, 201, 0.4);
 }
