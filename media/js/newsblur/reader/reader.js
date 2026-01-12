@@ -2492,7 +2492,7 @@
             this.active_feed = 'add-site';
             this.active_folder = new Backbone.Model({
                 id: 'add-site',
-                folder_title: "Add Site",
+                folder_title: "Add + Discover",
                 fake: true,
                 show_options: false
             });
@@ -2505,7 +2505,9 @@
             this.$s.$layout.addClass('NB-add-site-active');
 
             // Create and append add site view to content pane
-            this.add_site_view = new NEWSBLUR.Views.AddSiteView();
+            this.add_site_view = new NEWSBLUR.Views.AddSiteView({
+                initial_tab: options.tab
+            });
             this.$s.$content_pane.append(this.add_site_view.$el);
 
             // Update URL

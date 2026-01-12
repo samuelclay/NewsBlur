@@ -23,6 +23,8 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         "click .NB-add-folder-icon": "open_add_folder",
         "click .NB-add-folder-submit": "save_add_folder",
         "click .NB-add-import-button": "close_and_open_import",
+        "click .NB-add-discover-link": "close_and_open_discover",
+        "click .NB-add-discover-source": "close_and_open_discover_tab",
         "focus .NB-add-url": "handle_focus_add_site",
         "blur .NB-add-url": "handle_blur_add_site"
     },
@@ -74,6 +76,33 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                     ]),
                     $.make('div', { className: 'NB-group NB-error' }, [
                         $.make('div', { className: 'NB-error-message' })
+                    ])
+                ]),
+                $.make('div', { className: 'NB-fieldset NB-add-discover-section' }, [
+                    $.make('div', { className: 'NB-add-discover-divider' }, [
+                        $.make('span', 'or discover new feeds')
+                    ]),
+                    $.make('div', { className: 'NB-add-discover-sources' }, [
+                        $.make('div', { className: 'NB-add-discover-source', 'data-tab': 'youtube' }, [
+                            $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/lucide/youtube.svg' }),
+                            $.make('span', 'YouTube')
+                        ]),
+                        $.make('div', { className: 'NB-add-discover-source', 'data-tab': 'reddit' }, [
+                            $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/reader/reddit_icon.svg' }),
+                            $.make('span', 'Reddit')
+                        ]),
+                        $.make('div', { className: 'NB-add-discover-source', 'data-tab': 'newsletters' }, [
+                            $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/lucide/mail.svg' }),
+                            $.make('span', 'Newsletters')
+                        ]),
+                        $.make('div', { className: 'NB-add-discover-source', 'data-tab': 'podcasts' }, [
+                            $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/lucide/podcast.svg' }),
+                            $.make('span', 'Podcasts')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-add-discover-link' }, [
+                        $.make('span', 'Browse all sources'),
+                        $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/silk/arrow_right.png' })
                     ])
                 ]),
                 $.make('div', { className: 'NB-fieldset NB-anonymous-ok NB-modal-submit NB-hidden' }, [
@@ -202,6 +231,19 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                 'page_number': 2,
                 'force_import': true
             });
+        });
+    },
+
+    close_and_open_discover: function () {
+        this.close(function () {
+            NEWSBLUR.reader.open_add_site();
+        });
+    },
+
+    close_and_open_discover_tab: function (e) {
+        var tab = $(e.currentTarget).data('tab');
+        this.close(function () {
+            NEWSBLUR.reader.open_add_site({ tab: tab });
         });
     },
 

@@ -479,6 +479,42 @@ color: #a85b40;
     background: #303739;
 }
 
+/* Discover Section in Add Popover - Dark Mode */
+.NB-dark .NB-add-discover-divider::before,
+.NB-dark .NB-add-discover-divider::after {
+    border-bottom-color: #404548;
+}
+
+.NB-dark .NB-add-discover-divider span {
+    color: #909090;
+}
+
+.NB-dark .NB-add-discover-source {
+    background: linear-gradient(135deg, #303438 0%, #282C30 100%);
+    border-color: #404548;
+}
+
+.NB-dark .NB-add-discover-source:hover {
+    background: linear-gradient(135deg, #383C40 0%, #303438 100%);
+    border-color: #5C89C9;
+}
+
+.NB-dark .NB-add-discover-source img {
+    filter: brightness(0.9);
+}
+
+.NB-dark .NB-add-discover-source span {
+    color: #B0B0B0;
+}
+
+.NB-dark .NB-add-discover-link {
+    background: linear-gradient(135deg, #5C89C9 0%, #4A73B0 100%);
+}
+
+.NB-dark .NB-add-discover-link:hover {
+    background: linear-gradient(135deg, #6A9AD8 0%, #5580C0 100%);
+}
+
 /* Unread/Oldest text color */
 .NB-dark .NB-feedbar-options-stat .NB-stat,
 .NB-dark .NB-dashboard-river-options-stat .NB-stat {
