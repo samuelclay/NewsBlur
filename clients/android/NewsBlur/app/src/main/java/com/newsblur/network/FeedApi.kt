@@ -48,6 +48,8 @@ interface FeedApi {
 
     suspend fun saveFeedChooser(feeds: Set<String>): NewsBlurResponse?
 
+    suspend fun setFeedMute(feedId: String, mute: Boolean): NewsBlurResponse?
+
     suspend fun updateFeedNotifications(
         feedId: String?,
         notifyTypes: List<String>,
