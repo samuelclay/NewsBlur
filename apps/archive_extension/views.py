@@ -1016,7 +1016,7 @@ Return ONLY valid JSON with the exact IDs from above:
 ]"""
 
             response = client.messages.create(
-                model="claude-3-5-haiku-20241022", max_tokens=2000, messages=[{"role": "user", "content": prompt}]
+                model="claude-haiku-4-5", max_tokens=2000, messages=[{"role": "user", "content": prompt}]
             )
 
             result_text = response.content[0].text.strip()

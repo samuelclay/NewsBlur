@@ -15,6 +15,7 @@ from .prompts import get_prompt
 from .providers import VALID_MODELS
 from .tasks import AskAIQuestion
 from .usage import AskAIUsageTracker, TranscriptionUsageTracker
+from utils.llm_costs import LLMCostTracker
 
 MAX_CUSTOM_QUESTION_LENGTH = 5000
 MAX_AUDIO_SIZE_MB = 25  # OpenAI Whisper API limit
@@ -34,7 +35,7 @@ def ask_ai_question(request):
         question_id: ID of the question template (e.g., "sentence", "bullets", "custom")
         custom_question: Optional custom question text (required if question_id is "custom")
         conversation_history: Optional JSON string of conversation history for follow-ups
-        model: Optional model to use (opus, gpt-5.1, gemini-3, grok-4.1). Defaults to server setting.
+        model: Optional model to use (opus, gpt-5.2, gemini-3, grok-4.1). Defaults to server setting.
 
     Returns:
         JSON response with request_id and status
@@ -182,6 +183,14 @@ def transcribe_audio(request):
             duration_seconds=estimated_duration,
             story_hash=request.POST.get("story_hash", ""),
             request_id=request.POST.get("request_id", ""),
+        )
+
+        # Record LLM cost for transcription
+        LLMCostTracker.record_transcription(
+            duration_seconds=estimated_duration,
+            user_id=request.user.pk,
+            request_id=request.POST.get("request_id", ""),
+            metadata={"file_size": audio_file.size, "file_name": audio_file.name},
         )
 
         logging.user(

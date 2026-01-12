@@ -18,6 +18,7 @@ from apps.archive_assistant.models import MArchiveConversation, MArchiveQuery, M
 from apps.archive_assistant.prompts import get_system_prompt
 from apps.archive_assistant.tools import ARCHIVE_TOOLS, execute_tool
 from utils import log as logging
+from utils.llm_costs import LLMCostTracker
 
 # Character limit for non-premium users before truncation
 FREE_RESPONSE_CHAR_LIMIT = 300
@@ -30,7 +31,7 @@ def get_redis_pubsub_connection():
 
 @shared_task(name="archive-assistant-query")
 def process_archive_query(
-    user_id, conversation_id, query_id, query_text, model="claude-sonnet-4-20250514", is_premium_archive=True
+    user_id, conversation_id, query_id, query_text, model="claude-sonnet-4-5", is_premium_archive=True
 ):
     """
     Process an Archive Assistant query using Claude with tools.
@@ -91,12 +92,24 @@ def process_archive_query(
         messages = history_messages + [{"role": "user", "content": query_text}]
 
         # Call Claude with tools (truncates response for non-premium users)
-        response_text, tool_calls, tokens_used, was_truncated = _call_claude_with_tools(
+        response_text, tool_calls, tokens_used, input_tokens, output_tokens, was_truncated = _call_claude_with_tools(
             user_id, messages, model, publish_event, is_premium_archive
         )
 
         # Calculate duration
         duration_ms = int((time.time() - start_time) * 1000)
+
+        # Record LLM cost
+        LLMCostTracker.record_usage(
+            provider="anthropic",
+            model=model,
+            feature="archive_assistant",
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            user_id=user_id,
+            request_id=query_id,
+            metadata={"tool_calls": len(tool_calls), "was_truncated": was_truncated},
+        )
 
         # Save the response
         query.set_response(response_text)
@@ -163,7 +176,7 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
         publish_event: Callback to publish events (type, extra_dict)
         is_premium_archive: Whether user has premium archive (no truncation)
 
-    Returns tuple: (response_text, tool_calls, tokens_used, was_truncated)
+    Returns tuple: (response_text, tool_calls, tokens_used, input_tokens, output_tokens, was_truncated)
     """
     import anthropic
 
@@ -171,6 +184,8 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
 
     tool_calls = []
     tokens_used = 0
+    input_tokens_total = 0
+    output_tokens_total = 0
     full_response = ""
     was_truncated = False
 
@@ -186,6 +201,8 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
         messages=messages,
     )
 
+    input_tokens_total += response.usage.input_tokens
+    output_tokens_total += response.usage.output_tokens
     tokens_used += response.usage.input_tokens + response.usage.output_tokens
 
     # Handle tool use loop
@@ -318,6 +335,8 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
             messages=messages,
         )
 
+        input_tokens_total += response.usage.input_tokens
+        output_tokens_total += response.usage.output_tokens
         tokens_used += response.usage.input_tokens + response.usage.output_tokens
 
     # Extract final text response (with truncation for non-premium users)
@@ -352,7 +371,7 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
             total_chars += len(chunk)
             publish_event("chunk", {"content": chunk})
 
-    return full_response, tool_calls, tokens_used, was_truncated
+    return full_response, tool_calls, tokens_used, input_tokens_total, output_tokens_total, was_truncated
 
 
 def _generate_conversation_title(query_text):

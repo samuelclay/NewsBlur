@@ -214,7 +214,7 @@ def _categorize_single_archive(archive, user_categories=None):
         )
 
         response = client.messages.create(
-            model="claude-3-5-haiku-20241022",
+            model="claude-haiku-4-5",
             max_tokens=100,
             messages=[{"role": "user", "content": prompt}],
         )
