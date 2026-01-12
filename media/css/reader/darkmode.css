@@ -2665,6 +2665,14 @@ a.mention, a.mention-group {
     border-bottom-color: #333;
 }
 
+.NB-dark .NB-add-site-tab-search-bar {
+    border-bottom-color: #333;
+}
+
+.NB-dark .NB-add-site-google-news-container {
+    background: transparent;
+}
+
 .NB-dark .NB-add-site-search-wrapper {
     background: #2A2A2A;
     border-color: #444;
