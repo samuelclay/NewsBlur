@@ -49,7 +49,13 @@ from apps.profile.models import (
 from apps.reader.forms import LoginForm, SignupForm
 from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
-from apps.social.models import MActivity, MSharedStory, MSocialProfile, MSocialServices, MSocialSubscription
+from apps.social.models import (
+    MActivity,
+    MSharedStory,
+    MSocialProfile,
+    MSocialServices,
+    MSocialSubscription,
+)
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import ajax_login_required, get_user
@@ -1110,7 +1116,9 @@ def delete_shared_stories(request):
     stories_deleted = shared_stories.count()
 
     # Mark social subscriptions for unread recalculation
-    socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk, needs_unread_recalc=False)
+    socialsubs = MSocialSubscription.objects.filter(
+        subscription_user_id=request.user.pk, needs_unread_recalc=False
+    )
     for socialsub in socialsubs:
         socialsub.needs_unread_recalc = True
         socialsub.save()
@@ -1129,7 +1137,8 @@ def delete_shared_stories(request):
 
     logging.user(
         request.user,
-        "~BC~FRDeleting %s/%s shared stories (%s)" % (stories_deleted, stories_deleted + shared_stories_count, delete_date),
+        "~BC~FRDeleting %s/%s shared stories (%s)"
+        % (stories_deleted, stories_deleted + shared_stories_count, delete_date),
     )
 
     return dict(code=1, stories_deleted=stories_deleted, shared_stories_count=shared_stories_count)
