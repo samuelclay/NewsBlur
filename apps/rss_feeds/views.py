@@ -5,6 +5,7 @@ from collections import defaultdict
 from urllib.parse import urlparse
 
 import redis
+import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -763,3 +764,416 @@ def trending_sites(request):
 
     logging.user(request, "~FCTrending sites (page %s, %sd): ~SB%s feeds" % (page, days, len(trending_feeds)))
     return {"trending_feeds": trending_feeds, "has_more": has_more}
+
+
+@json.json_view
+def youtube_search(request):
+    """
+    Search YouTube channels and playlists using the YouTube Data API v3.
+    Returns results with constructed RSS feed URLs.
+    """
+    query = request.GET.get("query", "").strip()
+    search_type = request.GET.get("type", "channel")  # 'channel' or 'playlist'
+    max_results = min(int(request.GET.get("limit", 10)), 25)
+
+    if not query:
+        return {"code": -1, "message": "Please provide a search query.", "results": []}
+
+    if not settings.YOUTUBE_API_KEY or settings.YOUTUBE_API_KEY == "YOUR_YOUTUBE_API_KEY":
+        return {"code": -1, "message": "YouTube API key not configured.", "results": []}
+
+    # Build YouTube Data API v3 search URL
+    api_url = "https://www.googleapis.com/youtube/v3/search"
+    params = {
+        "part": "snippet",
+        "q": query,
+        "type": search_type,
+        "maxResults": max_results,
+        "key": settings.YOUTUBE_API_KEY,
+    }
+
+    try:
+        response = requests.get(api_url, params=params, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+    except requests.exceptions.RequestException as e:
+        logging.user(request, "~FRYouTube search error: %s" % str(e))
+        return {"code": -1, "message": "YouTube API request failed.", "results": []}
+
+    if "error" in data:
+        error_msg = data["error"].get("message", "Unknown error")
+        logging.user(request, "~FRYouTube API error: %s" % error_msg)
+        return {"code": -1, "message": error_msg, "results": []}
+
+    results = []
+    for item in data.get("items", []):
+        snippet = item.get("snippet", {})
+        thumbnails = snippet.get("thumbnails", {})
+        thumbnail_url = thumbnails.get("medium", {}).get("url") or thumbnails.get("default", {}).get("url", "")
+
+        if search_type == "channel":
+            channel_id = item.get("id", {}).get("channelId")
+            if channel_id:
+                feed_url = f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
+                channel_url = f"https://www.youtube.com/channel/{channel_id}"
+                results.append({
+                    "id": channel_id,
+                    "type": "channel",
+                    "title": snippet.get("channelTitle") or snippet.get("title", ""),
+                    "description": snippet.get("description", ""),
+                    "thumbnail": thumbnail_url,
+                    "feed_url": feed_url,
+                    "link": channel_url,
+                })
+        elif search_type == "playlist":
+            playlist_id = item.get("id", {}).get("playlistId")
+            if playlist_id:
+                feed_url = f"https://www.youtube.com/feeds/videos.xml?playlist_id={playlist_id}"
+                playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
+                results.append({
+                    "id": playlist_id,
+                    "type": "playlist",
+                    "title": snippet.get("title", ""),
+                    "description": snippet.get("description", ""),
+                    "thumbnail": thumbnail_url,
+                    "feed_url": feed_url,
+                    "link": playlist_url,
+                    "channel_title": snippet.get("channelTitle", ""),
+                })
+
+    logging.user(request, "~FBYouTube search for '%s' (%s): ~SB%s results" % (query, search_type, len(results)))
+    return {"code": 1, "results": results}
+
+
+@json.json_view
+def reddit_search(request):
+    """
+    Search Reddit subreddits using the public Reddit JSON API.
+    Returns results with constructed RSS feed URLs.
+    """
+    query = request.GET.get("query", "").strip()
+    limit = min(int(request.GET.get("limit", 15)), 25)
+
+    if not query:
+        return {"code": -1, "message": "Please provide a search query.", "results": []}
+
+    # Reddit's public JSON API for subreddit search
+    api_url = "https://www.reddit.com/subreddits/search.json"
+    params = {
+        "q": query,
+        "limit": limit,
+        "include_over_18": "false",
+    }
+    headers = {
+        "User-Agent": "NewsBlur/1.0 (RSS Reader; https://newsblur.com)",
+    }
+
+    try:
+        response = requests.get(api_url, params=params, headers=headers, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+    except requests.exceptions.RequestException as e:
+        logging.user(request, "~FRReddit search error: %s" % str(e))
+        return {"code": -1, "message": "Reddit API request failed.", "results": []}
+
+    results = []
+    for child in data.get("data", {}).get("children", []):
+        subreddit = child.get("data", {})
+        name = subreddit.get("display_name", "")
+        if name:
+            feed_url = f"https://www.reddit.com/r/{name}/.rss"
+            subreddit_url = f"https://www.reddit.com/r/{name}"
+
+            # Get icon - try community_icon first, then icon_img
+            icon_url = subreddit.get("community_icon", "")
+            if icon_url:
+                # Remove query params that may cause issues
+                icon_url = icon_url.split("?")[0]
+            if not icon_url:
+                icon_url = subreddit.get("icon_img", "")
+
+            results.append({
+                "id": subreddit.get("id", ""),
+                "name": name,
+                "title": subreddit.get("title", name),
+                "description": subreddit.get("public_description", "")[:200],
+                "subscribers": subreddit.get("subscribers", 0),
+                "icon": icon_url,
+                "feed_url": feed_url,
+                "link": subreddit_url,
+                "over18": subreddit.get("over18", False),
+            })
+
+    logging.user(request, "~FBReddit search for '%s': ~SB%s results" % (query, len(results)))
+    return {"code": 1, "results": results}
+
+
+@json.json_view
+def reddit_popular(request):
+    """
+    Get popular Reddit subreddits.
+    Returns results with constructed RSS feed URLs.
+    """
+    limit = min(int(request.GET.get("limit", 20)), 50)
+
+    # Reddit's public JSON API for popular subreddits
+    api_url = "https://www.reddit.com/subreddits/popular.json"
+    params = {
+        "limit": limit,
+    }
+    headers = {
+        "User-Agent": "NewsBlur/1.0 (RSS Reader; https://newsblur.com)",
+    }
+
+    try:
+        response = requests.get(api_url, params=params, headers=headers, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+    except requests.exceptions.RequestException as e:
+        logging.user(request, "~FRReddit popular error: %s" % str(e))
+        return {"code": -1, "message": "Reddit API request failed.", "results": []}
+
+    results = []
+    for child in data.get("data", {}).get("children", []):
+        subreddit = child.get("data", {})
+        name = subreddit.get("display_name", "")
+        if name and not subreddit.get("over18", False):
+            feed_url = f"https://www.reddit.com/r/{name}/.rss"
+            subreddit_url = f"https://www.reddit.com/r/{name}"
+
+            # Get icon - try community_icon first, then icon_img
+            icon_url = subreddit.get("community_icon", "")
+            if icon_url:
+                icon_url = icon_url.split("?")[0]
+            if not icon_url:
+                icon_url = subreddit.get("icon_img", "")
+
+            results.append({
+                "id": subreddit.get("id", ""),
+                "name": name,
+                "title": subreddit.get("title", name),
+                "description": subreddit.get("public_description", "")[:200],
+                "subscribers": subreddit.get("subscribers", 0),
+                "icon": icon_url,
+                "feed_url": feed_url,
+                "link": subreddit_url,
+            })
+
+    logging.user(request, "~FBReddit popular: ~SB%s results" % len(results))
+    return {"code": 1, "results": results}
+
+
+@json.json_view
+def newsletter_convert(request):
+    """
+    Convert a newsletter URL to its RSS feed URL.
+    Supports Substack, Medium, Ghost, and other common platforms.
+    """
+    url = request.GET.get("url", "").strip()
+
+    if not url:
+        return {"code": -1, "message": "Please provide a newsletter URL.", "feed_url": None}
+
+    # Normalize URL
+    if not url.startswith(("http://", "https://")):
+        url = "https://" + url
+
+    # Remove trailing slash
+    url = url.rstrip("/")
+
+    feed_url = None
+    platform = None
+    title = None
+
+    # Parse the URL
+    from urllib.parse import urlparse
+
+    parsed = urlparse(url)
+    hostname = parsed.netloc.lower()
+    path = parsed.path
+
+    # Substack detection
+    if "substack.com" in hostname or hostname.endswith(".substack.com"):
+        # Extract subdomain for substack
+        if hostname.endswith(".substack.com"):
+            subdomain = hostname.replace(".substack.com", "")
+            feed_url = f"https://{subdomain}.substack.com/feed"
+            title = subdomain.replace("-", " ").title()
+        else:
+            # Could be a custom domain pointing to substack
+            feed_url = f"{url}/feed"
+        platform = "substack"
+
+    # Medium detection
+    elif "medium.com" in hostname:
+        if path.startswith("/@"):
+            # User profile: medium.com/@username
+            username = path.split("/")[1]
+            feed_url = f"https://medium.com/feed/{username}"
+            title = username.lstrip("@")
+        elif path.startswith("/"):
+            # Publication: medium.com/publication-name
+            publication = path.split("/")[1] if len(path.split("/")) > 1 else ""
+            if publication and publication != "":
+                feed_url = f"https://medium.com/feed/{publication}"
+                title = publication.replace("-", " ").title()
+        platform = "medium"
+
+    # Ghost blogs (common pattern)
+    elif any(ghost_indicator in url.lower() for ghost_indicator in [".ghost.io", "/ghost/"]):
+        feed_url = f"{url}/rss/"
+        platform = "ghost"
+
+    # Buttondown detection
+    elif "buttondown.email" in hostname:
+        # buttondown.email/username
+        username = path.lstrip("/").split("/")[0] if path else ""
+        if username:
+            feed_url = f"https://buttondown.email/{username}/rss"
+            title = username.replace("-", " ").title()
+        platform = "buttondown"
+
+    # Beehiiv detection
+    elif ".beehiiv.com" in hostname:
+        feed_url = f"{url}/feed"
+        platform = "beehiiv"
+
+    # ConvertKit detection
+    elif "convertkit.com" in hostname or ".ck.page" in hostname:
+        # ConvertKit doesn't have standard RSS - try /rss
+        feed_url = f"{url}/rss"
+        platform = "convertkit"
+
+    # Revue (Twitter newsletters - now defunct but some archives exist)
+    elif "revue.co" in hostname or "getrevue.co" in hostname:
+        username = path.lstrip("/").split("/")[0] if path else ""
+        if username:
+            feed_url = f"https://www.getrevue.co/profile/{username}/feed"
+            title = username.replace("-", " ").title()
+        platform = "revue"
+
+    # Generic fallback - try common RSS patterns
+    else:
+        # Try to detect if it's already a feed URL
+        if any(ext in url.lower() for ext in ["/feed", "/rss", ".xml", "/atom"]):
+            feed_url = url
+            platform = "direct"
+        else:
+            # Try adding /feed (most common pattern)
+            feed_url = f"{url}/feed"
+            platform = "generic"
+
+    if not feed_url:
+        return {"code": -1, "message": "Could not determine RSS feed URL.", "feed_url": None}
+
+    logging.user(request, "~FBNewsletter convert: %s -> %s (%s)" % (url, feed_url, platform))
+    return {
+        "code": 1,
+        "feed_url": feed_url,
+        "platform": platform,
+        "title": title,
+        "original_url": url,
+    }
+
+
+@json.json_view
+def podcast_search(request):
+    """
+    Search for podcasts using iTunes Search API.
+    Returns podcasts with their RSS feed URLs.
+    """
+    query = request.GET.get("query", "").strip()
+    limit = min(int(request.GET.get("limit", 20)), 50)
+
+    if not query:
+        return {"code": -1, "message": "Query is required", "results": []}
+
+    # iTunes Search API (free, no auth required)
+    api_url = "https://itunes.apple.com/search"
+    params = {
+        "term": query,
+        "media": "podcast",
+        "limit": limit,
+        "entity": "podcast",
+    }
+
+    try:
+        headers = {"User-Agent": "NewsBlur/1.0 (RSS Reader; https://newsblur.com)"}
+        response = requests.get(api_url, params=params, headers=headers, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+
+        results = []
+        for podcast in data.get("results", []):
+            # Only include podcasts that have a feed URL
+            feed_url = podcast.get("feedUrl")
+            if not feed_url:
+                continue
+
+            results.append({
+                "name": podcast.get("collectionName", ""),
+                "artist": podcast.get("artistName", ""),
+                "artwork": podcast.get("artworkUrl100", ""),
+                "feed_url": feed_url,
+                "genre": podcast.get("primaryGenreName", ""),
+                "track_count": podcast.get("trackCount", 0),
+                "itunes_url": podcast.get("collectionViewUrl", ""),
+            })
+
+        logging.user(request, "~FBPodcast search for '%s': %s results" % (query, len(results)))
+        return {"code": 1, "results": results, "query": query}
+
+    except requests.exceptions.RequestException as e:
+        logging.user(request, "~FRPodcast search error: %s" % str(e))
+        return {"code": -1, "message": "Failed to search podcasts", "results": []}
+
+
+@json.json_view
+def google_news_feed(request):
+    """
+    Build a Google News RSS feed URL from search parameters.
+    Returns the constructed RSS URL for subscribing.
+    Supports both custom search queries and predefined topic feeds.
+    """
+    from urllib.parse import quote_plus
+
+    query = request.GET.get("query", "").strip()
+    topic = request.GET.get("topic", "").strip().upper()
+    language = request.GET.get("language", "en")
+    region = request.GET.get("region", "US")
+
+    # Topic map for predefined Google News topics
+    topic_map = {
+        "WORLD": "CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx1YlY4U0FtVnVHZ0pWVXlnQVAB",
+        "NATION": "CAAqIggKIhxDQkFTRHdvSkwyMHZNRFY2TVdZeUVnSmxiaWdBUAE",
+        "BUSINESS": "CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtVnVHZ0pWVXlnQVAB",
+        "TECHNOLOGY": "CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtVnVHZ0pWVXlnQVAB",
+        "ENTERTAINMENT": "CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtVnVHZ0pWVXlnQVAB",
+        "SPORTS": "CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtVnVHZ0pWVXlnQVAB",
+        "SCIENCE": "CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp0Y1RjU0FtVnVHZ0pWVXlnQVAB",
+        "HEALTH": "CAAqIQgKIhtDQkFTRGdvSUwyMHZNR3QwTlRFU0FtVnVLQUFQAQ",
+    }
+
+    # Build feed URL based on topic or custom query
+    if topic and topic in topic_map:
+        # Topic-based feed
+        feed_url = f"https://news.google.com/rss/topics/{topic_map[topic]}?hl={language}&gl={region}&ceid={region}:{language}"
+        title = f"Google News - {topic.title()}"
+    elif query:
+        # Custom search query feed
+        encoded_query = quote_plus(query)
+        feed_url = f"https://news.google.com/rss/search?q={encoded_query}&hl={language}&gl={region}&ceid={region}:{language}"
+        title = f"Google News - {query}"
+    else:
+        return {"code": -1, "message": "Search query or topic is required", "feed_url": None}
+
+    logging.user(request, "~FBGoogle News feed built: %s" % feed_url)
+    return {
+        "code": 1,
+        "feed_url": feed_url,
+        "title": title,
+        "query": query,
+        "topic": topic,
+        "language": language,
+        "region": region,
+    }

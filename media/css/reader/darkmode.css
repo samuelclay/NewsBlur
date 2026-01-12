@@ -2590,3 +2590,255 @@ a.mention, a.mention-group {
     background: #444;
     border-color: #666;
 }
+
+/* ==================
+   Add Site View Dark Mode
+   ================== */
+
+.NB-dark .NB-add-site-view {
+    background: #1A1A1A;
+}
+
+.NB-dark .NB-add-site-container {
+    background: #1A1A1A;
+}
+
+.NB-dark .NB-add-site-header {
+    background: #1A1A1A;
+    border-bottom-color: #333;
+}
+
+.NB-dark .NB-add-site-search-wrapper {
+    background: #2A2A2A;
+    border-color: #444;
+}
+
+.NB-dark .NB-add-site-search-input {
+    background: transparent;
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-search-input::placeholder {
+    color: #888;
+}
+
+.NB-dark .NB-add-site-search-icon {
+    opacity: 0.7;
+    filter: invert(1);
+}
+
+.NB-dark .NB-add-site-search-clear {
+    color: #888;
+}
+
+.NB-dark .NB-add-site-view-toggle {
+    background: #2A2A2A;
+    border-color: #444;
+}
+
+.NB-dark .NB-add-site-view-toggle img {
+    filter: invert(1);
+    opacity: 0.7;
+}
+
+.NB-dark .NB-add-site-view-toggle.NB-active {
+    background: #3A3A3A;
+    border-color: #5C89C9;
+}
+
+.NB-dark .NB-add-site-tab {
+    background: transparent;
+    border-color: #444;
+    color: #AAA;
+}
+
+.NB-dark .NB-add-site-tab:hover {
+    background: #2A2A2A;
+    border-color: #555;
+    color: #DDD;
+}
+
+.NB-dark .NB-add-site-tab.NB-active {
+    background: linear-gradient(135deg, #4A73B0 0%, #3D619A 100%);
+    border-color: #5C89C9;
+    color: #FFF;
+}
+
+.NB-dark .NB-add-site-tab-content {
+    background: #1A1A1A;
+}
+
+.NB-dark .NB-add-site-empty-state {
+    color: #AAA;
+}
+
+.NB-dark .NB-add-site-empty-title {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-empty-desc {
+    color: #888;
+}
+
+.NB-dark .NB-add-site-tip {
+    color: #AAA;
+}
+
+.NB-dark .NB-add-site-card {
+    background: #2A2A2A;
+    border-color: #444;
+}
+
+.NB-dark .NB-add-site-card:hover {
+    border-color: #5C89C9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-add-site-card-title {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-card-meta {
+    color: #888;
+}
+
+.NB-dark .NB-add-site-card-desc {
+    color: #AAA;
+}
+
+.NB-dark .NB-add-site-card-url {
+    background: #222;
+    color: #888;
+}
+
+.NB-dark .NB-add-site-folder-select {
+    background: #333;
+    border-color: #444;
+    color: #DDD;
+}
+
+.NB-dark .NB-add-site-source-header {
+    border-bottom-color: #333;
+}
+
+.NB-dark .NB-add-site-source-title {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-source-desc {
+    color: #888;
+}
+
+.NB-dark .NB-add-site-tab-search-input {
+    background: #2A2A2A;
+    border-color: #444;
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-no-results {
+    color: #888;
+}
+
+.NB-dark .NB-add-site-error {
+    color: #EF9A9A;
+}
+
+/* Google News Dark Mode */
+.NB-dark .NB-add-site-google-news-section {
+    border-top-color: #333;
+}
+
+.NB-dark .NB-add-site-google-news-title {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-google-news-desc {
+    color: #888;
+}
+
+.NB-dark .NB-add-site-google-news-topic {
+    background: #2A2A2A;
+    border-color: #444;
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-google-news-topic:hover {
+    border-color: #5C89C9;
+    background: #333;
+}
+
+.NB-dark .NB-add-site-google-news-custom {
+    background: #222;
+    border-color: #333;
+}
+
+.NB-dark .NB-add-site-google-news-custom-title {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-google-news-search-input {
+    background: #2A2A2A;
+    border-color: #444;
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-google-news-language {
+    background: #2A2A2A;
+    border-color: #444;
+    color: #E8E8E8;
+}
+
+/* Categories Tab Dark Mode */
+.NB-dark .NB-add-site-categories-title {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-categories-desc {
+    color: #888;
+}
+
+.NB-dark .NB-add-site-category-card {
+    background: #2A2A2A;
+    border-color: #444;
+}
+
+.NB-dark .NB-add-site-category-card:hover {
+    border-color: #5C89C9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-add-site-category-icon {
+    background: #333;
+}
+
+.NB-dark .NB-add-site-category-name {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-category-count {
+    color: #888;
+}
+
+/* Trending Tab Dark Mode */
+.NB-dark .NB-add-site-trending-title {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-trending-days {
+    background: #2A2A2A;
+    border-color: #444;
+    color: #DDD;
+}
+
+/* Platform Hints Dark Mode */
+.NB-dark .NB-add-site-platform-hints {
+    background: #222;
+}
+
+.NB-dark .NB-add-site-platform-label {
+    color: #AAA;
+}
+
+.NB-dark .NB-add-site-platform-example {
+    color: #666;
+}
