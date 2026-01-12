@@ -64,7 +64,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     initialize: function (options) {
         this.options = options || {};
         this.model = NEWSBLUR.assets;
-        this.active_tab = 'search';
+        this.active_tab = this.options.initial_tab || 'search';
         this.view_mode = 'grid';
         this.search_query = '';
         this.search_debounced = _.debounce(_.bind(this.perform_search, this), 300);

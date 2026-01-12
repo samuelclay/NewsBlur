@@ -8233,6 +8233,104 @@ form.opml_import_form input {
     padding: 0 4px 0 0;
 }
 
+/* Discover Section in Add Popover */
+.NB-add-discover-section {
+    margin-top: 12px;
+    padding-top: 0;
+}
+
+.NB-add-discover-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.NB-add-discover-divider::before,
+.NB-add-discover-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.NB-add-discover-divider span {
+    padding: 0 12px;
+    font-size: 11px;
+    color: #808080;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.NB-add-discover-sources {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.NB-add-discover-source {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 6px;
+    background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 100%);
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.NB-add-discover-source:hover {
+    background: linear-gradient(135deg, #FFFFFF 0%, #F5F5F5 100%);
+    border-color: #5C89C9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(92, 137, 201, 0.2);
+}
+
+.NB-add-discover-source img {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 4px;
+}
+
+.NB-add-discover-source span {
+    font-size: 10px;
+    color: #606060;
+    font-weight: 500;
+}
+
+.NB-add-discover-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #5C89C9 0%, #4A73B0 100%);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.NB-add-discover-link:hover {
+    background: linear-gradient(135deg, #6A9AD8 0%, #5580C0 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(92, 137, 201, 0.3);
+}
+
+.NB-add-discover-link span {
+    color: #FFF;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.NB-add-discover-link img {
+    width: 12px;
+    height: 12px;
+    margin-left: 6px;
+    filter: brightness(10);
+}
+
 .NB-add input[type=text].ui-autocomplete-loading {
     background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat right 3px top 3px;
     background-size: 16px;
