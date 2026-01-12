@@ -14,7 +14,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 
 from apps.archive_assistant.models import MArchiveConversation, MArchiveQuery, MArchiveAssistantUsage
-from apps.archive_assistant.prompts import ARCHIVE_ASSISTANT_SYSTEM_PROMPT
+from apps.archive_assistant.prompts import get_system_prompt
 from apps.archive_assistant.tools import ARCHIVE_TOOLS, execute_tool
 from utils import log as logging
 
@@ -173,11 +173,14 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
     full_response = ""
     was_truncated = False
 
+    # Get system prompt with current date context
+    system_prompt = get_system_prompt()
+
     # Initial request with tools
     response = client.messages.create(
         model=model,
         max_tokens=4096,
-        system=ARCHIVE_ASSISTANT_SYSTEM_PROMPT,
+        system=system_prompt,
         tools=ARCHIVE_TOOLS,
         messages=messages,
     )
@@ -228,7 +231,7 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
             # RSS feed story tools
             elif tool_name == "search_starred_stories":
                 count = result.get("count", 0)
-                result_summary = f"Found {count} starred {'story' if count == 1 else 'stories'}"
+                result_summary = f"Found {count} saved {'story' if count == 1 else 'stories'}"
                 # Preview: first 3 story titles
                 stories = result.get("stories", [])[:3]
                 if stories:
@@ -237,8 +240,8 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
                 title = result.get("title", "story")
                 result_summary = f"Reading: {title[:50]}"
             elif tool_name == "get_starred_summary":
-                starred_count = result.get('total_starred', 0)
-                result_summary = f"Starred: {starred_count} {'story' if starred_count == 1 else 'stories'}"
+                saved_count = result.get('total_starred', 0)
+                result_summary = f"Saved: {saved_count} {'story' if saved_count == 1 else 'stories'}"
             elif tool_name == "search_feed_stories":
                 count = result.get("count", 0)
                 result_summary = f"Found {count} feed {'story' if count == 1 else 'stories'}"
@@ -246,6 +249,23 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
                 stories = result.get("stories", [])[:3]
                 if stories:
                     preview = [s.get("title", "Untitled")[:60] for s in stories]
+            elif tool_name == "get_feed_story_content":
+                title = result.get("title", "story")
+                result_summary = f"Reading: {title[:50]}"
+            elif tool_name == "search_shared_stories":
+                count = result.get("count", 0)
+                result_summary = f"Found {count} shared {'story' if count == 1 else 'stories'}"
+                # Preview: first 3 shared story titles with sharer
+                stories = result.get("stories", [])[:3]
+                if stories:
+                    preview = []
+                    for s in stories:
+                        title = s.get("title", "Untitled")[:50]
+                        sharer = s.get("sharer", "")
+                        if sharer:
+                            preview.append(f"{title} (via {sharer})")
+                        else:
+                            preview.append(title)
             else:
                 result_summary = "Retrieved content"
 
@@ -280,7 +300,7 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
         response = client.messages.create(
             model=model,
             max_tokens=4096,
-            system=ARCHIVE_ASSISTANT_SYSTEM_PROMPT,
+            system=system_prompt,
             tools=ARCHIVE_TOOLS,
             messages=messages,
         )
