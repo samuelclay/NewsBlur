@@ -650,15 +650,18 @@ class Profile(models.Model):
                         refunded = None
                         if transaction["status"] in ["PARTIALLY_REFUNDED", "REFUNDED"]:
                             refunded = True
-                        PaymentHistory.objects.get_or_create(
-                            user=self.user,
-                            payment_date=created,
-                            payment_amount=int(
-                                float(transaction["amount_with_breakdown"]["gross_amount"]["value"])
-                            ),
-                            payment_provider="paypal",
-                            refunded=refunded,
-                        )
+                        try:
+                            PaymentHistory.objects.get_or_create(
+                                user=self.user,
+                                payment_date=created,
+                                payment_amount=int(
+                                    float(transaction["amount_with_breakdown"]["gross_amount"]["value"])
+                                ),
+                                payment_provider="paypal",
+                                refunded=refunded,
+                            )
+                        except PaymentHistory.MultipleObjectsReturned:
+                            pass  # Duplicate records exist, skip
 
                     ipns = PayPalIPN.objects.filter(
                         Q(custom=self.user.username) | Q(payer_email=self.user.email) | Q(custom=self.user.pk)
@@ -671,12 +674,15 @@ class Profile(models.Model):
                             continue
                         seen_payments.add(created)
                         total_paypal_payments += 1
-                        PaymentHistory.objects.get_or_create(
-                            user=self.user,
-                            payment_date=created,
-                            payment_amount=int(transaction.payment_gross),
-                            payment_provider="paypal",
-                        )
+                        try:
+                            PaymentHistory.objects.get_or_create(
+                                user=self.user,
+                                payment_date=created,
+                                payment_amount=int(transaction.payment_gross),
+                                payment_provider="paypal",
+                            )
+                        except PaymentHistory.MultipleObjectsReturned:
+                            pass  # Duplicate records exist, skip
         else:
             logging.user(self.user, "~FBNo Paypal payments")
 
@@ -720,13 +726,16 @@ class Profile(models.Model):
                     refunded = None
                     if payment.refunded:
                         refunded = True
-                    PaymentHistory.objects.get_or_create(
-                        user=self.user,
-                        payment_date=created,
-                        payment_amount=payment.amount / 100.0,
-                        payment_provider="stripe",
-                        refunded=refunded,
-                    )
+                    try:
+                        PaymentHistory.objects.get_or_create(
+                            user=self.user,
+                            payment_date=created,
+                            payment_amount=payment.amount / 100.0,
+                            payment_provider="stripe",
+                            refunded=refunded,
+                        )
+                    except PaymentHistory.MultipleObjectsReturned:
+                        pass  # Duplicate records exist, skip
         else:
             logging.user(self.user, "~FBNo Stripe payments")
 

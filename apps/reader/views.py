@@ -3376,7 +3376,9 @@ def save_feed_chooser(request):
     # Safety check: warn if this would mute many feeds unexpectedly
     approved_set = set(approved_feeds)
     if not approve_all and is_premium and total_subs > 10:
-        would_mute = currently_active - len(approved_set & set(usersubs.filter(active=True).values_list("feed_id", flat=True)))
+        would_mute = currently_active - len(
+            approved_set & set(usersubs.filter(active=True).values_list("feed_id", flat=True))
+        )
         if would_mute > 10 and len(approved_feeds) < total_subs * 0.5:
             logging.user(
                 request,
