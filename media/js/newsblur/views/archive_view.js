@@ -61,7 +61,10 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         "click .NB-archive-search-clear": "clear_search",
         "keydown .NB-archive-search-input": "handle_search_keydown",
         // Re-categorize event
-        "click .NB-archive-item-recategorize": "recategorize_item"
+        "click .NB-archive-item-recategorize": "recategorize_item",
+        // Browser extension events
+        "click .NB-archive-extensions-button": "toggle_extensions_popover",
+        "click .NB-archive-extension-link": "track_extension_click"
     },
 
     initialize: function (options) {
@@ -293,6 +296,13 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                         $.make('img', { src: '/media/img/icons/nouns/archive.svg', className: 'NB-archive-tab-icon' }),
                         'Browse Archives'
                     ])
+                ]),
+                $.make('div', { className: 'NB-archive-extensions-container' }, [
+                    $.make('div', { className: 'NB-archive-extensions-button' }, [
+                        $.make('img', { src: '/media/img/icons/lucide/puzzle.svg', className: 'NB-archive-extensions-icon' }),
+                        'Browser Extensions'
+                    ]),
+                    $.make('div', { className: 'NB-archive-extensions-popover' }, this.render_extensions_popover())
                 ])
             ]),
 
@@ -362,6 +372,44 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             }),
             $.make('div', { className: 'NB-archive-assistant-send' })
         ]));
+
+        // Browser extensions section (only show if no conversation yet)
+        if (this.conversation_history.length === 0) {
+            main_elements.push($.make('div', { className: 'NB-archive-assistant-extensions' }, [
+                $.make('div', { className: 'NB-archive-assistant-extensions-header' }, [
+                    $.make('img', { src: '/media/img/icons/lucide/puzzle.svg', className: 'NB-assistant-ext-header-icon' }),
+                    $.make('span', 'Get the Browser Extension')
+                ]),
+                $.make('div', { className: 'NB-archive-assistant-extensions-desc' },
+                    'Automatically archive every page you visit to search with AI later.'),
+                $.make('div', { className: 'NB-archive-assistant-extension-links' }, [
+                    $.make('a', {
+                        className: 'NB-archive-assistant-ext-link',
+                        href: 'https://chrome.google.com/webstore/detail/newsblur-archive/PLACEHOLDER',
+                        target: '_blank'
+                    }, [
+                        $.make('img', { src: '/media/img/reader/chrome.png', className: 'NB-assistant-ext-icon' }),
+                        $.make('span', 'Chrome')
+                    ]),
+                    $.make('a', {
+                        className: 'NB-archive-assistant-ext-link',
+                        href: 'https://addons.mozilla.org/firefox/addon/newsblur-archive/',
+                        target: '_blank'
+                    }, [
+                        $.make('img', { src: '/media/img/reader/firefox.png', className: 'NB-assistant-ext-icon' }),
+                        $.make('span', 'Firefox')
+                    ]),
+                    $.make('a', {
+                        className: 'NB-archive-assistant-ext-link',
+                        href: 'https://apps.apple.com/app/newsblur-archive/PLACEHOLDER',
+                        target: '_blank'
+                    }, [
+                        $.make('img', { src: '/media/img/reader/safari.png', className: 'NB-assistant-ext-icon' }),
+                        $.make('span', 'Safari')
+                    ])
+                ])
+            ]));
+        }
 
         // Return main area + sidebar (sidebar on right)
         var sidebar_elements = [];
@@ -666,10 +714,67 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         if (this.archives.length === 0 && !this.is_loading) {
             $list.html($.make('div', { className: 'NB-archive-empty' }, [
-                $.make('img', { src: '/media/img/icons/nouns/archive.svg', className: 'NB-archive-empty-icon' }),
-                $.make('div', { className: 'NB-archive-empty-title' }, 'No archived pages yet'),
-                $.make('div', { className: 'NB-archive-empty-subtitle' },
-                    'Install the NewsBlur Archive browser extension to start building your browsing history.')
+                $.make('div', { className: 'NB-archive-empty-hero' }, [
+                    $.make('img', { src: '/media/img/icons/lucide/puzzle.svg', className: 'NB-archive-empty-icon' }),
+                    $.make('div', { className: 'NB-archive-empty-title' }, 'Get Started with Archive'),
+                    $.make('div', { className: 'NB-archive-empty-subtitle' },
+                        'Install the browser extension to automatically save every page you visit. Ask AI questions about anything you\'ve read.')
+                ]),
+                $.make('div', { className: 'NB-archive-empty-extensions' }, [
+                    $.make('div', { className: 'NB-archive-empty-extensions-title' }, 'Choose your browser'),
+                    $.make('div', { className: 'NB-archive-empty-extension-buttons' }, [
+                        $.make('a', {
+                            className: 'NB-archive-empty-extension-btn',
+                            href: 'https://chrome.google.com/webstore/detail/newsblur-archive/PLACEHOLDER',
+                            target: '_blank',
+                            'data-browser': 'chrome'
+                        }, [
+                            $.make('img', { src: '/media/img/reader/chrome.png', className: 'NB-empty-ext-icon' }),
+                            $.make('div', { className: 'NB-empty-ext-info' }, [
+                                $.make('div', { className: 'NB-empty-ext-name' }, 'Chrome'),
+                                $.make('div', { className: 'NB-empty-ext-desc' }, 'Also works with Edge')
+                            ])
+                        ]),
+                        $.make('a', {
+                            className: 'NB-archive-empty-extension-btn',
+                            href: 'https://addons.mozilla.org/firefox/addon/newsblur-archive/',
+                            target: '_blank',
+                            'data-browser': 'firefox'
+                        }, [
+                            $.make('img', { src: '/media/img/reader/firefox.png', className: 'NB-empty-ext-icon' }),
+                            $.make('div', { className: 'NB-empty-ext-info' }, [
+                                $.make('div', { className: 'NB-empty-ext-name' }, 'Firefox'),
+                                $.make('div', { className: 'NB-empty-ext-desc' }, 'Get the add-on')
+                            ])
+                        ]),
+                        $.make('a', {
+                            className: 'NB-archive-empty-extension-btn',
+                            href: 'https://apps.apple.com/app/newsblur-archive/PLACEHOLDER',
+                            target: '_blank',
+                            'data-browser': 'safari'
+                        }, [
+                            $.make('img', { src: '/media/img/reader/safari.png', className: 'NB-empty-ext-icon' }),
+                            $.make('div', { className: 'NB-empty-ext-info' }, [
+                                $.make('div', { className: 'NB-empty-ext-name' }, 'Safari'),
+                                $.make('div', { className: 'NB-empty-ext-desc' }, 'For Mac')
+                            ])
+                        ])
+                    ])
+                ]),
+                $.make('div', { className: 'NB-archive-empty-features' }, [
+                    $.make('div', { className: 'NB-archive-empty-feature' }, [
+                        $.make('div', { className: 'NB-archive-feature-icon' }, '🔒'),
+                        $.make('div', { className: 'NB-archive-feature-text' }, 'Private by default — banking, medical, and email sites are never archived')
+                    ]),
+                    $.make('div', { className: 'NB-archive-empty-feature' }, [
+                        $.make('div', { className: 'NB-archive-feature-icon' }, '⚡'),
+                        $.make('div', { className: 'NB-archive-feature-text' }, 'Runs silently — pages are captured after 5 seconds of reading')
+                    ]),
+                    $.make('div', { className: 'NB-archive-empty-feature' }, [
+                        $.make('div', { className: 'NB-archive-feature-icon' }, '🤖'),
+                        $.make('div', { className: 'NB-archive-feature-text' }, 'Ask AI anything about your browsing history')
+                    ])
+                ])
             ]));
             return;
         }
@@ -846,6 +951,75 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         if (tab === 'browser' && this.archives.length === 0) {
             this.fetch_archives(true);
         }
+    },
+
+    render_extensions_popover: function () {
+        var extensions = [
+            {
+                name: 'Chrome',
+                icon: '/media/img/reader/chrome.png',
+                url: 'https://chrome.google.com/webstore/detail/newsblur-archive/PLACEHOLDER',
+                description: 'For Chrome & Edge'
+            },
+            {
+                name: 'Firefox',
+                icon: '/media/img/reader/firefox.png',
+                url: 'https://addons.mozilla.org/firefox/addon/newsblur-archive/',
+                description: 'For Firefox'
+            },
+            {
+                name: 'Safari',
+                icon: '/media/img/reader/safari.png',
+                url: 'https://apps.apple.com/app/newsblur-archive/PLACEHOLDER',
+                description: 'For Safari on Mac'
+            }
+        ];
+
+        return _.map(extensions, function (ext) {
+            return $.make('a', {
+                className: 'NB-archive-extension-link',
+                href: ext.url,
+                target: '_blank',
+                'data-browser': ext.name.toLowerCase()
+            }, [
+                $.make('img', {
+                    src: ext.icon,
+                    className: 'NB-archive-extension-browser-icon'
+                }),
+                $.make('div', { className: 'NB-archive-extension-info' }, [
+                    $.make('div', { className: 'NB-archive-extension-name' }, ext.name),
+                    $.make('div', { className: 'NB-archive-extension-desc' }, ext.description)
+                ])
+            ]);
+        });
+    },
+
+    toggle_extensions_popover: function (e) {
+        e.stopPropagation();
+        var $container = this.$('.NB-archive-extensions-container');
+        var is_open = $container.hasClass('NB-popover-open');
+
+        if (is_open) {
+            $container.removeClass('NB-popover-open');
+            $(document).off('click.extensions-popover');
+        } else {
+            $container.addClass('NB-popover-open');
+            // Close when clicking outside
+            _.delay(function () {
+                $(document).on('click.extensions-popover', function (e) {
+                    if (!$(e.target).closest('.NB-archive-extensions-container').length) {
+                        $container.removeClass('NB-popover-open');
+                        $(document).off('click.extensions-popover');
+                    }
+                });
+            }, 10);
+        }
+    },
+
+    track_extension_click: function (e) {
+        var browser = $(e.currentTarget).data('browser');
+        console.log('Extension download clicked:', browser);
+        // Could add analytics tracking here
     },
 
     toggle_category_filter: function (e) {
