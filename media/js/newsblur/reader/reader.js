@@ -565,8 +565,8 @@
                 .toggleClass('NB-dashboard-columns-' + columns);
             this.$s.$body.toggleClass('NB-disable-social', this.model.preference('disable_social') === true || this.model.preference('disable_social') === 'true');
 
-            // Show Archive folder for users with archive access
-            if (NEWSBLUR.Globals.is_archive) {
+            // Show Archive folder for staff users only
+            if (NEWSBLUR.Globals.is_staff) {
                 $('.NB-feeds-header-archive-container').removeClass('NB-hidden');
             }
         },

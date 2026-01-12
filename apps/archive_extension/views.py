@@ -20,7 +20,6 @@ from apps.archive_extension.matching import match_and_process
 from apps.archive_extension.models import MArchivedStory, MArchiveUserSettings
 from apps.archive_extension.tasks import categorize_archives, index_archive_for_search
 from apps.archive_extension.utils import format_datetime_utc
-from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import ajax_login_required, get_user
@@ -47,13 +46,12 @@ def _check_archive_access(user):
     """
     Check if user has access to the Archive Extension feature.
     Returns (has_access, error_message).
+
+    All authenticated users can ingest content. Premium Archive is only
+    required for querying via Archive Assistant (checked separately).
     """
     if not user.is_authenticated:
         return False, "Authentication required"
-
-    profile = Profile.objects.get(user=user)
-    if not profile.is_archive:
-        return False, "Archive Extension requires a Premium Archive subscription"
 
     return True, None
 

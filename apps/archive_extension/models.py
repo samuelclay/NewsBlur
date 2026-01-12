@@ -65,7 +65,6 @@ class MArchivedStory(mongo.Document):
             {"fields": ["user_id", "matched_feed_id"]},
             {"fields": ["user_id", "deleted", "-archived_date"]},
         ],
-        "db_alias": "nbanalytics",
         "allow_inheritance": False,
         "ordering": ["-archived_date"],
     }
@@ -335,7 +334,6 @@ class MArchiveUserSettings(mongo.Document):
         "indexes": [
             {"fields": ["user_id"], "unique": True},
         ],
-        "db_alias": "nbanalytics",
     }
 
     @classmethod

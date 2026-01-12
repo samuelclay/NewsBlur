@@ -204,8 +204,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             });
         }
 
-        // Show Archive folder for premium archive users
-        if (NEWSBLUR.Globals.is_archive) {
+        // Show Archive folder for staff users only
+        if (NEWSBLUR.Globals.is_staff) {
             $('.NB-feeds-header-archive-container').css({
                 'display': 'block',
                 'opacity': 0
