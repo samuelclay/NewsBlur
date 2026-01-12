@@ -64,7 +64,8 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         "click .NB-archive-item-recategorize": "recategorize_item",
         // Browser extension events
         "click .NB-archive-extensions-button": "toggle_extensions_popover",
-        "click .NB-archive-extension-link": "track_extension_click"
+        "click .NB-archive-extension-link": "track_extension_click",
+        "click .NB-archive-assistant-extensions-close": "dismiss_extension_promo"
     },
 
     initialize: function (options) {
@@ -110,6 +111,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.conversations_loaded = false;
         this.conversations_loading = false;
         this.sidebar_collapsed = false;
+        this.extension_promo_dismissed = false;
         // Search state
         this.search_query = '';
         this.search_debounced = _.debounce(_.bind(this.perform_search, this), 300);
@@ -333,9 +335,10 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     render_assistant_tab: function () {
         var self = this;
 
-        // Check localStorage for sidebar state
+        // Check localStorage for sidebar state and extension promo dismissal
         try {
             this.sidebar_collapsed = localStorage.getItem('NB:archive_sidebar_collapsed') === 'true';
+            this.extension_promo_dismissed = localStorage.getItem('NB:archive_extension_promo_dismissed') === 'true';
         } catch (e) {}
 
         // Build main chat area elements
@@ -373,12 +376,16 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             $.make('div', { className: 'NB-archive-assistant-send' })
         ]));
 
-        // Browser extensions section (only show if no conversation yet)
-        if (this.conversation_history.length === 0) {
+        // Browser extensions section (only show if no conversation yet, not dismissed, and no past conversations)
+        var show_extension_promo = this.conversation_history.length === 0 &&
+                                   !this.extension_promo_dismissed &&
+                                   this.past_conversations.length === 0;
+        if (show_extension_promo) {
             main_elements.push($.make('div', { className: 'NB-archive-assistant-extensions' }, [
                 $.make('div', { className: 'NB-archive-assistant-extensions-header' }, [
                     $.make('img', { src: '/media/img/icons/lucide/puzzle.svg', className: 'NB-assistant-ext-header-icon' }),
-                    $.make('span', 'Get the Browser Extension')
+                    $.make('span', 'Get the Browser Extension'),
+                    $.make('div', { className: 'NB-archive-assistant-extensions-close', title: 'Dismiss' })
                 ]),
                 $.make('div', { className: 'NB-archive-assistant-extensions-desc' },
                     'Automatically archive every page you visit to search with AI later.'),
@@ -1361,6 +1368,18 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         if (this.conversation_history.length > 0) {
             this.render_assistant_messages();
         }
+    },
+
+    dismiss_extension_promo: function () {
+        this.extension_promo_dismissed = true;
+
+        // Persist preference
+        try {
+            localStorage.setItem('NB:archive_extension_promo_dismissed', 'true');
+        } catch (e) {}
+
+        // Remove the extensions section from the DOM
+        this.$('.NB-archive-assistant-extensions').remove();
     },
 
     render_conversation_sidebar: function () {
