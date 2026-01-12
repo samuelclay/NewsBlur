@@ -2627,6 +2627,27 @@ a.mention, a.mention-group {
     border-color: #666;
 }
 
+/* Add + Discover Sidebar Header - Dark Mode */
+.NB-dark .NB-feeds-header-add-site .NB-feeds-header-title {
+    color: #7AA8E0;
+}
+
+.NB-dark .NB-feeds-header-add-site .NB-feeds-header-icon {
+    filter: brightness(0) saturate(100%) invert(65%) sepia(30%) saturate(600%) hue-rotate(179deg) brightness(95%) contrast(90%);
+}
+
+.NB-dark .NB-feeds-header-add-site:hover .NB-feeds-header-title {
+    color: #8BB8F0;
+}
+
+.NB-dark .NB-feeds-header-add-site.NB-selected {
+    background-color: #2A3A4A;
+}
+
+.NB-dark .NB-feeds-header-add-site.NB-selected .NB-feeds-header-title {
+    color: #9CC8FF;
+}
+
 /* ==================
    Add Site View Dark Mode
    ================== */

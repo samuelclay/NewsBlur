@@ -20075,6 +20075,7 @@ form.opml_import_form input {
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 100;
     background: #F6F6F6;
     overflow: hidden;
     display: flex;
@@ -20799,35 +20800,30 @@ form.opml_import_form input {
     font-size: 14px;
 }
 
-/* Sidebar Header Styling */
+/* Sidebar Header Styling - Add + Discover */
 .NB-feeds-header-add-site-container {
     display: block;
-    margin-bottom: 4px;
-}
-
-.NB-feeds-header-add-site {
-    background: linear-gradient(135deg, #5C89C9 0%, #4A73B0 100%);
-    border-radius: 8px;
-    margin: 4px 8px;
-    padding: 10px 12px;
 }
 
 .NB-feeds-header-add-site .NB-feeds-header-title {
-    color: #FFF;
+    color: #5C89C9;
     font-weight: 600;
 }
 
 .NB-feeds-header-add-site .NB-feeds-header-icon {
-    filter: brightness(0) invert(1);
-    opacity: 0.9;
+    filter: brightness(0) saturate(100%) invert(52%) sepia(53%) saturate(454%) hue-rotate(179deg) brightness(91%) contrast(85%);
 }
 
-.NB-feeds-header-add-site:hover {
-    background: linear-gradient(135deg, #4A73B0 0%, #3D619A 100%);
+.NB-feeds-header-add-site:hover .NB-feeds-header-title {
+    color: #4A73B0;
 }
 
 .NB-feeds-header-add-site.NB-selected {
-    background: linear-gradient(135deg, #3D619A 0%, #2F4F80 100%);
+    background-color: #D5E3F7;
+}
+
+.NB-feeds-header-add-site.NB-selected .NB-feeds-header-title {
+    color: #3D619A;
 }
 
 /* Google News Section */

@@ -2511,7 +2511,7 @@
             this.$s.$content_pane.append(this.add_site_view.$el);
 
             // Update URL
-            NEWSBLUR.router.navigate('/add-site');
+            NEWSBLUR.router.navigate('/add');
 
             this.make_feed_title_in_stories();
 
