@@ -30,4 +30,10 @@ urlpatterns = [
     url(r"^discover/feeds/?$", views.discover_feeds, name="discover-feeds"),
     url(r"^discover/stories/(?P<story_hash>\w+:\w+)/?$", views.discover_stories, name="discover-stories"),
     url(r"^trending_sites/?$", views.trending_sites, name="trending-sites"),
+    url(r"^youtube/search/?$", views.youtube_search, name="youtube-search"),
+    url(r"^reddit/search/?$", views.reddit_search, name="reddit-search"),
+    url(r"^reddit/popular/?$", views.reddit_popular, name="reddit-popular"),
+    url(r"^newsletter/convert/?$", views.newsletter_convert, name="newsletter-convert"),
+    url(r"^podcast/search/?$", views.podcast_search, name="podcast-search"),
+    url(r"^google-news/feed/?$", views.google_news_feed, name="google-news-feed"),
 ]
