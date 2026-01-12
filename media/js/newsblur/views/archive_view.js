@@ -12,6 +12,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         "click .NB-archive-assistant-send": "submit_assistant_query",
         "click .NB-archive-suggestion": "use_suggestion",
         "click .NB-archive-assistant-voice-button": "start_voice_recording",
+        "click .NB-assistant-story-link": "open_assistant_story_link",
         "click .NB-archive-assistant-premium-only .NB-premium-link": "open_premium_modal",
         // Category management events
         "click .NB-archive-manage-categories": "open_category_manager",
@@ -989,6 +990,28 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.submit_assistant_query();
     },
 
+    open_assistant_story_link: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $link = $(e.currentTarget);
+        var feed_id = $link.data('feed-id');
+        var story_hash = $link.data('story-hash');
+
+        if (feed_id && story_hash && NEWSBLUR.reader) {
+            var options = { router: true, story_id: story_hash };
+
+            var feed = NEWSBLUR.assets.get_feed(feed_id);
+            if (feed && !feed.get('temp')) {
+                // User is subscribed - open directly
+                NEWSBLUR.reader.open_feed(feed_id, options);
+            } else {
+                // Not subscribed - use tryfeed view
+                NEWSBLUR.reader.load_feed_in_tryfeed_view(feed_id, options);
+            }
+        }
+    },
+
     start_voice_recording: function (e) {
         if (e) {
             e.preventDefault();
@@ -1565,7 +1588,11 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         text = text.replace(/\*([^\n*]+?)\*/g, '<em>$1</em>');
         text = text.replace(/_([^\n_]+?)_/g, '<em>$1</em>');
 
-        // Links - convert [text](url) to clickable links
+        // Special NewsBlur story links - convert [text](nb://story/feed_id/story_hash)
+        text = text.replace(/\[([^\]]+)\]\(nb:\/\/story\/(\d+)\/([^)]+)\)/g,
+            '<a href="#" class="NB-assistant-story-link" data-feed-id="$2" data-story-hash="$3">$1</a>');
+
+        // Regular links - convert [text](url) to clickable links
         text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
 
         return text;

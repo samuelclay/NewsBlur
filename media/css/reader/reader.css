@@ -20426,6 +20426,18 @@ form.opml_import_form input {
     color: #B8D1F0;
 }
 
+.NB-archive-message-content .NB-assistant-story-link {
+    color: #5C89C9;
+    text-decoration: none;
+    border-bottom: 1px dashed #5C89C9;
+    cursor: pointer;
+}
+
+.NB-archive-message-content .NB-assistant-story-link:hover {
+    color: #3D6CAD;
+    border-bottom-style: solid;
+}
+
 .NB-archive-message-thinking {
     display: flex;
     gap: 4px;
@@ -22624,6 +22636,16 @@ button.NB-merge-group-apply.NB-button:hover {
     color: #DDD;
 }
 
+.NB-dark .NB-archive-message-content .NB-assistant-story-link {
+    color: #7AA3D5;
+    border-bottom-color: #7AA3D5;
+}
+
+.NB-dark .NB-archive-message-content .NB-assistant-story-link:hover {
+    color: #9BC1EB;
+    border-bottom-color: #9BC1EB;
+}
+
 .NB-dark .NB-archive-assistant-welcome {
     color: #999;
 }
@@ -23194,95 +23216,11 @@ button.NB-merge-group-apply.NB-button:hover {
     max-width: 800px;
 }
 
-/* Title and header */
-.NB-modal-category-manager .NB-modal-title {
-    padding: 20px 24px 16px;
-    background: #FAFAFA;
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-    margin: 0;
-    display: flex;
-    align-items: center;
-}
-
-.NB-modal-category-manager .NB-modal-title .NB-icon {
-    display: none;
-}
-
-.NB-modal-category-manager .NB-modal-title .NB-icon-dropdown {
-    display: none;
-}
-
-/* Tabs - cleaner style without heavy borders */
-.NB-modal-category-manager .NB-modal-tabs {
-    float: none;
-    display: flex;
-    background: #FAFAFA;
-    padding: 0 24px;
-    gap: 4px;
-    margin: 0;
-    position: static;
-}
-
-.NB-modal-category-manager .NB-modal-tabs .NB-modal-loading {
-    position: absolute;
-    right: 24px;
-    top: 24px;
-}
-
-.NB-modal-category-manager .NB-modal-tab {
-    float: none;
-    padding: 10px 20px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #666;
-    background: transparent;
-    border: none;
-    border-radius: 6px 6px 0 0;
-    cursor: pointer;
-    margin: 0;
-    box-shadow: none;
-    transition: all 0.15s ease;
-}
-
-.NB-modal-category-manager .NB-modal-tab:hover {
-    color: #333;
-    background: rgba(0, 0, 0, 0.04);
-}
-
-.NB-modal-category-manager .NB-modal-tab.NB-active {
-    color: #333;
-    background: #FFF;
-    font-weight: 600;
-    border: none;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
-}
-
-.NB-modal-category-manager .NB-modal-tab:first-child,
-.NB-modal-category-manager .NB-modal-tab:last-child {
-    border: none;
-    border-radius: 6px 6px 0 0;
-}
-
-/* Modal content area */
-.NB-modal-category-manager .NB-modal-content {
-    background: #FFF;
-}
-
-/* Tab content panels */
+/* Tab content panels - only override height/padding */
 .NB-modal-category-manager .NB-tab {
-    display: none;
     padding: 24px;
     height: auto;
     max-height: 500px;
-    overflow-y: auto;
-    border: none;
-    background: #FFF;
-}
-
-.NB-modal-category-manager .NB-tab.NB-active {
-    display: block;
 }
 
 /* Empty state message */
@@ -23644,39 +23582,6 @@ button.NB-merge-group-apply.NB-button:hover {
 /* ===================================== */
 /* = Category Manager Modal Dark Mode = */
 /* ===================================== */
-
-.NB-dark #simplemodal-container:has(.NB-modal-category-manager) {
-    background-color: #1E1E1E;
-}
-
-.NB-dark .NB-modal-category-manager .NB-modal-title {
-    background: #252525;
-    color: #E0E0E0;
-}
-
-.NB-dark .NB-modal-category-manager .NB-modal-tabs {
-    background: #252525;
-}
-
-.NB-dark .NB-modal-category-manager .NB-modal-tab {
-    color: #888;
-}
-
-.NB-dark .NB-modal-category-manager .NB-modal-tab:hover {
-    color: #CCC;
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.NB-dark .NB-modal-category-manager .NB-modal-tab.NB-active {
-    color: #E0E0E0;
-    background: #1E1E1E;
-    box-shadow: none;
-}
-
-.NB-dark .NB-modal-category-manager .NB-modal-content,
-.NB-dark .NB-modal-category-manager .NB-tab {
-    background: #1E1E1E;
-}
 
 .NB-dark .NB-modal-category-manager .NB-category-empty {
     color: #666;

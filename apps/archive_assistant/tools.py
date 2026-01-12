@@ -178,6 +178,38 @@ ARCHIVE_TOOLS = [
             "required": ["query"],
         },
     },
+    {
+        "name": "get_feed_story_content",
+        "description": "Get the full content of a specific feed story by its hash. Use this to read the complete article text when you need more detail than the search excerpt provides.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "story_hash": {
+                    "type": "string",
+                    "description": "The story hash ID (from search results)",
+                }
+            },
+            "required": ["story_hash"],
+        },
+    },
+    {
+        "name": "search_shared_stories",
+        "description": "Search stories shared by people the user follows (their social feed/blurblogs). These are stories that friends and followed users have shared with comments. Use this to find what people in the user's network are talking about or recommending.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Search query to match against titles, content, and comments.",
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum results (default: 10, max: 30)",
+                },
+            },
+            "required": [],
+        },
+    },
 ]
 
 
@@ -211,6 +243,10 @@ def execute_tool(tool_name, tool_input, user_id):
         return _get_starred_summary(user_id)
     elif tool_name == "search_feed_stories":
         return _search_feed_stories(user_id, **tool_input)
+    elif tool_name == "get_feed_story_content":
+        return _get_feed_story_content(user_id, tool_input.get("story_hash"))
+    elif tool_name == "search_shared_stories":
+        return _search_shared_stories(user_id, **tool_input)
     else:
         return {"error": f"Unknown tool: {tool_name}"}
 
@@ -479,6 +515,7 @@ def _search_starred_stories(user_id, query=None, tags=None, feed_title=None, dat
 
         results.append({
             "story_hash": story.story_hash,
+            "feed_id": story.story_feed_id,
             "title": story.story_title,
             "url": story.story_permalink,
             "feed": feed_title_str,
@@ -544,6 +581,7 @@ def _get_starred_story_content(user_id, story_hash):
 
     return {
         "story_hash": story.story_hash,
+        "feed_id": story.story_feed_id,
         "title": story.story_title,
         "url": story.story_permalink,
         "feed": feed_title,
@@ -687,6 +725,7 @@ def _search_feed_stories(user_id, query, feed_ids=None, limit=10):
 
             results.append({
                 "story_hash": story.story_hash,
+                "feed_id": story.story_feed_id,
                 "title": story.story_title,
                 "url": story.story_permalink,
                 "feed": feed_title,
@@ -702,4 +741,163 @@ def _search_feed_stories(user_id, query, feed_ids=None, limit=10):
         "count": len(results),
         "stories": results,
         "query": query,
+    }
+
+
+def _get_feed_story_content(user_id, story_hash):
+    """Get full content of a specific feed story."""
+    from apps.rss_feeds.models import MStory
+
+    if not story_hash:
+        return {"error": "story_hash is required"}
+
+    try:
+        story = MStory.objects.get(story_hash=story_hash)
+    except MStory.DoesNotExist:
+        return {"error": f"Story not found: {story_hash}"}
+
+    # Get content from compressed field if available
+    content = ""
+    if story.story_content:
+        content = story.story_content
+    elif story.story_content_z:
+        import zlib
+        try:
+            content = zlib.decompress(story.story_content_z).decode("utf-8")
+        except Exception:
+            content = ""
+
+    # Get feed title
+    feed_title = ""
+    try:
+        feed = Feed.objects.get(pk=story.story_feed_id)
+        feed_title = feed.feed_title
+    except Feed.DoesNotExist:
+        pass
+
+    return {
+        "story_hash": story.story_hash,
+        "feed_id": story.story_feed_id,
+        "title": story.story_title,
+        "url": story.story_permalink,
+        "feed": feed_title,
+        "author": story.story_author_name,
+        "content": content,
+        "content_length": len(content),
+        "story_date": format_datetime_utc(story.story_date),
+        "tags": story.story_tags or [],
+    }
+
+
+def _search_shared_stories(user_id, query=None, limit=10):
+    """Search stories shared by people the user follows."""
+    from apps.social.models import MSocialProfile, MSharedStory
+
+    limit = min(limit or 10, 30)
+
+    # Get the user's social profile to find who they follow
+    try:
+        social_profile = MSocialProfile.get_user(user_id)
+        following_ids = social_profile.following_user_ids or []
+    except Exception as e:
+        logging.error(f"Error getting social profile: {e}")
+        return {
+            "count": 0,
+            "stories": [],
+            "message": "Could not access social profile.",
+        }
+
+    if not following_ids:
+        return {
+            "count": 0,
+            "stories": [],
+            "message": "Not following anyone yet.",
+        }
+
+    # Query shared stories from followed users
+    try:
+        shared_stories = MSharedStory.objects.filter(
+            user_id__in=following_ids
+        ).order_by("-shared_date")
+
+        # If query provided, filter by title/content/comments
+        if query:
+            query_lower = query.lower()
+            filtered_stories = []
+            for story in shared_stories:
+                title_match = query_lower in (story.story_title or "").lower()
+                content = ""
+                if story.story_content:
+                    content = story.story_content
+                elif story.story_content_z:
+                    import zlib
+                    try:
+                        content = zlib.decompress(story.story_content_z).decode("utf-8")
+                    except Exception:
+                        content = ""
+                content_match = query_lower in content.lower()
+                comments_match = query_lower in (story.comments or "").lower()
+
+                if title_match or content_match or comments_match:
+                    filtered_stories.append(story)
+                    if len(filtered_stories) >= limit:
+                        break
+            shared_stories = filtered_stories
+        else:
+            shared_stories = list(shared_stories[:limit])
+
+    except Exception as e:
+        logging.error(f"Error searching shared stories: {e}")
+        return {"error": f"Search failed: {str(e)}", "count": 0, "stories": []}
+
+    if not shared_stories:
+        return {
+            "count": 0,
+            "stories": [],
+            "query": query,
+            "message": "No shared stories found.",
+        }
+
+    # Build results
+    results = []
+    for story in shared_stories:
+        # Get content for excerpt
+        content = ""
+        if story.story_content:
+            content = story.story_content
+        elif story.story_content_z:
+            import zlib
+            try:
+                content = zlib.decompress(story.story_content_z).decode("utf-8")
+            except Exception:
+                content = ""
+
+        excerpt = content[:300] + "..." if len(content) > 300 else content
+
+        # Get sharer's username
+        sharer_name = ""
+        try:
+            sharer_profile = MSocialProfile.get_user(story.user_id)
+            sharer_name = sharer_profile.user.username if sharer_profile.user else ""
+        except Exception:
+            pass
+
+        results.append({
+            "story_hash": story.story_hash,
+            "feed_id": story.story_feed_id,
+            "title": story.story_title,
+            "url": story.story_permalink,
+            "author": story.story_author_name,
+            "sharer": sharer_name,
+            "sharer_comments": story.comments or "",
+            "excerpt": excerpt,
+            "shared_date": format_datetime_utc(story.shared_date),
+            "story_date": format_datetime_utc(story.story_date) if story.story_date else None,
+        })
+
+    return {
+        "count": len(results),
+        "stories": results,
+        "query": query,
+        "following_count": len(following_ids),
     }
