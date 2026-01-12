@@ -21234,10 +21234,275 @@ form.opml_import_form input {
 }
 
 .NB-archive-empty-subtitle {
-    font-size: 14px;
+    font-size: 15px;
     color: #666;
-    max-width: 300px;
-    line-height: 1.5;
+    max-width: 420px;
+    line-height: 1.6;
+}
+
+/* Empty State - Hero Section */
+.NB-archive-empty-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+/* Empty State - Extension Buttons */
+.NB-archive-empty-extensions {
+    margin-bottom: 32px;
+}
+
+.NB-archive-empty-extensions-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+}
+
+.NB-archive-empty-extension-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.NB-archive-empty-extension-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: linear-gradient(to bottom, #FAFAFA, #F0F0F0);
+    border: 1px solid #D0D0D0;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    min-width: 180px;
+}
+
+.NB-archive-empty-extension-btn:hover {
+    background: linear-gradient(to bottom, #FFFFFF, #F5F5F5);
+    border-color: #5C89C9;
+    box-shadow: 0 4px 12px rgba(92, 137, 201, 0.15);
+    transform: translateY(-2px);
+}
+
+.NB-empty-ext-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
+.NB-empty-ext-info {
+    text-align: left;
+}
+
+.NB-empty-ext-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.NB-empty-ext-desc {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+}
+
+/* Empty State - Features */
+.NB-archive-empty-features {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 420px;
+    padding: 20px 24px;
+    background: #F8F9FA;
+    border-radius: 12px;
+}
+
+.NB-archive-empty-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.NB-archive-feature-icon {
+    font-size: 20px;
+    width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.NB-archive-feature-text {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.4;
+}
+
+/* Header - Extensions Button & Popover */
+.NB-archive-extensions-container {
+    position: relative;
+}
+
+.NB-archive-extensions-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid #D0D0D0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.15s ease;
+}
+
+.NB-archive-extensions-button:hover {
+    background: #FFF;
+    border-color: #BBB;
+    color: #333;
+}
+
+.NB-archive-extensions-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+}
+
+.NB-archive-extensions-popover {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: #FFF;
+    border: 1px solid #D0D0D0;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 8px;
+    min-width: 240px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.NB-archive-extensions-container.NB-popover-open .NB-archive-extensions-popover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.NB-archive-extension-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s ease;
+}
+
+.NB-archive-extension-link:hover {
+    background: #F5F7FA;
+}
+
+.NB-archive-extension-browser-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.NB-archive-extension-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.NB-archive-extension-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.NB-archive-extension-desc {
+    font-size: 12px;
+    color: #888;
+    margin-top: 1px;
+}
+
+/* Assistant Tab - Browser Extensions Section */
+.NB-archive-assistant-extensions {
+    margin-top: 32px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #F8F9FA 0%, #EEF1F5 100%);
+    border: 1px solid #E0E4E8;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.NB-archive-assistant-extensions-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.NB-assistant-ext-header-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+}
+
+.NB-archive-assistant-extensions-desc {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+
+.NB-archive-assistant-extension-links {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.NB-archive-assistant-ext-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #FFF;
+    border: 1px solid #D0D4D8;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.NB-archive-assistant-ext-link:hover {
+    border-color: #5C89C9;
+    box-shadow: 0 2px 8px rgba(92, 137, 201, 0.15);
+    transform: translateY(-1px);
+}
+
+.NB-assistant-ext-icon {
+    width: 20px;
+    height: 20px;
 }
 
 /* Archive End Line (loading and end state) */
@@ -22606,6 +22871,113 @@ button.NB-merge-group-apply.NB-button:hover {
 
 .NB-dark .NB-archive-sidebar-toggle::before {
     filter: brightness(0) invert(0.7);
+}
+
+/* Dark mode - Extensions Button & Popover */
+.NB-dark .NB-archive-extensions-button {
+    border-color: #444;
+    color: #999;
+}
+
+.NB-dark .NB-archive-extensions-button:hover {
+    background: #2a2a2a;
+    border-color: #555;
+    color: #CCC;
+}
+
+.NB-dark .NB-archive-extensions-icon {
+    filter: brightness(0) invert(0.7);
+}
+
+.NB-dark .NB-archive-extensions-popover {
+    background: #1e1e1e;
+    border-color: #444;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-archive-extension-link:hover {
+    background: #2a2a2a;
+}
+
+.NB-dark .NB-archive-extension-name {
+    color: #DDD;
+}
+
+.NB-dark .NB-archive-extension-desc {
+    color: #777;
+}
+
+/* Dark mode - Empty State */
+.NB-dark .NB-archive-empty-icon {
+    filter: brightness(0) invert(0.5);
+}
+
+.NB-dark .NB-archive-empty-title {
+    color: #DDD;
+}
+
+.NB-dark .NB-archive-empty-subtitle {
+    color: #999;
+}
+
+.NB-dark .NB-archive-empty-extensions-title {
+    color: #777;
+}
+
+.NB-dark .NB-archive-empty-extension-btn {
+    background: linear-gradient(to bottom, #2a2a2a, #222);
+    border-color: #444;
+}
+
+.NB-dark .NB-archive-empty-extension-btn:hover {
+    background: linear-gradient(to bottom, #333, #2a2a2a);
+    border-color: #5C89C9;
+    box-shadow: 0 4px 12px rgba(92, 137, 201, 0.2);
+}
+
+.NB-dark .NB-empty-ext-name {
+    color: #DDD;
+}
+
+.NB-dark .NB-empty-ext-desc {
+    color: #888;
+}
+
+.NB-dark .NB-archive-empty-features {
+    background: #252525;
+}
+
+.NB-dark .NB-archive-feature-text {
+    color: #AAA;
+}
+
+/* Dark mode - Assistant Tab Extensions */
+.NB-dark .NB-archive-assistant-extensions {
+    background: linear-gradient(135deg, #252525 0%, #1e1e1e 100%);
+    border-color: #3a3a3a;
+}
+
+.NB-dark .NB-archive-assistant-extensions-header {
+    color: #DDD;
+}
+
+.NB-dark .NB-assistant-ext-header-icon {
+    filter: brightness(0) invert(0.7);
+}
+
+.NB-dark .NB-archive-assistant-extensions-desc {
+    color: #999;
+}
+
+.NB-dark .NB-archive-assistant-ext-link {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #DDD;
+}
+
+.NB-dark .NB-archive-assistant-ext-link:hover {
+    border-color: #5C89C9;
+    box-shadow: 0 2px 8px rgba(92, 137, 201, 0.2);
 }
 
 .NB-dark .NB-archive-assistant-message.NB-assistant {
