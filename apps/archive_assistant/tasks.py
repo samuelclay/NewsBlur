@@ -6,6 +6,7 @@ Handles async processing of AI queries with streaming responses via Redis PubSub
 
 import json
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
 import redis
@@ -192,17 +193,29 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
         # Extract tool calls from response
         tool_use_blocks = [block for block in response.content if block.type == "tool_use"]
 
-        # Execute each tool
+        # First, publish ALL tool_call events so UI shows all spinners at once
+        for tool_block in tool_use_blocks:
+            publish_event("tool_call", {"tool": tool_block.name, "input": tool_block.input})
+
+        # Execute tools in parallel using ThreadPoolExecutor
+        def execute_single_tool(tool_block):
+            """Execute a single tool and return (tool_block, result)."""
+            return (tool_block, execute_tool(tool_block.name, tool_block.input, user_id))
+
+        # Run all tools in parallel (max 6 concurrent to avoid overwhelming resources)
+        tool_execution_results = {}
+        with ThreadPoolExecutor(max_workers=6) as executor:
+            futures = {executor.submit(execute_single_tool, block): block for block in tool_use_blocks}
+            for future in as_completed(futures):
+                tool_block, result = future.result()
+                tool_execution_results[tool_block.id] = (tool_block, result)
+
+        # Process results in original order (to maintain consistent tool_results array)
         tool_results = []
         for tool_block in tool_use_blocks:
+            _, result = tool_execution_results[tool_block.id]
             tool_name = tool_block.name
             tool_input = tool_block.input
-
-            # Publish tool call event
-            publish_event("tool_call", {"tool": tool_name, "input": tool_input})
-
-            # Execute tool
-            result = execute_tool(tool_name, tool_input, user_id)
 
             # Build result summary and preview for user visibility
             preview = None
