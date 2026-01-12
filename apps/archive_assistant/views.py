@@ -47,7 +47,7 @@ def submit_query(request):
     POST params:
         query: The question to ask (required)
         conversation_id: Existing conversation ID (optional, creates new if not provided)
-        model: Model to use (optional, defaults to claude-sonnet-4-20250514)
+        model: Model to use (optional, defaults to claude-sonnet-4-5)
 
     Returns:
         {
@@ -68,7 +68,7 @@ def submit_query(request):
 
     query_text = request.POST.get("query", "").strip()
     conversation_id = request.POST.get("conversation_id", "").strip()
-    model = request.POST.get("model", "claude-sonnet-4-20250514")
+    model = request.POST.get("model", "claude-sonnet-4-5")
 
     # Check if user has premium archive for full responses
     profile = Profile.objects.get(user=user)
