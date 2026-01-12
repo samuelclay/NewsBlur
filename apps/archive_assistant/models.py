@@ -30,7 +30,6 @@ class MArchiveConversation(mongo.Document):
             {"fields": ["user_id", "-last_activity"]},
             {"fields": ["user_id", "is_active", "-last_activity"]},
         ],
-        "db_alias": "nbanalytics",
         "ordering": ["-last_activity"],
     }
 
@@ -74,7 +73,6 @@ class MArchiveQuery(mongo.Document):
             {"fields": ["user_id", "-query_date"]},
             {"fields": ["conversation_id", "query_date"]},
         ],
-        "db_alias": "nbanalytics",
         "ordering": ["query_date"],
     }
 
@@ -115,7 +113,6 @@ class MArchiveAssistantUsage(mongo.Document):
             {"fields": ["user_id", "-query_date"]},
             {"fields": ["user_id", "source", "-query_date"]},
         ],
-        "db_alias": "nbanalytics",
     }
 
     @classmethod
