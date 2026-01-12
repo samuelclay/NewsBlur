@@ -20110,9 +20110,35 @@ form.opml_import_form input {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    padding: 20px 0 16px;
+    padding: 16px 0;
     border-bottom: 1px solid #E0E0E0;
     flex-shrink: 0;
+}
+
+/* Tabs Row - tabs and view toggles on same line */
+.NB-add-site-tabs-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+/* Tab Search Bar - inline search in tabs */
+.NB-add-site-tab-search-bar {
+    padding: 0 0 16px;
+    border-bottom: 1px solid #E8E8E8;
+    margin-bottom: 16px;
+}
+
+.NB-add-site-tab-with-search {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.NB-add-site-tab-results {
+    flex: 1;
+    overflow-y: auto;
 }
 
 /* Global Search */
@@ -20826,7 +20852,12 @@ form.opml_import_form input {
     color: #3D619A;
 }
 
-/* Google News Section */
+/* Google News Tab */
+.NB-add-site-google-news-container {
+    max-width: 800px;
+}
+
+/* Google News Section (legacy - embedded in search) */
 .NB-add-site-google-news-section {
     margin-top: 40px;
     padding-top: 32px;
