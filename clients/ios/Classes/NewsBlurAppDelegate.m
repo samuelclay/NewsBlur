@@ -3475,16 +3475,20 @@
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sender:(id)sender {
     if ([sender isKindOfClass:[UITableViewCell class]]) {
         UITableViewCell *cell = (UITableViewCell *)sender;
-        
+
         [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:cell sourceRect:cell.bounds];
-    } else if ([sender class] == [UIBarButtonItem class] || [sender class] == [UIButton class]) {
+    } else if ([sender isKindOfClass:[UIBarButtonItem class]]) {
         [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:sender];
-    } else if ([sender class] == [UIView class]) {
-        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:sender sourceRect:[sender frame]];
-    } else {
+    } else if ([sender isKindOfClass:[UIView class]]) {
+        UIView *view = (UIView *)sender;
+        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:view sourceRect:view.bounds];
+    } else if ([sender isKindOfClass:[NSValue class]]) {
         CGRect frame = [sender CGRectValue];
-        
+
         [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:self.storyPagesViewController.view sourceRect:frame];
+    } else {
+        // Fallback: use the feeds view as source
+        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:self.feedsViewController.view sourceRect:CGRectMake(0, 0, 1, 1)];
     }
 }
 

@@ -414,11 +414,11 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)updateSegmentedControl:(UISegmentedControl *)segmentedControl {
-    segmentedControl.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xcccccc, 0x8F918B);
+    segmentedControl.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x505050, 0x8F918B);
 #if !TARGET_OS_MACCATALYST
-    segmentedControl.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xe7e6e7, 0xE8DED0, 0x4a4a4a, 0x303030);
+    segmentedControl.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xe7e6e7, 0xE8DED0, 0x707070, 0x303030);
 #endif
-    segmentedControl.selectedSegmentTintColor = UIColorFromLightSepiaMediumDarkRGB(0xffffff, 0xFAF5ED, 0x666666, 0x6f6f75);
+    segmentedControl.selectedSegmentTintColor = UIColorFromLightSepiaMediumDarkRGB(0xffffff, 0xFAF5ED, 0x555555, 0x6f6f75);
 
     [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightSepiaMediumDarkRGB(0x909090, 0x8B7B6B, 0xcccccc, 0xaaaaaa)];
     [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateSelected foregroundColor:UIColorFromLightSepiaMediumDarkRGB(0x0, 0x3C3226, 0xffffff, 0xffffff)];
@@ -469,13 +469,16 @@ NSString * const ThemeStyleDark = @"dark";
     [UINavigationBar appearance].titleTextAttributes = @{NSForegroundColorAttributeName : UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B)};
     [UIToolbar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x4A4A4A, 0x222222);
     [UISegmentedControl appearance].tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
-    
+
     UIBarStyle style = self.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
-    
+
     [UINavigationBar appearance].barStyle = style;
     [UINavigationBar appearance].translucent = YES;
     self.appDelegate.feedsNavigationController.navigationBar.barStyle = style;
-    
+
+    // Set window background color for status bar area (match toolbar colors)
+    self.appDelegate.window.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x4A4A4A, 0x222222);
+
     [self.appDelegate.feedsNavigationController setNeedsStatusBarAppearanceUpdate];
     [self.appDelegate.splitViewController setNeedsStatusBarAppearanceUpdate];
 }

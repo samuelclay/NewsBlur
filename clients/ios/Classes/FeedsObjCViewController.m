@@ -170,6 +170,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.intelligenceControl.subviews objectAtIndex:2].accessibilityLabel = @"Unread";
     [self.intelligenceControl.subviews objectAtIndex:1].accessibilityLabel = @"Focus";
     [self.intelligenceControl.subviews objectAtIndex:0].accessibilityLabel = @"Saved";
+
+    // Set segmented control height to match toolbar button heights
+    self.intelligenceControl.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.intelligenceControl.heightAnchor constraintEqualToConstant:28].active = YES;
+    self.intelligenceControl.layer.cornerRadius = 7;
+    self.intelligenceControl.clipsToBounds = YES;
     
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
@@ -1147,7 +1153,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.appDelegate openNotificationsWithFeed:nil];
     }];
 
-    [viewController addTitle:@"Interactions" iconName:@"icons8-activity-history-100.png" selectionShouldDismiss:YES handler:^{
+    [viewController addTitle:@"Interactions" iconName:@"pulse" iconColor:UIColorFromRGB(0x8F918B) selectionShouldDismiss:YES handler:^{
         [self showInteractionsPopover:nil];
     }];
 
@@ -1381,8 +1387,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
         self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     }
-    self.addBarButton.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xcccccc, 0x8F918B);
-    self.settingsBarButton.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xcccccc, 0x8F918B);
+    self.addBarButton.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x8F918B);
+    self.settingsBarButton.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x8F918B);
 #if TARGET_OS_MACCATALYST
     if (ThemeManager.themeManager.isLikeSystem) {
         self.view.backgroundColor = UIColor.clearColor;
@@ -2024,7 +2030,12 @@ heightForHeaderInSection:(NSInteger)section {
         [[prefs stringForKey:@"dashboard_layout"] isEqualToString:@"none"]) {
         return 0;
     }
-    
+
+    // Hide Dashboard on iPhone, only show on iPad
+    if (section == NewsBlurTopSectionDashboard && self.isPhone) {
+        return 0;
+    }
+
     if (section == NewsBlurTopSectionInfrequentSiteStories &&
         ![prefs boolForKey:@"show_infrequent_site_stories"]) {
         return 0;
