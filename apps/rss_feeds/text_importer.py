@@ -259,14 +259,15 @@ class TextImporter:
             if len(noscript.contents) > 0:
                 noscript.replaceWith(noscript.contents[0])
 
-        content = str(soup)
+        # Make relative image URLs absolute by modifying soup elements directly
+        # (string replacement would corrupt absolute URLs that contain relative paths as substrings)
+        for img in soup.findAll("img"):
+            if "src" in img.attrs:
+                src = img["src"]
+                if not src.startswith(("http://", "https://", "//")):
+                    img["src"] = urljoin(self.story_url, src)
 
-        images = set([img.attrs["src"] for img in soup.findAll("img") if "src" in img.attrs])
-        for image_url in images:
-            abs_image_url = urljoin(self.story_url, image_url)
-            content = content.replace(image_url, abs_image_url)
-
-        return content
+        return str(soup)
 
     @timelimit(10)
     def fetch_request(self, use_mercury=True):
