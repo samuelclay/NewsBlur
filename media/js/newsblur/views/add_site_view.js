@@ -9,6 +9,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         "keypress .NB-add-site-search-input": "handle_search_keypress",
         "click .NB-add-site-search-clear": "clear_search",
         "click .NB-add-site-subscribe-btn": "subscribe_to_feed",
+        "click .NB-add-site-open-btn": "open_subscribed_feed",
         "change .NB-add-site-folder-select": "handle_folder_change",
         // YouTube tab events
         "click .NB-add-site-youtube-tab .NB-add-site-tab-search-btn": "perform_youtube_search",
@@ -22,10 +23,13 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         // Podcast tab events
         "click .NB-add-site-podcasts-tab .NB-add-site-tab-search-btn": "perform_podcast_search",
         "keypress .NB-add-site-podcasts-search": "handle_podcast_search_keypress",
-        // Google News events (in Search tab)
+        // Google News events
         "click .NB-add-site-google-news-topic": "handle_google_news_topic_click",
-        "click .NB-add-site-google-news-search-btn": "perform_google_news_search",
-        "keypress .NB-add-site-google-news-search-input": "handle_google_news_search_keypress"
+        "click .NB-add-site-google-news-subscribe-btn": "handle_google_news_subscribe",
+        "input .NB-add-site-google-news-search-input": "handle_google_news_input",
+        "keypress .NB-add-site-google-news-search-input": "handle_google_news_search_keypress",
+        // Trending tab events
+        "change .NB-add-site-trending-days": "handle_trending_days_change"
     },
 
     TABS: [
@@ -106,7 +110,12 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         this.google_news_state = {
             is_loading: false,
-            result: null
+            is_subscribed: false,
+            query: '',
+            selected_topic: null,
+            language: 'en',
+            feed_url: null,
+            feed_id: null
         };
     },
 
@@ -604,53 +613,70 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
     render_google_news_tab: function () {
         var $tab = this.$('.NB-add-site-google-news-tab');
+        var state = this.google_news_state;
 
-        var $content = $.make('div', { className: 'NB-add-site-google-news-container' }, [
-            $.make('div', { className: 'NB-add-site-google-news-header' }, [
-                $.make('img', {
-                    src: '/media/img/icons/nouns/world.svg',
-                    className: 'NB-add-site-google-news-logo'
-                }),
-                $.make('span', { className: 'NB-add-site-google-news-title' }, 'Google News Feeds')
-            ]),
-            $.make('div', { className: 'NB-add-site-google-news-desc' },
-                'Subscribe to Google News topics or create custom news feeds based on keywords.'),
-            $.make('div', { className: 'NB-add-site-google-news-topics' },
-                _.map(this.GOOGLE_NEWS_TOPICS, function (topic) {
-                    return $.make('div', {
-                        className: 'NB-add-site-google-news-topic',
-                        'data-topic-id': topic.id,
-                        'data-topic-name': topic.name
-                    }, [
-                        $.make('span', { className: 'NB-add-site-topic-icon' }, topic.icon),
-                        $.make('span', { className: 'NB-add-site-topic-name' }, topic.name)
-                    ]);
-                })
-            ),
-            $.make('div', { className: 'NB-add-site-google-news-custom' }, [
-                $.make('div', { className: 'NB-add-site-google-news-custom-title' }, 'Custom News Feed'),
-                $.make('div', { className: 'NB-add-site-google-news-search-row' }, [
-                    $.make('input', {
-                        type: 'text',
-                        className: 'NB-add-site-google-news-search-input',
-                        placeholder: 'Enter keywords (e.g., "climate change", "AI startups")...'
-                    }),
-                    $.make('select', { className: 'NB-add-site-google-news-language' }, [
-                        $.make('option', { value: 'en' }, 'English'),
-                        $.make('option', { value: 'es' }, 'Spanish'),
-                        $.make('option', { value: 'fr' }, 'French'),
-                        $.make('option', { value: 'de' }, 'German'),
-                        $.make('option', { value: 'pt' }, 'Portuguese'),
-                        $.make('option', { value: 'ja' }, 'Japanese'),
-                        $.make('option', { value: 'zh' }, 'Chinese')
-                    ]),
-                    $.make('div', { className: 'NB-add-site-google-news-search-btn' }, 'Create Feed')
+        var $content = $.make('div', { className: 'NB-add-site-source-tab' }, [
+            $.make('div', { className: 'NB-add-site-source-header' }, [
+                $.make('div', { className: 'NB-add-site-source-icon NB-google-news' }, [
+                    $.make('img', { src: '/media/img/icons/nouns/world.svg' })
+                ]),
+                $.make('div', { className: 'NB-add-site-source-info' }, [
+                    $.make('div', { className: 'NB-add-site-source-title' }, 'Google News'),
+                    $.make('div', { className: 'NB-add-site-source-desc' },
+                        'Subscribe to Google News feeds by topic or custom keywords.')
                 ])
             ]),
-            $.make('div', { className: 'NB-add-site-google-news-result' })
+            $.make('div', { className: 'NB-add-site-source-results' }, [
+                $.make('div', { className: 'NB-add-site-google-news-unified' }, [
+                    $.make('div', { className: 'NB-add-site-google-news-input-row' }, [
+                        $.make('input', {
+                            type: 'text',
+                            className: 'NB-add-site-tab-search-input NB-add-site-google-news-search-input',
+                            placeholder: 'Enter a topic or keywords (e.g., "climate change", "AI startups")...',
+                            value: state.query || ''
+                        })
+                    ]),
+                    $.make('div', { className: 'NB-add-site-google-news-topics-label' }, 'Or choose a topic:'),
+                    $.make('div', { className: 'NB-add-site-google-news-topics' },
+                        _.map(this.GOOGLE_NEWS_TOPICS, function (topic) {
+                            var is_selected = state.selected_topic === topic.id;
+                            return $.make('div', {
+                                className: 'NB-add-site-google-news-topic' + (is_selected ? ' NB-selected' : ''),
+                                'data-topic-id': topic.id,
+                                'data-topic-name': topic.name
+                            }, [
+                                $.make('span', { className: 'NB-add-site-topic-icon' }, topic.icon),
+                                $.make('span', { className: 'NB-add-site-topic-name' }, topic.name)
+                            ]);
+                        })
+                    ),
+                    $.make('div', { className: 'NB-add-site-google-news-subscribe-row' }, [
+                        this.make_folder_selector(),
+                        $.make('select', { className: 'NB-add-site-google-news-language' }, [
+                            $.make('option', { value: 'en' }, 'English'),
+                            $.make('option', { value: 'es' }, 'Spanish'),
+                            $.make('option', { value: 'fr' }, 'French'),
+                            $.make('option', { value: 'de' }, 'German'),
+                            $.make('option', { value: 'pt' }, 'Portuguese'),
+                            $.make('option', { value: 'ja' }, 'Japanese'),
+                            $.make('option', { value: 'zh' }, 'Chinese')
+                        ]),
+                        $.make('div', {
+                            className: 'NB-add-site-google-news-subscribe-btn' +
+                                (state.is_subscribed ? ' NB-subscribed' : '') +
+                                (state.is_loading ? ' NB-loading' : '')
+                        }, state.is_subscribed ? 'Open Site' : (state.is_loading ? 'Subscribing...' : 'Subscribe'))
+                    ])
+                ])
+            ])
         ]);
 
         $tab.html($content);
+
+        // Restore language selection if we have one
+        if (state.language) {
+            $tab.find('.NB-add-site-google-news-language').val(state.language);
+        }
     },
 
     // ================
@@ -660,13 +686,17 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     render_trending_tab: function () {
         var state = this.trending_state;
 
-        var $content = $.make('div', { className: 'NB-add-site-trending-container' }, [
-            $.make('div', { className: 'NB-add-site-trending-header' }, [
-                $.make('div', { className: 'NB-add-site-trending-title' }, [
-                    $.make('img', { src: '/media/img/icons/nouns/pulse.svg', className: 'NB-add-site-trending-icon' }),
-                    'Trending Sites'
+        var $content = $.make('div', { className: 'NB-add-site-source-tab NB-add-site-source-tab-wide' }, [
+            $.make('div', { className: 'NB-add-site-source-header' }, [
+                $.make('div', { className: 'NB-add-site-source-icon NB-trending' }, [
+                    $.make('img', { src: '/media/img/icons/nouns/pulse.svg' })
                 ]),
-                $.make('div', { className: 'NB-add-site-trending-time-selector' }, [
+                $.make('div', { className: 'NB-add-site-source-info' }, [
+                    $.make('div', { className: 'NB-add-site-source-title' }, 'Trending Sites'),
+                    $.make('div', { className: 'NB-add-site-source-desc' },
+                        'Discover the most popular feeds being added by NewsBlur users.')
+                ]),
+                $.make('div', { className: 'NB-add-site-source-filter' }, [
                     $.make('select', { className: 'NB-add-site-trending-days' }, [
                         $.make('option', { value: '1' }, 'Today'),
                         $.make('option', { value: '7', selected: state.days === 7 }, 'This Week'),
@@ -674,7 +704,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     ])
                 ])
             ]),
-            $.make('div', { className: 'NB-add-site-trending-results' })
+            $.make('div', { className: 'NB-add-site-source-results NB-add-site-trending-results' })
         ]);
 
         this.$('.NB-add-site-trending-tab').html($content);
@@ -698,8 +728,20 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             days: state.days
         }, function (data) {
             state.is_loading = false;
-            if (data && data.feeds) {
-                state.feeds = state.feeds.concat(data.feeds);
+            if (data && data.trending_feeds) {
+                // Convert trending_feeds object to array for easier rendering
+                var feeds_array = _.map(data.trending_feeds, function(item) {
+                    return {
+                        feed: item.feed,
+                        stories: item.stories,
+                        trending_score: item.trending_score
+                    };
+                });
+                // Sort by trending score (highest first)
+                feeds_array = _.sortBy(feeds_array, function(item) {
+                    return -item.trending_score;
+                });
+                state.feeds = state.feeds.concat(feeds_array);
                 state.has_more = data.has_more;
             }
             self.render_trending_results();
@@ -731,6 +773,19 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         $results.html($grid);
     },
 
+    handle_trending_days_change: function (e) {
+        var new_days = parseInt($(e.currentTarget).val(), 10);
+        var state = this.trending_state;
+
+        if (new_days !== state.days) {
+            state.days = new_days;
+            state.page = 1;
+            state.feeds = [];
+            state.has_more = true;
+            this.fetch_trending_feeds();
+        }
+    },
+
     // ==================
     // = Categories Tab =
     // ==================
@@ -743,13 +798,18 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             return;
         }
 
-        var $content = $.make('div', { className: 'NB-add-site-categories-container' }, [
-            $.make('div', { className: 'NB-add-site-categories-header' }, [
-                $.make('div', { className: 'NB-add-site-categories-title' }, 'Browse by Category'),
-                $.make('div', { className: 'NB-add-site-categories-desc' },
-                    'Discover feeds organized by topic and interest.')
+        var $content = $.make('div', { className: 'NB-add-site-source-tab NB-add-site-source-tab-wide' }, [
+            $.make('div', { className: 'NB-add-site-source-header' }, [
+                $.make('div', { className: 'NB-add-site-source-icon NB-categories' }, [
+                    $.make('img', { src: '/media/img/icons/nouns/folder-closed.svg' })
+                ]),
+                $.make('div', { className: 'NB-add-site-source-info' }, [
+                    $.make('div', { className: 'NB-add-site-source-title' }, 'Browse by Category'),
+                    $.make('div', { className: 'NB-add-site-source-desc' },
+                        'Discover feeds organized by topic and interest.')
+                ])
             ]),
-            $.make('div', { className: 'NB-add-site-categories-grid' })
+            $.make('div', { className: 'NB-add-site-source-results NB-add-site-categories-grid' })
         ]);
 
         this.$('.NB-add-site-categories-tab').html($content);
@@ -1139,14 +1199,16 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         NEWSBLUR.assets.save_add_url(feed_url, folder, function (data) {
             if (data.code > 0 || data.feed) {
-                $btn.removeClass('NB-loading').addClass('NB-subscribed').text('Subscribed!');
                 $card.addClass('NB-subscribed');
 
-                setTimeout(function () {
-                    NEWSBLUR.reader.force_feeds_refresh(function () {
-                        NEWSBLUR.reader.resize_feed_list();
-                    });
-                }, 500);
+                // Refresh feed list without opening the feed
+                NEWSBLUR.assets.load_feeds();
+
+                // Convert button to "Open Site" with feed ID stored for later
+                $btn.removeClass('NB-loading NB-add-site-subscribe-btn')
+                    .addClass('NB-add-site-open-btn')
+                    .text('Open Site')
+                    .data('feed-id', data.feed ? data.feed.id : null);
             } else {
                 $btn.removeClass('NB-loading').addClass('NB-error').text('Error');
                 console.log('Subscribe error:', data.message);
@@ -1155,6 +1217,15 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 }, 2000);
             }
         });
+    },
+
+    open_subscribed_feed: function (e) {
+        var $btn = $(e.currentTarget);
+        var feed_id = $btn.data('feed-id');
+
+        if (feed_id) {
+            NEWSBLUR.reader.open_feed(feed_id);
+        }
     },
 
     handle_folder_change: function (e) {
@@ -1321,128 +1392,151 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     // ==========================
 
     handle_google_news_topic_click: function (e) {
-        var self = this;
         var $topic = $(e.currentTarget);
         var topic_id = $topic.data('topic-id');
         var topic_name = $topic.data('topic-name');
         var state = this.google_news_state;
 
-        $topic.addClass('NB-loading');
-        state.is_loading = true;
+        // Toggle selection
+        if ($topic.hasClass('NB-selected')) {
+            // Deselect
+            $topic.removeClass('NB-selected');
+            state.selected_topic = null;
+            state.query = '';
+            this.$('.NB-add-site-google-news-search-input').val('');
+        } else {
+            // Select this topic
+            this.$('.NB-add-site-google-news-topic.NB-selected').removeClass('NB-selected');
+            $topic.addClass('NB-selected');
+            state.selected_topic = topic_id;
+            state.query = topic_name;
+            this.$('.NB-add-site-google-news-search-input').val(topic_name);
+        }
 
-        this.model.make_request('/rss_feeds/google-news/feed', {
-            topic: topic_id,
-            language: 'en',
-            region: 'US'
-        }, function (data) {
-            state.is_loading = false;
-            $topic.removeClass('NB-loading');
+        // Reset subscription state when changing topic
+        state.is_subscribed = false;
+        state.feed_url = null;
+        state.feed_id = null;
+        this.update_google_news_subscribe_button();
+    },
 
-            if (data && data.code === 1 && data.feed_url) {
-                state.result = {
-                    feed_url: data.feed_url,
-                    title: data.title || 'Google News - ' + topic_name,
-                    topic: topic_name
-                };
-                self.render_google_news_result();
-            } else {
-                var message = (data && data.message) ? data.message : 'Failed to create feed';
-                self.$('.NB-add-site-google-news-result').html(self.make_error_with_icon(message));
+    handle_google_news_input: function (e) {
+        var query = $(e.currentTarget).val().trim();
+        var state = this.google_news_state;
+
+        state.query = query;
+        // Clear topic selection when user types custom query
+        if (state.selected_topic) {
+            var topic = _.find(this.GOOGLE_NEWS_TOPICS, function(t) { return t.id === state.selected_topic; });
+            if (!topic || topic.name.toLowerCase() !== query.toLowerCase()) {
+                state.selected_topic = null;
+                this.$('.NB-add-site-google-news-topic.NB-selected').removeClass('NB-selected');
             }
-        }, function () {
-            state.is_loading = false;
-            $topic.removeClass('NB-loading');
-            self.$('.NB-add-site-google-news-result').html(
-                self.make_error_message('Failed to create Google News feed')
-            );
-        }, { request_type: 'GET' });
+        }
+
+        // Reset subscription state when query changes
+        state.is_subscribed = false;
+        state.feed_url = null;
+        state.feed_id = null;
+        this.update_google_news_subscribe_button();
     },
 
     handle_google_news_search_keypress: function (e) {
         if (e.which === 13) {
-            this.perform_google_news_search();
+            this.handle_google_news_subscribe();
         }
     },
 
-    perform_google_news_search: function () {
+    update_google_news_subscribe_button: function () {
+        var state = this.google_news_state;
+        var $btn = this.$('.NB-add-site-google-news-subscribe-btn');
+
+        $btn.removeClass('NB-loading NB-subscribed NB-disabled');
+
+        if (state.is_subscribed) {
+            $btn.addClass('NB-subscribed').text('Open Site');
+        } else if (state.is_loading) {
+            $btn.addClass('NB-loading NB-disabled').text('Subscribing...');
+        } else {
+            $btn.text('Subscribe');
+        }
+    },
+
+    handle_google_news_subscribe: function () {
         var self = this;
+        var state = this.google_news_state;
+        var $btn = this.$('.NB-add-site-google-news-subscribe-btn');
+
+        // If already subscribed, open the feed
+        if (state.is_subscribed && state.feed_id) {
+            NEWSBLUR.reader.open_feed(state.feed_id);
+            return;
+        }
+
         var query = this.$('.NB-add-site-google-news-search-input').val().trim();
         var language = this.$('.NB-add-site-google-news-language').val();
-        var state = this.google_news_state;
+        var folder = this.$('.NB-add-site-google-news-subscribe-row .NB-add-site-folder-select').val() || '';
 
         if (!query || query.length < 2) {
             return;
         }
 
         state.is_loading = true;
-        this.$('.NB-add-site-google-news-search-btn').addClass('NB-loading').text('Creating...');
-        this.$('.NB-add-site-google-news-result').html(this.make_loading_indicator());
+        state.language = language;
+        this.update_google_news_subscribe_button();
 
-        this.model.make_request('/rss_feeds/google-news/feed', {
-            query: query,
+        // Build request params
+        var params = {
             language: language,
             region: 'US'
-        }, function (data) {
-            state.is_loading = false;
-            self.$('.NB-add-site-google-news-search-btn').removeClass('NB-loading').text('Create Feed');
+        };
 
+        // Use topic ID if a quick topic is selected, otherwise use query
+        if (state.selected_topic) {
+            params.topic = state.selected_topic;
+        } else {
+            params.query = query;
+        }
+
+        // First get the feed URL from Google News
+        this.model.make_request('/rss_feeds/google-news/feed', params, function (data) {
             if (data && data.code === 1 && data.feed_url) {
-                state.result = {
-                    feed_url: data.feed_url,
-                    title: data.title || 'Google News - ' + query,
-                    query: query
-                };
-                self.render_google_news_result();
+                state.feed_url = data.feed_url;
+
+                // Now subscribe to the feed
+                NEWSBLUR.assets.save_add_url(data.feed_url, folder, function (sub_data) {
+                    state.is_loading = false;
+
+                    if (sub_data.code > 0 || sub_data.feed) {
+                        state.is_subscribed = true;
+                        state.feed_id = sub_data.feed ? sub_data.feed.id : null;
+
+                        // Refresh feed list
+                        NEWSBLUR.assets.load_feeds();
+
+                        self.update_google_news_subscribe_button();
+                    } else {
+                        self.show_google_news_error(sub_data.message || 'Failed to subscribe');
+                    }
+                });
             } else {
+                state.is_loading = false;
                 var message = (data && data.message) ? data.message : 'Failed to create feed';
-                self.$('.NB-add-site-google-news-result').html(self.make_error_with_icon(message));
+                self.show_google_news_error(message);
             }
         }, function () {
             state.is_loading = false;
-            self.$('.NB-add-site-google-news-search-btn').removeClass('NB-loading').text('Create Feed');
-            self.$('.NB-add-site-google-news-result').html(
-                self.make_error_message('Failed to create Google News feed')
-            );
+            self.show_google_news_error('Failed to create Google News feed');
         }, { request_type: 'GET' });
     },
 
-    render_google_news_result: function () {
-        var state = this.google_news_state;
-        var result = state.result;
+    show_google_news_error: function (message) {
+        var $btn = this.$('.NB-add-site-google-news-subscribe-btn');
+        $btn.removeClass('NB-loading NB-disabled').addClass('NB-error').text('Error');
 
-        if (!result) {
-            this.$('.NB-add-site-google-news-result').empty();
-            return;
-        }
-
-        var description = result.query
-            ? 'Custom news feed for: "' + result.query + '"'
-            : 'Google News feed for the ' + result.topic + ' topic';
-
-        var $card = $.make('div', { className: 'NB-add-site-card NB-add-site-google-news-card' }, [
-            $.make('div', { className: 'NB-add-site-card-header' }, [
-                $.make('div', { className: 'NB-add-site-card-icon NB-add-site-google-icon' }, [
-                    $.make('img', { src: '/media/img/icons/nouns/world.svg' })
-                ]),
-                $.make('div', { className: 'NB-add-site-card-info' }, [
-                    $.make('div', { className: 'NB-add-site-card-title' }, result.title),
-                    $.make('div', { className: 'NB-add-site-card-meta' }, [
-                        $.make('span', { className: 'NB-add-site-google-badge' }, 'Google News')
-                    ])
-                ])
-            ]),
-            $.make('div', { className: 'NB-add-site-card-desc' }, description),
-            $.make('div', { className: 'NB-add-site-card-url' }, result.feed_url),
-            $.make('div', { className: 'NB-add-site-card-actions' }, [
-                this.make_folder_selector(),
-                $.make('div', {
-                    className: 'NB-add-site-card-subscribe NB-add-site-subscribe-btn',
-                    'data-feed-url': result.feed_url
-                }, 'Subscribe')
-            ])
-        ]);
-
-        this.$('.NB-add-site-google-news-result').html($card);
+        setTimeout(function () {
+            $btn.removeClass('NB-error').text('Subscribe');
+        }, 2000);
     }
 
 });

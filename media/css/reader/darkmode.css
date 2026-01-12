@@ -2627,26 +2627,8 @@ a.mention, a.mention-group {
     border-color: #666;
 }
 
-/* Add + Discover Sidebar Header - Dark Mode */
-.NB-dark .NB-feeds-header-add-site .NB-feeds-header-title {
-    color: #7AA8E0;
-}
-
-.NB-dark .NB-feeds-header-add-site .NB-feeds-header-icon {
-    filter: brightness(0) saturate(100%) invert(65%) sepia(30%) saturate(600%) hue-rotate(179deg) brightness(95%) contrast(90%);
-}
-
-.NB-dark .NB-feeds-header-add-site:hover .NB-feeds-header-title {
-    color: #8BB8F0;
-}
-
-.NB-dark .NB-feeds-header-add-site.NB-selected {
-    background-color: #2A3A4A;
-}
-
-.NB-dark .NB-feeds-header-add-site.NB-selected .NB-feeds-header-title {
-    color: #9CC8FF;
-}
+/* Add + Discover Sites Sidebar Header - Dark Mode */
+/* Uses default folder styling - no special overrides needed */
 
 /* ==================
    Add Site View Dark Mode
@@ -2830,6 +2812,37 @@ a.mention, a.mention-group {
 .NB-dark .NB-add-site-google-news-topic:hover {
     border-color: #5C89C9;
     background: #333;
+}
+
+.NB-dark .NB-add-site-google-news-topic.NB-selected {
+    background: #5C89C9;
+    border-color: #5C89C9;
+    color: #FFF;
+}
+
+.NB-dark .NB-add-site-google-news-topic.NB-selected:hover {
+    background: #4A7AB8;
+}
+
+.NB-dark .NB-add-site-google-news-result-card {
+    background: #333;
+    border-color: #444;
+}
+
+.NB-dark .NB-add-site-result-url {
+    background: #222;
+    color: #AAA;
+}
+
+.NB-dark .NB-add-site-result-actions .NB-add-site-folder-select {
+    background: #2A2A2A;
+    border-color: #444;
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-add-site-google-news-topic.NB-loading .NB-add-site-topic-spinner {
+    border-color: #555;
+    border-top-color: #5C89C9;
 }
 
 .NB-dark .NB-add-site-google-news-custom {
