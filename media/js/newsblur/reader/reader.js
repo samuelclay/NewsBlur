@@ -1458,11 +1458,11 @@
                 // Restore story titles pane and taskbars that were hidden for archive view
                 var story_anchor = this.model.preference('story_pane_anchor');
                 if (this.layout.contentLayout) {
-                    this.layout.contentLayout.open(story_anchor);
+                    this.layout.contentLayout.open(story_anchor, true);
                 }
                 if (this.layout.rightLayout) {
-                    this.layout.rightLayout.open('north');
-                    this.layout.rightLayout.open('south');
+                    this.layout.rightLayout.open('north', true);
+                    this.layout.rightLayout.open('south', true);
                 }
                 this.archive_view.close();
                 this.archive_view = null;
@@ -2422,6 +2422,11 @@
                 return;
             }
 
+            // Already in archive view, no need to reset
+            if (this.flags['archive_view'] && this.archive_view) {
+                return;
+            }
+
             this.reset_feed(options);
             this.hide_splash_page();
 
@@ -2453,11 +2458,11 @@
             // Must be after make_feed_title_in_stories which may affect layout
             var story_anchor = this.model.preference('story_pane_anchor');
             if (this.layout.contentLayout) {
-                this.layout.contentLayout.hide(story_anchor);
+                this.layout.contentLayout.hide(story_anchor, true);
             }
             if (this.layout.rightLayout) {
-                this.layout.rightLayout.hide('north');
-                this.layout.rightLayout.hide('south');
+                this.layout.rightLayout.hide('north', true);
+                this.layout.rightLayout.hide('south', true);
                 this.layout.rightLayout.resizeAll();
             }
         },
@@ -3922,7 +3927,7 @@
         close_story_titles_pane: function (update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
             if (update_layout) {
-                NEWSBLUR.reader.layout.contentLayout.hide(story_anchor);
+                NEWSBLUR.reader.layout.contentLayout.hide(story_anchor, this.flags['archive_view']);
             }
             this.resize_window();
             this.flags['story_titles_closed'] = true;
@@ -3931,7 +3936,7 @@
         open_story_titles_pane: function (update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
             if (update_layout) {
-                NEWSBLUR.reader.layout.contentLayout.open(story_anchor);
+                NEWSBLUR.reader.layout.contentLayout.open(story_anchor, this.flags['archive_view']);
             }
             this.resize_window();
             this.flags['story_titles_closed'] = false;
