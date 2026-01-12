@@ -20391,6 +20391,17 @@ form.opml_import_form input {
     margin-bottom: 12px;
 }
 
+.NB-add-site-card-url {
+    font-size: 12px;
+    color: #888;
+    word-break: break-all;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: #F5F5F5;
+    border-radius: 6px;
+    font-family: monospace;
+}
+
 /* Story Previews in Card */
 .NB-add-site-card-stories {
     background: #F8F8F8;
@@ -20459,6 +20470,25 @@ form.opml_import_form input {
 
 .NB-add-site-subscribe-btn:hover {
     background: linear-gradient(135deg, #4A73B0 0%, #3D619A 100%);
+    transform: translateY(-1px);
+}
+
+.NB-add-site-open-btn {
+    padding: 8px 20px;
+    background: linear-gradient(135deg, #27AE60 0%, #1E8449 100%);
+    color: #FFF;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.NB-add-site-open-btn:hover {
+    background: linear-gradient(135deg, #1E8449 0%, #196F3D 100%);
     transform: translateY(-1px);
 }
 
@@ -20558,8 +20588,21 @@ form.opml_import_form input {
 
 /* Source Tab Header */
 .NB-add-site-source-tab {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
+}
+
+.NB-add-site-source-filter {
+    flex-shrink: 0;
+}
+
+.NB-add-site-source-filter select {
+    padding: 8px 16px;
+    border: 1px solid #D0D0D0;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    background: #FFF;
 }
 
 .NB-add-site-source-header {
@@ -20597,6 +20640,18 @@ form.opml_import_form input {
 
 .NB-add-site-source-icon.NB-podcasts {
     background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+}
+
+.NB-add-site-source-icon.NB-google-news {
+    background: linear-gradient(135deg, #4285F4 0%, #3367D6 100%);
+}
+
+.NB-add-site-source-icon.NB-trending {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+.NB-add-site-source-icon.NB-categories {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
 }
 
 .NB-add-site-source-icon img {
@@ -20658,61 +20713,16 @@ form.opml_import_form input {
 }
 
 /* Trending Tab */
-.NB-add-site-trending-container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.NB-add-site-trending-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.NB-add-site-trending-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 20px;
-    font-weight: 600;
-    color: #333;
-}
-
-.NB-add-site-trending-icon {
-    width: 24px;
-    height: 24px;
-}
-
 .NB-add-site-trending-days {
     padding: 8px 16px;
     border: 1px solid #D0D0D0;
     border-radius: 6px;
     font-size: 14px;
     cursor: pointer;
+    background: #FFF;
 }
 
 /* Categories Tab */
-.NB-add-site-categories-container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.NB-add-site-categories-header {
-    margin-bottom: 24px;
-}
-
-.NB-add-site-categories-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 8px;
-}
-
-.NB-add-site-categories-desc {
-    font-size: 14px;
-    color: #666;
-}
 
 .NB-add-site-categories-grid {
     display: grid;
@@ -20826,156 +20836,132 @@ form.opml_import_form input {
     font-size: 14px;
 }
 
-/* Sidebar Header Styling - Add + Discover */
+/* Sidebar Header Styling - Add + Discover Sites */
 .NB-feeds-header-add-site-container {
     display: block;
 }
 
-.NB-feeds-header-add-site .NB-feeds-header-title {
-    color: #5C89C9;
-    font-weight: 600;
-}
-
-.NB-feeds-header-add-site .NB-feeds-header-icon {
-    filter: brightness(0) saturate(100%) invert(52%) sepia(53%) saturate(454%) hue-rotate(179deg) brightness(91%) contrast(85%);
-}
-
-.NB-feeds-header-add-site:hover .NB-feeds-header-title {
-    color: #4A73B0;
-}
-
-.NB-feeds-header-add-site.NB-selected {
-    background-color: #D5E3F7;
-}
-
-.NB-feeds-header-add-site.NB-selected .NB-feeds-header-title {
-    color: #3D619A;
-}
-
 /* Google News Tab */
-.NB-add-site-google-news-container {
-    max-width: 800px;
+
+.NB-add-site-google-news-unified {
+    max-width: 700px;
 }
 
-/* Google News Section (legacy - embedded in search) */
-.NB-add-site-google-news-section {
-    margin-top: 40px;
-    padding-top: 32px;
-    border-top: 1px solid #E0E0E0;
+.NB-add-site-google-news-input-row {
+    margin-bottom: 16px;
 }
 
-.NB-add-site-google-news-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
+.NB-add-site-google-news-input-row .NB-add-site-tab-search-input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 15px;
+    border: 2px solid #D0D4D8;
+    border-radius: 10px;
+    background: #FFF;
+    box-sizing: border-box;
 }
 
-.NB-add-site-google-news-logo {
-    width: 24px;
-    height: 24px;
+.NB-add-site-google-news-input-row .NB-add-site-tab-search-input:focus {
+    border-color: #5C89C9;
+    outline: none;
 }
 
-.NB-add-site-google-news-title {
-    font-size: 18px;
+.NB-add-site-google-news-topics-label {
+    font-size: 12px;
     font-weight: 600;
-    color: #333;
-}
-
-.NB-add-site-google-news-desc {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 20px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
 }
 
 .NB-add-site-google-news-topics {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 24px;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
 .NB-add-site-google-news-topic {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
+    gap: 6px;
+    padding: 8px 14px;
     background: #FFF;
     border: 1px solid #E0E0E0;
-    border-radius: 8px;
+    border-radius: 20px;
     cursor: pointer;
     transition: all 0.15s ease;
-    font-size: 14px;
+    font-size: 13px;
     color: #333;
 }
 
 .NB-add-site-google-news-topic:hover {
     border-color: #5C89C9;
-    background: #F8FAFC;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(92, 137, 201, 0.15);
+    background: #F0F5FF;
 }
 
-.NB-add-site-google-news-topic.NB-loading {
-    opacity: 0.6;
-    pointer-events: none;
+.NB-add-site-google-news-topic.NB-selected {
+    background: #5C89C9;
+    color: #FFF;
+    border-color: #5C89C9;
+}
+
+.NB-add-site-google-news-topic.NB-selected:hover {
+    background: #4A7AB8;
 }
 
 .NB-add-site-topic-icon {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .NB-add-site-topic-name {
     font-weight: 500;
 }
 
-.NB-add-site-google-news-custom {
-    background: #F8FAFC;
-    border: 1px solid #E0E0E0;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.NB-add-site-google-news-custom-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 12px;
-}
-
-.NB-add-site-google-news-search-row {
+.NB-add-site-google-news-subscribe-row {
     display: flex;
-    gap: 12px;
     align-items: center;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid #E8E8E8;
 }
 
-.NB-add-site-google-news-search-input {
+.NB-add-site-google-news-subscribe-row .NB-add-site-folder-select {
     flex: 1;
-    padding: 10px 14px;
-    border: 1px solid #D0D0D0;
-    border-radius: 8px;
+    padding: 12px 14px;
     font-size: 14px;
+    border: 2px solid #D0D4D8;
+    border-radius: 8px;
+    background: #FFF;
+    cursor: pointer;
+    min-width: 150px;
+    max-width: 200px;
 }
 
-.NB-add-site-google-news-search-input:focus {
+.NB-add-site-google-news-subscribe-row .NB-add-site-folder-select:focus {
     border-color: #5C89C9;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(92, 137, 201, 0.1);
 }
 
 .NB-add-site-google-news-language {
-    padding: 10px 14px;
-    border: 1px solid #D0D0D0;
+    padding: 12px 14px;
+    border: 2px solid #D0D4D8;
     border-radius: 8px;
     font-size: 14px;
     cursor: pointer;
-    min-width: 120px;
+    min-width: 110px;
+    background: #FFF;
 }
 
-.NB-add-site-google-news-search-btn {
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #5C89C9 0%, #4A73B0 100%);
+.NB-add-site-google-news-language:focus {
+    border-color: #5C89C9;
+    outline: none;
+}
+
+.NB-add-site-google-news-subscribe-btn {
+    padding: 12px 24px;
+    background: linear-gradient(to bottom, #6EA753 0%, #57A138 100%);
     color: #FFF;
     border: none;
     border-radius: 8px;
@@ -20986,41 +20972,67 @@ form.opml_import_form input {
     white-space: nowrap;
 }
 
-.NB-add-site-google-news-search-btn:hover {
-    background: linear-gradient(135deg, #4A73B0 0%, #3D619A 100%);
+.NB-add-site-google-news-subscribe-btn:hover {
+    background: linear-gradient(to bottom, #7DB762 0%, #6AAE4A 100%);
 }
 
-.NB-add-site-google-news-search-btn.NB-loading {
-    opacity: 0.6;
+.NB-add-site-google-news-subscribe-btn.NB-loading {
+    opacity: 0.7;
     pointer-events: none;
 }
 
-.NB-add-site-google-news-result {
-    margin-top: 16px;
+.NB-add-site-google-news-subscribe-btn.NB-loading::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #FFF;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
 }
 
-.NB-add-site-google-news-card {
-    border-color: #4285F4;
+.NB-add-site-google-news-subscribe-btn.NB-subscribed {
+    background: linear-gradient(to bottom, #5C89C9 0%, #4A78B5 100%);
 }
 
-.NB-add-site-google-icon {
-    background: linear-gradient(135deg, #4285F4 0%, #3367D6 100%);
-    border-radius: 8px;
-    padding: 8px;
+.NB-add-site-google-news-subscribe-btn.NB-subscribed:hover {
+    background: linear-gradient(to bottom, #6B96D3 0%, #5985C2 100%);
 }
 
-.NB-add-site-google-icon img {
-    filter: brightness(0) invert(1);
+.NB-add-site-google-news-subscribe-btn.NB-error {
+    background: linear-gradient(to bottom, #D9534F 0%, #C9302C 100%);
 }
 
-.NB-add-site-google-badge {
-    background: linear-gradient(135deg, #4285F4 0%, #3367D6 100%);
-    color: #FFF;
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Disabled button state with spinner */
+.NB-add-site-subscribe-btn.NB-loading,
+.NB-add-site-subscribe-btn.NB-disabled,
+.NB-add-site-tab-search-btn.NB-loading,
+.NB-add-site-tab-search-btn.NB-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed;
+    position: relative;
+}
+
+.NB-add-site-subscribe-btn.NB-loading::before,
+.NB-add-site-tab-search-btn.NB-loading::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #FFF;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
 }
 
 /* ===================

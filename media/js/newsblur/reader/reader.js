@@ -1423,6 +1423,7 @@
             this.$s.$river_trending_header.removeClass('NB-selected');
             this.$s.$archive_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
+            this.$s.$add_site_header.removeClass('NB-selected');
             this.$s.$layout.removeClass('NB-view-river');
             this.$s.$layout.removeClass('NB-archive-active');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
@@ -1471,14 +1472,18 @@
             this.flags['archive_view'] = false;
 
             if (this.add_site_view) {
-                // Restore story titles pane and taskbars that were hidden for add site view
+                // Restore story titles pane and taskbars instantly that were hidden for add site view
                 var story_anchor = this.model.preference('story_pane_anchor');
                 if (this.layout.contentLayout) {
-                    this.layout.contentLayout.open(story_anchor);
+                    this.layout.contentLayout.open(story_anchor, true);  // true = instant, no animation
                 }
                 if (this.layout.rightLayout) {
-                    this.layout.rightLayout.open('north');
-                    this.layout.rightLayout.open('south');
+                    this.layout.rightLayout.open('north', true);
+                    this.layout.rightLayout.open('south', true);
+                    this.layout.rightLayout.resizeAll();
+                }
+                if (this.layout.contentLayout) {
+                    this.layout.contentLayout.resizeAll();
                 }
                 this.add_site_view.close();
                 this.add_site_view = null;
@@ -2491,13 +2496,18 @@
         open_add_site: function (options) {
             options = options || {};
 
+            // Already in add site view, no need to reset
+            if (this.flags['add_site_view'] && this.add_site_view) {
+                return;
+            }
+
             this.reset_feed(options);
             this.hide_splash_page();
 
             this.active_feed = 'add-site';
             this.active_folder = new Backbone.Model({
                 id: 'add-site',
-                folder_title: "Add + Discover",
+                folder_title: "Add + Discover Sites",
                 fake: true,
                 show_options: false
             });
@@ -2518,16 +2528,24 @@
             // Update URL
             NEWSBLUR.router.navigate('/add');
 
-            this.make_feed_title_in_stories();
+            try {
+                this.make_feed_title_in_stories();
+            } catch (e) {
+                // Ignore errors for fake folders like add-site
+            }
 
-            // Hide story titles pane and taskbars to give add site view full width
+            // Ensure intelligence slider shows correct selection
+            this.load_intelligence_slider();
+
+            // Hide story titles pane and taskbars instantly to give add site view full width
+            // Must be after make_feed_title_in_stories which may affect layout
             var story_anchor = this.model.preference('story_pane_anchor');
             if (this.layout.contentLayout) {
-                this.layout.contentLayout.hide(story_anchor);
+                this.layout.contentLayout.hide(story_anchor, true);
             }
             if (this.layout.rightLayout) {
-                this.layout.rightLayout.hide('north');
-                this.layout.rightLayout.hide('south');
+                this.layout.rightLayout.hide('north', true);
+                this.layout.rightLayout.hide('south', true);
                 this.layout.rightLayout.resizeAll();
             }
         },
@@ -3992,7 +4010,8 @@
         close_story_titles_pane: function (update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
             if (update_layout) {
-                NEWSBLUR.reader.layout.contentLayout.hide(story_anchor, this.flags['archive_view']);
+                var no_animation = this.flags['archive_view'] || this.flags['add_site_view'];
+                NEWSBLUR.reader.layout.contentLayout.hide(story_anchor, no_animation);
             }
             this.resize_window();
             this.flags['story_titles_closed'] = true;
@@ -4001,7 +4020,8 @@
         open_story_titles_pane: function (update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
             if (update_layout) {
-                NEWSBLUR.reader.layout.contentLayout.open(story_anchor, this.flags['archive_view']);
+                var no_animation = this.flags['archive_view'] || this.flags['add_site_view'];
+                NEWSBLUR.reader.layout.contentLayout.open(story_anchor, no_animation);
             }
             this.resize_window();
             this.flags['story_titles_closed'] = false;
