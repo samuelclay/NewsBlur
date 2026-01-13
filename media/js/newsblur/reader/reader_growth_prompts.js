@@ -2,7 +2,7 @@
  * NewsBlur Growth Prompts
  *
  * Strategic upgrade prompts for converting engaged free users to premium.
- * Max one prompt every 30 days. Triggers:
+ * Shows once per user, ever. Triggers:
  * - After adding a feed (when user has 5+ feeds)
  * - After reading 20 stories in a session
  */
@@ -13,7 +13,6 @@ NEWSBLUR.ReaderGrowthPrompts = function() {
 
 NEWSBLUR.ReaderGrowthPrompts.prototype = {
 
-    PROMPT_COOLDOWN_DAYS: 30,  // Global cooldown: max one prompt every 30 days
     SESSION_STORY_THRESHOLD: 20,  // Stories read before showing milestone prompt
     MIN_FEEDS_FOR_PROMPT: 5,  // Minimum feeds before showing feed_added prompt
 
@@ -55,16 +54,13 @@ NEWSBLUR.ReaderGrowthPrompts.prototype = {
         return NEWSBLUR.assets.feeds.size();
     },
 
-    // Check if ANY prompt was shown recently (global 30-day cooldown)
-    was_prompt_shown_recently: function() {
-        // Test mode bypasses cooldown
+    // Check if a prompt was ever shown (only show once per user)
+    was_prompt_shown_ever: function() {
+        // Test mode bypasses this check
         if (this.is_test_mode()) return false;
 
         var last_shown = NEWSBLUR.assets.preference('growth_prompt_last_shown');
-        if (!last_shown) return false;
-
-        var days_since = (Date.now() - last_shown) / (1000 * 60 * 60 * 24);
-        return days_since < this.PROMPT_COOLDOWN_DAYS;
+        return !!last_shown;
     },
 
     // Record that a prompt was shown (global timestamp)
@@ -92,7 +88,7 @@ NEWSBLUR.ReaderGrowthPrompts.prototype = {
     // Call this when user adds a feed (only shows at 5+ feeds)
     on_feed_added: function() {
         if (!this.should_show_prompt()) return false;
-        if (this.was_prompt_shown_recently()) return false;
+        if (this.was_prompt_shown_ever()) return false;
         if (this.prompt_shown_this_session) return false;
 
         // Only show after user has committed with 5+ feeds
@@ -108,7 +104,7 @@ NEWSBLUR.ReaderGrowthPrompts.prototype = {
 
     maybe_show_milestone_prompt: function() {
         if (!this.should_show_prompt()) return false;
-        if (this.was_prompt_shown_recently()) return false;
+        if (this.was_prompt_shown_ever()) return false;
         if (this.prompt_shown_this_session) return false;
 
         this.show_milestone_prompt('stories_read');
@@ -280,7 +276,7 @@ NEWSBLUR.ReaderGrowthPrompts.prototype = {
         // Normal mode: prompts triggered by user actions only:
         // - on_feed_added(): after adding a feed
         // - maybe_show_milestone_prompt(): after reading 20 stories
-        // Max one prompt every 30 days
+        // Only shown once per user, ever
     }
 };
 
