@@ -28,7 +28,7 @@ static enum {
 NSCacheDelegate,
 UIPopoverControllerDelegate,
 MCSwipeTableViewCellDelegate,
-UIGestureRecognizerDelegate, UISearchBarDelegate> {
+UIGestureRecognizerDelegate, UITextFieldDelegate> {
     NSMutableDictionary * activeFeedLocations;
     NSMutableDictionary *stillVisibleFeeds;
     NSMutableDictionary *visibleFolders;
@@ -82,7 +82,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 #if !TARGET_OS_MACCATALYST
 @property (nonatomic) UIRefreshControl *refreshControl;
 #endif
-@property (nonatomic) UISearchBar *searchBar;
+@property (nonatomic) UITextField *searchField;
 @property (nonatomic, strong) NSArray<NSString *> *searchFeedIds;
 @property (nonatomic) NSCache *imageCache;
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;

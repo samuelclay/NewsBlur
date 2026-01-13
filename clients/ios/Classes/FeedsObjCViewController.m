@@ -120,25 +120,43 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedViewToolbar.translatesAutoresizingMaskIntoConstraints = NO;
 #endif
     
-    self.searchBar = [[UISearchBar alloc]
-                      initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 44.)];
-    self.searchBar.delegate = self;
-    [self.searchBar setReturnKeyType:UIReturnKeySearch];
-    self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
-    self.searchBar.tintColor = UIColorFromRGB(0x0);
-    self.searchBar.nb_searchField.textColor = UIColorFromRGB(0x0);
-    [self.searchBar setSearchBarStyle:UISearchBarStyleMinimal];
-    [self.searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-#if TARGET_OS_MACCATALYST
-    // Workaround for Catalyst bug.
-    self.searchBar.frame = CGRectMake(10, 0, CGRectGetWidth(self.feedTitlesTable.frame) - 20, 44.);
-    self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    UIView *searchContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 44.)];
-    [searchContainerView addSubview:self.searchBar];
+    // Create compact search field with theme colors
+    UIView *searchContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 28.)];
+    searchContainerView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xf4f4f4, 0xF3E2CB, 0x333333, 0x222222);
+    searchContainerView.tag = 100; // Tag for theme updates
+
+    self.searchField = [[UITextField alloc] initWithFrame:CGRectMake(8, 2, CGRectGetWidth(self.feedTitlesTable.frame) - 16, 24.)];
+    self.searchField.delegate = self;
+    self.searchField.returnKeyType = UIReturnKeySearch;
+    self.searchField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x444444, 0x333333);
+    self.searchField.textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
+    self.searchField.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
+    self.searchField.font = [UIFont systemFontOfSize:13];
+    self.searchField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.searchField.autocorrectionType = UITextAutocorrectionTypeNo;
+    self.searchField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.searchField.placeholder = @"Search feeds";
+    self.searchField.layer.cornerRadius = 6;
+    self.searchField.layer.masksToBounds = YES;
+    self.searchField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+
+    // Add search icon as left view
+    UIImageView *searchIcon = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"magnifyingglass"]];
+    searchIcon.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
+    searchIcon.contentMode = UIViewContentModeScaleAspectFit;
+    searchIcon.frame = CGRectMake(0, 0, 24, 16);
+    searchIcon.tag = 101; // Tag for theme updates
+    UIView *leftPaddingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 24)];
+    searchIcon.center = CGPointMake(16, 12);
+    [leftPaddingView addSubview:searchIcon];
+    self.searchField.leftView = leftPaddingView;
+    self.searchField.leftViewMode = UITextFieldViewModeAlways;
+
+    // Add target for text change events
+    [self.searchField addTarget:self action:@selector(searchFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+
+    [searchContainerView addSubview:self.searchField];
     self.feedTitlesTable.tableHeaderView = searchContainerView;
-#else
-    self.feedTitlesTable.tableHeaderView = self.searchBar;
-#endif
     
     userLabelFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
     
@@ -321,13 +339,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     if (self.searchFeedIds) {
 //        [self.feedTitlesTable setContentOffset:CGPointMake(0, 0)];
-        [self.searchBar becomeFirstResponder];
+        [self.searchField becomeFirstResponder];
     } else {
-        [self.searchBar setText:@""];
-//        [self.feedTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+        self.searchField.text = @"";
+//        [self.feedTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchField.frame))];
     }
-    
-    [self.searchBar setShowsCancelButton:self.searchBar.text.length > 0 animated:YES];
     
 //    NSLog(@"Feed List timing 2: %f", [NSDate timeIntervalSinceReferenceDate] - start);
 }
@@ -433,13 +449,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)viewWillDisappear:(BOOL)animated {
     [self.appDelegate hidePopoverAnimated:YES];
     [super viewWillDisappear:animated];
-    [self.searchBar resignFirstResponder];
+    [self.searchField resignFirstResponder];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    [self.searchBar resignFirstResponder];
+    [self.searchField resignFirstResponder];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -685,7 +701,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     // Doing this here avoids the search bar from appearing on initial load, but doesn't help when only a few rows visible.
 //    if (!self.searchFeedIds && self.feedTitlesTable.contentOffset.y == 0) {
-//        self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchBar.frame));
+//        self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchField.frame));
 //    }
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -1403,17 +1419,21 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
     
-    self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
-    self.searchBar.tintColor = UIColorFromRGB(0xffffff);
-    self.searchBar.nb_searchField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
-    self.searchBar.nb_searchField.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
-    
+    // Update search field colors for theme
+    self.feedTitlesTable.tableHeaderView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xf4f4f4, 0xF3E2CB, 0x333333, 0x222222);
+    self.searchField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x444444, 0x333333);
+    self.searchField.textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
+    self.searchField.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
+    // Update search icon color
+    UIImageView *searchIcon = [self.searchField.leftView viewWithTag:101];
+    searchIcon.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
+
     if ([ThemeManager themeManager].isDarkTheme) {
         self.feedTitlesTable.indicatorStyle = UIScrollViewIndicatorStyleWhite;
-        self.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.searchField.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
         self.feedTitlesTable.indicatorStyle = UIScrollViewIndicatorStyleBlack;
-        self.searchBar.keyboardAppearance = UIKeyboardAppearanceDefault;
+        self.searchField.keyboardAppearance = UIKeyboardAppearanceDefault;
     }
     
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
@@ -2882,62 +2902,63 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 #pragma mark -
-#pragma mark Search
+#pragma mark Search (UITextFieldDelegate)
 
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
-    [self updateTheme];
-    
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    if (textField == self.searchField) {
+        [self updateTheme];
+    }
     return YES;
 }
 
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-    [self.searchBar setShowsCancelButton:YES animated:YES];
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    // Search field is now active
 }
 
-- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
-    if ([self.searchBar.text length]) {
-        [self.searchBar setShowsCancelButton:YES animated:YES];
-    } else {
-        [self.searchBar setShowsCancelButton:NO animated:YES];
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    // Search field editing ended
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if (textField == self.searchField) {
+        [self.searchField resignFirstResponder];
     }
-    [self.searchBar resignFirstResponder];
+    return YES;
 }
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-    [self.searchBar setText:@""];
-    [self.searchBar resignFirstResponder];
-    self.searchFeedIds = nil;
-    [self reloadFeedTitlesTable];
-}
-
-- (void)searchBarSearchButtonClicked:(UISearchBar*) theSearchBar {
-    [self.searchBar resignFirstResponder];
+- (BOOL)textFieldShouldClear:(UITextField *)textField {
+    if (textField == self.searchField) {
+        self.searchFeedIds = nil;
+        [self reloadFeedTitlesTable];
+    }
+    return YES;
 }
 
 - (BOOL)disablesAutomaticKeyboardDismissal {
     return NO;
 }
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+- (void)searchFieldDidChange:(UITextField *)textField {
+    NSString *searchText = textField.text;
     if (searchText.length) {
         NSMutableArray *array = [NSMutableArray array];
-        
+
         for (NSString *folderName in appDelegate.dictFoldersArray) {
             NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
-            
+
             for (id feedId in folder) {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
                 NSDictionary *feed = [appDelegate getFeed:feedIdStr];
                 NSString *title = [feed objectForKey:@"feed_title"];
-                
+
                 if ([title localizedStandardContainsString:searchText]) {
                     [array addObject:feedIdStr];
                 }
             }
         }
-        
+
         NSLog(@"search: '%@' matches %@ feeds", searchText, @(array.count));  // log
-        
+
         if (array.count) {
             self.searchFeedIds = array;
             [self reloadFeedTitlesTable];
@@ -3080,7 +3101,7 @@ heightForHeaderInSection:(NSInteger)section {
             [self loadFavicons];
 //            if (!self.searchFeedIds && self.feedTitlesTable.contentOffset.y == 0) {
 //                [UIView animateWithDuration:0.2 animations:^{
-//                    self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchBar.frame));
+//                    self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchField.frame));
 //                }];
 //
 //            }
