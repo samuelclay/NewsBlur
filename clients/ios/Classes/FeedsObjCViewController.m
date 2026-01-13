@@ -38,6 +38,16 @@ static const CGFloat kPhoneBlurblogTableViewRowHeight = 9.0f;
 static const CGFloat kFolderTitleHeight = 12.0f;
 static UIFont *userLabelFont;
 
+static UIImage *NBImageFromColor(UIColor *color) {
+    CGRect rect = CGRectMake(0, 0, 1, 1);
+    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0.0);
+    [color setFill];
+    UIRectFill(rect);
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}
+
 static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 @interface FeedsObjCViewController () <PreferencesViewDelegate>
@@ -194,8 +204,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.intelligenceControl.heightAnchor constraintEqualToConstant:28].active = YES;
     self.intelligenceControl.layer.cornerRadius = 7;
     self.intelligenceControl.clipsToBounds = YES;
-    self.intelligenceControl.layer.borderWidth = 0.5;
-    self.intelligenceControl.layer.borderColor = UIColorFromRGB(0xc0c0c0).CGColor;
 
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
@@ -536,6 +544,51 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    intelFrame.origin.x = (self.feedViewToolbar.frame.size.width / 2) - (intelFrame.size.width / 2) + 20;
 //    intelFrame.size.height = self.feedViewToolbar.frame.size.height - height;
 //    self.intelligenceControl.frame = intelFrame;
+}
+
+- (void)updateIntelligenceControlAppearance {
+#if !TARGET_OS_MACCATALYST
+    if (@available(iOS 26.0, *)) {
+        NSArray<NSNumber *> *barMetrics = @[@(UIBarMetricsDefault), @(UIBarMetricsCompact)];
+        for (NSNumber *metric in barMetrics) {
+            UIBarMetrics barMetric = metric.integerValue;
+            [self.intelligenceControl setBackgroundImage:nil forState:UIControlStateNormal barMetrics:barMetric];
+            [self.intelligenceControl setBackgroundImage:nil forState:UIControlStateSelected barMetrics:barMetric];
+            [self.intelligenceControl setBackgroundImage:nil forState:UIControlStateHighlighted barMetrics:barMetric];
+            [self.intelligenceControl setBackgroundImage:nil forState:UIControlStateDisabled barMetrics:barMetric];
+            [self.intelligenceControl setDividerImage:nil forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:barMetric];
+            [self.intelligenceControl setDividerImage:nil forLeftSegmentState:UIControlStateSelected rightSegmentState:UIControlStateNormal barMetrics:barMetric];
+            [self.intelligenceControl setDividerImage:nil forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateSelected barMetrics:barMetric];
+            [self.intelligenceControl setDividerImage:nil forLeftSegmentState:UIControlStateSelected rightSegmentState:UIControlStateSelected barMetrics:barMetric];
+        }
+        self.intelligenceControl.backgroundColor = nil;
+        self.intelligenceControl.selectedSegmentTintColor = nil;
+        self.intelligenceControl.tintColor = nil;
+        self.intelligenceControl.layer.borderWidth = 0.0;
+        self.intelligenceControl.layer.borderColor = nil;
+        self.intelligenceControl.layer.cornerRadius = 0.0;
+        self.intelligenceControl.clipsToBounds = NO;
+        return;
+    }
+#endif
+
+#if !TARGET_OS_MACCATALYST
+    UIColor *unselectedColor = UIColorFromLightSepiaMediumDarkRGB(0xe7e6e7, 0xE8DED0, 0x707070, 0x303030);
+    UIColor *selectedColor = UIColorFromLightSepiaMediumDarkRGB(0xffffff, 0xFAF5ED, 0x555555, 0x6f6f75);
+    UIImage *unselectedImage = NBImageFromColor(unselectedColor);
+    UIImage *selectedImage = NBImageFromColor(selectedColor);
+
+    NSArray<NSNumber *> *barMetrics = @[@(UIBarMetricsDefault), @(UIBarMetricsCompact)];
+    for (NSNumber *metric in barMetrics) {
+        UIBarMetrics barMetric = metric.integerValue;
+        [self.intelligenceControl setBackgroundImage:unselectedImage forState:UIControlStateNormal barMetrics:barMetric];
+        [self.intelligenceControl setBackgroundImage:selectedImage forState:UIControlStateSelected barMetrics:barMetric];
+        [self.intelligenceControl setBackgroundImage:selectedImage forState:UIControlStateHighlighted barMetrics:barMetric];
+        [self.intelligenceControl setBackgroundImage:unselectedImage forState:UIControlStateDisabled barMetrics:barMetric];
+    }
+#endif
+    self.intelligenceControl.layer.borderWidth = 1.0 / UIScreen.mainScreen.scale;
+    self.intelligenceControl.layer.borderColor = UIColorFromLightSepiaMediumDarkRGB(0xc0c0c0, 0xC8B8A8, 0x555555, 0x444444).CGColor;
 }
 
 // allow keyboard comands
@@ -1412,6 +1465,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 #endif
     
     [[ThemeManager themeManager] updateSegmentedControl:self.intelligenceControl];
+    [self updateIntelligenceControlAppearance];
     
     NBBarButtonItem *barButton = self.addBarButton.customView;
     [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
@@ -2987,6 +3041,9 @@ heightForHeaderInSection:(NSInteger)section {
 #if !TARGET_OS_MACCATALYST
     [self.refreshControl endRefreshing];
 #endif
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.syncNotifier updateFrameInSuperview];
+    });
 }
 
 - (void)refreshFeedList {
@@ -3342,11 +3399,8 @@ heightForHeaderInSection:(NSInteger)section {
     [self.syncNotifier showWithStyle:SyncNotifierStyleDone title:@"All done"];
     [self finishRefresh];
 
-    // Auto-hide after 5 seconds
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC),
-                   dispatch_get_main_queue(), ^{
-        [self.syncNotifier hide];
-    });
+    // Auto-hide after 5 seconds (cancels if new sync starts)
+    [self.syncNotifier hideAfter:5.0];
 }
 
 - (void)showSyncingNotifier:(float)progress hoursBack:(NSInteger)hours {
@@ -3382,10 +3436,7 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)hideNotifier {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC),
-                   dispatch_get_main_queue(), ^{
-        [self.syncNotifier hide];
-    });
+    [self.syncNotifier hideAfter:0.25];
 }
 
 @end
