@@ -107,19 +107,22 @@ worktree-stop:
 	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
 	echo "Stopping workspace: $$WORKSPACE_NAME"; \
 	if [ -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" ]; then \
-		COMPOSE_PROJECT_NAME="$$WORKSPACE_NAME" docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" down --remove-orphans; \
-		echo "✓ Stopped containers for workspace: $$WORKSPACE_NAME"; \
-	else \
-		echo "No worktree configuration found"; \
-	fi
+		COMPOSE_PROJECT_NAME="$$WORKSPACE_NAME" docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" down --remove-orphans 2>/dev/null || true; \
+	fi; \
+	echo "Removing containers for workspace: $$WORKSPACE_NAME"; \
+	docker rm -f newsblur_web_$$WORKSPACE_NAME newsblur_node_$$WORKSPACE_NAME newsblur_celery_$$WORKSPACE_NAME newsblur_nginx_$$WORKSPACE_NAME newsblur_haproxy_$$WORKSPACE_NAME 2>/dev/null || true; \
+	echo "✓ Stopped containers for workspace: $$WORKSPACE_NAME"
 
-worktree-close: worktree-stop
+worktree-close:
 	@if [ -f ".git" ]; then \
 		echo "Detected git worktree"; \
-		$(MAKE) worktree-permissions; \
 		WORKSPACE_NAME=$$(basename "$$(pwd)"); \
 		WORKTREE_PATH=$$(pwd); \
 		MAIN_REPO=$$(git rev-parse --git-common-dir | sed 's|/\.git$$||'); \
+		echo "Syncing permissions before cleanup..."; \
+		$(MAKE) worktree-permissions || true; \
+		echo "Stopping containers..."; \
+		$(MAKE) worktree-stop; \
 		if [ -z "$$(git status --porcelain)" ]; then \
 			echo "Cleaning up config files..."; \
 			rm -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml"; \
