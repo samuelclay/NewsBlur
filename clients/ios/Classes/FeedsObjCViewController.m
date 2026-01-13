@@ -194,7 +194,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.intelligenceControl.heightAnchor constraintEqualToConstant:28].active = YES;
     self.intelligenceControl.layer.cornerRadius = 7;
     self.intelligenceControl.clipsToBounds = YES;
-    
+    self.intelligenceControl.layer.borderWidth = 0.5;
+    self.intelligenceControl.layer.borderColor = UIColorFromRGB(0xc0c0c0).CGColor;
+
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
                                                                UIColorFromFixedRGB(0x8F918B)}

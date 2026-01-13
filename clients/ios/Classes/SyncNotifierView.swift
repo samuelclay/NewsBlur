@@ -89,6 +89,8 @@ class SyncNotifierView: UIView {
     private var progressWidthConstraint: NSLayoutConstraint?
     private var isShowing = false
     private var pendingHide = false
+    private var pendingShow = false
+    private var pendingShowDuration: TimeInterval = 0
 
     var title: String = "" {
         didSet {
@@ -310,6 +312,8 @@ class SyncNotifierView: UIView {
     @objc func showIn(_ duration: TimeInterval) {
         guard window != nil else {
             pendingHide = false
+            pendingShow = true
+            pendingShowDuration = duration
             return
         }
 
@@ -320,6 +324,7 @@ class SyncNotifierView: UIView {
 
         isShowing = true
         pendingHide = false
+        pendingShow = false
         isHidden = false
 
         // Update frame and position before animating
@@ -350,6 +355,9 @@ class SyncNotifierView: UIView {
     }
 
     @objc func hideIn(_ duration: TimeInterval) {
+        if pendingShow {
+            pendingShow = false
+        }
         guard isShowing else { return }
 
         // If no window yet, mark as pending and it will hide when window is set
@@ -375,10 +383,24 @@ class SyncNotifierView: UIView {
 
     override func didMoveToWindow() {
         super.didMoveToWindow()
+        if window != nil {
+            updateFrameInSuperview()
+            if pendingShow {
+                let duration = pendingShowDuration
+                pendingShow = false
+                showIn(duration)
+                return
+            }
+        }
         // Execute pending hide when we get a window
         if window != nil && pendingHide {
             hide()
         }
+    }
+
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        updateFrameInSuperview()
     }
 
     // MARK: - Convenience Methods for ObjC
