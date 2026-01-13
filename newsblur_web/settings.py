@@ -360,6 +360,7 @@ INSTALLED_APPS = (
     "apps.oauth",
     "apps.search",
     "apps.categories",
+    "apps.discover",
     "apps.ask_ai",
     "apps.archive_extension",
     "apps.archive_assistant",

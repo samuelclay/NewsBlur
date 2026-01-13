@@ -30,6 +30,7 @@ urlpatterns = [
     url(r"^story/.*?", reader_views.index),
     url(r"^feed/?", social_views.shared_stories_rss_feed_noid),
     url(r"^rss_feeds/", include("apps.rss_feeds.urls")),
+    url(r"^discover/", include("apps.discover.urls")),
     url(r"^analyzer/", include("apps.analyzer.urls")),
     url(r"^classifier/", include("apps.analyzer.urls")),
     url(r"^folder_rss/", include("apps.profile.urls")),

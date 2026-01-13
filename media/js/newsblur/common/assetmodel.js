@@ -1926,7 +1926,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     search_for_feeds: function (query, callback) {
-        this.make_request('/rss_feeds/feed_autocomplete', {
+        this.make_request('/discover/autocomplete', {
             'query': query,
             'format': 'full',
             'v': 2

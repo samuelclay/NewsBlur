@@ -151,7 +151,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         $add.autocomplete({
             minLength: 1,
             appendTo: ".NB-add-form",
-            source: '/rss_feeds/feed_autocomplete',
+            source: '/discover/autocomplete',
             position: {
                 my: "left bottom",
                 at: "left top",
