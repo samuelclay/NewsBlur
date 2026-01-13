@@ -1,7 +1,7 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <string name="newsblur">NewsBlur</string>
-    
+
     <string name="login_username_hint">username</string>
     <string name="login_password_hint">password</string>
     <string name="login_registration_email_hint">email address</string>
@@ -15,19 +15,20 @@
     <string name="login_retrieving_feeds">Retrieving feeds…</string>
     <string name="login_next">Next</string>
     <string name="login_custom_server_scheme_error">Expected \'https://\' in custom server URL</string>
+    <string name="user_profile_picture">User profile picture</string>
 
     <string name="search_for_feed">Search for feeds</string>
 
     <string name="loading">Loading…</string>
     <string name="orig_text_loading">Fetching story text…</string>
-    
+
     <string name="follow_error">There was a problem following the user.</string>
     <string name="unfollow_error">There was a problem unfollowing the user.</string>
-    
+
     <string name="description_login_button">Press to log in</string>
     <string name="description_login_logo">NewsBlur Logo</string>
-	<string name="description_profile_picture">The user\'s profile picture</string>
-	<string name="description_row_folder_icon">folder icon</string>
+    <string name="description_profile_picture">The user\'s profile picture</string>
+    <string name="description_row_folder_icon">folder icon</string>
     <string name="description_row_feed_icon">feed icon</string>
     <string name="description_row_feed_mute_toggle">feed mute toggle</string>
     <string name="description_activity_icon">An icon illustrating the user\'s activity</string>
@@ -40,29 +41,28 @@
     <string name="title_rename_feed">Rename feed %s</string>
     <string name="title_rename_folder">Rename folder %s</string>
 
-	<string name="all_stories_title">All Stories</string>
-	<string name="infrequent_title">Infrequent Site Stories</string>
-	<string name="all_shared_stories_title">All Shared Stories</string>
+    <string name="all_stories_title">All Stories</string>
+    <string name="infrequent_title">Infrequent Site Stories</string>
+    <string name="all_shared_stories_title">All Shared Stories</string>
     <string name="global_shared_stories_title">Global Shared Stories</string>
-	<string name="read_stories_title">Read Stories</string>
-	<string name="saved_stories_title">Saved Stories</string>
+    <string name="read_stories_title">Read Stories</string>
+    <string name="saved_stories_title">Saved Stories</string>
     <string name="saved_searches_title">Saved Searches</string>
 
     <string name="top_level">TOP LEVEL</string>
-	
-	<string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nShared with NewsBlur</string>
-	<string name="share_comment_hint">Share comment (Optional)</string>
-	<string name="share_save_newsblur">Share/Save \"%s\" to your Blurblog?</string>
+
+    <string name="send_full">%1$s \n\%2$s \n\n%3$s \n\n—\nShared with NewsBlur</string>
+    <string name="share_comment_hint">Share comment (Optional)</string>
+    <string name="share_save_newsblur">Share/Save \"%s\" to your Blurblog?</string>
     <string name="share_this">Share</string>
     <string name="already_shared">Shared</string>
     <string name="share_this_story">Share</string>
     <string name="unshare">Delete share</string>
     <string name="update_shared">Update comment</string>
-    <string name="feed_name_save">Rename feed</string>
-    <string name="folder_name_save">Rename folder</string>
+    <string name="rename">Rename</string>
 
-	<string name="save_this">Save</string>
-	<string name="unsave_this">Unsave</string>
+    <string name="save_this">Save</string>
+    <string name="unsave_this">Unsave</string>
     <string name="train_this">Train</string>
     <string name="story_mark_unread_state">Read</string>
     <string name="story_mark_read_state">Mark story read</string>
@@ -80,20 +80,20 @@
     <string name="state_focus">Focus</string>
     <string name="state_saved">Saved</string>
 
-	<string name="reply_to">Reply to \"%s\"</string>
+    <string name="reply_to">Reply to \"%s\"</string>
     <string name="edit_reply">Edit reply</string>
     <string name="edit_reply_update">Update reply</string>
     <string name="edit_reply_delete">Delete replyY</string>
-	
-	<string name="alert_dialog_ok">Okay</string>
-	<string name="alert_dialog_cancel">@android:string/cancel</string>
-	<string name="alert_dialog_done">Done</string>
-	<string name="alert_dialog_openlink">Open link</string>
-	<string name="alert_dialog_openimage">Open Image</string>
+
+    <string name="alert_dialog_ok">Okay</string>
+    <string name="alert_dialog_cancel">@android:string/cancel</string>
+    <string name="alert_dialog_done">Done</string>
+    <string name="alert_dialog_openlink">Open link</string>
+    <string name="alert_dialog_openimage">Open Image</string>
     <string name="dialog_folders_save">Save folders</string>
     <string name="dialog_story_intel_save">Save training</string>
     <string name="dialog_story_tags_save">Save tags</string>
-	
+
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
     <string name="profile_following">Following</string>
@@ -124,7 +124,7 @@
     <string name="profile_feed_not_available">You are no longer subscribed to this feed</string>
     <string name="profile_do_not_follow">You do not follow this user</string>
     <string name="profile_no_interactions">No interactions</string>
-    
+
     <string name="menu_profile">Profile</string>
     <string name="menu_search_feeds">Search your feeds</string>
     <string name="menu_original">View original</string>
@@ -172,6 +172,7 @@
     <string name="menu_story_list_style_choose">List style</string>
     <string name="menu_save_search">Save Search</string>
     <string name="menu_web_search">Web search</string>
+    <string name="menu_highlight">Highlight</string>
     <string name="list_style_list">List</string>
     <string name="list_style_grid_f">Grid (fine)</string>
     <string name="list_style_grid_m">Grid (medium)</string>
@@ -248,12 +249,11 @@
     <string name="empty_list_view_no_unread_stories">You have no unread stories.</string>
     <string name="empty_list_view_no_focus_stories">You have no unread stories in Focus.\n\nSwitch to All or Unread.</string>
     <string name="empty_list_view_no_saved_stories">You have no saved stories.\n\nSwitch to All or Unread.</string>
-    
-    <string name="login_registration_custom_server">Custom server</string>
+
+    <string name="login_registration_custom_server">Set custom server</string>
     <string name="login_registration_reset_url"><u>Reset</u></string>
     <string name="login_registration_register">Register</string>
     <string name="register_message_error">There was problem registering for NewsBlur.</string>
-    <string name="get_started">Let\'s get started</string>
     <string name="need_to_login"><u>I need to log in!</u></string>
     <string name="need_to_register"><u>I need to register</u></string>
     <string name="public_comment_count">%d public comments</string>
@@ -263,6 +263,7 @@
     <string name="delete_feed_message">Delete feed \&quot;%s\&quot;?</string>
     <string name="delete_saved_search_message">Delete saved search %s?</string>
     <string name="delete_folder_message">Delete folder \&quot;%s\&quot; and unsubscribe from all feeds inside?</string>
+    <string name="deleting_folder_message">Deleting folder \&quot;%s\&quot;</string>
     <string name="add_saved_search_message">Save search \&quot;%s\&quot;?</string>
     <string name="unfollow_message">Unfollow \&quot;%s\&quot;?</string>
     <string name="feed_subscribers">%s subscribers</string>
@@ -294,17 +295,17 @@
     <string name="newsbluropml">NewsBlur-OPML</string>
     <string name="import_export_title">Import/Export OPML</string>
     <string name="notifications_title">Notifications</string>
-    
+
     <string name="premium_subscribers_folder">Reading by folder is only available to</string>
     <string name="premium_subscribers_search">Search is only available to</string>
     <string name="premium_subscribers">premium subscribers</string>
     <string name="subscription_toolbar_title">NewsBlur Subscription</string>
-<!--    <string name="premium_title_going_premium">Thank you so much for going premium!</string>-->
+    <!--    <string name="premium_title_going_premium">Thank you so much for going premium!</string>-->
     <string name="thank_you_for_subscribing">Thank you for subscribing!</string>
     <string name="premium_subscription_renewal">Your subscription is set to\nrenew on %s</string>
     <string name="premium_subscription_expiration">Your subscription is set\nto expire on %s</string>
     <string name="premium_subscription_no_expiration">Your subscription is set\nto never expire. Whoa!</string>
-<!--    <string name="premium_subtitle">Upgrading to a NewsBlur premium subscription gives you all of these features. Payments will be charged to your Play Store account at confirmation of purchase. Subscription renew unless auto-renew is turned off at least 24 hours before the end of the current period. Cancel at any time from Account Settings in Play Store.</string>-->
+    <!--    <string name="premium_subtitle">Upgrading to a NewsBlur premium subscription gives you all of these features. Payments will be charged to your Play Store account at confirmation of purchase. Subscription renew unless auto-renew is turned off at least 24 hours before the end of the current period. Cancel at any time from Account Settings in Play Store.</string>-->
     <string name="premium_policies"><![CDATA[See NewsBlur\'s <a href="https://newsblur.com/privacy">privacy policy</a> and <a href="https://newsblur.com/tos">terms of use</a> for details.]]></string>
     <string name="premium_subscription_header">Premium Subscription</string>
     <string name="archive_subscription_header">Premium Archive Subscription</string>
@@ -338,8 +339,6 @@
     <string name="settings_enable_offline_sum">Periodically fetch stories in background</string>
     <string name="settings_enable_image_prefetch">Download images</string>
     <string name="settings_enable_image_prefetch_sum">Pre-fetch images for offline reading</string>
-    <string name="settings_enable_text_prefetch">Download full text</string>
-    <string name="settings_enable_text_prefetch_sum">Pre-fetch full text for offline reading</string>
     <string name="settings_keep_old_stories">Keep stories after reading</string>
     <string name="settings_keep_old_stories_sum">Disable to reduce storage usage</string>
 
@@ -348,7 +347,7 @@
     <string name="mute_config_reset_button">Reset to popular sites</string>
     <string name="mute_config_upgrade_to_premium">Upgrade to NewsBlur Premium</string>
     <string name="mute_config_upgrade">Upgrade</string>
-    <string name="mute_config_sites">%1$s/%2$s</string>
+    <string name="mute_config_sites">%1$d/%2$d</string>
 
     <string name="menu_network_select">Download using…</string>
     <string name="menu_network_select_sum">Restrict background data to chosen networks</string>
@@ -447,7 +446,7 @@
         <item>UNREAD</item>
     </string-array>
     <string name="default_read_filter_value">ALL</string>
-    
+
     <string-array name="mark_all_read_options">
         <item>Mark all read</item>
         <item>Cancel</item>
@@ -580,8 +579,7 @@
     <string name="sync_status_starred">Sync saved stories actions…</string>
     <string name="sync_status_stories">Fetching fresh stories…</string>
     <string name="sync_status_unreads">Storing%sunread stories…</string>
-    <string name="sync_status_text">Storing text for %s stories…</string>
-    <string name="sync_status_images">Storing %s images…</string>
+    <string name="sync_status_images">Storing %d images…</string>
     <string name="sync_status_offline">Offline</string>
     <string name="sync_status_feed_add">Adding feed</string>
 
@@ -756,7 +754,7 @@
     <string name="unread_stories">Unread stories</string>
     <string name="focused_stories">Focused stories</string>
     <string name="saved_stories">Saved stories</string>
-    
+
     <string name="short_next_story">Next Story</string>
     <string name="short_next_story_key_down">\u2193</string>
     <string name="short_next_story_key_j">J</string>
@@ -806,5 +804,8 @@
 
     <string name="short_add_site">Add Site</string>
     <string name="short_add_site_key">\u2325 A</string>
+    <string name="registering">Registering...</string>
+    <string name="renaming_feed_message">Renaming feed %s</string>
+    <string name="renaming_folder_message">Renaming folder %s</string>
 
 </resources>

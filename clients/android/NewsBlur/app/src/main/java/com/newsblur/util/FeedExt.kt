@@ -3,7 +3,6 @@ package com.newsblur.util
 import com.newsblur.domain.Feed
 
 object FeedExt {
-
     fun Feed.isNotifyEmail(): Boolean = isNotify(NOTIFY_EMAIL)
 
     fun Feed.isNotifyWeb(): Boolean = isNotify(NOTIFY_WEB)

@@ -57,6 +57,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         $('.NB-feeds-header-river-global .NB-feeds-header-icon').attr('src', $.favicon('river:global'));
         $('.NB-feeds-header-river-blurblogs .NB-feeds-header-icon').attr('src', $.favicon('river:blurblogs'));
         $('.NB-feeds-header-river-infrequent .NB-feeds-header-icon').attr('src', $.favicon('river:infrequent'));
+        $('.NB-feeds-header-river-trending .NB-feeds-header-icon').attr('src', $.favicon('river:trending'));
         $('.NB-feeds-header-river-sites .NB-feeds-header-icon').attr('src', $.favicon('river:'));
         $('.NB-feeds-header-read .NB-feeds-header-icon').attr('src', $.favicon('read'));
         $('.NB-feeds-header-searches .NB-feeds-header-icon').attr('src', $.favicon('searches'));
@@ -122,6 +123,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
                     'display': 'block',
                     'opacity': 0
                 }).animate({ 'opacity': 1 }, { 'duration': 700 });
+                NEWSBLUR.app.sidebar.update_toggle_all_folders_icon();
             }
 
             if (NEWSBLUR.reader.flags['showing_feed_in_tryfeed_view'] ||
@@ -184,6 +186,18 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             }).animate({ 'opacity': 1 }, { 'duration': 700 });
         } else {
             $('.NB-feeds-header-river-infrequent-container').css({
+                'display': 'none',
+                'opacity': 0
+            });
+        }
+
+        if (NEWSBLUR.Globals.is_staff && NEWSBLUR.assets.preference('show_trending_sites')) {
+            $('.NB-feeds-header-river-trending-container').css({
+                'display': 'block',
+                'opacity': 0
+            }).animate({ 'opacity': 1 }, { 'duration': 700 });
+        } else {
+            $('.NB-feeds-header-river-trending-container').css({
                 'display': 'none',
                 'opacity': 0
             });

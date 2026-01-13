@@ -34,7 +34,13 @@ public class BlurDatabase extends SQLiteOpenHelper {
         db.execSQL(DatabaseConstants.FEED_AUTHORS_SQL);
         db.execSQL(DatabaseConstants.SYNC_METADATA_SQL);
 	}
-	
+
+	@Override
+	public void onOpen(SQLiteDatabase db) {
+		super.onOpen(db);
+		db.enableWriteAheadLogging();
+	}
+
 	void dropAndRecreateTables() {
 		SQLiteDatabase db = getWritableDatabase();
 		String drop = "DROP TABLE IF EXISTS ";
