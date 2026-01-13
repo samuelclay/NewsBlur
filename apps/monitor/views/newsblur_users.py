@@ -58,9 +58,31 @@ class Users(View):
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
+            "trial": MStatistics.get(
+                "munin:users_trial",
+                lambda: Profile.objects.filter(is_premium=True, is_premium_trial=True).count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
             "queued": MStatistics.get(
                 "munin:users_queued",
                 lambda: RNewUserQueue.user_count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
+            "grandfathered": MStatistics.get(
+                "munin:users_grandfathered",
+                lambda: Profile.objects.filter(is_grandfathered=True).count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
+            "grandfathered_heavy": MStatistics.get(
+                "munin:users_grandfathered_heavy",
+                lambda: Profile.objects.filter(
+                    is_grandfathered=True,
+                    grandfather_expires__isnull=False,
+                    grandfather_expires__gt=datetime.datetime.now(datetime.timezone.utc),
+                ).count(),
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),

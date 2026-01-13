@@ -3359,14 +3359,11 @@ def save_feed_chooser(request):
     incomplete approved_feeds list. For individual feed mute/unmute operations,
     use the safer /reader/set_feed_mute endpoint instead.
     """
+    max_feed_limit = request.user.profile.max_feed_limit
     is_premium = request.user.profile.is_premium
     approved_feeds = request.POST.getlist("approved_feeds") or request.POST.getlist("approved_feeds[]")
     approved_feeds = [int(feed_id) for feed_id in approved_feeds if feed_id]
-    approve_all = False
-    if not is_premium:
-        approved_feeds = approved_feeds[:64]
-    elif is_premium and not approved_feeds:
-        approve_all = True
+    approved_feeds = approved_feeds[:max_feed_limit]
     activated = 0
     muted = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
@@ -3389,7 +3386,7 @@ def save_feed_chooser(request):
 
     for sub in usersubs:
         try:
-            if sub.feed_id in approved_feeds or approve_all:
+            if sub.feed_id in approved_feeds:
                 activated += 1
                 if not sub.active:
                     sub.active = True
