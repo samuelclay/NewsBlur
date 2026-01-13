@@ -422,6 +422,8 @@ NSString * const ThemeStyleDark = @"dark";
 
     [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightSepiaMediumDarkRGB(0x909090, 0x8B7B6B, 0xcccccc, 0xaaaaaa)];
     [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateSelected foregroundColor:UIColorFromLightSepiaMediumDarkRGB(0x0, 0x3C3226, 0xffffff, 0xffffff)];
+    segmentedControl.layer.borderWidth = 0.5;
+    segmentedControl.layer.borderColor = UIColorFromLightSepiaMediumDarkRGB(0xc0c0c0, 0xC8B8A8, 0x555555, 0x444444).CGColor;
 }
 
 - (void)updateThemeSegmentedControl:(UISegmentedControl *)segmentedControl {
