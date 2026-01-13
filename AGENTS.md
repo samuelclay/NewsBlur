@@ -99,21 +99,82 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 
 ## Sentry
 - **Projects**: `web`, `task`, `node`, `monitor` (auth token in `~/.sentryclirc`)
-- List issues: `sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --status unresolved`
-- Get stack trace from issue ID or URL: `curl -H "Authorization: Bearer $(grep token ~/.sentryclirc | cut -d= -f2)" "https://sentry.newsblur.com/api/0/issues/<ID>/events/latest/"`
-- Extract issue ID from web URL: `https://sentry.newsblur.com/organizations/newsblur/issues/<ID>/` → use `<ID>` in API
+- **Always use sentry-cli** when given a Sentry issue URL
+- Extract issue ID from URL: `https://sentry.newsblur.com/organizations/newsblur/issues/1037/` → issue ID is `1037`
+
+### Sentry CLI Commands
+```bash
+# List unresolved issues
+sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --status unresolved
+
+# Get specific issue with full details (use --log-level debug to see JSON with file/function info)
+sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --query "issue.id:1037" --log-level debug 2>&1 | grep "body:"
+
+# The JSON body contains: culprit (endpoint), metadata.filename, metadata.function
+# Example output: "culprit":"/profile/save_ios_receipt/","metadata":{"filename":"apps/profile/models.py","function":"setup_premium_history",...}
+
+# List issues for other projects (task, node, monitor)
+sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p task --status unresolved
+```
 
 ## Browser Testing with Chrome DevTools MCP
 - Local dev: `https://localhost` (when using containers directly)
-- Open All Site Stories: `NEWSBLUR.reader.open_river_stories()`
-- Get feed with unread stories: `NEWSBLUR.assets.feeds.find(f => f.get('nt') > 0)`
-- Open feed: `NEWSBLUR.reader.open_feed(feed.get('id'))`
-- Select first story: `document.querySelector('.NB-feed-story').click()`
-- Open story intelligence trainer: `document.querySelector('.NB-feed-story-train').click()`
-- Open feed options popover: Click `.NB-feedbar-options` element (no API)
-- Get feed IDs: `NEWSBLUR.assets.feeds` is a Backbone.js collection with underscore.js operations
-- Open folder: Click `.folder .folder_title` element (no API)
 - **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts
+
+### Test Query Parameters
+- `?test=growth` - Test growth prompts (bypasses premium check and cooldowns)
+- `?test=growth1` - Test feed_added growth prompt
+- `?test=growth2` - Test stories_read growth prompt
+
+### Theme Switching
+- `NEWSBLUR.reader.switch_theme('dark')` - Switch to dark mode
+- `NEWSBLUR.reader.switch_theme('light')` - Switch to light mode
+- `NEWSBLUR.reader.switch_theme('auto')` - Switch to auto/system theme
+
+### Opening Modals
+- `NEWSBLUR.reader.open_premium_upgrade_modal()` - Premium upgrade dialog
+- `NEWSBLUR.reader.open_feedchooser_modal()` - Feed chooser (mute sites)
+- `NEWSBLUR.reader.open_account_modal()` - Account settings
+- `NEWSBLUR.reader.open_preferences_modal()` - Preferences
+- `NEWSBLUR.reader.open_keyboard_shortcuts_modal()` - Keyboard shortcuts
+- `NEWSBLUR.reader.open_goodies_modal()` - Goodies & apps
+- `NEWSBLUR.reader.open_notifications_modal(feed_id)` - Notifications for feed
+- `NEWSBLUR.reader.open_newsletters_modal()` - Email newsletters
+- `NEWSBLUR.reader.open_organizer_modal()` - Organize feeds
+- `NEWSBLUR.reader.open_trainer_modal()` - Intelligence trainer
+- `NEWSBLUR.reader.open_add_feed_modal()` - Add new feed
+- `NEWSBLUR.reader.open_friends_modal()` - Find friends
+- `NEWSBLUR.reader.open_intro_modal()` - Intro/tutorial
+- `NEWSBLUR.reader.open_feed_statistics_modal(feed_id)` - Feed statistics
+- `NEWSBLUR.reader.open_feed_exception_modal(feed_id)` - Feed exceptions
+- `NEWSBLUR.reader.open_mark_read_modal()` - Mark as read options
+- `NEWSBLUR.reader.open_social_profile_modal(user_id)` - Social profile
+- `$.modal.close()` - Close any open modal
+
+### Feed & Story Operations
+- `NEWSBLUR.reader.open_river_stories()` - Open All Site Stories
+- `NEWSBLUR.reader.open_feed(feed_id)` - Open a specific feed
+- `NEWSBLUR.assets.feeds.find(f => f.get('nt') > 0)` - Get feed with unread stories
+- `NEWSBLUR.assets.feeds` - Backbone.js collection of all feeds
+- Click `.NB-feed-story` - Select first story
+- Click `.NB-feed-story-train` - Open story intelligence trainer
+- Click `.NB-feedbar-options` - Open feed options popover
+- Click `.folder .folder_title` - Open folder
+
+### User State (via Django shell)
+To test different subscription states, modify user profile in Django shell:
+```python
+docker exec -t newsblur_web_<worktree> python manage.py shell -c "
+from apps.profile.models import Profile
+p = Profile.objects.get(user__username='<username>')
+p.is_premium = True       # Enable premium
+p.is_premium_trial = True # Set as trial (False = paid)
+p.is_archive = False      # Archive tier
+p.is_pro = False          # Pro tier
+p.premium_renewal = True  # Has active renewal
+p.save()
+"
+```
 
 ## Server Maintenance
 - **DNS/Service Discovery**: Docker containers resolve services via dnsmasq → Consul (e.g., `redis-story.service.consul`)

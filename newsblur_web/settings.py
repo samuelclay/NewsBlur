@@ -540,6 +540,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": datetime.timedelta(minutes=5),
         "options": {"queue": "cron_queue"},
     },
+    "email-feed-limit-notifications": {
+        "task": "email-feed-limit-notifications",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
 }
 
 # =========

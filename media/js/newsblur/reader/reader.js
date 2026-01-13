@@ -145,6 +145,10 @@
             NEWSBLUR.assets.feeds.bind('reset', _.bind(function () {
                 this.load_dashboard_rivers();
                 this.load_intelligence_slider();
+                // Check for growth prompts after feeds load
+                if (NEWSBLUR.growth_prompts) {
+                    NEWSBLUR.growth_prompts.check_on_load();
+                }
             }, this));
 
             this.handle_mouse_indicator_hover();
@@ -1206,9 +1210,10 @@
             $('.NB-progress-counts', $progress).hide();
             $('.NB-progress-percentage', $progress).hide();
             $progress.addClass('NB-progress-error').addClass('NB-progress-big');
+            var limit_text = NEWSBLUR.Globals.max_feed_limit ? Inflector.commas(NEWSBLUR.Globals.max_feed_limit) : 'your';
             $('.NB-progress-link', $progress).html($.make('div', {
                 className: 'NB-modal-submit-button NB-modal-submit-green NB-menu-manage-feedchooser'
-            }, ['Choose your 64 sites']));
+            }, ['Choose ' + limit_text + ' sites']));
 
             this.show_progress_bar();
         },
@@ -1224,6 +1229,21 @@
         open_dialog_after_feeds_loaded: function (options) {
             options = options || {};
             if (!NEWSBLUR.Globals.is_authenticated) return;
+
+            // Handle test parameters for opening dialogs - skip normal dialog logic if test param present
+            var test_param = $.getQueryString('test');
+            if (test_param == 'feedchooser') {
+                _.defer(_.bind(this.open_feedchooser_modal, this), 100);
+                return;
+            }
+            if (test_param == 'premium') {
+                _.defer(_.bind(this.open_premium_upgrade_modal, this), 100);
+                return;
+            }
+            // Skip normal dialog logic for other test params (growth1, growth2, etc.)
+            if (test_param) {
+                return;
+            }
 
             if (!NEWSBLUR.assets.folders.length ||
                 !NEWSBLUR.assets.preference('has_setup_feeds')) {
@@ -1244,8 +1264,8 @@
                 } else {
                     _.defer(_.bind(this.open_feedchooser_modal, this), 100);
                 }
-            } else if (!NEWSBLUR.Globals.is_premium &&
-                NEWSBLUR.assets.feeds.active().length > 64) {
+            } else if (NEWSBLUR.Globals.max_feed_limit &&
+                NEWSBLUR.assets.feeds.active().length > NEWSBLUR.Globals.max_feed_limit) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
             }
         },
@@ -1545,6 +1565,13 @@
 
         open_feed: function (feed_id, options) {
             options = options || {};
+
+            // If over feed limit, show feedchooser modal instead of opening feed
+            if (NEWSBLUR.Globals.max_feed_limit &&
+                NEWSBLUR.assets.feeds.active().length > NEWSBLUR.Globals.max_feed_limit) {
+                return this.open_feedchooser_modal();
+            }
+
             var self = this;
             var $story_titles = this.$s.$story_titles;
             var feed = this.model.get_feed(feed_id) || options.feed;
@@ -1696,6 +1723,16 @@
             if (next == 'notifications') {
                 _.defer(function () {
                     NEWSBLUR.reader.open_notifications_modal(NEWSBLUR.assets.active_feed && NEWSBLUR.assets.active_feed.id);
+                });
+            }
+            if (next == 'feedchooser') {
+                _.defer(function () {
+                    NEWSBLUR.reader.open_feedchooser_modal();
+                });
+            }
+            if (next == 'premium') {
+                _.defer(function () {
+                    NEWSBLUR.reader.open_premium_upgrade_modal();
                 });
             }
             if (add_url) {
@@ -2145,6 +2182,13 @@
 
         open_river_stories: function ($folder, folder, options) {
             options = options || {};
+
+            // If over feed limit, show feedchooser modal instead of opening folder
+            if (NEWSBLUR.Globals.max_feed_limit &&
+                NEWSBLUR.assets.feeds.active().length > NEWSBLUR.Globals.max_feed_limit) {
+                return this.open_feedchooser_modal();
+            }
+
             $folder = $folder || this.$s.$feed_list;
             var folder_title = folder && folder.get('folder_title') || 'Everything';
 
@@ -2749,6 +2793,10 @@
             var story = this.model.get_story(story_id);
             if (this.active_story && !this.active_story.get('read_status')) {
                 NEWSBLUR.assets.stories.mark_read(story, { skip_delay: true });
+                // Track story read for growth prompts
+                if (NEWSBLUR.growth_prompts) {
+                    NEWSBLUR.growth_prompts.increment_stories_read();
+                }
             } else if (this.active_story && this.active_story.get('read_status')) {
                 NEWSBLUR.assets.stories.mark_unread(story);
             }
@@ -3470,6 +3518,19 @@
             }
         },
 
+        hide_trial_module: function () {
+            var $trial = $('.NB-module-trial-offer');
+            $trial.animate({
+                'opacity': 0
+            }, {
+                'duration': 380,
+                'complete': function () {
+                    $trial.slideUp(350);
+                }
+            });
+            this.model.preference('hide_trial_module', true);
+        },
+
         // ==========================
         // = Story Pane - Feed View =
         // ==========================
@@ -3791,6 +3852,28 @@
             NEWSBLUR.feedchooser = new NEWSBLUR.ReaderFeedchooser(options);
         },
 
+        get_premium_menu_title: function () {
+            if (NEWSBLUR.Globals.is_pro) {
+                return 'Premium Pro Account';
+            } else if (NEWSBLUR.Globals.is_archive) {
+                return 'Upgrade to Premium Pro';
+            } else if (NEWSBLUR.Globals.is_premium) {
+                return 'Upgrade to Archive or Pro';
+            } else {
+                return 'Upgrade to Premium';
+            }
+        },
+
+        open_premium_upgrade_modal: function (options) {
+            NEWSBLUR.premium_upgrade = new NEWSBLUR.ReaderPremiumUpgrade(options);
+        },
+
+        start_premium_trial: function () {
+            var $button = $('.NB-module-trial-offer-button');
+            $button.addClass('NB-disabled').text('Starting trial...');
+            window.location.href = '/profile/activate_premium_trial';
+        },
+
         open_organizer_modal: function (options) {
             NEWSBLUR.organizer = new NEWSBLUR.ReaderOrganizer(options);
         },
@@ -4058,7 +4141,7 @@
                     ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64 sites'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your ' + (NEWSBLUR.Globals.max_feed_limit ? Inflector.commas(NEWSBLUR.Globals.max_feed_limit) : '') + ' sites'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Enable the sites you want')
                     ])),
                     (NEWSBLUR.Globals.is_premium && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser', role: "button" }, [
@@ -4107,6 +4190,10 @@
                         $.make('div', { className: 'NB-menu-manage-logout NB-modal-submit-green NB-modal-submit-button' }, 'Logout'),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Account')
                     ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-premium', role: "button" }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Premium Subscription')
+                    ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-profile-editor', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Profile &amp; Blurblog')
@@ -4119,11 +4206,6 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences')
                     ]),
-                    (show_chooser && $.make('li', { className: 'NB-menu-separator' })),
-                    (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-premium', role: "button" }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Upgrade to premium')
-                    ])),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-font' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -4552,6 +4634,11 @@
             var $manage_menu = this.make_manage_menu(type, feed_id, story_id, inverse, $item);
             $manage_menu_container.empty().append($manage_menu);
             $manage_menu_container.data('item', $item && $item[0]);
+            $manage_menu_container.toggleClass('NB-menu-manage-hide-style-controls', !!options.hide_style_controls);
+            if (options.hide_style_controls) {
+                // Hide the separator before style controls
+                $('.NB-menu-manage-font', $manage_menu_container).prev('.NB-menu-separator').hide();
+            }
             $('.NB-taskbar').css('z-index', 2);
             if (type == 'site') {
                 if (inverse) {
@@ -5098,17 +5185,11 @@
         },
 
         manage_menu_mute_feed: function (feed_id, unmute) {
-            var approve_list = _.pluck(NEWSBLUR.assets.feeds.filter(function (feed) {
-                if (unmute) {
-                    return feed.get('active') || feed.get('id') == feed_id;
-                }
-                return feed.get('active') && feed.get('id') != feed_id;
-            }), 'id');
-
-            console.log(["Saving", approve_list, feed_id]);
+            var mute = !unmute;
+            console.log(["Muting feed", feed_id, "mute:", mute]);
 
             NEWSBLUR.reader.flags['reloading_feeds'] = true;
-            this.model.save_feed_chooser(approve_list, _.bind(function () {
+            this.model.set_feed_mute(feed_id, mute, _.bind(function () {
                 this.flags['has_saved'] = true;
                 NEWSBLUR.reader.flags['reloading_feeds'] = false;
                 NEWSBLUR.reader.hide_feed_chooser_button();
@@ -6936,7 +7017,7 @@
                 if (!$t.hasClass('NB-disabled')) {
                     var $item = $(".NB-icon", $t);
                     if ($item.length) {
-                        self.show_manage_menu('site', $item, { inverse: true, right: true, body: true });
+                        self.show_manage_menu('site', $item, { inverse: true, right: true, body: true, hide_style_controls: true });
                     }
                 }
             });
@@ -7447,9 +7528,7 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function () {
-                        self.open_feedchooser_modal({
-                            'chooser_only': NEWSBLUR.Globals.is_premium
-                        });
+                        self.open_feedchooser_modal();
                     });
                 }
             });
@@ -7465,14 +7544,14 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function () {
-                        self.open_feedchooser_modal({ 'premium_only': true });
+                        self.open_premium_upgrade_modal();
                     });
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-module-account-upgrade' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_feedchooser_modal({ 'premium_only': true });
+                    self.open_premium_upgrade_modal();
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-module-account-train' }, function ($t, $p) {
@@ -7502,7 +7581,19 @@
             $.targetIs(e, { tagSelector: '.NB-module-premium-button' }, function ($t, $p) {
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
-                    self.open_feedchooser_modal({ 'premium_only': true });
+                    self.open_premium_upgrade_modal();
+                }
+            });
+            $.targetIs(e, { tagSelector: '.NB-module-trial-offer-button' }, function ($t, $p) {
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.start_premium_trial();
+                }
+            });
+            $.targetIs(e, { tagSelector: '.NB-module-trial-button' }, function ($t, $p) {
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.open_premium_upgrade_modal();
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-module-gettingstarted-hide' }, function ($t, $p) {
@@ -7510,6 +7601,10 @@
                 if (!$t.hasClass('NB-disabled')) {
                     self.check_hide_getting_started(true);
                 }
+            });
+            $.targetIs(e, { tagSelector: '.NB-module-trial-hide' }, function ($t, $p) {
+                e.preventDefault();
+                self.hide_trial_module();
             });
 
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-unread' }, function ($t, $p) {

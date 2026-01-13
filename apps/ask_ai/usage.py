@@ -286,6 +286,7 @@ class AskAIUsageTracker:
         return f"{minutes} minute{'s' if minutes != 1 else ''}"
 
     def _daily_limit_message(self, limit):
+        """Generate error message for archive/pro users hitting daily limit."""
         time_remaining = self._format_time_until_reset()
         return (
             f"You've reached your daily limit of {limit} Ask AI requests. "
@@ -323,7 +324,13 @@ class TranscriptionUsageTracker:
             limit = self.DAILY_LIMIT_ARCHIVE
             used = self._daily_count()
             if used >= limit:
-                # Always return Ask AI quota message to hide transcription implementation
+                return False, ask_ai_message
+            return True, None
+
+        # Premium users have weekly limit
+        if self.profile.is_premium:
+            weekly_usage = self._weekly_count()
+            if weekly_usage >= self.WEEKLY_LIMIT_PREMIUM:
                 return False, ask_ai_message
             return True, None
 
