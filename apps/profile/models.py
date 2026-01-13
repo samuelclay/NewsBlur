@@ -200,10 +200,10 @@ class Profile(models.Model):
         """
         Returns the maximum number of feeds allowed for this user's subscription tier.
 
-        Grandfathering logic:
-        - Grandfathered premium users (existing at launch): 2000 feed limit
-        - Grandfathered users with grandfather_expires in future: no limit (grace period)
-        - New premium users: 1024 feed limit
+        Grandfathering logic (only for users who had > 1024 feeds at launch):
+        - Grandfathered premium (1024-1999 feeds at launch): 2000 feed limit
+        - Grandfathered premium (2000+ feeds at launch): no limit during grace period, then 2000
+        - Non-grandfathered premium (< 1024 feeds or new users): 1024 feed limit
         """
         if self.is_pro:
             return self.PRO_FEED_LIMIT

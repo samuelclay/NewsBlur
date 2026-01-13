@@ -66,21 +66,21 @@ class Command(BaseCommand):
         self._send_expiry_notifications(dry_run, force, username_filter, days_before, now, one_year_ago)
 
     def _grandfather_existing_users(self, dry_run, username_filter):
-        """Mark all existing premium users as grandfathered (one-time operation)."""
-        self.stdout.write("\n--- Grandfathering existing premium users ---")
+        """Mark premium users with > 1024 feeds as grandfathered (one-time operation).
+
+        Only users OVER the new 1024 limit need grandfathering. Users under 1024 feeds
+        are fine with the standard limit and don't need special treatment.
+        """
+        self.stdout.write("\n--- Grandfathering premium users over 1024 feeds ---")
 
         profiles = Profile.objects.filter(
             is_premium=True,
             is_archive=False,
             is_pro=False,
-            is_grandfathered__isnull=True,  # Only process unset profiles
-        ).select_related("user")
-
-        if username_filter:
-            profiles = profiles.filter(user__username=username_filter)
-
-        # Also include is_grandfathered=False for completeness
-        profiles_to_update = profiles | Profile.objects.filter(
+        ).filter(
+            # Only process profiles that haven't been grandfathered yet
+            is_grandfathered__isnull=True,
+        ).select_related("user") | Profile.objects.filter(
             is_premium=True,
             is_archive=False,
             is_pro=False,
@@ -88,19 +88,32 @@ class Command(BaseCommand):
         ).select_related("user")
 
         if username_filter:
-            profiles_to_update = profiles_to_update.filter(user__username=username_filter)
+            profiles = profiles.filter(user__username=username_filter)
 
+        user_ids = list(profiles.values_list("user_id", flat=True))
+
+        # Only grandfather users with > 1024 active feeds (over the new limit)
+        feed_counts = dict(
+            UserSubscription.objects.filter(user_id__in=user_ids, active=True)
+            .values("user_id")
+            .annotate(feed_count=Count("id"))
+            .filter(feed_count__gt=Profile.PREMIUM_FEED_LIMIT)  # > 1024
+            .values_list("user_id", "feed_count")
+        )
+
+        profiles_to_update = profiles.filter(user_id__in=feed_counts.keys())
         count = profiles_to_update.count()
 
         if count == 0:
-            self.stdout.write("No new premium users to grandfather")
+            self.stdout.write("No premium users over 1024 feeds to grandfather")
             return
 
-        self.stdout.write(f"Found {count} premium users to mark as grandfathered")
+        self.stdout.write(f"Found {count} premium users over 1024 feeds to mark as grandfathered")
 
         if dry_run:
             for profile in profiles_to_update[:10]:
-                self.stdout.write(f"  WOULD SET is_grandfathered=True: {profile.user.username}")
+                feed_count = feed_counts.get(profile.user_id, 0)
+                self.stdout.write(f"  WOULD SET is_grandfathered=True: {profile.user.username} ({feed_count} feeds)")
             if count > 10:
                 self.stdout.write(f"  ... and {count - 10} more")
         else:
