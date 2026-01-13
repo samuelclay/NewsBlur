@@ -3352,6 +3352,19 @@
             }
         },
 
+        hide_trial_module: function () {
+            var $trial = $('.NB-module-trial-offer');
+            $trial.animate({
+                'opacity': 0
+            }, {
+                'duration': 380,
+                'complete': function () {
+                    $trial.slideUp(350);
+                }
+            });
+            this.model.preference('hide_trial_module', true);
+        },
+
         // ==========================
         // = Story Pane - Feed View =
         // ==========================
@@ -7291,6 +7304,10 @@
                 if (!$t.hasClass('NB-disabled')) {
                     self.check_hide_getting_started(true);
                 }
+            });
+            $.targetIs(e, { tagSelector: '.NB-module-trial-hide' }, function ($t, $p) {
+                e.preventDefault();
+                self.hide_trial_module();
             });
 
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-unread' }, function ($t, $p) {

@@ -63,6 +63,7 @@ class Profile(models.Model):
     days_of_unread = models.IntegerField(default=settings.DAYS_OF_UNREAD, blank=True, null=True)
     tutorial_finished = models.BooleanField(default=False)
     hide_getting_started = models.BooleanField(default=False, null=True, blank=True)
+    hide_trial_module = models.BooleanField(default=False, null=True, blank=True)
     has_setup_feeds = models.BooleanField(default=False, null=True, blank=True)
     has_found_friends = models.BooleanField(default=False, null=True, blank=True)
     has_trained_intelligence = models.BooleanField(default=False, null=True, blank=True)
@@ -262,6 +263,7 @@ class Profile(models.Model):
             "preferences": json.decode(self.preferences),
             "tutorial_finished": self.tutorial_finished,
             "hide_getting_started": self.hide_getting_started,
+            "hide_trial_module": self.hide_trial_module,
             "has_setup_feeds": self.has_setup_feeds,
             "has_found_friends": self.has_found_friends,
             "has_trained_intelligence": self.has_trained_intelligence,
