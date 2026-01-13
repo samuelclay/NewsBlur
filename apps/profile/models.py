@@ -2280,6 +2280,7 @@ class PaymentHistory(models.Model):
 
     def canonical(self):
         return {
+            "id": self.id,
             "payment_date": self.payment_date.strftime("%Y-%m-%d"),
             "payment_amount": self.payment_amount,
             "payment_provider": self.payment_provider,
