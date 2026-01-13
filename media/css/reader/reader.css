@@ -15794,8 +15794,8 @@ form.opml_import_form input {
 }
 
 .NB-account-payments .NB-account-payment {
-    clear: both;
-    overflow: hidden;
+    display: flex;
+    align-items: center;
     list-style: none;
     margin: 0 0 12px;
     padding: 0 0 12px;
@@ -15815,19 +15815,19 @@ form.opml_import_form input {
 }
 
 .NB-account-payments .NB-account-payment-date {
-    float: left;
     width: 180px;
     font-weight: bold;
+    flex-shrink: 0;
 }
 
 .NB-account-payments .NB-account-payment-amount {
-    float: left;
-    width: 100px;
+    width: 80px;
+    flex-shrink: 0;
 }
 
 .NB-account-payments .NB-account-payment-provider {
-    float: left;
-    width: 100px;
+    width: 80px;
+    flex-shrink: 0;
 }
 
 .NB-account-payments .NB-scheduled .NB-account-payment-provider {
@@ -15838,6 +15838,38 @@ form.opml_import_form input {
 .NB-account-payments .NB-refunded .NB-account-payment-amount {
     text-decoration: line-through;
     color: darkred;
+}
+
+.NB-account-payments .NB-account-payment-invoice {
+    font-size: 11px;
+    color: #707070;
+    text-decoration: none;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background-color: #f0f0f0;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.NB-account-payments .NB-account-payment-invoice:hover {
+    background-color: #FAD961;
+    color: #505050;
+}
+
+.NB-account-payments .NB-account-payment-invoice-icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background: transparent url('/media/img/icons/heroicons-solid/document-text.svg') no-repeat center center;
+    background-size: 12px;
+    opacity: 0.6;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.NB-account-payments .NB-account-payment-invoice:hover .NB-account-payment-invoice-icon {
+    opacity: 1;
 }
 
 .NB-modal-account .NB-error {
