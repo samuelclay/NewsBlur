@@ -29,7 +29,15 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         "input .NB-add-site-google-news-search-input": "handle_google_news_input",
         "keypress .NB-add-site-google-news-search-input": "handle_google_news_search_keypress",
         // Trending tab events
-        "change .NB-add-site-trending-days": "handle_trending_days_change"
+        "change .NB-add-site-trending-days": "handle_trending_days_change",
+        // Categories tab events
+        "click .NB-add-site-category-card": "handle_category_click",
+        "click .NB-add-site-category-back": "go_back_to_categories",
+        // Discovery navigation events
+        "click .NB-add-site-source-pill": "handle_source_pill_click",
+        "click .NB-add-site-section-link": "handle_section_link_click",
+        // Filter pill events
+        "click .NB-add-site-filter-pill": "handle_filter_pill_click"
     },
 
     TABS: [
@@ -66,6 +74,107 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         'direct': 'RSS Feed'
     },
 
+    YOUTUBE_CATEGORIES: [
+        { id: 'all', name: 'All' },
+        { id: 'tech', name: 'Tech' },
+        { id: 'science', name: 'Science' },
+        { id: 'gaming', name: 'Gaming' },
+        { id: 'education', name: 'Education' },
+        { id: 'news', name: 'News' },
+        { id: 'entertainment', name: 'Entertainment' },
+        { id: 'music', name: 'Music' }
+    ],
+
+    PODCAST_CATEGORIES: [
+        { id: 'all', name: 'All' },
+        { id: 'news', name: 'News' },
+        { id: 'tech', name: 'Tech' },
+        { id: 'comedy', name: 'Comedy' },
+        { id: 'truecrime', name: 'True Crime' },
+        { id: 'business', name: 'Business' },
+        { id: 'education', name: 'Education' },
+        { id: 'science', name: 'Science' }
+    ],
+
+    POPULAR_PODCASTS: [
+        { name: 'The Daily', artist: 'The New York Times', genre: 'News', category: 'news', feed_url: 'https://feeds.simplecast.com/54nAGcIl', artwork: 'https://image.simplecastcdn.com/images/bdb43d4d-bd1c-4064-9531-5391a6e6e5e1/1d1dbe3d-4e99-4200-97ae-39d8f6b7f6d4/3000x3000/uploads_2f1615832653772-qxxi1vxge2o-3c8e6c2fe685b30fc38696d0e71dc11a_2fthe-daily-album-art-original.jpg' },
+        { name: 'Serial', artist: 'Serial Productions', genre: 'True Crime', category: 'truecrime', feed_url: 'https://feeds.simplecast.com/xl36XBC2' },
+        { name: 'This American Life', artist: 'Chicago Public Media', genre: 'Society', category: 'news', feed_url: 'https://www.thisamericanlife.org/podcast/rss.xml' },
+        { name: 'Radiolab', artist: 'WNYC Studios', genre: 'Science', category: 'science', feed_url: 'https://feeds.simplecast.com/EmVW7VGp' },
+        { name: 'Planet Money', artist: 'NPR', genre: 'Business', category: 'business', feed_url: 'https://feeds.npr.org/510289/podcast.xml' },
+        { name: 'How I Built This', artist: 'NPR', genre: 'Business', category: 'business', feed_url: 'https://feeds.npr.org/510313/podcast.xml' },
+        { name: 'Freakonomics Radio', artist: 'Freakonomics', genre: 'Business', category: 'business', feed_url: 'https://feeds.simplecast.com/Y8lFbOT4' },
+        { name: 'Acquired', artist: 'Ben Gilbert and David Rosenthal', genre: 'Technology', category: 'tech', feed_url: 'https://feeds.simplecast.com/JBiZ0WnY' },
+        { name: 'Lex Fridman Podcast', artist: 'Lex Fridman', genre: 'Technology', category: 'tech', feed_url: 'https://lexfridman.com/feed/podcast/' },
+        { name: 'All-In Podcast', artist: 'Jason Calacanis', genre: 'Technology', category: 'tech', feed_url: 'https://feeds.simplecast.com/4MVDEgRM' },
+        { name: 'The Vergecast', artist: 'The Verge', genre: 'Technology', category: 'tech', feed_url: 'https://feeds.megaphone.fm/vergecast' },
+        { name: 'Conan O\'Brien Needs a Friend', artist: 'Team Coco', genre: 'Comedy', category: 'comedy', feed_url: 'https://feeds.simplecast.com/dHoohVNH' },
+        { name: 'SmartLess', artist: 'Jason Bateman, Sean Hayes, Will Arnett', genre: 'Comedy', category: 'comedy', feed_url: 'https://feeds.simplecast.com/xs0YcAjq' },
+        { name: 'Stuff You Should Know', artist: 'iHeartPodcasts', genre: 'Education', category: 'education', feed_url: 'https://feeds.megaphone.fm/stuffyoushouldknow' },
+        { name: 'Hidden Brain', artist: 'NPR', genre: 'Science', category: 'science', feed_url: 'https://feeds.npr.org/510308/podcast.xml' },
+        { name: 'Crime Junkie', artist: 'audiochuck', genre: 'True Crime', category: 'truecrime', feed_url: 'https://feeds.simplecast.com/qm_9xx0g' },
+        { name: 'My Favorite Murder', artist: 'Exactly Right', genre: 'True Crime', category: 'truecrime', feed_url: 'https://feeds.simplecast.com/GLTi1Mcb' },
+        { name: 'TED Radio Hour', artist: 'NPR', genre: 'Education', category: 'education', feed_url: 'https://feeds.npr.org/510298/podcast.xml' },
+        { name: 'The Joe Rogan Experience', artist: 'Joe Rogan', genre: 'Society', category: 'comedy', feed_url: 'https://feeds.megaphone.fm/GLT1412515089' },
+        { name: 'Hardcore History', artist: 'Dan Carlin', genre: 'History', category: 'education', feed_url: 'https://feeds.feedburner.com/dancarlin/history' }
+    ],
+
+    POPULAR_NEWSLETTERS: [
+        // Substack
+        { title: 'The Hustle', platform: 'substack', url: 'thehustle.co', description: 'Business and tech news', feed_url: 'https://thehustle.co/feed/', subscribers: '2.5M' },
+        { title: 'Lenny\'s Newsletter', platform: 'substack', url: 'lennysnewsletter.com', description: 'Product management and growth', feed_url: 'https://www.lennysnewsletter.com/feed', subscribers: '500K' },
+        { title: 'Stratechery', platform: 'substack', url: 'stratechery.com', description: 'Technology strategy analysis', feed_url: 'https://stratechery.com/feed/', subscribers: '100K' },
+        { title: 'The Pragmatic Engineer', platform: 'substack', url: 'pragmaticengineer.com', description: 'Software engineering insights', feed_url: 'https://newsletter.pragmaticengineer.com/feed', subscribers: '400K' },
+        { title: 'Platformer', platform: 'substack', url: 'platformer.news', description: 'Tech and democracy', feed_url: 'https://www.platformer.news/feed', subscribers: '200K' },
+        { title: 'Money Stuff', platform: 'substack', url: 'bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine', description: 'Finance explained by Matt Levine', feed_url: 'https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss', subscribers: '150K' },
+        // Medium
+        { title: 'Towards Data Science', platform: 'medium', url: 'towardsdatascience.com', description: 'Data science and ML articles', feed_url: 'https://towardsdatascience.com/feed', subscribers: '700K' },
+        { title: 'Better Programming', platform: 'medium', url: 'betterprogramming.pub', description: 'Programming tutorials and tips', feed_url: 'https://betterprogramming.pub/feed', subscribers: '500K' },
+        { title: 'OneZero', platform: 'medium', url: 'onezero.medium.com', description: 'Tech and science stories', feed_url: 'https://onezero.medium.com/feed', subscribers: '200K' },
+        // Ghost
+        { title: 'CSS-Tricks', platform: 'ghost', url: 'css-tricks.com', description: 'Web development tips and tricks', feed_url: 'https://css-tricks.com/feed/', subscribers: '350K' },
+        { title: 'Smashing Magazine', platform: 'ghost', url: 'smashingmagazine.com', description: 'Web design and development', feed_url: 'https://www.smashingmagazine.com/feed/', subscribers: '400K' },
+        // Other
+        { title: 'Morning Brew', platform: 'generic', url: 'morningbrew.com', description: 'Daily business news digest', feed_url: 'https://www.morningbrew.com/daily/rss', subscribers: '4M' },
+        { title: 'The Verge', platform: 'direct', url: 'theverge.com', description: 'Technology news and reviews', feed_url: 'https://www.theverge.com/rss/index.xml', subscribers: '3M' },
+        { title: 'Ars Technica', platform: 'direct', url: 'arstechnica.com', description: 'Tech news and analysis', feed_url: 'https://feeds.arstechnica.com/arstechnica/index', subscribers: '1M' },
+        { title: 'Hacker News', platform: 'direct', url: 'news.ycombinator.com', description: 'Tech and startup news', feed_url: 'https://news.ycombinator.com/rss', subscribers: '500K' }
+    ],
+
+    REDDIT_CATEGORIES: [
+        { id: 'all', name: 'All' },
+        { id: 'news', name: 'News' },
+        { id: 'tech', name: 'Tech' },
+        { id: 'gaming', name: 'Gaming' },
+        { id: 'entertainment', name: 'Entertainment' },
+        { id: 'sports', name: 'Sports' },
+        { id: 'science', name: 'Science' },
+        { id: 'funny', name: 'Funny' }
+    ],
+
+    POPULAR_YOUTUBE_CHANNELS: [
+        { id: 'UCBcRF18a7Qf58cCRy5xuWwQ', title: 'MKBHD', description: 'Quality tech videos', subscriber_count: '19M', category: 'tech', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCBcRF18a7Qf58cCRy5xuWwQ' },
+        { id: 'UCXuqSBlHAE6Xw-yeJA0Tunw', title: 'Linus Tech Tips', description: 'Tech tips, reviews, and more', subscriber_count: '16M', category: 'tech', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw' },
+        { id: 'UC6nSFpj9HTCZ5t-N3Rm3-HA', title: 'Vsauce', description: 'Mind-bending science and curiosities', subscriber_count: '20M', category: 'science', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6nSFpj9HTCZ5t-N3Rm3-HA' },
+        { id: 'UCsXVk37bltHxD1rDPwtNM8Q', title: 'Kurzgesagt', description: 'Science and philosophy animations', subscriber_count: '22M', category: 'science', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q' },
+        { id: 'UCHnyfMqiRRG1u-2MsSQLbXA', title: 'Veritasium', description: 'Science and engineering videos', subscriber_count: '15M', category: 'science', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCHnyfMqiRRG1u-2MsSQLbXA' },
+        { id: 'UCWX3bGDLdJ8y_E7n2ghDbTQ', title: 'Tom Scott', description: 'Amazing places and interesting things', subscriber_count: '6M', category: 'education', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCWX3bGDLdJ8y_E7n2ghDbTQ' },
+        { id: 'UC9-y-6csu5WGm29I7JiwpnA', title: 'Computerphile', description: 'Computer science topics', subscriber_count: '2.5M', category: 'tech', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC9-y-6csu5WGm29I7JiwpnA' },
+        { id: 'UCy0tKL1T7wFoYcxCe0xjN6Q', title: 'Technology Connections', description: 'How everyday technology works', subscriber_count: '2M', category: 'tech', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCy0tKL1T7wFoYcxCe0xjN6Q' },
+        { id: 'UCVHFbqXqoYvEWM1Ddxl0QKg', title: 'Bloomberg Technology', description: 'Technology news and analysis', subscriber_count: '1M', category: 'news', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCVHFbqXqoYvEWM1Ddxl0QKg' },
+        { id: 'UCeY0bbntWzzVIaj2z3QigXg', title: 'NBC News', description: 'Breaking news and top stories', subscriber_count: '6M', category: 'news', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCeY0bbntWzzVIaj2z3QigXg' },
+        { id: 'UCupvZG-5ko_eiXAupbDfxWw', title: 'CNN', description: 'News, original shows and video', subscriber_count: '15M', category: 'news', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCupvZG-5ko_eiXAupbDfxWw' },
+        { id: 'UCYfdidRxbB8Qhf0Nx7ioOYw', title: 'The Verge', description: 'Technology, science, art, and culture', subscriber_count: '3M', category: 'tech', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCYfdidRxbB8Qhf0Nx7ioOYw' },
+        { id: 'UCddiUEpeqJcYeBxX1IVBKvQ', title: 'Wired', description: 'Future trends and tech culture', subscriber_count: '14M', category: 'tech', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCddiUEpeqJcYeBxX1IVBKvQ' },
+        { id: 'UCBJycsmduvYEL83R_U4JriQ', title: 'Marques Brownlee', description: 'Tech reviews and podcasts', subscriber_count: '3M', category: 'tech', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCBJycsmduvYEL83R_U4JriQ' },
+        { id: 'UCVls1GmFKf6WlTraIb_IaJg', title: 'DistroTube', description: 'Linux and open source software', subscriber_count: '300K', category: 'tech', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCVls1GmFKf6WlTraIb_IaJg' },
+        { id: 'UCX6OQ3DkcsbYNE6H8uQQuVA', title: 'MrBeast', description: 'Challenges and philanthropy', subscriber_count: '300M', category: 'entertainment', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCX6OQ3DkcsbYNE6H8uQQuVA' },
+        { id: 'UC-lHJZR3Gqxm24_Vd_AJ5Yw', title: 'PewDiePie', description: 'Gaming and entertainment', subscriber_count: '111M', category: 'gaming', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC-lHJZR3Gqxm24_Vd_AJ5Yw' },
+        { id: 'UCq-Fj5jknLsUf-MWSy4_brA', title: '3Blue1Brown', description: 'Math visualizations and explanations', subscriber_count: '6M', category: 'education', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCq-Fj5jknLsUf-MWSy4_brA' },
+        { id: 'UCYO_jab_esuFRV4b17AJtAw', title: '3Blue1Brown', description: 'Animated math explanations', subscriber_count: '6M', category: 'education', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw' },
+        { id: 'UC2C_jShtL725hvbm1arSV9w', title: 'CGP Grey', description: 'Educational explanations', subscriber_count: '6M', category: 'education', feed_url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC2C_jShtL725hvbm1arSV9w' }
+    ],
+
     initialize: function (options) {
         this.options = options || {};
         this.model = NEWSBLUR.assets;
@@ -87,11 +196,22 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             query: ''
         };
 
-        this.search_state = _.extend({}, default_search_state);
-        this.youtube_state = _.extend({}, default_search_state);
-        this.reddit_state = _.extend({}, default_search_state);
+        this.search_state = _.extend({}, default_search_state, {
+            trending_feeds: [],
+            trending_loaded: false
+        });
+        this.youtube_state = _.extend({}, default_search_state, {
+            selected_category: 'all'
+        });
+        this.reddit_state = _.extend({}, default_search_state, {
+            popular_subreddits: [],
+            popular_loaded: false,
+            selected_category: 'all'
+        });
         this.newsletters_state = _.extend({}, default_search_state);
-        this.podcasts_state = _.extend({}, default_search_state);
+        this.podcasts_state = _.extend({}, default_search_state, {
+            selected_category: 'all'
+        });
 
         this.trending_state = {
             feeds: [],
@@ -105,6 +225,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             categories: [],
             selected_category: null,
             feeds: [],
+            feeds_data: {},  // Cache of all feeds from /categories/ API
             is_loading: false
         };
 
@@ -269,18 +390,131 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     render_search_empty_state: function () {
-        return $.make('div', { className: 'NB-add-site-empty-state' }, [
-            $.make('div', { className: 'NB-add-site-empty-icon' }, [
-                $.make('img', { src: '/media/img/icons/lucide/rss.svg' })
+        var self = this;
+        var state = this.search_state;
+
+        // Load trending feeds if not already loaded
+        if (!state.trending_loaded && state.trending_feeds.length === 0) {
+            this.fetch_search_trending_feeds();
+        }
+
+        var $container = $.make('div', { className: 'NB-add-site-discover-container' });
+
+        // Trending Feeds Section
+        var $trending_section = $.make('div', { className: 'NB-add-site-section' }, [
+            $.make('div', { className: 'NB-add-site-section-header' }, [
+                $.make('div', { className: 'NB-add-site-section-title' }, [
+                    $.make('img', { src: '/media/img/icons/nouns/pulse.svg', className: 'NB-add-site-section-icon' }),
+                    'Trending Feeds'
+                ]),
+                $.make('div', { className: 'NB-add-site-section-link', 'data-tab': 'trending' }, 'View all')
             ]),
-            $.make('div', { className: 'NB-add-site-empty-title' }, 'Subscribe to RSS Feeds'),
-            $.make('div', { className: 'NB-add-site-empty-desc' },
-                'Search for sites by name or paste a URL directly.'),
-            $.make('div', { className: 'NB-add-site-empty-tips' }, [
-                this.make_tip('\ud83d\udd17', 'Paste any website URL to find its RSS feed'),
-                this.make_tip('\ud83d\udcfa', 'Use the YouTube tab to subscribe to channels'),
-                this.make_tip('\ud83c\udff7\ufe0f', 'Browse Categories to discover new content'),
-                this.make_tip('\ud83c\udf0d', 'Try Google News for topic-based news feeds')
+            $.make('div', { className: 'NB-add-site-section-content NB-add-site-trending-preview' })
+        ]);
+
+        // Render trending feeds or loading indicator
+        var $trending_content = $trending_section.find('.NB-add-site-trending-preview');
+        if (state.trending_feeds.length > 0) {
+            var $grid = $.make('div', { className: 'NB-add-site-results-grid' });
+            _.each(state.trending_feeds.slice(0, 6), function(item) {
+                $grid.append(self.render_feed_card(item.feed, item.stories));
+            });
+            $trending_content.append($grid);
+        } else {
+            $trending_content.append(this.make_loading_indicator());
+        }
+
+        $container.append($trending_section);
+
+        // Browse by Category Section
+        var $categories_section = $.make('div', { className: 'NB-add-site-section' }, [
+            $.make('div', { className: 'NB-add-site-section-header' }, [
+                $.make('div', { className: 'NB-add-site-section-title' }, [
+                    $.make('img', { src: '/media/img/icons/nouns/folder-closed.svg', className: 'NB-add-site-section-icon' }),
+                    'Browse by Source'
+                ])
+            ]),
+            $.make('div', { className: 'NB-add-site-section-content' }, [
+                $.make('div', { className: 'NB-add-site-source-pills' }, [
+                    this.make_source_pill('youtube', 'YouTube', '/media/img/reader/youtube_play.png'),
+                    this.make_source_pill('reddit', 'Reddit', '/media/img/reader/reddit.png'),
+                    this.make_source_pill('newsletters', 'Newsletters', '/media/img/reader/newsletters_folder.png'),
+                    this.make_source_pill('podcasts', 'Podcasts', '/media/img/icons/nouns/activity.svg'),
+                    this.make_source_pill('google-news', 'Google News', '/media/img/icons/nouns/world.svg'),
+                    this.make_source_pill('categories', 'Categories', '/media/img/icons/nouns/folder-closed.svg')
+                ])
+            ])
+        ]);
+
+        $container.append($categories_section);
+
+        // Tips Section
+        var $tips_section = $.make('div', { className: 'NB-add-site-section NB-add-site-section-tips' }, [
+            $.make('div', { className: 'NB-add-site-section-header' }, [
+                $.make('div', { className: 'NB-add-site-section-title' }, [
+                    $.make('img', { src: '/media/img/icons/nouns/lightbulb.svg', className: 'NB-add-site-section-icon' }),
+                    'Quick Tips'
+                ])
+            ]),
+            $.make('div', { className: 'NB-add-site-tips-grid' }, [
+                this.make_tip_card('/media/img/icons/nouns/link.svg', 'Paste any URL', 'Paste any website URL to automatically find its RSS feed'),
+                this.make_tip_card('/media/img/icons/nouns/search.svg', 'Search by name', 'Search for blogs, news sites, or publications by name'),
+                this.make_tip_card('/media/img/icons/nouns/folder-closed.svg', 'Browse categories', 'Explore curated collections of feeds by topic')
+            ])
+        ]);
+
+        $container.append($tips_section);
+
+        return $container;
+    },
+
+    fetch_search_trending_feeds: function () {
+        var self = this;
+        var state = this.search_state;
+
+        this.model.make_request('/rss_feeds/trending_sites', { days: 7 }, function(data) {
+            state.trending_loaded = true;
+            if (data && data.feeds) {
+                // Convert object to array and take first 6
+                var feeds_array = [];
+                _.each(data.feeds, function(feed_data, feed_id) {
+                    feeds_array.push({
+                        feed: feed_data.feed,
+                        stories: feed_data.stories || [],
+                        trending_score: feed_data.trending_score
+                    });
+                });
+
+                // Sort by trending score and take top 6
+                feeds_array = _.sortBy(feeds_array, function(f) {
+                    return -(f.trending_score || 0);
+                }).slice(0, 6);
+
+                state.trending_feeds = feeds_array;
+            }
+            // Re-render if still on search tab with empty query
+            if (self.active_tab === 'search' && !self.search_query) {
+                self.render_search_tab();
+            }
+        }, null, { request_type: 'GET' });
+    },
+
+    make_source_pill: function (tab_id, label, icon) {
+        return $.make('div', {
+            className: 'NB-add-site-source-pill',
+            'data-tab': tab_id
+        }, [
+            $.make('img', { src: icon, className: 'NB-add-site-source-pill-icon' }),
+            $.make('span', label)
+        ]);
+    },
+
+    make_tip_card: function (icon, title, description) {
+        return $.make('div', { className: 'NB-add-site-tip-card' }, [
+            $.make('img', { src: icon, className: 'NB-add-site-tip-card-icon' }),
+            $.make('div', { className: 'NB-add-site-tip-card-content' }, [
+                $.make('div', { className: 'NB-add-site-tip-card-title' }, title),
+                $.make('div', { className: 'NB-add-site-tip-card-desc' }, description)
             ])
         ]);
     },
@@ -333,16 +567,52 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     // ===============
 
     render_youtube_tab: function () {
-        this.render_source_tab({
-            tab_id: 'youtube',
-            state_key: 'youtube_state',
-            icon: '/media/img/reader/youtube.png',
-            title: 'YouTube Channels',
-            description: 'Subscribe to YouTube channels and playlists as RSS feeds.',
-            placeholder: 'Search YouTube channels...',
-            button_text: 'Search',
-            render_results: this.render_youtube_results
-        });
+        var self = this;
+        var state = this.youtube_state;
+        var $tab = this.$('.NB-add-site-youtube-tab');
+
+        // Build category pills
+        var $category_pills = $.make('div', { className: 'NB-add-site-filter-pills' },
+            _.map(this.YOUTUBE_CATEGORIES, function(cat) {
+                return $.make('div', {
+                    className: 'NB-add-site-filter-pill' + (state.selected_category === cat.id ? ' NB-active' : ''),
+                    'data-category': cat.id,
+                    'data-source': 'youtube'
+                }, cat.name);
+            })
+        );
+
+        var $content = $.make('div', { className: 'NB-add-site-source-tab' }, [
+            $.make('div', { className: 'NB-add-site-source-header' }, [
+                $.make('div', { className: 'NB-add-site-source-icon NB-youtube' }, [
+                    $.make('img', { src: '/media/img/reader/youtube.png' })
+                ]),
+                $.make('div', { className: 'NB-add-site-source-info' }, [
+                    $.make('div', { className: 'NB-add-site-source-title' }, 'YouTube Channels'),
+                    $.make('div', { className: 'NB-add-site-source-desc' },
+                        'Subscribe to YouTube channels and playlists as RSS feeds.')
+                ])
+            ]),
+            $.make('div', { className: 'NB-add-site-source-search' }, [
+                $.make('input', {
+                    type: 'text',
+                    className: 'NB-add-site-tab-search-input NB-add-site-youtube-search',
+                    placeholder: 'Search YouTube channels...'
+                }),
+                $.make('div', { className: 'NB-add-site-tab-search-btn' }, 'Search')
+            ]),
+            $category_pills,
+            $.make('div', { className: 'NB-add-site-source-results' })
+        ]);
+
+        $tab.html($content);
+
+        // Show search results or popular channels
+        if (state.results.length > 0) {
+            this.render_youtube_results();
+        } else {
+            this.render_youtube_popular();
+        }
     },
 
     render_youtube_results: function () {
@@ -364,6 +634,35 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         $results.html($grid);
     },
 
+    render_youtube_popular: function () {
+        var self = this;
+        var state = this.youtube_state;
+        var $results = this.$('.NB-add-site-youtube-tab .NB-add-site-source-results');
+
+        // Filter channels by category
+        var channels = this.POPULAR_YOUTUBE_CHANNELS;
+        if (state.selected_category && state.selected_category !== 'all') {
+            channels = _.filter(channels, function(ch) {
+                return ch.category === state.selected_category;
+            });
+        }
+
+        var $section = $.make('div', { className: 'NB-add-site-section' }, [
+            $.make('div', { className: 'NB-add-site-section-header' }, [
+                $.make('div', { className: 'NB-add-site-section-title' }, 'Popular Channels')
+            ]),
+            $.make('div', { className: 'NB-add-site-section-content' })
+        ]);
+
+        var $grid = $.make('div', { className: 'NB-add-site-results-grid' });
+        _.each(channels, function(channel) {
+            $grid.append(self.render_youtube_card(channel));
+        });
+
+        $section.find('.NB-add-site-section-content').append($grid);
+        $results.html($section);
+    },
+
     render_youtube_card: function (channel) {
         var meta_parts = [channel.subscriber_count || ''];
         if (channel.video_count) {
@@ -372,7 +671,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         return this.make_source_card({
             card_class: 'NB-add-site-youtube-card',
-            icon: channel.thumbnail || '/media/img/icons/lucide/youtube.svg',
+            icon: channel.thumbnail || '/media/img/reader/youtube.png',
             title: channel.title,
             meta: meta_parts.filter(Boolean).join(' \u2022 '),
             description: channel.description,
@@ -385,16 +684,52 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     // ==============
 
     render_reddit_tab: function () {
-        this.render_source_tab({
-            tab_id: 'reddit',
-            state_key: 'reddit_state',
-            icon: '/media/img/reader/reddit.png',
-            title: 'Reddit Subreddits',
-            description: 'Subscribe to subreddits as RSS feeds.',
-            placeholder: 'Search subreddits (e.g., programming, news, gaming)...',
-            button_text: 'Search',
-            render_results: this.render_reddit_results
-        });
+        var self = this;
+        var state = this.reddit_state;
+        var $tab = this.$('.NB-add-site-reddit-tab');
+
+        // Build category pills
+        var $category_pills = $.make('div', { className: 'NB-add-site-filter-pills' },
+            _.map(this.REDDIT_CATEGORIES, function(cat) {
+                return $.make('div', {
+                    className: 'NB-add-site-filter-pill' + (state.selected_category === cat.id ? ' NB-active' : ''),
+                    'data-category': cat.id,
+                    'data-source': 'reddit'
+                }, cat.name);
+            })
+        );
+
+        var $content = $.make('div', { className: 'NB-add-site-source-tab' }, [
+            $.make('div', { className: 'NB-add-site-source-header' }, [
+                $.make('div', { className: 'NB-add-site-source-icon NB-reddit' }, [
+                    $.make('img', { src: '/media/img/reader/reddit.png' })
+                ]),
+                $.make('div', { className: 'NB-add-site-source-info' }, [
+                    $.make('div', { className: 'NB-add-site-source-title' }, 'Reddit Subreddits'),
+                    $.make('div', { className: 'NB-add-site-source-desc' },
+                        'Subscribe to subreddits as RSS feeds.')
+                ])
+            ]),
+            $.make('div', { className: 'NB-add-site-source-search' }, [
+                $.make('input', {
+                    type: 'text',
+                    className: 'NB-add-site-tab-search-input NB-add-site-reddit-search',
+                    placeholder: 'Search subreddits (e.g., programming, news, gaming)...'
+                }),
+                $.make('div', { className: 'NB-add-site-tab-search-btn' }, 'Search')
+            ]),
+            $category_pills,
+            $.make('div', { className: 'NB-add-site-source-results' })
+        ]);
+
+        $tab.html($content);
+
+        // Show search results or popular subreddits
+        if (state.results.length > 0) {
+            this.render_reddit_results();
+        } else {
+            this.render_reddit_popular();
+        }
     },
 
     render_reddit_results: function () {
@@ -414,6 +749,54 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }, this);
 
         $results.html($grid);
+    },
+
+    render_reddit_popular: function () {
+        var self = this;
+        var state = this.reddit_state;
+        var $results = this.$('.NB-add-site-reddit-tab .NB-add-site-source-results');
+
+        // Load popular subreddits if not loaded
+        if (!state.popular_loaded) {
+            $results.html(this.make_loading_indicator());
+            this.fetch_reddit_popular();
+            return;
+        }
+
+        var $section = $.make('div', { className: 'NB-add-site-section' }, [
+            $.make('div', { className: 'NB-add-site-section-header' }, [
+                $.make('div', { className: 'NB-add-site-section-title' }, 'Popular Subreddits')
+            ]),
+            $.make('div', { className: 'NB-add-site-section-content' })
+        ]);
+
+        var $grid = $.make('div', { className: 'NB-add-site-results-grid' });
+        _.each(state.popular_subreddits, function(subreddit) {
+            $grid.append(self.render_reddit_card(subreddit));
+        });
+
+        $section.find('.NB-add-site-section-content').append($grid);
+        $results.html($section);
+    },
+
+    fetch_reddit_popular: function () {
+        var self = this;
+        var state = this.reddit_state;
+
+        this.model.make_request('/rss_feeds/reddit/popular', { limit: 30 }, function(data) {
+            state.popular_loaded = true;
+            if (data && data.results) {
+                state.popular_subreddits = data.results;
+            }
+            // Re-render if still on reddit tab
+            if (self.active_tab === 'reddit' && state.results.length === 0) {
+                self.render_reddit_popular();
+            }
+        }, function() {
+            state.popular_loaded = true;
+            state.popular_subreddits = [];
+            self.render_reddit_popular();
+        }, { request_type: 'GET' });
     },
 
     render_reddit_card: function (subreddit) {
@@ -447,6 +830,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     // ===================
 
     render_newsletters_tab: function () {
+        var self = this;
+        var state = this.newsletters_state;
+        var $tab = this.$('.NB-add-site-newsletters-tab');
+
         var platform_hints = $.make('div', { className: 'NB-add-site-platform-hints' }, [
             this.make_platform_hint('Substack:', 'newsletter.substack.com'),
             this.make_platform_hint('Medium:', 'medium.com/@username'),
@@ -454,17 +841,37 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             this.make_platform_hint('Ghost:', 'newsletter.ghost.io')
         ]);
 
-        this.render_source_tab({
-            tab_id: 'newsletters',
-            state_key: 'newsletters_state',
-            icon: '/media/img/reader/newsletters_folder.png',
-            title: 'Newsletters & Substack',
-            description: 'Subscribe to newsletters from Substack, Medium, Ghost, Buttondown, and more.',
-            placeholder: 'Paste newsletter URL (e.g., example.substack.com)...',
-            button_text: 'Find Feed',
-            render_results: this.render_newsletter_results,
-            extra_content: [platform_hints]
-        });
+        var $content = $.make('div', { className: 'NB-add-site-source-tab' }, [
+            $.make('div', { className: 'NB-add-site-source-header' }, [
+                $.make('div', { className: 'NB-add-site-source-icon NB-newsletters' }, [
+                    $.make('img', { src: '/media/img/reader/newsletters_folder.png' })
+                ]),
+                $.make('div', { className: 'NB-add-site-source-info' }, [
+                    $.make('div', { className: 'NB-add-site-source-title' }, 'Newsletters & Substack'),
+                    $.make('div', { className: 'NB-add-site-source-desc' },
+                        'Subscribe to newsletters from Substack, Medium, Ghost, Buttondown, and more.')
+                ])
+            ]),
+            $.make('div', { className: 'NB-add-site-source-search' }, [
+                $.make('input', {
+                    type: 'text',
+                    className: 'NB-add-site-tab-search-input NB-add-site-newsletters-search',
+                    placeholder: 'Paste newsletter URL (e.g., example.substack.com)...'
+                }),
+                $.make('div', { className: 'NB-add-site-tab-search-btn' }, 'Find Feed')
+            ]),
+            platform_hints,
+            $.make('div', { className: 'NB-add-site-source-results' })
+        ]);
+
+        $tab.html($content);
+
+        // Show search results or popular newsletters
+        if (state.results.length > 0) {
+            this.render_newsletter_results();
+        } else {
+            this.render_newsletters_popular();
+        }
     },
 
     make_platform_hint: function (label, example) {
@@ -491,6 +898,70 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }, this);
 
         $results.html($grid);
+    },
+
+    render_newsletters_popular: function () {
+        var self = this;
+        var $results = this.$('.NB-add-site-newsletters-tab .NB-add-site-source-results');
+
+        // Group newsletters by platform
+        var by_platform = _.groupBy(this.POPULAR_NEWSLETTERS, 'platform');
+        var platform_order = ['substack', 'medium', 'ghost', 'generic', 'direct'];
+
+        var $container = $.make('div', { className: 'NB-add-site-newsletters-popular' });
+
+        _.each(platform_order, function(platform) {
+            var newsletters = by_platform[platform];
+            if (!newsletters || newsletters.length === 0) return;
+
+            var platform_name = self.NEWSLETTER_PLATFORMS[platform] || platform;
+
+            var $section = $.make('div', { className: 'NB-add-site-section' }, [
+                $.make('div', { className: 'NB-add-site-section-header' }, [
+                    $.make('div', { className: 'NB-add-site-section-title' }, platform_name + ' Examples')
+                ]),
+                $.make('div', { className: 'NB-add-site-section-content' })
+            ]);
+
+            var $grid = $.make('div', { className: 'NB-add-site-results-grid' });
+            _.each(newsletters, function(newsletter) {
+                $grid.append(self.render_popular_newsletter_card(newsletter));
+            });
+
+            $section.find('.NB-add-site-section-content').append($grid);
+            $container.append($section);
+        });
+
+        $results.html($container);
+    },
+
+    render_popular_newsletter_card: function (newsletter) {
+        var platform_label = this.NEWSLETTER_PLATFORMS[newsletter.platform] || 'Newsletter';
+
+        return $.make('div', { className: 'NB-add-site-card NB-add-site-newsletter-card' }, [
+            $.make('div', { className: 'NB-add-site-card-header' }, [
+                $.make('div', {
+                    className: 'NB-add-site-card-icon NB-add-site-platform-icon NB-platform-' + newsletter.platform
+                }, [
+                    $.make('img', { src: '/media/img/reader/newsletters_folder.png' })
+                ]),
+                $.make('div', { className: 'NB-add-site-card-info' }, [
+                    $.make('div', { className: 'NB-add-site-card-title' }, newsletter.title),
+                    $.make('div', { className: 'NB-add-site-card-meta' }, [
+                        $.make('span', { className: 'NB-add-site-platform-badge' }, platform_label),
+                        newsletter.subscribers ? ' \u2022 ' + newsletter.subscribers + ' subscribers' : ''
+                    ])
+                ])
+            ]),
+            $.make('div', { className: 'NB-add-site-card-desc' }, newsletter.description),
+            $.make('div', { className: 'NB-add-site-card-actions' }, [
+                this.make_folder_selector(),
+                $.make('div', {
+                    className: 'NB-add-site-card-subscribe NB-add-site-subscribe-btn',
+                    'data-feed-url': newsletter.feed_url
+                }, 'Subscribe')
+            ])
+        ].filter(Boolean));
     },
 
     render_newsletter_card: function (newsletter) {
@@ -539,16 +1010,52 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     // ================
 
     render_podcasts_tab: function () {
-        this.render_source_tab({
-            tab_id: 'podcasts',
-            state_key: 'podcasts_state',
-            icon: '/media/img/icons/lucide/podcast.svg',
-            title: 'Podcasts',
-            description: 'Subscribe to podcasts via RSS. Search by name or paste a feed URL.',
-            placeholder: 'Search podcasts (e.g., "technology", "true crime", "comedy")...',
-            button_text: 'Search',
-            render_results: this.render_podcast_results
-        });
+        var self = this;
+        var state = this.podcasts_state;
+        var $tab = this.$('.NB-add-site-podcasts-tab');
+
+        // Build category pills
+        var $category_pills = $.make('div', { className: 'NB-add-site-filter-pills' },
+            _.map(this.PODCAST_CATEGORIES, function(cat) {
+                return $.make('div', {
+                    className: 'NB-add-site-filter-pill' + (state.selected_category === cat.id ? ' NB-active' : ''),
+                    'data-category': cat.id,
+                    'data-source': 'podcasts'
+                }, cat.name);
+            })
+        );
+
+        var $content = $.make('div', { className: 'NB-add-site-source-tab' }, [
+            $.make('div', { className: 'NB-add-site-source-header' }, [
+                $.make('div', { className: 'NB-add-site-source-icon NB-podcasts' }, [
+                    $.make('img', { src: '/media/img/icons/nouns/activity.svg' })
+                ]),
+                $.make('div', { className: 'NB-add-site-source-info' }, [
+                    $.make('div', { className: 'NB-add-site-source-title' }, 'Podcasts'),
+                    $.make('div', { className: 'NB-add-site-source-desc' },
+                        'Subscribe to podcasts via RSS. Search by name or paste a feed URL.')
+                ])
+            ]),
+            $.make('div', { className: 'NB-add-site-source-search' }, [
+                $.make('input', {
+                    type: 'text',
+                    className: 'NB-add-site-tab-search-input NB-add-site-podcasts-search',
+                    placeholder: 'Search podcasts (e.g., "technology", "true crime", "comedy")...'
+                }),
+                $.make('div', { className: 'NB-add-site-tab-search-btn' }, 'Search')
+            ]),
+            $category_pills,
+            $.make('div', { className: 'NB-add-site-source-results' })
+        ]);
+
+        $tab.html($content);
+
+        // Show search results or popular podcasts
+        if (state.results.length > 0) {
+            this.render_podcast_results();
+        } else {
+            this.render_podcasts_popular();
+        }
     },
 
     render_podcast_results: function () {
@@ -568,6 +1075,35 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }, this);
 
         $results.html($grid);
+    },
+
+    render_podcasts_popular: function () {
+        var self = this;
+        var state = this.podcasts_state;
+        var $results = this.$('.NB-add-site-podcasts-tab .NB-add-site-source-results');
+
+        // Filter podcasts by category
+        var podcasts = this.POPULAR_PODCASTS;
+        if (state.selected_category && state.selected_category !== 'all') {
+            podcasts = _.filter(podcasts, function(p) {
+                return p.category === state.selected_category;
+            });
+        }
+
+        var $section = $.make('div', { className: 'NB-add-site-section' }, [
+            $.make('div', { className: 'NB-add-site-section-header' }, [
+                $.make('div', { className: 'NB-add-site-section-title' }, 'Popular Podcasts')
+            ]),
+            $.make('div', { className: 'NB-add-site-section-content' })
+        ]);
+
+        var $grid = $.make('div', { className: 'NB-add-site-results-grid' });
+        _.each(podcasts, function(podcast) {
+            $grid.append(self.render_podcast_card(podcast));
+        });
+
+        $section.find('.NB-add-site-section-content').append($grid);
+        $results.html($section);
     },
 
     render_podcast_card: function (podcast) {
@@ -828,12 +1364,64 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         state.is_loading = true;
         this.$('.NB-add-site-categories-grid').html(this.make_loading_indicator());
 
-        // Placeholder categories until backend is implemented
-        setTimeout(function() {
+        this.model.make_request('/categories/', {}, function(data) {
             state.is_loading = false;
-            state.categories = self.get_placeholder_categories();
+
+            if (data && data.categories) {
+                // Store feeds data for later use
+                state.feeds_data = data.feeds || {};
+
+                // Map categories to display format with feed counts and icons
+                state.categories = _.map(data.categories, function(cat) {
+                    return {
+                        id: cat.title.toLowerCase().replace(/\s+/g, '-'),
+                        name: cat.title,
+                        description: cat.description,
+                        feed_ids: cat.feed_ids || [],
+                        feed_count: (cat.feed_ids || []).length,
+                        slug: cat.title.toLowerCase().replace(/\s+/g, '-'),
+                        icon: self.get_category_icon(cat.title)
+                    };
+                });
+            } else {
+                state.categories = [];
+            }
+
             self.render_categories_grid();
-        }, 500);
+        }, function() {
+            state.is_loading = false;
+            state.categories = [];
+            self.render_categories_grid();
+        }, { request_type: 'GET' });
+    },
+
+    get_category_icon: function(title) {
+        // Map category titles to SVG icons
+        var icon_map = {
+            'technology': '/media/img/icons/nouns/computer.svg',
+            'news': '/media/img/icons/nouns/news.svg',
+            'science': '/media/img/icons/nouns/flask.svg',
+            'business': '/media/img/icons/nouns/briefcase.svg',
+            'sports': '/media/img/icons/nouns/trophy.svg',
+            'entertainment': '/media/img/icons/nouns/tv.svg',
+            'gaming': '/media/img/icons/nouns/gaming.svg',
+            'health': '/media/img/icons/nouns/heart.svg',
+            'programming': '/media/img/icons/nouns/code.svg',
+            'design': '/media/img/icons/nouns/brush.svg',
+            'finance': '/media/img/icons/nouns/chart.svg',
+            'politics': '/media/img/icons/nouns/building.svg',
+            'music': '/media/img/icons/nouns/music.svg',
+            'food': '/media/img/icons/nouns/food.svg',
+            'travel': '/media/img/icons/nouns/plane.svg',
+            'photography': '/media/img/icons/nouns/camera.svg',
+            'environment': '/media/img/icons/nouns/world.svg',
+            'ai': '/media/img/icons/nouns/ai.svg',
+            'startups': '/media/img/icons/nouns/rocket.svg',
+            'security': '/media/img/icons/nouns/shield.svg'
+        };
+
+        var key = title.toLowerCase().replace(/[^a-z]/g, '');
+        return icon_map[key] || '/media/img/icons/nouns/folder-closed.svg';
     },
 
     get_placeholder_categories: function () {
@@ -867,13 +1455,32 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         $grid.empty();
 
+        if (state.categories.length === 0) {
+            $grid.html($.make('div', { className: 'NB-add-site-empty-state' },
+                'No categories available. Categories will appear here once they are configured.'));
+            return;
+        }
+
         _.each(state.categories, function(category) {
+            var $icon;
+            if (category.icon && category.icon.indexOf('/') === 0) {
+                // SVG icon path
+                $icon = $.make('img', {
+                    src: category.icon,
+                    className: 'NB-add-site-category-icon-img'
+                });
+            } else {
+                // Emoji fallback
+                $icon = category.icon || '';
+            }
+
             $grid.append($.make('div', {
                 className: 'NB-add-site-category-card',
                 'data-category-id': category.id,
-                'data-category-slug': category.slug
+                'data-category-slug': category.slug,
+                'data-category-name': category.name
             }, [
-                $.make('div', { className: 'NB-add-site-category-icon' }, category.icon),
+                $.make('div', { className: 'NB-add-site-category-icon' }, $icon),
                 $.make('div', { className: 'NB-add-site-category-info' }, [
                     $.make('div', { className: 'NB-add-site-category-name' }, category.name),
                     $.make('div', { className: 'NB-add-site-category-count' }, category.feed_count + ' feeds')
@@ -886,6 +1493,17 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var state = this.categories_state;
         var category = state.selected_category;
 
+        // Build category icon element
+        var $category_icon;
+        if (category.icon && category.icon.indexOf('/') === 0) {
+            $category_icon = $.make('img', {
+                src: category.icon,
+                className: 'NB-add-site-category-feeds-icon-img'
+            });
+        } else {
+            $category_icon = $.make('span', { className: 'NB-add-site-category-feeds-icon' }, category.icon);
+        }
+
         var $content = $.make('div', { className: 'NB-add-site-category-feeds-container' }, [
             $.make('div', { className: 'NB-add-site-category-feeds-header' }, [
                 $.make('div', { className: 'NB-add-site-category-back' }, [
@@ -893,7 +1511,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     'Back to Categories'
                 ]),
                 $.make('div', { className: 'NB-add-site-category-feeds-title' }, [
-                    $.make('span', { className: 'NB-add-site-category-feeds-icon' }, category.icon),
+                    $category_icon,
                     category.name
                 ])
             ]),
@@ -904,20 +1522,101 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.fetch_category_feeds(category);
     },
 
-    fetch_category_feeds: function (_category) {
+    fetch_category_feeds: function (category) {
         var self = this;
         var state = this.categories_state;
 
         this.$('.NB-add-site-category-feeds-results').html(this.make_loading_indicator());
 
-        // Placeholder - will be replaced with actual API call
-        setTimeout(function() {
-            state.feeds = [];
-            self.$('.NB-add-site-category-feeds-results').html(
-                $.make('div', { className: 'NB-add-site-coming-soon' },
-                    'Category feeds coming soon! This feature is under development.')
-            );
-        }, 500);
+        // Get feeds from cached data
+        var feed_ids = category.feed_ids || [];
+        var feeds = [];
+
+        _.each(feed_ids, function(feed_id) {
+            var feed = state.feeds_data[feed_id];
+            if (feed) {
+                feeds.push(feed);
+            }
+        });
+
+        // Sort by subscriber count
+        feeds = _.sortBy(feeds, function(f) {
+            return -(f.num_subscribers || 0);
+        });
+
+        state.feeds = feeds;
+
+        var $results = this.$('.NB-add-site-category-feeds-results');
+        $results.empty();
+
+        if (feeds.length === 0) {
+            $results.html($.make('div', { className: 'NB-add-site-empty-state' },
+                'No feeds found in this category.'));
+            return;
+        }
+
+        // Render feed cards in a grid
+        var $grid = $.make('div', { className: 'NB-add-site-results-grid' });
+        _.each(feeds, function(feed) {
+            $grid.append(self.render_feed_card(feed));
+        });
+        $results.html($grid);
+    },
+
+    handle_category_click: function (e) {
+        var $card = $(e.currentTarget);
+        var category_name = $card.data('category-name');
+        var category_id = $card.data('category-id');
+
+        // Find the full category object
+        var category = _.find(this.categories_state.categories, function(c) {
+            return c.id === category_id || c.name === category_name;
+        });
+
+        if (category) {
+            this.categories_state.selected_category = category;
+            this.render_categories_tab();
+        }
+    },
+
+    go_back_to_categories: function () {
+        this.categories_state.selected_category = null;
+        this.render_categories_tab();
+    },
+
+    handle_source_pill_click: function (e) {
+        var tab_id = $(e.currentTarget).data('tab');
+        if (tab_id) {
+            this.active_tab = tab_id;
+            this.render();
+        }
+    },
+
+    handle_section_link_click: function (e) {
+        var tab_id = $(e.currentTarget).data('tab');
+        if (tab_id) {
+            this.active_tab = tab_id;
+            this.render();
+        }
+    },
+
+    handle_filter_pill_click: function (e) {
+        var $pill = $(e.currentTarget);
+        var category = $pill.data('category');
+        var source = $pill.data('source');
+
+        // Handle different sources
+        if (source === 'youtube') {
+            this.youtube_state.selected_category = category;
+            this.youtube_state.results = [];  // Clear to show popular
+            this.render_youtube_tab();
+        } else if (source === 'reddit') {
+            this.reddit_state.selected_category = category;
+            this.render_reddit_tab();
+        } else if (source === 'podcasts') {
+            this.podcasts_state.selected_category = category;
+            this.render_podcasts_tab();
+        }
     },
 
     // ==================

@@ -21035,6 +21035,215 @@ form.opml_import_form input {
     vertical-align: middle;
 }
 
+/* Discovery Container */
+.NB-add-site-discover-container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* Section Styles */
+.NB-add-site-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.NB-add-site-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.NB-add-site-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.NB-add-site-section-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
+}
+
+.NB-add-site-section-link {
+    font-size: 13px;
+    color: #5C89C9;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.NB-add-site-section-link:hover {
+    text-decoration: underline;
+}
+
+.NB-add-site-section-content {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Source Pills */
+.NB-add-site-source-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.NB-add-site-source-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #FFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.NB-add-site-source-pill:hover {
+    border-color: #5C89C9;
+    background: #F0F5FF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(92, 137, 201, 0.15);
+}
+
+.NB-add-site-source-pill-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Filter Pills */
+.NB-add-site-filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 0 4px;
+}
+
+.NB-add-site-filter-pill {
+    padding: 8px 16px;
+    background: #FFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+}
+
+.NB-add-site-filter-pill:hover {
+    border-color: #5C89C9;
+    background: #F0F5FF;
+    color: #5C89C9;
+}
+
+.NB-add-site-filter-pill.NB-active {
+    background: #5C89C9;
+    color: #FFF;
+    border-color: #5C89C9;
+}
+
+.NB-add-site-filter-pill.NB-active:hover {
+    background: #4A78B5;
+}
+
+/* Tips Grid */
+.NB-add-site-tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.NB-add-site-tip-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    background: #F8F9FA;
+    border-radius: 10px;
+    border: 1px solid #E8E8E8;
+}
+
+.NB-add-site-tip-card-icon {
+    width: 24px;
+    height: 24px;
+    opacity: 0.5;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.NB-add-site-tip-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.NB-add-site-tip-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.NB-add-site-tip-card-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* Category Icon Images */
+.NB-add-site-category-icon-img {
+    width: 32px;
+    height: 32px;
+    opacity: 0.7;
+}
+
+.NB-add-site-category-feeds-icon-img {
+    width: 28px;
+    height: 28px;
+    opacity: 0.7;
+}
+
+/* Empty State */
+.NB-add-site-empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+    font-size: 14px;
+}
+
+/* Newsletters Popular */
+.NB-add-site-newsletters-popular {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* Section Tips - smaller padding */
+.NB-add-site-section-tips {
+    background: #F8F9FA;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 8px;
+}
+
+.NB-add-site-section-tips .NB-add-site-section-header {
+    border-bottom: none;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
 /* ===================
    Archive View Styles
    =================== */
