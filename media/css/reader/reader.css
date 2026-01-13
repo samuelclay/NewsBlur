@@ -20065,6 +20065,78 @@ form.opml_import_form input {
     padding: 20px 24px 16px;
 }
 
+/* Trending Feed Grid (for Add Site view) */
+.NB-trending-feed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.NB-trending-feed-card {
+    background: #fff;
+    border: 1px solid #e8e8e6;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.NB-trending-feed-card:hover {
+    border-color: #d0d0ce;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.NB-trending-feed-card .NB-feed-badge {
+    padding: 16px;
+    border: none;
+}
+
+.NB-trending-feed-card .NB-feed-badge-inner {
+    display: flex;
+    flex-direction: column;
+}
+
+.NB-trending-feed-card .NB-feed-badge-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.NB-trending-feed-card .NB-feed-badge-tagline {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 10px;
+    line-height: 1.4;
+    max-height: 40px;
+    overflow: hidden;
+}
+
+.NB-trending-feed-card .NB-feed-badge-stats {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 12px;
+}
+
+.NB-trending-feed-card .NB-feed-badge-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.NB-trending-feed-card .NB-badge-action-try,
+.NB-trending-feed-card .NB-badge-action-add {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+/* Add Site Trending Section */
+.NB-add-site-trending-section .NB-trending-feed-badges {
+    padding-top: 0;
+}
+
+.NB-add-site-trending-content {
+    min-height: 100px;
+}
+
 /* ====================
    Add Site View Styles
    ==================== */
@@ -20362,6 +20434,23 @@ form.opml_import_form input {
     object-fit: cover;
     flex-shrink: 0;
     background: #F0F0F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.NB-add-site-card-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.NB-add-site-newsletter-card .NB-add-site-card-icon img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
 }
 
 .NB-add-site-card-info {
@@ -21120,6 +21209,41 @@ form.opml_import_form input {
 .NB-add-site-source-pill-icon {
     width: 20px;
     height: 20px;
+}
+
+/* Category Pills */
+.NB-add-site-category-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.NB-add-site-category-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #FFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.NB-add-site-category-pill:hover {
+    border-color: #5C89C9;
+    background: #F0F5FF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(92, 137, 201, 0.15);
+}
+
+.NB-add-site-category-pill-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
 }
 
 /* Filter Pills */
