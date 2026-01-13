@@ -2669,6 +2669,18 @@ a.mention, a.mention-group {
     background-image: url('/media/embed/icons/icons8/icons8-bursts-100.png');
 }
 
+.NB-dark .NB-module-hide {
+    color: #9ca3af;
+    background: #374151;
+    border-color: #4b5563;
+}
+
+.NB-dark .NB-module-hide:hover {
+    color: #d1d5db;
+    background: #4b5563;
+    border-color: #6b7280;
+}
+
 /* ================================ */
 /* = Premium Upgrade Modal - Dark = */
 /* ================================ */

@@ -9498,6 +9498,25 @@ form.opml_import_form input {
     box-shadow: 0 4px 12px rgba(106, 142, 66, 0.3);
 }
 
+.NB-module-hide {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #888;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.NB-module-hide:hover {
+    color: #666;
+    background: #e8e8e8;
+    border-color: #ccc;
+}
+
 /* ================================= */
 /* = Feed Chooser Trial Banner     = */
 /* ================================= */
