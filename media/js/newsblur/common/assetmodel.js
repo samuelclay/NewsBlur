@@ -1850,6 +1850,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
 
+    set_feed_mute: function (feed_id, mute, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/set_feed_mute', {
+                'feed_id': feed_id,
+                'mute': mute
+            }, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+
     set_notifications_for_feed: function (feed, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/notifications/feed/', {
@@ -2152,6 +2163,24 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/profile/delete_starred_stories', {
             timestamp: timestamp
         }, pre_callback, error_callback);
+    },
+
+    count_saved_stories: function (timestamp, callback, error_callback) {
+        this.make_request('/profile/count_starred_stories', {
+            timestamp: timestamp
+        }, callback, error_callback);
+    },
+
+    count_shared_stories: function (timestamp, callback, error_callback) {
+        this.make_request('/profile/count_shared_stories', {
+            timestamp: timestamp
+        }, callback, error_callback);
+    },
+
+    delete_shared_stories: function (timestamp, callback, error_callback) {
+        this.make_request('/profile/delete_shared_stories', {
+            timestamp: timestamp
+        }, callback, error_callback);
     },
 
     delete_all_sites: function (callback, error_callback) {

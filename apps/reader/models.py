@@ -1370,15 +1370,43 @@ class UserSubscription(models.Model):
         self.feed = new_feed
         self.needs_unread_recalc = True
         try:
-            UserSubscription.objects.get(user=self.user, feed=new_feed)
+            existing_sub = UserSubscription.objects.get(user=self.user, feed=new_feed)
         except UserSubscription.DoesNotExist:
             self.save()
-            user_sub_folders.rewrite_feed(new_feed, old_feed)
         else:
-            # except (IntegrityError, OperationError):
-            logging.info("      !!!!> %s already subscribed" % self.user)
+            # User is subscribed to both feeds - merge metadata before deleting duplicate
+            logging.info("      !!!!> %s already subscribed, merging metadata" % self.user)
+
+            # Preserve active status: if either subscription is active, keep it active
+            if self.active and not existing_sub.active:
+                existing_sub.active = True
+
+            if self.user_title and not existing_sub.user_title:
+                existing_sub.user_title = self.user_title
+
+            # Sum feed_opens to preserve engagement history
+            existing_sub.feed_opens += self.feed_opens
+
+            # Use the more recent read dates
+            if self.last_read_date and (
+                not existing_sub.last_read_date or self.last_read_date > existing_sub.last_read_date
+            ):
+                existing_sub.last_read_date = self.last_read_date
+            if self.mark_read_date and (
+                not existing_sub.mark_read_date or self.mark_read_date > existing_sub.mark_read_date
+            ):
+                existing_sub.mark_read_date = self.mark_read_date
+
+            # Preserve training status
+            if self.is_trained:
+                existing_sub.is_trained = True
+
+            existing_sub.needs_unread_recalc = True
+            existing_sub.save()
             self.delete()
-            return
+
+        # Always rewrite folders to clean up duplicate feed references
+        user_sub_folders.rewrite_feed(new_feed, old_feed)
 
     @classmethod
     def collect_orphan_feeds(cls, user):
@@ -2292,9 +2320,7 @@ class UserSubscriptionFolders(models.Model):
             self.save()
 
     def auto_activate(self):
-        if self.user.profile.is_premium:
-            return
-
+        max_feed_limit = self.user.profile.max_feed_limit
         active_count = UserSubscription.objects.filter(user=self.user, active=True).count()
         if active_count:
             return
@@ -2303,7 +2329,8 @@ class UserSubscriptionFolders(models.Model):
         if not all_feeds:
             return
 
-        for feed in all_feeds[:64]:
+        feeds_to_activate = all_feeds[:max_feed_limit]
+        for feed in feeds_to_activate:
             try:
                 sub = UserSubscription.objects.get(user=self.user, feed=feed)
             except UserSubscription.DoesNotExist:
@@ -2562,6 +2589,29 @@ class MCustomFeedIcon(mongo.Document):
     @classmethod
     def delete_feed_icon(cls, user_id, feed_id):
         cls.objects.filter(user_id=user_id, feed_id=feed_id).delete()
+
+    @classmethod
+    def switch_feed(cls, original_feed_id, duplicate_feed_id):
+        """Migrate custom feed icons from duplicate feed to original feed."""
+        duplicate_icons = cls.objects.filter(feed_id=duplicate_feed_id)
+        count = duplicate_icons.count()
+        if count:
+            logging.info(
+                " ---> Switching %s custom feed icons from feed %s to %s"
+                % (count, duplicate_feed_id, original_feed_id)
+            )
+            for icon in duplicate_icons:
+                # Check if user already has a custom icon for the original feed
+                try:
+                    cls.objects.get(user_id=icon.user_id, feed_id=original_feed_id)
+                    # User already has icon for original feed, delete the duplicate
+                    icon.delete()
+                except cls.DoesNotExist:
+                    # No existing icon, migrate this one
+                    icon.feed_id = original_feed_id
+                    icon.updated_at = datetime.datetime.now()
+                    icon.save()
+        return count
 
     def to_json(self):
         return {

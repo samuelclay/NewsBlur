@@ -180,7 +180,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             });
         }
 
-        if (NEWSBLUR.assets.preference('show_infrequent_site_stories')) {
+        if (NEWSBLUR.assets.preference('show_infrequent_site_stories') && NEWSBLUR.assets.folders.length) {
             $('.NB-feeds-header-river-infrequent-container').css({
                 'display': 'block',
                 'opacity': 0
@@ -348,12 +348,10 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_intro_modal({ page_number: 2 });
         } else if (next == 'organizer') {
             NEWSBLUR.reader.open_organizer_modal();
-        } else if (next == 'chooser') {
+        } else if (next == 'chooser' || next == 'feedchooser') {
             NEWSBLUR.reader.open_feedchooser_modal();
-        } else if (next == 'premium') {
-            NEWSBLUR.reader.open_feedchooser_modal({ 'premium_only': true });
-        } else if (next == 'renew') {
-            NEWSBLUR.reader.open_feedchooser_modal({ 'premium_only': true });
+        } else if (next == 'premium' || next == 'renew') {
+            NEWSBLUR.reader.open_premium_upgrade_modal();
         } else if (next == 'password') {
             NEWSBLUR.reader.open_account_modal({ 'change_password': true });
         } else if (next == 'notifications') {
@@ -372,7 +370,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             }
         }
 
-        // This removes the query string from the URL.
+        // This removes the query string from the URL (unless ?test= is present).
         if (!route_found && window.history.replaceState && !$.getQueryString('test')) {
             // In case this needs to be found again: window.location.href = BACKBONE
             window.history.replaceState({}, null, '/');
