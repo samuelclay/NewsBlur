@@ -47,14 +47,9 @@ class Profile(models.Model):
     # Feed limits by subscription tier
     FREE_FEED_LIMIT = 64
     PREMIUM_FEED_LIMIT = 1024
+    GRANDFATHERED_FEED_LIMIT = 2000  # For existing premium users at launch
     ARCHIVE_FEED_LIMIT = 4096
     PRO_FEED_LIMIT = 10000
-
-    # Grandfathering: Premium users who signed up before this date with fewer than
-    # GRANDFATHER_FEED_THRESHOLD feeds are exempt from the PREMIUM_FEED_LIMIT.
-    # Users with >= GRANDFATHER_FEED_THRESHOLD feeds must mute down to the limit.
-    GRANDFATHER_CUTOFF_DATE = datetime.datetime(2026, 1, 1, tzinfo=datetime.timezone.utc)
-    GRANDFATHER_FEED_THRESHOLD = 2000
 
     user = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
     is_premium = models.BooleanField(default=False)
@@ -84,6 +79,7 @@ class Profile(models.Model):
     premium_renewal = models.BooleanField(default=False, blank=True, null=True)
     active_provider = models.CharField(max_length=24, blank=True, null=True)
     is_premium_trial = models.BooleanField(default=None, blank=True, null=True)
+    is_grandfathered = models.BooleanField(default=False, blank=True, null=True)
     grandfather_expires = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
@@ -174,19 +170,21 @@ class Profile(models.Model):
         return True
 
     @property
-    def is_feed_limit_grandfathered(self):
+    def is_feed_limit_temporarily_exempt(self):
         """
-        Returns True if this premium user is grandfathered and exempt from the feed limit.
+        Returns True if this premium user is temporarily exempt from feed limits.
 
-        Grandfathering is determined by the grandfather_expires field, which is set
-        when we send the feed limit notification email. Until that date passes,
-        the user won't see the mute dialog and can add feeds freely.
+        This applies to grandfathered users who had 2000+ feeds at launch.
+        They get a one-year grace period (grandfather_expires) to either upgrade
+        to Archive or mute down to the 2000 feed limit.
         """
-        # Only applies to premium users (not archive/pro)
+        # Only applies to grandfathered premium users (not archive/pro)
         if not self.is_premium or self.is_archive or self.is_pro:
             return False
+        if not self.is_grandfathered:
+            return False
 
-        # If grandfather_expires is set and in the future, user is grandfathered
+        # If grandfather_expires is set and in the future, user is temporarily exempt
         if self.grandfather_expires:
             expires = self.grandfather_expires
             if expires.tzinfo is None:
@@ -202,16 +200,23 @@ class Profile(models.Model):
         """
         Returns the maximum number of feeds allowed for this user's subscription tier.
 
-        For grandfathered premium users, returns None to disable the mute dialog
-        entirely until their renewal date passes.
+        Grandfathering logic:
+        - Grandfathered premium users (existing at launch): 2000 feed limit
+        - Grandfathered users with grandfather_expires in future: no limit (grace period)
+        - New premium users: 1024 feed limit
         """
         if self.is_pro:
             return self.PRO_FEED_LIMIT
         if self.is_archive:
             return self.ARCHIVE_FEED_LIMIT
         if self.is_premium:
-            if self.is_feed_limit_grandfathered:
-                return None
+            if self.is_grandfathered:
+                # Grandfathered users who had 2000+ feeds get a temporary exemption
+                if self.is_feed_limit_temporarily_exempt:
+                    return None
+                # All other grandfathered users have a 2000 feed limit
+                return self.GRANDFATHERED_FEED_LIMIT
+            # New premium users have a 1024 feed limit
             return self.PREMIUM_FEED_LIMIT
         return self.FREE_FEED_LIMIT
 

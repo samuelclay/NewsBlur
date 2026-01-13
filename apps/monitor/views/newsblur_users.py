@@ -72,7 +72,14 @@ class Users(View):
             ),
             "grandfathered": MStatistics.get(
                 "munin:users_grandfathered",
+                lambda: Profile.objects.filter(is_grandfathered=True).count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
+            "grandfathered_heavy": MStatistics.get(
+                "munin:users_grandfathered_heavy",
                 lambda: Profile.objects.filter(
+                    is_grandfathered=True,
                     grandfather_expires__isnull=False,
                     grandfather_expires__gt=datetime.datetime.now(datetime.timezone.utc),
                 ).count(),

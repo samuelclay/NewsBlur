@@ -12,7 +12,7 @@ from utils import log as logging
 
 
 class Command(BaseCommand):
-    help = "Grandfather users over the feed limit and email them 7 days before expiry. Run daily via Celery."
+    help = "Grandfather existing premium users and email those with 2000+ feeds before expiry. Run daily via Celery."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -54,22 +54,68 @@ class Command(BaseCommand):
 
         now = datetime.datetime.now(datetime.timezone.utc)
         one_year_ago = now - datetime.timedelta(days=365)
-        hard_cutoff = Profile.GRANDFATHER_CUTOFF_DATE + datetime.timedelta(days=365)
+        one_year_from_now = now + datetime.timedelta(days=365)
 
-        # Step 1: Set grandfather_expires on users who are over the limit but don't have it set
-        self._grandfather_new_users(dry_run, username_filter, now, hard_cutoff)
+        # Step 1: Mark existing premium users as grandfathered (one-time)
+        self._grandfather_existing_users(dry_run, username_filter)
 
-        # Step 2: Email users whose grandfather_expires is coming up
+        # Step 2: Set grandfather_expires on users with 2000+ feeds (one-time)
+        self._set_expiry_for_heavy_users(dry_run, username_filter, one_year_from_now)
+
+        # Step 3: Email users whose grandfather_expires is coming up
         self._send_expiry_notifications(dry_run, force, username_filter, days_before, now, one_year_ago)
 
-    def _grandfather_new_users(self, dry_run, username_filter, now, hard_cutoff):
-        """Set grandfather_expires on users who are over the limit but don't have it set."""
-        self.stdout.write("\n--- Grandfathering new users ---")
+    def _grandfather_existing_users(self, dry_run, username_filter):
+        """Mark all existing premium users as grandfathered (one-time operation)."""
+        self.stdout.write("\n--- Grandfathering existing premium users ---")
 
         profiles = Profile.objects.filter(
             is_premium=True,
             is_archive=False,
             is_pro=False,
+            is_grandfathered__isnull=True,  # Only process unset profiles
+        ).select_related("user")
+
+        if username_filter:
+            profiles = profiles.filter(user__username=username_filter)
+
+        # Also include is_grandfathered=False for completeness
+        profiles_to_update = profiles | Profile.objects.filter(
+            is_premium=True,
+            is_archive=False,
+            is_pro=False,
+            is_grandfathered=False,
+        ).select_related("user")
+
+        if username_filter:
+            profiles_to_update = profiles_to_update.filter(user__username=username_filter)
+
+        count = profiles_to_update.count()
+
+        if count == 0:
+            self.stdout.write("No new premium users to grandfather")
+            return
+
+        self.stdout.write(f"Found {count} premium users to mark as grandfathered")
+
+        if dry_run:
+            for profile in profiles_to_update[:10]:
+                self.stdout.write(f"  WOULD SET is_grandfathered=True: {profile.user.username}")
+            if count > 10:
+                self.stdout.write(f"  ... and {count - 10} more")
+        else:
+            updated = profiles_to_update.update(is_grandfathered=True)
+            self.stdout.write(f"Marked {updated} users as grandfathered")
+
+    def _set_expiry_for_heavy_users(self, dry_run, username_filter, one_year_from_now):
+        """Set grandfather_expires on grandfathered users with 2000+ feeds."""
+        self.stdout.write("\n--- Setting expiry for users with 2000+ feeds ---")
+
+        profiles = Profile.objects.filter(
+            is_premium=True,
+            is_archive=False,
+            is_pro=False,
+            is_grandfathered=True,
             grandfather_expires__isnull=True,
         ).select_related("user")
 
@@ -78,12 +124,12 @@ class Command(BaseCommand):
 
         user_ids = list(profiles.values_list("user_id", flat=True))
 
-        # Get users with > 1024 active feeds
+        # Get users with >= 2000 active feeds
         feed_counts = dict(
             UserSubscription.objects.filter(user_id__in=user_ids, active=True)
             .values("user_id")
             .annotate(feed_count=Count("id"))
-            .filter(feed_count__gt=Profile.PREMIUM_FEED_LIMIT)
+            .filter(feed_count__gte=Profile.GRANDFATHERED_FEED_LIMIT)
             .values_list("user_id", "feed_count")
         )
 
@@ -91,24 +137,26 @@ class Command(BaseCommand):
         count = profiles_to_update.count()
 
         if count == 0:
-            self.stdout.write("No new users to grandfather")
+            self.stdout.write("No users with 2000+ feeds need grandfather_expires set")
             return
 
-        self.stdout.write(f"Found {count} users over {Profile.PREMIUM_FEED_LIMIT} feeds without grandfather_expires")
+        self.stdout.write(f"Found {count} users with 2000+ feeds without grandfather_expires")
 
         for profile in profiles_to_update:
             user = profile.user
             feed_count = feed_counts[user.pk]
 
-            # Determine grandfather_expires based on premium_expire, capped at hard cutoff
+            # Set grandfather_expires to 1 year from now, or their renewal date if sooner
             if profile.premium_expire:
                 expires = profile.premium_expire
                 if expires.tzinfo is None:
                     expires = expires.replace(tzinfo=datetime.timezone.utc)
-                if expires > hard_cutoff:
-                    expires = hard_cutoff
+                # Use whichever is later: their renewal date or 1 year from now
+                # (give them at least 1 year)
+                if expires < one_year_from_now:
+                    expires = one_year_from_now
             else:
-                expires = hard_cutoff
+                expires = one_year_from_now
 
             expires_date = expires.strftime("%B %d, %Y")
 
@@ -130,6 +178,7 @@ class Command(BaseCommand):
             is_premium=True,
             is_archive=False,
             is_pro=False,
+            is_grandfathered=True,
             grandfather_expires__isnull=False,
         ).select_related("user")
 
