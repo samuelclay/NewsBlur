@@ -4,5 +4,5 @@ enum class StoryContentPreviewStyle {
     NONE,
     SMALL,
     MEDIUM,
-    LARGE
+    LARGE,
 }

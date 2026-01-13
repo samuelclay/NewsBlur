@@ -660,7 +660,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             bottom: -1 * $expander.outerHeight() - 76
         }, {
             duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(200 * height_ratio, 10)),
-            easing: 'easeInOutQuart'
+            easing: 'easeInOutQuart',
+            complete: function () {
+                $expander.hide();
+            }
         });
 
     },

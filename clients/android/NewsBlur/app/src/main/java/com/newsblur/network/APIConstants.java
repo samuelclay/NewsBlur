@@ -71,6 +71,7 @@ public class APIConstants {
     public static final String PATH_READ_STORIES = "/reader/read_stories";
     public static final String PATH_MOVE_FEED_TO_FOLDERS = "/reader/move_feed_to_folders";
     public static final String PATH_SAVE_FEED_CHOOSER = "/reader/save_feed_chooser";
+    public static final String PATH_SET_FEED_MUTE = "/reader/set_feed_mute";
     public static final String PATH_SET_NOTIFICATIONS = "/notifications/feed/";
     public static final String PATH_INSTA_FETCH = "/rss_feeds/exception_retry";
     public static final String PATH_RENAME_FEED = "/reader/rename_feed";
@@ -108,6 +109,7 @@ public class APIConstants {
     public static final String PARAMETER_REPLY_ID = "reply_id";
 	public static final String PARAMETER_COMMENT_USERID = "comment_user_id";
 	public static final String PARAMETER_FEEDID = "feed_id";
+	public static final String PARAMETER_MUTE = "mute";
 	public static final String PARAMETER_REPLY_TEXT = "reply_comments";
 	public static final String PARAMETER_STORY_FEEDID = "story_feed_id";
 	public static final String PARAMETER_SHARE_COMMENT = "comments";
@@ -132,7 +134,8 @@ public class APIConstants {
     public static final String PARAMETER_TAG = "tag";
     public static final String PARAMETER_APPROVED_FEEDS = "approved_feeds";
     public static final String PARAMETER_NOTIFICATION_TYPES = "notification_types";
-	public static final String PAREMETER_USER_TAGS = "user_tags";
+	public static final String PARAMETER_USER_TAGS = "user_tags";
+    public static final String PARAMETER_HIGHLIGHTS = "highlights";
 	public static final String PARAMETER_NOTIFICATION_FILTER = "notification_filter";
     public static final String PARAMETER_RESET_FETCH = "reset_fetch";
     public static final String PARAMETER_INFREQUENT = "infrequent";
@@ -151,6 +154,8 @@ public class APIConstants {
     public static final String VALUE_TRUE = "true";
     public static final String VALUE_FALSE = "false";
     public static final String VALUE_STARRED = "starred";
-	
+
 	public static final String S3_URL_FEED_ICONS = "https://s3.amazonaws.com/icons.newsblur.com/";
+
+    public static final String NULL_STORY_TEXT = "__NULL_STORY_TEXT__";
 }

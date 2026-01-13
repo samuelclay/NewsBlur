@@ -1,0 +1,3 @@
+[*.{kt,kts}]
+# Let @Composable/@Preview functions use PascalCase names
+ktlint_function_naming_ignore_when_annotated_with=Composable,Preview
