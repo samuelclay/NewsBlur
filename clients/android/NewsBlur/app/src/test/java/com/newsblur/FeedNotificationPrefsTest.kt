@@ -11,7 +11,6 @@ import org.junit.Assert
 import org.junit.Test
 
 class FeedNotificationPrefsTest {
-
     @Test
     fun enableUnreadNotif() {
         val feed = Feed.getZeroFeed()

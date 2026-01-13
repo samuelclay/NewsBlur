@@ -1,7 +1,6 @@
 package com.newsblur.fragment
 
 import android.app.Dialog
-import android.database.Cursor
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -9,30 +8,25 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.newsblur.R
 import com.newsblur.databinding.DialogStoryUserTagsBinding
 import com.newsblur.databinding.RowSavedTagBinding
 import com.newsblur.domain.StarredCount
 import com.newsblur.domain.Story
-import com.newsblur.service.NBSyncService
 import com.newsblur.util.FeedSet
-import com.newsblur.util.FeedUtils
 import com.newsblur.util.TagsAdapter
 import com.newsblur.viewModel.StoryUserTagsViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
-import javax.inject.Inject
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
-
-    @Inject
-    lateinit var feedUtils: FeedUtils
-
+class StoryUserTagsFragment :
+    DialogFragment(),
+    TagsAdapter.OnTagClickListener {
     private lateinit var story: Story
     private lateinit var fs: FeedSet
     private lateinit var binding: DialogStoryUserTagsBinding
@@ -46,8 +40,10 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
     private val newTags = HashSet<StarredCount>()
 
     companion object {
-
-        fun newInstance(story: Story, fs: FeedSet): StoryUserTagsFragment {
+        fun newInstance(
+            story: Story,
+            fs: FeedSet,
+        ): StoryUserTagsFragment {
             val fragment = StoryUserTagsFragment()
             val args = Bundle()
             args.putSerializable("story", story)
@@ -74,10 +70,6 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
 
         story = requireArguments().getSerializable("story") as Story
         fs = requireArguments().getSerializable("feed_set") as FeedSet
-
-        storyUserTagsViewModel.savedStoryCountsLiveData.observe(this) {
-            setCursor(it)
-        }
 
         binding.textAddNewTag.setOnClickListener {
             if (binding.containerAddTag.isVisible) {
@@ -122,22 +114,16 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
             binding.containerStoryTags.visibility = View.GONE
         }
 
-        storyUserTagsViewModel.getSavedStoryCounts()
-
         return builder.create()
     }
 
-    private fun setCursor(cursor: Cursor) {
-        if (!cursor.isBeforeFirst) return
-        val starredTags = ArrayList<StarredCount>()
-        while (cursor.moveToNext()) {
-            val sc = StarredCount.fromCursor(cursor)
-            if (sc.tag != null && !sc.isTotalCount) {
-                starredTags.add(sc)
+    override fun onStart() {
+        super.onStart()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                storyUserTagsViewModel.storyCounts.collect { setTags(it) }
             }
         }
-        Collections.sort(starredTags, StarredCount.StarredCountComparatorByTag)
-        setTags(starredTags)
     }
 
     private fun processNewTag(newTag: StarredCount) {
@@ -168,7 +154,7 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
         binding.inputTagName.text.clear()
     }
 
-    private fun setTags(starredTags: ArrayList<StarredCount>) {
+    private fun setTags(starredTags: List<StarredCount>) {
         otherTags.clear()
         starredTags.forEach { otherTags[it.tag] = it }
 
@@ -182,7 +168,10 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
         updateListAdapters()
     }
 
-    override fun onTagClickListener(starredTag: StarredCount, type: TagsAdapter.Type) {
+    override fun onTagClickListener(
+        starredTag: StarredCount,
+        type: TagsAdapter.Type,
+    ) {
         if (type == TagsAdapter.Type.OTHER) {
             otherTags.remove(starredTag.tag)
             // tag story count increases because the story
@@ -225,15 +214,8 @@ class StoryUserTagsFragment : DialogFragment(), TagsAdapter.OnTagClickListener {
         }
     }
 
-    private fun getSavedTagsList(): ArrayList<String> {
-        val tagList = ArrayList<String>(savedTags.size)
-        savedTags.forEach { tagList.add(it.tag) }
-        return tagList
-    }
-
     private fun saveTags() {
-        val savedTagList = getSavedTagsList()
-        NBSyncService.forceFeedsFolders()
-        feedUtils.setStorySaved(story, true, requireContext(), savedTagList)
+        val savedTagList = savedTags.map { it.tag }
+        storyUserTagsViewModel.saveTags(story, savedTagList)
     }
 }
