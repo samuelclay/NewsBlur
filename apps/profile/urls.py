@@ -30,6 +30,7 @@ urlpatterns = [
     url(r"^stripe_checkout/?", views.stripe_checkout, name="stripe-checkout"),
     url(r"^activities/?", views.load_activities, name="profile-activities"),
     url(r"^payment_history/?", views.payment_history, name="profile-payment-history"),
+    url(r"^invoice/(?P<payment_id>\d+)/?$", views.invoice, name="profile-invoice"),
     url(r"^cancel_premium/?", views.cancel_premium, name="profile-cancel-premium"),
     url(r"^refund_premium/?", views.refund_premium, name="profile-refund-premium"),
     url(r"^never_expire_premium/?", views.never_expire_premium, name="profile-never-expire-premium"),

@@ -15,7 +15,7 @@ from django.contrib.sites.models import Site
 from django.core.mail import mail_admins
 from django.db.models.aggregates import Sum
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.decorators.http import require_POST
@@ -917,6 +917,36 @@ def payment_history(request):
         "statistics": statistics,
         "next_invoice": next_invoice,
     }
+
+
+@login_required
+def invoice(request, payment_id):
+    """
+    Generate a printable invoice for a specific payment.
+    Staff can view any invoice; regular users can only view their own.
+    """
+    if request.user.is_staff:
+        payment = get_object_or_404(PaymentHistory, id=payment_id)
+    else:
+        payment = get_object_or_404(PaymentHistory, id=payment_id, user=request.user)
+
+    invoice_number = f"NB-{payment.id:08d}"
+
+    # Calculate coverage period (1 year from payment date)
+    coverage_start = payment.payment_date
+    coverage_end = coverage_start + dateutil.relativedelta.relativedelta(years=1)
+
+    return render(
+        request,
+        "profile/invoice.xhtml",
+        {
+            "payment": payment,
+            "invoice_number": invoice_number,
+            "user": payment.user,
+            "coverage_start": coverage_start,
+            "coverage_end": coverage_end,
+        },
+    )
 
 
 @ajax_login_required

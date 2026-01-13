@@ -606,10 +606,25 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 }
                 _.each(data.payments, function (payment) {
                     var date = new Date(payment.payment_date);
+                    var $invoice_link = null;
+
+                    // Only show invoice link for completed payments (not scheduled ones)
+                    if (!payment.scheduled && payment.id) {
+                        $invoice_link = $.make('a', {
+                            href: '/profile/invoice/' + payment.id + '/',
+                            target: '_blank',
+                            className: 'NB-account-payment-invoice'
+                        }, [
+                            $.make('span', { className: 'NB-account-payment-invoice-icon' }),
+                            'Invoice'
+                        ]);
+                    }
+
                     $history.append($.make('li', { className: 'NB-account-payment ' + (payment.scheduled ? ' NB-scheduled' : '') + (payment.refunded ? ' NB-refunded' : '') }, [
                         $.make('div', { className: 'NB-account-payment-date' }, date.format("F d, Y")),
                         $.make('div', { className: 'NB-account-payment-amount' }, "$" + payment.payment_amount),
-                        $.make('div', { className: 'NB-account-payment-provider' }, payment.payment_provider)
+                        $.make('div', { className: 'NB-account-payment-provider' }, payment.payment_provider),
+                        $invoice_link
                     ]));
                 });
             }
