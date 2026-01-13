@@ -1,6 +1,11 @@
 import datetime
 
-from apps.profile.models import Profile, RNewUserQueue
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.db.models import Count
+from django.template.loader import render_to_string
+
+from apps.profile.models import MSentEmail, Profile, RNewUserQueue
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.social.models import MActivity, MInteraction, MSocialServices
 from newsblur_web.celeryapp import app
@@ -147,8 +152,76 @@ def ReimportStripeHistory():
 
 @app.task(name="email-feed-limit-notifications")
 def EmailFeedLimitNotifications():
-    """Email grandfathered users 7 days before their grandfather_expires date."""
-    from django.core.management import call_command
+    """
+    Daily task to email grandfathered users 7 days before their renewal date.
 
-    logging.debug(" ---> Sending feed limit notification emails...")
-    call_command("email_feed_limit_notification")
+    Grandfathering is done once at launch via: manage.py grandfather_premium_users
+    """
+    logging.debug(" ---> Checking for feed limit notification emails...")
+    now = datetime.datetime.now(datetime.timezone.utc)
+    one_year_ago = now - datetime.timedelta(days=365)
+    days_before = 7
+
+    window_start = now
+    window_end = now + datetime.timedelta(days=days_before)
+
+    profiles = Profile.objects.filter(
+        is_premium=True,
+        is_archive=False,
+        is_pro=False,
+        is_grandfathered=True,
+        grandfather_expires__isnull=False,
+        grandfather_expires__gte=window_start,
+        grandfather_expires__lte=window_end,
+    ).select_related("user")
+
+    user_ids = list(profiles.values_list("user_id", flat=True))
+    feed_counts = dict(
+        UserSubscription.objects.filter(user_id__in=user_ids, active=True)
+        .values("user_id")
+        .annotate(feed_count=Count("id"))
+        .values_list("user_id", "feed_count")
+    )
+
+    for profile in profiles:
+        user = profile.user
+        feed_count = feed_counts.get(user.pk, 0)
+
+        # Skip inactive users (no login in past year)
+        last_seen = profile.last_seen_on
+        if last_seen.tzinfo is None:
+            last_seen = last_seen.replace(tzinfo=datetime.timezone.utc)
+        if last_seen < one_year_ago:
+            continue
+
+        # Skip if already sent
+        if MSentEmail.objects.filter(receiver_user_id=user.pk, email_type="feed_limit_notification").exists():
+            continue
+
+        deadline = profile.grandfather_expires
+        if deadline.tzinfo is None:
+            deadline = deadline.replace(tzinfo=datetime.timezone.utc)
+        deadline_date = deadline.strftime("%B %d, %Y")
+
+        # Send email
+        params = {
+            "user": user,
+            "username": user.username,
+            "feed_count": f"{feed_count:,}",
+            "deadline_date": deadline_date,
+        }
+        text = render_to_string("mail/email_feed_limit_notification.txt", params)
+        html = render_to_string("mail/email_feed_limit_notification.xhtml", params)
+        subject = f"Your NewsBlur subscription and your {feed_count:,} sites"
+
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            from_email=f"NewsBlur <{settings.HELLO_EMAIL}>",
+            to=[f"{user.username} <{user.email}>"],
+        )
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+
+        MSentEmail.record(receiver_user_id=user.pk, email_type="feed_limit_notification")
+        logging.user(user, f"~BB~FM~SBSent feed limit notification: {feed_count:,} feeds, deadline: {deadline_date}")
