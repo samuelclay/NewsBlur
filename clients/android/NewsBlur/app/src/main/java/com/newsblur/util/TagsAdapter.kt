@@ -9,18 +9,24 @@ import com.newsblur.R
 import com.newsblur.databinding.RowSavedTagBinding
 import com.newsblur.domain.StarredCount
 
-class TagsAdapter(private val type: Type,
-                  private val listener: OnTagClickListener) : RecyclerView.Adapter<TagsAdapter.ViewHolder>() {
-
+class TagsAdapter(
+    private val type: Type,
+    private val listener: OnTagClickListener,
+) : RecyclerView.Adapter<TagsAdapter.ViewHolder>() {
     private val tags = ArrayList<StarredCount>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.row_saved_tag, parent, false)
         return ViewHolder(view)
     }
 
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         val tag = tags[position]
         holder.binding.containerRow.setBackgroundResource(android.R.color.transparent)
         holder.binding.rowTagName.text = tag.tag
@@ -33,7 +39,6 @@ class TagsAdapter(private val type: Type,
     override fun getItemCount(): Int = tags.size
 
     fun replaceAll(tags: MutableCollection<StarredCount>) {
-
         val diffCallback = TagDiffCallback(this.tags, tags.toList())
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.tags.clear()
@@ -41,29 +46,41 @@ class TagsAdapter(private val type: Type,
         diffResult.dispatchUpdatesTo(this)
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
         val binding = RowSavedTagBinding.bind(view)
     }
 
     enum class Type {
         OTHER,
-        SAVED
+        SAVED,
     }
 
     interface OnTagClickListener {
-        fun onTagClickListener(starredTag: StarredCount, type: Type)
+        fun onTagClickListener(
+            starredTag: StarredCount,
+            type: Type,
+        )
     }
 
-    class TagDiffCallback(private val oldList: List<StarredCount>,
-                          private val newList: List<StarredCount>) : DiffUtil.Callback() {
+    class TagDiffCallback(
+        private val oldList: List<StarredCount>,
+        private val newList: List<StarredCount>,
+    ) : DiffUtil.Callback() {
+        override fun areItemsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ): Boolean =
+            oldList[oldItemPosition].tag == newList[newItemPosition].tag &&
+                oldList[oldItemPosition].count == newList[newItemPosition].count
 
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                oldList[oldItemPosition].tag == newList[newItemPosition].tag &&
-                        oldList[oldItemPosition].count == newList[newItemPosition].count
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                oldList[oldItemPosition].tag == newList[newItemPosition].tag &&
-                        oldList[oldItemPosition].count == newList[newItemPosition].count
+        override fun areContentsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ): Boolean =
+            oldList[oldItemPosition].tag == newList[newItemPosition].tag &&
+                oldList[oldItemPosition].count == newList[newItemPosition].count
 
         override fun getOldListSize(): Int = oldList.size
 

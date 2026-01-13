@@ -1,5 +1,7 @@
 package com.newsblur.util;
 
+import static com.newsblur.util.AppConstants.READING_IMAGES_PATH;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -16,7 +18,7 @@ import okhttp3.OkHttpClient;
 
 public class FileCache {
 
-    private static final String FILE_CACHE_STORY_IMAGES_DIR = "olimages";
+    public static final String FILE_CACHE_STORY_IMAGES_DIR = "olimages";
     private static final String FILE_CACHE_ICONS_DIR = "icons";
     private static final String FILE_CACHE_THUMBNAILS_DIR = "thumbs";
     private static final long MIN_FREE_SPACE_BYTES = 250L * 1024L * 1024L;
@@ -108,7 +110,7 @@ public class FileCache {
         }
     }
 
-    public String getCachedLocation(String url) {
+    public String getWebViewImageCache(String url) {
         try {
             String fileName = getFileName(url);
             if (fileName == null) {
@@ -116,7 +118,7 @@ public class FileCache {
             }
             File f = new File(cacheDir, fileName);
             if (f.exists()) {
-                return f.getAbsolutePath();
+                return READING_IMAGES_PATH + fileName;
             } else {
                 return null;
             }
@@ -181,6 +183,10 @@ public class FileCache {
         } catch (Exception e) {
             com.newsblur.util.Log.e(this, "exception cleaning up cache", e);
         }
+    }
+
+    public File getCacheDir() {
+        return cacheDir;
     }
 
     /**

@@ -106,13 +106,24 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Download this XML file as a backup')
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-delete' }, [
+                    $.make('div', { className: 'NB-preference NB-preference-delete NB-preference-delete-saved' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', { className: 'NB-preference-saved-stories-date' }),
+                            $.make('div', { className: 'NB-preference-stories-count NB-preference-saved-stories-count' }),
                             $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-account-delete-saved-stories' }, 'Delete my saved stories')
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Erase your saved stories'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-delete NB-preference-delete-shared' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', { className: 'NB-preference-shared-stories-date' }),
+                            $.make('div', { className: 'NB-preference-stories-count NB-preference-shared-stories-count' }),
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-account-delete-shared-stories' }, 'Delete my shared stories')
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Erase your shared stories'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-delete' }, [
@@ -236,38 +247,60 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     },
 
     render_dates: function () {
+        var self = this;
         var now = new Date();
         var this_year = now.getFullYear();
         var this_month = now.getMonth();
         var this_day = now.getDate();
 
-        var $dates = $(".NB-preference-saved-stories-date", this.$modal);
+        var make_date_selectors = function (prefix) {
+            var $months = $.make('select', { name: prefix + '_month', className: 'NB-date-month' });
+            _.each(NEWSBLUR.utils.monthNames, function (name, i) {
+                var $option = $.make('option', { value: i + "" }, name);
+                if (this_month == i) $option.prop('selected', true);
+                $months.append($option);
+            });
 
-        var $months = $.make('select', { name: 'month' });
-        _.each(NEWSBLUR.utils.monthNames, function (name, i) {
-            var $option = $.make('option', { value: i + "" }, name);
-            if (this_month == i) $option.prop('selected', true);
-            $months.append($option);
-        });
+            var $days = $.make('select', { name: prefix + '_day', className: 'NB-date-day' });
+            _.each(_.range(0, 31), function (name, i) {
+                var $option = $.make('option', { value: i + 1 + "" }, i + 1);
+                if (this_day == i + 1) $option.prop('selected', true);
+                $days.append($option);
+            });
 
-        var $days = $.make('select', { name: 'day' });
-        _.each(_.range(0, 31), function (name, i) {
-            var $option = $.make('option', { value: i + 1 + "" }, i + 1);
-            if (this_day == i + 1) $option.prop('selected', true);
-            $days.append($option);
-        });
+            var $years = $.make('select', { name: prefix + '_year', className: 'NB-date-year' });
+            _.each(_.range(2009, this_year + 1), function (name, i) {
+                var $option = $.make('option', { value: name + "" }, name);
+                if (this_year == name) $option.prop('selected', true);
+                $years.append($option);
+            });
 
-        var $years = $.make('select', { name: 'year' });
-        _.each(_.range(2009, this_year + 1), function (name, i) {
-            var $option = $.make('option', { value: name + "" }, name);
-            if (this_year == name) $option.prop('selected', true);
-            $years.append($option);
-        });
+            return { $months: $months, $days: $days, $years: $years };
+        };
 
-        $dates.append($.make('span', 'Older than: '));
-        $dates.append($months);
-        $dates.append($days);
-        $dates.append($years);
+        // Saved stories date selector
+        var $saved_dates = $(".NB-preference-saved-stories-date", this.$modal);
+        var saved_selectors = make_date_selectors('saved');
+        $saved_dates.append($.make('span', 'Older than: '));
+        $saved_dates.append(saved_selectors.$months);
+        $saved_dates.append(saved_selectors.$days);
+        $saved_dates.append(saved_selectors.$years);
+
+        // Shared stories date selector
+        var $shared_dates = $(".NB-preference-shared-stories-date", this.$modal);
+        var shared_selectors = make_date_selectors('shared');
+        $shared_dates.append($.make('span', 'Older than: '));
+        $shared_dates.append(shared_selectors.$months);
+        $shared_dates.append(shared_selectors.$days);
+        $shared_dates.append(shared_selectors.$years);
+
+        // Bind date change events to fetch counts
+        $saved_dates.find('select').on('change', _.bind(this.fetch_saved_stories_count, this));
+        $shared_dates.find('select').on('change', _.bind(this.fetch_shared_stories_count, this));
+
+        // Initial count fetch
+        this.fetch_saved_stories_count();
+        this.fetch_shared_stories_count();
     },
 
     animate_fields: function () {
@@ -362,14 +395,60 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         }
     },
 
+    get_saved_timestamp: function () {
+        var year = parseInt($("select[name=saved_year]", this.$modal).val(), 10);
+        var month = parseInt($("select[name=saved_month]", this.$modal).val(), 10);
+        var day = parseInt($("select[name=saved_day]", this.$modal).val(), 10);
+        return (new Date(year, month, day)).getTime() / 1000;
+    },
+
+    get_shared_timestamp: function () {
+        var year = parseInt($("select[name=shared_year]", this.$modal).val(), 10);
+        var month = parseInt($("select[name=shared_month]", this.$modal).val(), 10);
+        var day = parseInt($("select[name=shared_day]", this.$modal).val(), 10);
+        return (new Date(year, month, day)).getTime() / 1000;
+    },
+
+    fetch_saved_stories_count: function () {
+        var $count = $('.NB-preference-saved-stories-count', this.$modal);
+        var timestamp = this.get_saved_timestamp();
+
+        $count.text('Counting...');
+
+        NEWSBLUR.assets.count_saved_stories(timestamp, _.bind(function (data) {
+            if (data.count === 0) {
+                $count.text('No stories to delete');
+            } else {
+                $count.text(Inflector.pluralize('story', data.count, true) + ' will be deleted');
+            }
+        }, this), _.bind(function () {
+            $count.text('');
+        }, this));
+    },
+
+    fetch_shared_stories_count: function () {
+        var $count = $('.NB-preference-shared-stories-count', this.$modal);
+        var timestamp = this.get_shared_timestamp();
+
+        $count.text('Counting...');
+
+        NEWSBLUR.assets.count_shared_stories(timestamp, _.bind(function (data) {
+            if (data.count === 0) {
+                $count.text('No stories to delete');
+            } else {
+                $count.text(Inflector.pluralize('story', data.count, true) + ' will be deleted');
+            }
+        }, this), _.bind(function () {
+            $count.text('');
+        }, this));
+    },
+
     delete_saved_stories: function () {
         var $link = $(".NB-account-delete-saved-stories", this.$modal);
+        var $count = $('.NB-preference-saved-stories-count', this.$modal);
         var $loading = $('.NB-modal-loading', this.$modal);
-        var year = parseInt($("select[name=year]", this.$modal).val(), 10);
-        var month = parseInt($("select[name=month]", this.$modal).val(), 10);
-        var day = parseInt($("select[name=day]", this.$modal).val(), 10);
+        var timestamp = this.get_saved_timestamp();
 
-        var timestamp = (new Date(year, month, day)).getTime() / 1000;
         if (window.confirm("Positive you want to delete your saved stories?")) {
             $loading.addClass('NB-active');
             $link.attr('disabled', 'disabled');
@@ -380,10 +459,34 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 NEWSBLUR.reader.update_starred_count();
                 $link.replaceWith($.make('div', Inflector.pluralize('story', data.stories_deleted, true) + ' ' + Inflector.pluralize('has', data.stories_deleted) +
                     ' been deleted.'));
+                $count.text('');
             }, this), _.bind(function () {
                 $loading.removeClass('NB-active');
                 NEWSBLUR.reader.update_starred_count();
                 $link.replaceWith($.make('div', { className: 'NB-error' }, 'There was a problem deleting your saved stories.')).show();
+            }, this));
+        }
+    },
+
+    delete_shared_stories: function () {
+        var $link = $(".NB-account-delete-shared-stories", this.$modal);
+        var $count = $('.NB-preference-shared-stories-count', this.$modal);
+        var $loading = $('.NB-modal-loading', this.$modal);
+        var timestamp = this.get_shared_timestamp();
+
+        if (window.confirm("Positive you want to delete your shared stories?")) {
+            $loading.addClass('NB-active');
+            $link.attr('disabled', 'disabled');
+            $link.text("Deleting...");
+
+            NEWSBLUR.assets.delete_shared_stories(timestamp, _.bind(function (data) {
+                $loading.removeClass('NB-active');
+                $link.replaceWith($.make('div', Inflector.pluralize('story', data.stories_deleted, true) + ' ' + Inflector.pluralize('has', data.stories_deleted) +
+                    ' been deleted.'));
+                $count.text('');
+            }, this), _.bind(function () {
+                $loading.removeClass('NB-active');
+                $link.replaceWith($.make('div', { className: 'NB-error' }, 'There was a problem deleting your shared stories.')).show();
             }, this));
         }
     },
@@ -502,10 +605,25 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 }
                 _.each(data.payments, function (payment) {
                     var date = new Date(payment.payment_date);
+                    var $invoice_link = null;
+
+                    // Only show invoice link for completed payments (not scheduled ones)
+                    if (!payment.scheduled && payment.id) {
+                        $invoice_link = $.make('a', {
+                            href: '/profile/invoice/' + payment.id + '/',
+                            target: '_blank',
+                            className: 'NB-account-payment-invoice'
+                        }, [
+                            $.make('span', { className: 'NB-account-payment-invoice-icon' }),
+                            'Invoice'
+                        ]);
+                    }
+
                     $history.append($.make('li', { className: 'NB-account-payment ' + (payment.scheduled ? ' NB-scheduled' : '') + (payment.refunded ? ' NB-refunded' : '') }, [
                         $.make('div', { className: 'NB-account-payment-date' }, date.format("F d, Y")),
                         $.make('div', { className: 'NB-account-payment-amount' }, "$" + payment.payment_amount),
-                        $.make('div', { className: 'NB-account-payment-provider' }, payment.payment_provider)
+                        $.make('div', { className: 'NB-account-payment-provider' }, payment.payment_provider),
+                        $invoice_link
                     ]));
                 });
             }
@@ -559,6 +677,11 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             e.preventDefault();
 
             self.delete_saved_stories();
+        });
+        $.targetIs(e, { tagSelector: '.NB-account-delete-shared-stories' }, function ($t, $p) {
+            e.preventDefault();
+
+            self.delete_shared_stories();
         });
         $.targetIs(e, { tagSelector: '.NB-modal-cancel' }, function ($t, $p) {
             e.preventDefault();

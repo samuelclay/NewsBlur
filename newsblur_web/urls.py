@@ -22,6 +22,7 @@ urlpatterns = [
     url(r"^saved/(?P<tag_name>\d+)?", reader_views.index, name="saved-stories-tag"),
     url(r"^saved/?", reader_views.index),
     url(r"^read/?", reader_views.index),
+    url(r"^trending/?", reader_views.index),
     url(r"^social/\d+/.*?", reader_views.index),
     url(r"^user/.*?", reader_views.index),
     url(r"^null/.*?", reader_views.index),

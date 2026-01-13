@@ -99,9 +99,23 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 
 ## Sentry
 - **Projects**: `web`, `task`, `node`, `monitor` (auth token in `~/.sentryclirc`)
-- List issues: `sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --status unresolved`
-- Get stack trace from issue ID or URL: `curl -H "Authorization: Bearer $(grep token ~/.sentryclirc | cut -d= -f2)" "https://sentry.newsblur.com/api/0/issues/<ID>/events/latest/"`
-- Extract issue ID from web URL: `https://sentry.newsblur.com/organizations/newsblur/issues/<ID>/` → use `<ID>` in API
+- **Always use sentry-cli** when given a Sentry issue URL
+- Extract issue ID from URL: `https://sentry.newsblur.com/organizations/newsblur/issues/1037/` → issue ID is `1037`
+
+### Sentry CLI Commands
+```bash
+# List unresolved issues
+sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --status unresolved
+
+# Get specific issue with full details (use --log-level debug to see JSON with file/function info)
+sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --query "issue.id:1037" --log-level debug 2>&1 | grep "body:"
+
+# The JSON body contains: culprit (endpoint), metadata.filename, metadata.function
+# Example output: "culprit":"/profile/save_ios_receipt/","metadata":{"filename":"apps/profile/models.py","function":"setup_premium_history",...}
+
+# List issues for other projects (task, node, monitor)
+sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p task --status unresolved
+```
 
 ## Browser Testing with Chrome DevTools MCP
 - Local dev: `https://localhost` (when using containers directly)

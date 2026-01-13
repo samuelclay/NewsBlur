@@ -1,6 +1,5 @@
 package com.newsblur.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -12,47 +11,59 @@ import com.newsblur.R
 import com.newsblur.databinding.FragmentProfiledetailsBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.UserDetails
-import com.newsblur.network.APIManager
+import com.newsblur.network.UserApi
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.ImageLoader
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProfileDetailsFragment : Fragment() {
-
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var userApi: UserApi
 
     @IconLoader
     @Inject
     lateinit var iconLoader: ImageLoader
+
+    @Inject
+    lateinit var prefsRepo: PrefsRepo
 
     private var user: UserDetails? = null
     private var viewingSelf = false
 
     private lateinit var binding: FragmentProfiledetailsBinding
 
-    fun setUser(context: Context, user: UserDetails?, viewingSelf: Boolean) {
+    fun setUser(
+        user: UserDetails?,
+        viewingSelf: Boolean,
+    ) {
         this.user = user
         this.viewingSelf = viewingSelf
         if (::binding.isInitialized) {
-            setUserFields(context)
+            setUserFields()
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_profiledetails, container, false)
         binding = FragmentProfiledetailsBinding.bind(view)
         binding.profileFollowButton.setOnClickListener { followUser() }
         binding.profileUnfollowButton.setOnClickListener { unfollowUser() }
-        user?.let { setUserFields(requireContext()) }
+        user?.let { setUserFields() }
         return view
     }
 
-    private fun setUserFields(context: Context?) {
+    private fun setUserFields() {
         binding.profileUsername.text = user!!.username
         if (!TextUtils.isEmpty(user!!.bio)) {
             binding.profileBio.text = user!!.bio
@@ -84,57 +95,63 @@ class ProfileDetailsFragment : Fragment() {
             }
         } else {
             binding.profileFollowButton.visibility = View.GONE
-            var userPicture = PrefsUtils.getUserImage(context)
-            // seems to sometimes be an error loading the picture so prevent
-            // force close if null returned
+            setUserPicture()
+        }
+    }
+
+    private fun setUserPicture() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val userPicture = prefsRepo.getUserImage(requireContext())
             if (userPicture != null) {
-                userPicture = UIUtils.clipAndRound(userPicture, true, false)
-                binding.profilePicture.setImageBitmap(userPicture)
+                val roundedPicture = UIUtils.clipAndRound(userPicture, true, false)
+                withContext(Dispatchers.Main) {
+                    binding.profilePicture.setImageBitmap(roundedPicture)
+                }
             }
         }
     }
 
     private fun followUser() {
         lifecycleScope.executeAsyncTask(
-                onPreExecute = {
-                    binding.profileFollowButton.isEnabled = false
-                },
-                doInBackground = {
-                    apiManager.followUser(user!!.userId)
-                },
-                onPostExecute = {
-                    binding.profileFollowButton.isEnabled = true
-                    if (it) {
-                        user!!.followedByYou = true
-                        binding.profileFollowButton.visibility = View.GONE
-                        binding.profileUnfollowButton.visibility = View.VISIBLE
-                    } else {
-                        val alertDialog = AlertDialogFragment.newAlertDialogFragment(resources.getString(R.string.follow_error))
-                        alertDialog.show(parentFragmentManager, "fragment_edit_name")
-                    }
+            onPreExecute = {
+                binding.profileFollowButton.isEnabled = false
+            },
+            doInBackground = {
+                userApi.followUser(user!!.userId)
+            },
+            onPostExecute = {
+                binding.profileFollowButton.isEnabled = true
+                if (it) {
+                    user!!.followedByYou = true
+                    binding.profileFollowButton.visibility = View.GONE
+                    binding.profileUnfollowButton.visibility = View.VISIBLE
+                } else {
+                    val alertDialog = AlertDialogFragment.newAlertDialogFragment(resources.getString(R.string.follow_error))
+                    alertDialog.show(parentFragmentManager, "fragment_edit_name")
                 }
+            },
         )
     }
 
     private fun unfollowUser() {
         lifecycleScope.executeAsyncTask(
-                onPreExecute = {
-                    binding.profileUnfollowButton.isEnabled = false
-                },
-                doInBackground = {
-                    apiManager.unfollowUser(user!!.userId)
-                },
-                onPostExecute = {
-                    binding.profileUnfollowButton.isEnabled = true
-                    if (it) {
-                        user!!.followedByYou = false
-                        binding.profileUnfollowButton.visibility = View.GONE
-                        binding.profileFollowButton.visibility = View.VISIBLE
-                    } else {
-                        val alertDialog = AlertDialogFragment.newAlertDialogFragment(resources.getString(R.string.unfollow_error))
-                        alertDialog.show(parentFragmentManager, "fragment_edit_name")
-                    }
+            onPreExecute = {
+                binding.profileUnfollowButton.isEnabled = false
+            },
+            doInBackground = {
+                userApi.unfollowUser(user!!.userId)
+            },
+            onPostExecute = {
+                binding.profileUnfollowButton.isEnabled = true
+                if (it) {
+                    user!!.followedByYou = false
+                    binding.profileUnfollowButton.visibility = View.GONE
+                    binding.profileFollowButton.visibility = View.VISIBLE
+                } else {
+                    val alertDialog = AlertDialogFragment.newAlertDialogFragment(resources.getString(R.string.unfollow_error))
+                    alertDialog.show(parentFragmentManager, "fragment_edit_name")
                 }
+            },
         )
     }
 }

@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.content.Context;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -14,13 +13,13 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.domain.Feed;
+import com.newsblur.preference.PrefsRepo;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.FeedOrderFilter;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.FolderViewFilter;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.ListOrderFilter;
-import com.newsblur.util.PrefsUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -48,16 +47,18 @@ public class FeedChooserAdapter extends BaseExpandableListAdapter {
     protected FeedOrderFilter feedOrderFilter;
     protected final FeedUtils feedUtils;
     protected final ImageLoader iconLoader;
+    protected final PrefsRepo prefsRepo;
 
     protected float textSize;
 
-    FeedChooserAdapter(Context context, FeedUtils feedUtils, ImageLoader iconLoader) {
-        folderViewFilter = PrefsUtils.getFeedChooserFolderView(context);
-        listOrderFilter = PrefsUtils.getFeedChooserListOrder(context);
-        feedOrderFilter = PrefsUtils.getFeedChooserFeedOrder(context);
-        textSize = PrefsUtils.getListTextSize(context);
+    FeedChooserAdapter(FeedUtils feedUtils, ImageLoader iconLoader, PrefsRepo prefsRepo) {
+        folderViewFilter = prefsRepo.getFeedChooserFolderView();
+        listOrderFilter = prefsRepo.getFeedChooserListOrder();
+        feedOrderFilter = prefsRepo.getFeedChooserFeedOrder();
+        textSize = prefsRepo.getListTextSize();
         this.feedUtils = feedUtils;
         this.iconLoader = iconLoader;
+        this.prefsRepo = prefsRepo;
     }
 
     @Override
