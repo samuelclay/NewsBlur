@@ -2,22 +2,42 @@ package com.newsblur.subscription
 
 import android.app.Activity
 import android.content.Context
-import com.android.billingclient.api.*
+import com.android.billingclient.api.AcknowledgePurchaseParams
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.BillingFlowParams.SubscriptionUpdateParams.ReplacementMode
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.PendingPurchasesParams
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
 import com.newsblur.R
-import com.newsblur.network.APIManager
-import com.newsblur.service.NBSyncService
-import com.newsblur.util.*
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.*
+import com.newsblur.network.UserApi
+import com.newsblur.preference.PrefsRepo
+import com.newsblur.service.SyncServiceState
+import com.newsblur.util.AppConstants
+import com.newsblur.util.FeedUtils
+import com.newsblur.util.Log
+import com.newsblur.util.NBScope
+import com.newsblur.util.executeAsyncTask
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 interface SubscriptionManager {
-
     /**
      * Open connection to Play Store to retrieve
      * purchases and subscriptions.
@@ -38,7 +58,11 @@ interface SubscriptionManager {
      * @param productDetails Product details for the intended purchases.
      * @param offerDetails Offer details for subscription.
      */
-    fun purchaseSubscription(activity: Activity, productDetails: ProductDetails, offerDetails: ProductDetails.SubscriptionOfferDetails)
+    fun purchaseSubscription(
+        activity: Activity,
+        productDetails: ProductDetails,
+        offerDetails: ProductDetails.SubscriptionOfferDetails,
+    )
 
     /**
      * Sync subscription state between NewsBlur and Play Store.
@@ -54,8 +78,11 @@ interface SubscriptionManager {
 }
 
 interface SubscriptionsListener {
-
-    fun onActiveSubscription(renewalMessage: String?, isPremium: Boolean, isArchive: Boolean) {}
+    fun onActiveSubscription(
+        renewalMessage: String?,
+        isPremium: Boolean,
+        isArchive: Boolean,
+    ) {}
 
     fun onAvailableSubscriptions(productDetails: List<ProductDetails>) {}
 
@@ -64,89 +91,93 @@ interface SubscriptionsListener {
     fun onBillingConnectionError(message: String? = null) {}
 }
 
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-interface SubscriptionManagerEntryPoint {
-
-    fun apiManager(): APIManager
-}
-
 class SubscriptionManagerImpl(
-        private val context: Context,
-        private val scope: CoroutineScope = NBScope,
+    private val context: Context,
+    private val userApi: UserApi,
+    private val prefRepository: PrefsRepo,
+    private val syncServiceState: SyncServiceState,
+    private val scope: CoroutineScope = NBScope,
 ) : SubscriptionManager {
-
     private var listener: SubscriptionsListener? = null
 
-    private val acknowledgePurchaseListener = AcknowledgePurchaseResponseListener { billingResult: BillingResult ->
-        when (billingResult.responseCode) {
-            BillingClient.BillingResponseCode.OK -> {
-                Log.d(this, "acknowledgePurchaseResponseListener OK")
-                scope.launch(Dispatchers.Default) {
-                    syncActiveSubscription()
+    private val acknowledgePurchaseListener =
+        AcknowledgePurchaseResponseListener { billingResult: BillingResult ->
+            when (billingResult.responseCode) {
+                BillingClient.BillingResponseCode.OK -> {
+                    Log.d(this, "acknowledgePurchaseResponseListener OK")
+                    scope.launch(Dispatchers.Default) {
+                        syncActiveSubscription()
+                    }
+                }
+
+                BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
+                    // Billing API version is not supported for the type requested.
+                    Log.d(this, "acknowledgePurchaseResponseListener BILLING_UNAVAILABLE")
+                }
+
+                BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE -> {
+                    // Network connection is down.
+                    Log.d(this, "acknowledgePurchaseResponseListener SERVICE_UNAVAILABLE")
+                }
+
+                else -> {
+                    // Handle any other error codes.
+                    Log.d(this, "acknowledgePurchaseResponseListener ERROR - message: " + billingResult.debugMessage)
                 }
             }
-            BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
-                // Billing API version is not supported for the type requested.
-                Log.d(this, "acknowledgePurchaseResponseListener BILLING_UNAVAILABLE")
-            }
-            BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE -> {
-                // Network connection is down.
-                Log.d(this, "acknowledgePurchaseResponseListener SERVICE_UNAVAILABLE")
-            }
-            else -> {
-                // Handle any other error codes.
-                Log.d(this, "acknowledgePurchaseResponseListener ERROR - message: " + billingResult.debugMessage)
-            }
         }
-    }
 
     /**
      * Billing client listener triggered after every user purchase intent.
      */
-    private val purchaseUpdateListener = PurchasesUpdatedListener { billingResult: BillingResult, purchases: List<Purchase>? ->
-        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-            Log.d(this, "purchaseUpdateListener OK")
-            for (purchase in purchases) {
-                handlePurchase(purchase)
-            }
-        } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-            // Handle an error caused by a user cancelling the purchase flow.
-            Log.d(this, "purchaseUpdateListener USER_CANCELLED")
-        } else if (billingResult.responseCode == BillingClient.BillingResponseCode.BILLING_UNAVAILABLE) {
-            // Billing API version is not supported for the type requested.
-            Log.d(this, "purchaseUpdateListener BILLING_UNAVAILABLE")
-        } else if (billingResult.responseCode == BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE) {
-            // Network connection is down.
-            Log.d(this, "purchaseUpdateListener SERVICE_UNAVAILABLE")
-        } else {
-            // Handle any other error codes.
-            Log.d(this, "purchaseUpdateListener ERROR - message: " + billingResult.debugMessage)
-        }
-    }
-
-    private val billingClientStateListener: BillingClientStateListener = object : BillingClientStateListener {
-        override fun onBillingSetupFinished(billingResult: BillingResult) {
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                Log.d(this, "onBillingSetupFinished OK")
-                listener?.onBillingConnectionReady()
+    private val purchaseUpdateListener =
+        PurchasesUpdatedListener { billingResult: BillingResult, purchases: List<Purchase>? ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
+                Log.d(this, "purchaseUpdateListener OK")
+                for (purchase in purchases) {
+                    handlePurchase(purchase)
+                }
+            } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+                // Handle an error caused by a user cancelling the purchase flow.
+                Log.d(this, "purchaseUpdateListener USER_CANCELLED")
+            } else if (billingResult.responseCode == BillingClient.BillingResponseCode.BILLING_UNAVAILABLE) {
+                // Billing API version is not supported for the type requested.
+                Log.d(this, "purchaseUpdateListener BILLING_UNAVAILABLE")
+            } else if (billingResult.responseCode == BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE) {
+                // Network connection is down.
+                Log.d(this, "purchaseUpdateListener SERVICE_UNAVAILABLE")
             } else {
+                // Handle any other error codes.
+                Log.d(this, "purchaseUpdateListener ERROR - message: " + billingResult.debugMessage)
+            }
+        }
+
+    private val billingClientStateListener: BillingClientStateListener =
+        object : BillingClientStateListener {
+            override fun onBillingSetupFinished(billingResult: BillingResult) {
+                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                    Log.d(this, "onBillingSetupFinished OK")
+                    listener?.onBillingConnectionReady()
+                } else {
+                    listener?.onBillingConnectionError("Error connecting to Play Store.")
+                }
+            }
+
+            override fun onBillingServiceDisconnected() {
+                Log.d(this, "onBillingServiceDisconnected")
+                // Try to restart the connection on the next request to
+                // Google Play by calling the startConnection() method.
                 listener?.onBillingConnectionError("Error connecting to Play Store.")
             }
         }
 
-        override fun onBillingServiceDisconnected() {
-            Log.d(this, "onBillingServiceDisconnected")
-            // Try to restart the connection on the next request to
-            // Google Play by calling the startConnection() method.
-            listener?.onBillingConnectionError("Error connecting to Play Store.")
-        }
-    }
-
-    private val billingClient: BillingClient = BillingClient.newBuilder(context)
+    private val billingClient: BillingClient =
+        BillingClient
+            .newBuilder(context)
             .setListener(purchaseUpdateListener)
-            .enablePendingPurchases()
-            .build()
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder().enableOneTimeProducts().build(),
+            ).build()
 
     override fun startBillingConnection(listener: SubscriptionsListener?) {
         this.listener = listener
@@ -168,16 +199,24 @@ class SubscriptionManagerImpl(
         }
     }
 
-    override fun purchaseSubscription(activity: Activity, productDetails: ProductDetails, offerDetails: ProductDetails.SubscriptionOfferDetails) {
+    override fun purchaseSubscription(
+        activity: Activity,
+        productDetails: ProductDetails,
+        offerDetails: ProductDetails.SubscriptionOfferDetails,
+    ) {
         Log.d(this, "launchBillingFlow for productId: ${productDetails.productId}")
         scope.launch(Dispatchers.Default) {
-            val productDetailsParamsList = listOf(
-                    BillingFlowParams.ProductDetailsParams.newBuilder()
-                            .setProductDetails(productDetails)
-                            .setOfferToken(offerDetails.offerToken)
-                            .build()
-            )
-            val billingFlowParamsBuilder = BillingFlowParams.newBuilder()
+            val productDetailsParamsList =
+                listOf(
+                    BillingFlowParams.ProductDetailsParams
+                        .newBuilder()
+                        .setProductDetails(productDetails)
+                        .setOfferToken(offerDetails.offerToken)
+                        .build(),
+                )
+            val billingFlowParamsBuilder =
+                BillingFlowParams
+                    .newBuilder()
                     .setProductDetailsParamsList(productDetailsParamsList)
 
             // check if there is an active subscription
@@ -187,10 +226,11 @@ class SubscriptionManagerImpl(
                 // this should be the case if there is an active subscription
                 if (it.products.firstOrNull() != productDetails.productId) {
                     billingFlowParamsBuilder.setSubscriptionUpdateParams(
-                            BillingFlowParams.SubscriptionUpdateParams.newBuilder()
-                                    .setOldPurchaseToken(it.purchaseToken)
-                                    .setReplaceProrationMode(BillingFlowParams.ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE)
-                                    .build()
+                        BillingFlowParams.SubscriptionUpdateParams
+                            .newBuilder()
+                            .setOldPurchaseToken(it.purchaseToken)
+                            .setSubscriptionReplacementMode(ReplacementMode.CHARGE_PRORATED_PRICE)
+                            .build(),
                     )
                 }
             }
@@ -200,72 +240,78 @@ class SubscriptionManagerImpl(
         }
     }
 
-    override suspend fun syncActiveSubscription() = scope.launch(Dispatchers.Default) {
-        val isPremium = PrefsUtils.getIsPremium(context)
-        val isArchive = PrefsUtils.getIsArchive(context)
-        val activePlayStoreSubscription = getActiveSubscriptionAsync().await()
+    override suspend fun syncActiveSubscription() =
+        scope.launch(Dispatchers.Default) {
+            val isPremium = prefRepository.getIsPremium()
+            val isArchive = prefRepository.getIsArchive()
+            val activePlayStoreSubscription = getActiveSubscriptionAsync().await()
 
-        if (isPremium || isArchive || activePlayStoreSubscription != null) {
-            listener?.let {
-                val renewalString: String? = getRenewalMessage(activePlayStoreSubscription)
-                withContext(Dispatchers.Main) {
-                    it.onActiveSubscription(renewalString, isPremium, isArchive)
+            if (isPremium || isArchive || activePlayStoreSubscription != null) {
+                listener?.let {
+                    val renewalString: String? = getRenewalMessage(activePlayStoreSubscription)
+                    withContext(Dispatchers.Main) {
+                        it.onActiveSubscription(renewalString, isPremium, isArchive)
+                    }
+                }
+            }
+
+            activePlayStoreSubscription?.let { purchase ->
+                if (purchase.isPremiumSub() && !isPremium) {
+                    saveReceipt(purchase)
+                } else if (purchase.isArchiveSub() && !isArchive) {
+                    saveReceipt(purchase)
                 }
             }
         }
 
-        activePlayStoreSubscription?.let { purchase ->
-            if (purchase.isPremiumSub() && !isPremium) {
-                saveReceipt(purchase)
-            } else if (purchase.isArchiveSub() && !isArchive) {
-                saveReceipt(purchase)
-            }
-        }
-    }
-
-    override suspend fun hasActiveSubscription(): Boolean =
-            PrefsUtils.hasSubscription(context) ||
-                    getActiveSubscriptionAsync().await() != null
+    override suspend fun hasActiveSubscription(): Boolean = prefRepository.hasSubscription() || getActiveSubscriptionAsync().await() != null
 
     override fun saveReceipt(purchase: Purchase) {
         Log.d(this, "saveReceipt: ${purchase.orderId}")
-        val hiltEntryPoint = EntryPointAccessors
-                .fromApplication(context.applicationContext, SubscriptionManagerEntryPoint::class.java)
         scope.executeAsyncTask(
-                doInBackground = {
-                    hiltEntryPoint.apiManager().saveReceipt(purchase.orderId, purchase.products.first())
-                },
-                onPostExecute = {
-                    if (!it.isError) {
-                        NBSyncService.forceFeedsFolders()
-                        FeedUtils.triggerSync(context)
-                    }
+            doInBackground = {
+                userApi.saveReceipt(purchase.orderId, purchase.products.first())
+            },
+            onPostExecute = {
+                if (it != null && !it.isError) {
+                    syncServiceState.forceFeedsFolders()
+                    FeedUtils.triggerSync(context)
                 }
+            },
         )
     }
 
     private fun getAvailableSubscriptionAsync(): Deferred<List<ProductDetails>> {
         val deferred = CompletableDeferred<List<ProductDetails>>()
-        val params = QueryProductDetailsParams.newBuilder().apply {
-            // add subscription SKUs from Play Store
-            setProductList(listOf(
-                    QueryProductDetailsParams.Product.newBuilder()
-                            .setProductId(AppConstants.PREMIUM_SUB_ID)
-                            .setProductType(BillingClient.ProductType.SUBS)
-                            .build(),
-                    QueryProductDetailsParams.Product.newBuilder()
-                            .setProductId(AppConstants.PREMIUM_ARCHIVE_SUB_ID)
-                            .setProductType(BillingClient.ProductType.SUBS)
-                            .build(),
-            ))
-        }.build()
+        val params =
+            QueryProductDetailsParams
+                .newBuilder()
+                .apply {
+                    // add subscription SKUs from Play Store
+                    setProductList(
+                        listOf(
+                            QueryProductDetailsParams.Product
+                                .newBuilder()
+                                .setProductId(AppConstants.PREMIUM_SUB_ID)
+                                .setProductType(BillingClient.ProductType.SUBS)
+                                .build(),
+                            QueryProductDetailsParams.Product
+                                .newBuilder()
+                                .setProductId(AppConstants.PREMIUM_ARCHIVE_SUB_ID)
+                                .setProductType(BillingClient.ProductType.SUBS)
+                                .build(),
+                        ),
+                    )
+                }.build()
 
-        billingClient.queryProductDetailsAsync(params) { _: BillingResult?, productDetailsList: List<ProductDetails> ->
+        billingClient.queryProductDetailsAsync(params) { _, productDetails ->
+            val productDetailsList = productDetails.productDetailsList
             Log.d(this, "ProductDetailsResponse $productDetailsList")
-            val productDetails = productDetailsList.filter {
-                it.productId == AppConstants.PREMIUM_SUB_ID ||
+            val productDetails =
+                productDetailsList.filter {
+                    it.productId == AppConstants.PREMIUM_SUB_ID ||
                         it.productId == AppConstants.PREMIUM_ARCHIVE_SUB_ID
-            }
+                }
             deferred.complete(productDetails)
         }
 
@@ -275,13 +321,16 @@ class SubscriptionManagerImpl(
     private fun getActiveSubscriptionAsync(): Deferred<Purchase?> {
         val deferred = CompletableDeferred<Purchase?>()
         billingClient.queryPurchasesAsync(
-                QueryPurchasesParams.newBuilder()
-                        .setProductType(BillingClient.ProductType.SUBS)
-                        .build()) { _, purchasesList ->
-            val purchases = purchasesList.filter { purchase ->
-                purchase.products.contains(AppConstants.PREMIUM_SUB_ID) ||
+            QueryPurchasesParams
+                .newBuilder()
+                .setProductType(BillingClient.ProductType.SUBS)
+                .build(),
+        ) { _, purchasesList ->
+            val purchases =
+                purchasesList.filter { purchase ->
+                    purchase.products.contains(AppConstants.PREMIUM_SUB_ID) ||
                         purchase.products.contains(AppConstants.PREMIUM_ARCHIVE_SUB_ID)
-            }
+                }
             deferred.complete(purchases.firstOrNull())
         }
 
@@ -297,12 +346,13 @@ class SubscriptionManagerImpl(
         } else if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged) {
             // need to acknowledge first time sub otherwise it will void
             Log.d(this, "acknowledge purchase: ${purchase.orderId}")
-            AcknowledgePurchaseParams.newBuilder()
-                    .setPurchaseToken(purchase.purchaseToken)
-                    .build()
-                    .also {
-                        billingClient.acknowledgePurchase(it, acknowledgePurchaseListener)
-                    }
+            AcknowledgePurchaseParams
+                .newBuilder()
+                .setPurchaseToken(purchase.purchaseToken)
+                .build()
+                .also {
+                    billingClient.acknowledgePurchase(it, acknowledgePurchaseListener)
+                }
         }
     }
 
@@ -310,12 +360,13 @@ class SubscriptionManagerImpl(
      * Generate subscription renewal message.
      */
     private fun getRenewalMessage(purchase: Purchase?): String? {
-        val expirationTimeMs = PrefsUtils.getSubscriptionExpire(context)
+        val expirationTimeMs = prefRepository.getSubscriptionExpire()
         return when {
             // lifetime subscription
             expirationTimeMs == 0L -> {
                 context.getString(R.string.premium_subscription_no_expiration)
             }
+
             expirationTimeMs > 0 -> {
                 // date constructor expects ms
                 val expirationDate = Date(expirationTimeMs * 1000)
@@ -327,6 +378,7 @@ class SubscriptionManagerImpl(
                     context.getString(R.string.premium_subscription_renewal, dateFormat.format(expirationDate))
                 }
             }
+
             else -> null
         }
     }

@@ -1,13 +1,15 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
-    id(Plugins.androidApplication) version Version.android apply false
-    id(Plugins.androidLibrary) version Version.android apply false
-    kotlin(Plugins.kotlinAndroid) version Version.kotlin apply false
-    kotlin(Plugins.kotlinKapt) version Version.kotlin apply false
-    id(Plugins.hiltAndroid) version Version.hilt apply false
-    id(Plugins.androidTest) version Version.android apply false
-    id(Plugins.benManesVersions) version Version.benManesVersions
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.android.test) apply false
+    alias(libs.plugins.benmanes.versions) apply false
+    alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.ktlint) apply false
 }
 
 allprojects {

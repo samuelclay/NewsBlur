@@ -30,9 +30,9 @@ public class LoginResponse {
     /**
      * Gets the error message returned by the API, or defaultMessage if none was found.
      */
-    public String getErrorMessage(String defaultMessage) {
+    public String getErrorMessage() {
         if ((errors != null) &&(errors.message != null) && (errors.message.length > 0) && (errors.message[0] != null)) return errors.message[0];
-        return defaultMessage;
+        return null;
     }
 
 }

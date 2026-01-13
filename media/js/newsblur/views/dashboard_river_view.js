@@ -19,6 +19,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             this.options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
         } else if (this.model.get('river_id') == "river:global") {
             this.options.global_feed = true;
+        } else if (this.model.get('river_id') == "river:trending") {
+            this.options.trending = true;
         }
 
         NEWSBLUR.assets.feeds.unbind(null, null, this);
@@ -129,6 +131,9 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
     feeds: function (include_read) {
         var river_id = this.model.get('river_id');
 
+        if (river_id == 'river:trending') {
+            return [];  // Trending sites fetches its own data
+        }
         if (_.string.startsWith(river_id, 'feed:')) {
             return [parseInt(river_id.replace('feed:', ''), 10)];
         }
@@ -232,6 +237,11 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             this.options.query = feed.get('query');
         }
 
+        // Trending sites use a different fetch mechanism
+        if (this.model.get('river_id') == "river:trending") {
+            return this.load_trending_stories(options);
+        }
+
         options = _.extend({
             global_feed: this.options.global_feed,
             infrequent: this.options.infrequent,
@@ -258,6 +268,52 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         this.story_titles.end_loading();
         this.fill_out({ new_stories: data.stories.length });
         this.cache.story_hashes = this.options.dashboard_stories.pluck('story_hash');
+    },
+
+    load_trending_stories: function (options) {
+        var self = this;
+        if (!this.$stories.length) return;
+
+        this.page = 1;
+        this.story_titles.show_loading();
+
+        // Create a temporary collection for trending feeds
+        var trending_feeds = new NEWSBLUR.Collections.TrendingFeeds();
+        trending_feeds.fetch({
+            data: { page: 1, days: 7 },
+            success: function (collection, response) {
+                self.story_titles.end_loading();
+
+                // Collect stories from the top trending feeds for the dashboard
+                var all_stories = [];
+                collection.each(function (trending_feed) {
+                    var feed = trending_feed.get("feed");
+                    var stories = trending_feed.get("stories");
+                    stories.each(function (story) {
+                        story.set('story_feed_id', feed.id);
+                        all_stories.push(story);
+                    });
+                });
+
+                // Sort by date and take the most recent stories
+                all_stories = _.sortBy(all_stories, function (story) {
+                    return -parseInt(story.get('story_timestamp'), 10);
+                });
+
+                var dashboard_count = parseInt(NEWSBLUR.assets.view_setting('river:trending', 'dashboard_count'), 10) || 6;
+                all_stories = all_stories.slice(0, dashboard_count);
+
+                // Add to dashboard stories collection
+                self.options.dashboard_stories.reset(all_stories);
+                self.story_titles.render();
+                self.cache.story_hashes = self.options.dashboard_stories.pluck('story_hash');
+            },
+            error: function () {
+                self.story_titles.end_loading();
+            }
+        });
+
+        this.setup_dashboard_refresh();
     },
 
     fill_out: function (options) {
@@ -359,6 +415,8 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             NEWSBLUR.reader.open_river_blurblogs_stories(_.extend({
                 global: true
             }, options));
+        } else if (river_id == "river:trending") {
+            NEWSBLUR.reader.open_trending_sites(options);
         } else if (_.string.startsWith(river_id, 'river:')) {
             var folder = NEWSBLUR.assets.get_folder(river_id.replace('river:', ''));
             if (folder) {

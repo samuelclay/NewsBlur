@@ -29,7 +29,7 @@ public class BootReceiver extends BroadcastReceiver {
 
     public static void scheduleSyncService(Context context) {
         com.newsblur.util.Log.d(BootReceiver.class.getName(), "scheduling sync service");
-        JobInfo.Builder builder = new JobInfo.Builder(1, new ComponentName(context, NBSyncService.class));
+        JobInfo.Builder builder = new JobInfo.Builder(1, new ComponentName(context, SyncService.class));
         builder.setPeriodic(AppConstants.BG_SERVICE_CYCLE_MILLIS);
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY);
         builder.setPersisted(true);
