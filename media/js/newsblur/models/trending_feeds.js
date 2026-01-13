@@ -13,7 +13,7 @@ NEWSBLUR.Collections.TrendingFeeds = Backbone.Collection.extend({
     model: NEWSBLUR.Models.TrendingFeed,
 
     url: function () {
-        return '/rss_feeds/trending_sites/';
+        return '/discover/trending/';
     },
 
     parse: function (response) {

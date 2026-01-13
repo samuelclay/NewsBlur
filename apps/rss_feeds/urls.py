@@ -1,10 +1,30 @@
 from django.conf.urls import url
+from django.views.generic import RedirectView
 
 from apps.rss_feeds import views
 
+
+# HTTP 308 Permanent Redirect preserves request method (important for POST requests)
+class PermanentRedirectView(RedirectView):
+    permanent = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        url = super().get_redirect_url(*args, **kwargs)
+        # Preserve query string
+        if self.request.META.get("QUERY_STRING"):
+            url = f"{url}?{self.request.META['QUERY_STRING']}"
+        return url
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        response.status_code = 308  # Permanent Redirect that preserves method
+        return response
+
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+
+
 urlpatterns = [
-    url(r"^feed_autocomplete", views.feed_autocomplete, name="feed-autocomplete"),
-    url(r"^search_feed", views.search_feed, name="search-feed"),
     url(r"^statistics/(?P<feed_id>\d+)", views.load_feed_statistics, name="feed-statistics"),
     url(
         r"^statistics_embedded/(?P<feed_id>\d+)",
@@ -26,14 +46,36 @@ urlpatterns = [
     url(r"^original_text", views.original_text, name="original-text"),
     url(r"^original_story", views.original_story, name="original-story"),
     url(r"^story_changes", views.story_changes, name="story-changes"),
-    url(r"^discover/(?P<feed_id>\d+)/?$", views.discover_feeds, name="discover-feed"),
-    url(r"^discover/feeds/?$", views.discover_feeds, name="discover-feeds"),
-    url(r"^discover/stories/(?P<story_hash>\w+:\w+)/?$", views.discover_stories, name="discover-stories"),
-    url(r"^trending_sites/?$", views.trending_sites, name="trending-sites"),
-    url(r"^youtube/search/?$", views.youtube_search, name="youtube-search"),
-    url(r"^reddit/search/?$", views.reddit_search, name="reddit-search"),
-    url(r"^reddit/popular/?$", views.reddit_popular, name="reddit-popular"),
-    url(r"^newsletter/convert/?$", views.newsletter_convert, name="newsletter-convert"),
-    url(r"^podcast/search/?$", views.podcast_search, name="podcast-search"),
-    url(r"^google-news/feed/?$", views.google_news_feed, name="google-news-feed"),
+    # Backward compatibility redirects for pre-existing endpoints moved to /discover/
+    # HTTP 308 preserves request method (important for POST requests)
+    url(
+        r"^feed_autocomplete/?$",
+        PermanentRedirectView.as_view(url="/discover/autocomplete"),
+        name="feed-autocomplete-redirect",
+    ),
+    url(
+        r"^search_feed/?$",
+        PermanentRedirectView.as_view(url="/discover/search_feed"),
+        name="search-feed-redirect",
+    ),
+    url(
+        r"^trending_sites/?$",
+        PermanentRedirectView.as_view(url="/discover/trending"),
+        name="trending-sites-redirect",
+    ),
+    url(
+        r"^discover/(?P<feed_id>\d+)/?$",
+        PermanentRedirectView.as_view(url="/discover/similar/%(feed_id)s"),
+        name="discover-feed-redirect",
+    ),
+    url(
+        r"^discover/feeds/?$",
+        PermanentRedirectView.as_view(url="/discover/similar/feeds"),
+        name="discover-feeds-redirect",
+    ),
+    url(
+        r"^discover/stories/(?P<story_hash>\w+:\w+)/?$",
+        PermanentRedirectView.as_view(url="/discover/similar/stories/%(story_hash)s"),
+        name="discover-stories-redirect",
+    ),
 ]

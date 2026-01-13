@@ -973,7 +973,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var self = this;
         var state = this.reddit_state;
 
-        this.model.make_request('/rss_feeds/reddit/popular', { limit: 30 }, function(data) {
+        this.model.make_request('/discover/reddit/popular', { limit: 30 }, function(data) {
             state.popular_loaded = true;
             if (data && data.results) {
                 state.popular_subreddits = data.results;
@@ -1449,7 +1449,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         state.is_loading = true;
         this.$('.NB-add-site-trending-results').html(this.make_loading_indicator());
 
-        this.model.make_request('/rss_feeds/trending_sites', {
+        this.model.make_request('/discover/trending', {
             page: state.page,
             days: state.days
         }, function (data) {
@@ -2059,7 +2059,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.search_state.results = [];
         this.render_search_tab();
 
-        this.model.make_request('/rss_feeds/feed_autocomplete', {
+        this.model.make_request('/discover/autocomplete', {
             query: query,
             format: 'full',
             v: 2
@@ -2200,7 +2200,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             input_class: 'NB-add-site-youtube-search',
             state_key: 'youtube_state',
             results_selector: 'NB-add-site-youtube-tab .NB-add-site-source-results',
-            endpoint: '/rss_feeds/youtube/search',
+            endpoint: '/discover/youtube/search',
             min_length: 2,
             params: function(query) {
                 return { query: query, type: 'channel', limit: 15 };
@@ -2215,7 +2215,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             input_class: 'NB-add-site-reddit-search',
             state_key: 'reddit_state',
             results_selector: 'NB-add-site-reddit-tab .NB-add-site-source-results',
-            endpoint: '/rss_feeds/reddit/search',
+            endpoint: '/discover/reddit/search',
             min_length: 2,
             params: function(query) {
                 return { query: query, limit: 15 };
@@ -2230,7 +2230,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             input_class: 'NB-add-site-podcasts-search',
             state_key: 'podcasts_state',
             results_selector: 'NB-add-site-podcasts-tab .NB-add-site-source-results',
-            endpoint: '/rss_feeds/podcast/search',
+            endpoint: '/discover/podcast/search',
             min_length: 2,
             params: function(query) {
                 return { query: query, limit: 20 };
@@ -2259,7 +2259,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var $results = this.$('.NB-add-site-newsletters-tab .NB-add-site-source-results');
         $results.html(this.make_loading_indicator());
 
-        this.model.make_request('/rss_feeds/newsletter/convert', {
+        this.model.make_request('/discover/newsletter/convert', {
             url: url
         }, function (data) {
             state.is_loading = false;
@@ -2393,7 +2393,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }
 
         // First get the feed URL from Google News
-        this.model.make_request('/rss_feeds/google-news/feed', params, function (data) {
+        this.model.make_request('/discover/google-news/feed', params, function (data) {
             if (data && data.code === 1 && data.feed_url) {
                 state.feed_url = data.feed_url;
 
