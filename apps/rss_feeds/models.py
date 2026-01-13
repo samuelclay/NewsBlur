@@ -4000,6 +4000,23 @@ class MStarredStory(mongo.DynamicDocument):
     def feed_guid_hash(self):
         return "%s:%s" % (self.story_feed_id or "0", self.guid_hash)
 
+    @classmethod
+    def switch_feed(cls, original_feed_id, duplicate_feed_id):
+        """Update starred stories to point to the new feed after a merge."""
+        starred_stories = cls.objects.filter(story_feed_id=duplicate_feed_id)
+        count = starred_stories.count()
+        if count:
+            logging.info(
+                " ---> Switching %s starred stories from feed %s to %s"
+                % (count, duplicate_feed_id, original_feed_id)
+            )
+            for story in starred_stories:
+                story.story_feed_id = original_feed_id
+                # Update story_hash to reflect new feed_id
+                story.story_hash = story.feed_guid_hash
+                story.save()
+        return count
+
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
         feed = Feed.get_by_id(self.story_feed_id)
@@ -4195,6 +4212,37 @@ class MStarredStoryCounts(mongo.Document):
         if story_count and story_count.count <= 0:
             story_count.delete()
 
+    @classmethod
+    def switch_feed(cls, original_feed_id, duplicate_feed_id):
+        """Merge starred story counts from duplicate feed into original feed."""
+        # Get all counts for the duplicate feed
+        duplicate_counts = cls.objects.filter(feed_id=duplicate_feed_id)
+        count = duplicate_counts.count()
+        if count:
+            logging.info(
+                " ---> Switching %s starred story count records from feed %s to %s"
+                % (count, duplicate_feed_id, original_feed_id)
+            )
+            for dup_count in duplicate_counts:
+                # Find or create matching count for original feed
+                try:
+                    orig_count = cls.objects.get(
+                        user_id=dup_count.user_id,
+                        feed_id=original_feed_id,
+                        tag=dup_count.tag,
+                        is_highlights=dup_count.is_highlights,
+                    )
+                    # Merge counts
+                    orig_count.count += dup_count.count
+                    orig_count.save()
+                    dup_count.delete()
+                except cls.DoesNotExist:
+                    # Just update the feed_id
+                    dup_count.feed_id = original_feed_id
+                    dup_count.slug = "feed:%s" % original_feed_id if dup_count.feed_id else dup_count.slug
+                    dup_count.save()
+        return count
+
 
 class MSavedSearch(mongo.Document):
     user_id = mongo.IntField()
@@ -4381,7 +4429,8 @@ class DuplicateFeed(models.Model):
 
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
-    from apps.reader.models import UserSubscription
+    from apps.notifications.models import MUserFeedNotification
+    from apps.reader.models import MCustomFeedIcon, UserSubscription
     from apps.social.models import MSharedStory
 
     if original_feed_id == duplicate_feed_id:
@@ -4433,6 +4482,16 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     for user_sub in user_subs:
         user_sub.switch_feed(original_feed, duplicate_feed)
 
+    # Switch starred stories and their counts to the new feed
+    MStarredStory.switch_feed(original_feed.pk, duplicate_feed.pk)
+    MStarredStoryCounts.switch_feed(original_feed.pk, duplicate_feed.pk)
+
+    # Switch notification settings to the new feed
+    MUserFeedNotification.switch_feed(original_feed.pk, duplicate_feed.pk)
+
+    # Switch custom feed icons to the new feed
+    MCustomFeedIcon.switch_feed(original_feed.pk, duplicate_feed.pk)
+
     def delete_story_feed(model, feed_field="feed_id"):
         duplicate_stories = model.objects(**{feed_field: duplicate_feed.pk})
         # if duplicate_stories.count():
@@ -4441,6 +4500,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
 
     delete_story_feed(MStory, "story_feed_id")
     delete_story_feed(MFeedPage, "feed_id")
+    delete_story_feed(MFeedIcon, "feed_id")
 
     try:
         DuplicateFeed.objects.create(
