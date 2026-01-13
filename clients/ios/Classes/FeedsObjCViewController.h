@@ -13,6 +13,8 @@
 #import "NBNotifier.h"
 #import "MCSwipeTableViewCell.h"
 
+@class SyncNotifierView;
+
 // indices in appDelegate.dictFoldersArray and button tags
 // keep in sync with NewsBlurTopSectionNames
 static enum {
@@ -90,6 +92,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 @property (strong, nonatomic) IBOutlet UILabel *noFocusLabel;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *toolbarLeftMargin;
 @property (nonatomic, retain) NBNotifier *notifier;
+@property (nonatomic, strong) SyncNotifierView *syncNotifier;
 @property (nonatomic, retain) UIImageView *avatarImageView;
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;

@@ -209,16 +209,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.feedTitlesTable];
     
     [self updateTheme];
-    
-    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
-                                           withOffset:CGPointMake(0, 0)];
-    [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.innerView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.innerView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:NOTIFIER_HEIGHT]];
-    self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.feedViewToolbar attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
-    [self.view addConstraint:self.notifier.topOffsetConstraint];
-    
+    [self layoutHeaderCounts:0];
+
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
@@ -3205,9 +3197,17 @@ heightForHeaderInSection:(NSInteger)section {
     positiveCount.textColor = UIColorFromRGB(0x707070);
     positiveCount.backgroundColor = [UIColor clearColor];
     [self.userInfoView addSubview:positiveCount];
-    
+
+    // Add sync notifier to userInfoView (titleView) so it only appears on feed list
+    if (!self.syncNotifier) {
+        self.syncNotifier = [[SyncNotifierView alloc] initWithTitle:@""];
+    }
+    // Re-add to userInfoView since userInfoView is recreated each time
+    [self.syncNotifier removeFromSuperview];
+    [self.userInfoView addSubview:self.syncNotifier];
+
 //    self.userInfoView.backgroundColor = UIColor.blueColor;
-    
+
 #if TARGET_OS_MACCATALYST
     self.activityButton.frame = CGRectMake(self.innerView.bounds.size.width - 36, 10, 32, 32);
     
@@ -3301,78 +3301,67 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)showRefreshNotifier {
-    self.notifier.style = NBSyncingStyle;
-    self.notifier.title = @"On its way...";
-    [self.notifier setProgress:0];
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleSyncing title:@"On its way..."];
+    [self finishRefresh];
 }
 
 - (void)showCountingNotifier {
-    self.notifier.style = NBSyncingStyle;
-    self.notifier.title = @"Counting is difficult...";
-    [self.notifier setProgress:0];
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleSyncing title:@"Counting is difficult..."];
     [self finishRefresh];
 }
 
 - (void)showSyncingNotifier {
-    self.notifier.style = NBSyncingStyle;
-    self.notifier.title = @"Syncing stories...";
-    [self.notifier setProgress:0];
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleSyncing title:@"Syncing stories..."];
     [self finishRefresh];
 }
 
 - (void)showDoneNotifier {
-    self.notifier.style = NBDoneStyle;
-    self.notifier.title = @"All done";
-    [self.notifier setProgress:0];
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleDone title:@"All done"];
     [self finishRefresh];
+
+    // Auto-hide after 5 seconds
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC),
+                   dispatch_get_main_queue(), ^{
+        [self.syncNotifier hide];
+    });
 }
 
 - (void)showSyncingNotifier:(float)progress hoursBack:(NSInteger)hours {
-//    [self.notifier hide];
-    self.notifier.style = NBSyncingProgressStyle;
+    NSString *title;
     if (hours < 2) {
-        self.notifier.title = @"Storing past hour";
+        title = @"Storing past hour";
     } else if (hours < 24) {
-        self.notifier.title = [NSString stringWithFormat:@"Storing past %ld hours", (long)hours];
+        title = [NSString stringWithFormat:@"Storing past %ld hours", (long)hours];
     } else if (hours < 48) {
-        self.notifier.title = @"Storing yesterday";
+        title = @"Storing yesterday";
     } else {
-        self.notifier.title = [NSString stringWithFormat:@"Storing past %d days", (int)round(hours / 24.f)];
+        title = [NSString stringWithFormat:@"Storing past %d days", (int)round(hours / 24.f)];
     }
-    [self.notifier setProgress:progress];
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleSyncingProgress title:title progress:progress];
 }
 
 - (void)showCachingNotifier:(NSString *)prefix progress:(float)progress hoursBack:(NSInteger)hours {
-    //    [self.notifier hide];
-    self.notifier.style = NBSyncingProgressStyle;
+    NSString *title;
     if (hours < 2) {
-        self.notifier.title = [NSString stringWithFormat:@"%@ from last hour", prefix];
+        title = [NSString stringWithFormat:@"%@ from last hour", prefix];
     } else if (hours < 24) {
-        self.notifier.title = [NSString stringWithFormat:@"%@ from %ld hours ago", prefix, (long)hours];
+        title = [NSString stringWithFormat:@"%@ from %ld hours ago", prefix, (long)hours];
     } else if (hours < 48) {
-        self.notifier.title = [NSString stringWithFormat:@"%@ from yesterday", prefix];
+        title = [NSString stringWithFormat:@"%@ from yesterday", prefix];
     } else {
-        self.notifier.title = [NSString stringWithFormat:@"%@ from %d days ago", prefix, (int)round(hours / 24.f)];
+        title = [NSString stringWithFormat:@"%@ from %d days ago", prefix, (int)round(hours / 24.f)];
     }
-    [self.notifier setProgress:progress];
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleSyncingProgress title:title progress:progress];
 }
 
 - (void)showOfflineNotifier {
-    self.notifier.style = NBOfflineStyle;
-    self.notifier.title = @"Offline";
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleOffline title:@"Offline"];
 }
 
 - (void)hideNotifier {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC),
                    dispatch_get_main_queue(), ^{
-        [self.notifier hide];
+        [self.syncNotifier hide];
     });
 }
 
