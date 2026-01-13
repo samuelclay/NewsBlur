@@ -86,11 +86,21 @@ class SyncNotifierView: UIView {
         return view
     }()
 
+    private let passiveTintView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        // Lighter overlay to reduce intensity for passive states (downloading, done)
+        view.backgroundColor = UIColor(white: 1.0, alpha: 0.15)
+        view.isHidden = true
+        return view
+    }()
+
     private var progressWidthConstraint: NSLayoutConstraint?
     private var isShowing = false
     private var pendingHide = false
     private var pendingShow = false
     private var pendingShowDuration: TimeInterval = 0
+    private var hideWorkItem: DispatchWorkItem?
 
     var title: String = "" {
         didSet {
@@ -143,8 +153,9 @@ class SyncNotifierView: UIView {
         // Add blur background
         addSubview(blurView)
 
-        // Add offline tint overlay (hidden by default)
+        // Add tint overlays (hidden by default)
         blurView.contentView.addSubview(offlineTintView)
+        blurView.contentView.addSubview(passiveTintView)
 
         // Add content view on top of blur
         blurView.contentView.addSubview(contentView)
@@ -184,6 +195,12 @@ class SyncNotifierView: UIView {
             offlineTintView.leadingAnchor.constraint(equalTo: blurView.contentView.leadingAnchor),
             offlineTintView.trailingAnchor.constraint(equalTo: blurView.contentView.trailingAnchor),
             offlineTintView.bottomAnchor.constraint(equalTo: blurView.contentView.bottomAnchor),
+
+            // Passive tint view fills blur content (for lighter passive states)
+            passiveTintView.topAnchor.constraint(equalTo: blurView.contentView.topAnchor),
+            passiveTintView.leadingAnchor.constraint(equalTo: blurView.contentView.leadingAnchor),
+            passiveTintView.trailingAnchor.constraint(equalTo: blurView.contentView.trailingAnchor),
+            passiveTintView.bottomAnchor.constraint(equalTo: blurView.contentView.bottomAnchor),
 
             // Content view fills blur content view
             contentView.topAnchor.constraint(equalTo: blurView.contentView.topAnchor),
@@ -266,17 +283,21 @@ class SyncNotifierView: UIView {
         iconImageView.isHidden = true
         progressBar.isHidden = true
         offlineTintView.isHidden = true
+        passiveTintView.isHidden = true
 
         switch style {
         case .loading, .syncing:
+            // Active states - full intensity (no tint overlay)
             activityIndicator.startAnimating()
             iconImageView.isHidden = true
 
         case .syncingProgress:
+            // Passive state - lighter appearance (already has progress bar indicator)
             activityIndicator.stopAnimating()
             iconImageView.image = UIImage(named: "g_icn_offline")?.withRenderingMode(.alwaysTemplate)
             iconImageView.isHidden = false
             progressBar.isHidden = false
+            passiveTintView.isHidden = false
 
         case .offline:
             activityIndicator.stopAnimating()
@@ -285,9 +306,11 @@ class SyncNotifierView: UIView {
             offlineTintView.isHidden = false
 
         case .done:
+            // Passive state - lighter appearance
             activityIndicator.stopAnimating()
             iconImageView.image = UIImage(named: "checkmark")?.withRenderingMode(.alwaysTemplate)
             iconImageView.isHidden = false
+            passiveTintView.isHidden = false
         }
     }
 
@@ -406,6 +429,9 @@ class SyncNotifierView: UIView {
     // MARK: - Convenience Methods for ObjC
 
     @objc func showWithStyle(_ style: SyncNotifierStyle, title: String) {
+        // Cancel any pending hide timer when showing new content
+        cancelPendingHide()
+
         let wasShowing = isShowing
 
         self.style = style
@@ -424,6 +450,9 @@ class SyncNotifierView: UIView {
     }
 
     @objc func showWithStyle(_ style: SyncNotifierStyle, title: String, progress: CGFloat) {
+        // Cancel any pending hide timer when showing new content
+        cancelPendingHide()
+
         let wasShowing = isShowing
 
         self.style = style
@@ -439,6 +468,28 @@ class SyncNotifierView: UIView {
             // Not visible - animate in
             show()
         }
+    }
+
+    // MARK: - Delayed Hide
+
+    /// Cancels any pending hide timer
+    private func cancelPendingHide() {
+        hideWorkItem?.cancel()
+        hideWorkItem = nil
+    }
+
+    /// Hides the notifier after a delay, canceling any previously scheduled hide
+    @objc func hideAfter(_ delay: TimeInterval) {
+        // Cancel any existing pending hide
+        cancelPendingHide()
+
+        // Create new work item for delayed hide
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.hide()
+        }
+        hideWorkItem = workItem
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
     }
 
 }
