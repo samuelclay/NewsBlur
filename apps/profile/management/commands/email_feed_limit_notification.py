@@ -12,7 +12,7 @@ from utils import log as logging
 
 
 class Command(BaseCommand):
-    help = "Grandfather existing premium users and email those with 2000+ feeds before expiry. Run daily via Celery."
+    help = "Grandfather premium users over 1024 feeds and email them 7 days before expiry. Run daily via Celery."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -56,35 +56,21 @@ class Command(BaseCommand):
         one_year_ago = now - datetime.timedelta(days=365)
         one_year_from_now = now + datetime.timedelta(days=365)
 
-        # Step 1: Mark existing premium users as grandfathered (one-time)
-        self._grandfather_existing_users(dry_run, username_filter)
+        # Step 1: Set is_grandfathered and grandfather_expires on users over 1024 feeds
+        self._grandfather_users_over_limit(dry_run, username_filter, one_year_from_now)
 
-        # Step 2: Set grandfather_expires on users with 2000+ feeds (one-time)
-        self._set_expiry_for_heavy_users(dry_run, username_filter, one_year_from_now)
-
-        # Step 3: Email users whose grandfather_expires is coming up
+        # Step 2: Email users whose grandfather_expires is coming up
         self._send_expiry_notifications(dry_run, force, username_filter, days_before, now, one_year_ago)
 
-    def _grandfather_existing_users(self, dry_run, username_filter):
-        """Mark premium users with > 1024 feeds as grandfathered (one-time operation).
-
-        Only users OVER the new 1024 limit need grandfathering. Users under 1024 feeds
-        are fine with the standard limit and don't need special treatment.
-        """
+    def _grandfather_users_over_limit(self, dry_run, username_filter, one_year_from_now):
+        """Mark premium users with > 1024 feeds as grandfathered with 1 year grace period."""
         self.stdout.write("\n--- Grandfathering premium users over 1024 feeds ---")
 
         profiles = Profile.objects.filter(
             is_premium=True,
             is_archive=False,
             is_pro=False,
-        ).filter(
-            # Only process profiles that haven't been grandfathered yet
-            is_grandfathered__isnull=True,
-        ).select_related("user") | Profile.objects.filter(
-            is_premium=True,
-            is_archive=False,
-            is_pro=False,
-            is_grandfathered=False,
+            grandfather_expires__isnull=True,  # Not yet grandfathered
         ).select_related("user")
 
         if username_filter:
@@ -92,7 +78,7 @@ class Command(BaseCommand):
 
         user_ids = list(profiles.values_list("user_id", flat=True))
 
-        # Only grandfather users with > 1024 active feeds (over the new limit)
+        # Find users with > 1024 active feeds
         feed_counts = dict(
             UserSubscription.objects.filter(user_id__in=user_ids, active=True)
             .values("user_id")
@@ -108,77 +94,25 @@ class Command(BaseCommand):
             self.stdout.write("No premium users over 1024 feeds to grandfather")
             return
 
-        self.stdout.write(f"Found {count} premium users over 1024 feeds to mark as grandfathered")
-
-        if dry_run:
-            for profile in profiles_to_update[:10]:
-                feed_count = feed_counts.get(profile.user_id, 0)
-                self.stdout.write(f"  WOULD SET is_grandfathered=True: {profile.user.username} ({feed_count} feeds)")
-            if count > 10:
-                self.stdout.write(f"  ... and {count - 10} more")
-        else:
-            updated = profiles_to_update.update(is_grandfathered=True)
-            self.stdout.write(f"Marked {updated} users as grandfathered")
-
-    def _set_expiry_for_heavy_users(self, dry_run, username_filter, one_year_from_now):
-        """Set grandfather_expires on grandfathered users with 2000+ feeds."""
-        self.stdout.write("\n--- Setting expiry for users with 2000+ feeds ---")
-
-        profiles = Profile.objects.filter(
-            is_premium=True,
-            is_archive=False,
-            is_pro=False,
-            is_grandfathered=True,
-            grandfather_expires__isnull=True,
-        ).select_related("user")
-
-        if username_filter:
-            profiles = profiles.filter(user__username=username_filter)
-
-        user_ids = list(profiles.values_list("user_id", flat=True))
-
-        # Get users with >= 2000 active feeds
-        feed_counts = dict(
-            UserSubscription.objects.filter(user_id__in=user_ids, active=True)
-            .values("user_id")
-            .annotate(feed_count=Count("id"))
-            .filter(feed_count__gte=Profile.GRANDFATHERED_FEED_LIMIT)
-            .values_list("user_id", "feed_count")
-        )
-
-        profiles_to_update = profiles.filter(user_id__in=feed_counts.keys())
-        count = profiles_to_update.count()
-
-        if count == 0:
-            self.stdout.write("No users with 2000+ feeds need grandfather_expires set")
-            return
-
-        self.stdout.write(f"Found {count} users with 2000+ feeds without grandfather_expires")
+        self.stdout.write(f"Found {count} premium users over 1024 feeds to grandfather")
 
         for profile in profiles_to_update:
             user = profile.user
             feed_count = feed_counts[user.pk]
 
-            # Set grandfather_expires to 1 year from now, or their renewal date if sooner
-            if profile.premium_expire:
-                expires = profile.premium_expire
-                if expires.tzinfo is None:
-                    expires = expires.replace(tzinfo=datetime.timezone.utc)
-                # Use whichever is later: their renewal date or 1 year from now
-                # (give them at least 1 year)
-                if expires < one_year_from_now:
-                    expires = one_year_from_now
-            else:
-                expires = one_year_from_now
-
+            # Set grandfather_expires to 1 year from now
+            expires = one_year_from_now
             expires_date = expires.strftime("%B %d, %Y")
 
             if dry_run:
-                self.stdout.write(f"  WOULD SET: {user.username} - {feed_count} feeds, expires: {expires_date}")
+                self.stdout.write(
+                    f"  WOULD SET: {user.username} - {feed_count:,} feeds, expires: {expires_date}"
+                )
             else:
+                profile.is_grandfathered = True
                 profile.grandfather_expires = expires
-                profile.save(update_fields=["grandfather_expires"])
-                logging.user(user, f"~BB~FM~SBSet grandfather_expires: {expires_date} ({feed_count} feeds)")
+                profile.save(update_fields=["is_grandfathered", "grandfather_expires"])
+                logging.user(user, f"~BB~FM~SBGrandfathered: {feed_count:,} feeds, expires: {expires_date}")
 
     def _send_expiry_notifications(self, dry_run, force, username_filter, days_before, now, one_year_ago):
         """Email users whose grandfather_expires is coming up in the next N days."""
@@ -254,12 +188,12 @@ class Command(BaseCommand):
             if dry_run:
                 self.stdout.write(
                     f"  WOULD EMAIL: {user.username} <{user.email}> - "
-                    f"{feed_count} feeds, deadline: {deadline_date} ({days_until} days)"
+                    f"{feed_count:,} feeds, deadline: {deadline_date} ({days_until} days)"
                 )
             else:
                 self._send_email(user, profile, feed_count, deadline_date)
                 MSentEmail.record(receiver_user_id=user.pk, email_type="feed_limit_notification")
-                logging.user(user, f"~BB~FM~SBSent feed limit notification: {feed_count} feeds, deadline: {deadline_date}")
+                logging.user(user, f"~BB~FM~SBSent feed limit notification: {feed_count:,} feeds, deadline: {deadline_date}")
 
             sent_count += 1
 
@@ -269,13 +203,13 @@ class Command(BaseCommand):
         params = {
             "user": user,
             "username": user.username,
-            "feed_count": feed_count,
+            "feed_count": f"{feed_count:,}",
             "deadline_date": deadline_date,
         }
 
         text = render_to_string("mail/email_feed_limit_notification.txt", params)
         html = render_to_string("mail/email_feed_limit_notification.xhtml", params)
-        subject = f"Your NewsBlur subscription and your {feed_count} sites"
+        subject = f"Your NewsBlur subscription and your {feed_count:,} sites"
 
         msg = EmailMultiAlternatives(
             subject,

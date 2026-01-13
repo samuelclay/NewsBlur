@@ -47,7 +47,6 @@ class Profile(models.Model):
     # Feed limits by subscription tier
     FREE_FEED_LIMIT = 64
     PREMIUM_FEED_LIMIT = 1024
-    GRANDFATHERED_FEED_LIMIT = 2000  # For existing premium users at launch
     ARCHIVE_FEED_LIMIT = 4096
     PRO_FEED_LIMIT = 10000
 
@@ -200,23 +199,18 @@ class Profile(models.Model):
         """
         Returns the maximum number of feeds allowed for this user's subscription tier.
 
-        Grandfathering logic (only for users who had > 1024 feeds at launch):
-        - Grandfathered premium (1024-1999 feeds at launch): 2000 feed limit
-        - Grandfathered premium (2000+ feeds at launch): no limit during grace period, then 2000
-        - Non-grandfathered premium (< 1024 feeds or new users): 1024 feed limit
+        Grandfathering: Users with > 1024 feeds at launch get 1 year grace period.
+        During grace period (grandfather_expires in future), no limit applies.
+        After grace period expires, standard 1024 limit applies.
         """
         if self.is_pro:
             return self.PRO_FEED_LIMIT
         if self.is_archive:
             return self.ARCHIVE_FEED_LIMIT
         if self.is_premium:
-            if self.is_grandfathered:
-                # Grandfathered users who had 2000+ feeds get a temporary exemption
-                if self.is_feed_limit_temporarily_exempt:
-                    return None
-                # All other grandfathered users have a 2000 feed limit
-                return self.GRANDFATHERED_FEED_LIMIT
-            # New premium users have a 1024 feed limit
+            # Grandfathered users in grace period have no limit
+            if self.is_feed_limit_temporarily_exempt:
+                return None
             return self.PREMIUM_FEED_LIMIT
         return self.FREE_FEED_LIMIT
 
