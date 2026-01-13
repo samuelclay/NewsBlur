@@ -8,11 +8,16 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.newsblur.R
 import com.newsblur.databinding.NewsletterDialogBinding
-import com.newsblur.util.PrefsUtils
+import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.setViewGone
 import com.newsblur.util.setViewVisible
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class NewslettersFragment : DialogFragment() {
+    @Inject
+    lateinit var prefsRepo: PrefsRepo
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = NewsletterDialogBinding.inflate(layoutInflater)
@@ -24,22 +29,24 @@ class NewslettersFragment : DialogFragment() {
             binding.txtSetup.setViewVisible()
         }
 
-        return AlertDialog.Builder(requireContext()).apply {
-            setView(binding.root)
-            setPositiveButton(android.R.string.ok, null)
-            setNegativeButton(R.string.copy_email) { _, _ ->
-                copyToClipboard(emailAddress)
-            }
-        }.create()
+        return AlertDialog
+            .Builder(requireContext())
+            .apply {
+                setView(binding.root)
+                setPositiveButton(android.R.string.ok, null)
+                setNegativeButton(R.string.copy_email) { _, _ ->
+                    copyToClipboard(emailAddress)
+                }
+            }.create()
     }
 
     private fun generateEmail(): String {
-        val userDetails = PrefsUtils.getUserDetails(requireContext())
-        val extToken = PrefsUtils.getExtToken(requireContext())
-        return if (userDetails.username.isNullOrBlank() || extToken.isNullOrBlank()) {
+        val username = prefsRepo.getUserName()
+        val extToken = prefsRepo.getExtToken()
+        return if (username.isNullOrBlank() || extToken.isNullOrBlank()) {
             "Error generating forwarding email address"
         } else {
-            "${userDetails.username}-$extToken@newsletters.newsblur.com"
+            "$username-$extToken@newsletters.newsblur.com"
         }
     }
 

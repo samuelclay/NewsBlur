@@ -10,21 +10,23 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class NotifySaveReceiver : BroadcastReceiver() {
-
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
 
     @Inject
     lateinit var feedUtils: FeedUtils
 
-    override fun onReceive(c: Context, i: Intent) {
+    override fun onReceive(
+        c: Context,
+        i: Intent,
+    ) {
         val storyHash = i.getStringExtra(Reading.EXTRA_STORY_HASH)
         NotificationUtils.cancel(c, storyHash.hashCode())
         NBScope.executeAsyncTask(
-                doInBackground = {
-                    dbHelper.putStoryDismissed(storyHash)
-                    feedUtils.setStorySaved(storyHash, true, c)
-                }
+            doInBackground = {
+                dbHelper.putStoryDismissed(storyHash)
+                feedUtils.setStorySaved(storyHash, true, c, emptyList())
+            },
         )
     }
 }

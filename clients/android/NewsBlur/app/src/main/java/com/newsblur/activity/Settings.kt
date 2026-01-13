@@ -6,25 +6,33 @@ import androidx.appcompat.app.AppCompatActivity
 import com.newsblur.R
 import com.newsblur.databinding.ActivitySettingsBinding
 import com.newsblur.fragment.SettingsFragment
+import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.EdgeToEdgeUtil.applyTheme
+import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.PrefConstants
-import com.newsblur.util.PrefsUtils
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class Settings : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChangeListener {
+class Settings :
+    AppCompatActivity(),
+    SharedPreferences.OnSharedPreferenceChangeListener {
+    @Inject
+    lateinit var prefsRepo: PrefsRepo
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        PrefsUtils.applyThemePreference(this)
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        applyTheme(prefsRepo.getSelectedTheme())
         val binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyView(binding)
 
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.settings), true)
+
         supportFragmentManager
-                .beginTransaction()
-                .replace(binding.container.id, SettingsFragment())
-                .commit()
+            .beginTransaction()
+            .replace(binding.container.id, SettingsFragment())
+            .commit()
 
         val prefs = getSharedPreferences(PrefConstants.PREFERENCES, 0)
         prefs.registerOnSharedPreferenceChangeListener(this)
@@ -36,7 +44,10 @@ class Settings : AppCompatActivity(), SharedPreferences.OnSharedPreferenceChange
         super.onDestroy()
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+    override fun onSharedPreferenceChanged(
+        sharedPreferences: SharedPreferences?,
+        key: String?,
+    ) {
         if (key == PrefConstants.THEME) {
             UIUtils.restartActivity(this)
         }

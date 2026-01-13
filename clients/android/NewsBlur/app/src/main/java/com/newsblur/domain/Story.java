@@ -49,6 +49,9 @@ public class Story implements Serializable {
 	@SerializedName("user_tags")
     public String[] userTags = new String[]{};
 
+    @SerializedName("highlights")
+    public String[] highlights = new String[]{};
+
 	@SerializedName("social_user_id")
 	public String socialUserId;
 
@@ -131,8 +134,9 @@ public class Story implements Serializable {
 
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
+        String safeTitle = title == null ? "" : title;
 		values.put(DatabaseConstants.STORY_ID, id);
-		values.put(DatabaseConstants.STORY_TITLE, title.replace("\n", " ").replace("\r", " "));
+		values.put(DatabaseConstants.STORY_TITLE, safeTitle.replace("\n", " ").replace("\r", " "));
 		values.put(DatabaseConstants.STORY_TIMESTAMP, timestamp);
         values.put(DatabaseConstants.STORY_CONTENT, content);
         values.put(DatabaseConstants.STORY_SHORT_CONTENT, shortContent);
@@ -149,6 +153,7 @@ public class Story implements Serializable {
         values.put(DatabaseConstants.STORY_INTELLIGENCE_TOTAL, intelligence.calcTotalIntel());
 		values.put(DatabaseConstants.STORY_TAGS, StoryUtil.nullSafeJoin(",", tags));
 		values.put(DatabaseConstants.STORY_USER_TAGS, StoryUtil.nullSafeJoin(",", userTags));
+		values.put(DatabaseConstants.STORY_HIGHLIGHTS, StoryUtil.nullSafeJoin(",", highlights));
 		values.put(DatabaseConstants.STORY_READ, read);
 		values.put(DatabaseConstants.STORY_STARRED, starred);
 		values.put(DatabaseConstants.STORY_STARRED_DATE, starredTimestamp);
@@ -186,6 +191,7 @@ public class Story implements Serializable {
 		story.starred = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED)) > 0;
 		story.starredTimestamp = cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_STARRED_DATE));
 		story.tags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TAGS)), ",");
+		story.highlights = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_HIGHLIGHTS)), ",");
 		story.userTags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_USER_TAGS)), ",");
 		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
@@ -311,21 +317,23 @@ public class Story implements Serializable {
         String content = story.content;
         
         String ytUrl = null;
-        if (ytUrl == null) {
-            Matcher m = ytSniff1.matcher(content);
-            if (m.find()) ytUrl = m.group(1);
-        }
-        if (ytUrl == null) {
-            Matcher m = ytSniff2.matcher(content);
-            if (m.find()) ytUrl = m.group(1);
-        }
-        if (ytUrl == null) {
-            Matcher m = ytSniff3.matcher(content);
-            if (m.find()) ytUrl = m.group(1);
-        }
-        if (ytUrl == null) {
-            Matcher m = ytSniff4.matcher(content);
-            if (m.find()) ytUrl = m.group(1);
+        if (content != null && !content.isEmpty()) {
+            if (ytUrl == null) {
+                Matcher m = ytSniff1.matcher(content);
+                if (m.find()) ytUrl = m.group(1);
+            }
+            if (ytUrl == null) {
+                Matcher m = ytSniff2.matcher(content);
+                if (m.find()) ytUrl = m.group(1);
+            }
+            if (ytUrl == null) {
+                Matcher m = ytSniff3.matcher(content);
+                if (m.find()) ytUrl = m.group(1);
+            }
+            if (ytUrl == null) {
+                Matcher m = ytSniff4.matcher(content);
+                if (m.find()) ytUrl = m.group(1);
+            }
         }
         if (ytUrl != null) {
             return YT_THUMB_PRE + ytUrl + YT_THUMB_POST;

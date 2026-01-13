@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment;
 import com.newsblur.R;
 import com.newsblur.databinding.ActivityAddfeedexternalBinding;
 import com.newsblur.fragment.AddFeedFragment;
+import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 
@@ -22,7 +23,7 @@ public class AddFeedExternal extends NbActivity implements AddFeedFragment.AddFe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAddfeedexternalBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        EdgeToEdgeUtil.applyView(this, binding);
 
         UIUtils.setupToolbar(this, R.drawable.logo, "Add Feed", true);
 

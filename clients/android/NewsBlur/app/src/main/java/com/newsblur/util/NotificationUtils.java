@@ -93,14 +93,12 @@ public class NotificationUtils {
      * creates notification channels necessary for 26+, if applicable
      */
     public static void createNotificationChannel(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = context.getString(R.string.story_notification_channel_name);
-            String id = context.getString(R.string.story_notification_channel_id);
-            NotificationChannel channel = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_DEFAULT);
+        CharSequence name = context.getString(R.string.story_notification_channel_name);
+        String id = context.getString(R.string.story_notification_channel_id);
+        NotificationChannel channel = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_DEFAULT);
 
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+        NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
     }
 
     private static Notification buildStoryNotification(Story story, Cursor cursor, Context context, FileCache iconCache) {
@@ -144,7 +142,7 @@ public class NotificationUtils {
         NotificationCompat.Builder nb = new NotificationCompat.Builder(context, context.getString(R.string.story_notification_channel_id))
                 .setContentTitle(title.toString())
                 .setContentText(story.shortContent)
-                .setSmallIcon(R.drawable.ic_logo_monochrome)
+                .setSmallIcon(R.drawable.logo_monochrome)
                 .setContentIntent(pendingIntent)
                 .setDeleteIntent(dismissPendingIntent)
                 .setAutoCancel(true)

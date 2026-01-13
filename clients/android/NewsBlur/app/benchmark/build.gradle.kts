@@ -1,49 +1,58 @@
 plugins {
-    id(Plugins.androidTest)
-    kotlin(Plugins.kotlinAndroid)
+    alias(libs.plugins.android.test)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
-    namespace = Const.namespaceBenchmark
-    compileSdk = Config.compileSdk
+    namespace = "com.newsblur.benchmark"
+    compileSdk =
+        libs.versions.compileSdk
+            .get()
+            .toInt()
 
     compileOptions {
-        sourceCompatibility = Config.javaVersion
-        targetCompatibility = Config.javaVersion
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     defaultConfig {
-        minSdk = Config.minSdk
-        targetSdk = Config.targetSdk
+        minSdk =
+            libs.versions.minSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.targetSdk
+                .get()
+                .toInt()
 
-        testInstrumentationRunner = Config.androidTestInstrumentation
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         // This benchmark buildType is used for benchmarking, and should function like your
         // release build (for example, with minification on). It's signed with a debug key
         // for easy local/CI testing.
-        maybeCreate(Const.benchmark)
-        getByName(Const.benchmark) {
+        maybeCreate("benchmark")
+        getByName("benchmark") {
             isDebuggable = true
-            signingConfig = signingConfigs.getByName(Const.debug)
-            matchingFallbacks += listOf(Const.release)
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
         }
     }
 
     targetProjectPath = ":app"
-    experimentalProperties[Const.selfInstrumenting] = true
+    experimentalProperties["android.experimental.self-instrumenting"] = true
 }
 
 dependencies {
-    implementation(Dependencies.junitExt)
-    implementation(Dependencies.espressoCore)
-    implementation(Dependencies.uiAutomator)
-    implementation(Dependencies.benchmarkMacroJunit4)
+    implementation(libs.androidx.junit)
+    implementation(libs.androidx.espresso.core)
+    implementation(libs.ui.automator)
+    implementation(libs.benchmark.macro.junit4)
 }
 
 androidComponents {
     beforeVariants(selector().all()) {
-        it.enable = it.buildType == Const.benchmark
+        it.enable = it.buildType == "benchmark"
     }
 }

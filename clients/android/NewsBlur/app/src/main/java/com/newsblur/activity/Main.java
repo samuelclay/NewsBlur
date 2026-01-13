@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Trace;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -25,7 +24,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.newsblur.R;
-import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.databinding.ActivityMainBinding;
 import com.newsblur.delegate.MainContextMenuDelegate;
 import com.newsblur.delegate.MainContextMenuDelegateImpl;
@@ -36,15 +34,17 @@ import com.newsblur.keyboard.KeyboardEvent;
 import com.newsblur.keyboard.KeyboardListener;
 import com.newsblur.keyboard.KeyboardManager;
 import com.newsblur.service.BootReceiver;
-import com.newsblur.service.NBSyncService;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.EdgeToEdgeUtil;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ShortcutUtils;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -56,9 +56,6 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     @Inject
     FeedUtils feedUtils;
 
-    @Inject
-    BlurDatabaseHelper dbHelper;
-
     public static final String EXTRA_FORCE_SHOW_FEED_ID = "force_show_feed_id";
 
     private FolderListFragment folderFeedList;
@@ -69,45 +66,40 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     private KeyboardManager keyboardManager;
 
     @Override
-	public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         Trace.beginSection("MainOnCreate");
-        PreferenceManager.setDefaultValues(this, R.xml.activity_settings, false);
 
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        contextMenuDelegate = new MainContextMenuDelegateImpl(this, dbHelper);
+        contextMenuDelegate = new MainContextMenuDelegateImpl(this, prefsRepo);
         keyboardManager = new KeyboardManager();
-        setContentView(binding.getRoot());
+        EdgeToEdgeUtil.applyView(this, binding);
 
         // set the status bar to an generic loading message when the activity is first created so
         // that something is displayed while the service warms up
         binding.mainSyncStatus.setText(R.string.loading);
         binding.mainSyncStatus.setVisibility(View.VISIBLE);
 
-        binding.swipeContainer.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
-        binding.swipeContainer.setProgressBackgroundColorSchemeResource(UIUtils.getThemedResource(this, R.attr.actionbarBackground, android.R.attr.background));
-        binding.swipeContainer.setOnRefreshListener(this);
+        binding.content.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3, R.color.refresh_4);
+        binding.content.setProgressBackgroundColorSchemeResource(UIUtils.getThemedResource(this, R.attr.actionbarBackground, android.R.attr.background));
+        binding.content.setOnRefreshListener(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
+        folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
         feedSelectorFragment = ((FeedSelectorFragment) fragmentManager.findFragmentByTag("feedIntelligenceSelector"));
         feedSelectorFragment.setState(folderFeedList.currentState);
 
         // make sure the interval sync is scheduled, since we are the root Activity
         BootReceiver.scheduleSyncService(this);
 
-        Bitmap userPicture = PrefsUtils.getUserImage(this);
-        if (userPicture != null) {
-            userPicture = UIUtils.clipAndRound(userPicture, true, false);
-            binding.mainUserImage.setImageBitmap(userPicture);
-        }
-        binding.mainUserName.setText(PrefsUtils.getUserDetails(this).username);
-        binding.feedlistSearchQuery.setOnKeyListener(new OnKeyListener() {
+        setUserImageAndName();
+
+        binding.inputSearchQuery.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    binding.feedlistSearchQuery.setVisibility(View.GONE);
-                    binding.feedlistSearchQuery.setText("");
+                    binding.inputSearchQuery.setVisibility(View.GONE);
+                    binding.inputSearchQuery.setText("");
                     checkSearchQuery();
                     return true;
                 }
@@ -118,19 +110,22 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
                 return false;
             }
         });
-        binding.feedlistSearchQuery.addTextChangedListener(new TextWatcher() {
+        binding.inputSearchQuery.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 checkSearchQuery();
             }
-            public void afterTextChanged(Editable s) {}
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void afterTextChanged(Editable s) {
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
         });
 
         feedUtils.currentFolderName = null;
 
         binding.mainMenuButton.setOnClickListener(v -> onClickMenuButton());
         binding.mainAddButton.setOnClickListener(v -> onClickAddButton());
-        binding.mainProfileButton.setOnClickListener(v -> onClickProfileButton());
         binding.mainUserImage.setOnClickListener(v -> onClickUserButton());
         binding.mainSearchFeedsButton.setOnClickListener(v -> onClickSearchFeedsButton());
 
@@ -143,7 +138,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         Trace.endSection();
         reportFullyDrawn();
-	}
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -168,8 +163,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
 
         if (folderFeedList.getSearchQuery() != null) {
-            binding.feedlistSearchQuery.setText(folderFeedList.getSearchQuery());
-            binding.feedlistSearchQuery.setVisibility(View.VISIBLE);
+            binding.inputSearchQuery.setText(folderFeedList.getSearchQuery());
+            binding.inputSearchQuery.setVisibility(View.VISIBLE);
         }
 
         // triggerSync() might not actually do enough to push a UI update if background sync has been
@@ -177,8 +172,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         // will be required, however inefficient
         folderFeedList.hasUpdated();
 
-        NBSyncService.resetReadingSession(dbHelper);
-        NBSyncService.flushRecounts();
+        syncServiceState.resetReadingSession(dbHelper); // TODO suspend
+        syncServiceState.flushRecounts();
 
         updateStatusIndicators();
         folderFeedList.pushUnreadCounts();
@@ -194,34 +189,30 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     @Override
-	public void changedState(StateFilter state) {
-        if ( !( (state == StateFilter.ALL) ||
+    public void changedState(StateFilter state) {
+        if (!((state == StateFilter.ALL) ||
                 (state == StateFilter.SOME) ||
-                (state == StateFilter.BEST) ) ) {
-            binding.feedlistSearchQuery.setText("");
-            binding.feedlistSearchQuery.setVisibility(View.GONE);
+                (state == StateFilter.BEST))) {
+            binding.inputSearchQuery.setText("");
+            binding.inputSearchQuery.setVisibility(View.GONE);
             checkSearchQuery();
         }
 
-		folderFeedList.changeState(state);
-	}
+        folderFeedList.changeState(state);
+    }
 
     @Override
-	public void handleUpdate(int updateType) {
+    public void handleUpdate(int updateType) {
         if ((updateType & UPDATE_REBUILD) != 0) {
             folderFeedList.reset();
         }
         if ((updateType & UPDATE_DB_READY) != 0) {
-            try {
-                folderFeedList.startLoaders();
-            } catch (IllegalStateException ex) {
-                ; // this might be called multiple times, and startLoaders is *not* idempotent
-            }
+            folderFeedList.loadData();
         }
         if ((updateType & UPDATE_STATUS) != 0) {
             updateStatusIndicators();
         }
-		if ((updateType & UPDATE_METADATA) != 0) {
+        if ((updateType & UPDATE_METADATA) != 0) {
             folderFeedList.hasUpdated();
         }
     }
@@ -246,6 +237,25 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         return super.onKeyUp(keyCode, event);
     }
 
+    private void setUserImageAndName() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            Bitmap rawImage = prefsRepo.getUserImage(this);
+            final Bitmap roundedImage = (rawImage != null)
+                    ? UIUtils.clipAndRound(rawImage, true, false)
+                    : null;
+
+            String username = prefsRepo.getUserName();
+
+            runOnUiThread(() -> {
+                if (roundedImage != null) {
+                    binding.mainUserImage.setImageBitmap(roundedImage);
+                }
+                binding.mainUserName.setText(username);
+            });
+        });
+    }
+
     public void updateUnreadCounts(int neutCount, int posiCount) {
         binding.mainUnreadCountNeutText.setText(Integer.toString(neutCount));
         binding.mainUnreadCountPosiText.setText(Integer.toString(posiCount));
@@ -257,8 +267,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
      * having to expensively recalculate those totals from the DB.
      */
     public void updateFeedCount(int feedCount) {
-        if (feedCount < 1 ) {
-            if (NBSyncService.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
+        if (feedCount < 1) {
+            if (syncServiceState.isFeedCountSyncRunning() || (!folderFeedList.firstCursorSeenYet)) {
                 binding.emptyViewImage.setVisibility(View.INVISIBLE);
                 binding.emptyViewText.setVisibility(View.INVISIBLE);
             } else {
@@ -279,10 +289,10 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
     }
 
     private void updateStatusIndicators() {
-        binding.swipeContainer.setRefreshing(NBSyncService.isFeedFolderSyncRunning());
+        binding.content.setRefreshing(syncServiceState.isFeedFolderSyncRunning());
 
-        String syncStatus = NBSyncService.getSyncStatusMessage(this, false);
-        if (syncStatus != null)  {
+        String syncStatus = syncServiceState.getSyncStatusMessage(this, false);
+        if (syncStatus != null) {
             if (AppConstants.VERBOSE_LOG) {
                 syncStatus = syncStatus + UIUtils.getMemoryUsageDebug(this);
             }
@@ -295,7 +305,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
     @Override
     public void onRefresh() {
-        NBSyncService.forceFeedsFolders();
+        syncServiceState.forceFeedsFolders();
         triggerSync();
         folderFeedList.clearRecents();
     }
@@ -314,23 +324,18 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         startActivity(i);
     }
 
-    private void onClickProfileButton() {
-        Intent i = new Intent(this, Profile.class);
-        startActivity(i);
-    }
-
     private void onClickUserButton() {
         Intent i = new Intent(this, Profile.class);
         startActivity(i);
     }
 
     private void onClickSearchFeedsButton() {
-        if (binding.feedlistSearchQuery.getVisibility() != View.VISIBLE) {
-            binding.feedlistSearchQuery.setVisibility(View.VISIBLE);
-            binding.feedlistSearchQuery.requestFocus();
+        if (binding.inputSearchQuery.getVisibility() != View.VISIBLE) {
+            binding.inputSearchQuery.setVisibility(View.VISIBLE);
+            binding.inputSearchQuery.requestFocus();
         } else {
-            binding.feedlistSearchQuery.setText("");
-            binding.feedlistSearchQuery.setVisibility(View.GONE);
+            binding.inputSearchQuery.setText("");
+            binding.inputSearchQuery.setVisibility(View.GONE);
             checkSearchQuery();
         }
     }
@@ -345,15 +350,15 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         if (binding != null) {
             boolean enable = (firstVisibleItem == 0);
             if (wasSwipeEnabled != enable) {
-                binding.swipeContainer.setEnabled(enable);
+                binding.content.setEnabled(enable);
                 wasSwipeEnabled = enable;
             }
         }
     }
 
     private void checkSearchQuery() {
-        String q = binding.feedlistSearchQuery.getText().toString().trim();
-        if (q.length() < 1) {
+        String q = binding.inputSearchQuery.getText().toString().trim();
+        if (q.isEmpty()) {
             q = null;
         }
         folderFeedList.setSearchQuery(q);
@@ -388,7 +393,7 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         }
     }
 
-    private void setAndNotifySelectorState(StateFilter state, @StringRes  int notifyMsgRes) {
+    private void setAndNotifySelectorState(StateFilter state, @StringRes int notifyMsgRes) {
         feedSelectorFragment.setState(state);
         UIUtils.showSnackBar(binding.getRoot(), getString(notifyMsgRes));
     }
