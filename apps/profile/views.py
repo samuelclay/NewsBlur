@@ -492,6 +492,24 @@ def activate_premium(request):
     return HttpResponseRedirect(reverse("index"))
 
 
+@login_required
+def activate_premium_trial(request):
+    """Page that activates a premium trial and shows progress like payment returns."""
+    profile = request.user.profile
+    success = profile.start_premium_trial()
+
+    if not success:
+        return HttpResponseRedirect(reverse("index"))
+
+    return render(
+        request,
+        "reader/premium_trial_return.xhtml",
+        {
+            "user_profile": profile,
+        },
+    )
+
+
 @ajax_login_required
 @json.json_view
 def profile_is_premium(request):
