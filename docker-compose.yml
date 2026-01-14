@@ -131,8 +131,7 @@ services:
     restart: unless-stopped
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms384m -Xmx384m -XX:UseSVE=0"
-      - "CLI_JAVA_OPTS=-XX:UseSVE=0"
+      - "ES_JAVA_OPTS=-Xms384m -Xmx384m"
       - cluster.routing.allocation.disk.threshold_enabled=false
       - xpack.security.enabled=false
       - bootstrap.memory_lock=false
