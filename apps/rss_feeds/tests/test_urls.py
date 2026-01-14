@@ -4,7 +4,6 @@ URL tests for the rss_feeds app.
 Tests URL resolution and basic access patterns for all rss_feeds endpoints.
 """
 
-import pytest
 from django.test import Client, TransactionTestCase
 from django.urls import resolve, reverse
 
@@ -143,17 +142,8 @@ class Test_RSSFeedsURLAccess(TransactionTestCase):
 
     def test_feed_autocomplete_anonymous(self):
         """Test anonymous access to feed autocomplete."""
-        from elasticsearch.exceptions import ConnectionError as ESConnectionError
-
-        try:
-            response = self.client.get(reverse("feed-autocomplete"), {"term": "test"})
-            assert response.status_code in [200, 302, 500]
-        except (ESConnectionError, Exception) as e:
-            # Elasticsearch not available in CI environment - connection errors bubble up
-            if "ConnectionError" in str(type(e).__name__) or "Failed to establish" in str(e):
-                pass
-            else:
-                raise
+        response = self.client.get(reverse("feed-autocomplete"), {"term": "test"})
+        assert response.status_code in [200, 302, 500]
 
     def test_search_feed_anonymous_no_useragent(self):
         """Test anonymous access to search feed without User-Agent gets banned."""

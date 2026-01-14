@@ -4,7 +4,6 @@ URL tests for the search app.
 Tests URL resolution and basic access patterns for all search endpoints.
 """
 
-import pytest
 from django.test import Client, TransactionTestCase
 from django.urls import resolve, reverse
 
@@ -35,27 +34,13 @@ class Test_SearchURLAccess(TransactionTestCase):
     def test_more_like_this_authenticated(self):
         """Test authenticated access to more like this."""
         self.client.login(username="testuser", password="testpass")
-        try:
-            response = self.client.get(reverse("more-like-this"), {"story_hash": "1:abc123"})
-            assert response.status_code in [200, 302, 400, 404, 500]
-        except Exception as e:
-            # Elasticsearch not available in CI environment
-            if "ConnectionError" in str(type(e).__name__) or "Failed to establish" in str(e):
-                pass
-            else:
-                raise
+        response = self.client.get(reverse("more-like-this"), {"story_hash": "1:abc123"})
+        assert response.status_code in [200, 302, 400, 404, 500]
 
     def test_more_like_this_anonymous(self):
         """Test anonymous access to more like this."""
-        try:
-            response = self.client.get(reverse("more-like-this"), {"story_hash": "1:abc123"})
-            assert response.status_code in [200, 302, 403, 404, 500]
-        except Exception as e:
-            # Elasticsearch not available in CI environment
-            if "ConnectionError" in str(type(e).__name__) or "Failed to establish" in str(e):
-                pass
-            else:
-                raise
+        response = self.client.get(reverse("more-like-this"), {"story_hash": "1:abc123"})
+        assert response.status_code in [200, 302, 403, 404, 500]
 
 
 class Test_SearchURLPOST(TransactionTestCase):
@@ -80,12 +65,5 @@ class Test_SearchURLPOST(TransactionTestCase):
     def test_more_like_this_post(self):
         """Test POST to more like this."""
         self.client.login(username="testuser", password="testpass")
-        try:
-            response = self.client.post(reverse("more-like-this"), {"story_hash": "1:abc123"})
-            assert response.status_code in [200, 302, 400, 404, 500]
-        except Exception as e:
-            # Elasticsearch not available in CI environment
-            if "ConnectionError" in str(type(e).__name__) or "Failed to establish" in str(e):
-                pass
-            else:
-                raise
+        response = self.client.post(reverse("more-like-this"), {"story_hash": "1:abc123"})
+        assert response.status_code in [200, 302, 400, 404, 500]
