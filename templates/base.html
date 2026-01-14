@@ -41,7 +41,7 @@
       'trial_days_remaining'    : {% if user_profile.trial_days_remaining %}{{ user_profile.trial_days_remaining }}{% else %}null{% endif %},
       'can_start_trial'         : {{ user_profile.can_start_trial|yesno:"true,false" }},
       'max_feed_limit'          : {% if user_profile.max_feed_limit %}{{ user_profile.max_feed_limit }}{% else %}null{% endif %},
-      'add_feed_limit'          : {{ user_profile.add_feed_limit }},
+      'add_feed_limit'          : {% if user_profile.add_feed_limit %}{{ user_profile.add_feed_limit }}{% else %}null{% endif %},
       'premium_feed_limit'      : {{ user_profile.premium_feed_limit }},
       'archive_feed_limit'      : {{ user_profile.archive_feed_limit }},
       'pro_feed_limit'          : {{ user_profile.pro_feed_limit }},
