@@ -2,6 +2,7 @@
 Celery tasks for the Archive Assistant.
 
 Handles async processing of AI queries with streaming responses via Redis PubSub.
+Uses Anthropic's streaming API for real-time response streaming with tool support.
 """
 
 import json
@@ -9,6 +10,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
+import anthropic
 import redis
 from celery import shared_task
 from django.conf import settings
@@ -167,7 +169,7 @@ def _get_conversation_history(conversation_id, limit=10):
 
 def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_archive=True):
     """
-    Call Claude API with tools and handle tool execution loop.
+    Call Claude API with tools using streaming for real-time response delivery.
 
     Args:
         user_id: User ID for tool execution
@@ -178,8 +180,6 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
 
     Returns tuple: (response_text, tool_calls, tokens_used, input_tokens, output_tokens, was_truncated)
     """
-    import anthropic
-
     client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
     tool_calls = []
@@ -188,190 +188,243 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
     output_tokens_total = 0
     full_response = ""
     was_truncated = False
+    total_chars = 0
 
     # Get system prompt with current date context
     system_prompt = get_system_prompt()
 
-    # Initial request with tools
-    response = client.messages.create(
-        model=model,
-        max_tokens=4096,
-        system=system_prompt,
-        tools=ARCHIVE_TOOLS,
-        messages=messages,
-    )
+    # Track if we need to continue with tool results
+    continue_with_tools = True
 
-    input_tokens_total += response.usage.input_tokens
-    output_tokens_total += response.usage.output_tokens
-    tokens_used += response.usage.input_tokens + response.usage.output_tokens
+    while continue_with_tools:
+        continue_with_tools = False
 
-    # Handle tool use loop
-    while response.stop_reason == "tool_use":
-        # Extract tool calls from response
-        tool_use_blocks = [block for block in response.content if block.type == "tool_use"]
-
-        # First, publish ALL tool_call events so UI shows all spinners at once
-        for tool_block in tool_use_blocks:
-            publish_event("tool_call", {"tool": tool_block.name, "input": tool_block.input})
-
-        # Execute tools in parallel using ThreadPoolExecutor
-        def execute_single_tool(tool_block):
-            """Execute a single tool and return (tool_block, result)."""
-            return (tool_block, execute_tool(tool_block.name, tool_block.input, user_id))
-
-        # Run all tools in parallel (max 6 concurrent to avoid overwhelming resources)
-        tool_execution_results = {}
-        with ThreadPoolExecutor(max_workers=6) as executor:
-            futures = {executor.submit(execute_single_tool, block): block for block in tool_use_blocks}
-            for future in as_completed(futures):
-                tool_block, result = future.result()
-                tool_execution_results[tool_block.id] = (tool_block, result)
-
-        # Process results in original order (to maintain consistent tool_results array)
-        tool_results = []
-        for tool_block in tool_use_blocks:
-            _, result = tool_execution_results[tool_block.id]
-            tool_name = tool_block.name
-            tool_input = tool_block.input
-
-            # Build result summary and preview for user visibility
-            preview = None
-            if tool_name == "search_archives":
-                count = result.get("count", 0)
-                result_summary = f"Found {count} matching {'article' if count == 1 else 'articles'}"
-                # Preview: first 3 article titles
-                archives = result.get("archives", [])[:3]
-                if archives:
-                    preview = [a.get("title", "Untitled")[:60] for a in archives]
-            elif tool_name == "get_archive_content":
-                title = result.get("title", "article")
-                result_summary = f"Reading: {title[:50]}"
-            elif tool_name == "get_archive_summary":
-                archive_count = result.get('total_archives', 0)
-                result_summary = f"Archive: {archive_count} {'page' if archive_count == 1 else 'pages'}"
-            elif tool_name == "get_recent_archives":
-                count = len(result.get("archives", []))
-                result_summary = f"Found {count} recent {'page' if count == 1 else 'pages'}"
-                # Preview: first 3 recent titles
-                archives = result.get("archives", [])[:3]
-                logging.debug(f"get_recent_archives: {count} total, {len(archives)} for preview")
-                if archives:
-                    preview = [a.get("title", "Untitled")[:60] for a in archives]
-                    logging.debug(f"Preview titles: {preview}")
-            # RSS feed story tools
-            elif tool_name == "search_starred_stories":
-                count = result.get("count", 0)
-                result_summary = f"Found {count} saved {'story' if count == 1 else 'stories'}"
-                # Preview: first 3 story titles
-                stories = result.get("stories", [])[:3]
-                if stories:
-                    preview = [s.get("title", "Untitled")[:60] for s in stories]
-            elif tool_name == "get_starred_story_content":
-                title = result.get("title", "story")
-                result_summary = f"Reading: {title[:50]}"
-            elif tool_name == "get_starred_summary":
-                saved_count = result.get('total_starred', 0)
-                result_summary = f"Saved: {saved_count} {'story' if saved_count == 1 else 'stories'}"
-            elif tool_name == "search_feed_stories":
-                count = result.get("count", 0)
-                result_summary = f"Found {count} feed {'story' if count == 1 else 'stories'}"
-                # Preview: first 3 story titles
-                stories = result.get("stories", [])[:3]
-                if stories:
-                    preview = [s.get("title", "Untitled")[:60] for s in stories]
-            elif tool_name == "get_feed_story_content":
-                title = result.get("title", "story")
-                result_summary = f"Reading: {title[:50]}"
-            elif tool_name == "search_shared_stories":
-                count = result.get("count", 0)
-                result_summary = f"Found {count} shared {'story' if count == 1 else 'stories'}"
-                # Preview: first 3 shared story titles with sharer
-                stories = result.get("stories", [])[:3]
-                if stories:
-                    preview = []
-                    for s in stories:
-                        title = s.get("title", "Untitled")[:50]
-                        sharer = s.get("sharer", "")
-                        if sharer:
-                            preview.append(f"{title} (via {sharer})")
-                        else:
-                            preview.append(title)
-            else:
-                result_summary = "Retrieved content"
-
-            # Publish tool result event with optional preview
-            event_data = {"tool": tool_name, "summary": result_summary}
-            if preview:
-                event_data["preview"] = preview
-            logging.info(f"Publishing tool_result: {tool_name}, preview={preview is not None}, data_keys={list(event_data.keys())}")
-            publish_event("tool_result", event_data)
-
-            tool_call_data = {
-                "tool": tool_name,
-                "input": tool_input,
-                "result_summary": result_summary,
-            }
-            if preview:
-                tool_call_data["preview"] = preview
-            tool_calls.append(tool_call_data)
-
-            tool_results.append(
-                {
-                    "type": "tool_result",
-                    "tool_use_id": tool_block.id,
-                    "content": json.dumps(result),
-                }
-            )
-
-        # Continue conversation with tool results
-        messages = messages + [{"role": "assistant", "content": response.content}]
-        messages = messages + [{"role": "user", "content": tool_results}]
-
-        response = client.messages.create(
+        # Stream this turn
+        with client.messages.stream(
             model=model,
             max_tokens=4096,
             system=system_prompt,
             tools=ARCHIVE_TOOLS,
             messages=messages,
-        )
+        ) as stream:
+            current_text = ""
+            tool_use_blocks = []
+            current_tool_input = ""
+            current_tool_name = None
+            current_tool_id = None
 
-        input_tokens_total += response.usage.input_tokens
-        output_tokens_total += response.usage.output_tokens
-        tokens_used += response.usage.input_tokens + response.usage.output_tokens
+            for event in stream:
+                # Handle text delta - stream chunks in real-time
+                if event.type == "content_block_delta":
+                    if hasattr(event.delta, "text"):
+                        chunk = event.delta.text
 
-    # Extract final text response (with truncation for non-premium users)
-    total_chars = 0
-    for block in response.content:
-        if hasattr(block, "text"):
-            chunk = block.text
+                        # Handle truncation for non-premium
+                        if not is_premium_archive:
+                            remaining = FREE_RESPONSE_CHAR_LIMIT - total_chars
+                            if remaining <= 0:
+                                publish_event("truncated", {"reason": "premium_required"})
+                                was_truncated = True
+                                break
+                            elif len(chunk) > remaining:
+                                truncated = chunk[:remaining]
+                                last_space = truncated.rfind(" ")
+                                if last_space > remaining // 2:
+                                    truncated = truncated[:last_space]
+                                current_text += truncated
+                                full_response += truncated
+                                total_chars += len(truncated)
+                                publish_event("chunk", {"content": truncated})
+                                publish_event("truncated", {"reason": "premium_required"})
+                                was_truncated = True
+                                break
 
-            # For non-premium users, enforce character limit
-            if not is_premium_archive:
-                remaining = FREE_RESPONSE_CHAR_LIMIT - total_chars
-                if remaining <= 0:
-                    # Already at limit, publish truncated and stop
-                    publish_event("truncated", {"reason": "premium_required"})
-                    was_truncated = True
+                        current_text += chunk
+                        full_response += chunk
+                        total_chars += len(chunk)
+                        logging.debug(f"Streaming chunk ({len(chunk)} chars): {chunk[:50]}...")
+                        publish_event("chunk", {"content": chunk})
+
+                    elif hasattr(event.delta, "partial_json"):
+                        # Accumulate tool input JSON
+                        current_tool_input += event.delta.partial_json
+
+                # Track when a tool use block starts
+                elif event.type == "content_block_start":
+                    if event.content_block.type == "tool_use":
+                        current_tool_name = event.content_block.name
+                        current_tool_id = event.content_block.id
+                        current_tool_input = ""
+                        # Publish tool_call event when we start to see a tool
+                        publish_event("tool_call", {"tool": current_tool_name, "input": {}})
+
+                # Track when a tool use block stops - now we have the full input
+                elif event.type == "content_block_stop":
+                    if current_tool_name and current_tool_id:
+                        try:
+                            tool_input = json.loads(current_tool_input) if current_tool_input else {}
+                        except json.JSONDecodeError:
+                            tool_input = {}
+
+                        tool_use_blocks.append({
+                            "id": current_tool_id,
+                            "name": current_tool_name,
+                            "input": tool_input,
+                        })
+                        current_tool_name = None
+                        current_tool_id = None
+                        current_tool_input = ""
+
+                if was_truncated:
                     break
-                elif len(chunk) > remaining:
-                    # Truncate at word boundary
-                    truncated_chunk = chunk[:remaining]
-                    # Try to cut at a word boundary
-                    last_space = truncated_chunk.rfind(" ")
-                    if last_space > remaining // 2:
-                        truncated_chunk = truncated_chunk[:last_space]
-                    full_response += truncated_chunk
-                    total_chars += len(truncated_chunk)
-                    publish_event("chunk", {"content": truncated_chunk})
-                    publish_event("truncated", {"reason": "premium_required"})
-                    was_truncated = True
-                    break
 
-            full_response += chunk
-            total_chars += len(chunk)
-            publish_event("chunk", {"content": chunk})
+            # Get final message for usage info
+            final_message = stream.get_final_message()
+            input_tokens_total += final_message.usage.input_tokens
+            output_tokens_total += final_message.usage.output_tokens
+            tokens_used += final_message.usage.input_tokens + final_message.usage.output_tokens
+
+        # If truncated, we're done
+        if was_truncated:
+            break
+
+        # If we have tool calls, execute them and continue
+        if tool_use_blocks:
+            continue_with_tools = True
+
+            # Execute tools in parallel
+            def execute_single_tool(tool_block):
+                """Execute a single tool and return (tool_block, result)."""
+                return (tool_block, execute_tool(tool_block["name"], tool_block["input"], user_id))
+
+            tool_execution_results = {}
+            with ThreadPoolExecutor(max_workers=6) as executor:
+                futures = {executor.submit(execute_single_tool, block): block for block in tool_use_blocks}
+                for future in as_completed(futures):
+                    tool_block, result = future.result()
+                    tool_execution_results[tool_block["id"]] = (tool_block, result)
+
+            # Build tool results for Claude and publish events
+            tool_results = []
+            assistant_content = []
+
+            # Add any text from this turn
+            if current_text:
+                assistant_content.append({"type": "text", "text": current_text})
+
+            for tool_block in tool_use_blocks:
+                _, result = tool_execution_results[tool_block["id"]]
+                tool_name = tool_block["name"]
+                tool_input = tool_block["input"]
+
+                # Add tool use to assistant content
+                assistant_content.append({
+                    "type": "tool_use",
+                    "id": tool_block["id"],
+                    "name": tool_name,
+                    "input": tool_input,
+                })
+
+                # Build summary and preview
+                result_summary, preview = _build_tool_summary(tool_name, result)
+
+                # Publish tool result event
+                event_data = {"tool": tool_name, "summary": result_summary}
+                if preview:
+                    event_data["preview"] = preview
+                publish_event("tool_result", event_data)
+
+                # Track tool call
+                tool_call_data = {
+                    "tool": tool_name,
+                    "input": tool_input,
+                    "result_summary": result_summary,
+                }
+                if preview:
+                    tool_call_data["preview"] = preview
+                tool_calls.append(tool_call_data)
+
+                # Add tool result
+                tool_results.append({
+                    "type": "tool_result",
+                    "tool_use_id": tool_block["id"],
+                    "content": json.dumps(result),
+                })
+
+            # Continue conversation with tool results
+            messages = messages + [{"role": "assistant", "content": assistant_content}]
+            messages = messages + [{"role": "user", "content": tool_results}]
+
+            # Reset for next turn
+            tool_use_blocks = []
 
     return full_response, tool_calls, tokens_used, input_tokens_total, output_tokens_total, was_truncated
+
+
+def _build_tool_summary(tool_name, result):
+    """
+    Build a human-readable summary and preview from tool result.
+
+    Returns tuple: (summary_string, preview_list_or_none)
+    """
+    preview = None
+
+    if tool_name == "search_archives":
+        count = result.get("count", 0)
+        summary = f"Found {count} matching {'article' if count == 1 else 'articles'}"
+        archives = result.get("archives", [])[:3]
+        if archives:
+            preview = [a.get("title", "Untitled")[:60] for a in archives]
+    elif tool_name == "get_archive_content":
+        title = result.get("title", "article")
+        summary = f"Reading: {title[:50]}"
+    elif tool_name == "get_archive_summary":
+        archive_count = result.get("total_archives", 0)
+        summary = f"Archive: {archive_count} {'page' if archive_count == 1 else 'pages'}"
+    elif tool_name == "get_recent_archives":
+        count = len(result.get("archives", []))
+        summary = f"Found {count} recent {'page' if count == 1 else 'pages'}"
+        archives = result.get("archives", [])[:3]
+        if archives:
+            preview = [a.get("title", "Untitled")[:60] for a in archives]
+    elif tool_name == "search_starred_stories":
+        count = result.get("count", 0)
+        summary = f"Found {count} saved {'story' if count == 1 else 'stories'}"
+        stories = result.get("stories", [])[:3]
+        if stories:
+            preview = [s.get("title", "Untitled")[:60] for s in stories]
+    elif tool_name == "get_starred_story_content":
+        title = result.get("title", "story")
+        summary = f"Reading: {title[:50]}"
+    elif tool_name == "get_starred_summary":
+        saved_count = result.get("total_starred", 0)
+        summary = f"Saved: {saved_count} {'story' if saved_count == 1 else 'stories'}"
+    elif tool_name == "search_feed_stories":
+        count = result.get("count", 0)
+        summary = f"Found {count} feed {'story' if count == 1 else 'stories'}"
+        stories = result.get("stories", [])[:3]
+        if stories:
+            preview = [s.get("title", "Untitled")[:60] for s in stories]
+    elif tool_name == "get_feed_story_content":
+        title = result.get("title", "story")
+        summary = f"Reading: {title[:50]}"
+    elif tool_name == "search_shared_stories":
+        count = result.get("count", 0)
+        summary = f"Found {count} shared {'story' if count == 1 else 'stories'}"
+        stories = result.get("stories", [])[:3]
+        if stories:
+            preview = []
+            for s in stories:
+                title = s.get("title", "Untitled")[:50]
+                sharer = s.get("sharer", "")
+                if sharer:
+                    preview.append(f"{title} (via {sharer})")
+                else:
+                    preview.append(title)
+    else:
+        summary = "Retrieved content"
+
+    return summary, preview
 
 
 def _generate_conversation_title(query_text):
