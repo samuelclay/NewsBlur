@@ -42,6 +42,8 @@ jobs:
           mkdir -p docker/volumes/db_redis
           mkdir -p docker/volumes/db_elasticsearch
           chmod -R 777 docker/volumes
+          # ES 8.x runs as uid 1000 (elasticsearch user) and needs to own its data dir
+          sudo chown -R 1000:1000 docker/volumes/db_elasticsearch
 
       - name: Start services
         run: docker compose up -d
@@ -64,7 +66,7 @@ jobs:
           echo "Waiting for Redis..."
           timeout 60 bash -c 'until docker exec newsblur_db_redis redis-cli -p 6579 ping; do sleep 2; done'
           echo "Waiting for Elasticsearch..."
-          timeout 90 bash -c 'until curl -s http://localhost:9200/_cluster/health | grep -q "status"; do sleep 2; done'
+          timeout 120 bash -c 'until curl -s http://localhost:9200/_cluster/health | grep -q "status"; do sleep 2; done'
           echo "All services ready"
 
       - name: Run migrations
