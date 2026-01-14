@@ -83,6 +83,7 @@ TIME_ZONE = "GMT"
 LANGUAGE_CODE = "en-us"
 SITE_ID = 1
 USE_I18N = False
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/account/login"
 MEDIA_URL = "/media/"
