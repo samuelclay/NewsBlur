@@ -73,7 +73,7 @@ jobs:
         run: docker exec newsblur_web python3 manage.py loaddata config/fixtures/bootstrap.json
 
       - name: Run tests
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T newsblur_web python3 manage.py test apps --noinput -v 1 --failfast
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T newsblur_web python3 manage.py test apps --noinput -v 1 --failfast --keepdb
         timeout-minutes: 5
 
       - name: Show logs on failure
