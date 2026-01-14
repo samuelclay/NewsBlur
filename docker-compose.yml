@@ -153,7 +153,7 @@ services:
 
   newsblur_db_mongo:
     container_name: newsblur_db_mongo
-    image: mongo:4.2
+    image: mongo:4.0
     restart: unless-stopped
     ports:
       - 29019:29019
