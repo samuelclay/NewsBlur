@@ -167,6 +167,16 @@ class Test_OAuthURLPOST(TransactionTestCase):
 
     def test_facebook_disconnect_post(self):
         """Test POST to facebook disconnect."""
+        from apps.social.models import MSocialServices
+
         self.client.login(username="testuser", password="testpass")
+        # Create social services for the user so disconnect can work
+        MSocialServices.objects.create(user_id=self.user.pk)
         response = self.client.post(reverse("facebook-disconnect"))
         assert response.status_code in [200, 302, 400]
+
+    def tearDown(self):
+        """Clean up MongoDB documents created during tests."""
+        from apps.social.models import MSocialServices
+
+        MSocialServices.objects.filter(user_id=self.user.pk).delete()
