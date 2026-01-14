@@ -537,7 +537,7 @@ def get_domains(request):
             "code": 0,
             "domains": [
                 {
-                    "domain": item["_id"],
+                    "domain": item["domain"],
                     "count": item["count"],
                     "last_visit": format_datetime_utc(item.get("last_visit")),
                 }
