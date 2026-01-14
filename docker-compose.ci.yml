@@ -1,0 +1,10 @@
+# CI-specific overrides for docker-compose.yml
+# ES 8.x requires proper ownership of its data directory, which is problematic
+# with bind mounts in CI. Use ephemeral storage instead (no data persistence needed).
+
+services:
+  newsblur_db_elasticsearch:
+    volumes:
+      # Remove the data volume - use ephemeral storage in CI
+      # Keep only the config file
+      - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
