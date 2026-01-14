@@ -1,8 +1,8 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from apps.categories import views
 
 urlpatterns = [
-    url(r"^$", views.all_categories, name="all-categories"),
-    url(r"^subscribe/?$", views.subscribe, name="categories-subscribe"),
+    re_path(r"^$", views.all_categories, name="all-categories"),
+    re_path(r"^subscribe/?$", views.subscribe, name="categories-subscribe"),
 ]

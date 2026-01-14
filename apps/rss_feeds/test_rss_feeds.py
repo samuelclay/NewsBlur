@@ -403,7 +403,7 @@ class Test_Feed(TransactionTestCase):
         )
         self.client.login(username="conesus", password="test")
         management.call_command("loaddata", "brokelyn.json", verbosity=0)
-        self.assertEquals(Feed.objects.get(pk=BROKELYN_FEED_ID).pk, BROKELYN_FEED_ID)
+        self.assertEqual(Feed.objects.get(pk=BROKELYN_FEED_ID).pk, BROKELYN_FEED_ID)
         management.call_command("refresh_feed", force=1, feed=BROKELYN_FEED_ID, daemonize=False)
 
         management.call_command("loaddata", "brokelyn.json", verbosity=0, skip_checks=False)

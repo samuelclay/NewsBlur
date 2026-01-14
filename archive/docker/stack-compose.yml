@@ -223,7 +223,7 @@ services:
       
   task_celerybeat_scheduler:
     image: newsblur/newsblur_python3
-    command: bash -c "mkdir -p data && celery beat -A newsblur_web --schedule=/srv/newsblur/data/celerybeat-schedule.db --loglevel=INFO --pidfile=/srv/celeryd.pid"
+    command: bash -c "mkdir -p data && celery -A newsblur_web beat --schedule=/srv/newsblur/data/celerybeat-schedule.db --loglevel=INFO --pidfile=/srv/celeryd.pid"
     environment: 
       - DOCKERBUILD=True
     deploy:
@@ -238,7 +238,7 @@ services:
       - nb_overlay
   task:
     image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q new_feeds,push_feeds,update_feeds"
+    command: "celery -A newsblur_web worker --loglevel=INFO -Q new_feeds,push_feeds,update_feeds"
     environment: 
       - DOCKERBUILD=True
     user: "${CURRENT_UID}:${CURRENT_GID}"
@@ -256,7 +256,7 @@ services:
       
   task_cron_queue:
     image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q cron_queue -c 3"
+    command: "celery -A newsblur_web worker --loglevel=INFO -Q cron_queue -c 3"
     environment: 
       - DOCKERBUILD=True
     user: "${CURRENT_UID}:${CURRENT_GID}"
@@ -273,7 +273,7 @@ services:
       
   task_beat_feeds:
     image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q beat_feeds_task -c 1"
+    command: "celery -A newsblur_web worker --loglevel=INFO -Q beat_feeds_task -c 1"
     environment: 
       - DOCKERBUILD=True
     user: "${CURRENT_UID}:${CURRENT_GID}"
@@ -290,7 +290,7 @@ services:
       
   task_search_indexer:
     image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer -c 4"
+    command: "celery -A newsblur_web worker --loglevel=INFO -Q search_indexer -c 4"
     environment: 
       - DOCKERBUILD=True
 
@@ -308,7 +308,7 @@ services:
 
   task_search_indexer_tasker:
     image: newsblur/newsblur_python3
-    command: "celery worker -A newsblur_web --loglevel=INFO -Q search_indexer_tasker -c 2"
+    command: "celery -A newsblur_web worker --loglevel=INFO -Q search_indexer_tasker -c 2"
     environment: 
       - DOCKERBUILD=True
     user: $CURRENT_UID:$CURRENT_GID
@@ -325,7 +325,7 @@ services:
 
   task_work_queue:
     image: newsblur/newsblur_python3
-    command: bash -c "celery worker -A newsblur_web --loglevel=INFO -Q work_queue"
+    command: bash -c "celery -A newsblur_web worker --loglevel=INFO -Q work_queue"
     ports:
       - 82:82
     environment: 

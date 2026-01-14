@@ -519,7 +519,7 @@ class Feed(models.Model):
                 return cls.objects.get(feed_address=url)
             except cls.MultipleObjectsReturned:
                 return cls.objects.filter(feed_address=url)[0]
-        if url and re.match("(https?://)?twitter.com/\w+/?", url):
+        if url and re.match(r"(https?://)?twitter.com/\w+/?", url):
             without_rss = True
         if url and re.match(r"(https?://)?(www\.)?facebook.com/\w+/?$", url):
             without_rss = True
@@ -528,7 +528,7 @@ class Feed(models.Model):
             username, domain = url[1:].split("@")
             url = f"https://{domain}/users/{username}.rss"
         if url and "youtube.com/user/" in url:
-            username = re.search("youtube.com/user/(\w+)", url).group(1)
+            username = re.search(r"youtube.com/user/(\w+)", url).group(1)
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
             without_rss = True
         if url and "youtube.com/@" in url:
@@ -536,7 +536,7 @@ class Feed(models.Model):
             url = "http://gdata.youtube.com/feeds/base/users/%s/uploads" % username
             without_rss = True
         if url and "youtube.com/channel/" in url:
-            channel_id = re.search("youtube.com/channel/([-_\w]+)", url).group(1)
+            channel_id = re.search(r"youtube.com/channel/([-_\w]+)", url).group(1)
             url = "https://www.youtube.com/feeds/videos.xml?channel_id=%s" % channel_id
             without_rss = True
         if url and "youtube.com/feeds" in url:
@@ -3708,13 +3708,13 @@ class MStory(mongo.Document):
         )
         for video_thumbnail in video_thumbnails:
             video_src = video_thumbnail.get("src")
-            video_id = re.search(".*?youtube.com/embed/([A-Za-z0-9\-_]+)", video_src)
+            video_id = re.search(r".*?youtube.com/embed/([A-Za-z0-9\-_]+)", video_src)
             if not video_id:
-                video_id = re.search(".*?youtube.com/v/([A-Za-z0-9\-_]+)", video_src)
+                video_id = re.search(r".*?youtube.com/v/([A-Za-z0-9\-_]+)", video_src)
             if not video_id:
-                video_id = re.search(".*?ytimg.com/vi/([A-Za-z0-9\-_]+)", video_src)
+                video_id = re.search(r".*?ytimg.com/vi/([A-Za-z0-9\-_]+)", video_src)
             if not video_id:
-                video_id = re.search(".*?youtube.com/watch\?v=([A-Za-z0-9\-_]+)", video_src)
+                video_id = re.search(r".*?youtube.com/watch\?v=([A-Za-z0-9\-_]+)", video_src)
             if not video_id:
                 logging.debug(f" ***> Couldn't find youtube url in {video_thumbnail}: {video_src}")
                 continue

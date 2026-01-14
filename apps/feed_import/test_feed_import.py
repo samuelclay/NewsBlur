@@ -114,7 +114,7 @@ class Test_Import(TransactionTestCase):
         # Verify user now has feeds
         subs = UserSubscription.objects.filter(user=user)
 
-        self.assertEquals(subs.count(), 0)
+        self.assertEqual(subs.count(), 0)
 
 
 class Test_Duplicate_Feeds(TransactionTestCase):

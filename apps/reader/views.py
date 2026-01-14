@@ -2723,7 +2723,7 @@ def add_url(request):
     elif any([(banned_url in url) for banned_url in BANNED_URLS]):
         code = -1
         message = "The publisher of this website has banned NewsBlur."
-    elif re.match("(https?://)?twitter.com/\w+/?$", url):
+    elif re.match(r"(https?://)?twitter.com/\w+/?$", url):
         if not request.user.profile.is_premium:
             message = "You must be a premium subscriber to add Twitter feeds."
             code = -1

@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM      python:3.9-slim
+FROM      python:3.14-slim
 WORKDIR   /srv/newsblur
 ENV       PYTHONPATH=/srv/newsblur
 

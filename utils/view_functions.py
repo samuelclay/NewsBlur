@@ -31,6 +31,7 @@ def render_to(template):
     """
 
     def renderer(func):
+        @functools.wraps(func)
         def wrapper(request, *args, **kw):
             output = func(request, *args, **kw)
             if isinstance(output, (list, tuple)):

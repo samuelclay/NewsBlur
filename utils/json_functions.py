@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import functools
 import json
 import sys
 from decimal import Decimal
@@ -10,7 +11,7 @@ from django.core import serializers
 from django.db import models
 from django.db.models.query import QuerySet
 from django.http import Http404, HttpResponse, HttpResponseForbidden
-from django.utils.encoding import force_text, smart_str
+from django.utils.encoding import force_str, smart_str
 from django.utils.functional import Promise
 
 # from django.utils.deprecation import CallableBool
@@ -76,7 +77,7 @@ def json_encode(data, *args, **kwargs):
             ret = str(data)
         # see http://code.djangoproject.com/ticket/5868
         elif isinstance(data, Promise):
-            ret = force_text(data)
+            ret = force_str(data)
         elif isinstance(data, datetime.datetime) or isinstance(data, datetime.date):
             ret = str(data)
         elif hasattr(data, "to_json"):
@@ -116,6 +117,7 @@ def json_encode(data, *args, **kwargs):
 
 
 def json_view(func):
+    @functools.wraps(func)
     def wrap(request, *a, **kw):
         response = func(request, *a, **kw)
         return json_response(request, response)
