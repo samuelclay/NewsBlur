@@ -285,6 +285,7 @@ class MArchivedStory(mongo.Document):
             {"$unwind": "$ai_categories"},
             {"$group": {"_id": "$ai_categories", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}},
+            {"$project": {"_id": 0, "category": "$_id", "count": 1}},
         ]
         return list(cls.objects.aggregate(pipeline))
 
@@ -296,6 +297,7 @@ class MArchivedStory(mongo.Document):
             {"$group": {"_id": "$domain", "count": {"$sum": 1}, "last_visit": {"$max": "$last_visited"}}},
             {"$sort": {"count": -1}},
             {"$limit": limit},
+            {"$project": {"_id": 0, "domain": "$_id", "count": 1, "last_visit": 1}},
         ]
         return list(cls.objects.aggregate(pipeline))
 

@@ -479,12 +479,12 @@ def get_categories(request):
         {
             code: 0,
             categories: [
-                {_id: "Research", count: 42},
-                {_id: "Shopping", count: 15},
+                {category: "Research", count: 42},
+                {category: "Shopping", count: 15},
                 ...
             ],
             domains: [
-                {_id: "nytimes.com", count: 42},
+                {domain: "nytimes.com", count: 42},
                 ...
             ]
         }
@@ -500,8 +500,8 @@ def get_categories(request):
     return _json_response(
         {
             "code": 0,
-            "categories": [{"_id": item["_id"], "count": item["count"]} for item in category_breakdown],
-            "domains": [{"_id": item["_id"], "count": item["count"]} for item in domain_breakdown],
+            "categories": category_breakdown,
+            "domains": domain_breakdown,
         }
     )
 
@@ -1137,8 +1137,8 @@ def suggest_category_merges(request):
         return _json_response({"code": 0, "suggestions": []})
 
     suggestions = []
-    category_names = [c["_id"] for c in categories]
-    category_counts = {c["_id"]: c["count"] for c in categories}
+    category_names = [c["category"] for c in categories]
+    category_counts = {c["category"]: c["count"] for c in categories}
 
     # Find similar category names
     checked = set()
