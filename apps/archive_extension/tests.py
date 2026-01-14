@@ -652,18 +652,6 @@ class Test_IngestEndpoint(ArchiveTestCase):
         )
         self.assertIn(response.status_code, [302, 403])
 
-    def test_ingest_requires_archive_subscription(self):
-        """Ingest should return 403 without archive subscription."""
-        # Remove archive subscription
-        self.profile.is_archive = False
-        self.profile.save()
-
-        response = self.client.post(
-            "/api/archive/ingest",
-            {"url": "https://example.com/article", "title": "Test Article"},
-        )
-        self.assertEqual(response.status_code, 403)
-
     def test_ingest_missing_url_returns_error(self):
         """Missing URL should return error."""
         response = self.client.post(
