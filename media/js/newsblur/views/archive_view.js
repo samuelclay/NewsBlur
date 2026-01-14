@@ -85,6 +85,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.conversation_history = [];
         this.is_streaming = false;
         this.response_text = '';
+        this.response_segments = [];  // Track text segments (pre-tool text becomes a segment)
         this.usage = null;
         this.active_query_id = null;
         this.tool_status = null;
@@ -569,6 +570,15 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Show streaming response or tool status
         if (this.is_streaming) {
+            // Show completed text segments (e.g., pre-tool text that was saved)
+            _.each(this.response_segments, function (segment) {
+                if (segment.type === 'text' && segment.content) {
+                    elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant' }, [
+                        $.make('div', { className: 'NB-archive-message-content' }, self.markdown_to_html(segment.content))
+                    ]));
+                }
+            });
+
             // Show completed tool calls with optional preview items
             _.each(this.current_tool_calls, function (tool_call) {
                 // Tool call header line with checkmark
@@ -595,8 +605,8 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant NB-streaming' }, [
                     $.make('div', { className: 'NB-archive-message-content' }, this.markdown_to_html(this.response_text))
                 ]));
-            } else {
-                // Show thinking animation while waiting for next action
+            } else if (this.response_segments.length === 0 && this.current_tool_calls.length === 0) {
+                // Show thinking animation only when nothing has been rendered yet
                 elements.push($.make('div', { className: 'NB-archive-tool-line NB-thinking' }, [
                     $.make('span', { className: 'NB-tool-icon NB-tool-spinner' }),
                     $.make('span', { className: 'NB-tool-message' }, 'Thinking...')
@@ -1305,6 +1315,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.active_conversation = conversation_id;
         this.is_streaming = false;
         this.response_text = '';
+        this.response_segments = [];
         this.tool_status = null;
 
         // Show loading state
@@ -1339,6 +1350,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.conversation_history = [];
         this.is_streaming = false;
         this.response_text = '';
+        this.response_segments = [];
         this.tool_status = null;
 
         this.render_assistant_messages();
@@ -1414,6 +1426,8 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         $input.val('');
         this.is_streaming = true;
         this.response_text = '';
+        this.response_segments = [];
+        this.current_tool_calls = [];
 
         // Re-render messages
         this.render_assistant_messages();
@@ -1493,6 +1507,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                         self.response_completed = true;
                         self.is_streaming = false;
                         self.response_text = '';
+                        self.response_segments = [];
 
                         // Add assistant response to history
                         self.conversation_history.push({
@@ -1525,11 +1540,19 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.active_query_id = null;
         this.clear_websocket_timeout();
 
-        // Build error content, preserving any partial response
+        // Build error content, preserving any partial response (including segments)
         var error_content = '';
+        _.each(this.response_segments, function (segment) {
+            if (segment.type === 'text' && segment.content) {
+                if (error_content) error_content += '\n\n';
+                error_content += segment.content;
+            }
+        });
         if (this.response_text) {
-            error_content = this.response_text + '\n\n';
+            if (error_content) error_content += '\n\n';
+            error_content += this.response_text;
         }
+        if (error_content) error_content += '\n\n';
         error_content += '**Error:** ' + message;
 
         // Save to history with any tool calls that were completed
@@ -1541,6 +1564,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Clear streaming state after preserving
         this.response_text = '';
+        this.response_segments = [];
         this.current_tool_calls = [];
 
         this.render_assistant_messages();
@@ -1583,6 +1607,15 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             'search_feed_stories': 'Searching RSS feeds...'
         };
 
+        // Save any existing response_text as a completed segment before tool call
+        if (this.response_text) {
+            this.response_segments.push({
+                type: 'text',
+                content: this.response_text
+            });
+            this.response_text = '';
+        }
+
         this.tool_status = status_messages[tool_name] || 'Processing...';
         NEWSBLUR.log(['Archive Assistant: Tool call', tool_name, tool_input]);
         this.render_assistant_messages();
@@ -1619,15 +1652,29 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.active_query_id = null;
         this.clear_websocket_timeout();
 
+        // Combine all text segments into final response
+        var full_response = '';
+        _.each(this.response_segments, function (segment) {
+            if (segment.type === 'text' && segment.content) {
+                if (full_response) full_response += '\n\n';
+                full_response += segment.content;
+            }
+        });
         if (this.response_text) {
+            if (full_response) full_response += '\n\n';
+            full_response += this.response_text;
+        }
+
+        if (full_response) {
             this.conversation_history.push({
                 role: 'assistant',
-                content: this.response_text,
+                content: full_response,
                 tool_calls: this.current_tool_calls || []
             });
         }
 
         this.response_text = '';
+        this.response_segments = [];
         this.current_tool_calls = [];
         this.render_assistant_messages();
         this.scroll_to_bottom();
@@ -1654,16 +1701,30 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.active_query_id = null;
         this.clear_websocket_timeout();
 
-        // Add truncated response to history with premium notice
+        // Combine all text segments into truncated response
+        var truncated_response = '';
+        _.each(this.response_segments, function (segment) {
+            if (segment.type === 'text' && segment.content) {
+                if (truncated_response) truncated_response += '\n\n';
+                truncated_response += segment.content;
+            }
+        });
         if (this.response_text) {
+            if (truncated_response) truncated_response += '\n\n';
+            truncated_response += this.response_text;
+        }
+
+        // Add truncated response to history with premium notice
+        if (truncated_response) {
             this.conversation_history.push({
                 role: 'assistant',
-                content: this.response_text,
+                content: truncated_response,
                 truncated: true
             });
         }
 
         this.response_text = '';
+        this.response_segments = [];
         this.render_assistant_messages();
         this.scroll_to_bottom();
     },
@@ -1686,7 +1747,14 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     scroll_to_bottom: function () {
         var $chat = this.$('.NB-archive-assistant-chat');
         if ($chat.length) {
-            $chat.scrollTop($chat[0].scrollHeight);
+            var scroll_top = $chat.scrollTop();
+            var scroll_height = $chat[0].scrollHeight;
+            var client_height = $chat[0].clientHeight;
+            var threshold = 10;  // Very small threshold - only pin if nearly at bottom
+            var is_at_bottom = (scroll_height - scroll_top - client_height) < threshold;
+            if (is_at_bottom) {
+                $chat.scrollTop(scroll_height);
+            }
         }
     },
 
