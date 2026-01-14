@@ -411,24 +411,25 @@ class Test_ReaderURLAccess(TransactionTestCase):
         self.user = User.objects.create_user(username="testuser", password="testpass", email="test@test.com")
 
     def test_index_anonymous(self):
-        """Test anonymous access to index."""
+        """Test anonymous access to index redirects to login."""
         response = self.client.get("/reader/")
-        assert response.status_code in [200, 302]
+        # Anonymous users get redirected to login
+        assert response.status_code == 302
 
     def test_welcome_anonymous(self):
         """Test anonymous access to welcome page."""
         response = self.client.get(reverse("welcome"))
-        assert response.status_code in [200, 302]
+        assert response.status_code == 200
 
     def test_login_page_anonymous(self):
         """Test anonymous access to login page."""
         response = self.client.get(reverse("welcome-login"))
-        assert response.status_code in [200, 302]
+        assert response.status_code == 200
 
     def test_signup_page_anonymous(self):
         """Test anonymous access to signup page."""
         response = self.client.get(reverse("welcome-signup"))
-        assert response.status_code in [200, 302]
+        assert response.status_code == 200
 
     def test_load_feeds_authenticated(self):
         """Test authenticated access to load feeds."""
@@ -436,10 +437,15 @@ class Test_ReaderURLAccess(TransactionTestCase):
         response = self.client.get(reverse("load-feeds"))
         assert response.status_code == 200
 
+        # Verify response contains expected structure
+        data = response.json()
+        assert "feeds" in data
+        assert "folders" in data
+
     def test_load_feeds_anonymous_redirects(self):
-        """Test anonymous access to load feeds redirects."""
+        """Test anonymous access to load feeds returns 403."""
         response = self.client.get(reverse("load-feeds"))
-        assert response.status_code in [200, 302, 403]
+        assert response.status_code == 403
 
     def test_refresh_feeds_authenticated(self):
         """Test authenticated access to refresh feeds."""
@@ -447,10 +453,14 @@ class Test_ReaderURLAccess(TransactionTestCase):
         response = self.client.get(reverse("refresh-feeds"))
         assert response.status_code == 200
 
+        # Verify response structure
+        data = response.json()
+        assert "feeds" in data
+
     def test_load_features_anonymous(self):
         """Test anonymous access to load features."""
         response = self.client.get(reverse("load-features"))
-        assert response.status_code in [200, 302]
+        assert response.status_code == 200
 
     def test_trending_feeds_anonymous(self):
         """Test anonymous access to trending feeds."""
@@ -463,11 +473,19 @@ class Test_ReaderURLAccess(TransactionTestCase):
         response = self.client.get(reverse("load-river-stories"))
         assert response.status_code == 200
 
+        # Verify response structure
+        data = response.json()
+        assert "stories" in data
+
     def test_starred_counts_authenticated(self):
         """Test authenticated access to starred counts."""
         self.client.login(username="testuser", password="testpass")
         response = self.client.get(reverse("starred-counts"))
         assert response.status_code == 200
+
+        # Verify response structure
+        data = response.json()
+        assert "starred_counts" in data or "starred_count" in data or isinstance(data, list)
 
     def test_starred_story_hashes_authenticated(self):
         """Test authenticated access to starred story hashes."""
@@ -475,17 +493,29 @@ class Test_ReaderURLAccess(TransactionTestCase):
         response = self.client.get(reverse("starred-story-hashes"))
         assert response.status_code == 200
 
+        # Verify response structure
+        data = response.json()
+        assert "starred_story_hashes" in data
+
     def test_unread_story_hashes_authenticated(self):
         """Test authenticated access to unread story hashes."""
         self.client.login(username="testuser", password="testpass")
         response = self.client.get(reverse("unread-story-hashes"))
         assert response.status_code == 200
 
+        # Verify response structure
+        data = response.json()
+        assert "unread_feed_story_hashes" in data
+
     def test_interactions_count_authenticated(self):
         """Test authenticated access to interactions count."""
         self.client.login(username="testuser", password="testpass")
         response = self.client.get(reverse("interactions-count"))
         assert response.status_code == 200
+
+        # Verify response structure
+        data = response.json()
+        assert "interactions_count" in data
 
     def test_feeds_trainer_authenticated(self):
         """Test authenticated access to feeds trainer."""
@@ -501,7 +531,7 @@ class Test_ReaderURLAccess(TransactionTestCase):
 
 
 class Test_ReaderURLPOST(TransactionTestCase):
-    """Test POST endpoints for reader URLs."""
+    """Test POST endpoints for reader URLs with database verification."""
 
     fixtures = [
         "apps/rss_feeds/fixtures/initial_data.json",
@@ -510,43 +540,222 @@ class Test_ReaderURLPOST(TransactionTestCase):
     def setUp(self):
         from django.contrib.auth.models import User
 
+        from apps.reader.models import UserSubscriptionFolders
+
         self.client = Client()
         self.user = User.objects.create_user(username="testuser", password="testpass", email="test@test.com")
 
+        # Create initial folder structure for user
+        UserSubscriptionFolders.objects.create(user=self.user, folders="[]")
+
     def test_mark_all_as_read_post(self):
-        """Test POST to mark all as read."""
+        """Test POST to mark all as read and verify response."""
         self.client.login(username="testuser", password="testpass")
         response = self.client.post(reverse("mark-all-as-read"), {"days": 0})
-        assert response.status_code in [200, 302, 400]
+        assert response.status_code == 200
+
+        # Verify response structure
+        data = response.json()
+        assert "code" in data
+        assert data["code"] == 1  # Success code
 
     def test_add_folder_post(self):
-        """Test POST to add folder."""
+        """Test POST to add folder and verify database persistence."""
+        from apps.reader.models import UserSubscriptionFolders
+
+        from utils import json_functions as json
+
         self.client.login(username="testuser", password="testpass")
+
+        # POST to add folder
         response = self.client.post("/reader/add_folder", {"folder": "Test Folder"})
-        assert response.status_code in [200, 302, 400]
+        assert response.status_code == 200
+
+        # Verify folder was added to database
+        usf = UserSubscriptionFolders.objects.get(user=self.user)
+        folders = json.decode(usf.folders)
+        # The folder should be in the folders structure
+        folder_names = []
+        for item in folders:
+            if isinstance(item, dict):
+                folder_names.extend(item.keys())
+        assert "Test Folder" in folder_names
+
+    def test_add_nested_folder_post(self):
+        """Test POST to add nested folder and verify database persistence."""
+        from apps.reader.models import UserSubscriptionFolders
+
+        from utils import json_functions as json
+
+        self.client.login(username="testuser", password="testpass")
+
+        # First add a parent folder
+        response = self.client.post("/reader/add_folder", {"folder": "Parent Folder"})
+        assert response.status_code == 200
+
+        # Add a nested folder
+        response = self.client.post(
+            "/reader/add_folder", {"folder": "Child Folder", "parent_folder": "Parent Folder"}
+        )
+        assert response.status_code == 200
+
+        # Verify nested structure in database
+        usf = UserSubscriptionFolders.objects.get(user=self.user)
+        folders = json.decode(usf.folders)
+
+        # Find Parent Folder and check it contains Child Folder
+        found_parent = False
+        for item in folders:
+            if isinstance(item, dict) and "Parent Folder" in item:
+                found_parent = True
+                parent_contents = item["Parent Folder"]
+                # Look for Child Folder in parent contents
+                child_folder_names = []
+                for subitem in parent_contents:
+                    if isinstance(subitem, dict):
+                        child_folder_names.extend(subitem.keys())
+                assert "Child Folder" in child_folder_names
+                break
+        assert found_parent
 
     def test_rename_folder_post(self):
-        """Test POST to rename folder."""
+        """Test POST to rename folder and verify database persistence."""
+        from apps.reader.models import UserSubscriptionFolders
+
+        from utils import json_functions as json
+
         self.client.login(username="testuser", password="testpass")
+
+        # First add a folder
+        response = self.client.post("/reader/add_folder", {"folder": "Old Folder Name"})
+        assert response.status_code == 200
+
+        # Rename the folder
         response = self.client.post(
-            reverse("rename-folder"), {"folder_name": "Old Folder", "new_folder_name": "New Folder"}
+            reverse("rename-folder"), {"folder_name": "Old Folder Name", "new_folder_name": "New Folder Name"}
         )
-        assert response.status_code in [200, 302, 400]
+        assert response.status_code == 200
+
+        # Verify folder was renamed in database
+        usf = UserSubscriptionFolders.objects.get(user=self.user)
+        folders = json.decode(usf.folders)
+
+        folder_names = []
+        for item in folders:
+            if isinstance(item, dict):
+                folder_names.extend(item.keys())
+
+        assert "New Folder Name" in folder_names
+        assert "Old Folder Name" not in folder_names
 
     def test_save_feed_order_post(self):
-        """Test POST to save feed order."""
+        """Test POST to save feed order and verify database persistence."""
+        from apps.reader.models import UserSubscriptionFolders
+
+        from utils import json_functions as json
+
         self.client.login(username="testuser", password="testpass")
-        response = self.client.post(reverse("save-feed-order"), {"folders": "[]"})
-        assert response.status_code in [200, 302, 400]
+
+        # Save a specific folder order
+        new_folders = '[{"Tech News": []}, {"Sports": []}]'
+        response = self.client.post(reverse("save-feed-order"), {"folders": new_folders})
+        assert response.status_code == 200
+
+        # Verify folder order was saved to database
+        usf = UserSubscriptionFolders.objects.get(user=self.user)
+        folders = json.decode(usf.folders)
+
+        # Extract folder names to verify order
+        folder_names = []
+        for item in folders:
+            if isinstance(item, dict):
+                folder_names.extend(item.keys())
+
+        assert "Tech News" in folder_names
+        assert "Sports" in folder_names
 
     def test_save_dashboard_rivers_post(self):
-        """Test POST to save dashboard rivers."""
+        """Test POST to save dashboard rivers and verify database persistence."""
+        import json
+
+        from apps.profile.models import Profile
+
         self.client.login(username="testuser", password="testpass")
-        response = self.client.post(reverse("save-dashboard-rivers"), {"rivers": "[]"})
-        assert response.status_code in [200, 302, 400]
+
+        # Save dashboard rivers with proper JSON body
+        dashboard_rivers = [
+            {"river_id": "river:global", "river_order": 0},
+            {"river_id": "river:infrequent", "river_order": 1},
+        ]
+        response = self.client.post(
+            reverse("save-dashboard-rivers"),
+            json.dumps({"dashboard_rivers": dashboard_rivers}),
+            content_type="application/json",
+        )
+        assert response.status_code == 200
+
+        # Verify dashboard rivers were saved to profile
+        profile = Profile.objects.get(user=self.user)
+        import json as std_json
+
+        preferences = std_json.loads(profile.preferences) if profile.preferences else {}
+        saved_rivers = preferences.get("dashboard_rivers", [])
+        assert len(saved_rivers) == 2
 
     def test_retrain_all_sites_post(self):
-        """Test POST to retrain all sites."""
+        """Test POST to retrain all sites and verify database changes."""
+        from apps.reader.models import UserSubscription
+        from apps.rss_feeds.models import Feed
+
         self.client.login(username="testuser", password="testpass")
-        response = self.client.post(reverse("retrain-all-sites"))
-        assert response.status_code in [200, 302, 400]
+
+        # Create a subscription and mark it as trained
+        feed = Feed.objects.first()
+        if feed:
+            sub = UserSubscription.objects.create(user=self.user, feed=feed, is_trained=True)
+
+            # POST to retrain all sites
+            response = self.client.post(reverse("retrain-all-sites"))
+            assert response.status_code == 200
+
+            # Verify subscription is_trained was reset to False
+            sub.refresh_from_db()
+            assert sub.is_trained is False
+        else:
+            # No feeds in fixture, just verify endpoint works
+            response = self.client.post(reverse("retrain-all-sites"))
+            assert response.status_code == 200
+
+    def test_delete_folder_post(self):
+        """Test POST to delete folder and verify database persistence."""
+        from apps.reader.models import UserSubscriptionFolders
+
+        from utils import json_functions as json
+
+        self.client.login(username="testuser", password="testpass")
+
+        # First add a folder
+        response = self.client.post("/reader/add_folder", {"folder": "Folder To Delete"})
+        assert response.status_code == 200
+
+        # Verify folder exists
+        usf = UserSubscriptionFolders.objects.get(user=self.user)
+        folders = json.decode(usf.folders)
+        folder_names = []
+        for item in folders:
+            if isinstance(item, dict):
+                folder_names.extend(item.keys())
+        assert "Folder To Delete" in folder_names
+
+        # Delete the folder
+        response = self.client.post(reverse("delete-folder"), {"folder_name": "Folder To Delete"})
+        assert response.status_code == 200
+
+        # Verify folder was removed from database
+        usf.refresh_from_db()
+        folders = json.decode(usf.folders)
+        folder_names = []
+        for item in folders:
+            if isinstance(item, dict):
+                folder_names.extend(item.keys())
+        assert "Folder To Delete" not in folder_names

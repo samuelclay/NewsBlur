@@ -226,13 +226,15 @@ class Test_MainURLAccess(TransactionTestCase):
     def setUp(self):
         from django.contrib.auth.models import User
 
-        self.client = Client()
+        self.client = Client(HTTP_USER_AGENT="Mozilla/5.0 (Test)")
         self.user = User.objects.create_user(username="testuser", password="testpass", email="test@test.com")
 
     def test_index_anonymous(self):
-        """Test anonymous access to index."""
+        """Test anonymous access to index renders without errors."""
         response = self.client.get(reverse("index"))
-        assert response.status_code in [200, 302]
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+        # Verify the page actually rendered (not an error page)
+        assert b"NewsBlur" in response.content, "Homepage should contain 'NewsBlur'"
 
     def test_about_anonymous(self):
         """Test anonymous access to about."""
@@ -305,10 +307,12 @@ class Test_MainURLAccess(TransactionTestCase):
         assert response.status_code == 200
 
     def test_index_authenticated(self):
-        """Test authenticated access to index."""
+        """Test authenticated access to index renders the main app."""
         self.client.login(username="testuser", password="testpass")
         response = self.client.get(reverse("index"))
-        assert response.status_code == 200
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+        # Verify the authenticated page rendered (should have the reader app)
+        assert b"NewsBlur" in response.content, "Authenticated homepage should contain 'NewsBlur'"
 
     def test_logout_authenticated(self):
         """Test authenticated access to logout."""
