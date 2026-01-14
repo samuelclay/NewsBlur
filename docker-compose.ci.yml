@@ -1,12 +1,15 @@
 # CI-specific overrides for docker-compose.yml
 # ES 8.x requires proper ownership of its data directory, which is problematic
-# with bind mounts in CI. Use tmpfs for ephemeral storage (no data persistence needed).
+# with bind mounts in CI. Use a different data path that doesn't have a bind mount.
 
 services:
   newsblur_db_elasticsearch:
-    # Use tmpfs for ES data dir to avoid permission issues with bind mounts
-    tmpfs:
-      - /usr/share/elasticsearch/data
-    volumes:
-      # Only mount config file, not data directory
-      - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms384m -Xmx384m"
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=false
+      - indices.breaker.total.use_real_memory=false
+      # Use internal tmp dir for data to avoid bind mount permission issues
+      - path.data=/tmp/elasticsearch/data
