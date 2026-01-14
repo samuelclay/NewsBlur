@@ -92,6 +92,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.current_tool_calls = [];  // Track tool calls for process log
         this.websocket_timeout = null;
         this.response_completed = false;
+        // Scroll pinning state
+        this.scroll_pinned = true;  // Start pinned to bottom
+        this.last_scroll_top = 0;   // Track scroll position to detect direction
         // Category management state
         this.selected_categories = [];
         this.category_manager_open = false;
@@ -327,6 +330,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.throttled_check_scroll = _.throttle(_.bind(this.check_scroll, this), 100);
         this.$('.NB-archive-browser-content').on('scroll', this.throttled_check_scroll);
 
+        // Set up scroll handler for chat auto-scroll pinning
+        this.$('.NB-archive-assistant-chat').on('scroll', _.bind(this.handle_chat_scroll, this));
+
         // Store view reference for WebSocket event lookup
         this.$el.data('view', this);
 
@@ -521,63 +527,79 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     'Ask questions about everything you\'ve read. I can search your browsing history and find relevant information.')
             ]));
         } else {
-            _.each(this.conversation_history, function (message, index) {
+            _.each(this.conversation_history, function (message) {
                 var is_user = message.role === 'user';
 
-                // Render tool calls before assistant messages (same structure as streaming)
-                if (!is_user && message.tool_calls && message.tool_calls.length > 0) {
-                    _.each(message.tool_calls, function (tool_call) {
-                        // Support both 'summary' (live WebSocket) and 'result_summary' (saved history)
-                        var summary_text = tool_call.summary || tool_call.result_summary || '';
-                        // Tool call line with checkmark - same as streaming completed
-                        elements.push($.make('div', { className: 'NB-archive-tool-line NB-complete' }, [
-                            $.make('span', { className: 'NB-tool-icon NB-tool-check' }),
-                            $.make('span', { className: 'NB-tool-message' }, summary_text)
-                        ]));
-                        // Preview items indented below
-                        if (tool_call.preview && tool_call.preview.length > 0) {
-                            _.each(tool_call.preview, function (title) {
-                                elements.push($.make('div', { className: 'NB-archive-tool-preview' }, title));
-                            });
-                        }
-                    });
-                }
-
-                var message_class = 'NB-archive-assistant-message' + (is_user ? ' NB-user' : ' NB-assistant');
-                if (!is_user && message.truncated) {
-                    message_class += ' NB-archive-assistant-premium-only';
-                }
-                var $message = $.make('div', {
-                    className: message_class
-                }, [
-                    $.make('div', { className: 'NB-archive-message-content' },
-                        is_user ? message.content : self.markdown_to_html(message.content))
-                ]);
-
-                // Add fade and upgrade notice for truncated messages
-                if (!is_user && message.truncated) {
-                    $message.append($.make('div', { className: 'NB-archive-assistant-premium-fade' }));
-                    $message.append($.make('div', { className: 'NB-archive-assistant-premium-notice' }, [
-                        'Full Archive Assistant responses are a ',
-                        $.make('a', { href: '#', className: 'NB-splash-link NB-premium-link' }, 'premium archive feature'),
-                        '.'
+                if (is_user) {
+                    // User message - single bubble
+                    elements.push($.make('div', {
+                        className: 'NB-archive-assistant-message NB-user'
+                    }, [
+                        $.make('div', { className: 'NB-archive-message-content' }, message.content)
                     ]));
-                }
+                } else {
+                    // Assistant message - may have multiple segments and tool calls
+                    // Render segments with tool calls between first and rest
+                    var text_segments = message.segments || (message.content ? [message.content] : []);
 
-                elements.push($message);
+                    // First segment (pre-tool text)
+                    if (text_segments.length > 0) {
+                        elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant' }, [
+                            $.make('div', { className: 'NB-archive-message-content' }, self.markdown_to_html(text_segments[0]))
+                        ]));
+                    }
+
+                    // Tool calls (between first and remaining segments)
+                    if (message.tool_calls && message.tool_calls.length > 0) {
+                        _.each(message.tool_calls, function (tool_call) {
+                            var summary_text = tool_call.summary || tool_call.result_summary || '';
+                            elements.push($.make('div', { className: 'NB-archive-tool-line NB-complete' }, [
+                                $.make('span', { className: 'NB-tool-icon NB-tool-check' }),
+                                $.make('span', { className: 'NB-tool-message' }, summary_text)
+                            ]));
+                            if (tool_call.preview && tool_call.preview.length > 0) {
+                                _.each(tool_call.preview, function (title) {
+                                    elements.push($.make('div', { className: 'NB-archive-tool-preview' }, title));
+                                });
+                            }
+                        });
+                    }
+
+                    // Remaining segments (post-tool text) - each as separate bubble
+                    for (var i = 1; i < text_segments.length; i++) {
+                        var segment_class = 'NB-archive-assistant-message NB-assistant';
+                        if (message.truncated && i === text_segments.length - 1) {
+                            segment_class += ' NB-archive-assistant-premium-only';
+                        }
+                        var $segment = $.make('div', { className: segment_class }, [
+                            $.make('div', { className: 'NB-archive-message-content' }, self.markdown_to_html(text_segments[i]))
+                        ]);
+                        if (message.truncated && i === text_segments.length - 1) {
+                            $segment.append($.make('div', { className: 'NB-archive-assistant-premium-fade' }));
+                            $segment.append($.make('div', { className: 'NB-archive-assistant-premium-notice' }, [
+                                'Full Archive Assistant responses are a ',
+                                $.make('a', { href: '#', className: 'NB-splash-link NB-premium-link' }, 'premium archive feature'),
+                                '.'
+                            ]));
+                        }
+                        elements.push($segment);
+                    }
+                }
             });
         }
 
         // Show streaming response or tool status
         if (this.is_streaming) {
-            // Show completed text segments (e.g., pre-tool text that was saved)
-            _.each(this.response_segments, function (segment) {
-                if (segment.type === 'text' && segment.content) {
-                    elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant' }, [
-                        $.make('div', { className: 'NB-archive-message-content' }, self.markdown_to_html(segment.content))
-                    ]));
-                }
-            });
+            // Show pre-tool text segment if it exists (as its own bubble)
+            if (this.response_segments.length > 0) {
+                _.each(this.response_segments, function (segment) {
+                    if (segment.type === 'text' && segment.content) {
+                        elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant' }, [
+                            $.make('div', { className: 'NB-archive-message-content' }, self.markdown_to_html(segment.content))
+                        ]));
+                    }
+                });
+            }
 
             // Show completed tool calls with optional preview items
             _.each(this.current_tool_calls, function (tool_call) {
@@ -594,6 +616,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 }
             });
 
+            // Show current state: tool spinner, streaming text, or thinking
             if (this.tool_status) {
                 // Show current active tool call with spinner
                 elements.push($.make('div', { className: 'NB-archive-tool-line NB-active' }, [
@@ -601,12 +624,12 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     $.make('span', { className: 'NB-tool-message' }, this.tool_status)
                 ]));
             } else if (this.response_text) {
-                // Show streaming text
+                // Show streaming text (either pre-tool or post-tool depending on state)
                 elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant NB-streaming' }, [
                     $.make('div', { className: 'NB-archive-message-content' }, this.markdown_to_html(this.response_text))
                 ]));
             } else if (this.response_segments.length === 0 && this.current_tool_calls.length === 0) {
-                // Show thinking animation only when nothing has been rendered yet
+                // Show thinking animation only at the very start
                 elements.push($.make('div', { className: 'NB-archive-tool-line NB-thinking' }, [
                     $.make('span', { className: 'NB-tool-icon NB-tool-spinner' }),
                     $.make('span', { className: 'NB-tool-message' }, 'Thinking...')
@@ -1428,6 +1451,8 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.response_text = '';
         this.response_segments = [];
         this.current_tool_calls = [];
+        this.tool_status = null;
+        this.scroll_pinned = true;  // Re-pin scroll for new query
 
         // Re-render messages
         this.render_assistant_messages();
@@ -1652,23 +1677,22 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.active_query_id = null;
         this.clear_websocket_timeout();
 
-        // Combine all text segments into final response
-        var full_response = '';
+        // Build segments array for history (keeps separate bubbles)
+        var segments = [];
         _.each(this.response_segments, function (segment) {
             if (segment.type === 'text' && segment.content) {
-                if (full_response) full_response += '\n\n';
-                full_response += segment.content;
+                segments.push(segment.content);
             }
         });
         if (this.response_text) {
-            if (full_response) full_response += '\n\n';
-            full_response += this.response_text;
+            segments.push(this.response_text);
         }
 
-        if (full_response) {
+        if (segments.length > 0) {
             this.conversation_history.push({
                 role: 'assistant',
-                content: full_response,
+                content: segments.length === 1 ? segments[0] : null,
+                segments: segments.length > 1 ? segments : null,
                 tool_calls: this.current_tool_calls || []
             });
         }
@@ -1744,17 +1768,34 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         }
     },
 
+    handle_chat_scroll: function () {
+        var $chat = this.$('.NB-archive-assistant-chat');
+        if (!$chat.length) return;
+
+        var scroll_top = $chat.scrollTop();
+        var scroll_height = $chat[0].scrollHeight;
+        var client_height = $chat[0].clientHeight;
+        var distance_from_bottom = scroll_height - scroll_top - client_height;
+
+        // Detect scroll direction
+        if (scroll_top < this.last_scroll_top) {
+            // Scrolling UP - unpin
+            this.scroll_pinned = false;
+        } else if (scroll_top > this.last_scroll_top && distance_from_bottom < 150) {
+            // Scrolling DOWN and near bottom - re-pin
+            this.scroll_pinned = true;
+        }
+
+        this.last_scroll_top = scroll_top;
+    },
+
     scroll_to_bottom: function () {
+        if (!this.scroll_pinned) return;
+
         var $chat = this.$('.NB-archive-assistant-chat');
         if ($chat.length) {
-            var scroll_top = $chat.scrollTop();
-            var scroll_height = $chat[0].scrollHeight;
-            var client_height = $chat[0].clientHeight;
-            var threshold = 10;  // Very small threshold - only pin if nearly at bottom
-            var is_at_bottom = (scroll_height - scroll_top - client_height) < threshold;
-            if (is_at_bottom) {
-                $chat.scrollTop(scroll_height);
-            }
+            $chat.scrollTop($chat[0].scrollHeight);
+            this.last_scroll_top = $chat.scrollTop();
         }
     },
 
