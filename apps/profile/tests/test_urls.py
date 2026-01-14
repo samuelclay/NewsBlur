@@ -287,8 +287,14 @@ class Test_ProfileURLAccess(TransactionTestCase):
     def test_profile_is_premium_authenticated(self):
         """Test authenticated access to profile is premium."""
         self.client.login(username="testuser", password="testpass")
-        response = self.client.get(reverse("profile-is-premium"))
+        response = self.client.get(reverse("profile-is-premium"), {"retries": "0"})
         assert response.status_code == 200
+
+        # Verify response contains expected fields
+        data = response.json()
+        assert "is_premium" in data
+        assert "is_premium_archive" in data
+        assert "code" in data
 
     def test_profile_activities_authenticated(self):
         """Test authenticated access to profile activities."""
@@ -357,10 +363,16 @@ class Test_ProfileURLPOST(TransactionTestCase):
         assert response.status_code in [200, 302, 400]
 
     def test_set_collapsed_folders_post(self):
-        """Test POST to set collapsed folders."""
+        """Test POST to set collapsed folders and verify database persistence."""
         self.client.login(username="testuser", password="testpass")
-        response = self.client.post("/profile/set_collapsed_folders/", {"folder_preferences": "{}"})
-        assert response.status_code in [200, 302, 400]
+
+        collapsed_folders_json = '["folder1", "folder2"]'
+        response = self.client.post("/profile/set_collapsed_folders/", {"collapsed_folders": collapsed_folders_json})
+        assert response.status_code == 200
+
+        # Verify database state
+        self.user.profile.refresh_from_db()
+        assert self.user.profile.collapsed_folders == collapsed_folders_json
 
     def test_activate_premium_trial_post(self):
         """Test POST to activate premium trial."""

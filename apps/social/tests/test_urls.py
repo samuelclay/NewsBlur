@@ -229,6 +229,8 @@ class Test_SocialURLAccess(TransactionTestCase):
 
         self.client = Client()
         self.user = User.objects.create_user(username="testuser", password="testpass", email="test@test.com")
+        # Create "popular" user required by recommended_users() in load_user_friends
+        User.objects.create_user(username="popular", password="popular", email="popular@test.com")
 
     def test_river_blurblog_authenticated(self):
         """Test authenticated access to river blurblog."""
@@ -275,7 +277,10 @@ class Test_SocialURLAccess(TransactionTestCase):
     def test_social_find_friends_authenticated(self):
         """Test authenticated access to find friends."""
         self.client.login(username="testuser", password="testpass")
-        response = self.client.get(reverse("social-find-friends"))
+        # Endpoint requires 'query' parameter
+        response = self.client.get(
+            reverse("social-find-friends"), {"query": "test"}, HTTP_USER_AGENT="TestBrowser/1.0"
+        )
         assert response.status_code == 200
 
     def test_shared_stories_public_anonymous(self):
@@ -299,10 +304,30 @@ class Test_SocialURLPOST(TransactionTestCase):
         self.user2 = User.objects.create_user(username="testuser2", password="testpass", email="test2@test.com")
 
     def test_save_user_profile_post(self):
-        """Test POST to save user profile."""
+        """Test POST to save user profile and verify database persistence."""
+        from apps.social.models import MSocialProfile
+
         self.client.login(username="testuser", password="testpass")
-        response = self.client.post(reverse("save-user-profile"), {"bio": "Test bio"})
-        assert response.status_code in [200, 302, 400]
+
+        # Create profile if it doesn't exist
+        MSocialProfile.get_user(self.user.pk)
+
+        response = self.client.post(
+            reverse("save-user-profile"),
+            {
+                "bio": "Test bio",
+                "website": "https://example.com",
+                "location": "Test Location",
+                "photo_service": "nothing",
+            },
+        )
+        assert response.status_code == 200
+
+        # Verify database state
+        profile = MSocialProfile.get_user(self.user.pk)
+        assert profile.bio == "Test bio"
+        assert profile.website == "https://example.com"
+        assert profile.location == "Test Location"
 
     def test_save_blurblog_settings_post(self):
         """Test POST to save blurblog settings."""

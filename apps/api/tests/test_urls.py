@@ -141,8 +141,17 @@ class Test_APIURLPOST(TransactionTestCase):
         )
         assert response.status_code in [200, 302, 400]
 
-    def test_api_add_site_authed_post(self):
-        """Test POST to API add site authed."""
+    def test_api_add_site_authed_get(self):
+        """Test GET to API add site authed (this endpoint uses GET params)."""
         self.client.login(username="testuser", password="testpass")
-        response = self.client.post(reverse("api-add-site-authed"), {"url": "http://example.com/feed.xml"})
-        assert response.status_code in [200, 302, 400]
+        # Note: This endpoint uses request.GET for parameters
+        response = self.client.get(
+            reverse("api-add-site-authed"),
+            {
+                "url": "http://example.com/feed.xml",
+                "folder": "",
+                "callback": "testCallback",
+            },
+        )
+        # This returns JSONP so status should be 200
+        assert response.status_code == 200

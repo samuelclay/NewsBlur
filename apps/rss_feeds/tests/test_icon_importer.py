@@ -99,12 +99,14 @@ class Test_IconImporterColorDetection(TransactionTestCase):
         assert len(color) == 6, f"Color should be 6 hex chars, got {color}"
 
     def test_numpy_prod_used_not_product(self):
-        """Test that np.prod is used (np.product was removed in numpy 2.0)."""
-        # This test verifies the fix for the numpy.product deprecation
-        # np.product was removed, np.prod should be used instead
+        """Test that np.prod is available (np.product deprecated in 1.x, removed in 2.0)."""
+        # This test verifies np.prod is available for use
+        # np.product was deprecated in numpy 1.x and removed in 2.0
         assert hasattr(np, "prod"), "numpy should have prod function"
-        # np.product was removed in numpy 2.0
-        assert not hasattr(np, "product"), "numpy.product should not exist in numpy 2.0+"
+        # In numpy 1.x, product still exists but is deprecated
+        # In numpy 2.0+, product was removed
+        # Either way, we just verify prod() works correctly
+        assert np.prod([1, 2, 3]) == 6, "np.prod should work correctly"
 
     def test_determine_dominant_color_large_image(self):
         """Test color detection with a larger image that needs reshaping."""

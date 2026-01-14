@@ -92,7 +92,7 @@ class Test_RecommendationsURLPOST(TransactionTestCase):
         self.client.login(username="testuser", password="testpass")
         response = self.client.post(
             reverse("save-recommended-feed"),
-            {"feed_id": self.feed.pk, "description": "Great feed!", "twitter": "testuser"},
+            {"feed_id": self.feed.pk, "tagline": "Great feed!", "twitter": "testuser"},
         )
         assert response.status_code in [200, 302, 400]
 

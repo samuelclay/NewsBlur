@@ -21,8 +21,8 @@ urlpatterns = [
     re_path(
         r"^switch_paypal_subscription/?", views.switch_paypal_subscription, name="switch-paypal-subscription"
     ),
-    re_path(r"^is_premium/?", views.profile_is_premium, name="profile-is-premium"),
-    re_path(r"^is_premium_archive/?", views.profile_is_premium_archive, name="profile-is-premium-archive"),
+    re_path(r"^is_premium_archive/?$", views.profile_is_premium_archive, name="profile-is-premium-archive"),
+    re_path(r"^is_premium/?$", views.profile_is_premium, name="profile-is-premium"),
     re_path(r"^activate_premium_trial/?", views.activate_premium_trial, name="activate-premium-trial"),
     # re_path(r'^paypal_ipn/?', include('paypal.standard.ipn.urls'), name='paypal-ipn'),
     re_path(r"^paypal_ipn/?", views.paypal_ipn, name="paypal-ipn"),
