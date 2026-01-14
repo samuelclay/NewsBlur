@@ -3361,6 +3361,7 @@ def save_feed_chooser(request):
     """
     max_feed_limit = request.user.profile.max_feed_limit
     is_premium = request.user.profile.is_premium
+    approve_all = request.POST.get("approve_all", "").lower() in ("true", "1", "yes")
     approved_feeds = request.POST.getlist("approved_feeds") or request.POST.getlist("approved_feeds[]")
     approved_feeds = [int(feed_id) for feed_id in approved_feeds if feed_id]
     approved_feeds = approved_feeds[:max_feed_limit]
