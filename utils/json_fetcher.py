@@ -41,7 +41,7 @@ class JSONFetcher:
 
     def json_feed_story(self, item):
         date_published = datetime.datetime.now()
-        pubdate = item.get("date_published", None)
+        pubdate = item.get("date_published") or item.get("date_modified")
         if pubdate:
             date_published = dateutil.parser.parse(pubdate)
         authors = item.get("authors", item.get("author", {}))

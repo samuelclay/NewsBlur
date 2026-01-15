@@ -1,0 +1,34 @@
+{
+  "name": "newsblur-archive-extension",
+  "version": "1.0.0",
+  "description": "NewsBlur Archive Browser Extension - Automatically archive your browsing history",
+  "type": "module",
+  "scripts": {
+    "build": "./build/build.sh",
+    "build:chrome": "npm run clean:chrome && npm run copy:chrome",
+    "build:firefox": "npm run clean:firefox && npm run copy:firefox",
+    "clean": "rm -rf dist",
+    "clean:chrome": "rm -rf dist/chrome",
+    "clean:firefox": "rm -rf dist/firefox",
+    "copy:chrome": "mkdir -p dist/chrome && cp manifest.json dist/chrome/ && cp -r src icons _locales dist/chrome/",
+    "copy:firefox": "mkdir -p dist/firefox && cp manifest.firefox.json dist/firefox/manifest.json && cp -r src icons _locales dist/firefox/",
+    "package:chrome": "cd dist/chrome && zip -r ../newsblur-archive-chrome.zip .",
+    "package:firefox": "cd dist/firefox && zip -r ../newsblur-archive-firefox.zip .",
+    "package": "npm run package:chrome && npm run package:firefox",
+    "lint": "eslint src/",
+    "watch": "chokidar 'src/**/*' -c 'npm run build:chrome'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samuelclay/NewsBlur.git"
+  },
+  "author": "Samuel Clay",
+  "license": "MIT",
+  "devDependencies": {
+    "chokidar-cli": "^3.0.0",
+    "eslint": "^8.56.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

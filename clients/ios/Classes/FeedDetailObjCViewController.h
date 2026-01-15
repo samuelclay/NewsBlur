@@ -122,6 +122,7 @@
 - (void)deleteSite;
 - (void)deleteFolder;
 - (IBAction)muteSite;
+- (IBAction)unmuteSite;
 - (IBAction)openTrainSite;
 - (IBAction)openNotifications:(id)sender;
 - (void)openNotificationsWithFeed:(NSString *)feedId;
