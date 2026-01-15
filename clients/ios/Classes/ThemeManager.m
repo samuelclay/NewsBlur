@@ -469,7 +469,7 @@ NSString * const ThemeStyleDark = @"dark";
     [UINavigationBar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
     [UINavigationBar appearance].backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
     [UINavigationBar appearance].titleTextAttributes = @{NSForegroundColorAttributeName : UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B)};
-    [UIToolbar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x4A4A4A, 0x222222);
+    [UIToolbar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
     [UISegmentedControl appearance].tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
 
     UIBarStyle style = self.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
@@ -477,11 +477,24 @@ NSString * const ThemeStyleDark = @"dark";
     [UINavigationBar appearance].barStyle = style;
     [UINavigationBar appearance].translucent = YES;
     self.appDelegate.feedsNavigationController.navigationBar.barStyle = style;
+    if (self.appDelegate.detailNavigationController) {
+        self.appDelegate.detailNavigationController.navigationBar.barStyle = style;
+    }
 
     // Set window background color for status bar area (match toolbar colors)
-    self.appDelegate.window.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x4A4A4A, 0x222222);
+    self.appDelegate.window.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
 
+    UIViewController *topViewController = self.appDelegate.window.rootViewController;
+    while (topViewController.presentedViewController) {
+        topViewController = topViewController.presentedViewController;
+    }
+    [topViewController setNeedsStatusBarAppearanceUpdate];
     [self.appDelegate.feedsNavigationController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.detailNavigationController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.feedDetailNavigationController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.detailViewController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.feedDetailViewController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.storyPagesViewController setNeedsStatusBarAppearanceUpdate];
     [self.appDelegate.splitViewController setNeedsStatusBarAppearanceUpdate];
 }
 

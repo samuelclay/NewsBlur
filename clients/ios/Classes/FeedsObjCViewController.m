@@ -1426,32 +1426,59 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
    
     [self.appDelegate hidePopoverAnimated:YES];
     
+    UIColor *tintColor = [UINavigationBar appearance].tintColor;
+    if (!tintColor) {
+        tintColor = UIColorFromLightSepiaMediumDarkRGB(0x0, 0x0, 0x9a8f73, 0x9a8f73);
+    }
     UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
     appearance.backgroundColor = [UINavigationBar appearance].barTintColor;
+    appearance.titleTextAttributes = [UINavigationBar appearance].titleTextAttributes;
+    if (@available(iOS 13.0, *)) {
+        UIBarButtonItemAppearance *buttonAppearance = [[UIBarButtonItemAppearance alloc] init];
+        NSDictionary *textAttributes = @{NSForegroundColorAttributeName: tintColor};
+        [buttonAppearance.normal setTitleTextAttributes:textAttributes];
+        [buttonAppearance.highlighted setTitleTextAttributes:textAttributes];
+        [buttonAppearance.disabled setTitleTextAttributes:textAttributes];
+        appearance.buttonAppearance = buttonAppearance;
+        appearance.backButtonAppearance = buttonAppearance;
+        appearance.doneButtonAppearance = buttonAppearance;
+    }
     
     self.navigationController.navigationBar.scrollEdgeAppearance = appearance;
     self.navigationController.navigationBar.standardAppearance = appearance;
-    self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.navigationController.navigationBar.compactAppearance = appearance;
+    self.navigationController.navigationBar.tintColor = tintColor;
     self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
     self.navigationController.toolbar.tintColor = [UIToolbar appearance].tintColor;
     self.navigationController.toolbar.barTintColor = [UIToolbar appearance].barTintColor;
-    if (@available(iOS 26.0, *)) {
-        // iOS 26 liquid glass style - transparent toolbar with blur effect
+    if (@available(iOS 15.0, *)) {
         self.feedViewToolbar.translucent = YES;
         UIToolbarAppearance *toolbarAppearance = [[UIToolbarAppearance alloc] init];
         [toolbarAppearance configureWithTransparentBackground];
-        toolbarAppearance.backgroundEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
+
+        UIBlurEffectStyle blurStyle = UIBlurEffectStyleSystemChromeMaterial;
+        if (ThemeManager.shared.isDarkTheme) {
+            blurStyle = UIBlurEffectStyleSystemChromeMaterialDark;
+        }
+
+        toolbarAppearance.backgroundEffect = [UIBlurEffect effectWithStyle:blurStyle];
+
+        UIColor *toolbarColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
+        CGFloat backgroundAlpha = ThemeManager.shared.isDarkTheme ? 0.85 : 0.75;
+        toolbarAppearance.backgroundColor = [toolbarColor colorWithAlphaComponent:backgroundAlpha];
+
         self.feedViewToolbar.standardAppearance = toolbarAppearance;
         self.feedViewToolbar.scrollEdgeAppearance = toolbarAppearance;
         self.feedViewToolbar.compactAppearance = toolbarAppearance;
-        self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
+        self.feedViewToolbar.tintColor = tintColor;
     } else {
-        self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
+        self.feedViewToolbar.tintColor = tintColor;
         self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     }
-    self.addBarButton.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x8F918B);
-    self.settingsBarButton.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x8F918B);
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
+    self.addBarButton.tintColor = toolbarButtonTint;
+    self.settingsBarButton.tintColor = toolbarButtonTint;
 #if TARGET_OS_MACCATALYST
     if (ThemeManager.themeManager.isLikeSystem) {
         self.view.backgroundColor = UIColor.clearColor;
@@ -1467,10 +1494,23 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [[ThemeManager themeManager] updateSegmentedControl:self.intelligenceControl];
     [self updateIntelligenceControlAppearance];
     
-    NBBarButtonItem *barButton = self.addBarButton.customView;
-    [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
+    UIImage *addImage = [[UIImage imageNamed:@"nav_icn_add.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    if ([self.addBarButton.customView isKindOfClass:[UIButton class]]) {
+        UIButton *addButton = (UIButton *)self.addBarButton.customView;
+        [addButton setImage:addImage forState:UIControlStateNormal];
+        addButton.tintColor = toolbarButtonTint;
+    } else {
+        self.addBarButton.image = addImage;
+    }
     
-    self.settingsBarButton.image = [Utilities imageNamed:@"settings" sized:self.isMac ? 24 : 30];
+    UIImage *settingsImage = [[UIImage imageNamed:@"nav_icn_settings.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    if ([self.settingsBarButton.customView isKindOfClass:[UIButton class]]) {
+        UIButton *settingsButton = (UIButton *)self.settingsBarButton.customView;
+        [settingsButton setImage:settingsImage forState:UIControlStateNormal];
+        settingsButton.tintColor = toolbarButtonTint;
+    } else {
+        self.settingsBarButton.image = settingsImage;
+    }
     
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
