@@ -364,6 +364,8 @@ def list_archives(request):
         category: Filter by AI category
         search: Search query (full-text search via Elasticsearch)
         include_deleted: Include soft-deleted archives (default false)
+        date_from: Filter archives from this date (ISO 8601 format)
+        date_to: Filter archives up to this date (ISO 8601 format)
 
     Returns:
         {
@@ -373,6 +375,8 @@ def list_archives(request):
             has_more: bool
         }
     """
+    from datetime import datetime
+
     from apps.archive_extension.search import SearchArchive
 
     user = get_user(request)
@@ -386,6 +390,22 @@ def list_archives(request):
     category = request.GET.get("category", "").strip()
     search = request.GET.get("search", "").strip()
     include_deleted = request.GET.get("include_deleted", "").lower() == "true"
+    date_from_str = request.GET.get("date_from", "").strip()
+    date_to_str = request.GET.get("date_to", "").strip()
+
+    # Parse date filters
+    date_from = None
+    date_to = None
+    if date_from_str:
+        try:
+            date_from = datetime.fromisoformat(date_from_str.replace("Z", "+00:00"))
+        except ValueError:
+            pass
+    if date_to_str:
+        try:
+            date_to = datetime.fromisoformat(date_to_str.replace("Z", "+00:00"))
+        except ValueError:
+            pass
 
     if search:
         # Use Elasticsearch for full-text search with highlights
@@ -397,6 +417,8 @@ def list_archives(request):
             limit=limit + 1,
             domain=domain if domain else None,
             categories=[category] if category else None,
+            date_from=date_from,
+            date_to=date_to,
         )
 
         # Fetch archives by IDs while preserving search result order
@@ -440,6 +462,10 @@ def list_archives(request):
         query["domain"] = domain
     if category:
         query["ai_categories"] = category
+    if date_from:
+        query["archived_date__gte"] = date_from
+    if date_to:
+        query["archived_date__lte"] = date_to
 
     # Get total count
     total = MArchivedStory.objects(**query).count()
@@ -473,20 +499,22 @@ def list_archives(request):
 @require_http_methods(["GET"])
 def get_categories(request):
     """
-    Get breakdown of archives by AI-generated categories and domains.
+    Get breakdown of archives by AI-generated categories, domains, and dates.
+    Supports filter intersection - pass current filters to get counts for remaining options.
+
+    GET params:
+        category: Filter by category (for domains and dates breakdown)
+        domain: Filter by domain (for categories and dates breakdown)
+        date_from: Filter from date (ISO 8601)
+        date_to: Filter to date (ISO 8601)
+        tz_offset: Client timezone offset in minutes from UTC (from JS getTimezoneOffset())
 
     Returns:
         {
             code: 0,
-            categories: [
-                {category: "Research", count: 42},
-                {category: "Shopping", count: 15},
-                ...
-            ],
-            domains: [
-                {domain: "nytimes.com", count: 42},
-                ...
-            ]
+            categories: [{category: str, count: int}, ...],
+            domains: [{domain: str, count: int}, ...],
+            dates: {today: int, yesterday: int, ...}
         }
     """
     user = get_user(request)
@@ -494,14 +522,56 @@ def get_categories(request):
     if not has_access:
         return _error_response(error, status=403)
 
-    category_breakdown = MArchivedStory.get_category_breakdown(user.pk)
-    domain_breakdown = MArchivedStory.get_domain_breakdown(user.pk, limit=20)
+    # Parse filter parameters
+    category = request.GET.get("category", "").strip() or None
+    domain = request.GET.get("domain", "").strip() or None
+    date_from_str = request.GET.get("date_from", "").strip()
+    date_to_str = request.GET.get("date_to", "").strip()
+    tz_offset_str = request.GET.get("tz_offset", "").strip()
+
+    date_from = None
+    date_to = None
+    client_tz_offset = None
+
+    if date_from_str:
+        try:
+            date_from = datetime.fromisoformat(date_from_str.replace("Z", "+00:00"))
+        except ValueError:
+            pass
+    if date_to_str:
+        try:
+            date_to = datetime.fromisoformat(date_to_str.replace("Z", "+00:00"))
+        except ValueError:
+            pass
+    if tz_offset_str:
+        try:
+            client_tz_offset = int(tz_offset_str)
+        except ValueError:
+            pass
+
+    # Get breakdowns with filters applied to OTHER dimensions
+    # Categories: filtered by domain + date (not by category itself)
+    category_breakdown = MArchivedStory.get_category_breakdown(
+        user.pk, domain=domain, date_from=date_from, date_to=date_to
+    )
+
+    # Domains: filtered by category + date (not by domain itself)
+    domain_breakdown = MArchivedStory.get_domain_breakdown(
+        user.pk, limit=20, category=category, date_from=date_from, date_to=date_to
+    )
+
+    # Dates: filtered by category + domain (not by date itself)
+    # Pass client timezone so date buckets align with user's local time
+    date_breakdown = MArchivedStory.get_date_breakdown(
+        user.pk, category=category, domain=domain, client_tz_offset=client_tz_offset
+    )
 
     return _json_response(
         {
             "code": 0,
             "categories": category_breakdown,
             "domains": domain_breakdown,
+            "dates": date_breakdown,
         }
     )
 
@@ -656,6 +726,53 @@ def delete_archives(request):
         _publish_archive_event(user, [{"archive_id": aid} for aid in deleted_ids], event_type="deleted")
 
     return _json_response({"code": 0, "deleted": deleted_count})
+
+
+@csrf_exempt
+@ajax_login_required
+@require_http_methods(["POST"])
+def delete_archives_by_domain(request):
+    """
+    Delete all archived pages from a specific domain.
+
+    POST params:
+        domain: Domain to delete archives for
+
+    Returns:
+        {
+            code: 0,
+            deleted: int
+        }
+    """
+    user = get_user(request)
+    has_access, error = _check_archive_access(user)
+    if not has_access:
+        return _error_response(error, status=403)
+
+    domain = request.POST.get("domain", "").strip().lower()
+    if not domain:
+        return _error_response("Domain is required")
+
+    # Find all archives for this domain
+    archives = MArchivedStory.objects.filter(user_id=user.pk, domain=domain, deleted=False)
+
+    deleted_count = 0
+    deleted_ids = []
+    for archive in archives:
+        try:
+            archive.soft_delete()
+            deleted_count += 1
+            deleted_ids.append(str(archive.id))
+        except Exception as e:
+            logging.error(f"Error deleting archive {archive.id}: {e}")
+
+    # Publish WebSocket event for real-time updates
+    if deleted_ids:
+        _publish_archive_event(user, [{"archive_id": aid} for aid in deleted_ids], event_type="deleted")
+
+    logging.info(f" ---> ~FBDeleted ~SB{deleted_count}~SN archives from ~SB{domain}~SN for user ~SB{user.pk}")
+
+    return _json_response({"code": 0, "deleted": deleted_count, "domain": domain})
 
 
 @ajax_login_required

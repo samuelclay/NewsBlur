@@ -22914,6 +22914,13 @@ form.opml_import_form input {
     color: #FFF;
 }
 
+.NB-archive-category-filter.NB-disabled,
+.NB-archive-domain-filter.NB-disabled,
+.NB-archive-date-filter.NB-disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
 .NB-archive-filter-name {
     font-size: 13px;
     overflow: hidden;
@@ -25511,6 +25518,13 @@ button.NB-merge-group-apply.NB-button:hover {
 .NB-dark .NB-archive-date-filter.NB-active:hover {
     background: #5C89C9;
     color: #FFF;
+}
+
+.NB-dark .NB-archive-category-filter.NB-disabled,
+.NB-dark .NB-archive-domain-filter.NB-disabled,
+.NB-dark .NB-archive-date-filter.NB-disabled {
+    opacity: 0.4;
+    pointer-events: none;
 }
 
 .NB-dark .NB-archive-filter-count {
