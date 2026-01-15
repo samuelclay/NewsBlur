@@ -69,7 +69,9 @@ class Command(BaseCommand):
             expires_date = expires.strftime("%B %d, %Y")
 
             if dry_run:
-                self.stdout.write(f"  WOULD SET: {user.username} - {feed_count:,} feeds, renewal: {expires_date}")
+                self.stdout.write(
+                    f"  WOULD SET: {user.username} - {feed_count:,} feeds, renewal: {expires_date}"
+                )
             else:
                 profile.is_grandfathered = True
                 profile.grandfather_expires = expires

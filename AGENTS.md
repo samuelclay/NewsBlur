@@ -116,7 +116,17 @@ sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --qu
 
 # List issues for other projects (task, node, monitor)
 sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p task --status unresolved
+
+# Resolve an issue after fixing (use issue ID from URL)
+sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -i 1037
 ```
+
+### Sentry Workflow
+1. Extract issue ID from URL (e.g., `.../issues/1037/` → `1037`)
+2. Get issue details with `--log-level debug` to find the file and function
+3. Fix the issue in code
+4. Commit the fix
+5. Resolve the issue with `sentry-cli issues resolve -i <issue_id>`
 
 ## Browser Testing with Chrome DevTools MCP
 - Local dev: `https://localhost` (when using containers directly)

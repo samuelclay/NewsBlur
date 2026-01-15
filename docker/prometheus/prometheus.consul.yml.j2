@@ -104,6 +104,14 @@ scrape_configs:
       relabel_configs:
         - target_label: instance
           replacement: '{{ monitor_server }}:443'
+    - job_name: 'deleted_users'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/deleted-users
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'errors'
       static_configs:
         - targets: ['{{ monitor_server }}']
