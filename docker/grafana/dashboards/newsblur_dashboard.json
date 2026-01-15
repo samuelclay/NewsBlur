@@ -8599,7 +8599,7 @@
       "type": "row"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "thresholds"},
@@ -8633,7 +8633,7 @@
       "type": "stat"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "thresholds"},
@@ -8667,7 +8667,7 @@
       "type": "stat"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "thresholds"},
@@ -8701,7 +8701,7 @@
       "type": "stat"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -8725,7 +8725,7 @@
       "type": "stat"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "palette-classic"},
@@ -8750,7 +8750,7 @@
       "type": "piechart"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "palette-classic"},
@@ -8775,7 +8775,7 @@
       "type": "piechart"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "palette-classic"},
@@ -8931,7 +8931,17 @@
               },
               {
                 "id": "custom.width",
-                "value": 80
+                "value": 100
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "View Feed",
+                    "url": "https://www.newsblur.com/site/${__value.text}",
+                    "targetBlank": true
+                  }
+                ]
               }
             ]
           },
@@ -8989,7 +8999,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 357
+        "y": 370
       },
       "id": 162,
       "options": {
@@ -9001,7 +9011,7 @@
           "show": false
         },
         "showHeader": true,
-        "sortBy": []
+        "sortBy": [{"displayName": "Rank", "desc": false}]
       },
       "pluginVersion": "9.0.2",
       "targets": [
@@ -9084,7 +9094,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 367
+        "y": 390
       },
       "id": 163,
       "options": {
@@ -9154,7 +9164,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 367
+        "y": 390
       },
       "id": 164,
       "options": {
@@ -9224,7 +9234,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 367
+        "y": 390
       },
       "id": 165,
       "options": {
@@ -9315,7 +9325,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 375
+        "y": 398
       },
       "id": 166,
       "options": {
@@ -9403,7 +9413,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 375
+        "y": 398
       },
       "id": 167,
       "options": {
@@ -9470,7 +9480,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 383
+        "y": 406
       },
       "id": 168,
       "options": {
@@ -9540,7 +9550,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 383
+        "y": 406
       },
       "id": 169,
       "options": {
@@ -9580,7 +9590,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 399
+        "y": 414
       },
       "id": 171,
       "panels": [],
@@ -9617,6 +9627,38 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "rank"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Rank"
+              },
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "feed_title"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Feed"
+              },
+              {
+                "id": "custom.width",
+                "value": 300
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Value"
             },
             "properties": [
@@ -9649,6 +9691,32 @@
                 "value": "Total Subs"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "feed_id"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "URL"
+              },
+              {
+                "id": "custom.width",
+                "value": 120
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "View Feed",
+                    "url": "https://www.newsblur.com/site/${__value.text}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -9656,7 +9724,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 400
+        "y": 380
       },
       "id": 172,
       "options": {
@@ -9668,7 +9736,7 @@
           "show": false
         },
         "showHeader": true,
-        "sortBy": []
+        "sortBy": [{"displayName": "Rank", "desc": false}]
       },
       "pluginVersion": "9.0.2",
       "targets": [
@@ -9750,7 +9818,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 410
+        "y": 415
       },
       "id": 173,
       "options": {
@@ -9820,7 +9888,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 410
+        "y": 415
       },
       "id": 174,
       "options": {
@@ -9912,7 +9980,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 410
+        "y": 415
       },
       "id": 175,
       "options": {
@@ -9953,7 +10021,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 418
+        "y": 423
       },
       "id": 176,
       "panels": [],
