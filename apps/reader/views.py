@@ -2133,23 +2133,38 @@ def load_river_stories_widget(request):
 
         # Ensure URL is properly encoded for non-ASCII characters and spaces
         parsed = urllib.parse.urlsplit(url)
+        needs_path_encoding = False
+        needs_query_encoding = False
+
         if parsed.path:
-            needs_encoding = False
             try:
                 # Check if path can be encoded as ASCII
                 parsed.path.encode("ascii")
                 # Also check for spaces which are valid ASCII but invalid in URLs
                 if " " in parsed.path:
-                    needs_encoding = True
+                    needs_path_encoding = True
             except UnicodeEncodeError:
-                needs_encoding = True
+                needs_path_encoding = True
 
-            if needs_encoding:
-                # Path contains characters that need encoding
+        if parsed.query:
+            # Check for spaces in query string (e.g., malformed srcset URLs like "w=16 16w")
+            if " " in parsed.query:
+                needs_query_encoding = True
+
+        if needs_path_encoding or needs_query_encoding:
+            encoded_path = parsed.path
+            encoded_query = parsed.query
+
+            if needs_path_encoding:
                 encoded_path = urllib.parse.quote(parsed.path, safe="/:@!$&'()*+,;=")
-                url = urllib.parse.urlunsplit(
-                    (parsed.scheme, parsed.netloc, encoded_path, parsed.query, parsed.fragment)
-                )
+
+            if needs_query_encoding:
+                # Encode spaces in query string
+                encoded_query = parsed.query.replace(" ", "%20")
+
+            url = urllib.parse.urlunsplit(
+                (parsed.scheme, parsed.netloc, encoded_path, encoded_query, parsed.fragment)
+            )
 
         scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
         scontext.verify_mode = ssl.VerifyMode.CERT_NONE
@@ -2163,7 +2178,12 @@ def load_river_stories_widget(request):
             url = url.replace("localhost", "haproxy")
             try:
                 conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
-            except (urllib.error.HTTPError, urllib.error.URLError, socket.timeout) as e:
+            except (
+                urllib.error.HTTPError,
+                urllib.error.URLError,
+                socket.timeout,
+                http.client.InvalidURL,
+            ) as e:
                 logging.user(
                     request.user, '~FB"%s" ~FRnot fetched~FB in %ss: ~SB%s' % (url, (time.time() - start), e)
                 )
@@ -3352,20 +3372,42 @@ def feeds_trainer(request):
 @ajax_login_required
 @json.json_view
 def save_feed_chooser(request):
+    """
+    Batch update feed mute status. Used by the feed chooser dialog.
+
+    WARNING: This endpoint can accidentally mute feeds if the client sends an
+    incomplete approved_feeds list. For individual feed mute/unmute operations,
+    use the safer /reader/set_feed_mute endpoint instead.
+    """
+    max_feed_limit = request.user.profile.max_feed_limit
     is_premium = request.user.profile.is_premium
+    approve_all = request.POST.get("approve_all", "").lower() in ("true", "1", "yes")
     approved_feeds = request.POST.getlist("approved_feeds") or request.POST.getlist("approved_feeds[]")
     approved_feeds = [int(feed_id) for feed_id in approved_feeds if feed_id]
-    approve_all = False
-    if not is_premium:
-        approved_feeds = approved_feeds[:64]
-    elif is_premium and not approved_feeds:
-        approve_all = True
+    approved_feeds = approved_feeds[:max_feed_limit]
     activated = 0
+    muted = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
+    total_subs = usersubs.count()
+    currently_active = usersubs.filter(active=True).count()
+
+    # Safety check: warn if this would mute many feeds unexpectedly
+    approved_set = set(approved_feeds)
+    if not approve_all and is_premium and total_subs > 10:
+        would_mute = currently_active - len(
+            approved_set & set(usersubs.filter(active=True).values_list("feed_id", flat=True))
+        )
+        if would_mute > 10 and len(approved_feeds) < total_subs * 0.5:
+            logging.user(
+                request,
+                "~BR~FW~SB[SAFETY WARNING]~SN Feed chooser would mute ~FC%s~SN feeds "
+                "(approved: ~FC%s~SN, total: ~FC%s~SN, currently active: ~FC%s~SN)"
+                % (would_mute, len(approved_feeds), total_subs, currently_active),
+            )
 
     for sub in usersubs:
         try:
-            if sub.feed_id in approved_feeds or approve_all:
+            if sub.feed_id in approved_feeds:
                 activated += 1
                 if not sub.active:
                     sub.active = True
@@ -3375,6 +3417,7 @@ def save_feed_chooser(request):
             elif sub.active:
                 sub.active = False
                 sub.save()
+                muted += 1
         except Feed.DoesNotExist:
             pass
 
@@ -3384,9 +3427,62 @@ def save_feed_chooser(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "reload:feeds")
 
-    logging.user(request, "~BB~FW~SBFeed chooser: ~FC%s~SN/~SB%s" % (activated, usersubs.count()))
+    logging.user(
+        request,
+        "~BB~FW~SBFeed chooser: ~FC%s~SN active, ~FC%s~SN muted /~SB%s~SN total"
+        % (activated, muted, total_subs),
+    )
 
-    return {"activated": activated}
+    return {"activated": activated, "muted": muted}
+
+
+@ajax_login_required
+@json.json_view
+def set_feed_mute(request):
+    """
+    Safely mute or unmute a single feed without requiring the full list of feeds.
+    This prevents accidental mass-muting that can occur with save_feed_chooser
+    when the client has an incomplete feed list.
+    """
+    feed_id = request.POST.get("feed_id")
+    mute = request.POST.get("mute", "true").lower() in ("true", "1", "yes")
+
+    if not feed_id:
+        return {"code": -1, "message": "feed_id is required"}
+
+    try:
+        feed_id = int(feed_id)
+    except (ValueError, TypeError):
+        return {"code": -1, "message": "Invalid feed_id"}
+
+    try:
+        sub = UserSubscription.objects.get(user=request.user, feed_id=feed_id)
+    except UserSubscription.DoesNotExist:
+        return {"code": -1, "message": "You are not subscribed to this feed"}
+
+    is_premium = request.user.profile.is_premium
+    if not mute and not is_premium and not sub.active:
+        active_count = UserSubscription.objects.filter(user=request.user, active=True).count()
+        if active_count >= 64:
+            return {"code": -1, "message": "Free accounts are limited to 64 active sites."}
+
+    if mute:
+        if sub.active:
+            sub.active = False
+            sub.save()
+            logging.user(request, "~BB~FW~SBMuted feed: ~FC%s" % feed_id)
+    else:
+        if not sub.active:
+            sub.active = True
+            sub.save()
+            if sub.feed.active_subscribers <= 0:
+                sub.feed.count_subscribers()
+            logging.user(request, "~BB~FW~SBUnmuted feed: ~FC%s" % feed_id)
+
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, "reload:feeds")
+
+    return {"code": 1, "feed_id": feed_id, "muted": mute}
 
 
 @ajax_login_required

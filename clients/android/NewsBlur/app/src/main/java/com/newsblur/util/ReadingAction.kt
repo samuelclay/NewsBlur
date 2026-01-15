@@ -135,6 +135,18 @@ sealed interface ReadingAction : Serializable {
         override val tried: Int = 0,
     ) : ReadingAction
 
+    data class MuteFeed(
+        val feedId: String,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
+    ) : ReadingAction
+
+    data class UnmuteFeed(
+        val feedId: String,
+        override val time: Long = System.currentTimeMillis(),
+        override val tried: Int = 0,
+    ) : ReadingAction
+
     data class SetNotify(
         val feedId: String? = null,
         val notifyTypes: List<String> = emptyList(),
@@ -198,6 +210,8 @@ sealed interface ReadingAction : Serializable {
                 is DeleteReply -> decoded.copy(time = time, tried = tried)
                 is MuteFeeds -> decoded.copy(time = time, tried = tried)
                 is UnmuteFeeds -> decoded.copy(time = time, tried = tried)
+                is MuteFeed -> decoded.copy(time = time, tried = tried)
+                is UnmuteFeed -> decoded.copy(time = time, tried = tried)
                 is SetNotify -> decoded.copy(time = time, tried = tried)
                 is InstaFetch -> decoded.copy(time = time, tried = tried)
                 is UpdateIntel -> decoded.copy(time = time, tried = tried)
@@ -223,6 +237,8 @@ sealed interface ReadingAction : Serializable {
                     .registerSubtype(DeleteReply::class.java, "DELETE_REPLY")
                     .registerSubtype(MuteFeeds::class.java, "MUTE_FEEDS")
                     .registerSubtype(UnmuteFeeds::class.java, "UNMUTE_FEEDS")
+                    .registerSubtype(MuteFeed::class.java, "MUTE_FEED")
+                    .registerSubtype(UnmuteFeed::class.java, "UNMUTE_FEED")
                     .registerSubtype(SetNotify::class.java, "SET_NOTIFY")
                     .registerSubtype(InstaFetch::class.java, "INSTA_FETCH")
                     .registerSubtype(UpdateIntel::class.java, "UPDATE_INTEL")
@@ -334,6 +350,12 @@ suspend fun ReadingAction.doRemote(
 
         is ReadingAction.UnmuteFeeds ->
             result = feedApi.saveFeedChooser(activeFeedIds)
+
+        is ReadingAction.MuteFeed ->
+            result = feedApi.setFeedMute(feedId, true)
+
+        is ReadingAction.UnmuteFeed ->
+            result = feedApi.setFeedMute(feedId, false)
 
         is ReadingAction.SetNotify ->
             result = feedApi.updateFeedNotifications(feedId, notifyTypes, notifyFilter)
@@ -463,6 +485,16 @@ fun ReadingAction.doLocal(
 
         is ReadingAction.UnmuteFeeds -> {
             dbHelper.setFeedsActive(modifiedFeedIds, true)
+            plus(UPDATE_METADATA)
+        }
+
+        is ReadingAction.MuteFeed -> {
+            dbHelper.setFeedsActive(setOf(feedId), false)
+            plus(UPDATE_METADATA)
+        }
+
+        is ReadingAction.UnmuteFeed -> {
+            dbHelper.setFeedsActive(setOf(feedId), true)
             plus(UPDATE_METADATA)
         }
 

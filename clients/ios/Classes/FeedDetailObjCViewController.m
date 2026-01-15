@@ -2899,9 +2899,16 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }];
     
     if (!appDelegate.storiesCollection.isRiverView) {
-        [viewController addTitle:@"Mute this site" iconName:@"menu_icn_mute.png" selectionShouldDismiss:NO handler:^{
-            [self confirmMuteSite:weakViewController.navigationController];
-        }];
+        BOOL isMuted = ![[storiesCollection.activeFeed objectForKey:@"active"] boolValue];
+        if (isMuted) {
+            [viewController addTitle:@"Unmute this site" iconName:@"menu_icn_mute.png" selectionShouldDismiss:YES handler:^{
+                [self unmuteSite];
+            }];
+        } else {
+            [viewController addTitle:@"Mute this site" iconName:@"menu_icn_mute.png" selectionShouldDismiss:NO handler:^{
+                [self confirmMuteSite:weakViewController.navigationController];
+            }];
+        }
     }
     
     [menuNavigationController showViewController:viewController sender:self];
@@ -3021,22 +3028,35 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Muting...";
-    
-    NSMutableArray *activeIdentifiers = [self.appDelegate.dictFeeds.allKeys mutableCopy];
-    NSString *thisIdentifier = [NSString stringWithFormat:@"%@", storiesCollection.activeFeed[@"id"]];
-    [activeIdentifiers removeObject:thisIdentifier];
-    
-    for (NSString *feedId in self.appDelegate.dictInactiveFeeds.allKeys) {
-        [activeIdentifiers removeObject:feedId];
-    }
-    
+
+    NSString *feedId = [NSString stringWithFormat:@"%@", storiesCollection.activeFeed[@"id"]];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    NSString *urlString = [NSString stringWithFormat:@"%@/reader/save_feed_chooser", self.appDelegate.url];
-    
-    [params setObject:activeIdentifiers forKey:@"approved_feeds"];
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/set_feed_mute", self.appDelegate.url];
+
+    [params setObject:feedId forKey:@"feed_id"];
+    [params setObject:@"true" forKey:@"mute"];
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.appDelegate reloadFeedsView:YES];
         [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"muteSite" animated:YES];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self requestFailed:error];
+    }];
+}
+
+- (IBAction)unmuteSite {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Unmuting...";
+
+    NSString *feedId = [NSString stringWithFormat:@"%@", storiesCollection.activeFeed[@"id"]];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/set_feed_mute", self.appDelegate.url];
+
+    [params setObject:feedId forKey:@"feed_id"];
+    [params setObject:@"false" forKey:@"mute"];
+    [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.appDelegate reloadFeedsView:YES];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self requestFailed:error];

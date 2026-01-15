@@ -438,24 +438,19 @@ class FeedUtils(
     ) {
         NBScope.executeAsyncTask(
             doInBackground = {
-                val activeFeeds = dbHelper.allActiveFeeds
+                // Use individual feed mute/unmute actions for safety
+                // This prevents accidentally muting other feeds if the local feed list is incomplete
                 for (feedId in feedIds) {
-                    if (active) {
-                        activeFeeds.add(feedId)
-                    } else {
-                        activeFeeds.remove(feedId)
-                    }
+                    val ra: ReadingAction =
+                        if (active) {
+                            ReadingAction.UnmuteFeed(feedId)
+                        } else {
+                            ReadingAction.MuteFeed(feedId)
+                        }
+
+                    dbHelper.enqueueAction(ra)
+                    ra.doLocal(dbHelper, prefsRepo)
                 }
-
-                val ra: ReadingAction =
-                    if (active) {
-                        ReadingAction.UnmuteFeeds(activeFeeds, feedIds)
-                    } else {
-                        ReadingAction.MuteFeeds(activeFeeds, feedIds)
-                    }
-
-                dbHelper.enqueueAction(ra)
-                ra.doLocal(dbHelper, prefsRepo)
             },
             onPostExecute = {
                 syncUpdateStatus(UPDATE_METADATA)
