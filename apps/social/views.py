@@ -977,6 +977,12 @@ def mark_story_as_unshared(request):
 
     story, original_story_found = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
 
+    if not story:
+        return json.json_response(
+            request,
+            {"code": -1, "message": "Could not find the original story and no copies could be found."},
+        )
+
     shared_story = (
         MSharedStory.objects(user_id=request.user.pk, story_feed_id=feed_id, story_hash=story["story_hash"])
         .limit(1)
