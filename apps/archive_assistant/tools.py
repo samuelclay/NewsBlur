@@ -407,8 +407,8 @@ def _get_archive_summary(user_id):
     return {
         "total_archives": total,
         "archives_this_week": recent_count,
-        "categories": [{"name": c["_id"], "count": c["count"]} for c in categories[:10]],
-        "top_domains": [{"domain": d["_id"], "count": d["count"]} for d in domains],
+        "categories": [{"name": c["category"], "count": c["count"]} for c in categories[:10]],
+        "top_domains": [{"domain": d["domain"], "count": d["count"]} for d in domains],
         "date_range": {
             "oldest": format_datetime_utc(oldest.archived_date) if oldest else None,
             "newest": format_datetime_utc(newest.archived_date) if newest else None,
