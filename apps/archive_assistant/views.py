@@ -257,11 +257,11 @@ def get_suggestions(request):
 
     # Get user's top categories
     categories = MArchivedStory.get_category_breakdown(user.pk)
-    category_names = [c["_id"] for c in categories[:5]]
+    category_names = [c["category"] for c in categories[:5]]
 
     # Get recent domains
     domains = MArchivedStory.get_domain_breakdown(user.pk, limit=10)
-    domain_names = [d["_id"] for d in domains]
+    domain_names = [d["domain"] for d in domains]
 
     suggestions = get_suggested_questions(categories=category_names, recent_domains=domain_names)
 
