@@ -99,7 +99,7 @@ def submit_query(request):
     )
     query.save()
 
-    # Queue async processing (route to archive_queue for worktree celery)
+    # Queue async processing (route to push_feeds for worktree celery)
     process_archive_query.apply_async(
         kwargs={
             "user_id": user.pk,
@@ -109,7 +109,7 @@ def submit_query(request):
             "model": model,
             "is_premium_archive": is_premium_archive,
         },
-        queue="archive_queue",
+        queue="push_feeds",
     )
 
     return _json_response(
