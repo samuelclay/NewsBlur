@@ -87,9 +87,10 @@
     currentPage.appDelegate = appDelegate;
     nextPage.appDelegate = appDelegate;
     previousPage.appDelegate = appDelegate;
-    currentPage.view.frame = self.scrollView.frame;
-    nextPage.view.frame = self.scrollView.frame;
-    previousPage.view.frame = self.scrollView.frame;
+    CGRect scrollBounds = self.scrollView.bounds;
+    currentPage.view.frame = scrollBounds;
+    nextPage.view.frame = scrollBounds;
+    previousPage.view.frame = scrollBounds;
     
 //    NSLog(@"Scroll view content inset: %@", NSStringFromCGRect(self.scrollView.bounds));
 //    NSLog(@"Scroll view frame pre: %@", NSStringFromCGRect(self.scrollView.frame));
@@ -393,6 +394,8 @@
     if (self.scrollView.subviews.lastObject != self.currentPage.view) {
         [self.scrollView bringSubviewToFront:self.currentPage.view];
     }
+
+    [self alignScrollViewToCurrentPageIfNeeded];
     
     [super viewDidLayoutSubviews];
 }
@@ -634,13 +637,14 @@
     
     [currentPage hideStory];
 
-    CGRect frame = self.scrollView.frame;
-    self.scrollView.contentSize = frame.size;
+    CGRect bounds = self.scrollView.bounds;
+    self.scrollView.contentSize = bounds.size;
     
 //    NSLog(@"Pages are at: %f / %f / %f (%@)", previousPage.view.frame.origin.x, currentPage.view.frame.origin.x, nextPage.view.frame.origin.x, NSStringFromCGRect(frame));
-    currentPage.view.frame = self.scrollView.frame;
-    nextPage.view.frame = self.scrollView.frame;
-    previousPage.view.frame = self.scrollView.frame;
+    CGRect scrollBounds = self.scrollView.bounds;
+    currentPage.view.frame = scrollBounds;
+    nextPage.view.frame = scrollBounds;
+    previousPage.view.frame = scrollBounds;
 
     currentPage.pageIndex = -2;
     nextPage.pageIndex = -2;
@@ -676,13 +680,18 @@
     
     // Scroll back to preserved index
     CGRect frame = self.scrollView.bounds;
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
     
     if (self.isHorizontal) {
-        frame.origin.x = frame.size.width * currentIndex;
+        frame.origin.x = [self pageOffsetForIndex:currentIndex
+                                       pageAmount:frame.size.width
+                                        axisInset:axisInset];
         frame.origin.y = 0;
     } else {
         frame.origin.x = 0;
-        frame.origin.y = (frame.size.height * currentIndex) - self.view.safeAreaInsets.bottom;
+        frame.origin.y = [self pageOffsetForIndex:currentIndex
+                                       pageAmount:frame.size.height
+                                        axisInset:axisInset];
     }
     
     [self.scrollView scrollRectToVisible:frame animated:NO];
@@ -979,8 +988,9 @@
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
     if (inRotation) return;
     NSInteger currentPageIndex = currentPage.pageIndex;
-    CGSize size = self.scrollView.frame.size;
+    CGSize size = self.scrollView.bounds.size;
     CGPoint offset = self.scrollView.contentOffset;
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
     if (self.isHorizontal) {
         CGFloat lockedY = -self.scrollView.adjustedContentInset.top;
         if (fabs(offset.y - lockedY) > 0.5) {
@@ -995,7 +1005,7 @@
         }
     }
     CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
-    float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
+    float fractionalPage = ((self.isHorizontal ? offset.x : offset.y) + axisInset) / pageAmount;
 	
 	NSInteger lowerNumber = floor(fractionalPage);
 	NSInteger upperNumber = lowerNumber + 1;
@@ -1074,6 +1084,15 @@
     self.isDraggingScrollview = YES;
 }
 
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    if (scrollView != self.scrollView || decelerate) {
+        return;
+    }
+
+    [self lockScrollViewToNearestPage];
+    [self scrollViewDidEndScrollingAnimation:scrollView];
+}
+
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint *)targetContentOffset {
@@ -1081,20 +1100,15 @@
         return;
     }
 
-    NSInteger storyCount = appDelegate.storiesCollection.storyLocationsCount;
-    if (storyCount == 0) {
-        storyCount = 1;
-    }
-
     CGFloat pageAmount = self.isHorizontal ? scrollView.bounds.size.width : scrollView.bounds.size.height;
     if (pageAmount <= 0) {
         return;
     }
 
+    CGFloat axisInset = [self axisInsetForScrollView:scrollView];
     CGFloat rawOffset = self.isHorizontal ? targetContentOffset->x : targetContentOffset->y;
-    NSInteger nearestNumber = lround(rawOffset / pageAmount);
-    nearestNumber = MAX(0, MIN(storyCount - 1, nearestNumber));
-    CGFloat targetOffset = pageAmount * nearestNumber;
+    NSInteger nearestNumber = [self clampedPageIndexForOffset:rawOffset pageAmount:pageAmount];
+    CGFloat targetOffset = [self pageOffsetForIndex:nearestNumber pageAmount:pageAmount axisInset:axisInset];
 
     if (self.isHorizontal) {
         targetContentOffset->x = targetOffset;
@@ -1112,18 +1126,91 @@
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
+    [self lockScrollViewToNearestPage];
+    self.isDraggingScrollview = NO;
     if (appDelegate.feedDetailViewController.suppressMarkAsRead) {
         return;
     }
-    
-    self.isDraggingScrollview = NO;
-    CGSize size = self.scrollView.frame.size;
+    CGSize size = self.scrollView.bounds.size;
     CGPoint offset = self.scrollView.contentOffset;
     CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
-    float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
-	NSInteger nearestNumber = lround(fractionalPage);
+    NSInteger nearestNumber = [self clampedPageIndexForOffset:(self.isHorizontal ? offset.x : offset.y)
+                                                  pageAmount:pageAmount];
     self.scrollingToPage = nearestNumber;
     [self setStoryFromScroll];
+}
+
+- (void)lockScrollViewToNearestPage {
+    CGFloat pageAmount = self.isHorizontal ? self.scrollView.bounds.size.width : self.scrollView.bounds.size.height;
+    if (pageAmount <= 0) {
+        return;
+    }
+
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
+    CGPoint offset = self.scrollView.contentOffset;
+    CGFloat rawOffset = self.isHorizontal ? offset.x : offset.y;
+    NSInteger nearestNumber = [self clampedPageIndexForOffset:rawOffset pageAmount:pageAmount];
+    CGFloat targetOffset = [self pageOffsetForIndex:nearestNumber pageAmount:pageAmount axisInset:axisInset];
+
+    if (self.isHorizontal) {
+        offset.x = targetOffset;
+        offset.y = -self.scrollView.adjustedContentInset.top;
+    } else {
+        offset.y = targetOffset;
+        offset.x = -self.scrollView.adjustedContentInset.left;
+    }
+
+    if (fabs(self.scrollView.contentOffset.x - offset.x) > 0.5 ||
+        fabs(self.scrollView.contentOffset.y - offset.y) > 0.5) {
+        [self.scrollView setContentOffset:offset animated:NO];
+    }
+}
+
+- (void)alignScrollViewToCurrentPageIfNeeded {
+    if (self.isDraggingScrollview || inRotation || currentPage.pageIndex < 0) {
+        return;
+    }
+
+    CGFloat pageAmount = self.isHorizontal ? self.scrollView.bounds.size.width : self.scrollView.bounds.size.height;
+    if (pageAmount <= 0) {
+        return;
+    }
+
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
+    CGFloat targetOffset = [self pageOffsetForIndex:currentPage.pageIndex pageAmount:pageAmount axisInset:axisInset];
+    CGPoint offset = self.scrollView.contentOffset;
+
+    if (self.isHorizontal) {
+        offset.x = targetOffset;
+        offset.y = -self.scrollView.adjustedContentInset.top;
+    } else {
+        offset.y = targetOffset;
+        offset.x = -self.scrollView.adjustedContentInset.left;
+    }
+
+    if (fabs(self.scrollView.contentOffset.x - offset.x) > 0.5 ||
+        fabs(self.scrollView.contentOffset.y - offset.y) > 0.5) {
+        [self.scrollView setContentOffset:offset animated:NO];
+    }
+}
+
+- (CGFloat)axisInsetForScrollView:(UIScrollView *)scrollView {
+    return self.isHorizontal ? scrollView.adjustedContentInset.left : scrollView.adjustedContentInset.top;
+}
+
+- (CGFloat)pageOffsetForIndex:(NSInteger)pageIndex pageAmount:(CGFloat)pageAmount axisInset:(CGFloat)axisInset {
+    return (pageAmount * pageIndex) - axisInset;
+}
+
+- (NSInteger)clampedPageIndexForOffset:(CGFloat)rawOffset pageAmount:(CGFloat)pageAmount {
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
+    NSInteger storyCount = appDelegate.storiesCollection.storyLocationsCount;
+    if (storyCount <= 0) {
+        storyCount = 1;
+    }
+
+    NSInteger nearestNumber = lround((rawOffset + axisInset) / pageAmount);
+    return MAX(0, MIN(storyCount - 1, nearestNumber));
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -1133,15 +1220,13 @@
     if (!self.isPhoneOrCompact &&
         [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
-        CGSize size = self.scrollView.frame.size;
+        CGSize size = self.scrollView.bounds.size;
         CGPoint offset = self.scrollView.contentOffset;
         CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
-        float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
-        NSInteger nearestNumber = lround(fractionalPage);
+        NSInteger nearestNumber = [self clampedPageIndexForOffset:(self.isHorizontal ? offset.x : offset.y)
+                                                      pageAmount:pageAmount];
         
         if (![appDelegate.storiesCollection.activeFeedStories count]) return;
-        
-//        NSLog(@"observe content offset: fractional page %@", @(fractionalPage));  // log
         
         NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:nearestNumber];
         if (storyIndex != [appDelegate.storiesCollection indexOfActiveStory] && storyIndex != NSNotFound) {
@@ -1192,15 +1277,20 @@
     
 	// update the scroll view to the appropriate page
     [self resizeScrollView];
-    CGRect frame = self.scrollView.frame;
+    CGRect frame = self.scrollView.bounds;
     CGPoint offset = self.scrollView.contentOffset;
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
     
     if (self.isHorizontal) {
-        frame.origin.x = frame.size.width * pageIndex;
+        frame.origin.x = [self pageOffsetForIndex:pageIndex
+                                       pageAmount:frame.size.width
+                                        axisInset:axisInset];
         frame.origin.y = 0;
     } else {
         frame.origin.x = 0;
-        frame.origin.y = (frame.size.height * pageIndex) - self.view.safeAreaInsets.bottom + self.view.safeAreaInsets.bottom;
+        frame.origin.y = [self pageOffsetForIndex:pageIndex
+                                       pageAmount:frame.size.height
+                                        axisInset:axisInset];
     }
     
     self.scrollingToPage = pageIndex;
@@ -1269,10 +1359,9 @@
     CGSize size = self.scrollView.bounds.size;
     CGPoint offset = self.scrollView.contentOffset;
     CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
-    float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
-	NSInteger nearestNumber = lround(fractionalPage);
+	NSInteger nearestNumber = [self clampedPageIndexForOffset:(self.isHorizontal ? offset.x : offset.y)
+                                                  pageAmount:pageAmount];
     
-//    NSLog(@"setStoryFromScroll: fractional page %@", @(fractionalPage));  // log
     
     if (!force && currentPage.pageIndex >= 0 &&
         currentPage.pageIndex == nearestNumber &&
@@ -1297,7 +1386,6 @@
         previousPage = swapNextController;
     }
     
-//    NSLog(@"Set Story from scroll: %@ = %@ (%@/%@/%@)", @(fractionalPage), @(nearestNumber), @(previousPage.pageIndex), @(currentPage.pageIndex), @(nextPage.pageIndex));
     
     self.autoscrollActive = NO;
 //    [self showAutoscrollBriefly:YES];

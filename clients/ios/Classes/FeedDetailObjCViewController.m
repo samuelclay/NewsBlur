@@ -773,7 +773,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         for (NSDictionary *story in stories) {
             NSString *storyHash = story[@"story_hash"];
             NSArray *imageURLs = story[@"image_urls"];
-            self.appDelegate.cachedStoryImages[storyHash] = [NSNull null];
+            [self.appDelegate cacheStoryImagePlaceholder:storyHash];
             [self getFirstImage:imageURLs forStoryHash:storyHash withManager:manager];
         }
     }];
@@ -808,7 +808,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             
             CGSize maxImageSize = CGSizeMake(300, 300);
             image = [image imageByScalingAndCroppingForSize:maxImageSize];
-            self.appDelegate.cachedStoryImages[storyHash] = image;
+            [self.appDelegate cacheStoryImage:image forStoryHash:storyHash];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self showImageForStoryHash:storyHash];
             });
