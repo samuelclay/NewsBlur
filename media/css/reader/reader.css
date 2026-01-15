@@ -16922,6 +16922,19 @@ form.opml_import_form input {
     float: none;
 }
 
+.NB-modal-preferences .NB-preference-archive-notice {
+    margin-top: 8px;
+    font-size: 11px;
+    color: #606060;
+    font-style: italic;
+}
+
+.NB-modal-preferences .NB-preference-archive-notice .NB-premium-link {
+    color: #5090C0;
+    font-style: normal;
+    text-decoration: underline;
+}
+
 .NB-modal-preferences .NB-preference-readstorydelay .NB-tangle-readstorydelay,
 .NB-modal-preferences .NB-preference-slider {
     display: inline-block;
