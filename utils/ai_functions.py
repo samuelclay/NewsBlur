@@ -3,9 +3,12 @@ import logging
 import re
 from html import unescape
 
+import anthropic
 import openai
 import tiktoken
 from django.conf import settings
+
+from utils.llm_costs import LLMCostTracker
 
 
 def setup_openai_model(openai_model):
@@ -19,24 +22,24 @@ def setup_openai_model(openai_model):
     return encoding
 
 
-def classify_stories_with_ai(prompt_classifier, stories, model="gpt-3.5-turbo"):
+def classify_stories_with_ai(prompt_classifier, stories, model="claude-haiku-4-5"):
     """
-    Classify a list of stories using OpenAI's function calling.
+    Classify a list of stories using Claude's tool use.
 
     Args:
         prompt_classifier: User-defined prompt (MClassifierPrompt) for classification criteria
         stories: List of dictionaries containing story data with at least title and content
-        model: OpenAI model to use
+        model: Claude model to use
 
     Returns:
         Dictionary mapping story_ids to classifications: 1 (focus), 0 (neutral), -1 (hidden)
     """
-    if not settings.OPENAI_API_KEY:
-        logging.error("OpenAI API key not configured")
+    if not settings.ANTHROPIC_API_KEY:
+        logging.error("Anthropic API key not configured")
         return {story["story_id"]: 0 for story in stories}
 
-    # Initialize OpenAI client
-    client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+    # Initialize Anthropic client
+    client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
     # Prepare stories for classification
     story_items = []
@@ -49,11 +52,11 @@ def classify_stories_with_ai(prompt_classifier, stories, model="gpt-3.5-turbo"):
             }
         )
 
-    # Define the function for classification
-    function_definition = {
+    # Define the tool for classification
+    tool_definition = {
         "name": "classify_stories",
         "description": "Classify stories based on user-defined criteria",
-        "parameters": {
+        "input_schema": {
             "type": "object",
             "properties": {
                 "classifications": {
@@ -81,46 +84,59 @@ def classify_stories_with_ai(prompt_classifier, stories, model="gpt-3.5-turbo"):
     }
 
     # Create system message based on prompt type
-    system_message = f"""
-    You are a story classifier for a news reader application. Your task is to classify stories 
-    based on the user's criteria. Each story should be classified as one of:
-    
-    - Focus (1): Stories that strongly match the user's interests according to their prompt
-    - Neutral (0): Stories that don't particularly match or contradict the user's criteria
-    - Hidden (-1): Stories that the user wants to hide based on their prompt
-    
-    The user's classification criteria is: {prompt_classifier.prompt}
-    
-    Classify each story independently. Most stories should remain neutral (0) by default.
-    Only classify stories as Focus (1) or Hidden (-1) if they clearly match the user's criteria.
-    """
+    system_message = f"""You are a story classifier for a news reader application. Your task is to classify stories based on the user's criteria. Each story should be classified as one of:
+
+- Focus (1): Stories that strongly match the user's interests according to their prompt
+- Neutral (0): Stories that don't particularly match or contradict the user's criteria
+- Hidden (-1): Stories that the user wants to hide based on their prompt
+
+The user's classification criteria is: {prompt_classifier.prompt}
+
+Classify each story independently. Most stories should remain neutral (0) by default.
+Only classify stories as Focus (1) or Hidden (-1) if they clearly match the user's criteria.
+
+You MUST use the classify_stories tool to return your classifications."""
 
     try:
-        # Call the OpenAI API
-        response = client.chat.completions.create(
+        # Call the Anthropic API with tool use
+        response = client.messages.create(
             model=model,
+            max_tokens=1024,
+            system=system_message,
+            tools=[tool_definition],
+            tool_choice={"type": "tool", "name": "classify_stories"},
             messages=[
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": f"Please classify these stories: {json.dumps(story_items)}"},
+                {"role": "user", "content": f"Please classify these stories: {json.dumps(story_items)}"}
             ],
-            functions=[function_definition],
-            function_call={"name": "classify_stories"},
         )
 
-        # Parse the response
-        function_call = response.choices[0].message.function_call
-        if function_call and function_call.name == "classify_stories":
-            try:
-                result = json.loads(function_call.arguments)
-                # Convert to dictionary mapping story_id to classification
-                classifications = {item["id"]: item["classification"] for item in result["classifications"]}
-                return classifications
-            except (json.JSONDecodeError, KeyError) as e:
-                logging.error(f"Error parsing AI classification response: {e}")
-                return {story["story_id"]: 0 for story in stories}
-        else:
-            logging.error("AI did not return a valid function call")
-            return {story["story_id"]: 0 for story in stories}
+        # Record LLM cost
+        if response.usage:
+            LLMCostTracker.record_usage(
+                provider="anthropic",
+                model=model,
+                feature="story_classification",
+                input_tokens=response.usage.input_tokens,
+                output_tokens=response.usage.output_tokens,
+                metadata={"story_count": len(stories)},
+            )
+
+        # Parse the response - look for tool_use blocks
+        for block in response.content:
+            if block.type == "tool_use" and block.name == "classify_stories":
+                try:
+                    result = block.input
+                    # Convert to dictionary mapping story_id to classification
+                    classifications = {
+                        item["id"]: item["classification"] for item in result["classifications"]
+                    }
+                    return classifications
+                except (KeyError, TypeError) as e:
+                    logging.error(f"Error parsing AI classification response: {e}")
+                    return {story["story_id"]: 0 for story in stories}
+
+        logging.error("AI did not return a valid tool use")
+        return {story["story_id"]: 0 for story in stories}
 
     except Exception as e:
         logging.error(f"Error during AI classification: {e}")

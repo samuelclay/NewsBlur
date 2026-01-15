@@ -1,0 +1,48 @@
+{
+  "manifest_version": 2,
+  "name": "NewsBlur Archive",
+  "version": "1.0.0",
+  "description": "Automatically archive your browsing history for AI-powered search in NewsBlur",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "alarms",
+    "identity",
+    "https://newsblur.com/*",
+    "https://*.newsblur.com/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["src/background/service-worker.js"],
+    "type": "module"
+  },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["src/content/detector.js"],
+    "run_at": "document_idle"
+  }],
+  "browser_action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "archive@newsblur.com",
+      "strict_min_version": "109.0"
+    }
+  },
+  "default_locale": "en"
+}
