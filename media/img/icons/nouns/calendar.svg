@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>calendar</title>
+    <g id="calendar" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="calendar-icon" transform="translate(15, 15)" stroke="#95968E" stroke-width="10" fill="none">
+            <!-- Calendar body -->
+            <rect x="5" y="25" width="110" height="90" rx="8"/>
+            <!-- Header line -->
+            <line x1="5" y1="50" x2="115" y2="50"/>
+            <!-- Left pin -->
+            <line x1="35" y1="5" x2="35" y2="35" stroke-linecap="round"/>
+            <!-- Right pin -->
+            <line x1="85" y1="5" x2="85" y2="35" stroke-linecap="round"/>
+        </g>
+    </g>
+</svg>

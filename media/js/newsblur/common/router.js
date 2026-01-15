@@ -8,6 +8,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "site/:site_id": "site",
         "read": "read",
         "trending": "trending",
+        "archive": "archive",
         "saved": "starred",
         "saved/:tag": "starred",
         "folder/saved": "starred",
@@ -72,6 +73,14 @@ NEWSBLUR.Router = Backbone.Router.extend({
         };
         console.log(["trending sites", options]);
         NEWSBLUR.reader.open_trending_sites(options);
+    },
+
+    archive: function () {
+        var options = {
+            router: true
+        };
+        console.log(["archive", options]);
+        NEWSBLUR.reader.open_archive(options);
     },
 
     starred: function (tag) {
