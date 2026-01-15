@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-13T18:17:19-05:00</updated>
+  <updated>2026-01-15T17:00:12-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,132 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">The NewsBlur Android app hits version 8.0 with a new Grid view</title>
+    <link href="https://blog.newsblur.com/2018/07/20/the-newsblur-android-app-hits-version-80-with-a/" rel="alternate" type="text/html" title="The NewsBlur Android app hits version 8.0 with a new Grid view" />
+    <published>2018-07-20T06:14:29-04:00</published>
+    <updated>2018-07-20T06:14:29-04:00</updated>
+    <id>https://blog.newsblur.com/2018/07/20/the-newsblur-android-app-hits-version-80-with-a</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2018/07/20/the-newsblur-android-app-hits-version-80-with-a/">
+      <![CDATA[<p>Long popular on the NewsBlur web app, the Grid view has now come to the Android app. Have a look for yourself…</p>
+
+<figure class="tmblr-full" data-orig-height="1270" data-orig-width="800" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-black.png"><img style="width: 350px; margin: 0 auto;" data-orig-height="1270" data-orig-width="800" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-black.png" /></figure>
+
+<p>There’s even a wide and narrow grid view for ultimate customization. And the grid view is saved per-folder/feed, so you can change some folders to use the grid view while leaving others in a list view. And gestures work on individual grid tiles, so you can swipe to mark stories as read/unread while in the Grid view.</p>
+
+<figure class="tmblr-full" data-orig-height="670" data-orig-width="800" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-white.png"><img style="width: 650px;margin: 0 auto;" data-orig-height="670" data-orig-width="800" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-white.png" /></figure>
+
+<p>Here’s a full list of the changes:</p>
+
+<ul>
+  <li>The grid view comes to Android. Each feed/folder has its own List view setting</li>
+  <li>Can scroll all the way past the last story (for marking-read while scrolling through story list)</li>
+  <li>Fix for Twitter videos</li>
+  <li>Fix crash for viewing muted feeds</li>
+  <li>Long press links and images without tags</li>
+  <li>Better login screen for very small devices</li>
+  <li>Improved efficiency on thumbnails</li>
+  <li>Story list position retained on rotate</li>
+  <li>Android 8 compatibility fixes</li>
+  <li>Color-blindness-friendly intelligence training</li>
+</ul>
+
+<p>And for those of you using the Amazon App Store, the NewsBlur Android app has been updated there as well.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[Long popular on the NewsBlur web app, the Grid view has now come to the Android app. Have a look for yourself…
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Moving to a better support forum at forum.newsblur.com</title>
+    <link href="https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at/" rel="alternate" type="text/html" title="Moving to a better support forum at forum.newsblur.com" />
+    <published>2018-04-17T17:22:11-04:00</published>
+    <updated>2018-04-17T17:22:11-04:00</updated>
+    <id>https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at/">
+      <![CDATA[<p>It’s about time NewsBlur had more control of its own support forums. For the past 7 years (to the week!), NewsBlur has been using Get Satisfaction for support, ideas, questions, and praise.</p>
+
+<p>In that time the forums have hosted 6,959 conversations with 6,432 members. And all of that has been imported into the new support forum at <a href="https://forum.newsblur.com">https://forum.newsblur.com</a>.</p>
+
+<figure class="tmblr-full" data-orig-height="2590" data-orig-width="2074" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/forum.png"><img width="650" data-orig-height="2590" data-orig-width="2074" src="https://s3.amazonaws.com/static.newsblur.com/blog/forum.png" /></figure>
+
+<p>Every topic, every post, every like, and every user is still there. The URLs have changed but the search function is alive and well.</p>
+
+<p>Here’s the story with your account. It’s still there and you can inherit all of your posting history. But to use your account you will have to go through the forgot password flow, as the passwords were not able to be imported.</p>
+
+<p>Or create a new account. The point of the forum is to post ideas and questions and problems, so if your posting history doesn’t come with you, it’s not a big deal. It’s not like anybody answering the forums looks at your post count and decides whether or not to dive deeper into your question.</p>
+
+<p>I try to do my best in answering every single support thread. At the rates we’ve seen with nearly 7,000 posts in 7 years, that’s an average of 3 per day. Let’s keep the posts coming!</p>
+
+<p>And if you’re wondering about why I decided to upgrade, the answer is that the new forum software, <a href="https://discourse.org">Discourse</a>, is open-source and allows me to better integrate the forums into other parts of NewsBlur. I have plans to build out the staff in the coming weeks and part of that includes a better support system.</p>
+
+<p>Thanks to Get Satisfaction for all the years of service. You and your cupcake avatars will be missed.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[It’s about time NewsBlur had more control of its own support forums. For the past 7 years (to the week!), NewsBlur has been using Get Satisfaction for support, ideas, questions, and praise.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Intelligence training comes to NewsBlur’s Android app</title>
+    <link href="https://blog.newsblur.com/2017/12/11/intelligence-training-comes-to-newsblurs-android/" rel="alternate" type="text/html" title="Intelligence training comes to NewsBlur’s Android app" />
+    <published>2017-12-11T08:00:13-05:00</published>
+    <updated>2017-12-11T08:00:13-05:00</updated>
+    <id>https://blog.newsblur.com/2017/12/11/intelligence-training-comes-to-newsblurs-android</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/12/11/intelligence-training-comes-to-newsblurs-android/">
+      <![CDATA[<p>This is a big deal for Android users. The NewsBlur Android app now fully supports intelligence training and filtering, letting you filter out the stories you don’t want to read while highlighting the stories you do want by letting you filter titles, authors, tags, and the publisher.</p>
+
+<p><img src="http://s3.amazonaws.com/static.newsblur.com/blog/android-training.png" alt="" /></p>
+
+<p>You used to be able to train by tapping on authors and tags right from the story, but that didn’t give you a bird’s eye view of an entire feed. You can now clear / modify old intelligence training without going back to the story that set it. And until now you had to use the web or iOS app to train on titles and the publisher itself. Now you can do it all from all of the apps. <a href="https://www.newsblur.com/faq">Check the FAQ</a> for ideas on how to make use of the intelligence trainer.</p>
+
+<p>Here’s a list of all the new features in version 7.0 of the Android app:</p>
+
+<ul>
+  <li>New Intelligence Trainer. You can train feeds and individual stories: titles, authors, tags, and publishers.</li>
+  <li>New Infrequent Site Stories view. It’s configurable and will show up on iOS and the web soon.</li>
+  <li>Titles with intelligence training are now highlighted.</li>
+  <li>You can now switch between light and dark themes from any view.</li>
+</ul>
+
+<p>This is a huge release and we hope you’ll find that it makes the NewsBlur reading experience that much better.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[This is a big deal for Android users. The NewsBlur Android app now fully supports intelligence training and filtering, letting you filter out the stories you don’t want to read while highlighting the stories you do want by letting you filter titles, authors, tags, and the publisher.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">NewsBlur for iPhone X</title>
@@ -984,137 +1110,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[I’m not sure what else you would search for, honestly. If not vanilla pizza, then perhaps a sicilian, or montanara, a deep-dish, slices of neapolitan, whole-wheat thin-crust, or stuffed crust?
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Power users need powerful statistics</title>
-    <link href="https://blog.newsblur.com/2016/01/15/improved-statistics/" rel="alternate" type="text/html" title="Power users need powerful statistics" />
-    <published>2016-01-15T06:00:33-05:00</published>
-    <updated>2016-01-15T06:00:33-05:00</updated>
-    <id>https://blog.newsblur.com/2016/01/15/improved-statistics</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/01/15/improved-statistics/">
-      <![CDATA[<p>That’s why I’m pleased to introduce more advanced statistics for every single feed. The Statistics dialog now shows a heat graph of the times of day that stories are published as well as the days of the weeks.</p>
-
-<p>Take a look at the NewsBlur support feed, which you can subscribe to here: <a href="http://www.newsblur.com/site/644144/get-satisfaction-for-newsblur">http://www.newsblur.com/site/644144/get-satisfaction-for-newsblur</a></p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/stats_getsatisfaction.png" alt="" /></p>
-
-<p>You can see the post-Google Reader shutdown bump starting in March 2013 and will notice that most of NewsBlur’s support happens during the week. (I like to take weekends off and work on side projects and the occasional NewsBlur feature.) But due to NewsBlur’s international audience, support comes in at all hours of the day.</p>
-
-<p>And of course one of NewsBlur’s most popular publishers is Kottke.org, home of fine hypertext products. You can subscribe to kottke.org here: <a href="http://www.newsblur.com/site/39/kottke.org.">http://www.newsblur.com/site/39/kottke.org.</a></p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/stats_kottke.png" alt="" /></p>
-
-<p>Amazingly, over the lifetime of NewsBlur’s statistics feature (which launched originally in 2010), Jason Kottke has been both prolific and regular in his postings of what’s good on the web. He sticks to a 9-5 schedule and works only on weekdays.</p>
-
-<p>Anything else you’d like to see on the statistics panel? Post an idea over on <a href="http://getsatisfaction.com/newsblur">NewsBlur’s Get Satisfaction support site</a>.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[That’s why I’m pleased to introduce more advanced statistics for every single feed. The Statistics dialog now shows a heat graph of the times of day that stories are published as well as the days of the weeks.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Better embeds for Twitter, Instagram, and Imgur</title>
-    <link href="https://blog.newsblur.com/2015/12/10/better-embeds-for-twitter-instagram-and-imgur/" rel="alternate" type="text/html" title="Better embeds for Twitter, Instagram, and Imgur" />
-    <published>2015-12-10T12:38:56-05:00</published>
-    <updated>2015-12-10T12:38:56-05:00</updated>
-    <id>https://blog.newsblur.com/2015/12/10/better-embeds-for-twitter-instagram-and-imgur</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2015/12/10/better-embeds-for-twitter-instagram-and-imgur/">
-      <![CDATA[<p>Every NewsBlur client, from the three official clients (web, iOS, and Android) to all third-party clients, should now be showing better embeds for Twitter, Instagram, and Imgur. Just take a look at these screenshots.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android_oembed_instagram.png" alt="" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios_oembed_instagram.png" alt="" /></p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android_oembed_twitter.png" alt="" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios_oembed_twitter.png" alt="" /></p>
-
-<p>And don’t forget that even YouTube gets special treatment on all three platforms. Here on the web, you can see that YouTube videos are automatically expanded to fill the screen.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/oembed_web_youtube.png" alt="" /></p>
-
-<p>So there you go, enjoy the new embeds (also called oEmbeds, whatever that means). And if you have any suggestions for new embeds, just submit an idea to <a href="http://getsatisfaction.com/newsblur.">http://getsatisfaction.com/newsblur.</a></p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    <category term="ios" />
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[Every NewsBlur client, from the three official clients (web, iOS, and Android) to all third-party clients, should now be showing better embeds for Twitter, Instagram, and Imgur. Just take a look at these screenshots.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Premium fonts, comment-less shares, in-app Safari, and way, way more in version 5.0 of the NewsBlur iOS app</title>
-    <link href="https://blog.newsblur.com/2015/11/18/premium-fonts-comment-less-shares-in-app-safari/" rel="alternate" type="text/html" title="Premium fonts, comment-less shares, in-app Safari, and way, way more in version 5.0 of the NewsBlur iOS app" />
-    <published>2015-11-18T12:21:44-05:00</published>
-    <updated>2015-11-18T12:21:44-05:00</updated>
-    <id>https://blog.newsblur.com/2015/11/18/premium-fonts-comment-less-shares-in-app-safari</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2015/11/18/premium-fonts-comment-less-shares-in-app-safari/">
-      <![CDATA[<p>Holy geez, this is a whopper of a release. Version 5.0 of the NewsBlur iOS app has lots and lots of new features, fixes for some long standing issues, and major performance improvements for reading stories.</p>
-
-<p>The biggest new feature to hit the iOS app is the introduction of premium fonts from type foundry Hoefler &amp; Co. Whitney, Gotham Narrow, and Chronicle have been added to give NewsBlur a more pleasurable reading experience. Take a look for yourself.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios9_fonts.png" alt="" /></p>
-
-<p>Comment-less shares have also been added to the iOS app. You can now share a story and your friends can now reply without you having to write anything first, just like on the web and on the Android app.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios9_share.png" alt="" /></p>
-
-<p>Here’s the full list of new features and improvements. Make a cup of tea first because this list is a doozy.</p>
-
-<ul>
-  <li>The app has been iOS 9-ified.</li>
-  <li>The iOS app now has the same great fonts from the web: Whitney, Gotham Narrow, and Chronicle. These each look fantastic.</li>
-  <li>The Text view is now sticky based on the last view you used. It’s per feed but it also respects individual feeds when reading by folder. This is unlike the web, where the Text view matches the feed or folder. Now it’s sticky to the feed, which makes it much easier to read through a folder of stories.</li>
-  <li>When switching between the Text view and Story view, the loading indicator is now at the bottom of the screen instead of directly on top of the story.</li>
-  <li>Stories now remember your last scroll position. When you go back to a story, you are taken back to the same place you left off.</li>
-  <li>New Safari-based browser for the original story. These views are faster and support content blockers on iOS 9 and use your browser’s cookies. However, they look like Safari and not NewsBlur, so the default in-app browser is the original browser. The new in-app Safari browser is a preference, along with Chrome, Opera, and the full Safari app.</li>
-  <li>A new option to mark stories as read when they are scrolled past. Defaults to off.</li>
-  <li>Sending stories to third-party services now uses full Text if available. Useful for storing full story text in Evernote or Pocket.</li>
-  <li>Comment-less shares are now supported, allowing you to reply to shared stories that have no comment.</li>
-  <li>The feed trainer now shows trained titles.</li>
-  <li>1Password integration on login.</li>
-  <li>iPad Pro is now supported.</li>
-  <li>Date and times of stories now uses the system locale, so everybody who isn’t in the U.S. will see dates as they should be.</li>
-  <li>3D Touch actions: Add site, all site stories, search stories.</li>
-  <li>Voiceover support.</li>
-  <li>iOS 8 is the minimum supported version for this release.</li>
-</ul>
-
-<p>Hot dog that’s a lot in one release. Version 5.0 is now ready for you. <a href="http://www.newsblur.com/ios">Download it for free on the App Store</a>.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="iOS" />
-    
-    
-    <summary type="html">
-      <![CDATA[Holy geez, this is a whopper of a release. Version 5.0 of the NewsBlur iOS app has lots and lots of new features, fixes for some long standing issues, and major performance improvements for reading stories.
 ]]>
     </summary>
     
