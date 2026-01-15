@@ -143,6 +143,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         // Search state
         this.search_query = '';
         this.search_debounced = _.debounce(_.bind(this.perform_search, this), 300);
+        // Filter intersection - debounced refresh for sidebar filters
+        this.date_counts = {};
+        this.refresh_sidebar_filters_debounced = _.debounce(_.bind(this.refresh_sidebar_filters, this), 150);
         // Blocklist state
         this.blocklist = null;
         this.blocklist_loading = false;
@@ -191,16 +194,52 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.fetch_conversations(check_complete);
     },
 
-    fetch_filters: function (callback) {
+    fetch_filters: function (callback, filters) {
         var self = this;
+        filters = filters || {};
 
-        this.model.make_request('/api/archive/categories', {}, function (data) {
+        var params = {};
+        if (filters.category) params.category = filters.category;
+        if (filters.domain) params.domain = filters.domain;
+        if (filters.date_from) params.date_from = filters.date_from;
+        if (filters.date_to) params.date_to = filters.date_to;
+        // Send client timezone offset so date buckets align with user's local time
+        params.tz_offset = new Date().getTimezoneOffset();
+
+        this.model.make_request('/api/archive/categories', params, function (data) {
             if (data.code === 0) {
                 self.categories = data.categories || [];
                 self.domains = data.domains || [];
+                self.date_counts = data.dates || {};
+
+                // Update sidebar UI if already rendered
+                if (self.$('.NB-archive-categories').length) {
+                    self.$('.NB-archive-categories').html(self.render_category_filters());
+                    self.$('.NB-archive-domains').html(self.render_domain_filters());
+                    self.$('.NB-archive-dates').html(self.render_date_filters());
+                }
             }
             if (callback) callback();
         }, callback, { request_type: 'GET' });
+    },
+
+    refresh_sidebar_filters: function () {
+        var filters = {};
+
+        if (this.active_category) filters.category = this.active_category;
+        if (this.active_domain) filters.domain = this.active_domain;
+
+        // Handle date range
+        if (this.custom_date_from || this.custom_date_to) {
+            if (this.custom_date_from) filters.date_from = this.custom_date_from;
+            if (this.custom_date_to) filters.date_to = this.custom_date_to;
+        } else if (this.active_date) {
+            var date_range = this.get_date_range(this.active_date);
+            if (date_range.date_from) filters.date_from = date_range.date_from;
+            if (date_range.date_to) filters.date_to = date_range.date_to;
+        }
+
+        this.fetch_filters(null, filters);
     },
 
     fetch_conversations: function (callback) {
@@ -755,6 +794,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
     render_date_filters: function () {
         var self = this;
         var filters = [];
+        var date_counts = this.date_counts || {};
         var date_options = [
             { value: 'today', label: 'Today' },
             { value: 'yesterday', label: 'Yesterday' },
@@ -785,14 +825,23 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             ]));
         }
 
-        // Add relative date options
+        // Add relative date options with counts
         _.each(date_options, function (option) {
             var is_active = self.active_date === option.value && !self.custom_date_from && !self.custom_date_to;
+            var count = date_counts[option.value];
+            var is_disabled = count === 0;
+
+            // Don't disable active filter (allow user to deselect)
+            if (is_active) is_disabled = false;
+
             filters.push($.make('div', {
-                className: 'NB-archive-date-filter' + (is_active ? ' NB-active' : ''),
+                className: 'NB-archive-date-filter' +
+                           (is_active ? ' NB-active' : '') +
+                           (is_disabled ? ' NB-disabled' : ''),
                 'data-date': option.value
             }, [
-                $.make('span', { className: 'NB-archive-filter-name' }, option.label)
+                $.make('span', { className: 'NB-archive-filter-name' }, option.label),
+                count !== undefined ? $.make('span', { className: 'NB-archive-filter-count' }, count) : ''
             ]));
         });
 
@@ -948,8 +997,15 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         return _.map(visible_items, function (item) {
             var item_value = item[filter_type];
             var is_active = active_value === item_value;
+            var is_disabled = item.count === 0;
+
+            // Don't disable active filter (allow user to deselect)
+            if (is_active) is_disabled = false;
+
             var attrs = {
-                className: 'NB-archive-' + filter_type + '-filter' + (is_active ? ' NB-active' : '')
+                className: 'NB-archive-' + filter_type + '-filter' +
+                           (is_active ? ' NB-active' : '') +
+                           (is_disabled ? ' NB-disabled' : '')
             };
             attrs['data-' + filter_type] = item_value;
 
@@ -1385,6 +1441,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             this.$('.NB-archive-search-input').val('');
         }
 
+        // Refresh other filter sidebars with intersection counts
+        this.refresh_sidebar_filters_debounced();
+
         this.fetch_archives(true);
     },
 
@@ -1436,6 +1495,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         // Re-render date filters list to show custom date at top
         this.$('.NB-archive-dates').html(this.render_date_filters());
 
+        // Refresh other filter sidebars with intersection counts
+        this.refresh_sidebar_filters_debounced();
+
         this.fetch_archives(true);
     },
 
@@ -1452,6 +1514,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Re-render date filters list to remove custom date
         this.$('.NB-archive-dates').html(this.render_date_filters());
+
+        // Refresh other filter sidebars with intersection counts
+        this.refresh_sidebar_filters_debounced();
 
         this.fetch_archives(true);
     },
@@ -1501,6 +1566,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.$('.NB-archive-date-filter').removeClass('NB-active');
         this.$('.NB-custom-date-display').remove();
 
+        // Refresh sidebar filters to show unfiltered counts
+        this.refresh_sidebar_filters_debounced();
+
         this.fetch_archives(true);
     },
 
@@ -1525,6 +1593,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             this.$('.NB-archive-search-input').val('');
             this.restore_full_sidebar();
         }
+
+        // Refresh other filter sidebars with intersection counts
+        this.refresh_sidebar_filters_debounced();
 
         this.fetch_archives(true);
     },

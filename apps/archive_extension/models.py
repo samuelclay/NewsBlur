@@ -278,10 +278,29 @@ class MArchivedStory(mongo.Document):
         return cls.objects(**query).skip(offset).limit(limit)
 
     @classmethod
-    def get_category_breakdown(cls, user_id):
-        """Get count of archives by AI category for a user."""
+    def get_category_breakdown(cls, user_id, domain=None, date_from=None, date_to=None):
+        """
+        Get count of archives by AI category for a user.
+
+        Args:
+            user_id: User ID to filter by
+            domain: Optional domain filter
+            date_from: Optional start date filter
+            date_to: Optional end date filter
+        """
+        match_stage = {"user_id": user_id, "deleted": False}
+
+        if domain:
+            match_stage["domain"] = domain
+        if date_from or date_to:
+            match_stage["archived_date"] = {}
+            if date_from:
+                match_stage["archived_date"]["$gte"] = date_from
+            if date_to:
+                match_stage["archived_date"]["$lte"] = date_to
+
         pipeline = [
-            {"$match": {"user_id": user_id, "deleted": False}},
+            {"$match": match_stage},
             {"$unwind": "$ai_categories"},
             {"$group": {"_id": "$ai_categories", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}},
@@ -290,16 +309,97 @@ class MArchivedStory(mongo.Document):
         return list(cls.objects.aggregate(pipeline))
 
     @classmethod
-    def get_domain_breakdown(cls, user_id, limit=20):
-        """Get count of archives by domain for a user."""
+    def get_domain_breakdown(cls, user_id, limit=20, category=None, date_from=None, date_to=None):
+        """
+        Get count of archives by domain for a user.
+
+        Args:
+            user_id: User ID to filter by
+            limit: Maximum number of domains to return
+            category: Optional category filter
+            date_from: Optional start date filter
+            date_to: Optional end date filter
+        """
+        match_stage = {"user_id": user_id, "deleted": False}
+
+        if category:
+            match_stage["ai_categories"] = category
+        if date_from or date_to:
+            match_stage["archived_date"] = {}
+            if date_from:
+                match_stage["archived_date"]["$gte"] = date_from
+            if date_to:
+                match_stage["archived_date"]["$lte"] = date_to
+
         pipeline = [
-            {"$match": {"user_id": user_id, "deleted": False}},
+            {"$match": match_stage},
             {"$group": {"_id": "$domain", "count": {"$sum": 1}, "last_visit": {"$max": "$last_visited"}}},
             {"$sort": {"count": -1}},
             {"$limit": limit},
             {"$project": {"_id": 0, "domain": "$_id", "count": 1, "last_visit": 1}},
         ]
         return list(cls.objects.aggregate(pipeline))
+
+    @classmethod
+    def get_date_breakdown(cls, user_id, category=None, domain=None, client_tz_offset=None):
+        """
+        Get count of archives by date bucket for a user.
+
+        Returns counts for predefined date ranges (today, yesterday, this_week, etc.)
+        filtered by optional category and domain.
+
+        Args:
+            user_id: User ID to filter by
+            category: Optional category filter
+            domain: Optional domain filter
+            client_tz_offset: Client timezone offset in minutes from UTC (e.g., -480 for PST).
+                              Used to calculate date boundaries relative to the user's timezone.
+        """
+        from datetime import timedelta, timezone
+
+        # Use client timezone if provided, otherwise fall back to UTC
+        if client_tz_offset is not None:
+            tz = timezone(timedelta(minutes=-client_tz_offset))  # JS offset is inverted
+            now = datetime.now(tz)
+        else:
+            now = datetime.now(timezone.utc)
+
+        today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        yesterday = today - timedelta(days=1)
+        # Use Sunday-based weeks to match frontend (getDay() returns 0 for Sunday)
+        # isoweekday(): Monday=1, Sunday=7, so (isoweekday() % 7) gives Sunday=0
+        week_start = today - timedelta(days=(today.isoweekday() % 7))
+        seven_days_ago = today - timedelta(days=7)
+        thirty_days_ago = today - timedelta(days=30)
+        ninety_days_ago = today - timedelta(days=90)
+        month_start = today.replace(day=1)
+        year_start = today.replace(month=1, day=1)
+
+        base_query = {"user_id": user_id, "deleted": False}
+        if category:
+            base_query["ai_categories"] = category
+        if domain:
+            base_query["domain"] = domain
+
+        # Define date buckets with their filters
+        buckets = {
+            "today": {"archived_date__gte": today},
+            "yesterday": {"archived_date__gte": yesterday, "archived_date__lt": today},
+            "this_week": {"archived_date__gte": week_start},
+            "last_7_days": {"archived_date__gte": seven_days_ago},
+            "last_30_days": {"archived_date__gte": thirty_days_ago},
+            "last_90_days": {"archived_date__gte": ninety_days_ago},
+            "this_month": {"archived_date__gte": month_start},
+            "this_year": {"archived_date__gte": year_start},
+        }
+
+        results = {}
+        for bucket_name, date_filter in buckets.items():
+            query = base_query.copy()
+            query.update(date_filter)
+            results[bucket_name] = cls.objects(**query).count()
+
+        return results
 
     def soft_delete(self):
         """Mark archive as deleted without removing from database."""
