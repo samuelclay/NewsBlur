@@ -3596,6 +3596,8 @@ class MStory(mongo.Document):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         feed = Feed.get_by_id(self.story_feed_id)
+        if not feed:
+            return
 
         if self.id and self.story_date > feed.unread_cutoff:
             feed_key = "F:%s" % self.story_feed_id
@@ -3616,6 +3618,8 @@ class MStory(mongo.Document):
     def sync_feed_redis(cls, story_feed_id, allow_skip_resync=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         feed = Feed.get_by_id(story_feed_id)
+        if not feed:
+            return
         stories = cls.objects.filter(story_feed_id=story_feed_id, story_date__gte=feed.unread_cutoff)
 
         if allow_skip_resync and stories.count() > 1000:
