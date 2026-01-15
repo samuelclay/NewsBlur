@@ -49,6 +49,7 @@
                 $river_blurblogs_header: $('.NB-feeds-header-river-blurblogs'),
                 $river_global_header: $('.NB-feeds-header-river-global'),
                 $river_trending_header: $('.NB-feeds-header-river-trending'),
+                $archive_header: $('.NB-feeds-header-archive'),
                 $starred_header: $('.NB-feeds-header-starred'),
                 $searches_header: $('.NB-feeds-header-searches'),
                 $read_header: $('.NB-feeds-header-read'),
@@ -567,6 +568,11 @@
                 .removeClass('NB-dashboard-columns-triple')
                 .toggleClass('NB-dashboard-columns-' + columns);
             this.$s.$body.toggleClass('NB-disable-social', this.model.preference('disable_social') === true || this.model.preference('disable_social') === 'true');
+
+            // Show Archive folder for staff users only
+            if (NEWSBLUR.Globals.is_staff) {
+                $('.NB-feeds-header-archive-container').removeClass('NB-hidden');
+            }
         },
 
         load_delayed_stylesheets: function () {
@@ -1434,8 +1440,10 @@
             this.$s.$river_blurblogs_header.removeClass('NB-selected');
             this.$s.$river_global_header.removeClass('NB-selected');
             this.$s.$river_trending_header.removeClass('NB-selected');
+            this.$s.$archive_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
             this.$s.$layout.removeClass('NB-view-river');
+            this.$s.$layout.removeClass('NB-archive-active');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_story', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-task-return');
@@ -1465,6 +1473,21 @@
                 this.trending_sites_view = null;
             }
             this.flags['trending_view'] = false;
+
+            if (this.archive_view) {
+                // Restore story titles pane and taskbars that were hidden for archive view
+                var story_anchor = this.model.preference('story_pane_anchor');
+                if (this.layout.contentLayout) {
+                    this.layout.contentLayout.open(story_anchor, true);
+                }
+                if (this.layout.rightLayout) {
+                    this.layout.rightLayout.open('north', true);
+                    this.layout.rightLayout.open('south', true);
+                }
+                this.archive_view.close();
+                this.archive_view = null;
+            }
+            this.flags['archive_view'] = false;
 
             this.active_folder = null;
             this.active_feed = null;
@@ -2430,6 +2453,64 @@
             this.make_feed_title_in_stories();
         },
 
+        // ===================
+        // = Archive Feature =
+        // ===================
+
+        open_archive: function (options) {
+            options = options || {};
+
+            // Check if user has archive access (Premium Archive tier)
+            if (!NEWSBLUR.Globals.is_archive) {
+                this.open_feedchooser_modal({ premium_only: true });
+                return;
+            }
+
+            // Already in archive view, no need to reset
+            if (this.flags['archive_view'] && this.archive_view) {
+                return;
+            }
+
+            this.reset_feed(options);
+            this.hide_splash_page();
+
+            this.active_feed = 'archive';
+            this.active_folder = new Backbone.Model({
+                id: 'archive',
+                folder_title: "Archive",
+                fake: true,
+                show_options: false
+            });
+
+            this.flags['archive_view'] = true;
+            this.flags['river_view'] = true;  // Needed for fake folder header rendering
+
+            this.$s.$archive_header.addClass('NB-selected');
+            this.$s.$layout.addClass('NB-view-river');
+            this.$s.$layout.addClass('NB-archive-active');
+
+            // Create and append archive view to content pane
+            this.archive_view = new NEWSBLUR.Views.ArchiveView();
+            this.$s.$content_pane.append(this.archive_view.$el);
+
+            // Update URL
+            NEWSBLUR.router.navigate('/archive');
+
+            this.make_feed_title_in_stories();
+
+            // Hide story titles pane and taskbars to give archive view full width
+            // Must be after make_feed_title_in_stories which may affect layout
+            var story_anchor = this.model.preference('story_pane_anchor');
+            if (this.layout.contentLayout) {
+                this.layout.contentLayout.hide(story_anchor, true);
+            }
+            if (this.layout.rightLayout) {
+                this.layout.rightLayout.hide('north', true);
+                this.layout.rightLayout.hide('south', true);
+                this.layout.rightLayout.resizeAll();
+            }
+        },
+
         // ==================
         // = Social Stories =
         // ==================
@@ -3209,7 +3290,9 @@
             }
             var feed_title;
 
-            if (feed_id == 'river:') {
+            if (feed_id == 'archive') {
+                feed_title = "Archive";
+            } else if (feed_id == 'river:') {
                 feed_title = "All Site Stories";
             } else if (feed_id == 'river:global') {
                 feed_title = "Global Shared Stories";
@@ -3927,7 +4010,7 @@
         close_story_titles_pane: function (update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
             if (update_layout) {
-                NEWSBLUR.reader.layout.contentLayout.hide(story_anchor);
+                NEWSBLUR.reader.layout.contentLayout.hide(story_anchor, this.flags['archive_view']);
             }
             this.resize_window();
             this.flags['story_titles_closed'] = true;
@@ -3936,7 +4019,7 @@
         open_story_titles_pane: function (update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
             if (update_layout) {
-                NEWSBLUR.reader.layout.contentLayout.open(story_anchor);
+                NEWSBLUR.reader.layout.contentLayout.open(story_anchor, this.flags['archive_view']);
             }
             this.resize_window();
             this.flags['story_titles_closed'] = false;
@@ -5638,6 +5721,38 @@
                 this.socket.removeAllListeners('ask_ai:usage');
                 this.socket.on('ask_ai:usage', _.bind(this.handle_ask_ai_usage, this));
 
+                // Archive Assistant streaming event listeners
+                this.socket.removeAllListeners('archive_assistant:start');
+                this.socket.on('archive_assistant:start', _.bind(this.handle_archive_assistant_start, this));
+
+                this.socket.removeAllListeners('archive_assistant:chunk');
+                this.socket.on('archive_assistant:chunk', _.bind(this.handle_archive_assistant_chunk, this));
+
+                this.socket.removeAllListeners('archive_assistant:tool_call');
+                this.socket.on('archive_assistant:tool_call', _.bind(this.handle_archive_assistant_tool_call, this));
+
+                this.socket.removeAllListeners('archive_assistant:tool_result');
+                this.socket.on('archive_assistant:tool_result', _.bind(this.handle_archive_assistant_tool_result, this));
+
+                this.socket.removeAllListeners('archive_assistant:complete');
+                this.socket.on('archive_assistant:complete', _.bind(this.handle_archive_assistant_complete, this));
+
+                this.socket.removeAllListeners('archive_assistant:error');
+                this.socket.on('archive_assistant:error', _.bind(this.handle_archive_assistant_error, this));
+
+                this.socket.removeAllListeners('archive_assistant:truncated');
+                this.socket.on('archive_assistant:truncated', _.bind(this.handle_archive_assistant_truncated, this));
+
+                // Archive Extension real-time event listeners
+                this.socket.removeAllListeners('archive:new');
+                this.socket.on('archive:new', _.bind(this.handle_archive_new, this));
+
+                this.socket.removeAllListeners('archive:deleted');
+                this.socket.on('archive:deleted', _.bind(this.handle_archive_deleted, this));
+
+                this.socket.removeAllListeners('archive:categories');
+                this.socket.on('archive:categories', _.bind(this.handle_archive_categories, this));
+
                 this.socket.on('disconnect', _.bind(function (reason) {
                     NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);
                     this.flags.feed_refreshing_in_realtime = false;
@@ -5808,6 +5923,103 @@
                 }
                 // No request_id from server, match first view for this story/question
                 return view;
+            }
+            return null;
+        },
+
+        // ===================
+        // = Archive Assistant =
+        // ===================
+
+        handle_archive_assistant_start: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view) {
+                view.handle_stream_start(data);
+            }
+        },
+
+        handle_archive_assistant_chunk: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view && data.content) {
+                view.append_chunk(data.content);
+            }
+        },
+
+        handle_archive_assistant_tool_call: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view) {
+                view.show_tool_call(data.tool, data.input);
+            }
+        },
+
+        handle_archive_assistant_tool_result: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view) {
+                view.show_tool_result(data.tool, data.summary, data.preview);
+            }
+        },
+
+        handle_archive_assistant_complete: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view) {
+                view.complete_response(data);
+            }
+        },
+
+        handle_archive_assistant_error: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view) {
+                view.show_error(data.error);
+            }
+        },
+
+        handle_archive_assistant_truncated: function (data) {
+            var view = this.find_archive_view_for_query(data.query_id);
+            if (view) {
+                view.handle_truncation(data);
+            }
+        },
+
+        find_archive_view_for_query: function (query_id) {
+            // Use the archive_view reference directly instead of jQuery data lookup
+            if (this.archive_view && this.archive_view.active_query_id === query_id) {
+                return this.archive_view;
+            }
+            return null;
+        },
+
+        // ==========================
+        // = Archive Extension Real-time =
+        // ==========================
+
+        handle_archive_new: function (data) {
+            NEWSBLUR.log(['Archive: New archives received via WebSocket', data.count]);
+            var view = this.find_archive_view();
+            if (view && view.handle_archive_new) {
+                view.handle_archive_new(data);
+            }
+        },
+
+        handle_archive_deleted: function (data) {
+            NEWSBLUR.log(['Archive: Archives deleted via WebSocket', data.archive_ids]);
+            var view = this.find_archive_view();
+            if (view && view.handle_archive_deleted) {
+                view.handle_archive_deleted(data);
+            }
+        },
+
+        handle_archive_categories: function (data) {
+            NEWSBLUR.log(['Archive: Categories updated via WebSocket', data.archive_id, data.categories]);
+            var view = this.find_archive_view();
+            if (view && view.handle_archive_categories) {
+                view.handle_archive_categories(data);
+            }
+        },
+
+        find_archive_view: function () {
+            var $archive_view = $('.NB-archive-view');
+            if ($archive_view.length) {
+                return $archive_view.data('view');
             }
             return null;
         },
