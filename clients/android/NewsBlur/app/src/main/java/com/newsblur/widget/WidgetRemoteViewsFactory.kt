@@ -14,8 +14,16 @@ import com.newsblur.R
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
-import com.newsblur.network.APIManager
-import com.newsblur.util.*
+import com.newsblur.network.StoryApi
+import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.FeedSet
+import com.newsblur.util.ImageLoader
+import com.newsblur.util.Log
+import com.newsblur.util.ReadFilter
+import com.newsblur.util.StoryOrder
+import com.newsblur.util.StoryUtils
+import com.newsblur.util.ThumbnailStyle
+import com.newsblur.util.UIUtils
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.runBlocking
@@ -24,13 +32,16 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.math.min
 
-class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFactory {
-
+class WidgetRemoteViewsFactory(
+    context: Context,
+    intent: Intent,
+) : RemoteViewsFactory {
     private val context: Context
-    private val apiManager: APIManager
+    private val storyApi: StoryApi
     private val dbHelper: BlurDatabaseHelper
     private val iconLoader: ImageLoader
     private val thumbnailLoader: ImageLoader
+    private val prefsRepo: PrefsRepo
     private val appWidgetId: Int
 
     private val storyItems: MutableList<Story> = mutableListOf()
@@ -40,15 +51,20 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
 
     init {
         Log.d(this.javaClass.name, "init")
-        val hiltEntryPoint = EntryPointAccessors
+        val hiltEntryPoint =
+            EntryPointAccessors
                 .fromApplication(context.applicationContext, WidgetRemoteViewsFactoryEntryPoint::class.java)
         this.context = context
-        this.apiManager = hiltEntryPoint.apiManager()
+        this.storyApi = hiltEntryPoint.storyApi()
         this.dbHelper = hiltEntryPoint.dbHelper()
         this.iconLoader = hiltEntryPoint.iconLoader()
         this.thumbnailLoader = hiltEntryPoint.thumbnailLoader()
-        appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                AppWidgetManager.INVALID_APPWIDGET_ID)
+        this.prefsRepo = hiltEntryPoint.prefRepository()
+        appWidgetId =
+            intent.getIntExtra(
+                AppWidgetManager.EXTRA_APPWIDGET_ID,
+                AppWidgetManager.INVALID_APPWIDGET_ID,
+            )
     }
 
     /**
@@ -60,36 +76,37 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
         WidgetUtils.enableWidgetUpdate(context)
     }
 
-    override fun getViewAt(position: Int): RemoteViews = storiesLock.withLock {
-        Log.d(this.javaClass.name, "getViewAt $position")
-        val story = storyItems[position]
-        val rv = WidgetRemoteViews(context.packageName, R.layout.view_widget_story_item)
-        rv.setTextViewText(R.id.story_item_title, story.title)
-        rv.setTextViewText(R.id.story_item_content, story.shortContent)
-        rv.setTextViewText(R.id.story_item_author, story.authors)
-        rv.setTextViewText(R.id.story_item_feedtitle, story.extern_feedTitle)
-        val time: CharSequence = StoryUtils.formatShortDate(context, story.timestamp)
-        rv.setTextViewText(R.id.story_item_date, time)
+    override fun getViewAt(position: Int): RemoteViews =
+        storiesLock.withLock {
+            Log.d(this.javaClass.name, "getViewAt $position")
+            val story = storyItems[position]
+            val rv = WidgetRemoteViews(context.packageName, R.layout.view_widget_story_item)
+            rv.setTextViewText(R.id.story_item_title, story.title)
+            rv.setTextViewText(R.id.story_item_content, story.shortContent)
+            rv.setTextViewText(R.id.story_item_author, story.authors)
+            rv.setTextViewText(R.id.story_item_feedtitle, story.extern_feedTitle)
+            val time: CharSequence = StoryUtils.formatShortDate(context, story.timestamp)
+            rv.setTextViewText(R.id.story_item_date, time)
 
-        // image dimensions same as R.layout.view_widget_story_item
-        iconLoader.displayWidgetImage(story.extern_faviconUrl, R.id.story_item_feedicon, UIUtils.dp2px(context, 19), rv)
-        if (PrefsUtils.getThumbnailStyle(context) != ThumbnailStyle.OFF && !TextUtils.isEmpty(story.thumbnailUrl)) {
-            thumbnailLoader.displayWidgetImage(story.thumbnailUrl, R.id.story_item_thumbnail, UIUtils.dp2px(context, 64), rv)
-        } else {
-            rv.setViewVisibility(R.id.story_item_thumbnail, View.GONE)
+            // image dimensions same as R.layout.view_widget_story_item
+            iconLoader.displayWidgetImage(story.extern_faviconUrl, R.id.story_item_feedicon, UIUtils.dp2px(context, 19), rv)
+            if (prefsRepo.getThumbnailStyle() != ThumbnailStyle.OFF && !TextUtils.isEmpty(story.thumbnailUrl)) {
+                thumbnailLoader.displayWidgetImage(story.thumbnailUrl, R.id.story_item_thumbnail, UIUtils.dp2px(context, 64), rv)
+            } else {
+                rv.setViewVisibility(R.id.story_item_thumbnail, View.GONE)
+            }
+            rv.setViewBackgroundColor(R.id.story_item_favicon_borderbar_1, UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY))
+            rv.setViewBackgroundColor(R.id.story_item_favicon_borderbar_2, UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY))
+
+            // set fill-intent which is used to fill in the pending intent template
+            // set on the collection view in WidgetProvider
+            val extras = Bundle()
+            extras.putString(WidgetUtils.EXTRA_ITEM_ID, story.storyHash)
+            val fillInIntent = Intent()
+            fillInIntent.putExtras(extras)
+            rv.setOnClickFillInIntent(R.id.view_widget_item, fillInIntent)
+            return rv
         }
-        rv.setViewBackgroundColor(R.id.story_item_favicon_borderbar_1, UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY))
-        rv.setViewBackgroundColor(R.id.story_item_favicon_borderbar_2, UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY))
-
-        // set fill-intent which is used to fill in the pending intent template
-        // set on the collection view in WidgetProvider
-        val extras = Bundle()
-        extras.putString(WidgetUtils.EXTRA_ITEM_ID, story.storyHash)
-        val fillInIntent = Intent()
-        fillInIntent.putExtras(extras)
-        rv.setOnClickFillInIntent(R.id.view_widget_item, fillInIntent)
-        return rv
-    }
 
     /**
      * This allows for the use of a custom loading view which appears between the time that
@@ -109,9 +126,10 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
      * @param position The position of the item within the data set whose row id we want.
      * @return The id of the item at the specified position.
      */
-    override fun getItemId(position: Int): Long = storiesLock.withLock {
-        storyItems[position].hashCode().toLong()
-    }
+    override fun getItemId(position: Int): Long =
+        storiesLock.withLock {
+            storyItems[position].hashCode().toLong()
+        }
 
     /**
      * @return True if the same id always refers to the same object.
@@ -121,45 +139,49 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
     /**
      * Heavy lifting like downloading or creating content etc, should be deferred to onDataSetChanged()
      */
-    override fun onDataSetChanged() = storiesLock.withLock {
-        Log.d(this.javaClass.name, "onDataSetChanged")
-        // if user logged out don't try to update widget
-        if (!WidgetUtils.isLoggedIn(context)) {
-            Log.d(this.javaClass.name, "onDataSetChanged - not logged in")
-            return@withLock
-        }
+    override fun onDataSetChanged() =
+        storiesLock.withLock {
+            Log.d(this.javaClass.name, "onDataSetChanged")
+            // if user logged out don't try to update widget
+            if (!WidgetUtils.isLoggedIn(prefsRepo)) {
+                Log.d(this.javaClass.name, "onDataSetChanged - not logged in")
+                return@withLock
+            }
 
-        // get fs based on pref widget feed ids
-        val feedIds = PrefsUtils.getWidgetFeedIds(context)
-        val fs = if (feedIds == null || feedIds.isNotEmpty()) {
-            // null feed ids get all feeds
-            FeedSet.widgetFeeds(feedIds)
-        } else null // intentionally no feeds selected.
-
-        if (fs == null) {
-            Log.d(this.javaClass.name, "onDataSetChanged - null fs cleared stories")
-            storyItems.clear()
-            return@withLock
-        }
-
-        runBlocking {
-            try {
-                // Taking more than 20 seconds in this method will result in an ANR.
-                withTimeout(18000) {
-                    Log.d(this.javaClass.name, "onDataSetChanged - get remote stories")
-                    val response = apiManager.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL)
-                    response.stories?.let {
-                        val stateFilter = PrefsUtils.getStateFilter(context)
-                        Log.d(this.javaClass.name, "onDataSetChanged - got ${it.size} remote stories")
-                        processStories(response.stories)
-                        dbHelper.insertStories(response, stateFilter, true)
-                    } ?: Log.d(this.javaClass.name, "onDataSetChanged - null remote stories")
+            // get fs based on pref widget feed ids
+            val feedIds = prefsRepo.getWidgetFeedIds()
+            val fs =
+                if (feedIds == null || feedIds.isNotEmpty()) {
+                    // null feed ids get all feeds
+                    FeedSet.widgetFeeds(feedIds)
+                } else {
+                    null // intentionally no feeds selected.
                 }
-            } catch (e: TimeoutCancellationException) {
-                Log.d(this.javaClass.name, "onDataSetChanged - timeout")
+
+            if (fs == null) {
+                Log.d(this.javaClass.name, "onDataSetChanged - null fs cleared stories")
+                storyItems.clear()
+                return@withLock
+            }
+
+            runBlocking {
+                try {
+                    // Taking more than 20 seconds in this method will result in an ANR.
+                    withTimeout(18000) {
+                        Log.d(this.javaClass.name, "onDataSetChanged - get remote stories")
+                        val response = storyApi.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL, prefsRepo.getInfrequentCutoff())
+                        response?.stories?.let {
+                            val stateFilter = prefsRepo.getStateFilter()
+                            Log.d(this.javaClass.name, "onDataSetChanged - got ${it.size} remote stories")
+                            processStories(response.stories)
+                            dbHelper.insertStories(response, stateFilter, true)
+                        } ?: Log.d(this.javaClass.name, "onDataSetChanged - null remote stories")
+                    }
+                } catch (_: TimeoutCancellationException) {
+                    Log.d(this.javaClass.name, "onDataSetChanged - timeout")
+                }
             }
         }
-    }
 
     /**
      * Called when the last RemoteViewsAdapter that is associated with this factory is
@@ -169,40 +191,46 @@ class WidgetRemoteViewsFactory(context: Context, intent: Intent) : RemoteViewsFa
         Log.d(this.javaClass.name, "onDestroy")
         cancellationSignal.cancel()
         WidgetUtils.disableWidgetUpdate(context)
-        PrefsUtils.removeWidgetData(context)
+        prefsRepo.removeWidgetData()
     }
 
     /**
      * @return Count of items.
      */
-    override fun getCount(): Int = storiesLock.withLock {
-        min(storyItems.size, WidgetUtils.STORIES_LIMIT)
-    }
+    override fun getCount(): Int =
+        storiesLock.withLock {
+            min(storyItems.size, WidgetUtils.STORIES_LIMIT)
+        }
 
     /**
      * Widget will show tap to config view when
      * empty stories and feeds maps are used
      */
-    private fun processStories(stories: Array<Story>) = storiesLock.withLock {
-        Log.d(this.javaClass.name, "processStories")
-        val feedMap = mutableMapOf<String, Feed>()
-        val cursor = dbHelper.getFeedsCursor(cancellationSignal)
-        while (cursor != null && cursor.moveToNext()) {
-            val feed = Feed.fromCursor(cursor)
-            if (feed.active) {
-                feedMap[feed.feedId] = feed
+    private fun processStories(stories: Array<Story>) =
+        storiesLock.withLock {
+            Log.d(this.javaClass.name, "processStories")
+            val feedMap = mutableMapOf<String, Feed>()
+            dbHelper.getFeedsCursor(cancellationSignal).use { cursor ->
+                while (cursor.moveToNext()) {
+                    val feed = Feed.fromCursor(cursor)
+                    if (feed.active) {
+                        feedMap[feed.feedId] = feed
+                    }
+                }
             }
+
+            for (story in stories) {
+                val storyFeed = feedMap[story.feedId]
+                storyFeed?.let { bindStoryValues(story, it) }
+            }
+            storyItems.clear()
+            storyItems.addAll(stories.toList())
         }
 
-        for (story in stories) {
-            val storyFeed = feedMap[story.feedId]
-            storyFeed?.let { bindStoryValues(story, it) }
-        }
-        storyItems.clear()
-        storyItems.addAll(stories.toList())
-    }
-
-    private fun bindStoryValues(story: Story, feed: Feed) = story.apply {
+    private fun bindStoryValues(
+        story: Story,
+        feed: Feed,
+    ) = story.apply {
         thumbnailUrl = Story.guessStoryThumbnailURL(story)
         extern_faviconBorderColor = feed.faviconBorder
         extern_faviconUrl = feed.faviconUrl

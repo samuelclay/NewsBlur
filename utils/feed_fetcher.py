@@ -389,15 +389,17 @@ class FetchFeed:
                         )
                     self.fpf = feedparser.parse(processed_json_feed)
                 elif raw_feed.content and raw_feed.status_code < 400:
-                    response_headers = raw_feed.headers.copy()
-                    response_headers["Content-Location"] = raw_feed.url
+                    # Normalize header keys to lowercase for feedparser compatibility
+                    # feedparser 6.0.12 has a bug where it does case-sensitive lookups for 'content-type'
+                    response_headers = {k.lower(): v for k, v in raw_feed.headers.items()}
+                    response_headers["content-location"] = raw_feed.url
 
                     # Fix encoding detection: if Content-Type doesn't specify charset, default to UTF-8
                     # This prevents feedparser from incorrectly guessing Windows-1252
-                    content_type = response_headers.get("Content-Type", "")
+                    content_type = response_headers.get("content-type", "")
                     if content_type and "charset" not in content_type.lower():
                         # Add UTF-8 charset to help feedparser detect encoding correctly
-                        response_headers["Content-Type"] = f"{content_type}; charset=utf-8"
+                        response_headers["content-type"] = f"{content_type}; charset=utf-8"
 
                     # Decode the raw bytes as UTF-8 (smart_str defaults to UTF-8 for bytes)
                     self.raw_feed = smart_str(raw_feed.content)

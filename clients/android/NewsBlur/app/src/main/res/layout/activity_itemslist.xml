@@ -7,6 +7,7 @@
     <include layout="@layout/toolbar_newsblur" />
 
     <RelativeLayout
+        android:id="@+id/content"
         style="?layoutBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,13 +20,13 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:animateLayoutChanges="true"
+            android:autofillHints="@null"
             android:drawableLeft="@drawable/ic_search"
             android:hint="@string/story_search_hint"
             android:imeOptions="actionSearch"
             android:inputType="textNoSuggestions"
             android:textSize="16sp"
-            android:visibility="gone"
-            android:autofillHints="@null"/>
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/activity_itemlist_container"

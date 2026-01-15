@@ -31,6 +31,8 @@
 
 @property (nonatomic, strong) NSString *fullStoryHTML;
 
+- (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
+
 @end
 
 @implementation StoryDetailObjCViewController
@@ -79,13 +81,13 @@
     WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *videoPlayback = [preferences stringForKey:@"video_playback"];
-    
+
     configuration.allowsInlineMediaPlayback = ![videoPlayback isEqualToString:@"fullscreen"];
-    
+
     self.webView = [[WKWebView alloc] initWithFrame:self.view.frame configuration:configuration];
-    
+
     [self.view addSubview:self.webView];
-    
+
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.webView.navigationDelegate = self;
     self.webView.allowsLinkPreview = YES;
@@ -400,16 +402,14 @@
 }
 
 - (void)loadHTMLString:(NSString *)html {
+    // Use HTTPS baseURL so YouTube embeds get a valid Referer header (fixes Error 153).
+    // CSS/JS are inlined directly in the HTML to avoid custom scheme issues.
     static NSURL *baseURL;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-#if TARGET_OS_MACCATALYST
-        baseURL = [NSBundle mainBundle].resourceURL;
-#else
-        baseURL = [NSBundle mainBundle].bundleURL;
-#endif
+        baseURL = [NSURL URLWithString:@"https://newsblur.com/"];
     });
-    
+
     [self.webView loadHTMLString:html baseURL:baseURL];
 }
 
@@ -457,7 +457,7 @@
     if (changes != nil) {
         storyContent = changes;
     }
-    
+
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     NSString *premiumTextString = [NSString stringWithFormat:@"<div class=\"NB-feed-story-premium-only-divider\"></div>"
@@ -514,6 +514,8 @@
     contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
                          contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
     
+    NSLog(@"📚 drawStory: content width class: %@", contentWidthClass);  // log
+    
     // if (appDelegate.feedsViewController.isOffline) {
         NSFileManager *manager = [NSFileManager defaultManager];
         NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
@@ -524,7 +526,6 @@
                                               stringByAppendingPathComponent:@"story_images"];
             for (NSString *imageUrl in imageUrls) {
                 NSURL *cachedUrl = [NSURL fileURLWithPath:storyImagesDirectory];
-//                cachedUrl = [cachedUrl URLByAppendingPathComponent:[Utilities md5:imageUrl storyHash:storyHash]];
                 cachedUrl = [cachedUrl URLByAppendingPathComponent:[Utilities md5:imageUrl]];
                 cachedUrl = [cachedUrl URLByAppendingPathExtension:@"jpeg"];
                 
@@ -534,6 +535,12 @@
                     } else {
                         continue;
                     }
+                }
+                
+                NSString *imageBase64 = [[NSData dataWithContentsOfURL:cachedUrl] base64EncodedStringWithOptions:0];
+                
+                if (imageBase64 != nil) {
+                    cachedUrl = [NSURL URLWithString:[NSString stringWithFormat:@"data:image/jpeg;base64,%@", imageBase64]];
                 }
                 
                 NSLog(@"📚 %@ %@ imageURL: %@ cachedURL: %@", activeStory[@"story_title"], storyHash, imageUrl, cachedUrl);
@@ -568,18 +575,46 @@
                             appDelegate.storiesCollection.isReadView) ?
                             @"NB-river" : @"NB-non-river";
     
-    NSString *themeStyle = [NSString stringWithFormat:@"<link rel=\"stylesheet\" type=\"text/css\" id=\"NB-theme-style\" href=\"storyDetailView%@.css\">", [ThemeManager themeManager].themeCSSSuffix];
-    
+    // Inline CSS and JS to avoid custom URL scheme issues with HTTPS baseURL
+    // (WKWebView blocks custom schemes as "insecure" when baseURL is HTTPS)
+    NSBundle *bundle = [NSBundle mainBundle];
+
+    // Read and inline CSS, embedding fonts and images as data URLs
+    NSString *mainCSSPath = [bundle pathForResource:@"storyDetailView" ofType:@"css"];
+    NSString *mainCSS = mainCSSPath ? [NSString stringWithContentsOfFile:mainCSSPath encoding:NSUTF8StringEncoding error:nil] : @"";
+    mainCSS = [self embedResourcesInCSS:mainCSS bundle:bundle];
+
+    NSString *themeSuffix = [ThemeManager themeManager].themeCSSSuffix;
+    NSString *themeCSS = @"";
+    if (themeSuffix.length) {
+        NSString *themeCSSPath = [bundle pathForResource:[NSString stringWithFormat:@"storyDetailView%@", themeSuffix] ofType:@"css"];
+        themeCSS = themeCSSPath ? [NSString stringWithContentsOfFile:themeCSSPath encoding:NSUTF8StringEncoding error:nil] : @"";
+    }
+
+    // Read and inline JS
+    NSString *zeptoPath = [bundle pathForResource:@"zepto" ofType:@"js"];
+    NSString *zeptoJS = zeptoPath ? [NSString stringWithContentsOfFile:zeptoPath encoding:NSUTF8StringEncoding error:nil] : @"";
+
+    NSString *fitvidPath = [bundle pathForResource:@"fitvid" ofType:@"js"];
+    NSString *fitvidJS = fitvidPath ? [NSString stringWithContentsOfFile:fitvidPath encoding:NSUTF8StringEncoding error:nil] : @"";
+
+    NSString *storyDetailPath = [bundle pathForResource:@"storyDetailView" ofType:@"js"];
+    NSString *storyDetailJS = storyDetailPath ? [NSString stringWithContentsOfFile:storyDetailPath encoding:NSUTF8StringEncoding error:nil] : @"";
+
+    NSString *fastTouchPath = [bundle pathForResource:@"fastTouch" ofType:@"js"];
+    NSString *fastTouchJS = fastTouchPath ? [NSString stringWithContentsOfFile:fastTouchPath encoding:NSUTF8StringEncoding error:nil] : @"";
+
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
-                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\">%@"
+                    "<style>%@</style><style id=\"NB-theme-style\">%@</style>"
                     "<meta name=\"viewport\" id=\"viewport\" content=\"width=%d, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
-                    themeStyle, contentWidth];
+                    mainCSS, themeCSS, contentWidth];
     footerString = [NSString stringWithFormat:@
-                    "<script src=\"zepto.js\"></script>"
-                    "<script src=\"fitvid.js\"></script>"
-                    "<script src=\"storyDetailView.js\"></script>"
-                    "<script src=\"fastTouch.js\"></script>"];
+                    "<script>%@</script>"
+                    "<script>%@</script>"
+                    "<script>%@</script>"
+                    "<script>%@</script>",
+                    zeptoJS, fitvidJS, storyDetailJS, fastTouchJS];
     
     sharingHtmlString = [self getSideOptions];
 
@@ -673,8 +708,10 @@
                             objectForKey:@"story_feed_id"]];
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
     
-    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0 && appDelegate.storyPagesViewController.currentlyTogglingNavigationBar && !appDelegate.storyPagesViewController.isNavigationBarHidden) {
-        yOffset -= 25;
+    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0 && !appDelegate.storyPagesViewController.isNavigationBarHidden) {
+        // Push gradient down below the navigation bar on notched iPhones
+        CGFloat navBarHeight = appDelegate.feedsNavigationController.navigationBar.frame.size.height;
+        yOffset += navBarHeight;
     }
     
     if (self.feedTitleGradient) {
@@ -741,24 +778,104 @@
 
 - (void)clearWebView {
     self.hasStory = NO;
-    
-    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+
+    self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
     self.webView.hidden = YES;
     self.activityIndicator.color = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     [self.activityIndicator startAnimating];
-    
-    NSString *themeStyle = [ThemeManager themeManager].themeCSSSuffix;
-    
-    if (themeStyle.length) {
-        themeStyle = [NSString stringWithFormat:@"<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView%@.css\">", themeStyle];
-    }
-    
-    NSString *html = [NSString stringWithFormat:@"<html>"
-                      "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\">%@</head>" // header string
-                      "<body></body>"
-                      "</html>", themeStyle];
 
-    [self loadHTMLString:html];
+    [self loadHTMLString:@"<html><body></body></html>"];
+}
+
+// Convert font and image URLs in CSS to inline base64 data URLs.
+// This is needed because WKWebView with an HTTPS baseURL won't load resources
+// from custom URL schemes (treats them as insecure).
+- (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle {
+    if (!css || css.length == 0) {
+        return css;
+    }
+
+    NSMutableString *result = [css mutableCopy];
+
+    // Regex to find url("filename") or url('filename') patterns
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression
+        regularExpressionWithPattern:@"url\\([\"']?([^\"')]+)[\"']?\\)"
+        options:0
+        error:&error];
+
+    if (error) {
+        NSLog(@"embedResourcesInCSS: Regex error: %@", error);
+        return css;
+    }
+
+    // Process matches in reverse order to preserve indices
+    NSArray *matches = [regex matchesInString:css options:0 range:NSMakeRange(0, css.length)];
+
+    for (NSTextCheckingResult *match in [matches reverseObjectEnumerator]) {
+        if (match.numberOfRanges < 2) continue;
+
+        NSRange fullMatchRange = [match rangeAtIndex:0];
+        NSRange filenameRange = [match rangeAtIndex:1];
+        NSString *filename = [css substringWithRange:filenameRange];
+
+        // Skip data URLs (already embedded) and external URLs
+        if ([filename hasPrefix:@"data:"] || [filename hasPrefix:@"http"]) {
+            continue;
+        }
+
+        // Get file extension and name
+        NSString *extension = filename.pathExtension.lowercaseString;
+        NSString *name = filename.stringByDeletingPathExtension;
+
+        // Try to find the resource in the bundle
+        NSString *path = [bundle pathForResource:name ofType:extension];
+        if (!path) {
+            path = [bundle pathForResource:name ofType:extension inDirectory:@"fonts"];
+        }
+
+        if (!path) {
+            NSLog(@"embedResourcesInCSS: Resource not found: %@", filename);
+            continue;
+        }
+
+        NSData *data = [NSData dataWithContentsOfFile:path];
+        if (!data) {
+            NSLog(@"embedResourcesInCSS: Cannot read resource: %@", filename);
+            continue;
+        }
+
+        // Determine MIME type
+        NSString *mimeType;
+        if ([extension isEqualToString:@"otf"]) {
+            mimeType = @"font/otf";
+        } else if ([extension isEqualToString:@"ttf"]) {
+            mimeType = @"font/ttf";
+        } else if ([extension isEqualToString:@"woff"]) {
+            mimeType = @"font/woff";
+        } else if ([extension isEqualToString:@"woff2"]) {
+            mimeType = @"font/woff2";
+        } else if ([extension isEqualToString:@"png"]) {
+            mimeType = @"image/png";
+        } else if ([extension isEqualToString:@"jpg"] || [extension isEqualToString:@"jpeg"]) {
+            mimeType = @"image/jpeg";
+        } else if ([extension isEqualToString:@"gif"]) {
+            mimeType = @"image/gif";
+        } else if ([extension isEqualToString:@"svg"]) {
+            mimeType = @"image/svg+xml";
+        } else {
+            mimeType = @"application/octet-stream";
+        }
+
+        // Convert to base64 data URL
+        NSString *base64 = [data base64EncodedStringWithOptions:0];
+        NSString *dataURL = [NSString stringWithFormat:@"url(\"data:%@;base64,%@\")", mimeType, base64];
+
+        // Replace in result
+        [result replaceCharactersInRange:fullMatchRange withString:dataURL];
+    }
+
+    return result;
 }
 
 - (NSString *)getHeader {
@@ -891,36 +1008,49 @@
 - (NSString *)getSideOptions {
     BOOL isSaved = [[self.activeStory objectForKey:@"starred"] boolValue];
     BOOL isShared = [[self.activeStory objectForKey:@"shared"] boolValue];
-    
+
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL showAskAI = [userPreferences objectForKey:@"show_ask_ai"] == nil || [userPreferences boolForKey:@"show_ask_ai"];
+
+    NSString *askAIButton = showAskAI ? @
+                             "  <div class='NB-share-button NB-ask-ai-button NB-button'>"
+                             "    <a href=\"http://ios.newsblur.com/ask-ai\"><div>"
+                             "      <span class=\"NB-icon\"></span>"
+                             "      <span class=\"NB-sideoption-text\">Ask AI</span>"
+                             "    </div></a>"
+                             "  </div>" : @"";
+
     NSString *sideOptions = [NSString stringWithFormat:@
                              "<div class='NB-sideoptions'>"
                              "<div class='NB-share-header'></div>"
                              "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-train-button NB-button'>"
+                             "  <div class='NB-share-button NB-train-button NB-button'>"
                              "    <a href=\"http://ios.newsblur.com/train\"><div>"
                              "      <span class=\"NB-icon\"></span>"
                              "      <span class=\"NB-sideoption-text\">Train</span>"
                              "    </div></a>"
                              "  </div>"
-                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-button %@'>"
+                             "  <div class='NB-share-button NB-share-share-button NB-button %@'>"
                              "    <a href=\"http://ios.newsblur.com/share\"><div>"
                              "      <span class=\"NB-icon\"></span>"
                              "      <span class=\"NB-sideoption-text\">%@</span>"
                              "    </div></a>"
                              "  </div>"
-                             "  <div id=\"NB-share-button-id\" class='NB-share-button NB-save-button NB-button %@'>"
+                             "  <div class='NB-share-button NB-save-button NB-button %@'>"
                              "    <a href=\"http://ios.newsblur.com/save/save/\"><div>"
                              "      <span class=\"NB-icon\"></span>"
                              "      <span class=\"NB-sideoption-text\">%@</span>"
                              "    </div></a>"
                              "  </div>"
+                             "%@"
                              "</div></div></div>",
                              isShared ? @"NB-button-active" : @"",
                              isShared ? @"Shared" : @"Share",
                              isSaved ? @"NB-button-active" : @"",
-                             isSaved ? @"Saved" : @"Save"
+                             isSaved ? @"Saved" : @"Save",
+                             askAIButton
                              ];
-    
+
     return sideOptions;
 }
 
@@ -1395,8 +1525,13 @@
                 
                 if (!isNavBarHidden) {
                     [self.webView insertSubview:self.feedTitleGradient aboveSubview:self.webView.scrollView];
-                    
-                    self.feedTitleGradient.frame = CGRectMake(0, -1,
+
+                    CGFloat yOffset = -1;
+                    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0) {
+                        CGFloat navBarHeight = appDelegate.feedsNavigationController.navigationBar.frame.size.height;
+                        yOffset += navBarHeight;
+                    }
+                    self.feedTitleGradient.frame = CGRectMake(0, yOffset,
                                                               self.feedTitleGradient.frame.size.width,
                                                               self.feedTitleGradient.frame.size.height);
                 }
@@ -1713,6 +1848,17 @@
             [self openShareDialog];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
+        } else if ([action isEqualToString:@"ask-ai"] && [urlComponents count] > 5) {
+            [self openAskAIDialog:[[urlComponents objectAtIndex:2] intValue]
+                      yCoordinate:[[urlComponents objectAtIndex:3] intValue]
+                            width:[[urlComponents objectAtIndex:4] intValue]
+                           height:[[urlComponents objectAtIndex:5] intValue]];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
+        } else if ([action isEqualToString:@"ask-ai"]) {
+            [appDelegate openAskAIDialog:self.activeStory];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
         } else if ([action isEqualToString:@"train"] && [urlComponents count] > 5) {
             [self openTrainingDialog:[[urlComponents objectAtIndex:2] intValue]
                          yCoordinate:[[urlComponents objectAtIndex:3] intValue]
@@ -1975,14 +2121,14 @@
 }
 
 - (void)updateStoryTheme {
-    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    
+    self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
+
     NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-theme-style').href='storyDetailView%@.css';",
                           [ThemeManager themeManager].themeCSSSuffix];
-    
+
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
-    
-    self.webView.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+
+    self.webView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
     
     if ([ThemeManager themeManager].isDarkTheme) {
         self.webView.scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
@@ -2141,10 +2287,33 @@
             y = y + 9;
         }
     }
-    
+
     frame = CGRectMake(x, y, width, height);
 
     [appDelegate openUserTagsStory:[NSValue valueWithCGRect:frame]];
+}
+
+- (void)openAskAIDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
+    CGRect frame = CGRectZero;
+    if (!self.isPhoneOrCompact) {
+        // only adjust for the bar if user is scrolling
+        if (appDelegate.storiesCollection.isRiverView ||
+            appDelegate.storiesCollection.isSocialView ||
+            appDelegate.storiesCollection.isSavedView ||
+            appDelegate.storiesCollection.isWidgetView ||
+            appDelegate.storiesCollection.isReadView) {
+            if (self.webView.scrollView.contentOffset.y == -20) {
+                y = y + 20;
+            }
+        } else {
+            if (self.webView.scrollView.contentOffset.y == -9) {
+                y = y + 9;
+            }
+        }
+
+        frame = CGRectMake(x, y, width, height);
+    }
+    [appDelegate openAskAIDialog:self.activeStory sourceRect:[NSValue valueWithCGRect:frame]];
 }
 
 - (BOOL)isTag:(NSString *)tagName equalTo:(NSString *)tagValue {
@@ -2484,6 +2653,8 @@
             alternateViewClass = @"NB-titles-left";
         }
     }
+    
+    NSLog(@"📚 changeWebViewWidth: content width class: %@", contentWidthClass);  // log
     
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||

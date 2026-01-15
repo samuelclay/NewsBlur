@@ -45,6 +45,27 @@ scrape_configs:
       scheme: https
       tls_config:
         insecure_skip_verify: true
+    - job_name: 'llm_costs'
+      static_configs:
+        - targets: ['haproxy']
+      metrics_path: /monitor/llm-costs
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'trending_feeds'
+      static_configs:
+        - targets: ['haproxy']
+      metrics_path: /monitor/trending-feeds
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'trending_subscriptions'
+      static_configs:
+        - targets: ['haproxy']
+      metrics_path: /monitor/trending-subscriptions
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
     - job_name: 'user_searches'
       static_configs:
         - targets: ['haproxy']
@@ -56,6 +77,13 @@ scrape_configs:
       static_configs:
         - targets: ['haproxy']
       metrics_path: /monitor/db-times
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
+    - job_name: 'deleted_users'
+      static_configs:
+        - targets: ['haproxy']
+      metrics_path: /monitor/deleted-users
       scheme: https
       tls_config:
         insecure_skip_verify: true

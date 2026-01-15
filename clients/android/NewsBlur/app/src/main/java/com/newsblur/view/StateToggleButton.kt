@@ -10,9 +10,10 @@ import com.newsblur.util.UIUtils
 import com.newsblur.util.setViewGone
 import com.newsblur.util.setViewVisible
 
-
-class StateToggleButton(context: Context, art: AttributeSet?) : LinearLayout(context, art) {
-
+class StateToggleButton(
+    context: Context,
+    art: AttributeSet?,
+) : LinearLayout(context, art) {
     private var state = StateFilter.SOME
     private var stateChangedListener: StateChangedListener? = null
     private val binding: StateToggleBinding
@@ -25,7 +26,6 @@ class StateToggleButton(context: Context, art: AttributeSet?) : LinearLayout(con
         binding.toggleFocus.setOnClickListener { setState(StateFilter.BEST) }
         binding.toggleSaved.setOnClickListener { setState(StateFilter.SAVED) }
     }
-
 
     fun setStateListener(stateChangedListener: StateChangedListener?) {
         this.stateChangedListener = stateChangedListener

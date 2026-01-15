@@ -86,4 +86,22 @@
   hostname:
     name: "{{ inventory_hostname }}"
   tags: hosts
+
+# TCP tuning for high-latency connections (improves performance for distant users)
+- name: Set TCP buffer sizes for high-latency connections
+  become: yes
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  loop:
+    - { name: 'net.core.rmem_max', value: '16777216' }
+    - { name: 'net.core.wmem_max', value: '16777216' }
+    - { name: 'net.ipv4.tcp_rmem', value: '4096 87380 16777216' }
+    - { name: 'net.ipv4.tcp_wmem', value: '4096 65536 16777216' }
+    - { name: 'net.ipv4.tcp_slow_start_after_idle', value: '0' }
+    - { name: 'net.ipv4.tcp_congestion_control', value: 'bbr' }
+    - { name: 'net.core.default_qdisc', value: 'fq' }
+  tags: sysctl
   

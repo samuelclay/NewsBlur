@@ -61,6 +61,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.dashboard_rivers = new NEWSBLUR.Collections.DashboardRivers();
         this.starred_stories = [];
         this.starred_count = 0;
+        this.folder_icons = {};
+        this.feed_icons = {};
         this.flags = {
             'favicons_fetching': false,
             'has_chosen_feeds': false
@@ -195,6 +197,43 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return theme;
     },
 
+    queue_read_time: function (story_hash, read_time_seconds) {
+        // Queue read time to be sent with the next mark-as-read API call
+        if (!('read_times' in this.queued_read_stories)) {
+            this.queued_read_stories['read_times'] = {};
+        }
+        // Accumulate read time in case the same story is queued multiple times
+        if (story_hash in this.queued_read_stories['read_times']) {
+            this.queued_read_stories['read_times'][story_hash] += read_time_seconds;
+        } else {
+            this.queued_read_stories['read_times'][story_hash] = read_time_seconds;
+        }
+    },
+
+    flush_read_times: function () {
+        // Send any queued read times to the server immediately (e.g., when switching feeds)
+        var self = this;
+        if (!NEWSBLUR.Globals.is_authenticated) return;
+        if (!this.queued_read_stories['read_times'] ||
+            _.isEmpty(this.queued_read_stories['read_times'])) return;
+
+        var data = {
+            read_times: JSON.stringify(this.queued_read_stories['read_times'])
+        };
+
+        // Clear read_times before sending to avoid duplicates
+        var read_times_to_send = this.queued_read_stories['read_times'];
+        this.queued_read_stories['read_times'] = {};
+
+        this.make_request('/reader/mark_story_hashes_as_read', data, null, function () {
+            // On error, restore queued read times to retry later
+            if (!self.queued_read_stories['read_times']) {
+                self.queued_read_stories['read_times'] = {};
+            }
+            _.extend(self.queued_read_stories['read_times'], read_times_to_send);
+        });
+    },
+
     mark_story_hash_as_read: function (story, callback, error_callback, data) {
         var self = this;
 
@@ -209,6 +248,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 data = _.extend({
                     story_hash: this.queued_read_stories['hashes']
                 }, data);
+
+                // Include read times for trending feeds feature
+                if (this.queued_read_stories['read_times'] &&
+                    !_.isEmpty(this.queued_read_stories['read_times'])) {
+                    data.read_times = JSON.stringify(this.queued_read_stories['read_times']);
+                }
 
                 this.make_request('/reader/mark_story_hashes_as_read', data, callback, error_callback, {
                     'ajax_group': 'queue_clear',
@@ -519,6 +564,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.searches_feeds.reset(subscriptions.saved_searches, { parse: true });
             self.social_services = subscriptions.social_services;
             self.dashboard_rivers.reset(subscriptions.dashboard_rivers);
+            self.folder_icons = subscriptions.folder_icons || {};
+            self.feed_icons = subscriptions.feed_icons || {};
 
             if (selected && self.feeds.get(selected)) {
                 self.feeds.get(selected).set('selected', true);
@@ -565,6 +612,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }));
         }
         this.make_request('/reader/favicons', data, pre_callback, pre_callback, { request_type: 'GET' });
+    },
+
+    fetch_trending_feeds: function (days, limit, callback, error_callback) {
+        this.make_request('/reader/trending_feeds', {
+            days: days || 7,
+            limit: limit || 50
+        }, callback, error_callback, { request_type: 'GET' });
     },
 
     load_feed: function (feed_id, page, first_load, callback, error_callback) {
@@ -1796,6 +1850,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
 
+    set_feed_mute: function (feed_id, mute, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/set_feed_mute', {
+                'feed_id': feed_id,
+                'mute': mute
+            }, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+
     set_notifications_for_feed: function (feed, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/notifications/feed/', {
@@ -1914,6 +1979,57 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.user_profile.set(response.user_profile);
             callback(response);
         }, this));
+    },
+
+    // ===================
+    // = Folder Icons =
+    // ===================
+
+    get_folder_icon: function (folder_title) {
+        return this.folder_icons[folder_title] || null;
+    },
+
+    save_folder_icon: function (folder_title, icon_type, icon_data, icon_color, icon_set, callback, error_callback) {
+        this.make_request('/reader/save_folder_icon', {
+            folder_title: folder_title,
+            icon_type: icon_type,
+            icon_data: icon_data,
+            icon_color: icon_color,
+            icon_set: icon_set || 'lucide'
+        }, _.bind(function (response) {
+            this.folder_icons = response.folder_icons || {};
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    remove_folder_icon: function (folder_title, callback, error_callback) {
+        this.save_folder_icon(folder_title, 'none', null, null, null, callback, error_callback);
+    },
+
+    // ===================
+    // = Feed Icons =
+    // ===================
+
+    get_feed_icon: function (feed_id) {
+        return this.feed_icons[feed_id] || null;
+    },
+
+    save_feed_icon: function (feed_id, icon_type, icon_data, icon_color, icon_set, callback, error_callback) {
+        var self = this;
+        this.make_request('/reader/save_feed_icon', {
+            feed_id: feed_id,
+            icon_type: icon_type,
+            icon_data: icon_data,
+            icon_color: icon_color,
+            icon_set: icon_set
+        }, function (response) {
+            self.feed_icons = response.feed_icons || {};
+            callback && callback(response);
+        }, error_callback);
+    },
+
+    remove_feed_icon: function (feed_id, callback, error_callback) {
+        this.save_feed_icon(feed_id, 'none', null, null, null, callback, error_callback);
     },
 
     save_dashboard_river: function (river_id, river_side, river_order, callback, error_callback) {
@@ -2047,6 +2163,24 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/profile/delete_starred_stories', {
             timestamp: timestamp
         }, pre_callback, error_callback);
+    },
+
+    count_saved_stories: function (timestamp, callback, error_callback) {
+        this.make_request('/profile/count_starred_stories', {
+            timestamp: timestamp
+        }, callback, error_callback);
+    },
+
+    count_shared_stories: function (timestamp, callback, error_callback) {
+        this.make_request('/profile/count_shared_stories', {
+            timestamp: timestamp
+        }, callback, error_callback);
+    },
+
+    delete_shared_stories: function (timestamp, callback, error_callback) {
+        this.make_request('/profile/delete_shared_stories', {
+            timestamp: timestamp
+        }, callback, error_callback);
     },
 
     delete_all_sites: function (callback, error_callback) {

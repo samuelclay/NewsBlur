@@ -107,21 +107,33 @@ worktree-stop:
 	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
 	echo "Stopping workspace: $$WORKSPACE_NAME"; \
 	if [ -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" ]; then \
-		docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" down --remove-orphans; \
-		echo "✓ Stopped containers for workspace: $$WORKSPACE_NAME"; \
-	else \
-		echo "No worktree configuration found"; \
-	fi
+		COMPOSE_PROJECT_NAME="$$WORKSPACE_NAME" docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" down --remove-orphans 2>/dev/null || true; \
+	fi; \
+	echo "Removing containers for workspace: $$WORKSPACE_NAME"; \
+	docker rm -f newsblur_web_$$WORKSPACE_NAME newsblur_node_$$WORKSPACE_NAME newsblur_celery_$$WORKSPACE_NAME newsblur_nginx_$$WORKSPACE_NAME newsblur_haproxy_$$WORKSPACE_NAME 2>/dev/null || true; \
+	echo "✓ Stopped containers for workspace: $$WORKSPACE_NAME"
 
-worktree-close: worktree-stop
+worktree-close:
 	@if [ -f ".git" ]; then \
 		echo "Detected git worktree"; \
+		WORKSPACE_NAME=$$(basename "$$(pwd)"); \
+		WORKTREE_PATH=$$(pwd); \
+		MAIN_REPO=$$(git rev-parse --git-common-dir | sed 's|/\.git$$||'); \
+		echo "Syncing permissions before cleanup..."; \
+		$(MAKE) worktree-permissions || true; \
+		echo "Stopping containers..."; \
+		$(MAKE) worktree-stop; \
 		if [ -z "$$(git status --porcelain)" ]; then \
-			WORKTREE_PATH=$$(pwd); \
-			cd ..; \
+			echo "Cleaning up config files..."; \
+			rm -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml"; \
+			rm -rf ".worktree/haproxy"; \
+			rmdir .worktree 2>/dev/null || true; \
+			echo "Removing files that may have root ownership..."; \
+			docker run --rm -v "$$WORKTREE_PATH:/workdir" alpine rm -rf /workdir/node /workdir/docker 2>/dev/null || rm -rf node docker 2>/dev/null || true; \
+			cd "$$MAIN_REPO"; \
 			echo "Removing worktree: $$WORKTREE_PATH"; \
-			git worktree remove "$$WORKTREE_PATH"; \
-			echo "✓ Removed worktree"; \
+			git worktree remove "$$WORKTREE_PATH" --force; \
+			echo "✓ Removed worktree. You are now in: $$MAIN_REPO"; \
 		else \
 			echo "⚠ Worktree has uncommitted changes. Commit or stash changes before closing."; \
 			git status --short; \
@@ -129,6 +141,71 @@ worktree-close: worktree-stop
 	else \
 		echo "Not in a worktree, keeping directory"; \
 	fi
+
+# Bidirectional Claude permissions sync (worktree ↔ parent)
+# Only syncs permissions.allow array, merges both directions
+worktree-permissions:
+	@if [ ! -f ".git" ]; then \
+		echo "Not in a worktree, skipping permission sync"; \
+		exit 0; \
+	fi; \
+	PARENT="../../.claude/settings.local.json"; \
+	LOCAL=".claude/settings.local.json"; \
+	mkdir -p .claude; \
+	if [ ! -f "$$PARENT" ] && [ ! -f "$$LOCAL" ]; then \
+		exit 0; \
+	fi; \
+	if [ -f "$$PARENT" ] && [ ! -f "$$LOCAL" ]; then \
+		cp "$$PARENT" "$$LOCAL"; \
+		echo "✓ Copied permissions from parent repo"; \
+		exit 0; \
+	fi; \
+	if [ ! -f "$$PARENT" ] && [ -f "$$LOCAL" ]; then \
+		exit 0; \
+	fi; \
+	PARENT_PERMS=$$(jq -r '.permissions.allow[]' "$$PARENT" 2>/dev/null | sort); \
+	LOCAL_PERMS=$$(jq -r '.permissions.allow[]' "$$LOCAL" 2>/dev/null | sort); \
+	NEW_IN_LOCAL=$$(echo "$$LOCAL_PERMS" | grep -vxF "$$PARENT_PERMS" 2>/dev/null || true); \
+	NEW_IN_PARENT=$$(echo "$$PARENT_PERMS" | grep -vxF "$$LOCAL_PERMS" 2>/dev/null || true); \
+	if [ -n "$$NEW_IN_PARENT" ]; then \
+		COUNT=$$(echo "$$NEW_IN_PARENT" | grep -c . || echo 0); \
+		echo "Syncing $$COUNT permission(s) from parent → worktree:"; \
+		echo "$$NEW_IN_PARENT" | while read perm; do [ -n "$$perm" ] && echo "  + $$perm"; done; \
+		MERGED=$$(jq -s '.[0].permissions.allow = (.[0].permissions.allow + .[1].permissions.allow | unique) | .[0]' "$$LOCAL" "$$PARENT"); \
+		echo "$$MERGED" > "$$LOCAL"; \
+	fi; \
+	if [ -n "$$NEW_IN_LOCAL" ]; then \
+		COUNT=$$(echo "$$NEW_IN_LOCAL" | grep -c . || echo 0); \
+		echo "Syncing $$COUNT permission(s) from worktree → parent:"; \
+		echo "$$NEW_IN_LOCAL" | while read perm; do [ -n "$$perm" ] && echo "  + $$perm"; done; \
+		MERGED=$$(jq -s '.[0].permissions.allow = (.[0].permissions.allow + .[1].permissions.allow | unique) | .[0]' "$$PARENT" "$$LOCAL"); \
+		echo "$$MERGED" > "$$PARENT"; \
+	fi; \
+	if [ -z "$$NEW_IN_LOCAL" ] && [ -z "$$NEW_IN_PARENT" ]; then \
+		echo "✓ Permissions already in sync"; \
+	else \
+		echo "✓ Permissions synced"; \
+	fi
+
+# Clean up orphaned worktree containers and directories
+# Run from main repo to remove artifacts from worktrees that no longer exist
+worktree-cleanup:
+	@echo "Cleaning up orphaned worktree artifacts..."
+	@# Stop and remove any containers from worktrees that no longer exist
+	@for name in $$(docker ps -a --format '{{.Names}}' | grep -E 'newsblur_(web|node|celery|nginx|haproxy)_' | sed 's/newsblur_[^_]*_//' | sort -u); do \
+		if [ ! -d ".worktree/$$name" ] || [ ! -f ".worktree/$$name/.git" ]; then \
+			echo "Removing orphaned containers for: $$name"; \
+			docker rm -f newsblur_web_$$name newsblur_node_$$name newsblur_celery_$$name newsblur_nginx_$$name newsblur_haproxy_$$name 2>/dev/null || true; \
+		fi; \
+	done
+	@# Clean up orphaned directories in .worktree that aren't valid git worktrees
+	@for dir in .worktree/*/; do \
+		if [ -d "$$dir" ] && [ ! -f "$${dir}.git" ]; then \
+			echo "Removing orphaned directory: $$dir"; \
+			docker run --rm -v "$$(pwd)/$$dir:/workdir" alpine rm -rf /workdir 2>/dev/null || rm -rf "$$dir" 2>/dev/null || true; \
+		fi; \
+	done
+	@echo "✓ Cleanup complete"
 
 coffee:
 	coffee -c -w **/*.coffee
@@ -191,9 +268,9 @@ jekyll:
 jekyll_drafts:
 	cd blog && JEKYLL_ENV=production bundle exec jekyll serve --drafts --config _config.yml
 lint:
-	docker exec -t newsblur_web isort --profile black --skip-glob '*.worktree/*' --skip-glob '*/archive/*' .
-	docker exec -t newsblur_web black --line-length 110 --exclude '\.worktree/.*|.*/archive/.*' .
-	docker exec -t newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv,apps/analyzer/archive,utils/archive,vendor,.worktree
+	docker exec -t newsblur_web isort --profile black --skip-glob '*.worktree/*' --skip-glob '*/archive/*' --skip-glob '.claude/*' .
+	docker exec -t newsblur_web black --line-length 110 --exclude '\.worktree/.*|.*/archive/.*|\.claude/.*' .
+	docker exec -t newsblur_web flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=venv,apps/analyzer/archive,utils/archive,vendor,.worktree,.claude
 	
 deps:
 	docker exec -t newsblur_web pip install -U uv
@@ -341,6 +418,9 @@ monitor: deploy_monitor
 deploy_staging:
 	ansible-playbook ansible/deploy.yml -l staging
 staging: deploy_staging
+deploy_blog:
+	ansible-playbook ansible/deploy.yml -l blogs
+blog: deploy_blog
 deploy_staging_static: staging_static
 staging_static:
 	ansible-playbook ansible/deploy.yml -l staging --tags static

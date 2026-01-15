@@ -9,11 +9,18 @@ from django.contrib.auth.models import User
 from apps.rss_feeds.models import MStory
 from newsblur_web.celeryapp import app
 from utils import log as logging
+from utils.llm_costs import LLMCostTracker
 from utils.story_functions import html_to_text
 
 from .models import MAskAIResponse
 from .prompts import get_full_prompt
-from .providers import DEFAULT_MODEL, LLM_EXCEPTIONS, MODELS, get_provider
+from .providers import (
+    DEFAULT_MODEL,
+    LLM_EXCEPTIONS,
+    MODEL_VENDORS,
+    MODELS,
+    get_provider,
+)
 from .usage import AskAIUsageTracker
 
 
@@ -173,6 +180,19 @@ def AskAIQuestion(
                 logging.user(user, f"~BB~FGAsk AI: First chunk to Redis channel ~SB'{username}'~SN")
 
         full_response_text = "".join(full_response)
+
+        # Record LLM cost
+        input_tokens, output_tokens = provider.get_last_usage()
+        LLMCostTracker.record_usage(
+            provider=MODEL_VENDORS.get(model_name, "unknown"),
+            model=model_id,
+            feature="ask_ai",
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            user_id=user_id,
+            request_id=request_token,
+            metadata={"question_id": question_id, "story_hash": story_hash},
+        )
 
         # Record usage for live responses
         tracker = AskAIUsageTracker(user)
