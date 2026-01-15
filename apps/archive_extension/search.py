@@ -116,7 +116,10 @@ class SearchArchive:
             logging.debug(f" ***> ~FRNo search server available for creating archive mapping: {e}")
             return
 
-        cls.ES().indices.flush(cls.index_name())
+        try:
+            cls.ES().indices.flush(cls.index_name())
+        except (elasticsearch.exceptions.NotFoundError, elasticsearch.exceptions.ConnectionError):
+            pass
 
     @classmethod
     def index(
@@ -257,7 +260,7 @@ class SearchArchive:
         """
         try:
             cls.ES().indices.flush(cls.index_name())
-        except elasticsearch.exceptions.NotFoundError as e:
+        except (elasticsearch.exceptions.NotFoundError, elasticsearch.exceptions.ConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available: {e}")
             return []
 
@@ -355,7 +358,7 @@ class SearchArchive:
         """
         try:
             cls.ES().indices.flush(cls.index_name())
-        except elasticsearch.exceptions.NotFoundError as e:
+        except (elasticsearch.exceptions.NotFoundError, elasticsearch.exceptions.ConnectionError) as e:
             logging.debug(f" ***> ~FRNo search server available: {e}")
             return []
 
