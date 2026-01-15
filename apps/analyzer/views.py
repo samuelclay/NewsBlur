@@ -151,6 +151,165 @@ def get_classifiers_feed(request, feed_id):
     return response
 
 
+@require_POST
+@ajax_login_required
+@json.json_view
+def save_all_classifiers(request):
+    """
+    Bulk save classifiers for multiple feeds in a single request.
+    Expects JSON body with format:
+    {
+        "classifiers": {
+            "feed_id": {
+                "like_author": ["author1", "author2"],
+                "dislike_tag": ["tag1"],
+                "remove_like_title": ["title1"],
+                ...
+            },
+            ...
+        }
+    }
+    """
+    try:
+        body = json.decode(request.body)
+    except (ValueError, TypeError):
+        return {"code": -1, "message": "Invalid JSON"}
+
+    classifiers_by_feed = body.get("classifiers", {})
+    if not classifiers_by_feed:
+        return {"code": 0, "message": "No classifiers to save"}
+
+    logging.user(request, "~FGBulk saving classifiers for ~SB%s~SN feeds" % len(classifiers_by_feed))
+
+    feeds_updated = []
+
+    for feed_id_str, classifier_data in classifiers_by_feed.items():
+        feed_id = None
+        social_user_id = None
+
+        if feed_id_str.startswith("social:"):
+            social_user_id = int(feed_id_str.replace("social:", ""))
+        else:
+            feed_id = int(feed_id_str)
+
+        # Mark subscription as dirty for unread recalc
+        if social_user_id:
+            try:
+                socialsub = MSocialSubscription.objects.get(
+                    user_id=request.user.pk, subscription_user_id=social_user_id
+                )
+                if not socialsub.needs_unread_recalc:
+                    socialsub.needs_unread_recalc = True
+                    socialsub.save()
+            except MSocialSubscription.DoesNotExist:
+                pass
+        else:
+            try:
+                usersub = UserSubscription.objects.get(user=request.user, feed_id=feed_id)
+                if not usersub.needs_unread_recalc or not usersub.is_trained:
+                    usersub.needs_unread_recalc = True
+                    usersub.is_trained = True
+                    usersub.save()
+            except UserSubscription.DoesNotExist:
+                pass
+
+        # Process each classifier type
+        _save_classifiers_for_feed(
+            request.user.pk, feed_id, social_user_id, classifier_data
+        )
+        feeds_updated.append(feed_id_str)
+
+    # Publish update notification
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, "feed:%s" % ",".join(map(str, feeds_updated)))
+
+    return {"code": 0, "message": "OK", "feeds_updated": feeds_updated}
+
+
+def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data):
+    """
+    Helper function to save classifiers for a single feed.
+    classifier_data is a dict like:
+    {
+        "like_author": ["author1"],
+        "dislike_tag": ["tag1"],
+        ...
+    }
+    """
+    classifier_types = {
+        "author": MClassifierAuthor,
+        "tag": MClassifierTag,
+        "title": MClassifierTitle,
+        "text": MClassifierText,
+        "feed": MClassifierFeed,
+    }
+
+    classifiers_config = {
+        "like_": 1,
+        "dislike_": -1,
+        "remove_like_": 0,
+        "remove_dislike_": 0,
+    }
+
+    for content_type, ClassifierCls in classifier_types.items():
+        for prefix, score in classifiers_config.items():
+            key = prefix + content_type
+            if key not in classifier_data:
+                continue
+
+            values = classifier_data[key]
+            if not isinstance(values, list):
+                values = [values]
+
+            for value in values:
+                if not value:
+                    continue
+
+                classifier_dict = {
+                    "user_id": user_id,
+                    "feed_id": feed_id or 0,
+                    "social_user_id": social_user_id or 0,
+                }
+
+                if content_type in ("author", "tag", "title", "text"):
+                    max_length = ClassifierCls._fields[content_type].max_length
+                    classifier_dict[content_type] = value[:max_length]
+                elif content_type == "feed":
+                    if not str(value).startswith("social:"):
+                        try:
+                            classifier_dict["feed_id"] = int(value)
+                        except (ValueError, TypeError):
+                            # Skip invalid feed IDs
+                            continue
+
+                try:
+                    classifier = ClassifierCls.objects.get(**classifier_dict)
+                except ClassifierCls.DoesNotExist:
+                    classifier = None
+                except ClassifierCls.MultipleObjectsReturned:
+                    classifiers = ClassifierCls.objects.filter(**classifier_dict)
+                    first_classifier = classifiers[0]
+                    first_classifier.score = score
+                    first_classifier.save()
+                    for dup in classifiers[1:]:
+                        dup.delete()
+                        break
+                    continue
+
+                if not classifier:
+                    if score != 0:
+                        try:
+                            classifier_dict["score"] = score
+                            ClassifierCls.objects.create(**classifier_dict)
+                        except NotUniqueError:
+                            pass
+                elif score == 0:
+                    classifier.delete()
+                elif classifier.score != score:
+                    classifier.score = score
+                    classifier.save()
+
+
 def popularity_query(request):
     if request.method == "POST":
         form = PopularityQueryForm(request.POST)

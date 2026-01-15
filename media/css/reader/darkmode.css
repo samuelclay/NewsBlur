@@ -3105,3 +3105,53 @@ a.mention, a.mention-group {
     background: #444;
     border-color: #666;
 }
+
+/* ============================== */
+/* = Manage Training Tab Styles = */
+/* ============================== */
+
+.NB-dark .NB-manage-folder-title {
+    background-color: #2a2a2a;
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-manage-feed {
+    border-left-color: #404040;
+}
+
+.NB-dark .NB-manage-feed-title {
+    color: #d0d0d0;
+}
+
+.NB-dark .NB-manage-training-empty-icon {
+    filter: invert(1);
+    opacity: 0.4;
+}
+
+.NB-dark .NB-manage-training-empty-message h3 {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-manage-training-empty-message p {
+    color: #909090;
+}
+
+.NB-dark .NB-manage-loading-text {
+    color: #909090;
+}
+
+.NB-dark .NB-manage-training-error h3 {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-manage-training-error p {
+    color: #909090;
+}
+
+.NB-dark .NB-manage-saved-message {
+    color: #6ab04c;
+}
+
+.NB-dark .NB-manage-training-error-icon {
+    filter: invert(1);
+}
