@@ -981,6 +981,19 @@
     NSInteger currentPageIndex = currentPage.pageIndex;
     CGSize size = self.scrollView.frame.size;
     CGPoint offset = self.scrollView.contentOffset;
+    if (self.isHorizontal) {
+        CGFloat lockedY = -self.scrollView.adjustedContentInset.top;
+        if (fabs(offset.y - lockedY) > 0.5) {
+            offset.y = lockedY;
+            self.scrollView.contentOffset = CGPointMake(offset.x, offset.y);
+        }
+    } else {
+        CGFloat lockedX = -self.scrollView.adjustedContentInset.left;
+        if (fabs(offset.x - lockedX) > 0.5) {
+            offset.x = lockedX;
+            self.scrollView.contentOffset = CGPointMake(offset.x, offset.y);
+        }
+    }
     CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
     float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
 	
@@ -1059,6 +1072,37 @@
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     self.isDraggingScrollview = YES;
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint *)targetContentOffset {
+    if (scrollView != self.scrollView || inRotation) {
+        return;
+    }
+
+    NSInteger storyCount = appDelegate.storiesCollection.storyLocationsCount;
+    if (storyCount == 0) {
+        storyCount = 1;
+    }
+
+    CGFloat pageAmount = self.isHorizontal ? scrollView.bounds.size.width : scrollView.bounds.size.height;
+    if (pageAmount <= 0) {
+        return;
+    }
+
+    CGFloat rawOffset = self.isHorizontal ? targetContentOffset->x : targetContentOffset->y;
+    NSInteger nearestNumber = lround(rawOffset / pageAmount);
+    nearestNumber = MAX(0, MIN(storyCount - 1, nearestNumber));
+    CGFloat targetOffset = pageAmount * nearestNumber;
+
+    if (self.isHorizontal) {
+        targetContentOffset->x = targetOffset;
+        targetContentOffset->y = -scrollView.adjustedContentInset.top;
+    } else {
+        targetContentOffset->y = targetOffset;
+        targetContentOffset->x = -scrollView.adjustedContentInset.left;
+    }
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView
