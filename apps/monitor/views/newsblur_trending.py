@@ -24,8 +24,9 @@ class TrendingFeeds(View):
 
         Metrics exported:
         - Aggregate totals (total seconds, story/feed reads, unique counts)
-        - Top 5 stories with full details (for Grafana table)
-        - Top 10 feeds by read time
+        - Top 20 stories with full details (for Grafana table)
+        - Top 20 feeds by read time
+        - Top 20 long reads (stories with ≥3 readers, by avg read time)
         - Read time distribution buckets
         """
         start_time = time.time()
@@ -86,7 +87,7 @@ class TrendingFeeds(View):
 
         # Top stories for both 1-day and 7-day windows
         for days in [1, 7]:
-            top_stories = RTrendingStory.get_trending_stories_detailed(days=days, limit=5)
+            top_stories = RTrendingStory.get_trending_stories_detailed(days=days, limit=20)
 
             if top_stories:
                 # Get story hashes to look up details
@@ -139,7 +140,7 @@ class TrendingFeeds(View):
 
         # Top feeds for both 1-day and 7-day windows
         for days in [1, 7]:
-            top_feeds = RTrendingStory.get_trending_feeds_detailed(days=days, limit=10)
+            top_feeds = RTrendingStory.get_trending_feeds_detailed(days=days, limit=20)
 
             if top_feeds:
                 feed_ids = [f["feed_id"] for f in top_feeds]
@@ -163,7 +164,7 @@ class TrendingFeeds(View):
 
         # Long Reads (stories with ≥3 readers, sorted by avg read time)
         for days in [1, 7]:
-            long_reads = RTrendingStory.get_long_reads(days=days, limit=5, min_readers=3)
+            long_reads = RTrendingStory.get_long_reads(days=days, limit=20, min_readers=3)
 
             if long_reads:
                 story_hashes = [s["story_hash"] for s in long_reads]
