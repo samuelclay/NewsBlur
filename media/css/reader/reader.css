@@ -21624,6 +21624,521 @@ form.opml_import_form input {
     width: 100%;
 }
 
+/* Settings Tab */
+.NB-archive-settings-tab {
+    display: none;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.NB-archive-settings-tab.NB-active {
+    display: block;
+}
+
+.NB-archive-settings-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 32px 48px;
+}
+
+.NB-archive-settings-loading,
+.NB-archive-settings-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    text-align: center;
+    color: #666;
+}
+
+.NB-settings-empty-icon {
+    width: 64px;
+    height: 64px;
+    opacity: 0.4;
+    margin-bottom: 16px;
+}
+
+.NB-settings-empty-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.NB-settings-empty-subtitle {
+    font-size: 14px;
+    color: #888;
+}
+
+.NB-archive-settings-header {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.NB-archive-settings-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.NB-archive-settings-desc {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.NB-archive-settings-section {
+    margin-bottom: 32px;
+    padding: 24px;
+    background: #FAFAFA;
+    border-radius: 12px;
+    border: 1px solid #E8E8E8;
+}
+
+.NB-archive-settings-section-header {
+    margin-bottom: 16px;
+}
+
+.NB-archive-settings-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 4px 0;
+}
+
+.NB-archive-settings-section-desc {
+    font-size: 13px;
+    color: #888;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.NB-blocklist-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+    min-height: 40px;
+}
+
+.NB-blocklist-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px 6px 12px;
+    background: #FFF;
+    border: 1px solid #DDD;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #333;
+    transition: all 0.15s ease;
+}
+
+.NB-blocklist-item:hover {
+    border-color: #C33;
+    background: #FFF5F5;
+}
+
+.NB-blocklist-item-text {
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-blocklist-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: all 0.15s ease;
+}
+
+.NB-blocklist-remove:hover {
+    opacity: 1;
+    background: #FEE;
+}
+
+.NB-blocklist-remove-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.NB-blocklist-empty {
+    color: #AAA;
+    font-size: 13px;
+    font-style: italic;
+    padding: 8px 0;
+}
+
+.NB-blocklist-add-row {
+    display: flex;
+    gap: 8px;
+}
+
+.NB-blocklist-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #DDD;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.15s ease;
+}
+
+.NB-blocklist-input:focus {
+    outline: none;
+    border-color: #5C89C9;
+    box-shadow: 0 0 0 3px rgba(92, 137, 201, 0.15);
+}
+
+.NB-blocklist-input.NB-error {
+    border-color: #C33;
+    background: #FFF5F5;
+    animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+.NB-blocklist-add-btn {
+    padding: 10px 20px;
+    background: #5C89C9;
+    color: #FFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.NB-blocklist-add-btn:hover {
+    background: #4A77B7;
+}
+
+.NB-blocklist-add-btn:active {
+    transform: scale(0.98);
+}
+
+/* Default blocklist section (read-only) */
+.NB-default-blocklist-section {
+    background: #F5F5F5;
+    border-color: #E0E0E0;
+}
+
+.NB-default-blocklist-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.NB-default-blocklist-item {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #E8E8E8;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #666;
+}
+
+.NB-default-blocklist-count {
+    font-size: 13px;
+    font-weight: 400;
+    color: #888;
+}
+
+/* Save button area */
+.NB-archive-settings-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 24px;
+    margin-top: 16px;
+    border-top: 1px solid #E0E0E0;
+}
+
+.NB-blocklist-save {
+    padding: 12px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.NB-blocklist-save.NB-disabled {
+    background: #E0E0E0;
+    color: #999;
+    cursor: default;
+}
+
+.NB-blocklist-save.NB-success {
+    background: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.NB-blocklist-save.NB-error {
+    background: #E53935;
+    border-color: #E53935;
+}
+
+/* Domain Browser Section */
+.NB-domain-browser-section {
+    margin-top: 24px;
+}
+
+.NB-domain-browser-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+}
+
+.NB-domain-browser-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.NB-domain-browser-item:last-child {
+    border-bottom: none;
+}
+
+.NB-domain-browser-item:hover {
+    background: #F5F5F5;
+}
+
+.NB-domain-browser-item.NB-blocked {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.NB-domain-browser-item.NB-blocked:hover {
+    background: transparent;
+}
+
+.NB-domain-browser-favicon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.NB-domain-browser-favicon img {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.NB-domain-browser-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-domain-browser-count {
+    font-size: 12px;
+    color: #888;
+    flex-shrink: 0;
+}
+
+.NB-domain-browser-action {
+    font-size: 12px;
+    color: #4A90D9;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.NB-domain-browser-item:hover .NB-domain-browser-action {
+    opacity: 1;
+}
+
+.NB-domain-browser-status.NB-blocked-status {
+    font-size: 11px;
+    color: #fff;
+    background: #999;
+    padding: 2px 8px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.NB-domain-browser-empty {
+    padding: 24px;
+    text-align: center;
+    color: #888;
+    font-style: italic;
+}
+
+.NB-domain-browser-count-total {
+    font-size: 13px;
+    font-weight: 400;
+    color: #888;
+}
+
+/* Block Domain Dialog */
+.NB-block-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.NB-block-dialog-overlay.NB-visible {
+    opacity: 1;
+}
+
+.NB-block-dialog {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    width: 420px;
+    max-width: 90vw;
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+}
+
+.NB-block-dialog-overlay.NB-visible .NB-block-dialog {
+    transform: scale(1);
+}
+
+.NB-block-dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 24px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.NB-block-dialog-favicon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+}
+
+.NB-block-dialog-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.NB-block-dialog-body {
+    padding: 20px 24px;
+}
+
+.NB-block-dialog-message {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+    margin: 0 0 16px 0;
+}
+
+.NB-block-dialog-option {
+    background: #F8F8F8;
+    border-radius: 8px;
+    padding: 12px 16px;
+}
+
+.NB-block-dialog-checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #444;
+}
+
+.NB-block-dialog-checkbox-label input[type="checkbox"] {
+    margin-top: 2px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.NB-block-dialog-checkbox-text {
+    flex: 1;
+}
+
+.NB-block-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #E0E0E0;
+}
+
+.NB-block-dialog-cancel {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    background: transparent;
+    border: 1px solid #DDD;
+    border-radius: 6px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.NB-block-dialog-cancel:hover {
+    background: #F5F5F5;
+    border-color: #CCC;
+}
+
+.NB-block-dialog-confirm {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    background: #E53935;
+    border: 1px solid #E53935;
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.NB-block-dialog-confirm:hover {
+    background: #C62828;
+    border-color: #C62828;
+}
+
+.NB-block-dialog-confirm:disabled {
+    background: #999;
+    border-color: #999;
+    cursor: default;
+}
+
 /* ==================
    Conversation History Sidebar (Right Side)
    ================== */
@@ -22372,7 +22887,8 @@ form.opml_import_form input {
 }
 
 .NB-archive-category-filter,
-.NB-archive-domain-filter {
+.NB-archive-domain-filter,
+.NB-archive-date-filter {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -22383,12 +22899,17 @@ form.opml_import_form input {
 }
 
 .NB-archive-category-filter:hover,
-.NB-archive-domain-filter:hover {
+.NB-archive-domain-filter:hover,
+.NB-archive-date-filter:hover {
     background: #E8E8E8;
 }
 
 .NB-archive-category-filter.NB-active,
-.NB-archive-domain-filter.NB-active {
+.NB-archive-domain-filter.NB-active,
+.NB-archive-date-filter.NB-active,
+.NB-archive-category-filter.NB-active:hover,
+.NB-archive-domain-filter.NB-active:hover,
+.NB-archive-date-filter.NB-active:hover {
     background: #5C89C9;
     color: #FFF;
 }
@@ -22413,6 +22934,284 @@ form.opml_import_form input {
 .NB-archive-domain-filter.NB-active .NB-archive-filter-count {
     background: rgba(255,255,255,0.2);
     color: #FFF;
+}
+
+/* Date Picker Toggle */
+.NB-archive-date-picker-toggle {
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+    padding: 4px;
+}
+
+.NB-archive-date-picker-toggle:hover {
+    opacity: 1;
+}
+
+.NB-date-picker-icon {
+    width: 16px;
+    height: 16px;
+    filter: brightness(0) saturate(100%) invert(51%) sepia(9%) saturate(8%) hue-rotate(8deg) brightness(96%) contrast(88%);
+}
+
+.NB-archive-date-picker-toggle:hover .NB-date-picker-icon {
+    filter: brightness(0) saturate(100%) invert(44%) sepia(52%) saturate(485%) hue-rotate(175deg) brightness(90%) contrast(92%);
+}
+
+/* Date Picker Popover */
+.NB-date-picker-popover {
+    display: none;
+    position: absolute;
+    top: 28px;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: #FFF;
+    border: 1px solid #DDD;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    padding: 16px;
+}
+
+.NB-date-picker-popover.NB-active {
+    display: block;
+}
+
+.NB-date-picker-relative-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 12px;
+}
+
+.NB-date-picker-relative-dates .NB-archive-date-filter {
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+.NB-date-picker-divider {
+    height: 1px;
+    background: #E0E0E0;
+    margin: 8px 0 12px;
+}
+
+.NB-date-picker-custom-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.NB-archive-filter-section {
+    position: relative;
+}
+
+/* Custom date filter in list */
+.NB-archive-date-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.NB-archive-date-custom-clear {
+    font-size: 14px;
+    color: #888;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.NB-archive-date-custom-clear:hover {
+    color: #c00;
+}
+
+.NB-archive-date-custom.NB-active .NB-archive-date-custom-clear {
+    color: rgba(255,255,255,0.6);
+}
+
+.NB-archive-date-custom.NB-active .NB-archive-date-custom-clear:hover {
+    color: #FFF;
+}
+
+/* Date picker popover title */
+.NB-date-picker-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 14px;
+}
+
+.NB-date-picker-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.NB-date-picker-label {
+    font-size: 12px;
+    color: #666;
+    width: 40px;
+    flex-shrink: 0;
+}
+
+.NB-date-picker-input {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid #DDD;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #333;
+}
+
+.NB-date-picker-input:focus {
+    outline: none;
+    border-color: #5C89C9;
+}
+
+.NB-date-picker-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #EEE;
+}
+
+.NB-date-picker-clear,
+.NB-date-picker-apply {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.NB-date-picker-clear {
+    background: #F0F0F0;
+    color: #666;
+}
+
+.NB-date-picker-clear:hover {
+    background: #E0E0E0;
+}
+
+.NB-date-picker-apply {
+    background: #5C89C9;
+    color: #FFF;
+}
+
+.NB-date-picker-apply:hover {
+    background: #4A77B7;
+}
+
+/* Custom Date Display */
+.NB-custom-date-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    background: #5C89C9;
+    color: #FFF;
+    border-radius: 6px;
+}
+
+.NB-custom-date-range {
+    font-size: 13px;
+}
+
+.NB-custom-date-clear {
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.15s ease;
+}
+
+.NB-custom-date-clear:hover {
+    opacity: 1;
+}
+
+/* No Results State */
+.NB-archive-no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    text-align: center;
+}
+
+.NB-no-results-icon {
+    margin-bottom: 20px;
+}
+
+.NB-no-results-img {
+    width: 64px;
+    height: 64px;
+    opacity: 0.4;
+}
+
+.NB-no-results-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.NB-no-results-subtitle {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 24px;
+}
+
+.NB-filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.NB-filter-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: #F0F0F0;
+    border-radius: 16px;
+    font-size: 13px;
+    color: #555;
+}
+
+.NB-filter-chip-remove {
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    color: #888;
+    transition: color 0.15s ease;
+}
+
+.NB-filter-chip-remove:hover {
+    color: #C00;
+}
+
+.NB-clear-all-filters {
+    padding: 10px 20px;
+    background: #5C89C9;
+    color: #FFF;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.NB-clear-all-filters:hover {
+    background: #4A77B7;
 }
 
 /* Archive Browser Content */
@@ -24699,13 +25498,116 @@ button.NB-merge-group-apply.NB-button:hover {
 }
 
 .NB-dark .NB-archive-category-filter:hover,
-.NB-dark .NB-archive-domain-filter:hover {
+.NB-dark .NB-archive-domain-filter:hover,
+.NB-dark .NB-archive-date-filter:hover {
     background: #333;
+}
+
+.NB-dark .NB-archive-category-filter.NB-active,
+.NB-dark .NB-archive-domain-filter.NB-active,
+.NB-dark .NB-archive-date-filter.NB-active,
+.NB-dark .NB-archive-category-filter.NB-active:hover,
+.NB-dark .NB-archive-domain-filter.NB-active:hover,
+.NB-dark .NB-archive-date-filter.NB-active:hover {
+    background: #5C89C9;
+    color: #FFF;
 }
 
 .NB-dark .NB-archive-filter-count {
     background: #333;
     color: #AAA;
+}
+
+/* Dark mode: Custom date filter */
+.NB-dark .NB-archive-date-custom-clear {
+    color: #666;
+}
+
+.NB-dark .NB-archive-date-custom-clear:hover {
+    color: #f66;
+}
+
+/* Dark mode: Date picker */
+.NB-dark .NB-date-picker-popover {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+.NB-dark .NB-date-picker-title {
+    color: #DDD;
+}
+
+.NB-dark .NB-date-picker-divider {
+    background: #444;
+}
+
+.NB-dark .NB-date-picker-custom-label {
+    color: #777;
+}
+
+.NB-dark .NB-date-picker-label {
+    color: #999;
+}
+
+.NB-dark .NB-date-picker-input {
+    background: #333;
+    border-color: #444;
+    color: #DDD;
+}
+
+.NB-dark .NB-date-picker-input:focus {
+    border-color: #5C89C9;
+}
+
+.NB-dark .NB-date-picker-actions {
+    border-color: #444;
+}
+
+.NB-dark .NB-date-picker-clear {
+    background: #444;
+    color: #AAA;
+}
+
+.NB-dark .NB-date-picker-clear:hover {
+    background: #555;
+}
+
+/* Dark mode: No results state */
+.NB-dark .NB-no-results-title {
+    color: #DDD;
+}
+
+.NB-dark .NB-no-results-subtitle {
+    color: #888;
+}
+
+.NB-dark .NB-no-results-img {
+    filter: invert(1);
+    opacity: 0.3;
+}
+
+.NB-dark .NB-filter-chip {
+    background: #333;
+    color: #AAA;
+}
+
+.NB-dark .NB-filter-chip-remove {
+    color: #777;
+}
+
+.NB-dark .NB-filter-chip-remove:hover {
+    color: #F88;
+}
+
+/* Dark mode: Icon filters for sidebar buttons */
+.NB-dark .NB-manage-icon,
+.NB-dark .NB-date-picker-icon {
+    filter: brightness(0) invert(0.6);
+}
+
+.NB-dark .NB-archive-manage-categories:hover .NB-manage-icon,
+.NB-dark .NB-archive-date-picker-toggle:hover .NB-date-picker-icon {
+    filter: brightness(0) invert(0.8);
 }
 
 .NB-dark .NB-archive-item {
@@ -24791,6 +25693,191 @@ button.NB-merge-group-apply.NB-button:hover {
 .NB-dark .NB-archive-item-title mark {
     background: #5C4800;
     color: #FFE082;
+}
+
+/* Dark Mode - Settings Tab */
+.NB-dark .NB-settings-empty-title {
+    color: #CCC;
+}
+
+.NB-dark .NB-settings-empty-subtitle {
+    color: #777;
+}
+
+.NB-dark .NB-settings-empty-icon {
+    filter: invert(0.6);
+}
+
+.NB-dark .NB-archive-settings-header {
+    border-color: #333;
+}
+
+.NB-dark .NB-archive-settings-title {
+    color: #DDD;
+}
+
+.NB-dark .NB-archive-settings-desc {
+    color: #999;
+}
+
+.NB-dark .NB-archive-settings-section {
+    background: #252525;
+    border-color: #333;
+}
+
+.NB-dark .NB-archive-settings-section-title {
+    color: #CCC;
+}
+
+.NB-dark .NB-archive-settings-section-desc {
+    color: #777;
+}
+
+.NB-dark .NB-blocklist-item {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #CCC;
+}
+
+.NB-dark .NB-blocklist-item:hover {
+    border-color: #C44;
+    background: #3a2525;
+}
+
+.NB-dark .NB-blocklist-remove:hover {
+    background: #4a2a2a;
+}
+
+.NB-dark .NB-blocklist-remove-icon {
+    filter: invert(0.6);
+}
+
+.NB-dark .NB-blocklist-empty {
+    color: #666;
+}
+
+.NB-dark .NB-blocklist-input {
+    background: #1a1a1a;
+    border-color: #444;
+    color: #DDD;
+}
+
+.NB-dark .NB-blocklist-input:focus {
+    border-color: #5C89C9;
+    box-shadow: 0 0 0 3px rgba(92, 137, 201, 0.25);
+}
+
+.NB-dark .NB-blocklist-input::placeholder {
+    color: #666;
+}
+
+.NB-dark .NB-default-blocklist-section {
+    background: #1e1e1e;
+    border-color: #333;
+}
+
+.NB-dark .NB-default-blocklist-item {
+    background: #333;
+    color: #999;
+}
+
+.NB-dark .NB-default-blocklist-count {
+    color: #666;
+}
+
+.NB-dark .NB-archive-settings-actions {
+    border-color: #333;
+}
+
+.NB-dark .NB-blocklist-save.NB-disabled {
+    background: #333;
+    color: #666;
+}
+
+/* Dark mode: Domain Browser */
+.NB-dark .NB-domain-browser-list {
+    border-color: #333;
+}
+
+.NB-dark .NB-domain-browser-item {
+    border-color: #333;
+}
+
+.NB-dark .NB-domain-browser-item:hover {
+    background: #2a2a2a;
+}
+
+.NB-dark .NB-domain-browser-item.NB-blocked:hover {
+    background: transparent;
+}
+
+.NB-dark .NB-domain-browser-name {
+    color: #DDD;
+}
+
+.NB-dark .NB-domain-browser-count {
+    color: #888;
+}
+
+.NB-dark .NB-domain-browser-action {
+    color: #5C89C9;
+}
+
+.NB-dark .NB-domain-browser-status.NB-blocked-status {
+    background: #555;
+}
+
+.NB-dark .NB-domain-browser-empty {
+    color: #666;
+}
+
+.NB-dark .NB-domain-browser-count-total {
+    color: #666;
+}
+
+/* Dark mode: Block Dialog */
+.NB-dark .NB-block-dialog-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.NB-dark .NB-block-dialog {
+    background: #2a2a2a;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-block-dialog-header {
+    border-color: #444;
+}
+
+.NB-dark .NB-block-dialog-title {
+    color: #DDD;
+}
+
+.NB-dark .NB-block-dialog-message {
+    color: #999;
+}
+
+.NB-dark .NB-block-dialog-option {
+    background: #333;
+}
+
+.NB-dark .NB-block-dialog-checkbox-label {
+    color: #CCC;
+}
+
+.NB-dark .NB-block-dialog-actions {
+    border-color: #444;
+}
+
+.NB-dark .NB-block-dialog-cancel {
+    background: #333;
+    border-color: #444;
+    color: #AAA;
+}
+
+.NB-dark .NB-block-dialog-cancel:hover {
+    background: #444;
+    border-color: #555;
 }
 
 /* Mobile - Conversation Sidebar */
