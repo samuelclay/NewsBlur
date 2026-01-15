@@ -2133,23 +2133,38 @@ def load_river_stories_widget(request):
 
         # Ensure URL is properly encoded for non-ASCII characters and spaces
         parsed = urllib.parse.urlsplit(url)
+        needs_path_encoding = False
+        needs_query_encoding = False
+
         if parsed.path:
-            needs_encoding = False
             try:
                 # Check if path can be encoded as ASCII
                 parsed.path.encode("ascii")
                 # Also check for spaces which are valid ASCII but invalid in URLs
                 if " " in parsed.path:
-                    needs_encoding = True
+                    needs_path_encoding = True
             except UnicodeEncodeError:
-                needs_encoding = True
+                needs_path_encoding = True
 
-            if needs_encoding:
-                # Path contains characters that need encoding
+        if parsed.query:
+            # Check for spaces in query string (e.g., malformed srcset URLs like "w=16 16w")
+            if " " in parsed.query:
+                needs_query_encoding = True
+
+        if needs_path_encoding or needs_query_encoding:
+            encoded_path = parsed.path
+            encoded_query = parsed.query
+
+            if needs_path_encoding:
                 encoded_path = urllib.parse.quote(parsed.path, safe="/:@!$&'()*+,;=")
-                url = urllib.parse.urlunsplit(
-                    (parsed.scheme, parsed.netloc, encoded_path, parsed.query, parsed.fragment)
-                )
+
+            if needs_query_encoding:
+                # Encode spaces in query string
+                encoded_query = parsed.query.replace(" ", "%20")
+
+            url = urllib.parse.urlunsplit(
+                (parsed.scheme, parsed.netloc, encoded_path, encoded_query, parsed.fragment)
+            )
 
         scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
         scontext.verify_mode = ssl.VerifyMode.CERT_NONE
@@ -2163,7 +2178,12 @@ def load_river_stories_widget(request):
             url = url.replace("localhost", "haproxy")
             try:
                 conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
-            except (urllib.error.HTTPError, urllib.error.URLError, socket.timeout) as e:
+            except (
+                urllib.error.HTTPError,
+                urllib.error.URLError,
+                socket.timeout,
+                http.client.InvalidURL,
+            ) as e:
                 logging.user(
                     request.user, '~FB"%s" ~FRnot fetched~FB in %ss: ~SB%s' % (url, (time.time() - start), e)
                 )
