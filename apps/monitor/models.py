@@ -25,7 +25,9 @@ class MLLMCost(mongo.Document):
     model = mongo.StringField(required=True)  # claude-sonnet-4-5, gpt-5.2, etc.
 
     # Feature identification
-    feature = mongo.StringField(required=True)  # archive_assistant, ask_ai, story_classification, transcription
+    feature = mongo.StringField(
+        required=True
+    )  # archive_assistant, ask_ai, story_classification, transcription
 
     # Token counts
     input_tokens = mongo.IntField(default=0)

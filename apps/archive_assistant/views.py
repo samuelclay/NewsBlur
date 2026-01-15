@@ -12,7 +12,11 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from apps.archive_assistant.models import MArchiveConversation, MArchiveQuery, MArchiveAssistantUsage
+from apps.archive_assistant.models import (
+    MArchiveAssistantUsage,
+    MArchiveConversation,
+    MArchiveQuery,
+)
 from apps.archive_assistant.prompts import get_suggested_questions
 from apps.archive_assistant.tasks import process_archive_query
 from apps.archive_extension.models import MArchivedStory

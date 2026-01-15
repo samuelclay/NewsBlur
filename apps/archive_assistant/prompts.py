@@ -83,6 +83,7 @@ def get_system_prompt():
     current_date = datetime.now().strftime("%A, %B %d, %Y")
     return ARCHIVE_ASSISTANT_SYSTEM_PROMPT.format(current_date=current_date)
 
+
 SUGGESTED_QUESTIONS = [
     # Discovery & Overview
     "What topics have I been researching lately?",
@@ -138,19 +139,35 @@ def get_suggested_questions(categories=None, recent_domains=None):
 
     # Domain-based suggestions
     if recent_domains:
-        news_domains = [d for d in recent_domains if any(x in d.lower() for x in ["news", "times", "post", "bbc", "cnn", "npr"])]
+        news_domains = [
+            d
+            for d in recent_domains
+            if any(x in d.lower() for x in ["news", "times", "post", "bbc", "cnn", "npr"])
+        ]
         if news_domains:
             suggestions.append("What news stories have I been following this week?")
 
-        shopping_domains = [d for d in recent_domains if any(x in d.lower() for x in ["amazon", "shop", "store", "ebay", "etsy"])]
+        shopping_domains = [
+            d
+            for d in recent_domains
+            if any(x in d.lower() for x in ["amazon", "shop", "store", "ebay", "etsy"])
+        ]
         if shopping_domains:
             suggestions.append("Summarize my recent product research")
 
-        tech_domains = [d for d in recent_domains if any(x in d.lower() for x in ["github", "stackoverflow", "dev", "medium", "hackernews"])]
+        tech_domains = [
+            d
+            for d in recent_domains
+            if any(x in d.lower() for x in ["github", "stackoverflow", "dev", "medium", "hackernews"])
+        ]
         if tech_domains:
             suggestions.append("What technical topics have I been exploring?")
 
-        recipe_domains = [d for d in recent_domains if any(x in d.lower() for x in ["recipe", "food", "cooking", "allrecipes", "epicurious"])]
+        recipe_domains = [
+            d
+            for d in recent_domains
+            if any(x in d.lower() for x in ["recipe", "food", "cooking", "allrecipes", "epicurious"])
+        ]
         if recipe_domains:
             suggestions.append("What recipes have I been looking at?")
 

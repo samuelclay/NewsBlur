@@ -34,7 +34,6 @@ from apps.archive_extension.matching import (
 from apps.archive_extension.models import MArchivedStory, MArchiveUserSettings
 from apps.profile.models import Profile
 
-
 # =============================================================================
 # Base Test Class
 # =============================================================================
@@ -833,9 +832,7 @@ class Test_BatchIngestEndpoint(ArchiveTestCase):
 
     def test_batch_ingest_max_100_limit(self):
         """Batch ingest should reject >100 items."""
-        archives = [
-            {"url": f"https://example.com/{i}", "title": f"Article {i}"} for i in range(101)
-        ]
+        archives = [{"url": f"https://example.com/{i}", "title": f"Article {i}"} for i in range(101)]
         response = self.client.post(
             "/api/archive/batch_ingest",
             stdlib_json.dumps(archives),
@@ -901,9 +898,7 @@ class Test_BatchIngestEndpoint(ArchiveTestCase):
         data = response.json()
 
         # Find the blocked result
-        blocked_result = next(
-            (r for r in data["results"] if "chase.com" in r.get("url", "")), None
-        )
+        blocked_result = next((r for r in data["results"] if "chase.com" in r.get("url", "")), None)
         self.assertIsNotNone(blocked_result)
         self.assertTrue(blocked_result.get("blocked"))
 

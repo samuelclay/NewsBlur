@@ -7,14 +7,11 @@ from unittest.mock import MagicMock, patch
 from django.test import TestCase
 from django.test.client import Client
 
-from apps.archive_assistant.tools import (
-    ARCHIVE_TOOLS,
-    execute_tool,
-)
 from apps.archive_assistant.prompts import (
     ARCHIVE_ASSISTANT_SYSTEM_PROMPT,
     get_suggested_questions,
 )
+from apps.archive_assistant.tools import ARCHIVE_TOOLS, execute_tool
 
 
 class Test_ArchiveTools(TestCase):

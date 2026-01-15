@@ -15,7 +15,11 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from apps.archive_extension.blocklist import get_blocked_domains, get_blocked_patterns, is_blocked
+from apps.archive_extension.blocklist import (
+    get_blocked_domains,
+    get_blocked_patterns,
+    is_blocked,
+)
 from apps.archive_extension.matching import match_and_process
 from apps.archive_extension.models import MArchivedStory, MArchiveUserSettings
 from apps.archive_extension.tasks import categorize_archives, index_archive_for_search
@@ -649,9 +653,7 @@ def get_stats(request):
 
     # Get counts
     total = MArchivedStory.objects(user_id=user.pk, deleted=False).count()
-    matched = MArchivedStory.objects(
-        user_id=user.pk, deleted=False, matched_story_hash__ne=None
-    ).count()
+    matched = MArchivedStory.objects(user_id=user.pk, deleted=False, matched_story_hash__ne=None).count()
     today = MArchivedStory.objects(user_id=user.pk, deleted=False, archived_date__gte=today_start).count()
     week = MArchivedStory.objects(user_id=user.pk, deleted=False, archived_date__gte=week_start).count()
 
@@ -670,9 +672,7 @@ def get_stats(request):
                 "total_domains": domains,
                 "archives_today": today,
                 "archives_this_week": week,
-                "last_archive_date": (
-                    format_datetime_utc(settings.last_archive_date)
-                ),
+                "last_archive_date": (format_datetime_utc(settings.last_archive_date)),
             },
         }
     )
