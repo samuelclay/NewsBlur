@@ -152,18 +152,21 @@
     self.loadingIndicator.frame = self.circularProgressView.frame;
 
     UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:self.isMac ? 24 : 30];
+    settingsImage = [settingsImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage
                                                     target:self
                                                     action:@selector(toggleFontSize:)];
     fontSettingsButton.accessibilityLabel = @"Story settings";
     
     UIImage *markreadImage = [Utilities imageNamed:@"original_button.png" sized:self.isMac ? 24 : 30];
+    markreadImage = [markreadImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     originalStoryButton = [UIBarButtonItem barItemWithImage:markreadImage
                                                      target:self
                                                      action:@selector(showOriginalSubview:)];
     originalStoryButton.accessibilityLabel = @"Show original story";
 
     UIImage *markReadImage = [UIImage imageNamed:@"markread.png"];
+    markReadImage = [markReadImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     markReadBarButton = [UIBarButtonItem barItemWithImage:markReadImage
                                                                     target:self
                                                                     action:@selector(markAllRead:)];
@@ -177,6 +180,8 @@
                                      ];
     
     self.subscribeButton = subscribeBtn;
+
+    [self updateTheme];
     
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching text..."
                                            withOffset:CGPointMake(0.0, 0.0 /*self.bottomSize.frame.size.height*/)];
@@ -227,7 +232,8 @@
     [self.navigationController setNavigationBarHidden:YES animated:animated];
     [self.navigationController setToolbarHidden:YES animated:animated];
 #endif
-    
+
+    [self applyToolbarButtonTint];
     [self updateTheme];
     
     [self updateAutoscrollButtons];
@@ -750,10 +756,35 @@
 
 - (void)updateTheme {
     [super updateTheme];
+
+    [self applyToolbarButtonTint];
     
-    self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
+    self.navigationController.navigationBar.tintColor = toolbarButtonTint;
     self.navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x222222, 0x111111);
     self.navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
+    self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
+    if (@available(iOS 13.0, *)) {
+        UINavigationBarAppearance *appearance = self.navigationController.navigationBar.standardAppearance;
+        if (!appearance) {
+            appearance = [[UINavigationBarAppearance alloc] init];
+        }
+        appearance.backgroundColor = self.navigationController.navigationBar.barTintColor;
+
+        UIBarButtonItemAppearance *buttonAppearance = [[UIBarButtonItemAppearance alloc] init];
+        NSDictionary *textAttributes = @{NSForegroundColorAttributeName: toolbarButtonTint};
+        [buttonAppearance.normal setTitleTextAttributes:textAttributes];
+        [buttonAppearance.highlighted setTitleTextAttributes:textAttributes];
+        [buttonAppearance.disabled setTitleTextAttributes:textAttributes];
+        appearance.buttonAppearance = buttonAppearance;
+        appearance.backButtonAppearance = buttonAppearance;
+        appearance.doneButtonAppearance = buttonAppearance;
+        appearance.titleTextAttributes = [UINavigationBar appearance].titleTextAttributes;
+        
+        self.navigationController.navigationBar.standardAppearance = appearance;
+        self.navigationController.navigationBar.scrollEdgeAppearance = appearance;
+        self.navigationController.navigationBar.compactAppearance = appearance;
+    }
     self.view.backgroundColor = UIColorFromLightDarkRGB(0xe0e0e0, 0x111111);
     
     [self updateAutoscrollButtons];
@@ -762,6 +793,29 @@
     [self setTextButton];
     [self updateStoriesTheme];
     [self updateStatusBarTheme];
+}
+
+- (void)applyToolbarButtonTint {
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
+
+    fontSettingsButton.tintColor = toolbarButtonTint;
+    originalStoryButton.tintColor = toolbarButtonTint;
+    markReadBarButton.tintColor = toolbarButtonTint;
+    self.subscribeButton.tintColor = toolbarButtonTint;
+    UIButton *settingsButton = (UIButton *)fontSettingsButton.customView;
+    if ([settingsButton isKindOfClass:[UIButton class]]) {
+        settingsButton.tintColor = toolbarButtonTint;
+    }
+    UIButton *originalButton = (UIButton *)originalStoryButton.customView;
+    if ([originalButton isKindOfClass:[UIButton class]]) {
+        originalButton.tintColor = toolbarButtonTint;
+    }
+    UIButton *markReadButton = (UIButton *)markReadBarButton.customView;
+    if ([markReadButton isKindOfClass:[UIButton class]]) {
+        markReadButton.tintColor = toolbarButtonTint;
+    }
+    self.navigationController.navigationBar.tintColor = toolbarButtonTint;
+    self.navigationController.toolbar.tintColor = toolbarButtonTint;
 }
 
 // allow keyboard commands
