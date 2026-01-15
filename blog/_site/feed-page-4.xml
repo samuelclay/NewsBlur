@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-13T18:17:19-05:00</updated>
+  <updated>2026-01-15T17:00:12-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,177 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Google Reader announced its shutdown exactly a year ago</title>
+    <link href="https://blog.newsblur.com/2014/03/13/google-reader-announced-its-shutdown-exactly-a-year-ago/" rel="alternate" type="text/html" title="Google Reader announced its shutdown exactly a year ago" />
+    <published>2014-03-13T14:27:00-04:00</published>
+    <updated>2014-03-13T14:27:00-04:00</updated>
+    <id>https://blog.newsblur.com/2014/03/13/google-reader-announced-its-shutdown-exactly-a-year-ago</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/03/13/google-reader-announced-its-shutdown-exactly-a-year-ago/">
+      <![CDATA[<p>In this industry, you gotta be tough.</p>
+
+<p>I’m just kidding. We’re a bunch of literates who enjoy reading so much that we built our own news readers. But when a behemoth like Google makes a call that places you at the business end of 100,000 frantic power users, reminding yourself how tough you are is one way of dealing with the madness.</p>
+
+<p><a href="http://googlereader.blogspot.com/2013/03/powering-down-google-reader.html">Google announced Reader’s sunset at 4pm on March 13th, 2013</a>. At that point I had spent three and a half years building my vision of a better news reader. I clearly wasn’t doing it for the money, since my paltry salary didn’t even cover my market rate rent in San Francisco. RSS was a decidedly stupid technology to piggyback off of to try and cover that financial disconnect.</p>
+
+<p>Take a look at this graph. It shows NewsBlur’s income versus its expenses for the past 16 months. Just look at those few months before the Google Reader shutdown announcement in March 2013.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/2013%20revenue.png" alt="" /></p>
+
+<p>It was never hard to justify to others why I worked on a news reader for three-some years, partially because I’d been justifying it to myself for so long. I had the delusion that it would all work itself out in the end, so long as I kept pushing my hardest and shipping features users wanted. And, at the time, with 1,000 paying subscribers, it certainly felt like I was getting somewhere.</p>
+
+<p>If you’re curious about why expenses are so high, think about what it takes to run a modern and popular news reader. This graph breaks down expenses for an average month from the past year.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/2013%20expenses.png" alt="" /></p>
+
+<h6 id="why-spend-all-that-money-on-subcontractors-and-new-tools-because-im-investing-in-building-an-even-better-news-reader">Why spend all that money on subcontractors and new tools? Because I’m investing in building an even better news reader.</h6>
+
+<p>Fast forward a year and let hindsight tell you what’s what. I was irrational to think that I could make it on my own in a decaying market, what with all the air sucked out by Google. But that three year hallucination kept me persevering to build a better product, which positioned NewsBlur well as a strong candidate for a Reader replacement. When the sunset announcement dropped, it didn’t take long to fortify the servers and handle all the traffic. NewsBlur permanently ballooned up to 20X the number of paid users. People flocked to NewsBlur because it was among the furthest along in creating real competition. As we say on NewsBlur, <a href="http://popular.newsblur.com">the people have spoken</a>.</p>
+
+<h2 id="the-post-google-reader-landscape">The post-Google Reader landscape</h2>
+
+<p>I run a very opinionated news reader. If you think somewhat like I do, you couldn’t be more pleased with the direction NewsBlur goes. But this is still a power tool, and in a world of casual readers who don’t care where their news is coming from so long as it’s in their interests and matches their biases, NewsBlur is the coffee equivalent of the AeroPress. Most people want drip coffee and they don’t bother wasting mental energy on caring about the difference in taste or quality. It’s a binary to them: coffee or no coffee. There’s nothing wrong with that, they just choose to focus on other things more important to them than the sourcing or control they have of their coffee.</p>
+
+<p>Many competing news readers are visual and offer a similar experience. When you want to give up control in exchange for the digested output of sophisticated and heartless algorithms, they’re your best bet. When you want to exert control and know what you want and from which sources, NewsBlur is the only option. No other reader gives you training, statistics, and sharing in one multi-platform app. Nobody else cares so much about RSS as to work on a news reader when it was still a financial inevitability of failure.</p>
+
+<h2 id="future-work-on-newsblur">Future work on NewsBlur</h2>
+
+<p>If the past is any indication, NewsBlur is going to continue to see many more improvements. This graph of contributions from the past 365 days shows my level of unwavering dedication.</p>
+
+<p><a href="http://github.com/samuelclay"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/2013%20contributions.png" alt="" /></a></p>
+
+<h6 id="one-way-people-speak-is-by-committing-code-to-newsblurs-github-repo-try-developing-your-own-pet-feature-ill-even-do-some-of-the-hard-work-for-you-so-long-as-you-give-it-a-good-try-and-submit-a-pull-request">One way people speak is by committing code to <a href="http://github.com/samuelclay/NewsBlur">NewsBlur’s GitHub repo</a>. Try developing your own pet feature. I’ll even do some of the hard work for you, so long as you give it a good try and submit a pull request.</h6>
+
+<p>Meanwhile, I’m using the windfall to develop a secret project that will complement NewsBlur in a way that hasn’t been tried before with any reader. And if that fails, I’ll find an even better way to make my users happy with their purchase. If you thought I was relentless before March 13th, 2013, just wait until you see what I’m capable of with the finances to build all the big ticket features I’ve been imagining for years.</p>
+
+<p>And while you’re here, do me a favor and tweet about NewsBlur. Tell your followers, who are probably looking for a better way to read news, about how much you rely on NewsBlur. Reading positive tweets about NewsBlur every morning (and afternoon and evening and before bed) make this the best job I’ve ever had.</p>
+
+]]>
+    </content>
+    
+    
+    
+    
+    <summary type="html">
+      <![CDATA[In this industry, you gotta be tough.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">NewsBlur iOS 4.0 features a new dashboard, gestures and sharing controls</title>
+    <link href="https://blog.newsblur.com/2014/03/10/newsblur-ios-40-features-a-new-dashboard/" rel="alternate" type="text/html" title="NewsBlur iOS 4.0 features a new dashboard, gestures and sharing controls" />
+    <published>2014-03-10T10:48:08-04:00</published>
+    <updated>2014-03-10T10:48:08-04:00</updated>
+    <id>https://blog.newsblur.com/2014/03/10/newsblur-ios-40-features-a-new-dashboard</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/03/10/newsblur-ios-40-features-a-new-dashboard/">
+      <![CDATA[<p>Today marks <a href="http://www.newsblur.com/ios">the release of version 4.0 of the NewsBlur iOS app</a>. To illustrate the significance of this release I’d like to talk about where the app has been.</p>
+
+<p>The first version of the NewsBlur iOS app was actually just an iPhone app. It <a href="http://blog.newsblur.com/2021/06/21/2012-01-16-2011-year-in-review.html">launched in October 2011</a> and only allowed you to read your feeds individually. Within months the river of news (reading by folder) was added, along with better sharing controls, intelligence training, sharing to your blurblog, and the May 2013 re-design.</p>
+
+<p>But similarly to the web, I wasn’t particularly proud of the app until I hit a major milestone. On the web, I hit that milestone with the May 2013 re-design. In <a href="http://blog.newsblur.com/2021/06/21/2013-05-20-the-newsblur-redesign.html">the blog post announcing the wide ranging re-design</a>, I wrote:</p>
+
+<blockquote>
+  <p>Not to say that NewsBlur was ugly before today, but it certainly didn’t have the loving embrace of a talented designer. So without waiting another moment (or month) I proudly present the NewsBlur redesign.</p>
+</blockquote>
+
+<p>Fast forward to today where I am finally releasing an iOS app that I’m proud of. This one comes with a ton of great features, both for iPhone and iPad.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios%20v4.jpg" alt="" /></p>
+
+<p>&lt;table style=”margin: 0 auto; padding: 0; width: 600px”&gt;&lt;tr&gt;&lt;td&gt; <img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios%20v4%20-%202.jpg" alt="" />&lt;/td&gt; &lt;td&gt; <img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios%20v4%20-%203.jpg" alt="" />&lt;/td&gt; &lt;/tr&gt;&lt;/table&gt;</p>
+<ul>
+  <li>New dashboard for the iPad app: All Site Stories are now on the dashboard for easy access to stories. More to come with this new dashboard.</li>
+  <li>Tons of new gestures: double tap, 2 finger double tap, long press.</li>
+  <li>New gestures for the iPad app: swipe to dismiss the original story view.</li>
+  <li>Brand new sharing controls work with Facebook, Twitter, Email, iMessage, Instapaper, Pocket, Readability, App.Net, Pinboard, OmniFocus, Safari, Chrome, and Airdrop.</li>
+  <li>Inline images show a preview of the story in the story title.</li>
+  <li>Inline descriptions show a preview of the story’s content in the story title.</li>
+  <li>Improved landscape support for the iPad app.</li>
+  <li>Improved video support: videos are now fit better for each device.</li>
+  <li>Numerous bugs fixed resulting in speed improvements and cleaned up code.</li>
+</ul>
+
+<p>If you want to tweet something along the lines of “Holy crap, the NewsBlur iOS app is nice! Only took four years” that would be alright. <a href="http://www.newsblur.com/ios">Download the free NewsBlur iOS app</a>, and if you find yourself enjoying it, please leave a positive five star review on the App Store.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    
+    <summary type="html">
+      <![CDATA[Today marks the release of version 4.0 of the NewsBlur iOS app. To illustrate the significance of this release I’d like to talk about where the app has been.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Connect NewsBlur to dozens of web services with IFTTT</title>
+    <link href="https://blog.newsblur.com/2014/02/20/connect-newsblur-to-dozens-of-web-services-with/" rel="alternate" type="text/html" title="Connect NewsBlur to dozens of web services with IFTTT" />
+    <published>2014-02-20T09:11:28-05:00</published>
+    <updated>2014-02-20T09:11:28-05:00</updated>
+    <id>https://blog.newsblur.com/2014/02/20/connect-newsblur-to-dozens-of-web-services-with</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/02/20/connect-newsblur-to-dozens-of-web-services-with/">
+      <![CDATA[<p>Wouldn’t it be nice if there was a way to automatically copy your saved stories over to Evernote or Twitter or Pinboard? What about an automatic way to keep track of your unread focus (trained) stories in Buffer or Delicious or Dropbox?</p>
+
+<p><a href="https://ifttt.com/newsblur"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ifttt-logo-large.png" alt="" /></a></p>
+
+<p><a href="https://ifttt.com/newsblur">IFTTT</a> (if this then that) is a free web service that automates the movement of data from NewsBlur to dozens of other web services. It also handles movement of data from dozens of other web services back into NewsBlur. <a href="http://blog.ifttt.com/post/77287507657/introducing-the-newsblur-fiverr-and-boxcar-2-channels">Today IFTTT is launching a NewsBlur channel</a> where you can take advantage of their incredible glue that binds dozens of web service like NewsBlur in unique and customizable ways.</p>
+
+<h2 id="customizable-ifttt-triggers">Customizable IFTTT triggers</h2>
+
+<p>The best part about these IFTTT recipes is that the triggers can be customized to fit a specific saved story tag or blurblog or folder or feed. When you create a recipe using NewsBlur, you can choose which of your own feeds or tags you want to use.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ifttt-blurblogs.png" alt="" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/ifttt-tags.png" alt="" /></p>
+
+<p>You can also choose to only use unread focus (trained) stories. So you can filter out stories you don’t want to read and highlight the stories you do want to read using the Intelligence Trainer.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ifttt-training.png" alt="" /></p>
+
+<h2 id="create-tasks-and-recipes-with-ifttt">Create tasks and recipes with IFTTT</h2>
+
+<p>Here’s a sample of IFTTT recipes that you can use today for moving your data from NewsBlur out to other services:</p>
+
+<p><a href="https://ifttt.com/view_embed_recipe/147729-when-you-save-a-story-on-newsblur-it-will-get-saved-for-later-on-instapaper"><img src="https://ifttt.com/recipe_embed_img/147729" alt="IFTTT Recipe: When you save a story on NewsBlur, it will get saved for later on Instapaper. connects newsblur to instapaper" /></a><script async="" type="text/javascript" src="//ifttt.com/assets/embed_recipe.js"></script></p>
+
+<p><a href="https://ifttt.com/view_embed_recipe/147727-saving-a-story-on-newsblur-also-saves-it-to-pocket"><img src="https://ifttt.com/recipe_embed_img/147727" alt="IFTTT Recipe: Saving a story on NewsBlur also saves it to Pocket connects newsblur to pocket" /></a><script async="" type="text/javascript" src="//ifttt.com/assets/embed_recipe.js"></script></p>
+
+<p><a href="https://ifttt.com/view_embed_recipe/147737-when-you-save-a-story-on-newsblur-it-will-create-a-new-link-note-on-evernote"><img src="https://ifttt.com/recipe_embed_img/147737" alt="IFTTT Recipe: When you save a story on NewsBlur, it will create a new link note on Evernote. connects newsblur to evernote" /></a><script async="" type="text/javascript" src="//ifttt.com/assets/embed_recipe.js"></script></p>
+
+<p><a href="https://ifttt.com/view_embed_recipe/147742-when-you-save-a-story-on-newsblur-add-a-private-bookmark-to-pinboard"><img src="https://ifttt.com/recipe_embed_img/147742" alt="IFTTT Recipe: When you save a story on NewsBlur, add a private bookmark to Pinboard. connects newsblur to pinboard" /></a><script async="" type="text/javascript" src="//ifttt.com/assets/embed_recipe.js"></script></p>
+
+<p><a href="https://ifttt.com/view_embed_recipe/147757-save-a-story-on-newsblur-add-to-buffer"><img src="https://ifttt.com/recipe_embed_img/147757" alt="IFTTT Recipe: Save a story on NewsBlur → Add to Buffer connects newsblur to buffer" /></a><script async="" type="text/javascript" src="//ifttt.com/assets/embed_recipe.js"></script></p>
+
+<p><a href="https://ifttt.com/view_embed_recipe/147761-new-saved-story-tweet-it"><img src="https://ifttt.com/recipe_embed_img/147761" alt="IFTTT Recipe: New saved story → tweet it connects newsblur to twitter" /></a><script async="" type="text/javascript" src="//ifttt.com/assets/embed_recipe.js"></script></p>
+
+<p><a href="https://ifttt.com/view_embed_recipe/147762-new-saved-story-post-it-on-facebook"><img src="https://ifttt.com/recipe_embed_img/147762" alt="IFTTT Recipe: New saved story → post it on Facebook connects newsblur to facebook" /></a><script async="" type="text/javascript" src="//ifttt.com/assets/embed_recipe.js"></script></p>
+
+<p>You can also take data from other services and move it into NewsBlur:</p>
+
+<p><a href="https://ifttt.com/view_embed_recipe/147740-if-you-post-anything-on-your-tumblr-blog-share-it-on-your-newsblur-blurblog"><img src="https://ifttt.com/recipe_embed_img/147740" alt="IFTTT Recipe: If you post anything on your Tumblr blog, share it on your NewsBlur blurblog. connects tumblr to newsblur" /></a><script async="" type="text/javascript" src="//ifttt.com/assets/embed_recipe.js"></script></p>
+
+<p><a href="https://ifttt.com/view_embed_recipe/147755-new-public-photo-in-your-500px-photo-stream-share-a-link-to-it-on-your-newsblur-blurblog"><img src="https://ifttt.com/recipe_embed_img/147755" alt="IFTTT Recipe: New public photo in your 500px photo stream → share a link to it on your NewsBlur blurblog connects 500px to newsblur" /></a><script async="" type="text/javascript" src="//ifttt.com/assets/embed_recipe.js"></script></p>
+
+<p>Mix and match and <a href="https://ifttt.com/newsblur">create your own IFTTT recipes using the NewsBlur channel</a>. And if you put together a good recipe, it’ll get featured both on IFTTT and on NewsBlur.</p>
+
+]]>
+    </content>
+    
+    
+    
+    
+    <summary type="html">
+      <![CDATA[Wouldn’t it be nice if there was a way to automatically copy your saved stories over to Evernote or Twitter or Pinboard? What about an automatic way to keep track of your unread focus (trained) stories in Buffer or Delicious or Dropbox?
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Saved story tagging </title>
@@ -920,254 +1091,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[For a long time, we’ve maintained The People Have Spoken, the blog of what’s popular on NewsBlur, with a simple algorithm that measured how often something was shared. While that’s a great way to see the stuff our users really like (Randall Munroe would probably win the NewsBlur equivalent of...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Take it to the couch with the NewsBlur iPad app</title>
-    <link href="https://blog.newsblur.com/2012/09/05/newsblur-ipad-app/" rel="alternate" type="text/html" title="Take it to the couch with the NewsBlur iPad app" />
-    <published>2012-09-05T08:21:00-04:00</published>
-    <updated>2012-09-05T08:21:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/09/05/newsblur-ipad-app</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/09/05/newsblur-ipad-app/">
-      <![CDATA[<p>There’s no wrong way to hold an iPad loaded with <a href="http://www.newsblur.com/ipad">the brand new NewsBlur iPad app</a>, provided it’s facing you and turned on.</p>
-
-<p><a href="http://www.newsblur.com/ipad"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iPad.png" alt="image" title="The NewsBlur iPad app in revealing positions" /></a></p>
-
-<p>This brand new iPad app is not just an accessory to the web. It’s a full blown reading experience. Here are some of the many features now available in the palm of your hands:</p>
-
-<ul>
-  <li>All your sites, folders, and friend’s blurblogs</li>
-  <li>Super-fast everything, from near-instant downloading of stories to the mouthfeel of the app itself</li>
-  <li>Commenting on stories and sharing them on your blurblog</li>
-  <li>New users can easily get started by importing directly from Google Reader, so you can tell friends about the app without having them to go the website first</li>
-</ul>
-
-<p>The biggest new feature is all about sharing stories with people. Blurblogs, those shared story feeds, are now part of your feed list. And you can expand your network by following more people directly from the app. Following more people means being exposed to stories from sites you may not have even heard of. And because the NewsBlur iPad app is so fast, you can traverse between stories quickly, settling on the ones that look interesting. And better yet, see contribute to a discussion between friends, all on the app.</p>
-
-<p>But wait, there’s more! In fact, there’s a whole lot more, because this is a universal iOS app, which means there’s an iPhone app to boot. Everything you can do on the iPad app is available on the iPhone app.</p>
-
-<p><a href="http://www.newsblur.com/ipad"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iPhone.png" alt="image" title="NewsBlur iPhone app to boot" /></a></p>
-
-<p>The iPad app and latest version of the iPhone app were built by my good friend Roy. Now that the Y Combinator summer has ended, we wish him well as he’s moving on to pursue his non-news dreams. So long buddy, and thanks for all the hard work this summer. Roy <a href="http://roycyang.tumblr.com/post/30118352382/what-ive-learned-during-my-summer-in-yc">wrote about his impression</a> of Y Combinator and the past summer.</p>
-
-<p>Go <a href="http://www.newsblur.com/ipad">download the NewsBlur iOS app</a> and forget about sitting at your desk.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="mobile" />
-    
-    
-    <summary type="html">
-      <![CDATA[There’s no wrong way to hold an iPad loaded with the brand new NewsBlur iPad app, provided it’s facing you and turned on.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Introducing Blurblogs, Roy, and Y Combinator</title>
-    <link href="https://blog.newsblur.com/2012/07/30/introducing-blurblogs-roy-and-y-combinator/" rel="alternate" type="text/html" title="Introducing Blurblogs, Roy, and Y Combinator" />
-    <published>2012-07-30T11:22:00-04:00</published>
-    <updated>2012-07-30T11:22:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/07/30/introducing-blurblogs-roy-and-y-combinator</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/07/30/introducing-blurblogs-roy-and-y-combinator/">
-      <![CDATA[<p>What a difference a few months make. NewsBlur was a side-project of mine for two years. In March of this year, <a href="[http://blog.newsblur.com/2021/06/21/2012-03-01-going-full-time.html](http://blog.newsblur.com/2021/06/21/2012-03-01-going-full-time.html)">I committed myself full-time</a> and went from developing NewsBlur almost entirely on the NYC subway to writing code every waking minute of the day. And now there are three big announcements to make. # 1. NewsBlur is now a *social* news reader The big news of the day is that you can now share stories on NewsBlur. When you share a story, your comments and the original story are posted to your blurblog. Your blurblog is a simple and customizable website. People can comment and reply directly on your blurblog, and you can follow your friends to read the news stories and blog posts that they care about.<figure class="tmblr-full" data-orig-height="869" data-orig-width="600" data-orig-src="http://f.cl.ly/items/3e1r202n3I232M473J2b/blurblog%20screenshot.png"><img style="margin: 0 auto;width: 600px; height: 869px; border: 1px solid #A0A0A0" data-orig-height="869" data-orig-width="600" src="http://f.cl.ly/items/3e1r202n3I232M473J2b/blurblog%20screenshot.png" /></figure>Since you’re good at picking your friends, and your friends are good at picking their friends, you will see friends of friends show up, expanding your network with shared stories that you will enjoy. It’s a new way of sharing the news. And because NewsBlur is already an easy to use news reader, it’s simple to find and share stories that your friends will care about. Every NewsBlur user has their own blurblog. All you have to do is signup for an account on <a href="[http://www.newsblur.com](http://www.newsblur.com)">www.newsblur.com</a> and share interesting stories. # 2. Y Combinator For those of you who work with computer science, you may know that a Y-combinator generalizes recursion, abstracting its implementation, and thereby separating it from the actual work of the function in question.[^1] <a href="http://www.ycombinator.com"><figure class="tmblr-full" data-orig-height="81" data-orig-width="500"><img src="https://64.media.tumblr.com/97d36e865086575a3b131e7ec928534e/c3a0661d97716fb7-14/s540x810/172c7f8b8367a623b61a3f26e3d95ff5214b5e2c.png" style="margin: 12px auto;width: 200px;border: none" data-orig-height="81" data-orig-width="500" /></figure></a>I’m pleased as punch to announce an investment in NewsBlur by Y Combinator, the investment firm. Over the past two months, we’ve been humbled by the roster of experienced partners giving us candid advice. It’s their tough love that is the catalyst for the next few months of transitioning NewsBlur from side project to world-class news reader. Expect NewsBlur to become simpler and more refined. # 3. Introducing Roy Yang When Y Combinator accepted me as a solo founder, their first piece of advice was to find a co-founder. Looking at every successful startup, a common pattern emerges. Every great startup has multiple people carrying the load when the company takes off. There is one person on this planet that I would trust as a co-founder. His name is Roy Yang and we have been friends since we met in New York four years ago. We worked together for nearly two years at Daylife, another news startup. I attended his wedding last year in Mexico, and he was the only person I called when I knew I needed somebody talented, focused, and able to complement me on a project that demands enormous time and effort.<a href="http://roy.newsblur.com"><figure class="tmblr-full" data-orig-height="334" data-orig-width="500"><img src="https://64.media.tumblr.com/88d3942183371de8e848da2416f28e29/c3a0661d97716fb7-c9/s540x810/028ee543cc6fd18a9daff3b46fbaaf1408994f25.jpg" style="margin: 12px auto;border: none" data-orig-height="334" data-orig-width="500" /></figure></a>Roy is now responsible for both iOS apps and is instrumental in challenging me when I think I’m right and am clearly not. He’s got the patience of a monk and the determination of a true New Yorker. <a href="[http://roy.newsblur.com](http://roy.newsblur.com)">Follow Roy’s blurblog</a> to keep up with him. # A glimpse into the future of NewsBlur This summer marks the beginning of NewsBlur as a full-time startup. Look forward to new mobile apps, new designs, and new features. Here’s a quick idea of what we’re working on for the next few weeks:</p>
-
-<figure data-orig-height="216" data-orig-width="284"><img src="https://64.media.tumblr.com/976b01805af2f28072b5fda19b03553e/c3a0661d97716fb7-2e/s540x810/3d07b12c76cc63bfcb21cee6d866c27dacd129f0.png" style="clear: none; float: left;margin: 0 24px 24px 0;border: 1px solid #A0A0A0;" data-orig-height="216" data-orig-width="284" /></figure>
-<figure data-orig-height="216" data-orig-width="284"><img src="https://64.media.tumblr.com/62efdc1b56ca49a5df863ae0ff79b9af/c3a0661d97716fb7-89/s540x810/1b25ff57ad8c97ee62d3d0f621fde66005f5ffc1.png" style="clear: none; float: left;margin: 0 0 24px 0;border: 1px solid #A0A0A0;" data-orig-height="216" data-orig-width="284" /></figure>
-<figure data-orig-height="216" data-orig-width="284"><img src="https://64.media.tumblr.com/aa7923057b5317a73d25d587f52b1a9b/c3a0661d97716fb7-74/s540x810/d09e1cbe95c3915f99a9b7b4e29e73c63fda0f4e.png" style="clear: none; float: left;margin: 0 24px 24px 0;border: 1px solid #A0A0A0;" data-orig-height="216" data-orig-width="284" /></figure>
-<figure data-orig-height="216" data-orig-width="284"><img src="https://64.media.tumblr.com/430031fdbde97cfda01b197653885cd6/c3a0661d97716fb7-98/s540x810/97b2fb0e47f2b1cf3a1a69ad3dd6aebae0ec4c2d.png" style="clear: none; float: left;margin: 0 0 24px 0;border: 1px solid #A0A0A0;" data-orig-height="216" data-orig-width="284" /></figure>
-
-<p>Until then, follow <a href="http://twitter.com/newsblur">@newsblur</a> on Twitter and start sharing news and blogs on <a href="http://www.newsblur.com">NewsBlur</a>.</p>
-
-<p>— Samuel Clay, <a href="http://twitter.com/samuelclay">@samuelclay</a></p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="meta" />
-    
-    <category term="news" />
-    
-    
-    <summary type="html">
-      <![CDATA[What a difference a few months make. NewsBlur was a side-project of mine for two years. In March of this year, I committed myself full-time and went from developing NewsBlur almost entirely on the NYC subway to writing code every waking minute of the day. And now there are three...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Building real-time feed updates for NewsBlur with Redis and WebSockets</title>
-    <link href="https://blog.newsblur.com/2012/04/02/building-real-time-feed-updates-for-newsblur/" rel="alternate" type="text/html" title="Building real-time feed updates for NewsBlur with Redis and WebSockets" />
-    <published>2012-04-02T17:52:00-04:00</published>
-    <updated>2012-04-02T17:52:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/04/02/building-real-time-feed-updates-for-newsblur</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/04/02/building-real-time-feed-updates-for-newsblur/">
-      <![CDATA[<p>Today, NewsBlur is going real-time. Blogs using the PubSubHubbub protocol (PuSH), which includes all Blogger, Tumblr, and many Wordpress blogs, will instantaneously show new updates to subscribers on NewsBlur. Making this happen, while not for the faint of heart, was straight-forward enough that I’m sharing the recipe I used to get everything hooked up and running smoothly.</p>
-
-<p>Every user, both premium and standard, will now receive instantaneous updates. I’ve been beta-testing this feature for the past few weeks, and I’ve been quite pleased in knowing that I’m now reading on the bleeding-edge.</p>
-
-<p>If you are a developer, you may be interested in how this was done. There are two components in a real-time feed: detecting updates and then informing users of those updates.</p>
-
-<h2 id="get-blog-updates-in-real-time">Get blog updates in real-time</h2>
-
-<p>If you are building a system that consumes an RSS feed and you want it to push to you, you’ll have to subscribe to a special PubSubHubbub hub url that the RSS feed gives you in the original RSS feed.</p>
-
-<p>Take a look at the <code class="language-plaintext highlighter-rouge">&lt;feed&gt;</code> section in the NewsBlur Blog’s RSS feed:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;&gt;&gt; # Python
-&gt;&gt;&gt; from utils import feedparser
-&gt;&gt;&gt; from pprint import pprint
-&gt;&gt;&gt; fp = feedparser.parse('http://blog.newsblur.com/rss')
-&gt;&gt;&gt; pprint(fp.feed)
-{'generator': u'Tumblr (3.0; @newsblur)',
- 'generator_detail': {'name': u'Tumblr (3.0; @newsblur)'},
- 'link': u'http://blog.newsblur.com/',
- 'links': [{'href': u'http://tumblr.superfeedr.com/',
-            'rel': u'hub',
-            'type': u'text/html'},
-           {'href': u'http://blog.newsblur.com/',
-            'rel': u'alternate',
-            'type': u'text/html'}],
- 'subtitle': u'Visual feed reading with intelligence.',
- 'subtitle_detail': {'base': u'http://blog.newsblur.com/rss',
-                     'language': None,
-                     'type': u'text/html',
-                     'value': u'Visual feed reading with intelligence.'},
- 'title': u'The NewsBlur Blog',
- 'title_detail': {'base': u'http://blog.newsblur.com/rss',
-                  'language': None,
-                  'type': u'text/plain',
-                  'value': u'The NewsBlur Blog'}}
-</code></pre></div></div>
-
-<p>If there’s a <code class="language-plaintext highlighter-rouge">rel="hub"</code> node under <code class="language-plaintext highlighter-rouge">links</code>, then the RSS feed is advertising its PubSubHubbub abilities. If you make a subscription request to that address, then the feed will push out updates to your callback URL.</p>
-
-<p>The code for sending the subscription requests, along with generating the verification token, can be found on GitHub: <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/push/views.py">the PuSH views for handling updates and the initial callback</a> and <a href="http://github.com/samuelclay/NewsBlur/tree/master/apps/push/models.py">the PuSH models used to store subscriptions in the DB</a>. Here’s the main request that your server has to send:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Python
-response = self._send_request(hub, {
-    'hub.mode' : 'subscribe',
-    'hub.callback' : callback,
-    'hub.topic' : topic,
-    'hub.verify' : ['async', 'sync'],
-    'hub.verify_token' : subscription.generate_token('subscribe'),
-    'hub.lease_seconds' : lease_seconds,
-})
-</code></pre></div></div>
-
-<p>The publisher will then ping your server back to confirm the subscription. Once the publisher is configured to send blog updates to your server, you just have to let users know when there’s a new story, and that’s takes some COMET/push technology with the help of WebSockets.</p>
-
-<h2 id="serving-updates-to-visitors-in-real-time">Serving updates to visitors in real-time</h2>
-
-<p>When a publisher pushes a new story to your server, apart from dupe detection and storing it in your database, you need to alert users who are currently on the site.</p>
-
-<p><a href="http://redis.io">Redis</a> is your new best friend. One of its primary data structures, apart from hashes, sets, sorted sets, and key-value, is a pubsub type that is perfect for this kind of update. Users subscribe to the updates of all of the feeds to which they subscribe. When these sites have a new story, they publish a simple notification to each of the feed’s subscribers.</p>
-
-<p>Here the feed fetcher is publishing to any listening subscribers.</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Python
-def publish_to_subscribers(self, feed):
-    try:
-        r = redis.Redis(connection_pool=settings.REDIS_POOL)
-        listeners_count = r.publish(str(feed.pk), 'story:new')
-        if listeners_count:
-            logging.debug(" ---&gt; [%-30s] Published to %s subscribers" % (
-                          feed.title[:30], listeners_count))
-    except redis.ConnectionError:
-        logging.debug(" ***&gt; [%-30s] Redis is unavailable for real-time." % (
-                      feed.title[:30],))
-</code></pre></div></div>
-
-<p>These subscribers have subscribed via Redis. To know that a user is currently connected and wants to be notified of updates, <a href="http://socket.io">Socket.io</a> is used to connect the browser to a Node.js server that will subscribe to updates via Redis.</p>
-
-<p>The browser opens up a WebSocket and listens for updates for the feeds that they care about:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// JavaScript
-setup_socket_realtime_unread_counts: function() {
-    if (!this.socket) {
-        var server = window.location.protocol + '//' +
-                     window.location.hostname + ':8888';
-        this.socket = this.socket || io.connect(server);
-
-        this.socket.on('connect', _.bind(function() {
-            var active_feeds = this.send_socket_active_feeds();
-            console.log(["Connected to real-time pubsub with " + 
-                         active_feeds.length + " feeds."]);
-
-            this.socket.on('feed:update', _.bind(function(feed_id, message) {
-                console.log(['Real-time feed update', feed_id, message]);
-                this.force_feeds_refresh(false, false, parseInt(feed_id, 10));
-            }, this));
-
-            this.flags.feed_refreshing_in_realtime = true;
-            this.setup_feed_refresh();
-        }, this));
-
-        this.socket.on('disconnect', _.bind(function() {
-            console.log(["Lost connection to real-time pubsub. Falling back to polling."]);
-            this.setup_feed_refresh();
-        }, this));
-    }
-},
-</code></pre></div></div>
-
-<p>The app server is ready to handle thousands of concurrent subscription requests, being Node.js and asynchronous:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># CoffeeScript
-fs = require 'fs'
-io = require('socket.io').listen 8888
-redis = require 'redis'
-
-REDIS_SERVER = if process.env.NODE_ENV == 'dev' then 'localhost' else 'db01'
-client = redis.createClient 6379, REDIS_SERVER
-
-io.sockets.on 'connection', (socket) -&gt;
-    console.log " ---&gt; New connection brings total to" +
-                " #{io.sockets.clients().length} consumers."
-    socket.on 'subscribe:feeds', (feeds, username) -&gt;
-        socket.subscribe?.end()
-        socket.subscribe = redis.createClient 6379, REDIS_SERVER
-
-        console.log " ---&gt; [#{username}] Subscribing to #{feeds.length} feeds"
-        socket.subscribe.subscribe feeds
-
-        socket.subscribe.on 'message', (channel, message) -&gt;
-            console.log " ---&gt; [#{username}] Update on #{channel}: #{message}"
-            socket.emit 'feed:update', channel
-
-    socket.on 'disconnect', () -&gt;
-        socket.subscribe?.end()
-        console.log " ---&gt; [] Disconnect, there are now" +
-                    " #{io.sockets.clients().length-1} consumers."
-</code></pre></div></div>
-
-<p>That’s all there is to it. There a lot going on, but it’s effectively a small circle composed of subscribers and publishers, using Redis to maintain pubsub connections between the many clients and their many feeds.</p>
-
-<script src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
-<link rel="stylesheet" type="text/css" href="http://yandex.st/highlightjs/6.1/styles/github.min.css" />
-
-<script type="text/javascript">
-  hljs.initHighlightingOnLoad();
-</script>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="code" />
-    
-    
-    <summary type="html">
-      <![CDATA[Today, NewsBlur is going real-time. Blogs using the PubSubHubbub protocol (PuSH), which includes all Blogger, Tumblr, and many Wordpress blogs, will instantaneously show new updates to subscribers on NewsBlur. Making this happen, while not for the faint of heart, was straight-forward enough that I’m sharing the recipe I used to...]]>
     </summary>
     
   </entry>
