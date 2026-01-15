@@ -243,6 +243,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.feedTitlesTable.estimatedRowHeight = 0;
+    self.feedTitlesTable.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     
 #if TARGET_OS_MACCATALYST
     // Workaround for Catalyst bug.
@@ -361,17 +362,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
 
-    // iOS 26+: Set content inset so feed list can scroll behind the transparent toolbar
-    if (@available(iOS 26.0, *)) {
-        CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
-        CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
-        CGFloat totalBottomInset = toolbarHeight + safeAreaBottom;
+    // Set content inset so feed list can scroll above the toolbar
+    // Toolbar is positioned 8pt above safe area bottom per storyboard constraint
+    CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
+    CGFloat toolbarBottomGap = 8.0; // From storyboard constraint
+    CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
+    CGFloat totalBottomInset = toolbarHeight + toolbarBottomGap + safeAreaBottom;
 
-        UIEdgeInsets currentInset = self.feedTitlesTable.contentInset;
-        if (currentInset.bottom != totalBottomInset) {
-            self.feedTitlesTable.contentInset = UIEdgeInsetsMake(currentInset.top, currentInset.left, totalBottomInset, currentInset.right);
-            self.feedTitlesTable.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, totalBottomInset, 0);
-        }
+    UIEdgeInsets currentInset = self.feedTitlesTable.contentInset;
+    if (currentInset.bottom != totalBottomInset) {
+        self.feedTitlesTable.contentInset = UIEdgeInsetsMake(currentInset.top, currentInset.left, totalBottomInset, currentInset.right);
+        self.feedTitlesTable.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, totalBottomInset, 0);
     }
 }
 
@@ -3250,45 +3251,65 @@ heightForHeaderInSection:(NSInteger)section {
 #endif
     
     // adding user avatar to left
+    NSString *userId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
                                             [appDelegate.dictSocialProfile
                                              objectForKey:@"large_photo_url"]]];
-    userAvatarButton = [UIButton systemButtonWithImage:[UIImage imageNamed:@"user"]
-                                                target:self action:@selector(showUserProfile)];
+
+    // Check for cached avatar first, otherwise use default
+    UIImage *cachedAvatar = [appDelegate getCachedUserAvatar:userId];
+    UIImage *initialImage = cachedAvatar ?: [appDelegate defaultUserAvatar];
+    initialImage = [Utilities roundCorneredImage:initialImage radius:6 convertToSize:CGSizeMake(38, 38)];
+    initialImage = [initialImage imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+
+    userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [userAvatarButton setImage:initialImage forState:UIControlStateNormal];
+    [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
+    userAvatarButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
     userAvatarButton.pointerInteractionEnabled = YES;
     userAvatarButton.accessibilityLabel = @"User info";
 #if TARGET_OS_MACCATALYST
     userAvatarButton.accessibilityHint = @"Double-click for information about your account.";
-    CGRect frame = userAvatarButton.frame;
-    userAvatarButton.frame = frame;
+    userAvatarButton.frame = CGRectMake(0, yOffset, 38, 38);
+    int avatarXOffset = 48; // avatar width (38) + padding (10)
 #else
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
-    UIEdgeInsets insets = UIEdgeInsetsMake(0, -10, 10, 0);
-    userAvatarButton.contentEdgeInsets = insets;
-    CGRect avatarFrame = userAvatarButton.frame;
-    avatarFrame.origin.y = yOffset;
-    userAvatarButton.frame = avatarFrame;
+    userAvatarButton.frame = CGRectMake(-10, yOffset, 38, 38);
+    int avatarXOffset = 38; // avatar end (-10 + 38 = 28) + padding (10)
 #endif
 //    userAvatarButton.backgroundColor = UIColor.blueColor;
-    
+
+    // Fetch avatar from network and cache it
     NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL];
     [avatarRequest addValue:@"image/*" forHTTPHeaderField:@"Accept"];
     [avatarRequest setTimeoutInterval:30.0];
     avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.frame];
     typeof(self) __weak weakSelf = self;
+    NSString *currentUserId = userId;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         typeof(weakSelf) __strong strongSelf = weakSelf;
+        // Cache the original image for future use
+        [appDelegate saveUserAvatar:image forUserId:currentUserId];
+        // Apply rounded corners for display
         image = [Utilities roundCorneredImage:image radius:6 convertToSize:CGSizeMake(38, 38)];
         image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         UIButton *button = strongSelf.userAvatarButton;
         [button setImage:image forState:UIControlStateNormal];
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {
         NSLog(@"Could not fetch user avatar: %@", error);
+        // If we don't have a cached avatar, show the default
+        typeof(weakSelf) __strong strongSelf = weakSelf;
+        if (![appDelegate getCachedUserAvatar:currentUserId]) {
+            UIImage *defaultAvatar = [appDelegate defaultUserAvatar];
+            defaultAvatar = [Utilities roundCorneredImage:defaultAvatar radius:6 convertToSize:CGSizeMake(38, 38)];
+            defaultAvatar = [defaultAvatar imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+            [strongSelf.userAvatarButton setImage:defaultAvatar forState:UIControlStateNormal];
+        }
     }];
-    
+
     [self.userInfoView addSubview:userAvatarButton];
-    
-    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(xOffset, yOffset, self.userInfoView.frame.size.width, 16)];
+
+    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(avatarXOffset, yOffset, self.userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);

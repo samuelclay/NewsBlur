@@ -8,6 +8,7 @@
 
 #import "InteractionCell.h"
 #import "UIImageView+AFNetworking.h"
+#import "NewsBlurAppDelegate.h"
 #import <CoreText/CoreText.h>
 
 @implementation InteractionCell
@@ -88,8 +89,9 @@
         return 1;
     }
     
+    UIImage *placeholder = [[NewsBlurAppDelegate sharedAppDelegate] defaultUserAvatar];
     [self.avatarView setImageWithURL:[NSURL URLWithString:[[interaction objectForKey:@"with_user"] objectForKey:@"photo_url"]]
-        placeholderImage:nil ];
+        placeholderImage:placeholder];
         
     NSString *category = [interaction objectForKey:@"category"];
     NSString *content = [interaction objectForKey:@"content"];
