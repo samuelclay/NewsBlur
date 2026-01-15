@@ -13,7 +13,7 @@ Track progress on the Archive Extension feature. Check off items as they are com
 ### Data Model
 - [x] Define `MArchivedStory` MongoEngine model
 - [x] Set up indexes for efficient queries
-- [ ] Add migration/initialization for analytics MongoDB collection
+- [x] Add migration/initialization for analytics MongoDB collection (auto-created by MongoDB)
 - [ ] Test model CRUD operations
 
 ### API Endpoints
@@ -80,8 +80,8 @@ Track progress on the Archive Extension feature. Check off items as they are com
 - [ ] Test prompt effectiveness with various query types
 
 ### Node.js WebSocket Handler
-- [ ] Add Archive Assistant events to `node/ask_ai.js` or new file (deferred - using polling)
-- [ ] Test streaming responses
+- [x] Add Archive Assistant events to `node/archive_assistant.js`
+- [x] Test streaming responses
 
 ---
 
@@ -106,10 +106,10 @@ Track progress on the Archive Extension feature. Check off items as they are com
 - [x] Add dark mode support
 
 ### Settings Page
-- [ ] Add Archive section to settings
-- [ ] Blocklist management UI
-- [ ] Export button
-- [ ] Extension download links
+- [x] Add Blocklist tab to archive view
+- [x] Blocklist management UI (add/remove blocked domains, patterns, allowed domains)
+- [ ] Export button (deferred)
+- [x] Extension download links (in Archive view UI, URLs need updating when published)
 
 ---
 

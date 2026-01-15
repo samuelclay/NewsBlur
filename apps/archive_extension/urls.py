@@ -26,6 +26,7 @@ urlpatterns = [
     path("recategorize", views.recategorize_archives, name="archive-recategorize"),
     # Management
     path("delete", views.delete_archives, name="archive-delete"),
+    path("delete_by_domain", views.delete_archives_by_domain, name="archive-delete-by-domain"),
     # Blocklist management
     path("blocklist", views.get_blocklist, name="archive-blocklist-get"),
     path("blocklist/update", views.update_blocklist, name="archive-blocklist-update"),
