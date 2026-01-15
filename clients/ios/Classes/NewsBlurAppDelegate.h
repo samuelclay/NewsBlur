@@ -150,6 +150,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     
     PINCache *cachedFavicons;
     PINCache *cachedStoryImages;
+    PINCache *cachedUserAvatars;
 }
 
 @property (class, nonatomic, readonly) NewsBlurAppDelegate *shared;
@@ -202,6 +203,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic, readwrite) StoriesCollection *storiesCollection;
 @property (nonatomic, readwrite) PINCache *cachedFavicons;
 @property (nonatomic, readwrite) PINCache *cachedStoryImages;
+@property (nonatomic, readwrite) PINCache *cachedUserAvatars;
 
 @property (nonatomic, readonly) NSString *url;
 @property (nonatomic, readonly) NSString *host;
@@ -482,6 +484,10 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (UIImage *)getFavicon:(NSString *)filename;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved;
+
+- (void)saveUserAvatar:(UIImage *)image forUserId:(NSString *)userId;
+- (UIImage *)getCachedUserAvatar:(NSString *)userId;
+- (UIImage *)defaultUserAvatar;
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;

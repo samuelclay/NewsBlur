@@ -118,6 +118,7 @@
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize cachedFavicons;
 @synthesize cachedStoryImages;
+@synthesize cachedUserAvatars;
 @synthesize activeUsername;
 @synthesize activeUserProfileId;
 @synthesize activeUserProfileName;
@@ -216,6 +217,8 @@
     cachedFavicons.memoryCache.removeAllObjectsOnEnteringBackground = NO;
     cachedStoryImages = [[PINCache alloc] initWithName:@"NBStoryImages"];
     cachedStoryImages.memoryCache.removeAllObjectsOnEnteringBackground = NO;
+    cachedUserAvatars = [[PINCache alloc] initWithName:@"NBUserAvatars"];
+    cachedUserAvatars.memoryCache.removeAllObjectsOnEnteringBackground = NO;
     isPremium = NO;
     isPremiumArchive = NO;
     premiumExpire = 0;
@@ -4081,6 +4084,24 @@
             return [UIImage imageNamed:@"world.png"];
         }
     }
+}
+
+- (void)saveUserAvatar:(UIImage *)image forUserId:(NSString *)userId {
+    if (image && userId && ![image isKindOfClass:[NSNull class]] &&
+        [userId class] != [NSNull class]) {
+        [self.cachedUserAvatars setObject:image forKey:userId];
+    }
+}
+
+- (UIImage *)getCachedUserAvatar:(NSString *)userId {
+    if (!userId || [userId class] == [NSNull class]) {
+        return nil;
+    }
+    return [self.cachedUserAvatars objectForKey:userId];
+}
+
+- (UIImage *)defaultUserAvatar {
+    return [UIImage imageNamed:@"default_profile_avatar"];
 }
 
 #pragma mark -
