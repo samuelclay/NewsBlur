@@ -161,6 +161,58 @@ class TrendingFeeds(View):
                         f'reader_count="{reader_count}"}} {total_seconds}'
                     )
 
+        # Long Reads (stories with ≥3 readers, sorted by avg read time)
+        for days in [1, 7]:
+            long_reads = RTrendingStory.get_long_reads(days=days, limit=5, min_readers=3)
+
+            if long_reads:
+                story_hashes = [s["story_hash"] for s in long_reads]
+
+                # Bulk fetch stories from MongoDB
+                stories_by_hash = {}
+                for story in MStory.objects(story_hash__in=story_hashes).only(
+                    "story_hash", "story_title", "story_date", "story_feed_id"
+                ):
+                    stories_by_hash[story.story_hash] = story
+
+                # Get feed titles
+                feed_ids = list(set(s["feed_id"] for s in long_reads))
+                feeds_by_id = {}
+                for feed in Feed.objects.filter(pk__in=feed_ids).values("pk", "feed_title"):
+                    feeds_by_id[feed["pk"]] = feed["feed_title"]
+
+                for rank, story_data in enumerate(long_reads, 1):
+                    story_hash = story_data["story_hash"]
+                    feed_id = story_data["feed_id"]
+                    total_seconds = story_data["total_seconds"]
+                    reader_count = story_data["reader_count"]
+                    avg_seconds = story_data["avg_seconds_per_reader"]
+
+                    story = stories_by_hash.get(story_hash)
+                    if story:
+                        story_title = story.story_title or "Unknown"
+                        story_date = (
+                            story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else "Unknown"
+                        )
+                    else:
+                        story_title = "Unknown"
+                        story_date = "Unknown"
+
+                    feed_title = feeds_by_id.get(feed_id, "Unknown Feed")
+
+                    story_title_safe = self._sanitize_label(story_title)
+                    feed_title_safe = self._sanitize_label(feed_title)
+                    story_hash_safe = self._sanitize_label(story_hash)
+
+                    key = f"long_read_{days}d_{rank}"
+                    formatted_data[key] = (
+                        f'{chart_name}{{metric="long_read",days="{days}",rank="{rank}",'
+                        f'feed_id="{feed_id}",feed_title="{feed_title_safe}",'
+                        f'story_hash="{story_hash_safe}",story_title="{story_title_safe}",'
+                        f'story_date="{story_date}",reader_count="{reader_count}",'
+                        f'total_seconds="{total_seconds}"}} {avg_seconds:.1f}'
+                    )
+
         # Read time distribution buckets (0-15, 15-30, 30-60, 60-120, 120+)
         # Using ZCOUNT for O(log N) per bucket instead of fetching all stories
         buckets = [

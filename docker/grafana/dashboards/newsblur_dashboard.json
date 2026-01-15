@@ -9068,6 +9068,257 @@
           "color": {
             "mode": "thresholds"
           },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Avg Read Time"
+              },
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "rank"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Rank"
+              },
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "feed_title"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Feed"
+              },
+              {
+                "id": "custom.width",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "story_title"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Story Title"
+              },
+              {
+                "id": "custom.width",
+                "value": 300
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "feed_id"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Feed ID"
+              },
+              {
+                "id": "custom.width",
+                "value": 100
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "View Feed",
+                    "url": "https://www.newsblur.com/site/${__value.text}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "story_hash"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Story Hash"
+              },
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "story_date"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Story Date"
+              },
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "reader_count"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Readers"
+              },
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "total_seconds"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Total Time"
+              },
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 380
+      },
+      "id": 208,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [{"displayName": "Rank", "desc": false}]
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": false,
+          "expr": "trending{metric=\"long_read\",days=\"$days\"}",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Long Reads (≥3 Readers by Avg Time)",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "days": true,
+              "instance": true,
+              "job": true,
+              "metric": true
+            },
+            "indexByName": {
+              "rank": 0,
+              "feed_title": 1,
+              "story_title": 2,
+              "Value": 3,
+              "reader_count": 4,
+              "total_seconds": 5,
+              "story_date": 6,
+              "feed_id": 7,
+              "story_hash": 8
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -9094,7 +9345,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 390
+        "y": 400
       },
       "id": 163,
       "options": {
@@ -9164,7 +9415,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 390
+        "y": 400
       },
       "id": 164,
       "options": {
@@ -9234,7 +9485,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 390
+        "y": 400
       },
       "id": 165,
       "options": {
@@ -9325,7 +9576,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 398
+        "y": 408
       },
       "id": 166,
       "options": {
@@ -9413,7 +9664,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 398
+        "y": 408
       },
       "id": 167,
       "options": {
@@ -9480,7 +9731,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 406
+        "y": 416
       },
       "id": 168,
       "options": {
@@ -9550,7 +9801,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 406
+        "y": 416
       },
       "id": 169,
       "options": {
@@ -9590,7 +9841,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 414
+        "y": 424
       },
       "id": 171,
       "panels": [],
@@ -9818,7 +10069,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 415
+        "y": 425
       },
       "id": 173,
       "options": {
@@ -9888,7 +10139,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 415
+        "y": 425
       },
       "id": 174,
       "options": {
@@ -9980,7 +10231,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 415
+        "y": 425
       },
       "id": 175,
       "options": {
@@ -10098,7 +10349,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 419
+        "y": 429
       },
       "id": 177,
       "options": {
@@ -10190,7 +10441,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 419
+        "y": 429
       },
       "id": 178,
       "options": {
@@ -10285,7 +10536,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 427
+        "y": 437
       },
       "id": 179,
       "options": {
@@ -10369,7 +10620,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 427
+        "y": 437
       },
       "id": 180,
       "options": {
@@ -10431,7 +10682,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 427
+        "y": 437
       },
       "id": 181,
       "options": {
