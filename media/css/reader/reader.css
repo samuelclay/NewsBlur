@@ -7810,17 +7810,29 @@ form.opml_import_form input {
     overflow: hidden !important;
 }
 
+#simplemodal-container.NB-full-container.NB-classifier-container {
+    height: 800px !important;
+}
+
 .NB-modal.NB-modal-classifiers {
     position: static;
     overflow: hidden;
-    max-height: 600px;
+    height: 100%;
+    max-height: 800px;
     padding: 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+.NB-modal-classifiers .NB-tab {
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
 }
 
 .NB-modal-classifiers form {
-    height: 500px;
-    padding: 12px 12px 12px 0;
-    margin: 1px 0;
+    padding: 12px 12px 36px 0;
+    margin: 1px 0 24px 0;
     overflow-y: auto;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -8018,6 +8030,261 @@ form.opml_import_form input {
     padding: 4px 4px 4px 24px;
     background: #FFE1DB url('/media/embed/icons/circular/exclamation.png') no-repeat 4px 4px;
     background-size: 16px;
+}
+
+/* ============================== */
+/* = Manage Training Tab Styles = */
+/* ============================== */
+
+/* Header with title and tabs on same row */
+.NB-modal-trainer .NB-trainer-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 0;
+}
+
+.NB-modal-trainer .NB-trainer-header .NB-modal-title {
+    margin-bottom: 8px;
+    border-bottom: none;
+}
+
+.NB-modal-trainer .NB-trainer-header .NB-modal-tabs {
+    float: none;
+    position: relative;
+    bottom: -1px;
+    margin: 0;
+}
+
+.NB-modal-trainer .NB-trainer-header .NB-modal-tab {
+    border-bottom: 1px solid transparent;
+}
+
+.NB-modal-trainer .NB-trainer-header .NB-modal-tab.NB-active {
+    border-bottom: 1px solid white;
+}
+
+.NB-modal-trainer .NB-tab {
+    display: none;
+}
+
+.NB-modal-trainer .NB-tab.NB-active {
+    display: block;
+}
+
+/* Add spacing above the "What do you like..." title */
+.NB-modal-trainer .NB-tab-sitebyside .NB-modal-title {
+    margin-top: 20px;
+    margin-bottom: 16px;
+}
+
+.NB-modal-trainer .NB-tab-sitebyside {
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.NB-modal-trainer .NB-tab-sitebyside > * {
+    flex-shrink: 0;
+}
+
+.NB-modal-trainer .NB-tab-sitebyside form {
+    flex: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.NB-modal-trainer .NB-tab-manage {
+    display: flex;
+    flex-direction: column;
+    padding-top: 16px;
+}
+
+.NB-manage-training-content {
+    padding: 12px 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    min-height: 0;
+}
+
+.NB-manage-training-content .NB-modal-submit-bottom {
+    flex-shrink: 0;
+}
+
+.NB-manage-training-folders {
+    padding: 0 12px 24px;
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 24px;
+    min-height: 0;
+}
+
+.NB-manage-folder {
+    margin-bottom: 16px;
+}
+
+.NB-manage-folder-title {
+    font-weight: bold;
+    font-size: 13px;
+    color: #505050;
+    padding: 8px 12px;
+    background-color: #EAECE5;
+    border-radius: 3px;
+    margin-bottom: 8px;
+}
+
+.NB-manage-folder-feeds {
+    padding-left: 12px;
+}
+
+.NB-manage-feed {
+    margin-bottom: 12px;
+    border-left: 3px solid #E0E0E0;
+    padding-left: 12px;
+}
+
+.NB-manage-feed-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.NB-manage-feed-header .feed_favicon {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-manage-feed-title {
+    font-weight: bold;
+    font-size: 13px;
+    color: #303030;
+}
+
+.NB-manage-feed-classifiers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.NB-manage-classifier-item {
+    display: inline-block;
+}
+
+.NB-manage-classifier-item .NB-classifier {
+    font-size: 12px;
+}
+
+/* Manage tab submit area */
+.NB-manage-submit-area {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 36px;
+}
+
+.NB-manage-save {
+    display: none;
+}
+
+.NB-manage-saved-message {
+    display: none;
+    color: #4a8f29;
+    font-size: 13px;
+    font-weight: bold;
+    margin-left: 12px;
+}
+
+/* Empty state */
+.NB-manage-training-empty {
+    text-align: center;
+    padding: 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-manage-training-empty-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: transparent url('/media/embed/icons/nouns/thumbs-up.svg') no-repeat center center;
+    background-size: 60px;
+    opacity: 0.3;
+}
+
+.NB-manage-training-empty-message h3 {
+    font-size: 18px;
+    color: #505050;
+    margin-bottom: 8px;
+}
+
+.NB-manage-training-empty-message p {
+    font-size: 14px;
+    color: #808080;
+    margin-bottom: 20px;
+}
+
+/* Loading state */
+.NB-manage-loading {
+    text-align: center;
+    padding: 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-manage-loading .NB-modal-loading {
+    display: block;
+    position: relative;
+    width: 24px;
+    height: 24px;
+    margin: 0 auto 12px;
+}
+
+.NB-manage-loading-text {
+    font-size: 14px;
+    color: #808080;
+}
+
+/* Error state */
+.NB-manage-training-error {
+    text-align: center;
+    padding: 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-manage-training-error-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px;
+    background-image: url('/media/img/icons/nouns/alert.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.5;
+}
+
+.NB-manage-training-error h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+}
+
+.NB-manage-training-error p {
+    font-size: 13px;
+    color: #808080;
+    margin: 0 0 20px 0;
 }
 
 /* ======================= */
@@ -9411,7 +9678,7 @@ form.opml_import_form input {
     transform: translate(-50%, -50%);
     font-size: 24px;
     color: #fff;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .NB-module-trial .NB-module-trial-message {
@@ -15670,7 +15937,8 @@ form.opml_import_form input {
 /* Green checkmarks for free tier - override absolute positioning for flex layout */
 .NB-premium-tier-features-free li .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/accept.svg');
-    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);  /* green */
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
+    /* green */
     width: 12px;
     height: 12px;
     background-size: 12px;
@@ -15778,7 +16046,8 @@ form.opml_import_form input {
 /* Green checkmarks for self-hosted tier - override absolute positioning for flex layout */
 .NB-premium-tier-features-selfhosted li .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/accept.svg');
-    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);  /* green */
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
+    /* green */
     width: 12px;
     height: 12px;
     background-size: 12px;
@@ -15830,8 +16099,8 @@ form.opml_import_form input {
     right: 0;
     bottom: 0;
     background:
-        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 40%);
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 40%);
     pointer-events: none;
 }
 
@@ -15912,103 +16181,148 @@ form.opml_import_form input {
 /* Premium tier icons with individual vivid colors */
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-1 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-sheets-100.png');
-    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);  /* green */
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
+    /* green */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-2 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-lightning-bolt-100.png');
-    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%); /* orange */
+    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%);
+    /* orange */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-3 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-comics-magazine-100.png');
-    filter: invert(36%) sepia(87%) saturate(2000%) hue-rotate(310deg) brightness(95%) contrast(100%);  /* pink */
+    filter: invert(36%) sepia(87%) saturate(2000%) hue-rotate(310deg) brightness(95%) contrast(100%);
+    /* pink */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-4 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
-    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);  /* blue */
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
+    /* blue */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-5 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-tags-100.png');
-    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);  /* purple */
+    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);
+    /* purple */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-6 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-security-wi-fi-100.png');
-    filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(140deg) brightness(95%) contrast(95%);   /* teal */
+    filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(140deg) brightness(95%) contrast(95%);
+    /* teal */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-7 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-rss-100.png');
-    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);  /* red */
+    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);
+    /* red */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-8 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-activity-history-100.png');
-    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);   /* cyan */
+    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
+    /* cyan */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-9 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/direction_black.svg');
-    filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);  /* violet */
+    filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);
+    /* violet */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-10 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-knife-and-spatchula-100.png');
-    filter: invert(60%) sepia(80%) saturate(1500%) hue-rotate(35deg) brightness(100%) contrast(100%);  /* yellow-gold */
+    filter: invert(60%) sepia(80%) saturate(1500%) hue-rotate(35deg) brightness(100%) contrast(100%);
+    /* yellow-gold */
 }
 
 /* Archive tier icons with individual vivid colors */
 .NB-premium-tier-features-archive li.NB-1 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-bursts-100.png');
-    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);  /* red */
+    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);
+    /* red */
 }
+
 .NB-premium-tier-features-archive li.NB-2 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-relax-with-book-100.png');
-    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);   /* green */
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
+    /* green */
 }
+
 .NB-premium-tier-features-archive li.NB-3 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-filing-cabinet-100.png');
-    filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);   /* brown-orange */
+    filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);
+    /* brown-orange */
 }
+
 .NB-premium-tier-features-archive li.NB-4 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-quadcopter-100.png');
-    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);  /* blue */
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
+    /* blue */
 }
+
 .NB-premium-tier-features-archive li.NB-5 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/train.svg');
-    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);  /* blue */
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
+    /* blue */
 }
+
 .NB-premium-tier-features-archive li.NB-6 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/direction_black.svg');
-    filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);  /* violet */
+    filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);
+    /* violet */
 }
+
 .NB-premium-tier-features-archive li.NB-7 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-rss-100.png');
-    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%); /* orange */
+    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%);
+    /* orange */
 }
+
 .NB-premium-tier-features-archive li.NB-8 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-calendar-100.png');
-    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);   /* cyan */
+    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
+    /* cyan */
 }
+
 .NB-premium-tier-features-archive li.NB-9 .NB-premium-bullet-image {
     background-image: url('/media/img/icons/nouns/prompt.svg');
-    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);  /* purple */
+    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);
+    /* purple */
 }
 
 /* Pro tier icons with individual vivid colors */
 .NB-premium-tier-features-pro li.NB-1 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/stack.svg');
-    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);  /* green */
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
+    /* green */
 }
+
 .NB-premium-tier-features-pro li.NB-2 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-lightning-bolt-100.png');
-    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%); /* orange */
+    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%);
+    /* orange */
 }
+
 .NB-premium-tier-features-pro li.NB-3 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-pyramids-100.png');
-    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
+    /* gold */
 }
+
 .NB-premium-tier-features-pro li.NB-4 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/train.svg');
-    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
+    /* gold */
 }
+
 .NB-premium-tier-features-pro li.NB-5 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
-    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
+    /* gold */
 }
 
 
@@ -16149,32 +16463,32 @@ form.opml_import_form input {
 
 .NB-premium-tier-premium .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green {
     background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
-    box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .NB-premium-tier-premium .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green:hover {
     background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
-    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .NB-premium-tier-archive .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green {
     background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
-    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .NB-premium-tier-archive .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green:hover {
     background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .NB-premium-tier-pro .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green {
     background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
-    box-shadow: 0 1px 2px rgba(217, 119, 6, 0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 1px 2px rgba(217, 119, 6, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .NB-premium-tier-pro .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green:hover {
     background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
-    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .NB-premium-tier-buttons .NB-provider-alternate {
@@ -19009,6 +19323,7 @@ form.opml_import_form input {
         opacity: 0;
         transform: translateY(-8px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -19058,11 +19373,25 @@ form.opml_import_form input {
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-4px); }
-    40% { transform: translateX(4px); }
-    60% { transform: translateX(-4px); }
-    80% { transform: translateX(4px); }
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-4px);
+    }
+
+    40% {
+        transform: translateX(4px);
+    }
+
+    60% {
+        transform: translateX(-4px);
+    }
+
+    80% {
+        transform: translateX(4px);
+    }
 }
 
 .NB-folder-icon-editor .NB-modal-submit-save {
@@ -21232,7 +21561,7 @@ form.opml_import_form input {
     padding: 16px 18px 16px 40px;
 }
 
-.NB-social-card input[type="radio"]:checked + .NB-social-card-content {
+.NB-social-card input[type="radio"]:checked+.NB-social-card-content {
     border-color: #5c89b2;
     background: #f0f7fc;
 }
@@ -21242,7 +21571,7 @@ form.opml_import_form input {
     background: #f0f0f0;
 }
 
-.NB-social-card input[type="radio"]:checked + .NB-social-card-content:hover {
+.NB-social-card input[type="radio"]:checked+.NB-social-card-content:hover {
     background: #e8f2f8;
 }
 
@@ -21292,7 +21621,7 @@ form.opml_import_form input {
     background: #2a2a2a;
 }
 
-.NB-dark .NB-social-card input[type="radio"]:checked + .NB-social-card-content {
+.NB-dark .NB-social-card input[type="radio"]:checked+.NB-social-card-content {
     border-color: #5c89b2;
     background: #2d3a47;
 }
@@ -21822,9 +22151,17 @@ form.opml_import_form input {
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    75% { transform: translateX(4px); }
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-4px);
+    }
+
+    75% {
+        transform: translateX(4px);
+    }
 }
 
 .NB-blocklist-add-btn {
@@ -22522,6 +22859,7 @@ form.opml_import_form input {
         opacity: 0.3;
         transform: scale(0.8);
     }
+
     40% {
         opacity: 1;
         transform: scale(1);
@@ -22952,7 +23290,7 @@ form.opml_import_form input {
 
 .NB-archive-category-filter.NB-active .NB-archive-filter-count,
 .NB-archive-domain-filter.NB-active .NB-archive-filter-count {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     color: #FFF;
 }
 
@@ -22989,7 +23327,7 @@ form.opml_import_form input {
     background: #FFF;
     border: 1px solid #DDD;
     border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     padding: 16px;
 }
 
@@ -23048,7 +23386,7 @@ form.opml_import_form input {
 }
 
 .NB-archive-date-custom.NB-active .NB-archive-date-custom-clear {
-    color: rgba(255,255,255,0.6);
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .NB-archive-date-custom.NB-active .NB-archive-date-custom-clear:hover {
@@ -23393,10 +23731,12 @@ form.opml_import_form input {
         padding-bottom: 0;
         border-width: 0;
     }
+
     40% {
         opacity: 0.3;
         border-width: 1px;
     }
+
     100% {
         opacity: 1;
         max-height: 200px;
@@ -23416,6 +23756,7 @@ form.opml_import_form input {
         opacity: 0;
         transform: translateY(-8px) scale(0.9);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0) scale(1);
