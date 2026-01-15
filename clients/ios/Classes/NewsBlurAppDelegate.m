@@ -215,10 +215,13 @@
     
     cachedFavicons = [[PINCache alloc] initWithName:@"NBFavicons"];
     cachedFavicons.memoryCache.removeAllObjectsOnEnteringBackground = NO;
+    cachedFavicons.memoryCache.costLimit = 5 * 1024 * 1024; // 5 MB
     cachedStoryImages = [[PINCache alloc] initWithName:@"NBStoryImages"];
     cachedStoryImages.memoryCache.removeAllObjectsOnEnteringBackground = NO;
+    cachedStoryImages.memoryCache.costLimit = 20 * 1024 * 1024; // 20 MB
     cachedUserAvatars = [[PINCache alloc] initWithName:@"NBUserAvatars"];
     cachedUserAvatars.memoryCache.removeAllObjectsOnEnteringBackground = NO;
+    cachedUserAvatars.memoryCache.costLimit = 10 * 1024 * 1024; // 10 MB
     isPremium = NO;
     isPremiumArchive = NO;
     premiumExpire = 0;
@@ -683,10 +686,15 @@
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
+
 #if !TARGET_OS_MACCATALYST
     // Release any cached data, images, etc that aren't in use.
-    [cachedStoryImages removeAllObjects];
+    // Only clear memory caches, not disk caches
+    [cachedStoryImages.memoryCache removeAllObjects];
+    [cachedFavicons.memoryCache removeAllObjects];
+    [cachedUserAvatars.memoryCache removeAllObjects];
+    [activeCachedImages removeAllObjects];
+    [recentlyReadStories removeAllObjects];
 #endif
 }
 
@@ -4057,7 +4065,10 @@
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename {
     if (image && filename && ![image isKindOfClass:[NSNull class]] &&
         [filename class] != [NSNull class]) {
-        [self.cachedFavicons setObject:image forKey:filename];
+        // Set cost based on image memory size for proper cache eviction
+        NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
+        [self.cachedFavicons.memoryCache setObject:image forKey:filename withCost:cost];
+        [self.cachedFavicons.diskCache setObject:image forKey:filename];
     }
 }
 
@@ -4089,7 +4100,10 @@
 - (void)saveUserAvatar:(UIImage *)image forUserId:(NSString *)userId {
     if (image && userId && ![image isKindOfClass:[NSNull class]] &&
         [userId class] != [NSNull class]) {
-        [self.cachedUserAvatars setObject:image forKey:userId];
+        // Set cost based on image memory size for proper cache eviction
+        NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
+        [self.cachedUserAvatars.memoryCache setObject:image forKey:userId withCost:cost];
+        [self.cachedUserAvatars.diskCache setObject:image forKey:userId];
     }
 }
 
@@ -4972,6 +4986,22 @@
 
 - (UIImage *)cachedImageForStoryHash:(NSString *)storyHash {
     return self.cachedStoryImages[storyHash];
+}
+
+- (void)cacheStoryImage:(UIImage *)image forStoryHash:(NSString *)storyHash {
+    if (!image || !storyHash) return;
+
+    // Set cost based on image memory size for proper cache eviction
+    NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
+    [self.cachedStoryImages.memoryCache setObject:image forKey:storyHash withCost:cost];
+    [self.cachedStoryImages.diskCache setObject:image forKey:storyHash];
+}
+
+- (void)cacheStoryImagePlaceholder:(NSString *)storyHash {
+    if (!storyHash) return;
+
+    // Use NSNull as placeholder with minimal cost
+    [self.cachedStoryImages.memoryCache setObject:[NSNull null] forKey:storyHash withCost:1];
 }
 
 - (void)cleanImageCache {
