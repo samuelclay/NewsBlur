@@ -108,3 +108,24 @@ class ratelimit_post(ratelimit):
             value = hashlib.sha1((request.POST.get(self.key_field, "")).encode("utf-8")).hexdigest()
             extra += "-" + value
         return extra
+
+
+class ratelimit_by_url_user(ratelimit):
+    """Rate limit based on a user_id extracted from the URL path, not the requester.
+
+    Use this for public/anonymous endpoints where the target resource belongs to
+    a specific user (e.g., RSS feeds, public profiles). All requests for resources
+    belonging to the same user share one rate limit.
+
+    Set `user_id_path_index` to specify which path segment contains the user_id.
+    Default is 2 for paths like /reader/folder_rss/{user_id}/...
+    """
+
+    user_id_path_index = 2  # Path segment index containing user_id
+
+    def key_extra(self, request):
+        path_parts = request.path.strip("/").split("/")
+        if len(path_parts) > self.user_id_path_index:
+            user_id = path_parts[self.user_id_path_index]
+            return f"url-user-{user_id}"
+        return super().key_extra(request)

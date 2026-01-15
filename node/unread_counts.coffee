@@ -2,6 +2,7 @@ fs     = require 'fs'
 redis  = require 'redis'
 log    = require './log.js'
 ask_ai = require './ask_ai.js'
+archive_assistant = require './archive_assistant.js'
 
 unread_counts = (server) =>
     ENV_DEV = process.env.NODE_ENV == 'development' or process.env.NODE_ENV == 'debug'
@@ -174,6 +175,14 @@ unread_counts = (server) =>
                         return
                     else
                         log.debug username, "Ask AI handler returned false"
+
+                # Route archive_assistant messages to dedicated handler
+                if message.startsWith?('archive_assistant:')
+                    log.debug username, "Routing to archive_assistant handler"
+                    handled = archive_assistant.handle_archive_assistant_message(socket, channel, message)
+                    if handled
+                        log.debug username, "Archive Assistant handler processed message"
+                        return
 
                 # Handle standard feed/user update messages
                 event_name = 'feed:update'

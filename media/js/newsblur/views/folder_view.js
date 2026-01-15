@@ -150,6 +150,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             this.$('.folder_title').eq(0).bind('contextmenu', _.bind(this.show_manage_menu_rightclick, this));
         }
 
+        // Store view reference on DOM element (also done in initialize, but ensure it's set after render)
+        this.$el.data('folder_view', this);
+
         return this;
     },
 
@@ -204,10 +207,10 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                         </div>\
                     <% } %>\
                 <% } %>\
-                <div class="NB-folder-icon">\
-                <% if (feedbar) { %>\
-                    <img class="feed_favicon" src="<%= $.favicon("river:"+folder_title) %>">\
-                <% } %>\
+                <% var icon_url = $.favicon("river:"+folder_title); %>\
+                <% var is_custom = $.icon_url_is_custom(icon_url); %>\
+                <div class="NB-folder-icon<% if (is_custom) { %> NB-has-custom-icon<% } %>">\
+                    <%= $.favicon_html("river:"+folder_title) %>\
                 </div>\
                 <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
                 <div class="NB-feedlist-manage-icon" role="button"></div>\
@@ -408,7 +411,10 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 $children.eq(0).is(':visible') &&
                 !this.collection.collapsed)) {
             NEWSBLUR.log(["hiding folder", $children, this.collection, this.options.folder_title]);
-            NEWSBLUR.assets.collapsed_folders(this.options.folder_title, true);
+            // Don't save preference in feed_chooser mode (temporary collapse)
+            if (!this.options.feed_chooser) {
+                NEWSBLUR.assets.collapsed_folders(this.options.folder_title, true);
+            }
             this.collection.collapsed = true;
             this.$el.addClass('NB-folder-collapsed');
             $children.animate({ 'opacity': 0 }, {
@@ -416,6 +422,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 'duration': options.force_collapse ? 0 : 200,
                 'complete': function () {
                     self.show_collapsed_folder_count();
+                    self.show_folder_highlight_status();
                     $children.slideUp({
                         'duration': 270,
                         'easing': 'easeOutQuart'
@@ -427,9 +434,14 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         else if ($children.length &&
             (this.collection.collapsed || !$children.eq(0).is(':visible'))) {
             NEWSBLUR.log(["showing folder", this.collection, this.options.folder_title]);
-            NEWSBLUR.assets.collapsed_folders(this.options.folder_title, false);
+            // Don't save preference in feed_chooser mode (temporary collapse)
+            if (!this.options.feed_chooser) {
+                NEWSBLUR.assets.collapsed_folders(this.options.folder_title, false);
+            }
             this.collection.collapsed = false;
             this.$el.removeClass('NB-folder-collapsed');
+            // Remove folder highlight status when expanding
+            this.$('.folder_title').eq(0).find('.NB-folder-highlight-status').remove();
             if (!NEWSBLUR.assets.preference('folder_counts')) {
                 this.hide_collapsed_folder_count();
             }
@@ -465,6 +477,53 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         });
 
         return all_children_highlighted;
+    },
+
+    no_children_highlighted: function () {
+        var folder_title = this.options.folder_title;
+        var no_children_highlighted = this.collection.all(function (item) {
+            if (item.is_feed()) {
+                var view = _.any(item.feed.views, function (view) {
+                    return view.options.feed_chooser &&
+                        view.options.folder_title == folder_title;
+                });
+
+                if (!view) return true;
+
+                return !item.feed.highlighted_in_folder(folder_title);
+            } else if (item.is_folder()) {
+                return _.all(item.folder_views, function (view) {
+                    if (!view.options.feed_chooser) return true;
+                    return view.no_children_highlighted();
+                });
+            }
+            return true;
+        });
+
+        return no_children_highlighted;
+    },
+
+    show_folder_highlight_status: function () {
+        if (!this.options.feed_chooser) return;
+
+        var $folder_title = this.$('.folder_title').eq(0);
+        var $status = $folder_title.find('.NB-folder-highlight-status');
+
+        // Remove existing status
+        $status.remove();
+
+        // Only show status if folder is collapsed
+        if (!this.$el.hasClass('NB-folder-collapsed')) return;
+
+        var all_highlighted = this.all_children_highlighted();
+        var none_highlighted = this.no_children_highlighted();
+
+        if (all_highlighted) {
+            $folder_title.append($.make('span', { className: 'NB-folder-highlight-status NB-folder-on' }, 'ON'));
+        } else if (none_highlighted) {
+            $folder_title.append($.make('span', { className: 'NB-folder-highlight-status NB-folder-off' }, 'OFF'));
+        }
+        // If mixed, don't show any status
     },
 
     highlighted_count_unique_folders: function () {
@@ -508,6 +567,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     highlight_feeds: function (options) {
         options = options || {};
         if (!this.options.feed_chooser) return;
+        // Don't toggle selection when clicking the collapse icon
+        if (options.target && $(options.target).hasClass('NB-feedlist-collapse-icon')) return;
         var $folder = options.currentTarget && $(options.currentTarget).closest('li.folder');
         if ($folder && $folder[0] != this.el) return;
         var all_children_highlighted = this.all_children_highlighted();

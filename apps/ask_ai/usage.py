@@ -28,6 +28,11 @@ class AskAIUsageTracker:
         weekly_usage = self._weekly_count()
         if weekly_usage >= self.WEEKLY_LIMIT:
             time_remaining = self._format_time_until_weekly_reset()
+            if self.profile.is_premium:
+                return (
+                    False,
+                    f"You've used your Ask AI request this week. Your limit resets in {time_remaining}.\n\nUpgrade to Premium Archive for 100 requests per day.",
+                )
             return (
                 False,
                 f"You've used your Ask AI request this week. Your limit resets in {time_remaining}.\n\nUpgrade to Premium Archive for 100 requests per day.",
@@ -104,7 +109,7 @@ class AskAIUsageTracker:
         last_day = now - datetime.timedelta(days=1)
         last_week = now - datetime.timedelta(days=7)
 
-        # Daily counts for premium users
+        # Daily counts for archive users
         daily_counts = {}
         for doc in collection.aggregate(
             [
@@ -114,7 +119,7 @@ class AskAIUsageTracker:
         ):
             daily_counts[doc["_id"]] = doc["count"]
 
-        # Weekly counts for free users
+        # Weekly counts for premium/free users
         weekly_counts = {}
         for doc in collection.aggregate(
             [
@@ -130,7 +135,6 @@ class AskAIUsageTracker:
     @property
     def _is_archive_tier(self):
         return self.profile.is_archive or self.profile.is_pro
-
 
     @property
     def _plan_tier(self):
@@ -264,16 +268,11 @@ class AskAIUsageTracker:
         return f"{minutes} minute{'s' if minutes != 1 else ''}"
 
     def _daily_limit_message(self, limit):
+        """Generate error message for archive/pro users hitting daily limit."""
         time_remaining = self._format_time_until_reset()
-        if self.profile.is_archive or self.profile.is_pro:
-            return (
-                f"You've reached your daily limit of {limit} Ask AI requests. "
-                f"Your limit resets at midnight tonight, in {time_remaining}."
-            )
         return (
             f"You've reached your daily limit of {limit} Ask AI requests. "
-            f"Your limit resets at midnight tonight, in {time_remaining}.\n\n"
-            "Upgrade to Premium Archive for 100 requests per day."
+            f"Your limit resets at midnight tonight, in {time_remaining}."
         )
 
 
@@ -374,7 +373,7 @@ class TranscriptionUsageTracker:
         last_day = now - datetime.timedelta(days=1)
         last_week = now - datetime.timedelta(days=7)
 
-        # Daily counts for premium users
+        # Daily counts for archive users
         daily_counts = {}
         for doc in collection.aggregate(
             [
@@ -384,7 +383,7 @@ class TranscriptionUsageTracker:
         ):
             daily_counts[doc["_id"]] = doc["count"]
 
-        # Weekly counts for free users
+        # Weekly counts for premium/free users
         weekly_counts = {}
         for doc in collection.aggregate(
             [
@@ -400,7 +399,6 @@ class TranscriptionUsageTracker:
     @property
     def _is_archive_tier(self):
         return self.profile.is_archive or self.profile.is_pro
-
 
     @property
     def _plan_tier(self):

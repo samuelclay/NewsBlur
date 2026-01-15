@@ -151,7 +151,11 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             return $.make('li', [
                 $.make('a', [
                     $.make('div', { className: 'NB-add-autocomplete-subscribers' }, Inflector.pluralize(' subscriber', item.num_subscribers, true)),
-                    $.make('img', { className: 'NB-add-autocomplete-favicon', src: $.favicon(feed) }),
+                    $.favicon_el(feed, {
+                        image_class: 'NB-add-autocomplete-favicon',
+                        emoji_class: 'NB-add-autocomplete-favicon NB-feed-emoji',
+                        colored_class: 'NB-add-autocomplete-favicon NB-feed-icon-colored'
+                    }),
                     $.make('div', { className: 'NB-add-autocomplete-title' }, item.label),
                     $.make('div', { className: 'NB-add-autocomplete-address' }, item.value)
                 ])
@@ -213,6 +217,17 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         var url = this.$('.NB-add-url').val();
         var folder = this.$('.NB-folders').val();
 
+        // Check feed limit before adding
+        var add_limit = NEWSBLUR.Globals.add_feed_limit;
+        var active_feeds = NEWSBLUR.assets.feeds.active().length;
+        if (add_limit && active_feeds >= add_limit) {
+            this.error({
+                message: "You've reached your limit of " + Inflector.commas(add_limit) +
+                    " sites. Mute some sites or upgrade your account to add more."
+            });
+            return;
+        }
+
         $error.slideUp(300);
         $loading.addClass('NB-active');
         $submit.addClass('NB-disabled').text('Adding...');
@@ -232,6 +247,10 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             NEWSBLUR.assets.load_feeds(function () {
                 if (data.feed) {
                     NEWSBLUR.reader.open_feed(data.feed.id);
+                }
+                // Show growth prompt after feed is added (if eligible)
+                if (NEWSBLUR.growth_prompts) {
+                    NEWSBLUR.growth_prompts.on_feed_added();
                 }
             });
             NEWSBLUR.reader.load_recommended_feed();

@@ -7,6 +7,8 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "site/:site_id/": "site",
         "site/:site_id": "site",
         "read": "read",
+        "trending": "trending",
+        "archive": "archive",
         "saved": "starred",
         "saved/:tag": "starred",
         "folder/saved": "starred",
@@ -63,6 +65,22 @@ NEWSBLUR.Router = Backbone.Router.extend({
         }
         console.log(["read stories", options]);
         NEWSBLUR.reader.open_read_stories(options);
+    },
+
+    trending: function () {
+        var options = {
+            router: true
+        };
+        console.log(["trending sites", options]);
+        NEWSBLUR.reader.open_trending_sites(options);
+    },
+
+    archive: function () {
+        var options = {
+            router: true
+        };
+        console.log(["archive", options]);
+        NEWSBLUR.reader.open_archive(options);
     },
 
     starred: function (tag) {
@@ -136,7 +154,8 @@ NEWSBLUR.Router = Backbone.Router.extend({
 
     extract_query: function () {
         var search = $.getQueryString('search');
-        var sanitized = search && search.replace(/[^\w\s]+/g, " ");
+        // Preserve quotes for phrase searches, strip other special characters
+        var sanitized = search && search.replace(/[^\w\s""\u201C\u201D]+/g, " ");
 
         // console.log('extract_query', search, sanitized);
 

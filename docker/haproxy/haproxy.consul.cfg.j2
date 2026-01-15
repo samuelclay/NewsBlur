@@ -6,6 +6,9 @@ global
     tune.bufsize 32000
     tune.maxrewrite 8196
     tune.ssl.default-dh-param 2048
+    # HTTP/2 performance tuning for high-latency connections
+    tune.h2.initial-window-size 1048576
+    tune.h2.max-concurrent-streams 250
     ssl-default-bind-options no-sslv3 no-tlsv10 no-tlsv11 no-tls-tickets
     ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
     log 127.0.0.1 local0 notice
@@ -22,7 +25,7 @@ defaults
     mode http
     option forwardfor
     option http-server-close
-    option httpclose
+    # option httpclose  # Disabled: breaks HTTP/2 multiplexing causing ERR_HTTP2_PROTOCOL_ERROR
     option log-health-checks
     option log-separate-errors
     option httplog
@@ -31,7 +34,7 @@ defaults
     retries 2
     timeout connect 10s
     timeout client 10s
-    timeout server 10s
+    timeout server 30s
     timeout queue 10s
     errorfile 502 /srv/newsblur/templates/502.http
     errorfile 503 /srv/newsblur/templates/502.http
@@ -103,7 +106,7 @@ backend nginx
     option httpchk GET /_nginxchk
     http-check expect rstatus 200|503
     default-server check inter 2000ms resolvers consul resolve-prefer ipv4 resolve-opts allow-dup-ip init-addr none
-    {% for host in groups.hweb %}
+    {% for host in groups.hdjango %}
         server nginx-{{host}} {{host}}.node.nyc1.consul:80
     {% endfor %}
 

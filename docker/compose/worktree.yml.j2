@@ -12,7 +12,7 @@ services:
       - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD:-True}
     stdin_open: true
     tty: true
-    restart: unless-stopped
+    restart: "no"
     ulimits:
       nproc: 10000
       nofile:
@@ -35,7 +35,7 @@ services:
       - NODE_ENV=docker
       - MONGODB_PORT=29019
     command: node newsblur.js
-    restart: unless-stopped
+    restart: "no"
     stop_signal: HUP
     ports:
       - {{ node_port }}:8008
@@ -49,7 +49,7 @@ services:
   nginx:
     container_name: newsblur_nginx_{{ workspace_name }}
     image: nginx:1.19.6
-    restart: unless-stopped
+    restart: "no"
     ports:
       - {{ nginx_port }}:81
     depends_on:
@@ -64,7 +64,7 @@ services:
   haproxy:
     container_name: newsblur_haproxy_{{ workspace_name }}
     image: haproxy:latest
-    restart: unless-stopped
+    restart: "no"
     depends_on:
       - nginx
       - newsblur_web
@@ -85,7 +85,7 @@ services:
     image: newsblur/newsblur_python3
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
     command: "celery worker -A newsblur_web -B --loglevel=INFO"
-    restart: unless-stopped
+    restart: "no"
     volumes:
       - ${PWD}:/srv/newsblur
     environment:

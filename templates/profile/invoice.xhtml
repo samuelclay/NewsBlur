@@ -1,0 +1,382 @@
+<html>
+<head>
+    <title>Invoice {{ invoice_number }} - NewsBlur</title>
+    <link rel="stylesheet" type="text/css" href="https://cloud.typography.com/6565292/711824/css/fonts.css" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Whitney SSm A', 'Whitney SSm B', "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #FAD961;
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+        }
+
+        .invoice-header .company {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .invoice-header .company-logo {
+            width: 48px;
+            height: 48px;
+        }
+
+        .invoice-header .company-logo img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .invoice-header .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #505050;
+        }
+
+        .invoice-header .invoice-title {
+            text-align: right;
+        }
+
+        .invoice-header .invoice-title h1 {
+            margin: 0;
+            font-size: 36px;
+            color: #505050;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .invoice-header .invoice-title .invoice-number {
+            font-size: 14px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .invoice-details .section {
+            flex: 1;
+        }
+
+        .invoice-details .section h3 {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #999;
+            margin: 0 0 12px 0;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .invoice-details .section p {
+            margin: 4px 0;
+            font-size: 14px;
+        }
+
+        .invoice-details .section .name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .invoice-details .section-right {
+            text-align: right;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        .invoice-table th {
+            text-align: left;
+            padding: 14px 16px;
+            background-color: #505050;
+            color: #fff;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .invoice-table th:last-child {
+            text-align: right;
+        }
+
+        .invoice-table td {
+            padding: 20px 16px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .invoice-table td:last-child {
+            text-align: right;
+        }
+
+        .invoice-table .description {
+            font-weight: 500;
+        }
+
+        .invoice-table .description-sub {
+            color: #888;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .invoice-table .amount {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .invoice-total-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 32px;
+        }
+
+        .invoice-total {
+            width: 280px;
+            background: #f8f8f8;
+            padding: 20px 24px;
+            border-radius: 4px;
+        }
+
+        .invoice-total .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .invoice-total .row.total {
+            border-top: 2px solid #FAD961;
+            margin-top: 8px;
+            padding-top: 16px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .invoice-total .label {
+            color: #666;
+        }
+
+        .invoice-total .value {
+            font-weight: 600;
+        }
+
+        .refund-notice {
+            background-color: #fff3f3;
+            border: 1px solid #ffcdd2;
+            color: #c62828;
+            padding: 16px 20px;
+            border-radius: 4px;
+            margin-bottom: 32px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .payment-info {
+            background: #f0f7ff;
+            border: 1px solid #bbdefb;
+            padding: 16px 20px;
+            border-radius: 4px;
+            margin-bottom: 32px;
+        }
+
+        .payment-info .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #666;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .payment-info .value {
+            font-weight: 500;
+            color: #1565c0;
+        }
+
+        .invoice-footer {
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+
+        .invoice-footer .thanks {
+            font-size: 18px;
+            color: #505050;
+            margin-bottom: 8px;
+        }
+
+        .invoice-footer .company-info {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #FAD961 0%, #F7B731 100%);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            color: #505050;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .print-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .print-button:active {
+            transform: translateY(0);
+        }
+
+        @media print {
+            .print-button {
+                display: none !important;
+            }
+
+            body {
+                padding: 20px;
+                max-width: none;
+            }
+
+            .invoice-header {
+                border-bottom-color: #FAD961 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .invoice-table th {
+                background-color: #505050 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .invoice-total {
+                background: #f8f8f8 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<button class="print-button" onclick="print_document()">Print Invoice</button>
+
+<div class="invoice-header">
+    <div class="company">
+        <div class="company-logo">
+            <img src="/media/img/logo_newsblur.svg" alt="NewsBlur">
+        </div>
+        <div class="company-name">NewsBlur Inc.</div>
+    </div>
+    <div class="invoice-title">
+        <h1>Invoice</h1>
+        <div class="invoice-number">{{ invoice_number }}</div>
+    </div>
+</div>
+
+<div class="invoice-details">
+    <div class="section">
+        <h3>Bill To</h3>
+        <p class="name">{{ user.username }}</p>
+        <p>{{ user.email }}</p>
+    </div>
+
+    <div class="section section-right">
+        <h3>Invoice Date</h3>
+        <p class="name">{{ payment.payment_date|date:"F j, Y" }}</p>
+    </div>
+</div>
+
+<table class="invoice-table">
+    <thead>
+        <tr>
+            <th>Description</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <div class="description">NewsBlur Premium Subscription</div>
+                <div class="description-sub">Coverage period: {{ coverage_start|date:"F j, Y" }} &ndash; {{ coverage_end|date:"F j, Y" }}</div>
+            </td>
+            <td class="amount">${{ payment.payment_amount }}.00</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="invoice-total-section">
+    <div class="invoice-total">
+        <div class="row">
+            <span class="label">Subtotal</span>
+            <span class="value">${{ payment.payment_amount }}.00</span>
+        </div>
+        <div class="row total">
+            <span class="label">Total Paid</span>
+            <span class="value">${{ payment.payment_amount }}.00</span>
+        </div>
+    </div>
+</div>
+
+{% if payment.refunded %}
+<div class="refund-notice">
+    This payment has been refunded.
+</div>
+{% endif %}
+
+<div class="payment-info">
+    <div class="label">Payment Method</div>
+    <div class="value">{{ payment.payment_provider|title }}</div>
+</div>
+
+<div class="invoice-footer">
+    <div class="thanks">Thank you for supporting NewsBlur!</div>
+    <div class="company-info">NewsBlur Inc. &middot; https://newsblur.com</div>
+</div>
+
+<script>
+    var print_document = function() {
+        document.querySelector('.print-button').style.display = 'none';
+        setTimeout(function() {
+            window.print();
+            setTimeout(function() {
+                document.querySelector('.print-button').style.display = 'block';
+            }, 100);
+        }, 100);
+    }
+
+    print_document();
+</script>
+
+</body>
+</html>

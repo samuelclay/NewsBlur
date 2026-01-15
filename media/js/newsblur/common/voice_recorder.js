@@ -1,11 +1,12 @@
 NEWSBLUR.VoiceRecorder = function(options) {
     var defaults = {
         on_transcription_start: function() {},
-        on_transcription_complete: function(text) {},
-        on_transcription_error: function(error) {},
+        on_transcription_complete: function() {},
+        on_transcription_error: function() {},
         on_recording_start: function() {},
         on_recording_stop: function() {},
-        on_recording_cancel: function() {}
+        on_recording_cancel: function() {},
+        on_audio_level: function() {}
     };
 
     this.options = _.extend({}, defaults, options);
@@ -13,6 +14,9 @@ NEWSBLUR.VoiceRecorder = function(options) {
     this.audio_chunks = [];
     this.is_recording = false;
     this.stream = null;
+    this.audio_context = null;
+    this.analyser = null;
+    this.level_interval = null;
 };
 
 NEWSBLUR.VoiceRecorder.prototype = {
@@ -38,6 +42,9 @@ NEWSBLUR.VoiceRecorder.prototype = {
                 self.stream = stream;
                 self.audio_chunks = [];
 
+                // Set up audio level monitoring
+                self.setup_audio_level_monitor(stream);
+
                 // Use webm codec as it's widely supported
                 var mime_type = 'audio/webm';
                 if (!MediaRecorder.isTypeSupported(mime_type)) {
@@ -60,6 +67,7 @@ NEWSBLUR.VoiceRecorder.prototype = {
 
                 self.media_recorder.onstop = function() {
                     self.is_recording = false;
+                    self.stop_audio_level_monitor();
                     self.options.on_recording_stop();
 
                     // Stop all tracks to release microphone
@@ -84,7 +92,15 @@ NEWSBLUR.VoiceRecorder.prototype = {
             })
             .catch(function(error) {
                 console.error('Error accessing microphone:', error);
-                self.options.on_transcription_error('Could not access microphone. Please check your browser permissions.');
+                var error_message;
+                if (error.name === 'NotFoundError') {
+                    error_message = 'No microphone found. Check System Settings > Privacy > Microphone and enable Chrome.';
+                } else if (error.name === 'NotAllowedError') {
+                    error_message = 'Microphone permission denied. Click the lock icon in the address bar to allow.';
+                } else {
+                    error_message = 'Could not access microphone. Please check your browser permissions.';
+                }
+                self.options.on_transcription_error(error_message);
             });
     },
 
@@ -140,6 +156,8 @@ NEWSBLUR.VoiceRecorder.prototype = {
     cleanup: function() {
         // Forcefully stop recording and release all resources
         // This is a defensive cleanup method that ensures recording stops even if something fails
+        this.stop_audio_level_monitor();
+
         try {
             if (this.media_recorder && this.is_recording) {
                 this.media_recorder.stop();
@@ -164,6 +182,69 @@ NEWSBLUR.VoiceRecorder.prototype = {
         this.is_recording = false;
         this.audio_chunks = [];
         this.media_recorder = null;
+    },
+
+    setup_audio_level_monitor: function(stream) {
+        var self = this;
+
+        try {
+            // Create audio context and analyser
+            this.audio_context = new (window.AudioContext || window.webkitAudioContext)();
+            this.analyser = this.audio_context.createAnalyser();
+            this.analyser.fftSize = 256;
+
+            // Connect stream to analyser
+            var source = this.audio_context.createMediaStreamSource(stream);
+            source.connect(this.analyser);
+
+            // Sample audio level periodically
+            var data_array = new Uint8Array(this.analyser.frequencyBinCount);
+
+            this.level_interval = setInterval(function() {
+                if (!self.is_recording) {
+                    self.stop_audio_level_monitor();
+                    return;
+                }
+
+                self.analyser.getByteFrequencyData(data_array);
+
+                // Calculate average volume (0-255)
+                var sum = 0;
+                for (var i = 0; i < data_array.length; i++) {
+                    sum += data_array[i];
+                }
+                var average = sum / data_array.length;
+
+                // Normalize to 0-1 range
+                var level = Math.min(1, average / 128);
+
+                self.options.on_audio_level(level);
+            }, 50);  // Update every 50ms
+
+        } catch (e) {
+            console.error('Error setting up audio level monitor:', e);
+        }
+    },
+
+    stop_audio_level_monitor: function() {
+        if (this.level_interval) {
+            clearInterval(this.level_interval);
+            this.level_interval = null;
+        }
+
+        if (this.audio_context) {
+            try {
+                this.audio_context.close();
+            } catch (e) {
+                // Ignore errors closing context
+            }
+            this.audio_context = null;
+        }
+
+        this.analyser = null;
+
+        // Send final zero level
+        this.options.on_audio_level(0);
     },
 
     transcribe_audio: function(audio_blob) {

@@ -1,193 +1,214 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true">
 
-    <RelativeLayout
-        android:id="@+id/main_top_bar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_alignParentTop="true"
+    <!-- Toolbar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:background="?colorPrimary"
-        android:focusable="false">
+        android:focusable="false"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/main_user_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginVertical="4dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@string/menu_profile"
             android:src="@drawable/logo"
-            android:layout_height="41dp"
-            android:layout_width="41dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="4dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/main_user_name"
+            android:layout_width="0dp"
             android:layout_height="22dp"
-            android:layout_width="match_parent"
+            android:layout_marginStart="6dp"
             android:layout_marginTop="4dp"
-            android:layout_marginLeft="6dp"
             android:layout_marginBottom="1dp"
-            android:layout_toRightOf="@id/main_user_image"
-            android:layout_alignParentTop="true"
+            android:layout_marginEnd="16dp"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:textSize="16sp" />
+            app:layout_constraintEnd_toStartOf="@id/main_search_feeds_button"
+            app:layout_constraintStart_toEndOf="@id/main_user_image"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/main_unread_count_neut_icon"
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:layout_below="@+id/main_user_name"
-            android:layout_toRightOf="@id/main_user_image"
-            android:layout_marginLeft="6dp"
+            android:layout_marginStart="6dp"
             android:layout_marginTop="3dp"
-            android:src="@drawable/ic_indicator_unread" />
+            android:src="@drawable/ic_indicator_unread"
+            app:layout_constraintStart_toEndOf="@id/main_user_image"
+            app:layout_constraintTop_toBottomOf="@id/main_user_name" />
 
         <TextView
             android:id="@+id/main_unread_count_neut_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/main_user_name"
-            android:layout_toRightOf="@id/main_unread_count_neut_icon"
-            android:layout_marginLeft="3dp"
-            android:textSize="14sp" />
+            android:layout_marginStart="3dp"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@id/main_unread_count_neut_icon"
+            app:layout_constraintTop_toBottomOf="@id/main_user_name" />
 
         <ImageView
             android:id="@+id/main_unread_count_posi_icon"
             android:layout_width="10dp"
             android:layout_height="10dp"
-            android:layout_below="@+id/main_user_name"
-            android:layout_toRightOf="@id/main_unread_count_neut_text"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="5dp"
-            android:src="@drawable/ic_indicator_focus" />
+            android:src="@drawable/ic_indicator_focus"
+            app:layout_constraintStart_toEndOf="@id/main_unread_count_neut_text"
+            app:layout_constraintTop_toBottomOf="@id/main_user_name" />
 
         <TextView
             android:id="@+id/main_unread_count_posi_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/main_user_name"
-            android:layout_toRightOf="@id/main_unread_count_posi_icon"
-            android:layout_marginLeft="3dp"
-            android:textSize="14sp" />
+            android:layout_marginStart="3dp"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@id/main_unread_count_posi_icon"
+            app:layout_constraintTop_toBottomOf="@id/main_user_name" />
 
         <ImageButton
             android:id="@+id/main_search_feeds_button"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:layout_alignParentTop="true"
             android:layout_margin="8dp"
-            android:layout_toStartOf="@+id/main_profile_button"
-            android:layout_toLeftOf="@+id/main_profile_button"
             android:background="@drawable/ic_search"
-            android:contentDescription="@string/menu_search_feeds" />
+            android:contentDescription="@string/menu_search_feeds"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Bottom Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottom_toolbar"
+        style="?actionbarBackground"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <fragment
+            android:id="@+id/fragment_feedintelligenceselector"
+            android:name="com.newsblur.fragment.FeedSelectorFragment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:tag="feedIntelligenceSelector"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
-            android:id="@+id/main_profile_button"
-            android:layout_width="34dp"
-            android:layout_height="34dp"
-            android:layout_margin="8dp"
-            android:background="@drawable/ic_menu_profile_gray55"
-            android:contentDescription="@string/menu_profile"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true" />
+            android:id="@+id/main_menu_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/ic_more_vertical"
+            android:contentDescription="@string/description_menu"
+            android:focusable="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <ImageButton
+            android:id="@+id/main_add_button"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_margin="9dp"
+            android:background="@drawable/ic_add"
+            android:contentDescription="@string/menu_add_feed"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- The all/unread/focus toggle. Despite being at the bottom, this needs
-         to be defined first so that other things can be placed above it. -->
-    <fragment
-        android:id="@+id/fragment_feedintelligenceselector"
-        android:name="com.newsblur.fragment.FeedSelectorFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:tag="feedIntelligenceSelector"
-        android:focusable="false"/>
-
-    <ImageButton
-        android:id="@+id/main_menu_button"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_margin="6dp"
-        android:background="@drawable/ic_more_vertical"
-        android:contentDescription="@string/description_menu"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:focusable="false"/>
-
-    <ImageButton
-        android:id="@+id/main_add_button"
-        android:layout_width="27dp"
-        android:layout_height="27dp"
-        android:layout_margin="9dp"
-        android:background="@drawable/ic_add"
-        android:contentDescription="@string/menu_add_feed"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" />
-
-    <!-- A pane that sits behind the feed list, acting as a background, except
-         when the list is empty, and it shows through as an explainer. -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/main_top_bar"
-        android:layout_above="@id/fragment_feedintelligenceselector"
+    <!-- Content -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/no_content"
         style="?listBackground"
-        android:focusable="false">
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusable="false"
+        app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
+        app:layout_constraintEnd_toEndOf="@id/content"
+        app:layout_constraintStart_toStartOf="@id/content"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <TextView
             android:id="@+id/empty_view_text"
-            android:layout_width="match_parent"
+            style="?explainerText"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:layout_marginBottom="25dp"
             android:gravity="center_horizontal"
-            style="?explainerText"
+            android:textSize="16sp"
             android:visibility="invisible"
-            android:textSize="16sp" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
             android:id="@+id/empty_view_image"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:contentDescription="@string/description_empty_list_image"
-            android:src="@drawable/ic_world"
-            android:layout_above="@id/empty_view_text"
             android:layout_marginBottom="15dp"
-            android:layout_centerHorizontal="true"
+            android:contentDescription="@string/description_empty_list_image"
             android:scaleType="fitCenter"
-            android:visibility="invisible" />
+            android:src="@drawable/ic_world"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@id/empty_view_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Search Field -->
     <EditText
-        android:id="@+id/feedlist_search_query"
-        android:layout_width="fill_parent"
+        android:id="@+id/input_search_query"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/main_top_bar"
-        android:textSize="16sp"
-        android:hint="@string/your_feeds_search_hint"
-        android:drawableLeft="@android:drawable/ic_menu_search"
-        android:inputType="textNoSuggestions"
-        android:imeOptions="actionSearch"
-        android:visibility="gone"
         android:animateLayoutChanges="true"
-        android:importantForAutofill="no" />
+        android:drawableLeft="@android:drawable/ic_menu_search"
+        android:hint="@string/your_feeds_search_hint"
+        android:imeOptions="actionSearch"
+        android:importantForAutofill="no"
+        android:inputType="textNoSuggestions"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/content"
+        app:layout_constraintStart_toStartOf="@id/content"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <!-- The scrollable and pull-able feed list.  -->
+    <!-- Swipe Container -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/fragment_feedintelligenceselector"
-        android:layout_below="@id/feedlist_search_query"
-        android:focusable="false">
+        android:id="@+id/content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusable="false"
+        app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/input_search_query">
 
         <fragment
             android:name="com.newsblur.fragment.FolderListFragment"
@@ -197,33 +218,20 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <!-- top_bar_border -->
-    <View
-        style="?delimiter"
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:layout_above="@id/swipe_container"
-        android:focusable="false"/>
-
-    <!-- feedintelligenceselector_border -->
-    <View
-        style="?delimiter"
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/swipe_container"
-        android:focusable="false"/>
-
+    <!-- Sync Status -->
     <TextView
         android:id="@+id/main_sync_status"
-        android:layout_width="fill_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/fragment_feedintelligenceselector"
-        android:padding="2dp"
-        android:textSize="14sp"
-        android:gravity="center"
-        android:textColor="@color/status_overlay_text"
         android:background="@color/status_overlay_background"
+        android:focusable="false"
+        android:gravity="center"
+        android:padding="2dp"
         android:text="SYNC STATUS"
-        android:focusable="false"/>
+        android:textColor="@color/status_overlay_text"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
+        app:layout_constraintEnd_toEndOf="@id/content"
+        app:layout_constraintStart_toStartOf="@id/content" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

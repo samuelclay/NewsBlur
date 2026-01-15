@@ -501,14 +501,16 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 section_index = 1;
             }
 
-            // Add pills after each <hr> for subsequent sections (only show if different from previous)
+            // Add pills after each <hr> for subsequent sections
+            // Always show pill in comparison mode, otherwise only show if model differs
             html = html.replace(/<hr>/g, function () {
                 var pill_html = '';
                 if (self.section_models[section_index]) {
                     var current_model = self.section_models[section_index];
                     var prev_model = self.section_models[section_index - 1];
                     var is_different = current_model !== prev_model;
-                    pill_html = self.create_model_pill_html(current_model, has_any_model_change && is_different);
+                    var should_show = self.is_comparison_response || (has_any_model_change && is_different);
+                    pill_html = self.create_model_pill_html(current_model, should_show);
                     section_index++;
                 }
                 return '<hr>\n' + pill_html;

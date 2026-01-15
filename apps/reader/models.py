@@ -660,6 +660,13 @@ class UserSubscription(models.Model):
 
             MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
 
+            if subscription_created:
+                from apps.statistics.rtrending_subscriptions import (
+                    RTrendingSubscription,
+                )
+
+                RTrendingSubscription.add_subscription(feed_id=feed.pk)
+
             feed.setup_feed_for_premium_subscribers(allow_skip_resync=allow_skip_resync)
             feed.count_subscribers()
 
@@ -1363,15 +1370,43 @@ class UserSubscription(models.Model):
         self.feed = new_feed
         self.needs_unread_recalc = True
         try:
-            UserSubscription.objects.get(user=self.user, feed=new_feed)
+            existing_sub = UserSubscription.objects.get(user=self.user, feed=new_feed)
         except UserSubscription.DoesNotExist:
             self.save()
-            user_sub_folders.rewrite_feed(new_feed, old_feed)
         else:
-            # except (IntegrityError, OperationError):
-            logging.info("      !!!!> %s already subscribed" % self.user)
+            # User is subscribed to both feeds - merge metadata before deleting duplicate
+            logging.info("      !!!!> %s already subscribed, merging metadata" % self.user)
+
+            # Preserve active status: if either subscription is active, keep it active
+            if self.active and not existing_sub.active:
+                existing_sub.active = True
+
+            if self.user_title and not existing_sub.user_title:
+                existing_sub.user_title = self.user_title
+
+            # Sum feed_opens to preserve engagement history
+            existing_sub.feed_opens += self.feed_opens
+
+            # Use the more recent read dates
+            if self.last_read_date and (
+                not existing_sub.last_read_date or self.last_read_date > existing_sub.last_read_date
+            ):
+                existing_sub.last_read_date = self.last_read_date
+            if self.mark_read_date and (
+                not existing_sub.mark_read_date or self.mark_read_date > existing_sub.mark_read_date
+            ):
+                existing_sub.mark_read_date = self.mark_read_date
+
+            # Preserve training status
+            if self.is_trained:
+                existing_sub.is_trained = True
+
+            existing_sub.needs_unread_recalc = True
+            existing_sub.save()
             self.delete()
-            return
+
+        # Always rewrite folders to clean up duplicate feed references
+        user_sub_folders.rewrite_feed(new_feed, old_feed)
 
     @classmethod
     def collect_orphan_feeds(cls, user):
@@ -2285,9 +2320,7 @@ class UserSubscriptionFolders(models.Model):
             self.save()
 
     def auto_activate(self):
-        if self.user.profile.is_premium:
-            return
-
+        max_feed_limit = self.user.profile.max_feed_limit
         active_count = UserSubscription.objects.filter(user=self.user, active=True).count()
         if active_count:
             return
@@ -2296,7 +2329,8 @@ class UserSubscriptionFolders(models.Model):
         if not all_feeds:
             return
 
-        for feed in all_feeds[:64]:
+        feeds_to_activate = all_feeds[:max_feed_limit]
+        for feed in feeds_to_activate:
             try:
                 sub = UserSubscription.objects.get(user=self.user, feed=feed)
             except UserSubscription.DoesNotExist:
@@ -2401,3 +2435,189 @@ class RUserUnreadStory:
 
         if len(story_hashes) > 0:
             logging.info(" ---> %s archived unread stories" % len(story_hashes))
+
+
+class MFolderIcon(mongo.Document):
+    """
+    Custom folder icons for users. Supports:
+    - Custom uploaded images (base64 PNG)
+    - Preset icons from Lucide or Heroicons library (icon name)
+    - Emoji icons (Unicode character)
+    """
+
+    user_id = mongo.IntField()
+    folder_title = mongo.StringField(max_length=256)
+    icon_type = mongo.StringField(max_length=20, default="none")  # upload, preset, emoji, none
+    icon_data = mongo.StringField()  # base64 PNG, icon name, or emoji char
+    icon_color = mongo.StringField(max_length=20)  # hex color like "#ff5722"
+    icon_set = mongo.StringField(max_length=30, default="lucide")  # lucide, heroicons-solid
+    created_at = mongo.DateTimeField(default=datetime.datetime.now)
+    updated_at = mongo.DateTimeField(default=datetime.datetime.now)
+
+    meta = {
+        "collection": "folder_icons",
+        "indexes": [
+            {"fields": ["user_id", "folder_title"], "unique": True},
+            "user_id",
+        ],
+        "allow_inheritance": False,
+    }
+
+    def __str__(self):
+        return f"[{self.user_id}] {self.folder_title}: {self.icon_type}"
+
+    @classmethod
+    def get_folder_icon(cls, user_id, folder_title):
+        try:
+            return cls.objects.get(user_id=user_id, folder_title=folder_title)
+        except cls.DoesNotExist:
+            return None
+
+    @classmethod
+    def get_folder_icons_for_user(cls, user_id):
+        return cls.objects.filter(user_id=user_id)
+
+    @classmethod
+    def save_folder_icon(
+        cls, user_id, folder_title, icon_type, icon_data=None, icon_color=None, icon_set=None
+    ):
+        try:
+            folder_icon = cls.objects.get(user_id=user_id, folder_title=folder_title)
+            folder_icon.icon_type = icon_type
+            folder_icon.icon_data = icon_data
+            folder_icon.icon_color = icon_color
+            folder_icon.icon_set = icon_set or "lucide"
+            folder_icon.updated_at = datetime.datetime.now()
+            folder_icon.save()
+        except cls.DoesNotExist:
+            folder_icon = cls.objects.create(
+                user_id=user_id,
+                folder_title=folder_title,
+                icon_type=icon_type,
+                icon_data=icon_data,
+                icon_color=icon_color,
+                icon_set=icon_set or "lucide",
+            )
+        return folder_icon
+
+    @classmethod
+    def delete_folder_icon(cls, user_id, folder_title):
+        cls.objects.filter(user_id=user_id, folder_title=folder_title).delete()
+
+    @classmethod
+    def rename_folder_icon(cls, user_id, old_folder_title, new_folder_title):
+        """Update folder_title when folder is renamed"""
+        folder_icon = cls.get_folder_icon(user_id, old_folder_title)
+        if folder_icon:
+            folder_icon.folder_title = new_folder_title
+            folder_icon.updated_at = datetime.datetime.now()
+            folder_icon.save()
+        return folder_icon
+
+    def to_json(self):
+        return {
+            "folder_title": self.folder_title,
+            "icon_type": self.icon_type,
+            "icon_data": self.icon_data,
+            "icon_color": self.icon_color,
+            "icon_set": self.icon_set or "lucide",
+        }
+
+
+class MCustomFeedIcon(mongo.Document):
+    """
+    Custom feed icons for users. Overrides the default favicon.
+    Supports:
+    - Custom uploaded images (base64 PNG)
+    - Preset icons from Lucide or Heroicons library (icon name)
+    - Emoji icons (Unicode character)
+    """
+
+    user_id = mongo.IntField()
+    feed_id = mongo.IntField()
+    icon_type = mongo.StringField(max_length=20, default="none")  # upload, preset, emoji, none
+    icon_data = mongo.StringField()  # base64 PNG, icon name, or emoji char
+    icon_color = mongo.StringField(max_length=20)  # hex color like "#ff5722"
+    icon_set = mongo.StringField(max_length=30, default="lucide")  # lucide, heroicons-solid
+    created_at = mongo.DateTimeField(default=datetime.datetime.now)
+    updated_at = mongo.DateTimeField(default=datetime.datetime.now)
+
+    meta = {
+        "collection": "custom_feed_icons",
+        "indexes": [
+            {"fields": ["user_id", "feed_id"], "unique": True},
+            "user_id",
+        ],
+        "allow_inheritance": False,
+    }
+
+    def __str__(self):
+        return f"[{self.user_id}] feed:{self.feed_id}: {self.icon_type}"
+
+    @classmethod
+    def get_feed_icon(cls, user_id, feed_id):
+        try:
+            return cls.objects.get(user_id=user_id, feed_id=feed_id)
+        except cls.DoesNotExist:
+            return None
+
+    @classmethod
+    def get_feed_icons_for_user(cls, user_id):
+        return cls.objects.filter(user_id=user_id)
+
+    @classmethod
+    def save_feed_icon(cls, user_id, feed_id, icon_type, icon_data=None, icon_color=None, icon_set=None):
+        try:
+            feed_icon = cls.objects.get(user_id=user_id, feed_id=feed_id)
+            feed_icon.icon_type = icon_type
+            feed_icon.icon_data = icon_data
+            feed_icon.icon_color = icon_color
+            feed_icon.icon_set = icon_set or "lucide"
+            feed_icon.updated_at = datetime.datetime.now()
+            feed_icon.save()
+        except cls.DoesNotExist:
+            feed_icon = cls.objects.create(
+                user_id=user_id,
+                feed_id=feed_id,
+                icon_type=icon_type,
+                icon_data=icon_data,
+                icon_color=icon_color,
+                icon_set=icon_set or "lucide",
+            )
+        return feed_icon
+
+    @classmethod
+    def delete_feed_icon(cls, user_id, feed_id):
+        cls.objects.filter(user_id=user_id, feed_id=feed_id).delete()
+
+    @classmethod
+    def switch_feed(cls, original_feed_id, duplicate_feed_id):
+        """Migrate custom feed icons from duplicate feed to original feed."""
+        duplicate_icons = cls.objects.filter(feed_id=duplicate_feed_id)
+        count = duplicate_icons.count()
+        if count:
+            logging.info(
+                " ---> Switching %s custom feed icons from feed %s to %s"
+                % (count, duplicate_feed_id, original_feed_id)
+            )
+            for icon in duplicate_icons:
+                # Check if user already has a custom icon for the original feed
+                try:
+                    cls.objects.get(user_id=icon.user_id, feed_id=original_feed_id)
+                    # User already has icon for original feed, delete the duplicate
+                    icon.delete()
+                except cls.DoesNotExist:
+                    # No existing icon, migrate this one
+                    icon.feed_id = original_feed_id
+                    icon.updated_at = datetime.datetime.now()
+                    icon.save()
+        return count
+
+    def to_json(self):
+        return {
+            "feed_id": self.feed_id,
+            "icon_type": self.icon_type,
+            "icon_data": self.icon_data,
+            "icon_color": self.icon_color,
+            "icon_set": self.icon_set or "lucide",
+        }

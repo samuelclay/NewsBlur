@@ -29,4 +29,5 @@ urlpatterns = [
     url(r"^discover/(?P<feed_id>\d+)/?$", views.discover_feeds, name="discover-feed"),
     url(r"^discover/feeds/?$", views.discover_feeds, name="discover-feeds"),
     url(r"^discover/stories/(?P<story_hash>\w+:\w+)/?$", views.discover_stories, name="discover-stories"),
+    url(r"^trending_sites/?$", views.trending_sites, name="trending-sites"),
 ]

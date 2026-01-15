@@ -12,6 +12,11 @@ from google.genai import types as genai_types
 class LLMProvider(ABC):
     """Abstract base class for LLM providers."""
 
+    def __init__(self):
+        # Track usage from the last API call
+        self._last_input_tokens = 0
+        self._last_output_tokens = 0
+
     @abstractmethod
     def is_configured(self) -> bool:
         """Check if the provider's API key is configured."""
@@ -32,6 +37,15 @@ class LLMProvider(ABC):
     def format_error(self, error: Exception) -> str:
         """Format an error message for this provider."""
         pass
+
+    def get_last_usage(self) -> tuple[int, int]:
+        """
+        Get token usage from the last API call.
+
+        Returns:
+            Tuple of (input_tokens, output_tokens)
+        """
+        return (self._last_input_tokens, self._last_output_tokens)
 
 
 class AnthropicProvider(LLMProvider):
@@ -55,6 +69,11 @@ class AnthropicProvider(LLMProvider):
         ) as stream:
             for text in stream.text_stream:
                 yield text
+            # Get usage after stream completes
+            final_message = stream.get_final_message()
+            if final_message and final_message.usage:
+                self._last_input_tokens = final_message.usage.input_tokens
+                self._last_output_tokens = final_message.usage.output_tokens
 
     @property
     def error_types(self) -> tuple:
@@ -74,10 +93,19 @@ class OpenAIProvider(LLMProvider):
 
     def stream_response(self, messages: list, model_id: str) -> Generator[str, None, None]:
         client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-        response = client.chat.completions.create(model=model_id, messages=messages, stream=True)
+        response = client.chat.completions.create(
+            model=model_id,
+            messages=messages,
+            stream=True,
+            stream_options={"include_usage": True},
+        )
 
         for chunk in response:
-            if chunk.choices[0].delta.content:
+            # The final chunk contains usage info
+            if chunk.usage:
+                self._last_input_tokens = chunk.usage.prompt_tokens
+                self._last_output_tokens = chunk.usage.completion_tokens
+            if chunk.choices and chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
 
     @property
@@ -101,10 +129,19 @@ class XAIProvider(LLMProvider):
             api_key=settings.XAI_GROK_API_KEY,
             base_url="https://api.x.ai/v1",
         )
-        response = client.chat.completions.create(model=model_id, messages=messages, stream=True)
+        response = client.chat.completions.create(
+            model=model_id,
+            messages=messages,
+            stream=True,
+            stream_options={"include_usage": True},
+        )
 
         for chunk in response:
-            if chunk.choices[0].delta.content:
+            # The final chunk contains usage info
+            if chunk.usage:
+                self._last_input_tokens = chunk.usage.prompt_tokens
+                self._last_output_tokens = chunk.usage.completion_tokens
+            if chunk.choices and chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
 
     @property
@@ -142,9 +179,17 @@ class GeminiProvider(LLMProvider):
 
         response = client.models.generate_content_stream(model=model_id, contents=contents, config=config)
 
+        last_chunk = None
         for chunk in response:
+            last_chunk = chunk
             if chunk.text:
                 yield chunk.text
+
+        # Get usage from the last chunk's usage_metadata
+        if last_chunk and hasattr(last_chunk, "usage_metadata") and last_chunk.usage_metadata:
+            usage = last_chunk.usage_metadata
+            self._last_input_tokens = getattr(usage, "prompt_token_count", 0) or 0
+            self._last_output_tokens = getattr(usage, "candidates_token_count", 0) or 0
 
     @property
     def error_types(self) -> tuple:

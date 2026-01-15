@@ -1,0 +1,24 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% block body %}
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">Hey {{ user.username }}, your 30-day trial premium subscription has ended.</h2>
+
+    <p style="line-height: 20px;">You've been enjoying NewsBlur's premium features. We hope you loved:</p>
+
+    <ul style="line-height: 24px; margin: 16px 0;">
+        <li>Reading stories across folders with River of News</li>
+        <li>Searching your sites and saved stories</li>
+        <li>Tagging and organizing saved stories</li>
+        <li>Faster feed updates</li>
+        <li>And all the other premium features</li>
+    </ul>
+
+    <p style="line-height: 20px;">Your account is now on the free plan with some limitations. But you can unlock everything again for just <b>$36/year</b>.</p>
+
+    <p style="line-height: 20px; margin-top: 20px;">
+        <a href="https://newsblur.com/?next=premium" style="background-color: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">Upgrade to Premium</a>
+    </p>
+
+    <p style="line-height: 20px; margin-top: 20px;">Thanks for trying NewsBlur!</p>
+    <p style="line-height: 20px;">- Sam Clay</p>
+{% endblock %}

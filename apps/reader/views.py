@@ -21,6 +21,7 @@ from django.contrib.auth import logout as logout_user
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.core.validators import validate_email
 from django.db import IntegrityError
@@ -60,6 +61,8 @@ from apps.profile.models import MCustomStyling, MDashboardRiver, Profile
 from apps.reader.forms import FeatureForm, LoginForm, SignupForm
 from apps.reader.models import (
     Feature,
+    MCustomFeedIcon,
+    MFolderIcon,
     RUserStory,
     RUserUnreadStory,
     UserSubscription,
@@ -70,6 +73,7 @@ from apps.rss_feeds.models import MFeedIcon, MSavedSearch, MStarredStoryCounts
 from apps.search.models import MUserSearch
 from apps.statistics.models import MAnalyticsLoader, MStatistics
 from apps.statistics.rstats import RStats
+from apps.statistics.rtrending import RTrendingStory
 
 # from apps.search.models import SearchStarredStory
 try:
@@ -98,7 +102,7 @@ from apps.social.views import load_social_page
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince
-from utils.ratelimit import ratelimit
+from utils.ratelimit import ratelimit, ratelimit_by_url_user
 from utils.story_functions import (
     format_story_link_date__long,
     format_story_link_date__short,
@@ -492,6 +496,12 @@ def load_feeds(request):
     if not user_subs:
         categories = MCategory.serialize()
 
+    folder_icons = MFolderIcon.get_folder_icons_for_user(user.pk)
+    folder_icons_dict = {fi.folder_title: fi.to_json() for fi in folder_icons}
+
+    feed_icons = MCustomFeedIcon.get_feed_icons_for_user(user.pk)
+    feed_icons_dict = {str(fi.feed_id): fi.to_json() for fi in feed_icons}
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB feeds/socials%s"
@@ -512,6 +522,8 @@ def load_feeds(request):
         "saved_searches": saved_searches,
         "dashboard_rivers": dashboard_rivers,
         "categories": categories,
+        "folder_icons": folder_icons_dict,
+        "feed_icons": feed_icons_dict,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -617,6 +629,12 @@ def load_feeds_flat(request):
     saved_searches = MSavedSearch.user_searches(user.pk)
     dashboard_rivers = MDashboardRiver.get_user_rivers(user.pk)
 
+    folder_icons = MFolderIcon.get_folder_icons_for_user(user.pk)
+    folder_icons_dict = {fi.folder_title: fi.to_json() for fi in folder_icons}
+
+    feed_icons = MCustomFeedIcon.get_feed_icons_for_user(user.pk)
+    feed_icons_dict = {str(fi.feed_id): fi.to_json() for fi in feed_icons}
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s"
@@ -649,6 +667,8 @@ def load_feeds_flat(request):
         "starred_counts": starred_counts,
         "saved_searches": saved_searches,
         "dashboard_rivers": dashboard_rivers,
+        "folder_icons": folder_icons_dict,
+        "feed_icons": feed_icons_dict,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -971,6 +991,10 @@ def load_single_feed(request, feed_id):
 
     checkpoint4 = time.time()
 
+    # Check if user wants YouTube captions enabled
+    user_preferences = json.decode(user.profile.preferences)
+    youtube_captions_enabled = user_preferences.get("youtube_captions", False)
+
     for story in stories:
         # Calculate intelligence BEFORE deleting story content (text classifier needs it)
         story["intelligence"] = {
@@ -985,6 +1009,10 @@ def load_single_feed(request, feed_id):
             ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
+
+        # Apply YouTube captions if user preference is enabled
+        if youtube_captions_enabled and "story_content" in story and story["story_content"]:
+            story["story_content"] = Feed.apply_youtube_captions(story["story_content"])
 
         if not include_story_content:
             del story["story_content"]
@@ -1477,7 +1505,14 @@ def starred_stories_rss_feed_tag(request, user_id, secret_token, tag_slug):
     return HttpResponse(rss.writeString("utf-8"), content_type="application/rss+xml")
 
 
+@ratelimit_by_url_user(minutes=1, requests=30)
 def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
+    # Check cache first (60 second TTL)
+    cache_key = f"folder_rss:{user_id}:{folder_slug}:{unread_filter}"
+    cached_response = cache.get(cache_key)
+    if cached_response:
+        return HttpResponse(cached_response, content_type="application/rss+xml")
+
     domain = Site.objects.get_current().domain
     date_hack_2023 = datetime.datetime.now() > datetime.datetime(2023, 7, 1)
     try:
@@ -1630,7 +1665,11 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         "~FBGenerating ~SB%s~SN's folder RSS feed (%s, %s stories): ~FM%s"
         % (user.username, folder_title, len(stories), request.META.get("HTTP_USER_AGENT", "")[:24]),
     )
-    return HttpResponse(rss.writeString("utf-8"), content_type="application/rss+xml")
+
+    # Cache the RSS response for 60 seconds
+    rss_content = rss.writeString("utf-8")
+    cache.set(cache_key, rss_content, 60)
+    return HttpResponse(rss_content, content_type="application/rss+xml")
 
 
 @json.json_view
@@ -1948,6 +1987,11 @@ def load_river_stories__redis(request):
 
     # Just need to format stories
     nowtz = localtime_for_timezone(now, user.profile.timezone)
+
+    # Check if user wants YouTube captions enabled
+    user_preferences = json.decode(user.profile.preferences)
+    youtube_captions_enabled = user_preferences.get("youtube_captions", False)
+
     for story in stories:
         if read_filter == "starred":
             story["read_status"] = 1
@@ -1981,6 +2025,10 @@ def load_river_stories__redis(request):
             ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
+
+        # Apply YouTube captions if user preference is enabled
+        if youtube_captions_enabled and "story_content" in story and story["story_content"]:
+            story["story_content"] = Feed.apply_youtube_captions(story["story_content"])
 
     if include_feeds:
         feeds = Feed.objects.filter(pk__in=set([story["story_feed_id"] for story in stories]))
@@ -2085,23 +2133,38 @@ def load_river_stories_widget(request):
 
         # Ensure URL is properly encoded for non-ASCII characters and spaces
         parsed = urllib.parse.urlsplit(url)
+        needs_path_encoding = False
+        needs_query_encoding = False
+
         if parsed.path:
-            needs_encoding = False
             try:
                 # Check if path can be encoded as ASCII
                 parsed.path.encode("ascii")
                 # Also check for spaces which are valid ASCII but invalid in URLs
                 if " " in parsed.path:
-                    needs_encoding = True
+                    needs_path_encoding = True
             except UnicodeEncodeError:
-                needs_encoding = True
+                needs_path_encoding = True
 
-            if needs_encoding:
-                # Path contains characters that need encoding
+        if parsed.query:
+            # Check for spaces in query string (e.g., malformed srcset URLs like "w=16 16w")
+            if " " in parsed.query:
+                needs_query_encoding = True
+
+        if needs_path_encoding or needs_query_encoding:
+            encoded_path = parsed.path
+            encoded_query = parsed.query
+
+            if needs_path_encoding:
                 encoded_path = urllib.parse.quote(parsed.path, safe="/:@!$&'()*+,;=")
-                url = urllib.parse.urlunsplit(
-                    (parsed.scheme, parsed.netloc, encoded_path, parsed.query, parsed.fragment)
-                )
+
+            if needs_query_encoding:
+                # Encode spaces in query string
+                encoded_query = parsed.query.replace(" ", "%20")
+
+            url = urllib.parse.urlunsplit(
+                (parsed.scheme, parsed.netloc, encoded_path, encoded_query, parsed.fragment)
+            )
 
         scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
         scontext.verify_mode = ssl.VerifyMode.CERT_NONE
@@ -2115,7 +2178,12 @@ def load_river_stories_widget(request):
             url = url.replace("localhost", "haproxy")
             try:
                 conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
-            except (urllib.error.HTTPError, urllib.error.URLError, socket.timeout) as e:
+            except (
+                urllib.error.HTTPError,
+                urllib.error.URLError,
+                socket.timeout,
+                http.client.InvalidURL,
+            ) as e:
                 logging.user(
                     request.user, '~FB"%s" ~FRnot fetched~FB in %ss: ~SB%s' % (url, (time.time() - start), e)
                 )
@@ -2300,6 +2368,41 @@ def mark_story_hashes_as_read(request):
         story_hashes = request.POST.getlist("story_hash") or request.POST.getlist("story_hash[]")
     except UnreadablePostError:
         return dict(code=-1, message="Missing `story_hash` list parameter.")
+
+    # Handle read times for trending feeds feature
+    read_times_raw = request.POST.get("read_times", "{}")
+    try:
+        read_times = json.decode(read_times_raw)
+        for story_hash, seconds in read_times.items():
+            try:
+                seconds = int(seconds)
+                if seconds >= RTrendingStory.MIN_READ_TIME_SECONDS:
+                    RTrendingStory.add_read_time(story_hash, seconds)
+                    # Log read time with feed/story titles
+                    try:
+                        feed_id = int(story_hash.split(":")[0])
+                        feed = Feed.objects.filter(pk=feed_id).only("feed_title").first()
+                        story = MStory.objects.filter(story_hash=story_hash).only("story_title").first()
+                        feed_title = (feed.feed_title[:20] if feed else "Unknown")[:20]
+                        story_title = (story.story_title[:60] if story else "Unknown")[:60]
+                        # Color based on read time: <30s yellow, <60s cyan, 60s+ green+bold
+                        if seconds < 30:
+                            time_color = "~FY"
+                        elif seconds < 60:
+                            time_color = "~FC"
+                        else:
+                            time_color = "~FG~SB"
+                        logging.user(
+                            request,
+                            "~FMRead for ~SB%s%ss~SN~FM on ~SB%s~SN: %s"
+                            % (time_color, seconds, feed_title, story_title),
+                        )
+                    except Exception:
+                        pass
+            except (ValueError, TypeError):
+                pass
+    except (json.JSONDecodeError, AttributeError):
+        pass
 
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(
         request.user.pk, story_hashes, username=request.user.username
@@ -2763,6 +2866,9 @@ def delete_folder(request):
     user_sub_folders.delete_folder(folder_to_delete, in_folder, feed_ids_in_folder)
     folders = json.decode(user_sub_folders.folders)
 
+    # Clean up folder icon when folder is deleted
+    MFolderIcon.delete_folder_icon(request.user.pk, folder_to_delete)
+
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "reload:feeds")
 
@@ -2825,6 +2931,8 @@ def rename_folder(request):
     if folder_to_rename and new_folder_name:
         user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
         user_sub_folders.rename_folder(folder_to_rename, new_folder_name, in_folder)
+        # Update folder icon when folder is renamed
+        MFolderIcon.rename_folder_icon(request.user.pk, folder_to_rename, new_folder_name)
         code = 1
     else:
         code = -1
@@ -2908,6 +3016,273 @@ def move_feeds_by_folder_to_folder(request):
     r.publish(request.user.username, "reload:feeds")
 
     return dict(code=1, folders=json.decode(user_sub_folders.folders))
+
+
+ICON_TYPES = {"upload", "preset", "emoji", "none"}
+ICON_SETS = {"lucide", "heroicons-solid"}
+ICON_COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
+ICON_NAME_RE = re.compile(r"^[a-z0-9-]+$")
+MAX_ICON_DATA_LENGTH = 120000
+MAX_EMOJI_LENGTH = 16
+MAX_ICON_UPLOAD_BYTES = 5 * 1024 * 1024
+ICON_UPLOAD_FORMATS = {"PNG", "JPEG", "GIF", "WEBP"}
+
+
+def _clean_icon_payload(icon_type, icon_data, icon_color, icon_set):
+    icon_type = (icon_type or "none").strip()
+    icon_color = icon_color.strip() if icon_color else None
+    icon_set = icon_set.strip() if icon_set else None
+
+    if icon_type not in ICON_TYPES:
+        return None, "Invalid icon type"
+
+    if icon_color and not ICON_COLOR_RE.match(icon_color):
+        return None, "Invalid icon color"
+
+    if icon_type == "none":
+        payload = {"icon_type": "none", "icon_data": None, "icon_color": None, "icon_set": None}
+        return payload, None
+
+    if icon_type == "preset":
+        if not icon_data:
+            return None, "Icon name required"
+        if not ICON_NAME_RE.match(icon_data):
+            return None, "Invalid icon name"
+        icon_set = icon_set or "lucide"
+        if icon_set not in ICON_SETS:
+            return None, "Invalid icon set"
+        payload = {
+            "icon_type": icon_type,
+            "icon_data": icon_data,
+            "icon_color": icon_color,
+            "icon_set": icon_set,
+        }
+        return payload, None
+
+    if icon_type == "emoji":
+        if not icon_data:
+            return None, "Emoji required"
+        if len(icon_data) > MAX_EMOJI_LENGTH:
+            return None, "Emoji is too long"
+        payload = {"icon_type": icon_type, "icon_data": icon_data, "icon_color": None, "icon_set": None}
+        return payload, None
+
+    if icon_type == "upload":
+        if not icon_data:
+            return None, "Icon data required"
+        if len(icon_data) > MAX_ICON_DATA_LENGTH:
+            return None, "Icon data is too large"
+        payload = {"icon_type": icon_type, "icon_data": icon_data, "icon_color": None, "icon_set": None}
+        return payload, None
+
+    return None, "Invalid icon type"
+
+
+def _process_icon_upload(photo):
+    from io import BytesIO
+
+    from PIL import Image
+
+    if photo.size > MAX_ICON_UPLOAD_BYTES:
+        return None, "Image must be smaller than 5MB"
+
+    photo_body = photo.read()
+    if len(photo_body) > MAX_ICON_UPLOAD_BYTES:
+        return None, "Image must be smaller than 5MB"
+
+    try:
+        image_file = BytesIO(photo_body)
+        image = Image.open(image_file)
+        image.verify()
+        image_file.seek(0)
+        image = Image.open(image_file)
+    except Exception:
+        return None, "Invalid image file"
+
+    if image.format not in ICON_UPLOAD_FORMATS:
+        return None, "Invalid image format"
+
+    if image.mode not in ("RGBA", "RGB"):
+        image = image.convert("RGBA")
+
+    image.thumbnail((128, 128), Image.LANCZOS)
+
+    canvas = Image.new("RGBA", (128, 128), (255, 255, 255, 0))
+    offset = ((128 - image.width) // 2, (128 - image.height) // 2)
+    canvas.paste(image, offset)
+
+    buffer = BytesIO()
+    canvas.save(buffer, format="PNG")
+    icon_data = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    return icon_data, None
+
+
+@ajax_login_required
+@json.json_view
+def save_folder_icon(request):
+    """Save a folder icon (upload, preset, emoji, or remove)"""
+    folder_title = request.POST.get("folder_title", "").replace("river:", "")
+    icon_type = request.POST.get("icon_type", "none")  # upload, preset, emoji, none
+    icon_data = request.POST.get("icon_data")  # base64, icon name, or emoji
+    icon_color = request.POST.get("icon_color")  # hex color
+    icon_set = request.POST.get("icon_set", "lucide")  # lucide, heroicons-solid
+
+    if not folder_title:
+        return {"code": -1, "message": "Folder title required"}
+
+    icon_payload, error_message = _clean_icon_payload(icon_type, icon_data, icon_color, icon_set)
+    if error_message:
+        return {"code": -1, "message": error_message}
+
+    icon_type = icon_payload["icon_type"]
+    icon_data = icon_payload["icon_data"]
+    icon_color = icon_payload["icon_color"]
+    icon_set = icon_payload["icon_set"]
+
+    if icon_type == "none":
+        MFolderIcon.delete_folder_icon(request.user.pk, folder_title)
+        logging.user(request, "~FRRemoving folder icon: ~SB%s" % folder_title)
+    else:
+        MFolderIcon.save_folder_icon(
+            request.user.pk,
+            folder_title,
+            icon_type,
+            icon_data,
+            icon_color,
+            icon_set,
+        )
+        logging.user(request, "~FBSaving folder icon: ~SB%s (%s)" % (folder_title, icon_type))
+
+    folder_icons = MFolderIcon.get_folder_icons_for_user(request.user.pk)
+    return {
+        "code": 1,
+        "folder_icons": {fi.folder_title: fi.to_json() for fi in folder_icons},
+    }
+
+
+@ajax_login_required
+@json.json_view
+def upload_folder_icon(request):
+    """Handle file upload for custom folder icons"""
+    folder_title = request.POST.get("folder_title", "").replace("river:", "")
+    photo = request.FILES.get("photo")
+
+    if not folder_title or not photo:
+        return {"code": -1, "message": "Folder title and photo required"}
+
+    try:
+        icon_data, error_message = _process_icon_upload(photo)
+        if error_message:
+            return {"code": -1, "message": error_message}
+
+        MFolderIcon.save_folder_icon(
+            request.user.pk,
+            folder_title,
+            icon_type="upload",
+            icon_data=icon_data,
+            icon_color=None,
+        )
+
+        logging.user(request, "~FC~BM~SBUploading folder icon: %s" % folder_title)
+
+        folder_icons = MFolderIcon.get_folder_icons_for_user(request.user.pk)
+        return {
+            "code": 1,
+            "icon_data": icon_data,
+            "folder_icons": {fi.folder_title: fi.to_json() for fi in folder_icons},
+        }
+    except Exception as e:
+        logging.user(request, "~FRFolder icon upload error: %s" % e)
+        return {"code": -1, "message": "Invalid image file"}
+
+
+@ajax_login_required
+@json.json_view
+def save_feed_icon(request):
+    """Save a custom feed icon (upload, preset, emoji, or remove)"""
+    feed_id = request.POST.get("feed_id")
+    icon_type = request.POST.get("icon_type", "none")  # upload, preset, emoji, none
+    icon_data = request.POST.get("icon_data")  # base64, icon name, or emoji
+    icon_color = request.POST.get("icon_color")  # hex color
+    icon_set = request.POST.get("icon_set", "lucide")  # lucide, heroicons-solid
+
+    if not feed_id:
+        return {"code": -1, "message": "Feed ID required"}
+
+    try:
+        feed_id = int(feed_id)
+    except (ValueError, TypeError):
+        return {"code": -1, "message": "Invalid feed ID"}
+
+    icon_payload, error_message = _clean_icon_payload(icon_type, icon_data, icon_color, icon_set)
+    if error_message:
+        return {"code": -1, "message": error_message}
+
+    icon_type = icon_payload["icon_type"]
+    icon_data = icon_payload["icon_data"]
+    icon_color = icon_payload["icon_color"]
+    icon_set = icon_payload["icon_set"]
+
+    if icon_type == "none":
+        MCustomFeedIcon.delete_feed_icon(request.user.pk, feed_id)
+        logging.user(request, "~FRRemoving feed icon: ~SB%s" % feed_id)
+    else:
+        MCustomFeedIcon.save_feed_icon(
+            request.user.pk,
+            feed_id,
+            icon_type,
+            icon_data,
+            icon_color,
+            icon_set,
+        )
+        logging.user(request, "~FBSaving feed icon: ~SB%s (%s)" % (feed_id, icon_type))
+
+    feed_icons = MCustomFeedIcon.get_feed_icons_for_user(request.user.pk)
+    return {
+        "code": 1,
+        "feed_icons": {str(fi.feed_id): fi.to_json() for fi in feed_icons},
+    }
+
+
+@ajax_login_required
+@json.json_view
+def upload_feed_icon(request):
+    """Handle file upload for custom feed icons"""
+    feed_id = request.POST.get("feed_id")
+    photo = request.FILES.get("photo")
+
+    if not feed_id or not photo:
+        return {"code": -1, "message": "Feed ID and photo required"}
+
+    try:
+        feed_id = int(feed_id)
+    except (ValueError, TypeError):
+        return {"code": -1, "message": "Invalid feed ID"}
+
+    try:
+        icon_data, error_message = _process_icon_upload(photo)
+        if error_message:
+            return {"code": -1, "message": error_message}
+
+        MCustomFeedIcon.save_feed_icon(
+            request.user.pk,
+            feed_id,
+            icon_type="upload",
+            icon_data=icon_data,
+            icon_color=None,
+        )
+
+        logging.user(request, "~FC~BM~SBUploading feed icon: %s" % feed_id)
+
+        feed_icons = MCustomFeedIcon.get_feed_icons_for_user(request.user.pk)
+        return {
+            "code": 1,
+            "icon_data": icon_data,
+            "feed_icons": {str(fi.feed_id): fi.to_json() for fi in feed_icons},
+        }
+    except Exception as e:
+        logging.user(request, "~FRFeed icon upload error: %s" % e)
+        return {"code": -1, "message": "Invalid image file"}
 
 
 @login_required
@@ -2997,20 +3372,42 @@ def feeds_trainer(request):
 @ajax_login_required
 @json.json_view
 def save_feed_chooser(request):
+    """
+    Batch update feed mute status. Used by the feed chooser dialog.
+
+    WARNING: This endpoint can accidentally mute feeds if the client sends an
+    incomplete approved_feeds list. For individual feed mute/unmute operations,
+    use the safer /reader/set_feed_mute endpoint instead.
+    """
+    max_feed_limit = request.user.profile.max_feed_limit
     is_premium = request.user.profile.is_premium
+    approve_all = request.POST.get("approve_all", "").lower() in ("true", "1", "yes")
     approved_feeds = request.POST.getlist("approved_feeds") or request.POST.getlist("approved_feeds[]")
     approved_feeds = [int(feed_id) for feed_id in approved_feeds if feed_id]
-    approve_all = False
-    if not is_premium:
-        approved_feeds = approved_feeds[:64]
-    elif is_premium and not approved_feeds:
-        approve_all = True
+    approved_feeds = approved_feeds[:max_feed_limit]
     activated = 0
+    muted = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
+    total_subs = usersubs.count()
+    currently_active = usersubs.filter(active=True).count()
+
+    # Safety check: warn if this would mute many feeds unexpectedly
+    approved_set = set(approved_feeds)
+    if not approve_all and is_premium and total_subs > 10:
+        would_mute = currently_active - len(
+            approved_set & set(usersubs.filter(active=True).values_list("feed_id", flat=True))
+        )
+        if would_mute > 10 and len(approved_feeds) < total_subs * 0.5:
+            logging.user(
+                request,
+                "~BR~FW~SB[SAFETY WARNING]~SN Feed chooser would mute ~FC%s~SN feeds "
+                "(approved: ~FC%s~SN, total: ~FC%s~SN, currently active: ~FC%s~SN)"
+                % (would_mute, len(approved_feeds), total_subs, currently_active),
+            )
 
     for sub in usersubs:
         try:
-            if sub.feed_id in approved_feeds or approve_all:
+            if sub.feed_id in approved_feeds:
                 activated += 1
                 if not sub.active:
                     sub.active = True
@@ -3020,6 +3417,7 @@ def save_feed_chooser(request):
             elif sub.active:
                 sub.active = False
                 sub.save()
+                muted += 1
         except Feed.DoesNotExist:
             pass
 
@@ -3029,9 +3427,62 @@ def save_feed_chooser(request):
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "reload:feeds")
 
-    logging.user(request, "~BB~FW~SBFeed chooser: ~FC%s~SN/~SB%s" % (activated, usersubs.count()))
+    logging.user(
+        request,
+        "~BB~FW~SBFeed chooser: ~FC%s~SN active, ~FC%s~SN muted /~SB%s~SN total"
+        % (activated, muted, total_subs),
+    )
 
-    return {"activated": activated}
+    return {"activated": activated, "muted": muted}
+
+
+@ajax_login_required
+@json.json_view
+def set_feed_mute(request):
+    """
+    Safely mute or unmute a single feed without requiring the full list of feeds.
+    This prevents accidental mass-muting that can occur with save_feed_chooser
+    when the client has an incomplete feed list.
+    """
+    feed_id = request.POST.get("feed_id")
+    mute = request.POST.get("mute", "true").lower() in ("true", "1", "yes")
+
+    if not feed_id:
+        return {"code": -1, "message": "feed_id is required"}
+
+    try:
+        feed_id = int(feed_id)
+    except (ValueError, TypeError):
+        return {"code": -1, "message": "Invalid feed_id"}
+
+    try:
+        sub = UserSubscription.objects.get(user=request.user, feed_id=feed_id)
+    except UserSubscription.DoesNotExist:
+        return {"code": -1, "message": "You are not subscribed to this feed"}
+
+    is_premium = request.user.profile.is_premium
+    if not mute and not is_premium and not sub.active:
+        active_count = UserSubscription.objects.filter(user=request.user, active=True).count()
+        if active_count >= 64:
+            return {"code": -1, "message": "Free accounts are limited to 64 active sites."}
+
+    if mute:
+        if sub.active:
+            sub.active = False
+            sub.save()
+            logging.user(request, "~BB~FW~SBMuted feed: ~FC%s" % feed_id)
+    else:
+        if not sub.active:
+            sub.active = True
+            sub.save()
+            if sub.feed.active_subscribers <= 0:
+                sub.feed.count_subscribers()
+            logging.user(request, "~BB~FW~SBUnmuted feed: ~FC%s" % feed_id)
+
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    r.publish(request.user.username, "reload:feeds")
+
+    return {"code": 1, "feed_id": feed_id, "muted": mute}
 
 
 @ajax_login_required
@@ -3561,3 +4012,39 @@ def save_dashboard_rivers(request):
     return {
         "dashboard_rivers": dashboard_rivers,
     }
+
+
+@json.json_view
+def trending_feeds(request):
+    """
+    Get trending feeds based on accumulated reader engagement (read time).
+
+    GET Parameters:
+        days: Number of days to aggregate (default 7, max 30)
+        limit: Maximum feeds to return (default 50, max 200)
+
+    Returns:
+        trending_feeds: List of feeds with read time data
+    """
+    days = min(int(request.GET.get("days", 7)), 30)
+    limit = min(int(request.GET.get("limit", 50)), 200)
+
+    trending = RTrendingStory.get_trending_feeds(days=days, limit=limit)
+
+    # Enrich with feed details
+    feed_ids = [feed_id for feed_id, _ in trending]
+    feeds = Feed.objects.filter(pk__in=feed_ids).values(
+        "pk", "feed_title", "feed_address", "feed_link", "num_subscribers", "active_subscribers"
+    )
+    feeds_dict = {f["pk"]: f for f in feeds}
+
+    result = []
+    for feed_id, read_seconds in trending:
+        if feed_id in feeds_dict:
+            feed_data = dict(feeds_dict[feed_id])
+            feed_data["trending_read_seconds"] = read_seconds
+            result.append(feed_data)
+
+    logging.user(request, "~FBFetched ~SB%s~SN trending feeds" % len(result))
+
+    return {"trending_feeds": result}

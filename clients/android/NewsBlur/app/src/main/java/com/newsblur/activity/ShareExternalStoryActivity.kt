@@ -7,16 +7,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.newsblur.R
 import com.newsblur.databinding.ActivityShareExternalStoryBinding
-import com.newsblur.network.APIManager
-import com.newsblur.util.*
+import com.newsblur.network.StoryApi
+import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.EdgeToEdgeUtil.applyTheme
+import com.newsblur.util.EdgeToEdgeUtil.applyView
+import com.newsblur.util.executeAsyncTask
+import com.newsblur.util.setViewGone
+import com.newsblur.util.setViewVisible
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ShareExternalStoryActivity : AppCompatActivity() {
+    @Inject
+    lateinit var storyApi: StoryApi
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var prefsRepo: PrefsRepo
 
     private var storyTitle: String? = null
     private var storyUrl: String? = null
@@ -24,10 +31,10 @@ class ShareExternalStoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityShareExternalStoryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        PrefsUtils.applyTranslucentThemePreference(this)
         super.onCreate(savedInstanceState)
+        applyTheme(prefsRepo.getSelectedTheme())
         binding = ActivityShareExternalStoryBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyView(binding)
 
         if (intent.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             handleIntent()
@@ -53,33 +60,39 @@ class ShareExternalStoryActivity : AppCompatActivity() {
 
     private fun shareStory(comment: String) {
         lifecycleScope.executeAsyncTask(
-                onPreExecute = {
-                    binding.progressIndicator.setViewVisible()
-                    binding.containerButtons.setViewGone()
-                },
-                doInBackground = {
-                    apiManager.shareExternalStory(storyTitle!!, storyUrl!!, comment)
-                },
-                onPostExecute = { response ->
-                    if (!response.isError) finishWithToast("NewsBlur shared $storyTitle successfully!")
-                    else finishWithToast("NewsBlur shared $storyTitle unsuccessfully!")
+            onPreExecute = {
+                binding.progressIndicator.setViewVisible()
+                binding.containerButtons.setViewGone()
+            },
+            doInBackground = {
+                storyApi.shareExternalStory(storyTitle!!, storyUrl!!, comment)
+            },
+            onPostExecute = { response ->
+                if (!response.isError) {
+                    finishWithToast("NewsBlur shared $storyTitle successfully!")
+                } else {
+                    finishWithToast("NewsBlur shared $storyTitle unsuccessfully!")
                 }
+            },
         )
     }
 
     private fun saveStory() {
         lifecycleScope.executeAsyncTask(
-                onPreExecute = {
-                    binding.progressIndicator.setViewVisible()
-                    binding.containerButtons.setViewGone()
-                },
-                doInBackground = {
-                    apiManager.saveExternalStory(storyTitle!!, storyUrl!!)
-                },
-                onPostExecute = { response ->
-                    if (!response.isError) finishWithToast("NewsBlur saved $storyTitle successfully!")
-                    else finishWithToast("NewsBlur saved $storyTitle unsuccessfully!")
+            onPreExecute = {
+                binding.progressIndicator.setViewVisible()
+                binding.containerButtons.setViewGone()
+            },
+            doInBackground = {
+                storyApi.saveExternalStory(storyTitle!!, storyUrl!!)
+            },
+            onPostExecute = { response ->
+                if (!response.isError) {
+                    finishWithToast("NewsBlur saved $storyTitle successfully!")
+                } else {
+                    finishWithToast("NewsBlur saved $storyTitle unsuccessfully!")
                 }
+            },
         )
     }
 

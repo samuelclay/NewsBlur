@@ -342,7 +342,9 @@
     
     self.autoscrollView.alpha = 0;
     previousPage.view.hidden = YES;
-    self.traverseView.alpha = 1;
+    // Only show traverse controls when there's an active feed or folder
+    BOOL hasFeedOrFolder = appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
+    self.traverseView.alpha = hasFeedOrFolder ? 1 : 0;
     self.isAnimatedIntoPlace = NO;
     currentPage.view.hidden = NO;
     
@@ -552,8 +554,10 @@
     
     if (alsoTraverse) {
         [self.view layoutIfNeeded];
-        self.traverseView.alpha = hide ? 0 : 1;
-        
+        // Only show traverse controls when there's an active feed or folder
+        BOOL hasFeedOrFolder = appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
+        self.traverseView.alpha = (hide || !hasFeedOrFolder) ? 0 : 1;
+
         if (hide) {
             [self hideAutoscrollImmediately];
         }
@@ -1106,7 +1110,7 @@
         [self applyNewIndex:pageIndex pageController:currentPage];
         [self setStoryFromScroll];
     } else {
-        [self.scrollView scrollRectToVisible:frame animated:animated];
+        [self.scrollView scrollRectToVisible:frame animated:animated && self.currentPage.pageIndex > -2];
         if (!animated) {
             [self setStoryFromScroll];
         }
