@@ -13,7 +13,7 @@ from apps.archive_extension.models import MArchivedStory
 from apps.archive_extension.search import SearchArchive
 from apps.archive_extension.utils import format_datetime_utc
 from apps.reader.models import UserSubscription
-from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts, Feed
+from apps.rss_feeds.models import Feed, MStarredStory, MStarredStoryCounts
 from apps.search.models import SearchStory
 from utils import log as logging
 
@@ -402,9 +402,7 @@ def _get_archive_summary(user_id):
 
     # Get recent activity
     week_ago = datetime.now() - timedelta(days=7)
-    recent_count = MArchivedStory.objects(
-        user_id=user_id, deleted=False, archived_date__gte=week_ago
-    ).count()
+    recent_count = MArchivedStory.objects(user_id=user_id, deleted=False, archived_date__gte=week_ago).count()
 
     return {
         "total_archives": total,
@@ -425,9 +423,11 @@ def _get_recent_archives(user_id, limit=10, days=7):
 
     cutoff = datetime.now() - timedelta(days=days)
 
-    archives = MArchivedStory.objects(
-        user_id=user_id, deleted=False, archived_date__gte=cutoff
-    ).order_by("-archived_date").limit(limit)
+    archives = (
+        MArchivedStory.objects(user_id=user_id, deleted=False, archived_date__gte=cutoff)
+        .order_by("-archived_date")
+        .limit(limit)
+    )
 
     results = []
     for archive in archives:
@@ -455,7 +455,10 @@ def _get_recent_archives(user_id, limit=10, days=7):
 
 # RSS Feed Story Tools
 
-def _search_starred_stories(user_id, query=None, tags=None, feed_title=None, date_from=None, date_to=None, limit=10):
+
+def _search_starred_stories(
+    user_id, query=None, tags=None, feed_title=None, date_from=None, date_to=None, limit=10
+):
     """Search user's starred/saved RSS stories."""
     limit = min(limit or 10, 50)
 
@@ -484,7 +487,9 @@ def _search_starred_stories(user_id, query=None, tags=None, feed_title=None, dat
 
     # Feed filter - need to look up feed IDs
     if feed_title:
-        matching_feeds = Feed.objects.filter(feed_title__icontains=feed_title).values_list("id", flat=True)[:20]
+        matching_feeds = Feed.objects.filter(feed_title__icontains=feed_title).values_list("id", flat=True)[
+            :20
+        ]
         if matching_feeds:
             mongo_query["story_feed_id__in"] = list(matching_feeds)
 
@@ -498,6 +503,7 @@ def _search_starred_stories(user_id, query=None, tags=None, feed_title=None, dat
             content = story.story_content
         elif story.story_content_z:
             import zlib
+
             try:
                 content = zlib.decompress(story.story_content_z).decode("utf-8")
             except Exception:
@@ -513,20 +519,22 @@ def _search_starred_stories(user_id, query=None, tags=None, feed_title=None, dat
         except Feed.DoesNotExist:
             pass
 
-        results.append({
-            "story_hash": story.story_hash,
-            "feed_id": story.story_feed_id,
-            "title": story.story_title,
-            "url": story.story_permalink,
-            "feed": feed_title_str,
-            "author": story.story_author_name,
-            "excerpt": excerpt,
-            "starred_date": format_datetime_utc(story.starred_date),
-            "story_date": format_datetime_utc(story.story_date) if story.story_date else None,
-            "user_tags": story.user_tags or [],
-            "user_notes": story.user_notes or "",
-            "has_highlights": bool(story.highlights),
-        })
+        results.append(
+            {
+                "story_hash": story.story_hash,
+                "feed_id": story.story_feed_id,
+                "title": story.story_title,
+                "url": story.story_permalink,
+                "feed": feed_title_str,
+                "author": story.story_author_name,
+                "excerpt": excerpt,
+                "starred_date": format_datetime_utc(story.starred_date),
+                "story_date": format_datetime_utc(story.story_date) if story.story_date else None,
+                "user_tags": story.user_tags or [],
+                "user_notes": story.user_notes or "",
+                "has_highlights": bool(story.highlights),
+            }
+        )
 
     return {
         "count": len(results),
@@ -558,6 +566,7 @@ def _get_starred_story_content(user_id, story_hash):
         content = story.story_content
     elif story.story_content_z:
         import zlib
+
         try:
             content = zlib.decompress(story.story_content_z).decode("utf-8")
         except Exception:
@@ -566,6 +575,7 @@ def _get_starred_story_content(user_id, story_hash):
     # Try original text if available
     if not content and story.original_text_z:
         import zlib
+
         try:
             content = zlib.decompress(story.original_text_z).decode("utf-8")
         except Exception:
@@ -610,13 +620,17 @@ def _get_starred_summary(user_id):
     # Get tag counts (filter out None and empty string tags)
     from mongoengine.queryset.visitor import Q
 
-    tag_counts = MStarredStoryCounts.objects(user_id=user_id).filter(
-        Q(tag__ne=None) & Q(tag__ne="")
-    ).order_by("-count")[:15]
+    tag_counts = (
+        MStarredStoryCounts.objects(user_id=user_id)
+        .filter(Q(tag__ne=None) & Q(tag__ne=""))
+        .order_by("-count")[:15]
+    )
     tags = [{"name": tc.tag, "count": tc.count} for tc in tag_counts]
 
     # Get feed counts
-    feed_counts = MStarredStoryCounts.objects(user_id=user_id, feed_id__ne=None, tag=None).order_by("-count")[:10]
+    feed_counts = MStarredStoryCounts.objects(user_id=user_id, feed_id__ne=None, tag=None).order_by("-count")[
+        :10
+    ]
     feeds = []
     for fc in feed_counts:
         try:
@@ -637,9 +651,9 @@ def _get_starred_summary(user_id):
     with_highlights = MStarredStory.objects(user_id=user_id, highlights__ne=[]).count()
 
     # Count with notes
-    with_notes = MStarredStory.objects(user_id=user_id).filter(
-        Q(user_notes__ne=None) & Q(user_notes__ne="")
-    ).count()
+    with_notes = (
+        MStarredStory.objects(user_id=user_id).filter(Q(user_notes__ne=None) & Q(user_notes__ne="")).count()
+    )
 
     return {
         "total_starred": total,
@@ -708,6 +722,7 @@ def _search_feed_stories(user_id, query, feed_ids=None, limit=10):
                 content = story.story_content
             elif story.story_content_z:
                 import zlib
+
                 try:
                     content = zlib.decompress(story.story_content_z).decode("utf-8")
                 except Exception:
@@ -723,17 +738,19 @@ def _search_feed_stories(user_id, query, feed_ids=None, limit=10):
             except Feed.DoesNotExist:
                 pass
 
-            results.append({
-                "story_hash": story.story_hash,
-                "feed_id": story.story_feed_id,
-                "title": story.story_title,
-                "url": story.story_permalink,
-                "feed": feed_title,
-                "author": story.story_author_name,
-                "excerpt": excerpt,
-                "story_date": format_datetime_utc(story.story_date),
-                "tags": story.story_tags or [],
-            })
+            results.append(
+                {
+                    "story_hash": story.story_hash,
+                    "feed_id": story.story_feed_id,
+                    "title": story.story_title,
+                    "url": story.story_permalink,
+                    "feed": feed_title,
+                    "author": story.story_author_name,
+                    "excerpt": excerpt,
+                    "story_date": format_datetime_utc(story.story_date),
+                    "tags": story.story_tags or [],
+                }
+            )
         except MStory.DoesNotExist:
             continue
 
@@ -762,6 +779,7 @@ def _get_feed_story_content(user_id, story_hash):
         content = story.story_content
     elif story.story_content_z:
         import zlib
+
         try:
             content = zlib.decompress(story.story_content_z).decode("utf-8")
         except Exception:
@@ -791,7 +809,7 @@ def _get_feed_story_content(user_id, story_hash):
 
 def _search_shared_stories(user_id, query=None, limit=10):
     """Search stories shared by people the user follows."""
-    from apps.social.models import MSocialProfile, MSharedStory
+    from apps.social.models import MSharedStory, MSocialProfile
 
     limit = min(limit or 10, 30)
 
@@ -816,9 +834,7 @@ def _search_shared_stories(user_id, query=None, limit=10):
 
     # Query shared stories from followed users
     try:
-        shared_stories = MSharedStory.objects.filter(
-            user_id__in=following_ids
-        ).order_by("-shared_date")
+        shared_stories = MSharedStory.objects.filter(user_id__in=following_ids).order_by("-shared_date")
 
         # If query provided, filter by title/content/comments
         if query:
@@ -831,6 +847,7 @@ def _search_shared_stories(user_id, query=None, limit=10):
                     content = story.story_content
                 elif story.story_content_z:
                     import zlib
+
                     try:
                         content = zlib.decompress(story.story_content_z).decode("utf-8")
                     except Exception:
@@ -867,6 +884,7 @@ def _search_shared_stories(user_id, query=None, limit=10):
             content = story.story_content
         elif story.story_content_z:
             import zlib
+
             try:
                 content = zlib.decompress(story.story_content_z).decode("utf-8")
             except Exception:
@@ -882,18 +900,20 @@ def _search_shared_stories(user_id, query=None, limit=10):
         except Exception:
             pass
 
-        results.append({
-            "story_hash": story.story_hash,
-            "feed_id": story.story_feed_id,
-            "title": story.story_title,
-            "url": story.story_permalink,
-            "author": story.story_author_name,
-            "sharer": sharer_name,
-            "sharer_comments": story.comments or "",
-            "excerpt": excerpt,
-            "shared_date": format_datetime_utc(story.shared_date),
-            "story_date": format_datetime_utc(story.story_date) if story.story_date else None,
-        })
+        results.append(
+            {
+                "story_hash": story.story_hash,
+                "feed_id": story.story_feed_id,
+                "title": story.story_title,
+                "url": story.story_permalink,
+                "author": story.story_author_name,
+                "sharer": sharer_name,
+                "sharer_comments": story.comments or "",
+                "excerpt": excerpt,
+                "shared_date": format_datetime_utc(story.shared_date),
+                "story_date": format_datetime_utc(story.story_date) if story.story_date else None,
+            }
+        )
 
     return {
         "count": len(results),

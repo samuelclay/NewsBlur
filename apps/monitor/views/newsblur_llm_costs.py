@@ -38,14 +38,22 @@ class LLMCosts(View):
             return stats_dict.get(key, {"tokens": 0, "cost_usd": 0.0, "requests": 0})
 
         # === Overall Totals ===
-        for period_name, stats in [("daily", daily_stats), ("weekly", weekly_stats), ("monthly", monthly_stats)]:
+        for period_name, stats in [
+            ("daily", daily_stats),
+            ("weekly", weekly_stats),
+            ("monthly", monthly_stats),
+        ]:
             total = get_stats(stats, "total")
             data[f"{period_name}_tokens"] = total["tokens"]
             data[f"{period_name}_cost_usd"] = total["cost_usd"]
             data[f"{period_name}_requests"] = total["requests"]
 
         # === By Provider ===
-        for period_name, stats in [("daily", daily_stats), ("weekly", weekly_stats), ("monthly", monthly_stats)]:
+        for period_name, stats in [
+            ("daily", daily_stats),
+            ("weekly", weekly_stats),
+            ("monthly", monthly_stats),
+        ]:
             for provider in providers:
                 s = get_stats(stats, f"provider:{provider}")
                 data[f"provider_{provider}_{period_name}_tokens"] = s["tokens"]
@@ -53,7 +61,11 @@ class LLMCosts(View):
                 data[f"provider_{provider}_{period_name}_requests"] = s["requests"]
 
         # === By Feature ===
-        for period_name, stats in [("daily", daily_stats), ("weekly", weekly_stats), ("monthly", monthly_stats)]:
+        for period_name, stats in [
+            ("daily", daily_stats),
+            ("weekly", weekly_stats),
+            ("monthly", monthly_stats),
+        ]:
             for feature in features:
                 s = get_stats(stats, f"feature:{feature}")
                 data[f"feature_{feature}_{period_name}_tokens"] = s["tokens"]
@@ -84,15 +96,15 @@ class LLMCosts(View):
 
         # Period totals
         for period in ["daily", "weekly", "monthly"]:
-            formatted_data[f"{period}_tokens"] = (
-                f'{chart_name}{{metric="tokens",period="{period}"}} {data[f"{period}_tokens"]}'
-            )
-            formatted_data[f"{period}_cost_usd"] = (
-                f'{chart_name}{{metric="cost_usd",period="{period}"}} {data[f"{period}_cost_usd"]:.6f}'
-            )
-            formatted_data[f"{period}_requests"] = (
-                f'{chart_name}{{metric="requests",period="{period}"}} {data[f"{period}_requests"]}'
-            )
+            formatted_data[
+                f"{period}_tokens"
+            ] = f'{chart_name}{{metric="tokens",period="{period}"}} {data[f"{period}_tokens"]}'
+            formatted_data[
+                f"{period}_cost_usd"
+            ] = f'{chart_name}{{metric="cost_usd",period="{period}"}} {data[f"{period}_cost_usd"]:.6f}'
+            formatted_data[
+                f"{period}_requests"
+            ] = f'{chart_name}{{metric="requests",period="{period}"}} {data[f"{period}_requests"]}'
 
         # By provider
         for provider in providers:
@@ -101,15 +113,15 @@ class LLMCosts(View):
                 cost_key = f"provider_{provider}_{period}_cost_usd"
                 requests_key = f"provider_{provider}_{period}_requests"
 
-                formatted_data[tokens_key] = (
-                    f'{chart_name}{{metric="tokens",provider="{provider}",period="{period}"}} {data[tokens_key]}'
-                )
-                formatted_data[cost_key] = (
-                    f'{chart_name}{{metric="cost_usd",provider="{provider}",period="{period}"}} {data[cost_key]:.6f}'
-                )
-                formatted_data[requests_key] = (
-                    f'{chart_name}{{metric="requests",provider="{provider}",period="{period}"}} {data[requests_key]}'
-                )
+                formatted_data[
+                    tokens_key
+                ] = f'{chart_name}{{metric="tokens",provider="{provider}",period="{period}"}} {data[tokens_key]}'
+                formatted_data[
+                    cost_key
+                ] = f'{chart_name}{{metric="cost_usd",provider="{provider}",period="{period}"}} {data[cost_key]:.6f}'
+                formatted_data[
+                    requests_key
+                ] = f'{chart_name}{{metric="requests",provider="{provider}",period="{period}"}} {data[requests_key]}'
 
         # By feature
         for feature in features:
@@ -118,15 +130,15 @@ class LLMCosts(View):
                 cost_key = f"feature_{feature}_{period}_cost_usd"
                 requests_key = f"feature_{feature}_{period}_requests"
 
-                formatted_data[tokens_key] = (
-                    f'{chart_name}{{metric="tokens",feature="{feature}",period="{period}"}} {data[tokens_key]}'
-                )
-                formatted_data[cost_key] = (
-                    f'{chart_name}{{metric="cost_usd",feature="{feature}",period="{period}"}} {data[cost_key]:.6f}'
-                )
-                formatted_data[requests_key] = (
-                    f'{chart_name}{{metric="requests",feature="{feature}",period="{period}"}} {data[requests_key]}'
-                )
+                formatted_data[
+                    tokens_key
+                ] = f'{chart_name}{{metric="tokens",feature="{feature}",period="{period}"}} {data[tokens_key]}'
+                formatted_data[
+                    cost_key
+                ] = f'{chart_name}{{metric="cost_usd",feature="{feature}",period="{period}"}} {data[cost_key]:.6f}'
+                formatted_data[
+                    requests_key
+                ] = f'{chart_name}{{metric="requests",feature="{feature}",period="{period}"}} {data[requests_key]}'
 
         # By model (daily only) - use stored model_names to avoid key parsing issues
         for model_name in model_names:
@@ -134,21 +146,21 @@ class LLMCosts(View):
             cost_key = f"model_{model_name}_daily_cost_usd"
             requests_key = f"model_{model_name}_daily_requests"
 
-            formatted_data[tokens_key] = (
-                f'{chart_name}{{metric="tokens",model="{model_name}",period="daily"}} {data[tokens_key]}'
-            )
-            formatted_data[cost_key] = (
-                f'{chart_name}{{metric="cost_usd",model="{model_name}",period="daily"}} {data[cost_key]:.6f}'
-            )
-            formatted_data[requests_key] = (
-                f'{chart_name}{{metric="requests",model="{model_name}",period="daily"}} {data[requests_key]}'
-            )
+            formatted_data[
+                tokens_key
+            ] = f'{chart_name}{{metric="tokens",model="{model_name}",period="daily"}} {data[tokens_key]}'
+            formatted_data[
+                cost_key
+            ] = f'{chart_name}{{metric="cost_usd",model="{model_name}",period="daily"}} {data[cost_key]:.6f}'
+            formatted_data[
+                requests_key
+            ] = f'{chart_name}{{metric="requests",model="{model_name}",period="daily"}} {data[requests_key]}'
 
         # Unique users
         for period in ["daily", "weekly", "monthly"]:
-            formatted_data[f"{period}_unique_users"] = (
-                f'{chart_name}{{metric="unique_users",period="{period}"}} {data[f"{period}_unique_users"]}'
-            )
+            formatted_data[
+                f"{period}_unique_users"
+            ] = f'{chart_name}{{metric="unique_users",period="{period}"}} {data[f"{period}_unique_users"]}'
 
         context = {
             "data": formatted_data,

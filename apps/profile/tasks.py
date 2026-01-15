@@ -224,4 +224,6 @@ def EmailFeedLimitNotifications():
         msg.send()
 
         MSentEmail.record(receiver_user_id=user.pk, email_type="feed_limit_notification")
-        logging.user(user, f"~BB~FM~SBSent feed limit notification: {feed_count:,} feeds, deadline: {deadline_date}")
+        logging.user(
+            user, f"~BB~FM~SBSent feed limit notification: {feed_count:,} feeds, deadline: {deadline_date}"
+        )

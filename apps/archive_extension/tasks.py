@@ -28,11 +28,7 @@ def _publish_category_update(user_id, archive_id, categories):
     try:
         user = User.objects.get(pk=user_id)
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-        payload = json.encode({
-            "type": "categories",
-            "archive_id": str(archive_id),
-            "categories": categories
-        })
+        payload = json.encode({"type": "categories", "archive_id": str(archive_id), "categories": categories})
         r.publish(user.username, f"archive:{payload}")
     except Exception as e:
         logging.error(f"Error publishing category update event: {e}")
@@ -293,7 +289,7 @@ def _parse_category_response(response):
     cleaned = []
     for cat in categories:
         # Remove quotes and extra whitespace
-        cat = cat.strip('"\'').strip()
+        cat = cat.strip("\"'").strip()
         # Skip categories with line breaks or explanations
         if "\n" in cat:
             cat = cat.split("\n")[0].strip()

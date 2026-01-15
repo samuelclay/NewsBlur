@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('profile', '0020_profile_is_premium_trial'),
+        ("profile", "0020_profile_is_premium_trial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='grandfather_expires',
+            model_name="profile",
+            name="grandfather_expires",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

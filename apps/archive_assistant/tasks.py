@@ -16,7 +16,11 @@ from celery import shared_task
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from apps.archive_assistant.models import MArchiveConversation, MArchiveQuery, MArchiveAssistantUsage
+from apps.archive_assistant.models import (
+    MArchiveAssistantUsage,
+    MArchiveConversation,
+    MArchiveQuery,
+)
 from apps.archive_assistant.prompts import get_system_prompt
 from apps.archive_assistant.tools import ARCHIVE_TOOLS, execute_tool
 from utils import log as logging
@@ -94,9 +98,14 @@ def process_archive_query(
         messages = history_messages + [{"role": "user", "content": query_text}]
 
         # Call Claude with tools (truncates response for non-premium users)
-        response_text, tool_calls, tokens_used, input_tokens, output_tokens, was_truncated = _call_claude_with_tools(
-            user_id, messages, model, publish_event, is_premium_archive
-        )
+        (
+            response_text,
+            tool_calls,
+            tokens_used,
+            input_tokens,
+            output_tokens,
+            was_truncated,
+        ) = _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_archive)
 
         # Calculate duration
         duration_ms = int((time.time() - start_time) * 1000)
@@ -266,11 +275,13 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
                         except json.JSONDecodeError:
                             tool_input = {}
 
-                        tool_use_blocks.append({
-                            "id": current_tool_id,
-                            "name": current_tool_name,
-                            "input": tool_input,
-                        })
+                        tool_use_blocks.append(
+                            {
+                                "id": current_tool_id,
+                                "name": current_tool_name,
+                                "input": tool_input,
+                            }
+                        )
                         current_tool_name = None
                         current_tool_id = None
                         current_tool_input = ""
@@ -318,12 +329,14 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
                 tool_input = tool_block["input"]
 
                 # Add tool use to assistant content
-                assistant_content.append({
-                    "type": "tool_use",
-                    "id": tool_block["id"],
-                    "name": tool_name,
-                    "input": tool_input,
-                })
+                assistant_content.append(
+                    {
+                        "type": "tool_use",
+                        "id": tool_block["id"],
+                        "name": tool_name,
+                        "input": tool_input,
+                    }
+                )
 
                 # Build summary and preview
                 result_summary, preview = _build_tool_summary(tool_name, result)
@@ -345,11 +358,13 @@ def _call_claude_with_tools(user_id, messages, model, publish_event, is_premium_
                 tool_calls.append(tool_call_data)
 
                 # Add tool result
-                tool_results.append({
-                    "type": "tool_result",
-                    "tool_use_id": tool_block["id"],
-                    "content": json.dumps(result),
-                })
+                tool_results.append(
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": tool_block["id"],
+                        "content": json.dumps(result),
+                    }
+                )
 
             # Continue conversation with tool results
             messages = messages + [{"role": "assistant", "content": assistant_content}]
