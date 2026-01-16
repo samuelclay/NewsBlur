@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.views import View
 
 from apps.ask_ai.models import MAITranscriptionUsage, MAskAIResponse, MAskAIUsage
-from apps.ask_ai.providers import MODEL_VENDORS, VALID_MODELS
+from apps.ask_ai.providers import MODEL_VENDORS
 from apps.ask_ai.usage import AskAIUsageTracker, TranscriptionUsageTracker
 from apps.profile.models import Profile
 
@@ -58,12 +58,15 @@ class AskAI(View):
 
         # ===== Requests by Model =====
         # Count requests by AI model (total and by period)
+        # Use MODEL_VENDORS which includes both current and historical models
+        all_tracked_models = list(MODEL_VENDORS.keys())
+
         model_counts = {}
         model_counts_daily = {}
         model_counts_weekly = {}
         model_counts_monthly = {}
 
-        for model_name in VALID_MODELS:
+        for model_name in all_tracked_models:
             model_counts[model_name] = MAskAIResponse.objects(model=model_name).count()
             model_counts_daily[model_name] = MAskAIResponse.objects(
                 model=model_name, created_at__gte=last_day
@@ -76,7 +79,7 @@ class AskAI(View):
             ).count()
 
         # Store model counts
-        for model_name in VALID_MODELS:
+        for model_name in all_tracked_models:
             data[f"model_{model_name}_total"] = model_counts[model_name]
             data[f"model_{model_name}_daily"] = model_counts_daily[model_name]
             data[f"model_{model_name}_weekly"] = model_counts_weekly[model_name]
@@ -94,7 +97,7 @@ class AskAI(View):
             vendor_counts_weekly[vendor] = 0
             vendor_counts_monthly[vendor] = 0
 
-        for model_name in VALID_MODELS:
+        for model_name in all_tracked_models:
             vendor = MODEL_VENDORS.get(model_name, "unknown")
             vendor_counts[vendor] += model_counts[model_name]
             vendor_counts_daily[vendor] += model_counts_daily[model_name]
@@ -391,8 +394,8 @@ class AskAI(View):
                 f"requests_{question_id}"
             ] = f'{chart_name}{{metric="requests",question_id="{question_id}"}} {count}'
 
-        # Requests by model
-        for model_name in VALID_MODELS:
+        # Requests by model (use MODEL_VENDORS to include historical models)
+        for model_name in MODEL_VENDORS.keys():
             vendor = MODEL_VENDORS.get(model_name, "unknown")
             formatted_data[
                 f"model_{model_name}_total"

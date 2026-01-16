@@ -223,11 +223,18 @@ MODELS = {
 
 VALID_MODELS = list(MODELS.keys())
 DEFAULT_MODEL = "opus"
+# MODEL_VENDORS includes both current and historical models for metrics tracking.
+# When retiring a model, remove it from MODELS above but keep it here.
 MODEL_VENDORS = {
+    # Current models
     "opus": "anthropic",
     "gpt-5.2": "openai",
     "gemini-3": "google",
     "grok-4.1": "xai",
+    # Historical models (kept for metrics)
+    "gpt-5.1": "openai",
+    "gpt-4.1": "openai",
+    "grok-4": "xai",
 }
 
 
