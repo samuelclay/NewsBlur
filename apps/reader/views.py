@@ -62,6 +62,7 @@ from apps.reader.forms import FeatureForm, LoginForm, SignupForm
 from apps.reader.models import (
     Feature,
     MCustomFeedIcon,
+    MFolderAutoMarkRead,
     MFolderIcon,
     RUserStory,
     RUserUnreadStory,
@@ -502,6 +503,9 @@ def load_feeds(request):
     feed_icons = MCustomFeedIcon.get_feed_icons_for_user(user.pk)
     feed_icons_dict = {str(fi.feed_id): fi.to_json() for fi in feed_icons}
 
+    folder_auto_mark_read = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
+    folder_auto_mark_read_dict = {fs.folder_title: fs.to_json() for fs in folder_auto_mark_read}
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB feeds/socials%s"
@@ -524,6 +528,7 @@ def load_feeds(request):
         "categories": categories,
         "folder_icons": folder_icons_dict,
         "feed_icons": feed_icons_dict,
+        "folder_auto_mark_read": folder_auto_mark_read_dict,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -635,6 +640,9 @@ def load_feeds_flat(request):
     feed_icons = MCustomFeedIcon.get_feed_icons_for_user(user.pk)
     feed_icons_dict = {str(fi.feed_id): fi.to_json() for fi in feed_icons}
 
+    folder_auto_mark_read = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
+    folder_auto_mark_read_dict = {fs.folder_title: fs.to_json() for fs in folder_auto_mark_read}
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s"
@@ -669,6 +677,7 @@ def load_feeds_flat(request):
         "dashboard_rivers": dashboard_rivers,
         "folder_icons": folder_icons_dict,
         "feed_icons": feed_icons_dict,
+        "folder_auto_mark_read": folder_auto_mark_read_dict,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -4048,3 +4057,163 @@ def trending_feeds(request):
     logging.user(request, "~FBFetched ~SB%s~SN trending feeds" % len(result))
 
     return {"trending_feeds": result}
+
+
+@ajax_login_required
+@json.json_view
+def save_feed_auto_mark_read(request):
+    """
+    Save the auto-mark-read setting for a feed.
+
+    POST Parameters:
+        feed_id: The feed ID to update
+        auto_mark_read_days: Number of days (1-365), 0 for never, or null/empty for inherit
+    """
+    user = request.user
+    feed_id = request.POST.get("feed_id")
+    days = request.POST.get("auto_mark_read_days")
+
+    if not feed_id:
+        return {"code": -1, "message": "Feed ID required"}
+
+    # Check if user is archive tier (required for this feature)
+    if not user.profile.is_archive:
+        return {"code": -1, "message": "This feature requires the Archive subscription"}
+
+    try:
+        feed_id = int(feed_id)
+    except (ValueError, TypeError):
+        return {"code": -1, "message": "Invalid feed ID"}
+
+    # Get the user subscription
+    try:
+        sub = UserSubscription.objects.get(user=user, feed_id=feed_id)
+    except UserSubscription.DoesNotExist:
+        return {"code": -1, "message": "Feed not found in subscriptions"}
+
+    # Parse days value
+    if days is None or days == "" or days == "null":
+        sub.auto_mark_read_days = None  # Inherit from folder/site-wide
+    else:
+        try:
+            days = int(days)
+            if days < 0 or days > 365:
+                return {"code": -1, "message": "Days must be between 0 and 365"}
+            sub.auto_mark_read_days = days
+        except (ValueError, TypeError):
+            return {"code": -1, "message": "Invalid days value"}
+
+    sub.needs_unread_recalc = True
+    sub.save()
+
+    # Calculate effective setting for response
+    effective_days, source = sub.get_effective_auto_mark_read_days()
+
+    logging.user(
+        request,
+        "~FBSaving feed auto-mark-read: ~SB%s~SN days=%s (effective: %s from %s)"
+        % (feed_id, sub.auto_mark_read_days, effective_days, source),
+    )
+
+    return {
+        "code": 1,
+        "feed_id": feed_id,
+        "auto_mark_read_days": sub.auto_mark_read_days,
+        "effective_days": effective_days,
+        "source": source,
+    }
+
+
+@ajax_login_required
+@json.json_view
+def save_folder_auto_mark_read(request):
+    """
+    Save the auto-mark-read setting for a folder.
+
+    POST Parameters:
+        folder_title: The folder title to update
+        auto_mark_read_days: Number of days (1-365), 0 for never, or null/empty for inherit
+    """
+    user = request.user
+    folder_title = request.POST.get("folder_title", "").replace("river:", "")
+    days = request.POST.get("auto_mark_read_days")
+
+    if not folder_title:
+        return {"code": -1, "message": "Folder title required"}
+
+    # Check if user is archive tier (required for this feature)
+    if not user.profile.is_archive:
+        return {"code": -1, "message": "This feature requires the Archive subscription"}
+
+    # Parse days value
+    if days is None or days == "" or days == "null":
+        # Delete the setting to inherit from parent
+        MFolderAutoMarkRead.delete_folder_setting(user.pk, folder_title)
+        effective_days = None
+        source = "inherited"
+    else:
+        try:
+            days = int(days)
+            if days < 0 or days > 365:
+                return {"code": -1, "message": "Days must be between 0 and 365"}
+            MFolderAutoMarkRead.save_folder_setting(user.pk, folder_title, days)
+            effective_days = days if days > 0 else None
+            source = f"folder:{folder_title}"
+        except (ValueError, TypeError):
+            return {"code": -1, "message": "Invalid days value"}
+
+    # Trigger recalc for all feeds in this folder
+    try:
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        flat_folders = usf.flatten_folders()
+        affected_feeds = []
+
+        # Collect all feeds that might be affected (this folder and nested folders)
+        for ft, feed_ids in flat_folders.items():
+            if ft == folder_title or ft.startswith(folder_title + " - "):
+                affected_feeds.extend(feed_ids)
+
+        if affected_feeds:
+            UserSubscription.objects.filter(user=user, feed_id__in=affected_feeds).update(
+                needs_unread_recalc=True
+            )
+    except UserSubscriptionFolders.DoesNotExist:
+        pass
+
+    logging.user(
+        request,
+        "~FBSaving folder auto-mark-read: ~SB%s~SN days=%s" % (folder_title, days),
+    )
+
+    # Return all folder settings
+    folder_settings = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
+    return {
+        "code": 1,
+        "folder_title": folder_title,
+        "auto_mark_read_days": days if days != "" and days is not None else None,
+        "folder_auto_mark_read": {fs.folder_title: fs.to_json() for fs in folder_settings},
+    }
+
+
+@ajax_login_required
+@json.json_view
+def get_auto_mark_read_settings(request):
+    """
+    Get all auto-mark-read settings for the user (folders and feeds).
+
+    Returns folder settings and site-wide setting.
+    """
+    user = request.user
+
+    # Get all folder settings
+    folder_settings = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
+
+    # Get site-wide setting
+    site_wide_days = user.profile.days_of_unread if user.profile.is_archive else None
+
+    return {
+        "code": 1,
+        "folder_auto_mark_read": {fs.folder_title: fs.to_json() for fs in folder_settings},
+        "site_wide_days": site_wide_days,
+        "is_archive": user.profile.is_archive,
+    }

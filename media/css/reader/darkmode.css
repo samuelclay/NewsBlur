@@ -918,6 +918,47 @@ color: #a85b40;
     color: #c0c0c0;
 }
 
+/* Auto-Mark Read Settings: Dark mode */
+.NB-dark .NB-auto-mark-read-options label {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-auto-mark-read-inherit-value {
+    color: #808080;
+}
+
+.NB-dark .NB-auto-mark-read-days-value {
+    color: #7CA4D8;
+}
+
+.NB-dark .NB-auto-mark-read-slider {
+    background: #404040;
+}
+
+.NB-dark .NB-auto-mark-read-slider::-webkit-slider-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-auto-mark-read-slider::-moz-range-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-exception-option-auto-mark-read .NB-exception-option-status {
+    color: #6EA74A;
+}
+
+.NB-dark .NB-auto-mark-read-archive-notice {
+    color: #707070;
+}
+
+.NB-dark .NB-auto-mark-read-archive-notice .NB-premium-link {
+    color: #7CA4D8;
+}
+
+.NB-dark .NB-auto-mark-read-preferences-link {
+    color: #7CA4D8;
+}
+
 /* Site Statistics: Text color */
 .NB-dark .NB-modal-statistics .NB-statistics-stat .NB-statistics-label,
 .NB-dark .NB-statistics-count,

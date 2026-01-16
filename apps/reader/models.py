@@ -65,6 +65,10 @@ class UserSubscription(models.Model):
     needs_unread_recalc = models.BooleanField(default=False)
     feed_opens = models.IntegerField(default=0)
     is_trained = models.BooleanField(default=False)
+    auto_mark_read_days = models.IntegerField(null=True, blank=True, default=None)
+    # None = inherit from folder/site-wide
+    # 0 = never auto-mark (explicit override to disable aging)
+    # 1-365 = days until auto-mark
 
     objects = UserSubscriptionManager()
 
@@ -83,6 +87,8 @@ class UserSubscription(models.Model):
         feed["active"] = self.active
         feed["feed_opens"] = self.feed_opens
         feed["subscribed"] = True
+        if self.auto_mark_read_days is not None:
+            feed["auto_mark_read_days"] = self.auto_mark_read_days
         if classifiers:
             feed["classifiers"] = classifiers
 
@@ -1134,6 +1140,78 @@ class UserSubscription(models.Model):
 
         return data
 
+    def get_effective_auto_mark_read_days(self, folder_settings=None):
+        """
+        Returns the effective auto_mark_read_days setting following inheritance:
+        feed -> folder (walking up nested hierarchy) -> site-wide
+
+        Returns tuple of (days, source) where source is 'feed', 'folder:FolderName', or 'site-wide'
+        """
+        # First check if feed has explicit setting
+        if self.auto_mark_read_days is not None:
+            if self.auto_mark_read_days == 0:
+                return (None, "feed")  # Explicit "never auto-mark"
+            return (self.auto_mark_read_days, "feed")
+
+        # Find folders containing this feed
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=self.user)
+            feed_folders = usf.find_feed_folders(self.feed_id)
+        except UserSubscriptionFolders.DoesNotExist:
+            feed_folders = []
+
+        # Get all folder settings for this user if not provided
+        if folder_settings is None:
+            folder_settings = {}
+            for setting in MFolderAutoMarkRead.get_folder_settings_for_user(self.user_id):
+                folder_settings[setting.folder_title] = setting.auto_mark_read_days
+
+        # Walk up the folder hierarchy for each folder containing the feed
+        for folder_title in feed_folders:
+            days, source = self._resolve_folder_auto_mark_read(folder_title, folder_settings)
+            if days is not None or source.startswith("folder:"):
+                return (days, source)
+
+        # Fall back to site-wide setting (only for archive users)
+        if self.user.profile.is_archive and self.user.profile.days_of_unread:
+            return (self.user.profile.days_of_unread, "site-wide")
+
+        return (None, "default")
+
+    def _resolve_folder_auto_mark_read(self, folder_title, folder_settings):
+        """
+        Walk up folder hierarchy to find auto_mark_read_days setting.
+        Folder titles use " - " as hierarchy separator (e.g., "Parent - Child - Grandchild").
+        Returns tuple of (days, source).
+        """
+        if not folder_title:
+            return (None, "default")
+
+        # Check this folder's setting
+        if folder_title in folder_settings:
+            days = folder_settings[folder_title]
+            if days == 0:
+                return (None, f"folder:{folder_title}")  # Explicit "never auto-mark"
+            return (days, f"folder:{folder_title}")
+
+        # Walk up to parent folder (split on " - ")
+        if " - " in folder_title:
+            parent_folder = " - ".join(folder_title.split(" - ")[:-1])
+            return self._resolve_folder_auto_mark_read(parent_folder, folder_settings)
+
+        return (None, "default")
+
+    def get_auto_mark_read_cutoff(self, folder_settings=None):
+        """
+        Returns the unread cutoff date based on auto_mark_read_days setting.
+        Takes into account feed, folder, and site-wide settings.
+        Returns None if no aging should be applied.
+        """
+        days, source = self.get_effective_auto_mark_read_days(folder_settings)
+        if days is None:
+            return None
+        return datetime.datetime.utcnow() - datetime.timedelta(days=days)
+
     def calculate_feed_scores(self, silent=False, stories=None, force=False):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
@@ -1160,8 +1238,14 @@ class UserSubscription(models.Model):
 
         feed_scores = dict(negative=0, neutral=0, positive=0)
 
-        # Two weeks in age. If mark_read_date is older, mark old stories as read.
-        date_delta = self.user.profile.unread_cutoff
+        # Determine the unread cutoff. Per-feed/folder settings take priority over site-wide.
+        # Check for per-feed or per-folder auto_mark_read_days setting first
+        auto_mark_cutoff = self.get_auto_mark_read_cutoff()
+        if auto_mark_cutoff is not None:
+            date_delta = auto_mark_cutoff
+        else:
+            date_delta = self.user.profile.unread_cutoff
+
         if date_delta < self.mark_read_date:
             date_delta = self.mark_read_date
         else:
@@ -1176,7 +1260,7 @@ class UserSubscription(models.Model):
                 feed_ids=[self.feed_id],
                 usersubs=[self],
                 read_filter="unread",
-                cutoff_date=self.user.profile.unread_cutoff,
+                cutoff_date=date_delta,
             )
 
             if not stories:
@@ -2018,6 +2102,16 @@ class UserSubscriptionFolders(models.Model):
 
         return flat_folders
 
+    def find_feed_folders(self, feed_id):
+        """Find the folder(s) containing a feed. Returns a list of folder titles."""
+        flat_folders = self.flatten_folders()
+        folders_with_feed = []
+        for folder_title, feed_ids in flat_folders.items():
+            if feed_id in feed_ids:
+                # Use empty string for root folder instead of " "
+                folders_with_feed.append(folder_title.strip() if folder_title.strip() else "")
+        return folders_with_feed
+
     def delete_feed(self, feed_id, in_folder, commit_delete=True):
         feed_id = int(feed_id)
 
@@ -2620,4 +2714,90 @@ class MCustomFeedIcon(mongo.Document):
             "icon_data": self.icon_data,
             "icon_color": self.icon_color,
             "icon_set": self.icon_set or "lucide",
+        }
+
+
+class MFolderAutoMarkRead(mongo.Document):
+    """
+    Auto-mark-read settings for folders. Allows users to automatically mark
+    stories as read after a certain number of days on a per-folder basis.
+
+    This works with inheritance:
+    - Site-wide setting (Profile.days_of_unread) is the default
+    - Folder settings can override the site-wide setting
+    - Nested folders inherit from parent unless overridden
+    - Feed settings (UserSubscription.auto_mark_read_days) override folder settings
+    """
+
+    user_id = mongo.IntField()
+    folder_title = mongo.StringField(max_length=256)
+    auto_mark_read_days = mongo.IntField()
+    # None = inherit from parent folder or site-wide
+    # 0 = never auto-mark (explicit override to disable aging)
+    # 1-365 = days until auto-mark
+
+    meta = {
+        "collection": "folder_auto_mark_read",
+        "indexes": [
+            {"fields": ["user_id", "folder_title"], "unique": True},
+            "user_id",
+        ],
+        "allow_inheritance": False,
+    }
+
+    def __str__(self):
+        return f"[{self.user_id}] {self.folder_title}: {self.auto_mark_read_days} days"
+
+    @classmethod
+    def get_folder_setting(cls, user_id, folder_title):
+        """Get the auto-mark-read setting for a specific folder."""
+        try:
+            return cls.objects.get(user_id=user_id, folder_title=folder_title)
+        except cls.DoesNotExist:
+            return None
+
+    @classmethod
+    def get_folder_settings_for_user(cls, user_id):
+        """Get all auto-mark-read settings for a user."""
+        return cls.objects.filter(user_id=user_id)
+
+    @classmethod
+    def save_folder_setting(cls, user_id, folder_title, auto_mark_read_days):
+        """Save or update an auto-mark-read setting for a folder."""
+        try:
+            setting = cls.objects.get(user_id=user_id, folder_title=folder_title)
+            if auto_mark_read_days is None:
+                # Delete the setting if set to None (inherit)
+                setting.delete()
+                return None
+            setting.auto_mark_read_days = auto_mark_read_days
+            setting.save()
+        except cls.DoesNotExist:
+            if auto_mark_read_days is None:
+                return None
+            setting = cls.objects.create(
+                user_id=user_id,
+                folder_title=folder_title,
+                auto_mark_read_days=auto_mark_read_days,
+            )
+        return setting
+
+    @classmethod
+    def delete_folder_setting(cls, user_id, folder_title):
+        """Delete an auto-mark-read setting for a folder."""
+        cls.objects.filter(user_id=user_id, folder_title=folder_title).delete()
+
+    @classmethod
+    def rename_folder_setting(cls, user_id, old_folder_title, new_folder_title):
+        """Update folder_title when folder is renamed."""
+        setting = cls.get_folder_setting(user_id, old_folder_title)
+        if setting:
+            setting.folder_title = new_folder_title
+            setting.save()
+        return setting
+
+    def to_json(self):
+        return {
+            "folder_title": self.folder_title,
+            "auto_mark_read_days": self.auto_mark_read_days,
         }
