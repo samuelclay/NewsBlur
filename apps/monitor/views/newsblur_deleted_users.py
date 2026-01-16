@@ -21,36 +21,6 @@ class DeletedUsers(View):
 
         # Premium breakdown
         premium_total = MDeletedUser.objects.filter(is_premium=True).count()
-        archive_total = MDeletedUser.objects.filter(is_archive=True).count()
-        pro_total = MDeletedUser.objects.filter(is_pro=True).count()
-        free_total = MDeletedUser.objects.filter(is_premium=False).count()
-
-        # Average stats
-        pipeline = [
-            {
-                "$group": {
-                    "_id": None,
-                    "avg_feeds": {"$avg": "$feeds_count"},
-                    "avg_payments": {"$avg": "$total_payments"},
-                    "avg_read_stories": {"$avg": "$read_story_count"},
-                    "avg_starred": {"$avg": "$starred_stories_count"},
-                    "total_revenue_lost": {"$sum": "$total_payments"},
-                }
-            }
-        ]
-        stats = list(MDeletedUser.objects.aggregate(pipeline))
-        if stats:
-            avg_feeds = stats[0].get("avg_feeds", 0) or 0
-            avg_payments = stats[0].get("avg_payments", 0) or 0
-            avg_read_stories = stats[0].get("avg_read_stories", 0) or 0
-            avg_starred = stats[0].get("avg_starred", 0) or 0
-            total_revenue_lost = stats[0].get("total_revenue_lost", 0) or 0
-        else:
-            avg_feeds = 0
-            avg_payments = 0
-            avg_read_stories = 0
-            avg_starred = 0
-            total_revenue_lost = 0
 
         data = {
             "total": total,
@@ -58,14 +28,6 @@ class DeletedUsers(View):
             "weekly": weekly,
             "monthly": monthly,
             "premium": premium_total,
-            "archive": archive_total,
-            "pro": pro_total,
-            "free": free_total,
-            "avg_feeds": round(avg_feeds, 1),
-            "avg_payments": round(avg_payments, 2),
-            "avg_read_stories": round(avg_read_stories, 0),
-            "avg_starred": round(avg_starred, 1),
-            "total_revenue_lost": total_revenue_lost,
         }
 
         chart_name = "deleted_users"
@@ -74,6 +36,45 @@ class DeletedUsers(View):
         formatted_data = {}
         for k, v in data.items():
             formatted_data[k] = f'{chart_name}{{category="{k}"}} {v}'
+
+        # Add individual deleted user entries (last 20)
+        recent_users = MDeletedUser.objects.order_by("-date_deleted")[:20]
+        for i, user in enumerate(recent_users):
+            tier = "free"
+            if user.is_pro:
+                tier = "pro"
+            elif user.is_archive:
+                tier = "archive"
+            elif user.is_premium:
+                tier = "premium"
+
+            def format_date(dt):
+                if dt:
+                    return dt.strftime("%Y-%m-%d %H:%M")
+                return ""
+
+            def escape_label(val):
+                if val is None:
+                    return ""
+                return str(val).replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+
+            labels = [
+                f'username="{escape_label(user.username)}"',
+                f'email="{escape_label(user.email)}"',
+                f'date_joined="{format_date(user.date_joined)}"',
+                f'date_deleted="{format_date(user.date_deleted)}"',
+                f'last_seen="{format_date(user.last_seen_on)}"',
+                f'tier="{tier}"',
+                f'feeds="{user.feeds_count or 0}"',
+                f'stories_read="{user.read_story_count or 0}"',
+                f'starred="{user.starred_stories_count or 0}"',
+                f'shared="{user.shared_stories_count or 0}"',
+                f'payments="{user.total_payments or 0}"',
+                f'payment_count="{user.payment_count or 0}"',
+                f'followers="{user.follower_count or 0}"',
+                f'following="{user.following_count or 0}"',
+            ]
+            formatted_data[f"user_{i}"] = f'deleted_user_entry{{{",".join(labels)}}} 1'
 
         context = {
             "data": formatted_data,
