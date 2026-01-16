@@ -1282,13 +1282,13 @@ var classifier_prototype = {
                 $.make('div', { className: 'NB-manage-training-folders' }, $folders),
                 $.make('div', { className: 'NB-modal-submit-bottom' }, [
                     $.make('div', { className: 'NB-modal-submit NB-manage-submit-area' }, [
+                        $.make('span', { className: 'NB-manage-saved-message' }, 'Saved'),
                         $.make('div', {
                             className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-disabled NB-manage-prompt'
                         }, 'Check what you like above...'),
                         $.make('div', {
                             className: 'NB-modal-submit-save NB-modal-submit-button NB-modal-submit-green NB-manage-save'
-                        }, 'Save'),
-                        $.make('span', { className: 'NB-manage-saved-message' }, 'Saved')
+                        }, 'Save')
                     ])
                 ])
             ]);
