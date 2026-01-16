@@ -441,10 +441,6 @@ body {
     font-size: 8px;
 }
 
-.server-badge.custom .server-icon {
-    color: #ff9800;
-}
-
 .server-name {
     font-family: monospace;
     font-size: 10px;

@@ -350,6 +350,7 @@ class Profile(models.Model):
             last_seen_ip=self.last_seen_ip,
             timezone=str(self.timezone) if self.timezone else None,
             is_premium=self.is_premium,
+            is_premium_trial=self.is_premium_trial or False,
             is_archive=self.is_archive or False,
             is_pro=self.is_pro or False,
             premium_expire=self.premium_expire,
@@ -3074,6 +3075,7 @@ class MDeletedUser(mongo.Document):
 
     # Subscription status at deletion
     is_premium = mongo.BooleanField(default=False)
+    is_premium_trial = mongo.BooleanField(default=False)
     is_archive = mongo.BooleanField(default=False)
     is_pro = mongo.BooleanField(default=False)
     premium_expire = mongo.DateTimeField()
