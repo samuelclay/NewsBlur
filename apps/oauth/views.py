@@ -883,9 +883,28 @@ class ExtensionAuthorizationView(BaseAuthorizationView):
     This is needed for browser extension OAuth flows.
     """
 
+    def get(self, request, *args, **kwargs):
+        """Override get to add logging for debugging OAuth issues."""
+        redirect_uri = request.GET.get("redirect_uri", "")
+        client_id = request.GET.get("client_id", "")
+        response_type = request.GET.get("response_type", "")
+
+        logging.user(
+            request,
+            "~FBArchive OAuth authorize: client=%s, response_type=%s, redirect_uri=%s"
+            % (client_id, response_type, redirect_uri),
+        )
+
+        return super().get(request, *args, **kwargs)
+
     def redirect(self, redirect_to, application):
         """Override redirect to allow chrome-extension:// and moz-extension:// schemes."""
         from django.http import HttpResponse
+
+        # Log the redirect for debugging
+        logging.info(
+            "~FBArchive OAuth redirect: app=%s, redirect_to=%s" % (application.name if application else "none", redirect_to[:100])
+        )
 
         # Check if this is a browser extension redirect
         if redirect_to.startswith("chrome-extension://") or redirect_to.startswith("moz-extension://"):
@@ -908,6 +927,24 @@ def extension_oauth_callback(request):
 
     code = request.GET.get("code", "")
     error = request.GET.get("error", "")
+
+    # Log the full request for debugging
+    full_url = request.build_absolute_uri()
+    query_string = request.META.get("QUERY_STRING", "")
+    logging.user(
+        request,
+        "~FBArchive OAuth callback: URL=%s, query=%s, code=%s, error=%s"
+        % (full_url, query_string, bool(code), error or "none"),
+    )
+
+    # If no code and no error, something went wrong in the OAuth flow
+    if not code and not error:
+        error = "no_code"
+        logging.user(
+            request,
+            "~FRArchive OAuth callback: No authorization code received. "
+            "This usually means a redirect stripped the query string. Check nginx/haproxy config.",
+        )
 
     # Common styles for both success and error pages
     common_styles = """
@@ -1005,6 +1042,25 @@ def extension_oauth_callback(request):
     """
 
     if error:
+        # Map error codes to user-friendly messages
+        error_messages = {
+            "no_code": (
+                "No authorization code was received. This usually means:<br><br>"
+                "1. A redirect (HTTP→HTTPS or www) stripped the query string<br>"
+                "2. The OAuth redirect_uri doesn't match what's registered<br><br>"
+                "Check your nginx/haproxy config and ensure NEWSBLUR_URL matches your domain.<br>"
+                f"<br><small style='color: #888;'>Requested URL: {request.build_absolute_uri()}</small>"
+            ),
+            "access_denied": "You denied access to the Archive extension.",
+            "invalid_request": "The authorization request was invalid.",
+            "unauthorized_client": "The client is not authorized.",
+            "unsupported_response_type": "The response type is not supported.",
+            "invalid_scope": "The requested scope is invalid.",
+            "server_error": "The server encountered an error.",
+            "temporarily_unavailable": "The server is temporarily unavailable.",
+        }
+        error_description = error_messages.get(error, f"Error: {error}")
+
         html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -1021,7 +1077,7 @@ def extension_oauth_callback(request):
         <p class="description">
             We couldn't connect the Archive extension to your account.
         </p>
-        <p class="error-detail">{error}</p>
+        <p class="error-detail">{error_description}</p>
         <p class="close-hint">
             <a href="javascript:window.close()">Close this tab and try again</a>
         </p>
@@ -1114,10 +1170,18 @@ def extension_oauth_callback(request):
             }} catch (error) {{
                 console.error('NewsBlur Archive: Token exchange error:', error);
 
+                // Parse the error message for better user feedback
+                let errorMessage = error.message;
+                if (errorMessage.includes('invalid_grant')) {{
+                    errorMessage = 'This authorization code has already been used or expired. ' +
+                        'If you just connected successfully, you can close this tab. ' +
+                        'Otherwise, please try connecting again from the extension.';
+                }}
+
                 // Show error
                 document.getElementById('connecting').classList.add('hidden');
                 document.getElementById('error').classList.remove('hidden');
-                document.getElementById('errorDetail').textContent = error.message;
+                document.getElementById('errorDetail').textContent = errorMessage;
                 document.title = 'Connection Failed - NewsBlur Archive';
             }}
         }})();

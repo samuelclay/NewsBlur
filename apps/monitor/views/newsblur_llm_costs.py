@@ -27,9 +27,9 @@ class LLMCosts(View):
         weekly_users = RLLMCosts.get_unique_users_for_period(days=7)
         monthly_users = RLLMCosts.get_unique_users_for_period(days=30)
 
-        # Define the dimensions we track
-        providers = ["anthropic", "openai", "google", "xai"]
-        features = ["archive_assistant", "ask_ai", "story_classification", "transcription"]
+        # Define the dimensions we track (use centralized lists from RLLMCosts)
+        providers = RLLMCosts.PROVIDERS
+        features = RLLMCosts.FEATURES
 
         data = {}
 
