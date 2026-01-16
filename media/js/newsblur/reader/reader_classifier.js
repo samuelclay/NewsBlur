@@ -1096,7 +1096,8 @@ var classifier_prototype = {
 
     serialize_classifier: function () {
         var data = {};
-        $('.NB-classifier', this.$modal).each(function () {
+        // Only serialize classifiers from the site-by-side tab, not the manage tab
+        $('.NB-tab-sitebyside .NB-classifier', this.$modal).each(function () {
             var value = $('.NB-classifier-input-like', this).val();
             if ($('.NB-classifier-input-like, .NB-classifier-input-dislike', this).is(':checked')) {
                 var name = $('input:checked', this).attr('name');
@@ -1146,7 +1147,8 @@ var classifier_prototype = {
         var self = this;
         var feed_id = this.feed_id;
 
-        $('input[type=checkbox]', this.$modal).each(function () {
+        // Only update opinions from the site-by-side tab, not the manage tab
+        $('.NB-tab-sitebyside input[type=checkbox]', this.$modal).each(function () {
             var $this = $(this);
             var name = $this.attr('name').replace(/^(dis)?like_/, '');
             var score = /^dislike/.test($this.attr('name')) ? -1 : 1;
@@ -1320,9 +1322,12 @@ var classifier_prototype = {
             $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'text', c.text, c.score));
         });
 
-        // Feed-level classifier (publisher)
+        // Feed-level classifier (publisher) - use feed_id as value but display feed_title
         _.each(classifiers.feeds, function (c) {
-            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'feed', feed.feed_title, c.score));
+            var $item = self.make_manage_classifier_item(feed.feed_id, 'feed', feed.feed_id, c.score);
+            // Update the label to show feed title instead of feed_id
+            $item.find('.NB-classifier label span').text(feed.feed_title);
+            $classifiers_list.push($item);
         });
 
         if (!$classifiers_list.length) return null;
