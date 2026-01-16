@@ -1170,10 +1170,18 @@ def extension_oauth_callback(request):
             }} catch (error) {{
                 console.error('NewsBlur Archive: Token exchange error:', error);
 
+                // Parse the error message for better user feedback
+                let errorMessage = error.message;
+                if (errorMessage.includes('invalid_grant')) {{
+                    errorMessage = 'This authorization code has already been used or expired. ' +
+                        'If you just connected successfully, you can close this tab. ' +
+                        'Otherwise, please try connecting again from the extension.';
+                }}
+
                 // Show error
                 document.getElementById('connecting').classList.add('hidden');
                 document.getElementById('error').classList.remove('hidden');
-                document.getElementById('errorDetail').textContent = error.message;
+                document.getElementById('errorDetail').textContent = errorMessage;
                 document.title = 'Connection Failed - NewsBlur Archive';
             }}
         }})();
