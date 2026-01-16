@@ -10,7 +10,7 @@
   
   
 
-  <updated>2026-01-08T18:50:17-05:00</updated>
+  <updated>2026-01-16T18:27:14-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,51 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Take it to the couch with the NewsBlur iPad app</title>
+    <link href="https://blog.newsblur.com/2012/09/05/newsblur-ipad-app/" rel="alternate" type="text/html" title="Take it to the couch with the NewsBlur iPad app" />
+    <published>2012-09-05T08:21:00-04:00</published>
+    <updated>2012-09-05T08:21:00-04:00</updated>
+    <id>https://blog.newsblur.com/2012/09/05/newsblur-ipad-app</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2012/09/05/newsblur-ipad-app/">
+      <![CDATA[<p>There’s no wrong way to hold an iPad loaded with <a href="http://www.newsblur.com/ipad">the brand new NewsBlur iPad app</a>, provided it’s facing you and turned on.</p>
+
+<p><a href="http://www.newsblur.com/ipad"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iPad.png" alt="image" title="The NewsBlur iPad app in revealing positions" /></a></p>
+
+<p>This brand new iPad app is not just an accessory to the web. It’s a full blown reading experience. Here are some of the many features now available in the palm of your hands:</p>
+
+<ul>
+  <li>All your sites, folders, and friend’s blurblogs</li>
+  <li>Super-fast everything, from near-instant downloading of stories to the mouthfeel of the app itself</li>
+  <li>Commenting on stories and sharing them on your blurblog</li>
+  <li>New users can easily get started by importing directly from Google Reader, so you can tell friends about the app without having them to go the website first</li>
+</ul>
+
+<p>The biggest new feature is all about sharing stories with people. Blurblogs, those shared story feeds, are now part of your feed list. And you can expand your network by following more people directly from the app. Following more people means being exposed to stories from sites you may not have even heard of. And because the NewsBlur iPad app is so fast, you can traverse between stories quickly, settling on the ones that look interesting. And better yet, see contribute to a discussion between friends, all on the app.</p>
+
+<p>But wait, there’s more! In fact, there’s a whole lot more, because this is a universal iOS app, which means there’s an iPhone app to boot. Everything you can do on the iPad app is available on the iPhone app.</p>
+
+<p><a href="http://www.newsblur.com/ipad"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iPhone.png" alt="image" title="NewsBlur iPhone app to boot" /></a></p>
+
+<p>The iPad app and latest version of the iPhone app were built by my good friend Roy. Now that the Y Combinator summer has ended, we wish him well as he’s moving on to pursue his non-news dreams. So long buddy, and thanks for all the hard work this summer. Roy <a href="http://roycyang.tumblr.com/post/30118352382/what-ive-learned-during-my-summer-in-yc">wrote about his impression</a> of Y Combinator and the past summer.</p>
+
+<p>Go <a href="http://www.newsblur.com/ipad">download the NewsBlur iOS app</a> and forget about sitting at your desk.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="mobile" />
+    
+    
+    <summary type="html">
+      <![CDATA[There’s no wrong way to hold an iPad loaded with the brand new NewsBlur iPad app, provided it’s facing you and turned on.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Introducing Blurblogs, Roy, and Y Combinator</title>

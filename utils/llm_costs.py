@@ -31,11 +31,15 @@ from utils import log as logging
 # - Google: https://ai.google.dev/gemini-api/docs/pricing
 # - xAI: https://docs.x.ai/docs/models
 MODEL_PRICING = {
-    # Anthropic Claude models
+    # Anthropic Claude models (full IDs and short aliases)
     "claude-opus-4-5-20251101": {"input": 5.00, "output": 25.00},
+    "claude-opus-4-5": {"input": 5.00, "output": 25.00},
     "claude-sonnet-4-20250514": {"input": 3.00, "output": 15.00},
+    "claude-sonnet-4": {"input": 3.00, "output": 15.00},
     "claude-sonnet-4-5-20251022": {"input": 3.00, "output": 15.00},
+    "claude-sonnet-4-5": {"input": 3.00, "output": 15.00},
     "claude-haiku-4-5-20251022": {"input": 1.00, "output": 5.00},
+    "claude-haiku-4-5": {"input": 1.00, "output": 5.00},
     # OpenAI GPT models
     "gpt-5.2": {"input": 2.00, "output": 8.00},
     "gpt-5-mini": {"input": 0.30, "output": 1.20},
@@ -47,6 +51,10 @@ MODEL_PRICING = {
     "gpt-3.5-turbo": {"input": 0.50, "output": 1.50},
     # OpenAI Whisper (per minute, not per token)
     "whisper-1": {"per_minute": 0.006},
+    # OpenAI Embedding models (input only, no output)
+    "text-embedding-3-small": {"input": 0.02, "output": 0.0},
+    "text-embedding-3-large": {"input": 0.13, "output": 0.0},
+    "text-embedding-ada-002": {"input": 0.10, "output": 0.0},
     # Google Gemini models
     "gemini-3-pro-preview": {"input": 2.00, "output": 12.00},
     "gemini-2.5-pro": {"input": 1.25, "output": 10.00},
@@ -57,12 +65,16 @@ MODEL_PRICING = {
     "grok-3-beta": {"input": 3.00, "output": 15.00},
 }
 
-# Provider mapping for models
+# Provider mapping for models (full IDs and short aliases)
 MODEL_PROVIDERS = {
     "claude-opus-4-5-20251101": "anthropic",
+    "claude-opus-4-5": "anthropic",
     "claude-sonnet-4-20250514": "anthropic",
+    "claude-sonnet-4": "anthropic",
     "claude-sonnet-4-5-20251022": "anthropic",
+    "claude-sonnet-4-5": "anthropic",
     "claude-haiku-4-5-20251022": "anthropic",
+    "claude-haiku-4-5": "anthropic",
     "gpt-5.2": "openai",
     "gpt-5-mini": "openai",
     "gpt-5.1": "openai",
@@ -72,6 +84,9 @@ MODEL_PROVIDERS = {
     "gpt-4o-mini": "openai",
     "gpt-3.5-turbo": "openai",
     "whisper-1": "openai",
+    "text-embedding-3-small": "openai",
+    "text-embedding-3-large": "openai",
+    "text-embedding-ada-002": "openai",
     "gemini-3-pro-preview": "google",
     "gemini-2.5-pro": "google",
     "gemini-2.5-flash": "google",
@@ -228,6 +243,37 @@ class LLMCostTracker:
             model="whisper-1",
             feature="transcription",
             duration_minutes=duration_minutes,
+            user_id=user_id,
+            request_id=request_id,
+            metadata=metadata,
+        )
+
+    @classmethod
+    def record_embedding(
+        cls, model, input_tokens, feature="search", user_id=None, request_id=None, metadata=None
+    ):
+        """
+        Convenience method for recording embedding API costs.
+
+        Embeddings only have input tokens (no output tokens).
+
+        Args:
+            model: Embedding model name (e.g., "text-embedding-3-small")
+            input_tokens: Number of tokens embedded
+            feature: Feature name (default: "search")
+            user_id: User ID (optional)
+            request_id: Request correlation ID (optional)
+            metadata: Additional context dict (optional)
+
+        Returns:
+            MLLMCost document instance
+        """
+        return cls.record_usage(
+            provider="openai",
+            model=model,
+            feature=feature,
+            input_tokens=input_tokens,
+            output_tokens=0,
             user_id=user_id,
             request_id=request_id,
             metadata=metadata,

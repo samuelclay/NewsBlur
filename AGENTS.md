@@ -1,5 +1,17 @@
 # NewsBlur Development Guidelines
 
+## Planning & Clarification
+**IMPORTANT: Before starting any implementation or creating a plan, use the AskUserQuestion tool to interview me thoroughly.** Ask as many clarifying questions as needed to understand:
+- The specific goals and desired outcomes
+- Edge cases and error handling preferences
+- UI/UX preferences (if applicable)
+- Performance or scalability requirements
+- Integration points with existing code
+- Testing expectations
+- Any constraints or preferences I might have
+
+Don't assume - ask. Multiple rounds of questions are encouraged before writing code.
+
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
 
