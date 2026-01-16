@@ -98,7 +98,7 @@ To customize your NewsBlur installation, create `newsblur_web/local_settings.py`
 
 **Settings for self-hosted installations:**
 
-- `NEWSBLUR_URL` - Your domain (default: `https://localhost`)
+- `NEWSBLUR_URL` - Your domain (default: `https://localhost`). Also used for Archive browser extension OAuth.
 - `SESSION_COOKIE_DOMAIN` - Cookie domain for authentication
 - `AUTO_PREMIUM` - Give new users premium features (default: `True`)
 - `AUTO_ENABLE_NEW_USERS` - Auto-activate new accounts (default: `True`)

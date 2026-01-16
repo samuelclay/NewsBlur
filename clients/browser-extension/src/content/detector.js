@@ -165,7 +165,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Listen for OAuth token messages from the callback page
-window.addEventListener('message', (event) => {
+window.addEventListener('message', async (event) => {
     // Only accept messages from the same frame
     if (event.source !== window) return;
 
@@ -173,19 +173,42 @@ window.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'NEWSBLUR_ARCHIVE_TOKEN') {
         console.log('NewsBlur Archive: Received token from callback page');
 
-        // Relay the token to the service worker
-        chrome.runtime.sendMessage({
-            action: 'setToken',
-            token: event.data.accessToken,
-            refreshToken: event.data.refreshToken,
-            expiresIn: event.data.expiresIn
-        }, (response) => {
-            if (response && response.success) {
-                console.log('NewsBlur Archive: Token saved successfully');
-            } else {
-                console.error('NewsBlur Archive: Failed to save token');
-            }
-        });
+        const tokenData = {
+            authToken: event.data.accessToken,
+            refreshToken: event.data.refreshToken || null,
+            tokenExpiry: event.data.expiresIn ? Date.now() + (event.data.expiresIn * 1000) : null
+        };
+
+        // Save directly to storage as primary method (more reliable across browsers)
+        try {
+            await chrome.storage.local.set(tokenData);
+            console.log('NewsBlur Archive: Token saved to storage');
+        } catch (storageError) {
+            console.error('NewsBlur Archive: Storage save failed:', storageError);
+        }
+
+        // Also notify service worker to reinitialize (fire and forget)
+        try {
+            chrome.runtime.sendMessage({
+                action: 'setToken',
+                token: event.data.accessToken,
+                refreshToken: event.data.refreshToken,
+                expiresIn: event.data.expiresIn
+            }, (response) => {
+                // Check for runtime errors (common in Firefox)
+                if (chrome.runtime.lastError) {
+                    console.log('NewsBlur Archive: Service worker notification failed (token already saved to storage):',
+                        chrome.runtime.lastError.message);
+                    return;
+                }
+                if (response && response.success) {
+                    console.log('NewsBlur Archive: Service worker notified');
+                }
+            });
+        } catch (msgError) {
+            // This is OK - token is already saved to storage
+            console.log('NewsBlur Archive: Service worker notification error (token already saved):', msgError.message);
+        }
     }
 });
 
