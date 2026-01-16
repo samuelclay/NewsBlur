@@ -8600,6 +8600,7 @@
     },
     {
       "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "description": "Total LLM API spend for today (resets at midnight UTC)",
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "thresholds"},
@@ -8618,22 +8619,23 @@
         },
         "overrides": []
       },
-      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 357},
+      "gridPos": {"h": 5, "w": 4, "x": 0, "y": 357},
       "id": 201,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
+        "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
-        "textMode": "auto"
+        "textMode": "value_and_name"
       },
-      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",period=\"daily\"}", "legendFormat": "Daily Cost", "refId": "A"}],
-      "title": "Daily Cost (USD)",
+      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",period=\"daily\"}", "instant": true, "legendFormat": "Today", "refId": "A"}],
+      "title": "Today's Cost",
       "type": "stat"
     },
     {
       "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "description": "Rolling 7-day LLM API spend",
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "thresholds"},
@@ -8652,22 +8654,23 @@
         },
         "overrides": []
       },
-      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 357},
+      "gridPos": {"h": 5, "w": 4, "x": 4, "y": 357},
       "id": 202,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
+        "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
-        "textMode": "auto"
+        "textMode": "value_and_name"
       },
-      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",period=\"weekly\"}", "legendFormat": "Weekly Cost", "refId": "A"}],
-      "title": "Weekly Cost (USD)",
+      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",period=\"weekly\"}", "instant": true, "legendFormat": "This Week", "refId": "A"}],
+      "title": "This Week's Cost",
       "type": "stat"
     },
     {
       "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "description": "Rolling 30-day LLM API spend",
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "thresholds"},
@@ -8686,46 +8689,101 @@
         },
         "overrides": []
       },
-      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 357},
+      "gridPos": {"h": 5, "w": 4, "x": 8, "y": 357},
       "id": 203,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
+        "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
-        "textMode": "auto"
+        "textMode": "value_and_name"
       },
-      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",period=\"monthly\"}", "legendFormat": "Monthly Cost", "refId": "A"}],
-      "title": "Monthly Cost (USD)",
+      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",period=\"monthly\"}", "instant": true, "legendFormat": "This Month", "refId": "A"}],
+      "title": "This Month's Cost",
       "type": "stat"
     },
     {
       "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "description": "Number of LLM API calls made today",
       "fieldConfig": {
         "defaults": {
+          "color": {"mode": "thresholds"},
           "mappings": [],
-          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]},
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 357},
+      "gridPos": {"h": 5, "w": 4, "x": 12, "y": 357},
       "id": 204,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
+        "graphMode": "none",
+        "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
-        "textMode": "auto"
+        "textMode": "value_and_name"
       },
-      "targets": [{"expr": "llm_costs{metric=\"requests\",period=\"daily\"}", "legendFormat": "Daily Requests", "refId": "A"}],
-      "title": "Daily Requests",
+      "targets": [{"expr": "llm_costs{metric=\"requests\",period=\"daily\"}", "instant": true, "legendFormat": "Requests Today", "refId": "A"}],
+      "title": "Today's Requests",
       "type": "stat"
     },
     {
       "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "description": "Number of LLM API calls in the last 7 days",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]},
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 5, "w": 4, "x": 16, "y": 357},
+      "id": 208,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "textMode": "value_and_name"
+      },
+      "targets": [{"expr": "llm_costs{metric=\"requests\",period=\"weekly\"}", "instant": true, "legendFormat": "Requests This Week", "refId": "A"}],
+      "title": "This Week's Requests",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "description": "Number of LLM API calls in the last 30 days",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]},
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 5, "w": 4, "x": 20, "y": 357},
+      "id": 209,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "textMode": "value_and_name"
+      },
+      "targets": [{"expr": "llm_costs{metric=\"requests\",period=\"monthly\"}", "instant": true, "legendFormat": "Requests This Month", "refId": "A"}],
+      "title": "This Month's Requests",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "description": "Today's cost breakdown by AI provider (OpenAI, Anthropic, Google, xAI)",
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "palette-classic"},
@@ -8736,21 +8794,22 @@
         },
         "overrides": []
       },
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 361},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 362},
       "id": 205,
       "options": {
         "displayLabels": ["name", "value"],
         "legend": {"displayMode": "list", "placement": "right", "showLegend": true},
-        "pieType": "pie",
+        "pieType": "donut",
         "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
         "tooltip": {"mode": "single", "sort": "none"}
       },
-      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",provider=~\".+\",period=\"daily\"}", "legendFormat": "{{provider}}", "refId": "A"}],
-      "title": "Daily Cost by Provider",
+      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",provider=~\".+\",period=\"daily\"}", "instant": true, "legendFormat": "{{provider}}", "refId": "A"}],
+      "title": "Today's Cost by Provider",
       "type": "piechart"
     },
     {
       "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "description": "Today's cost breakdown by feature (Ask AI, Archive Assistant, Search Embeddings, etc.)",
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "palette-classic"},
@@ -8761,21 +8820,22 @@
         },
         "overrides": []
       },
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 361},
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 362},
       "id": 206,
       "options": {
         "displayLabels": ["name", "value"],
         "legend": {"displayMode": "list", "placement": "right", "showLegend": true},
-        "pieType": "pie",
+        "pieType": "donut",
         "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
         "tooltip": {"mode": "single", "sort": "none"}
       },
-      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",feature=~\".+\",period=\"daily\"}", "legendFormat": "{{feature}}", "refId": "A"}],
-      "title": "Daily Cost by Feature",
+      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",feature=~\".+\",period=\"daily\"}", "instant": true, "legendFormat": "{{feature}}", "refId": "A"}],
+      "title": "Today's Cost by Feature",
       "type": "piechart"
     },
     {
       "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "description": "Historical cost trend by provider over time",
       "fieldConfig": {
         "defaults": {
           "color": {"mode": "palette-classic"},
@@ -8786,33 +8846,33 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
+            "fillOpacity": 20,
+            "gradientMode": "opacity",
             "hideFrom": {"legend": false, "tooltip": false, "viz": false},
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
             "pointSize": 5,
             "scaleDistribution": {"type": "linear"},
             "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {"group": "A", "mode": "none"},
+            "spanNulls": true,
+            "stacking": {"group": "A", "mode": "normal"},
             "thresholdsStyle": {"mode": "off"}
           },
-          "decimals": 4,
+          "decimals": 2,
           "mappings": [],
           "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 361},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 362},
       "id": 207,
       "options": {
-        "legend": {"calcs": ["sum", "mean"], "displayMode": "table", "placement": "bottom", "showLegend": true},
+        "legend": {"calcs": ["sum"], "displayMode": "table", "placement": "bottom", "showLegend": true},
         "tooltip": {"mode": "multi", "sort": "desc"}
       },
       "targets": [{"expr": "llm_costs{metric=\"cost_usd\",provider=~\".+\",period=\"daily\"}", "legendFormat": "{{provider}}", "refId": "A"}],
-      "title": "Cost Over Time by Provider",
+      "title": "Cost Trend by Provider",
       "type": "timeseries"
     },
     {
