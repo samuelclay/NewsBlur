@@ -199,11 +199,20 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.intelligenceControl.subviews objectAtIndex:1].accessibilityLabel = @"Focus";
     [self.intelligenceControl.subviews objectAtIndex:0].accessibilityLabel = @"Saved";
 
-    // Set segmented control height to match toolbar button heights
-    self.intelligenceControl.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.intelligenceControl.heightAnchor constraintEqualToConstant:28].active = YES;
-    self.intelligenceControl.layer.cornerRadius = 7;
+    // Set segmented control styling and size
+    self.intelligenceControl.layer.cornerRadius = 8;
     self.intelligenceControl.clipsToBounds = YES;
+
+    // Set explicit segment widths to control overall size
+    [self.intelligenceControl setWidth:42 forSegmentAtIndex:0]; // All
+    [self.intelligenceControl setWidth:68 forSegmentAtIndex:1]; // Unread
+    [self.intelligenceControl setWidth:58 forSegmentAtIndex:2]; // Focus
+    [self.intelligenceControl setWidth:58 forSegmentAtIndex:3]; // Saved
+
+    // Set height via Auto Layout, constrain width to prevent expansion
+    self.intelligenceControl.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.intelligenceControl.heightAnchor constraintEqualToConstant:36].active = YES;
+    [self.intelligenceControl.widthAnchor constraintEqualToConstant:232].active = YES;
 
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:

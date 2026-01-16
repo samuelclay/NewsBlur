@@ -32,6 +32,7 @@
 @property (nonatomic, strong) NSTimer *autoscrollTimer;
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
 @property (nonatomic, strong) NSString *restoringStoryId;
+@property (nonatomic) CGSize lastScrollViewBoundsSize;
 
 @end
 
@@ -376,6 +377,7 @@
     appDelegate.isTryFeedView = NO;
     [self reorientPages];
     previousPage.view.hidden = NO;
+    [self alignScrollViewToCurrentPageIfNeeded];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         self.doneInitialDisplay = YES;
@@ -384,11 +386,21 @@
     [self becomeFirstResponder];
 }
 
+- (void)viewSafeAreaInsetsDidChange {
+    [super viewSafeAreaInsetsDidChange];
+    [self alignScrollViewToCurrentPageIfNeeded];
+}
+
 - (void)viewDidLayoutSubviews {
     CGRect frame = self.scrollView.frame;
     
     if (frame.size.width != floor(frame.size.width)) {
         self.scrollView.frame = CGRectMake(frame.origin.x, frame.origin.y, floor(frame.size.width), floor(frame.size.height));
+    }
+
+    if (!CGSizeEqualToSize(self.lastScrollViewBoundsSize, self.scrollView.bounds.size)) {
+        self.lastScrollViewBoundsSize = self.scrollView.bounds.size;
+        [self reorientPages];
     }
     
     if (self.scrollView.subviews.lastObject != self.currentPage.view) {
@@ -1195,7 +1207,7 @@
 }
 
 - (CGFloat)axisInsetForScrollView:(UIScrollView *)scrollView {
-    return self.isHorizontal ? scrollView.adjustedContentInset.left : scrollView.adjustedContentInset.top;
+    return self.isHorizontal ? scrollView.contentInset.left : scrollView.contentInset.top;
 }
 
 - (CGFloat)pageOffsetForIndex:(NSInteger)pageIndex pageAmount:(CGFloat)pageAmount axisInset:(CGFloat)axisInset {
