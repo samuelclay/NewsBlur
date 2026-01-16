@@ -1179,7 +1179,12 @@
 }
 
 - (void)alignScrollViewToCurrentPageIfNeeded {
-    if (self.isDraggingScrollview || inRotation || currentPage.pageIndex < 0) {
+    if (self.isDraggingScrollview || inRotation) {
+        return;
+    }
+
+    NSInteger targetIndex = currentPage.pageIndex >= 0 ? currentPage.pageIndex : self.scrollingToPage;
+    if (targetIndex < 0) {
         return;
     }
 
@@ -1189,7 +1194,7 @@
     }
 
     CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
-    CGFloat targetOffset = [self pageOffsetForIndex:currentPage.pageIndex pageAmount:pageAmount axisInset:axisInset];
+    CGFloat targetOffset = [self pageOffsetForIndex:targetIndex pageAmount:pageAmount axisInset:axisInset];
     CGPoint offset = self.scrollView.contentOffset;
 
     if (self.isHorizontal) {
@@ -1206,8 +1211,16 @@
     }
 }
 
+- (void)scrollViewDidChangeAdjustedContentInset:(UIScrollView *)scrollView {
+    if (scrollView != self.scrollView) {
+        return;
+    }
+
+    [self alignScrollViewToCurrentPageIfNeeded];
+}
+
 - (CGFloat)axisInsetForScrollView:(UIScrollView *)scrollView {
-    return self.isHorizontal ? scrollView.contentInset.left : scrollView.contentInset.top;
+    return self.isHorizontal ? scrollView.adjustedContentInset.left : scrollView.adjustedContentInset.top;
 }
 
 - (CGFloat)pageOffsetForIndex:(NSInteger)pageIndex pageAmount:(CGFloat)pageAmount axisInset:(CGFloat)axisInset {
