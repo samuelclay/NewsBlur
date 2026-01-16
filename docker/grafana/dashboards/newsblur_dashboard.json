@@ -11020,48 +11020,76 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "email"
+              "options": "duration"
             },
             "properties": [
               {
                 "id": "displayName",
-                "value": "Email"
+                "value": "Duration"
               },
               {
                 "id": "custom.width",
-                "value": 180
+                "value": 100
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 365
+                    }
+                  ]
+                }
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "date_joined"
+              "options": "days_active"
             },
             "properties": [
               {
                 "id": "displayName",
-                "value": "Joined"
+                "value": "Days"
               },
               {
                 "id": "custom.width",
-                "value": 130
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "date_deleted"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Deleted"
+                "value": 60
               },
               {
-                "id": "custom.width",
-                "value": 130
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 365
+                    }
+                  ]
+                }
               }
             ]
           },
@@ -11077,7 +11105,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 80
+                "value": 100
               }
             ]
           },
@@ -11126,6 +11154,22 @@
               {
                 "id": "custom.width",
                 "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "date_deleted"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Deleted"
+              },
+              {
+                "id": "custom.width",
+                "value": 130
               }
             ]
           }
@@ -11186,17 +11230,19 @@
               "shared": true,
               "payment_count": true,
               "followers": true,
-              "following": true
+              "following": true,
+              "email": true,
+              "date_joined": true
             },
             "indexByName": {
               "username": 0,
-              "email": 1,
-              "date_joined": 2,
-              "date_deleted": 3,
-              "tier": 4,
-              "feeds": 5,
-              "stories_read": 6,
-              "payments": 7
+              "duration": 1,
+              "days_active": 2,
+              "tier": 3,
+              "feeds": 4,
+              "stories_read": 5,
+              "payments": 6,
+              "date_deleted": 7
             },
             "renameByName": {}
           }
