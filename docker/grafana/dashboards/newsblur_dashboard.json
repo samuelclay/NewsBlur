@@ -8794,11 +8794,11 @@
         },
         "overrides": []
       },
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 362},
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 362},
       "id": 205,
       "options": {
         "displayLabels": ["name", "value"],
-        "legend": {"displayMode": "list", "placement": "right", "showLegend": true},
+        "legend": {"displayMode": "list", "placement": "bottom", "showLegend": true},
         "pieType": "donut",
         "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
         "tooltip": {"mode": "single", "sort": "none"}
@@ -8820,17 +8820,43 @@
         },
         "overrides": []
       },
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 362},
+      "gridPos": {"h": 8, "w": 6, "x": 6, "y": 362},
       "id": 206,
       "options": {
         "displayLabels": ["name", "value"],
-        "legend": {"displayMode": "list", "placement": "right", "showLegend": true},
+        "legend": {"displayMode": "list", "placement": "bottom", "showLegend": true},
         "pieType": "donut",
         "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
         "tooltip": {"mode": "single", "sort": "none"}
       },
       "targets": [{"expr": "llm_costs{metric=\"cost_usd\",feature=~\".+\",period=\"daily\"}", "instant": true, "legendFormat": "{{feature}}", "refId": "A"}],
       "title": "Today's Cost by Feature",
+      "type": "piechart"
+    },
+    {
+      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "description": "Today's cost breakdown by specific model (claude-opus, gpt-5.2, gemini-3, etc.)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {"hideFrom": {"legend": false, "tooltip": false, "viz": false}},
+          "decimals": 2,
+          "mappings": [],
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 362},
+      "id": 210,
+      "options": {
+        "displayLabels": ["name", "value"],
+        "legend": {"displayMode": "list", "placement": "bottom", "showLegend": true},
+        "pieType": "donut",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "tooltip": {"mode": "single", "sort": "none"}
+      },
+      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",model=~\".+\",period=\"daily\"}", "instant": true, "legendFormat": "{{model}}", "refId": "A"}],
+      "title": "Today's Cost by Model",
       "type": "piechart"
     },
     {
@@ -8865,7 +8891,7 @@
         },
         "overrides": []
       },
-      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 362},
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 362},
       "id": 207,
       "options": {
         "legend": {"calcs": ["sum"], "displayMode": "table", "placement": "bottom", "showLegend": true},
