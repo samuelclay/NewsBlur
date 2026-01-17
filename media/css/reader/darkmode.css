@@ -3155,3 +3155,26 @@ a.mention, a.mention-group {
 .NB-dark .NB-manage-training-error-icon {
     filter: invert(1);
 }
+
+.NB-dark .NB-manage-filter-bar {
+    border-bottom-color: #404040;
+}
+
+.NB-dark .NB-manage-filter-label {
+    color: #707070;
+}
+
+/* Bright green (like) and red (dislike) when inactive in dark mode */
+.NB-dark .NB-manage-filter-icon.NB-icon-like {
+    filter: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(436%) hue-rotate(87deg) brightness(92%) contrast(91%);
+}
+
+.NB-dark .NB-manage-filter-icon.NB-icon-dislike {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(100%) saturate(6000%) hue-rotate(0deg) brightness(90%) contrast(110%);
+}
+
+/* Yellowish-orange when active/selected in dark mode */
+.NB-dark .NB-manage-sentiment-control li.NB-active .NB-icon-like,
+.NB-dark .NB-manage-sentiment-control li.NB-active .NB-icon-dislike {
+    filter: invert(67%) sepia(89%) saturate(497%) hue-rotate(2deg) brightness(103%) contrast(104%);
+}

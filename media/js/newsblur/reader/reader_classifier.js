@@ -20,6 +20,9 @@ NEWSBLUR.ReaderClassifierTrainer = function (options) {
     this.current_tab = 'sitebyside';
     this.all_classifiers_data = null;
     this.manage_dirty_feeds = {};
+    // Manage tab filter state
+    this.manage_filter_sentiment = 'all'; // 'all', 'like', 'dislike'
+    this.manage_filter_types = ['title', 'text', 'tag', 'author', 'feed']; // all enabled by default
     this.runner_trainer();
 };
 
@@ -1023,6 +1026,30 @@ var classifier_prototype = {
             self.save_manage_classifiers();
         });
 
+        // Manage tab - sentiment filter (single select)
+        $.targetIs(e, { tagSelector: '.NB-manage-sentiment-control li' }, function ($t) {
+            e.preventDefault();
+            var sentiment = $t.data('sentiment');
+            self.manage_filter_sentiment = sentiment;
+            $('.NB-manage-sentiment-control li', self.$modal).removeClass('NB-active');
+            $t.addClass('NB-active');
+            self.apply_manage_filters();
+        });
+
+        // Manage tab - type filter (multi-select toggle)
+        $.targetIs(e, { tagSelector: '.NB-manage-types-control li' }, function ($t) {
+            e.preventDefault();
+            var type = $t.data('type');
+            if ($t.hasClass('NB-active')) {
+                self.manage_filter_types = _.without(self.manage_filter_types, type);
+                $t.removeClass('NB-active');
+            } else {
+                self.manage_filter_types.push(type);
+                $t.addClass('NB-active');
+            }
+            self.apply_manage_filters();
+        });
+
         // Manage tab classifier clicks (handle before regular classifiers)
         var manage_stop = false;
         $.targetIs(e, { tagSelector: '.NB-manage-classifier-item .NB-classifier-icon-dislike' }, function ($t, $p) {
@@ -1198,6 +1225,10 @@ var classifier_prototype = {
         this.switch_tab(tab);
 
         if (tab === 'manage') {
+            // Reset filter state to defaults when switching to manage tab
+            this.manage_filter_sentiment = 'all';
+            this.manage_filter_types = ['title', 'text', 'tag', 'author', 'feed'];
+
             // Always refresh data when switching to manage tab
             this.all_classifiers_data = null;
             this.manage_dirty_feeds = {};
@@ -1279,6 +1310,7 @@ var classifier_prototype = {
             });
 
             $content = $.make('div', { className: 'NB-manage-training-content' }, [
+                this.make_manage_filter_bar(),
                 $.make('div', { className: 'NB-manage-training-folders' }, $folders),
                 $.make('div', { className: 'NB-modal-submit-bottom' }, [
                     $.make('div', { className: 'NB-modal-submit NB-manage-submit-area' }, [
@@ -1295,6 +1327,111 @@ var classifier_prototype = {
         }
 
         return $content;
+    },
+
+    make_manage_filter_bar: function () {
+        var self = this;
+
+        return $.make('div', { className: 'NB-manage-filter-bar' }, [
+            $.make('div', { className: 'NB-manage-filter-group NB-manage-filter-sentiment' }, [
+                $.make('div', { className: 'NB-manage-filter-label' }, 'Show'),
+                $.make('ul', { className: 'segmented-control NB-manage-sentiment-control' }, [
+                    $.make('li', {
+                        className: 'NB-manage-filter-sentiment-all' + (this.manage_filter_sentiment === 'all' ? ' NB-active' : ''),
+                        'data-sentiment': 'all'
+                    }, 'All'),
+                    $.make('li', {
+                        className: 'NB-manage-filter-sentiment-like' + (this.manage_filter_sentiment === 'like' ? ' NB-active' : ''),
+                        'data-sentiment': 'like'
+                    }, [
+                        $.make('span', { className: 'NB-manage-filter-icon NB-icon-like' }),
+                        'Likes'
+                    ]),
+                    $.make('li', {
+                        className: 'NB-manage-filter-sentiment-dislike' + (this.manage_filter_sentiment === 'dislike' ? ' NB-active' : ''),
+                        'data-sentiment': 'dislike'
+                    }, [
+                        $.make('span', { className: 'NB-manage-filter-icon NB-icon-dislike' }),
+                        'Dislikes'
+                    ])
+                ])
+            ]),
+            $.make('div', { className: 'NB-manage-filter-group NB-manage-filter-types' }, [
+                $.make('div', { className: 'NB-manage-filter-label' }, 'Types'),
+                $.make('ul', { className: 'segmented-control NB-manage-types-control' }, [
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-title' + (_.contains(this.manage_filter_types, 'title') ? ' NB-active' : ''),
+                        'data-type': 'title'
+                    }, 'Title'),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-author' + (_.contains(this.manage_filter_types, 'author') ? ' NB-active' : ''),
+                        'data-type': 'author'
+                    }, 'Author'),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-tag' + (_.contains(this.manage_filter_types, 'tag') ? ' NB-active' : ''),
+                        'data-type': 'tag'
+                    }, 'Tag'),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-text' + (_.contains(this.manage_filter_types, 'text') ? ' NB-active' : ''),
+                        'data-type': 'text'
+                    }, 'Text'),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-feed' + (_.contains(this.manage_filter_types, 'feed') ? ' NB-active' : ''),
+                        'data-type': 'feed'
+                    }, 'Site')
+                ])
+            ])
+        ]);
+    },
+
+    apply_manage_filters: function () {
+        var self = this;
+        // Always query the DOM for the current modal to avoid stale references
+        var $modal = $('.NB-modal-classifiers');
+        var $items = $('.NB-manage-classifier-item', $modal);
+        var visible_feeds = {};
+
+        $items.each(function () {
+            var $item = $(this);
+            var type = $item.data('type');
+            var score = $item.data('score');
+            var feed_id = $item.data('feed-id');
+            var sentiment = score > 0 ? 'like' : 'dislike';
+
+            var type_match = _.contains(self.manage_filter_types, type);
+            var sentiment_match = self.manage_filter_sentiment === 'all' || self.manage_filter_sentiment === sentiment;
+
+            if (type_match && sentiment_match) {
+                $item.show();
+                visible_feeds[feed_id] = true;
+            } else {
+                $item.hide();
+            }
+        });
+
+        // Hide/show feeds and folders based on whether they have visible items
+        $('.NB-manage-feed', $modal).each(function () {
+            var $feed = $(this);
+            var feed_id = $feed.data('feed-id');
+            if (visible_feeds[feed_id]) {
+                $feed.show();
+            } else {
+                $feed.hide();
+            }
+        });
+
+        $('.NB-manage-folder', $modal).each(function () {
+            var $folder = $(this);
+            // Check display property directly since :visible checks parent visibility
+            var has_visible = $folder.find('.NB-manage-feed').filter(function () {
+                return $(this).css('display') !== 'none';
+            }).length > 0;
+            if (has_visible) {
+                $folder.show();
+            } else {
+                $folder.hide();
+            }
+        });
     },
 
     make_feed_classifiers_for_manage: function (feed) {
