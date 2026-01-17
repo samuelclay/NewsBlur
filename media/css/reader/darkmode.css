@@ -3178,3 +3178,29 @@ a.mention, a.mention-group {
 .NB-dark .NB-manage-sentiment-control li.NB-active .NB-icon-dislike {
     filter: invert(67%) sepia(89%) saturate(497%) hue-rotate(2deg) brightness(103%) contrast(104%);
 }
+
+/* Feed chooser dropdown in dark mode */
+.NB-dark .NB-manage-feed-chooser {
+    background: #303030;
+    border-color: #505050;
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-manage-feed-chooser:focus {
+    border-color: #50A050;
+}
+
+/* Search input in dark mode */
+.NB-dark .NB-manage-search-input {
+    background: #303030;
+    border-color: #505050;
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-manage-search-input:focus {
+    border-color: #50A050;
+}
+
+.NB-dark .NB-manage-search-input::placeholder {
+    color: #707070;
+}

@@ -8084,7 +8084,7 @@ form.opml_import_form input {
     flex-direction: column;
 }
 
-.NB-modal-trainer .NB-tab-sitebyside > * {
+.NB-modal-trainer .NB-tab-sitebyside>* {
     flex-shrink: 0;
 }
 
@@ -8101,7 +8101,7 @@ form.opml_import_form input {
 }
 
 .NB-manage-training-content {
-    padding: 12px 0;
+    padding: 0 0 12px 0;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -8116,7 +8116,7 @@ form.opml_import_form input {
 /* Manage tab filter bar */
 .NB-manage-filter-bar {
     display: flex;
-    gap: 24px;
+    gap: 8px;
     padding: 0 12px 12px;
     border-bottom: 1px solid #E0E0E0;
     margin-bottom: 12px;
@@ -8181,6 +8181,66 @@ form.opml_import_form input {
 /* Multi-select types control - show inactive state differently */
 .NB-manage-types-control li:not(.NB-active) {
     opacity: 0.5;
+}
+
+/* Filter bar rows */
+.NB-manage-filter-row {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+}
+
+.NB-manage-filter-row-1 {
+    margin-bottom: 10px;
+}
+
+.NB-manage-filter-row-2 {
+    display: flex;
+    gap: 16px;
+}
+
+/* Feed/folder dropdown filter */
+.NB-manage-filter-feed {
+    flex: 0 0 auto;
+}
+
+.NB-manage-feed-chooser {
+    width: 200px;
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #D0D0D0;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+}
+
+.NB-manage-feed-chooser:focus {
+    outline: none;
+    border-color: #50A050;
+}
+
+/* Search input filter */
+.NB-manage-filter-search {
+    flex: 1;
+}
+
+.NB-manage-search-input {
+    width: 100%;
+    max-width: 300px;
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #D0D0D0;
+    border-radius: 4px;
+    background: white;
+}
+
+.NB-manage-search-input:focus {
+    outline: none;
+    border-color: #50A050;
+}
+
+.NB-manage-search-input::placeholder {
+    color: #A0A0A0;
 }
 
 .NB-manage-training-folders {
