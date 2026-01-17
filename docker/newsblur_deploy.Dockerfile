@@ -20,6 +20,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash -
 RUN apt install -y nodejs build-essential
 RUN	npm -g install yuglify
 
+# Increase Node.js heap size for yuglify to handle large CSS bundles
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 # Cleanup
 RUN apt-get clean
 
