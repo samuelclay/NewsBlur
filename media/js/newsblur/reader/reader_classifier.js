@@ -1378,6 +1378,21 @@ var classifier_prototype = {
 
         return $.make('div', { className: 'NB-manage-filter-bar' }, [
             $.make('div', { className: 'NB-manage-filter-row NB-manage-filter-row-1' }, [
+                $.make('div', { className: 'NB-manage-filter-group NB-manage-filter-feed' }, [
+                    $.make('div', { className: 'NB-manage-filter-label' }, 'Folder/Site'),
+                    $feed_chooser
+                ]),
+                $.make('div', { className: 'NB-manage-filter-group NB-manage-filter-search' }, [
+                    $.make('div', { className: 'NB-manage-filter-label' }, 'Search'),
+                    $.make('input', {
+                        type: 'text',
+                        className: 'NB-manage-search-input',
+                        placeholder: 'Filter by name...',
+                        value: this.manage_filter_search
+                    })
+                ])
+            ]),
+            $.make('div', { className: 'NB-manage-filter-row NB-manage-filter-row-2' }, [
                 $.make('div', { className: 'NB-manage-filter-group NB-manage-filter-sentiment' }, [
                     $.make('div', { className: 'NB-manage-filter-label' }, 'Show'),
                     $.make('ul', { className: 'segmented-control NB-manage-sentiment-control' }, [
@@ -1425,21 +1440,6 @@ var classifier_prototype = {
                             'data-type': 'feed'
                         }, 'Site')
                     ])
-                ])
-            ]),
-            $.make('div', { className: 'NB-manage-filter-row NB-manage-filter-row-2' }, [
-                $.make('div', { className: 'NB-manage-filter-group NB-manage-filter-feed' }, [
-                    $.make('div', { className: 'NB-manage-filter-label' }, 'Folder/Site'),
-                    $feed_chooser
-                ]),
-                $.make('div', { className: 'NB-manage-filter-group NB-manage-filter-search' }, [
-                    $.make('div', { className: 'NB-manage-filter-label' }, 'Search'),
-                    $.make('input', {
-                        type: 'text',
-                        className: 'NB-manage-search-input',
-                        placeholder: 'Filter by name...',
-                        value: this.manage_filter_search
-                    })
                 ])
             ])
         ]);
