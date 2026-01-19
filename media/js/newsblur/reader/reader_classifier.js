@@ -1338,7 +1338,7 @@ var classifier_prototype = {
         $.targetIs(e, { tagSelector: '.NB-classifier-premium-link' }, function ($t, $p) {
             e.preventDefault();
             self.close(function () {
-                NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
+                NEWSBLUR.reader.open_premium_upgrade_modal();
             });
         });
 

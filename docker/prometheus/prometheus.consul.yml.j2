@@ -80,6 +80,14 @@ scrape_configs:
       relabel_configs:
         - target_label: instance
           replacement: '{{ monitor_server }}:443'
+    - job_name: 'llm_costs'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/llm-costs
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'trending_feeds'
       static_configs:
         - targets: ['{{ monitor_server }}']
@@ -100,6 +108,14 @@ scrape_configs:
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/db-times
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
+    - job_name: 'deleted_users'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/deleted-users
       scheme: https
       relabel_configs:
         - target_label: instance

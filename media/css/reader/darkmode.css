@@ -178,10 +178,9 @@ color: #a85b40;
 
 /* Background color of "Upgrade" box (only visible for free users */
 .NB-dark .NB-module-premium .NB-module-item-intro {
-    background-image: none;
-    background-color: #303739;
-    border: none;
-    box-shadow: none;
+    background: linear-gradient(145deg, #2a3a30 0%, #253530 50%, #203028 100%);
+    border: 1px solid rgba(106, 142, 66, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .NB-dark .NB-modal-feedchooser .NB-premium-prorate-message {
@@ -706,6 +705,22 @@ color: #a85b40;
 /* Mute sites: Text color */
 .NB-dark .NB-feedchooser-info-counts {
     text-shadow: none;
+    background: rgba(133, 189, 103, 0.15);
+    color: #85bd67;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-info-counts.NB-full {
+    color: #7dd3fc;
+    background: rgba(56, 189, 248, 0.15);
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-info-counts.NB-error {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.15);
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-info-sort {
+    color: #707070;
 }
 
 .NB-dark .NB-modal-feedchooser .NB-modal-subtitle b {
@@ -758,6 +773,127 @@ color: #a85b40;
 .NB-dark .NB-modal-feedchooser .NB-feedchooser-premium-already {
     background-color: rgb(48 88 83);
     color: #85bd67;
+}
+
+/* Feedchooser: Upgrade banner dark mode */
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-banner {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(14, 165, 233, 0.15) 100%);
+    border-color: rgba(56, 189, 248, 0.35);
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-banner:hover {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(14, 165, 233, 0.22) 100%);
+    border-color: rgba(56, 189, 248, 0.5);
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-banner-text {
+    color: #7dd3fc;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-banner-description {
+    color: #bae6fd;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-banner-arrow {
+    filter: brightness(0) saturate(100%) invert(80%) sepia(50%) saturate(500%) hue-rotate(160deg);
+}
+
+/* Feedchooser: Folder actions dark mode */
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-folder-actions .NB-splash-link {
+    color: #909090;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-folder-actions .NB-splash-link:hover {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-folder-actions-separator {
+    color: #505050;
+}
+
+/* Feedchooser: Auto-select button dark mode */
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-info-reset {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #a0a0a0;
+    text-shadow: none;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-info-reset:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: #c0c0c0;
+}
+
+/* Feedchooser: Unified header dark mode */
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-free {
+    background: #3f3f46;
+    color: #a1a1aa;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-premium {
+    background: linear-gradient(135deg, #78350f, #92400e);
+    color: #fde68a;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-archive {
+    background: linear-gradient(135deg, #1e3a5f, #1e40af);
+    color: #93c5fd;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-pro {
+    background: linear-gradient(135deg, #064e3b, #065f46);
+    color: #6ee7b7;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-usage-text {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-usage-text.NB-state-ok {
+    color: #4ade80;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-usage-text.NB-state-error {
+    color: #f87171;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-progress-track {
+    background: #3f3f46;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-progress-label {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-progress-container.NB-state-ok .NB-feedchooser-progress-label {
+    color: #4ade80;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-progress-container.NB-state-error .NB-feedchooser-progress-label {
+    color: #f87171;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-inline {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(14, 165, 233, 0.15));
+    border-color: rgba(56, 189, 248, 0.35);
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-inline:hover {
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(14, 165, 233, 0.22));
+    border-color: rgba(56, 189, 248, 0.5);
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-text {
+    color: #7dd3fc;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-limit {
+    color: #bae6fd;
+}
+
+.NB-dark .NB-modal-feedchooser .NB-feedchooser-upgrade-arrow {
+    filter: brightness(0) saturate(100%) invert(80%) sepia(50%) saturate(500%) hue-rotate(160deg);
 }
 
 /* Intelligence Trainer: Container color */
@@ -1314,7 +1450,7 @@ border-bottom: 1px solid #222d31;
 
 /* Staff-Only Badge - Dark Mode */
 .NB-dark .NB-staff-badge {
-    color: #7a6a5a;
+    color: #a89880;
 }
 
 /*
@@ -2621,6 +2757,385 @@ a.mention, a.mention-group {
     background: #3a1b1b;
     color: #ef6f6f;
     border-color: #5a2e2e;
+}
+
+/* ===================================== */
+/* = Getting Started Module Dark Mode  = */
+/* ===================================== */
+
+.NB-dark .NB-module-gettingstarted .NB-module-item-intro {
+    background: linear-gradient(145deg, #2a3a30 0%, #253530 50%, #203028 100%);
+    border: 1px solid rgba(106, 142, 66, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-module-gettingstarted .NB-intro-avatar-bezel {
+    background: linear-gradient(135deg, rgba(106, 142, 66, 0.25) 0%, rgba(106, 142, 66, 0.15) 100%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-module-gettingstarted .NB-intro-progress-goal:not(.NB-done) {
+    background-color: #303739;
+}
+
+.NB-dark .NB-module-gettingstarted .NB-intro-goal {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-module-gettingstarted .NB-intro-goal .NB-done {
+    color: #8cd444;
+}
+
+/* ===================================== */
+/* = Trial Premium Module Dark Mode    = */
+/* ===================================== */
+
+.NB-dark .NB-module-trial .NB-module-item-intro {
+    background: linear-gradient(145deg, #2a3a30 0%, #253530 50%, #203028 100%);
+    border: 1px solid rgba(106, 142, 66, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-message {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-message .NB-trial-days {
+    color: #8cd444;
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-benefits {
+    color: #8cd444;
+    background: rgba(106, 142, 66, 0.2);
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li {
+    color: #c0c0c0;
+    position: relative;
+    background-image: none !important;
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 16px;
+    filter: invert(0.85) brightness(1.2);
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li.NB-sites::before {
+    background-image: url('/media/embed/icons/icons8/icons8-sheets-100.png');
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li.NB-folder::before {
+    background-image: url('/media/embed/icons/icons8/icons8-comics-magazine-100.png');
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li.NB-text::before {
+    background-image: url('/media/embed/icons/icons8/icons8-activity-history-100.png');
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li.NB-tags::before {
+    background-image: url('/media/embed/icons/icons8/icons8-tags-100.png');
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li.NB-search::before {
+    background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
+}
+
+.NB-dark .NB-module-trial .NB-module-trial-features li.NB-more::before {
+    background-image: url('/media/embed/icons/icons8/icons8-bursts-100.png');
+}
+
+.NB-dark .NB-module-hide {
+    color: #9ca3af;
+    background: #374151;
+    border-color: #4b5563;
+}
+
+.NB-dark .NB-module-hide:hover {
+    color: #d1d5db;
+    background: #4b5563;
+    border-color: #6b7280;
+}
+
+/* ================================ */
+/* = Premium Upgrade Modal - Dark = */
+/* ================================ */
+
+/* Target the simplemodal container when it has the premium upgrade modal */
+.NB-dark #simplemodal-container:has(.NB-modal-premium-upgrade) {
+    background-color: #1a1f24;
+    border-color: #374151;
+}
+
+.NB-dark #simplemodal-container:has(.NB-modal-premium-upgrade) .simplemodal-data {
+    background-color: #1a1f24;
+}
+
+.NB-dark .NB-modal-premium-upgrade {
+    background: linear-gradient(180deg, #1a1f24 0%, #151a1e 100%);
+}
+
+.NB-dark .NB-modal-premium-upgrade .NB-modal-title {
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-premium-trial-badge {
+    background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+    border-color: #059669;
+    color: #d1fae5;
+}
+
+/* Tier cards */
+.NB-dark .NB-premium-tier {
+    background-color: #252d33;
+    border-color: #374151;
+}
+
+.NB-dark .NB-premium-tier:hover {
+    border-color: #4b5563;
+}
+
+/* Free tier dark mode */
+.NB-dark .NB-premium-tier-free {
+    background: linear-gradient(180deg, #1f272d 0%, #1a2027 100%);
+    border-color: #374151;
+}
+
+.NB-dark .NB-premium-tier-free .NB-premium-tier-header {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+}
+
+.NB-dark .NB-premium-tier-free .NB-premium-tier-features {
+    background-color: #1a2027;
+}
+
+.NB-dark .NB-premium-tier-free .NB-premium-tier-features li {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-premium-tier-free .NB-premium-tier-actions {
+    background: linear-gradient(180deg, #1f272d 0%, #1a2027 100%);
+    border-top-color: #374151;
+}
+
+.NB-dark .NB-premium-tier-free-trial-notice {
+    color: #9ca3af;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-premium-tier-free-current {
+    color: #9ca3af;
+}
+
+/* Self-hosted tier dark mode */
+.NB-dark .NB-premium-tier-selfhosted {
+    background: linear-gradient(180deg, #1e252b 0%, #181e23 100%);
+    border-color: #334155;
+}
+
+.NB-dark .NB-premium-tier-selfhosted .NB-premium-tier-header {
+    background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+}
+
+.NB-dark .NB-premium-tier-selfhosted .NB-premium-tier-features {
+    background-color: #181e23;
+}
+
+.NB-dark .NB-premium-tier-selfhosted .NB-premium-tier-features li {
+    color: #94a3b8;
+}
+
+.NB-dark .NB-premium-tier-selfhosted .NB-premium-tier-actions {
+    background: linear-gradient(180deg, #1e252b 0%, #181e23 100%);
+    border-top-color: #334155;
+}
+
+.NB-dark .NB-premium-selfhosted-github {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-premium-selfhosted-github:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+}
+
+.NB-dark .NB-premium-selfhosted-github .NB-github-icon {
+    filter: invert(1);
+}
+
+/* Tier headers - keep vibrant colors but darken slightly */
+.NB-dark .NB-premium-tier-premium .NB-premium-tier-header {
+    background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+}
+
+.NB-dark .NB-premium-tier-archive .NB-premium-tier-header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+}
+
+.NB-dark .NB-premium-tier-pro .NB-premium-tier-header {
+    background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+}
+
+/* Feature lists */
+.NB-dark .NB-premium-tier-features {
+    background-color: #1f272d;
+}
+
+.NB-dark .NB-premium-tier-features li {
+    color: #d1d5db;
+    border-bottom-color: #374151;
+}
+
+.NB-dark .NB-premium-tier-features li:last-child {
+    border-bottom-color: transparent;
+}
+
+.NB-dark .NB-premium-tier-features li.NB-premium-tier-includes {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-premium-tier-premium .NB-premium-tier-features li.NB-premium-tier-includes {
+    color: #86efac;
+}
+
+.NB-dark .NB-premium-tier-archive .NB-premium-tier-features li.NB-premium-tier-includes {
+    color: #93c5fd;
+}
+
+.NB-dark .NB-premium-tier-pro .NB-premium-tier-features li.NB-premium-tier-includes {
+    color: #fcd34d;
+}
+
+/* Upcoming features in dark mode */
+.NB-dark .NB-premium-tier-features li.NB-premium-tier-upcoming-header {
+    color: #6b7280;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-premium-tier-features li.NB-upcoming {
+    color: #6b7280;
+}
+
+/* Invert icons for dark mode */
+.NB-dark .NB-premium-tier-features .NB-premium-bullet-image {
+    filter: invert(0.85) brightness(1.2) !important;
+}
+
+/* Actions section */
+.NB-dark .NB-premium-tier-actions {
+    background: linear-gradient(180deg, #252d33 0%, #1f272d 100%);
+    border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Credit cards */
+.NB-dark .NB-premium-tier-buttons .NB-creditcards {
+    filter: brightness(0.9);
+}
+
+/* Provider alternate text */
+.NB-dark .NB-premium-tier-buttons .NB-provider-alternate {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-premium-tier-buttons .NB-provider-alternate .NB-modal-submit-button {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-premium-tier-buttons .NB-provider-alternate .NB-modal-submit-button:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+}
+
+/* Prorate message */
+.NB-dark .NB-premium-tier-buttons .NB-premium-prorate-message {
+    color: #6b7280;
+}
+
+/* Trial status badge */
+.NB-dark .NB-premium-tier-trial-status {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+    border-color: #059669;
+    color: #d1fae5;
+}
+
+/* Active subscription status */
+.NB-dark .NB-premium-tier-status-active {
+    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+    border-color: #059669;
+}
+
+.NB-dark .NB-premium-tier-archive .NB-premium-tier-status-active {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+    border-color: #3b82f6;
+}
+
+.NB-dark .NB-premium-tier-pro .NB-premium-tier-status-active {
+    background: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+    border-color: #f59e0b;
+}
+
+.NB-dark .NB-premium-tier-status-active .NB-premium-tier-status-text {
+    color: #d1fae5;
+}
+
+.NB-dark .NB-premium-tier-archive .NB-premium-tier-status-active .NB-premium-tier-status-text {
+    color: #dbeafe;
+}
+
+.NB-dark .NB-premium-tier-pro .NB-premium-tier-status-active .NB-premium-tier-status-text {
+    color: #fef3c7;
+}
+
+/* Included status (for higher tier users viewing lower tiers) */
+.NB-dark .NB-premium-tier-status-included {
+    background: linear-gradient(135deg, #1f272d 0%, #252d33 100%);
+    border-color: #4b5563;
+}
+
+.NB-dark .NB-premium-tier-status-included .NB-premium-tier-status-text {
+    color: #9ca3af;
+}
+
+/* Status icons - invert for dark mode */
+.NB-dark .NB-premium-tier-status-active .NB-premium-tier-status-icon,
+.NB-dark .NB-premium-tier-status-included .NB-premium-tier-status-icon {
+    filter: brightness(1.5);
+}
+
+/* Switch/downgrade buttons */
+.NB-dark .NB-premium-tier-status .NB-modal-submit-grey {
+    background: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+.NB-dark .NB-premium-tier-status .NB-modal-submit-grey:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+}
+
+/* Change billing details button */
+.NB-dark .NB-provider-button-change {
+    background: #374151 !important;
+    border-color: #4b5563 !important;
+    color: #e5e7eb !important;
+}
+
+.NB-dark .NB-provider-button-change:hover {
+    background: #4b5563 !important;
+    border-color: #6b7280 !important;
 }
 
 /* ================= */

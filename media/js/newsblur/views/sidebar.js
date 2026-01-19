@@ -14,7 +14,8 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         "click .NB-feeds-header-river-blurblogs": "open_river_blurblogs_stories",
         "click .NB-feeds-header-river-global": "open_river_global_stories",
         "click .NB-feeds-header-river-trending": "open_trending_sites",
-        "click .NB-feeds-header-river-dashboard": "show_splash_page"
+        "click .NB-feeds-header-river-dashboard": "show_splash_page",
+        "click .NB-feeds-header-archive": "open_archive"
     },
 
     initialize: function () { },
@@ -284,6 +285,10 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
 
     open_trending_sites: function () {
         return NEWSBLUR.reader.open_trending_sites();
+    },
+
+    open_archive: function () {
+        return NEWSBLUR.reader.open_archive();
     },
 
     toggle_all_folders: function (e) {

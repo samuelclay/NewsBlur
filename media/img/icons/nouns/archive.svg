@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>archive</title>
+    <g id="archive" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(15, 20)" fill="#95968E" fill-rule="nonzero">
+            <!-- Archive box lid -->
+            <rect x="0" y="0" width="120" height="25" rx="4"></rect>
+            <!-- Archive box body -->
+            <path d="M8,30 L112,30 L112,105 C112,109.418278 108.418278,113 104,113 L16,113 C11.581722,113 8,109.418278 8,105 L8,30 Z"></path>
+            <!-- Archive folder tab -->
+            <rect x="42" y="50" width="36" height="8" rx="2" fill="#F6F6F6"></rect>
+            <!-- Archive content lines -->
+            <rect x="30" y="68" width="60" height="4" rx="2" fill="#F6F6F6" opacity="0.6"></rect>
+            <rect x="30" y="80" width="50" height="4" rx="2" fill="#F6F6F6" opacity="0.6"></rect>
+            <rect x="30" y="92" width="55" height="4" rx="2" fill="#F6F6F6" opacity="0.6"></rect>
+        </g>
+    </g>
+</svg>
