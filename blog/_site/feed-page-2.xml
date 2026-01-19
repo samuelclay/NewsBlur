@@ -1,0 +1,1118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator>
+  <link href="/feed-page-2.xml" rel="self" type="application/atom+xml" />
+  <link href="/" rel="alternate" type="text/html" />
+
+  
+  
+  <link href="/feed.xml" rel="prev-archive" type="application/atom+xml" />
+  
+  
+  <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
+  
+
+  <updated>2026-01-16T18:27:14-05:00</updated>
+  <id>https://blog.newsblur.com/feed.xml</id>
+  <title type="html">The NewsBlur Blog</title>
+  
+  <subtitle>NewsBlur is a personal news reader that brings people together to talk about the world.
+A new sound of an old instrument.
+</subtitle>
+  
+  
+
+  
+  <entry>
+    <title type="html">The NewsBlur Android app hits version 8.0 with a new Grid view</title>
+    <link href="https://blog.newsblur.com/2018/07/20/the-newsblur-android-app-hits-version-80-with-a/" rel="alternate" type="text/html" title="The NewsBlur Android app hits version 8.0 with a new Grid view" />
+    <published>2018-07-20T06:14:29-04:00</published>
+    <updated>2018-07-20T06:14:29-04:00</updated>
+    <id>https://blog.newsblur.com/2018/07/20/the-newsblur-android-app-hits-version-80-with-a</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2018/07/20/the-newsblur-android-app-hits-version-80-with-a/">
+      <![CDATA[<p>Long popular on the NewsBlur web app, the Grid view has now come to the Android app. Have a look for yourself…</p>
+
+<figure class="tmblr-full" data-orig-height="1270" data-orig-width="800" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-black.png"><img style="width: 350px; margin: 0 auto;" data-orig-height="1270" data-orig-width="800" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-black.png" /></figure>
+
+<p>There’s even a wide and narrow grid view for ultimate customization. And the grid view is saved per-folder/feed, so you can change some folders to use the grid view while leaving others in a list view. And gestures work on individual grid tiles, so you can swipe to mark stories as read/unread while in the Grid view.</p>
+
+<figure class="tmblr-full" data-orig-height="670" data-orig-width="800" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-white.png"><img style="width: 650px;margin: 0 auto;" data-orig-height="670" data-orig-width="800" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-grid-white.png" /></figure>
+
+<p>Here’s a full list of the changes:</p>
+
+<ul>
+  <li>The grid view comes to Android. Each feed/folder has its own List view setting</li>
+  <li>Can scroll all the way past the last story (for marking-read while scrolling through story list)</li>
+  <li>Fix for Twitter videos</li>
+  <li>Fix crash for viewing muted feeds</li>
+  <li>Long press links and images without tags</li>
+  <li>Better login screen for very small devices</li>
+  <li>Improved efficiency on thumbnails</li>
+  <li>Story list position retained on rotate</li>
+  <li>Android 8 compatibility fixes</li>
+  <li>Color-blindness-friendly intelligence training</li>
+</ul>
+
+<p>And for those of you using the Amazon App Store, the NewsBlur Android app has been updated there as well.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[Long popular on the NewsBlur web app, the Grid view has now come to the Android app. Have a look for yourself…
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Moving to a better support forum at forum.newsblur.com</title>
+    <link href="https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at/" rel="alternate" type="text/html" title="Moving to a better support forum at forum.newsblur.com" />
+    <published>2018-04-17T17:22:11-04:00</published>
+    <updated>2018-04-17T17:22:11-04:00</updated>
+    <id>https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2018/04/17/moving-to-a-better-support-forum-at/">
+      <![CDATA[<p>It’s about time NewsBlur had more control of its own support forums. For the past 7 years (to the week!), NewsBlur has been using Get Satisfaction for support, ideas, questions, and praise.</p>
+
+<p>In that time the forums have hosted 6,959 conversations with 6,432 members. And all of that has been imported into the new support forum at <a href="https://forum.newsblur.com">https://forum.newsblur.com</a>.</p>
+
+<figure class="tmblr-full" data-orig-height="2590" data-orig-width="2074" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/forum.png"><img width="650" data-orig-height="2590" data-orig-width="2074" src="https://s3.amazonaws.com/static.newsblur.com/blog/forum.png" /></figure>
+
+<p>Every topic, every post, every like, and every user is still there. The URLs have changed but the search function is alive and well.</p>
+
+<p>Here’s the story with your account. It’s still there and you can inherit all of your posting history. But to use your account you will have to go through the forgot password flow, as the passwords were not able to be imported.</p>
+
+<p>Or create a new account. The point of the forum is to post ideas and questions and problems, so if your posting history doesn’t come with you, it’s not a big deal. It’s not like anybody answering the forums looks at your post count and decides whether or not to dive deeper into your question.</p>
+
+<p>I try to do my best in answering every single support thread. At the rates we’ve seen with nearly 7,000 posts in 7 years, that’s an average of 3 per day. Let’s keep the posts coming!</p>
+
+<p>And if you’re wondering about why I decided to upgrade, the answer is that the new forum software, <a href="https://discourse.org">Discourse</a>, is open-source and allows me to better integrate the forums into other parts of NewsBlur. I have plans to build out the staff in the coming weeks and part of that includes a better support system.</p>
+
+<p>Thanks to Get Satisfaction for all the years of service. You and your cupcake avatars will be missed.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[It’s about time NewsBlur had more control of its own support forums. For the past 7 years (to the week!), NewsBlur has been using Get Satisfaction for support, ideas, questions, and praise.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Intelligence training comes to NewsBlur’s Android app</title>
+    <link href="https://blog.newsblur.com/2017/12/11/intelligence-training-comes-to-newsblurs-android/" rel="alternate" type="text/html" title="Intelligence training comes to NewsBlur’s Android app" />
+    <published>2017-12-11T08:00:13-05:00</published>
+    <updated>2017-12-11T08:00:13-05:00</updated>
+    <id>https://blog.newsblur.com/2017/12/11/intelligence-training-comes-to-newsblurs-android</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/12/11/intelligence-training-comes-to-newsblurs-android/">
+      <![CDATA[<p>This is a big deal for Android users. The NewsBlur Android app now fully supports intelligence training and filtering, letting you filter out the stories you don’t want to read while highlighting the stories you do want by letting you filter titles, authors, tags, and the publisher.</p>
+
+<p><img src="http://s3.amazonaws.com/static.newsblur.com/blog/android-training.png" alt="" /></p>
+
+<p>You used to be able to train by tapping on authors and tags right from the story, but that didn’t give you a bird’s eye view of an entire feed. You can now clear / modify old intelligence training without going back to the story that set it. And until now you had to use the web or iOS app to train on titles and the publisher itself. Now you can do it all from all of the apps. <a href="https://www.newsblur.com/faq">Check the FAQ</a> for ideas on how to make use of the intelligence trainer.</p>
+
+<p>Here’s a list of all the new features in version 7.0 of the Android app:</p>
+
+<ul>
+  <li>New Intelligence Trainer. You can train feeds and individual stories: titles, authors, tags, and publishers.</li>
+  <li>New Infrequent Site Stories view. It’s configurable and will show up on iOS and the web soon.</li>
+  <li>Titles with intelligence training are now highlighted.</li>
+  <li>You can now switch between light and dark themes from any view.</li>
+</ul>
+
+<p>This is a huge release and we hope you’ll find that it makes the NewsBlur reading experience that much better.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[This is a big deal for Android users. The NewsBlur Android app now fully supports intelligence training and filtering, letting you filter out the stories you don’t want to read while highlighting the stories you do want by letting you filter titles, authors, tags, and the publisher.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">NewsBlur for iPhone X</title>
+    <link href="https://blog.newsblur.com/2017/12/11/newsblur-for-iphone-x/" rel="alternate" type="text/html" title="NewsBlur for iPhone X" />
+    <published>2017-12-11T07:00:14-05:00</published>
+    <updated>2017-12-11T07:00:14-05:00</updated>
+    <id>https://blog.newsblur.com/2017/12/11/newsblur-for-iphone-x</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/12/11/newsblur-for-iphone-x/">
+      <![CDATA[<p>I’m proud to announce the launch of version 7.0 of the NewsBlur iOS app, complete with iPhone X support. There’s a lot that’s new and improved in this release.</p>
+
+<figure class="tmblr-full" data-orig-height="1928" data-orig-width="1090" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v7-iphonex-feeds.png"><img width="450" style="margin: 0 auto;" data-orig-height="1928" data-orig-width="1090" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v7-iphonex-feeds.png" /></figure>
+
+<p>Also new to the release is that addition of in-app payments for a NewsBlur premium subscription. This was a long time coming. This upgrades the iOS app to match the experience on the web. And because in-app subscriptions are now live, the iOS app will now match the free account restrictions you’ll find on the web. As a reminder, NewsBlur is a paid service with free accounts that act as indefinite trials.</p>
+
+<figure class="tmblr-full" data-orig-height="1131" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/iphone-x-stories.png"><img width="650" style="margin: 24px auto;" data-orig-height="1131" data-orig-width="1200" src="https://s3.amazonaws.com/static.newsblur.com/blog/iphone-x-stories.png" /></figure>
+
+<p>Here’s a complete list of what’s new:</p>
+
+<ul>
+  <li>Built for iOS 11 and iPhone X</li>
+  <li>In app purchases allow you to upgrade to a premium subscription from inside the app</li>
+  <li>Drag-and-drop on iPad to share stories and images from NewsBlur</li>
+  <li>New view: Infrequent Site Stories shows stories from feeds that update less than once a day (premium only)</li>
+  <li>Theme manager in every view for quick color changes</li>
+  <li>Adding San Francisco font choice</li>
+  <li>Adding feed list and story list font size controls so you can change size directly from each view</li>
+  <li>Adding in-app Safari with Reader mode option</li>
+  <li>Scroll position is now saved, so when you return to a story you maintain your place</li>
+  <li>New mark as read button on iPad when in landscape or with story titles on bottom</li>
+  <li>Fixing image sizing on all iPhones and iPads</li>
+  <li>Updated many layouts for better future compatibility</li>
+  <li>Fixing unread count badge for users without notifications turned on</li>
+  <li>Fixing duplicate title/URL in Messages sharing (thanks Nicholas R!)</li>
+  <li>Fixing compatibility with Firefox (thanks Joe G!)</li>
+</ul>
+
+<p>I hope you enjoy the updated iOS app. I have plans to build new features on top of the app next year, when some huge features will make their debut.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="iOS" />
+    
+    
+    <summary type="html">
+      <![CDATA[I’m proud to announce the launch of version 7.0 of the NewsBlur iOS app, complete with iPhone X support. There’s a lot that’s new and improved in this release.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Infrequent Site Stories is the blog reader we need</title>
+    <link href="https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need/" rel="alternate" type="text/html" title="Infrequent Site Stories is the blog reader we need" />
+    <published>2017-12-11T06:00:15-05:00</published>
+    <updated>2017-12-11T06:00:15-05:00</updated>
+    <id>https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/12/11/infrequent-site-stories-is-the-blog-reader-we-need/">
+      <![CDATA[<p>Launching today on all three platforms—web, iOS, and Android—is the new Infrequent Site Stories view. This configurable river of news offers a view of stories only from the blogs that publish less often than 1 story per day.</p>
+
+<p>Most of what you see in your day-to-day feed is news that’s up to the minute and is probably stale within a day. Even 8 hour old news can be a problem. But sometimes what you want is an overview of the news that isn’t exactly news. It’s stories from the blogs who have individual authors, or blogs that publish only a few times a month. And missing out on those stories is a tragedy because it is those blogs that pushed you to invest in an RSS reader in the first place.</p>
+
+<p>Today I’m happy to introduce a new feature that you won’t find anywhere else. It’s called Infrequent Site Stories and you can find it at the top of your feed list on the web, on iOS, and on Android.</p>
+
+<figure class="tmblr-full" data-orig-height="1131" data-orig-width="1200" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-ios-android.png"><img width="600" style="margin: 24px auto;" data-orig-height="1131" data-orig-width="1200" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-ios-android.png" /></figure>
+
+<p>Infrequent Site Stories is the river that captures stories from those authors who aren’t pulling from the firehose. These are the stories that are more thoughtful and more relevant days, weeks, months, or even years down the line. These stories are not to be missed. And the best thing about these stories is that there are far fewer of them than there are of your normal full river from All Site Stories.</p>
+
+<p>You can also configure the Infrequent river to be more or less inclusive of content that is more or less frequently published by changing the filter anywhere from 5 to 90 stories per month.</p>
+
+<figure class="tmblr-full" data-orig-height="570" data-orig-width="1100" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-options.png"><img width="650" style="margin: 24px auto; border: 1px solid #606060;" data-orig-height="570" data-orig-width="1100" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-options.png" /></figure>
+
+<p>These options are also available on all three official NewsBlur platforms and will let you perform a filter similar to how Focus mode reduces your number of unreads. It’s great to dip into Infrequent Site Stories and get stories you would ordinarily miss out on.</p>
+
+<figure class="tmblr-full" data-orig-height="866" data-orig-width="1400" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-web.png"><img width="650" style="margin: 24px auto;" data-orig-height="866" data-orig-width="1400" src="https://s3.amazonaws.com/static.newsblur.com/blog/infrequent-web.png" /></figure>
+
+<p>Try out the new Infrequent Site Stories feed, available only to premium subscribers. If your experience is anything like mine, it’ll be one of the new must read feeds in your reader.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[Launching today on all three platforms—web, iOS, and Android—is the new Infrequent Site Stories view. This configurable river of news offers a view of stories only from the blogs that publish less often than 1 story per day.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Improved Text view story extraction</title>
+    <link href="https://blog.newsblur.com/2017/10/24/improved-text-view-story-extraction/" rel="alternate" type="text/html" title="Improved Text view story extraction" />
+    <published>2017-10-24T16:17:25-04:00</published>
+    <updated>2017-10-24T16:17:25-04:00</updated>
+    <id>https://blog.newsblur.com/2017/10/24/improved-text-view-story-extraction</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/10/24/improved-text-view-story-extraction/">
+      <![CDATA[<p>The Text view is one of the most popular NewsBlur features. It’s available on all three platforms and gives you the full text of the original story, even in truncated RSS feeds. Up until today, NewsBlur’s implementation of the Text view used Readability’s open source text extractor.</p>
+
+<p>Starting today, all stories will be run through <a href="https://mercury.postlight.com/web-parser/">Postlight Labs’ Mercury Parser</a>. That means that not only will the full text be more likely to correctly pull the entire article, but it will also do a much better job with extracting full size images in stories.</p>
+
+<p>Take a look:</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/text_view_images.png" alt="" /></p>
+
+<p>A welcome improvement. This new text extractor and parser also does a better job of handling Unicode and Chinese characters. And when it doesn’t extract text as well as the old text extractor, NewsBlur will automatically fallback on the old method.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[The Text view is one of the most popular NewsBlur features. It’s available on all three platforms and gives you the full text of the original story, even in truncated RSS feeds. Up until today, NewsBlur’s implementation of the Text view used Readability’s open source text extractor.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Launching real-time filterable push notifications for iOS, Android, web, and email</title>
+    <link href="https://blog.newsblur.com/2017/06/14/launching-real-time-filterable-push-notifications/" rel="alternate" type="text/html" title="Launching real-time filterable push notifications for iOS, Android, web, and email" />
+    <published>2017-06-14T05:00:17-04:00</published>
+    <updated>2017-06-14T05:00:17-04:00</updated>
+    <id>https://blog.newsblur.com/2017/06/14/launching-real-time-filterable-push-notifications</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/06/14/launching-real-time-filterable-push-notifications/">
+      <![CDATA[<p>For some sites, you want to know when they publish as soon as they publish. Maybe you want to immediately be notified of everything a site publishes, like a monthly meetup that posts an event only once a month. Or perhaps you want to be immediately notified of everything the NYTimes publishes about the companies in your stock portfolio. Or you just really enjoy reading your daily comics and want them emailed to you so you never miss a beat.</p>
+
+<p><img src="http://www.newsblur.com/media/blog/notifications-announcement.png" alt="" /></p>
+
+<p>Today I’m proud to launch push notifications simultaneously across all three native platforms on NewsBlur (that’s web, iOS, and Android). That means that you can setup notifications for all Unread stories or only Focus stories that you’ve trained to be pushed to you over email, iOS, Android, or through browser notifications on the web.</p>
+
+<p>You can setup all four types of notifications on both web and mobile. And you can employ your intelligence training to only surface the stories that have use certain tags, have specific keywords in the titles, or are written by specific authors. Additionally, it’s easy to hide stories using that same training so that you don’t receive notifications that you want to ignore.</p>
+
+<h2 id="push-notifications-on-ios">Push notifications on iOS</h2>
+
+<p>To start with notifications on iOS, you can use the new swipe-to-the right gesture on the feed list (replacing the trainer on the swipe gesture). It’s very easy to turn notifications on and off or to even step up the filtering on a site so that you only get Focus stories instead.</p>
+
+<p>This way you can overprovision notifications for yourself and easily dial them back to where you get just the right number of notifications.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-ios.png" alt="" /></p>
+
+<p>Today version 7.0 of the NewsBlur iOS app is being released and here’s a list of what’s new and fixed on iOS:</p>
+
+<ul>
+  <li>Push notifications: real-time push notifications on a per-feed basis.</li>
+  <li>Swipe-to-the-right on a feed to change its notifications.</li>
+  <li>A new optional app badge for unread counts. Enable under Preferences.</li>
+  <li>Stories now automatically are marked as read on scroll. Disable under Preferences.</li>
+  <li>Better image support on iPad and fixes for drag-and-dropping the story titles bar (at bottom of the story detail).</li>
+  <li>A note on that: you can move story titles to the bottom on iPad. Just drag the bottom bar up.</li>
+  <li>Fixed issue with sharing stories not working or disappearing on iPad.</li>
+  <li>Fixed theme issues in the activity share sheet.</li>
+  <li>Fixed a crash from opening stories with no permalink.</li>
+  <li>Fixed size of intelligence control on bottom of feed list on iPhone SE.</li>
+  <li>Fixed issues when story titles are set to the bottom layout on iPad.</li>
+  <li>Fixed issues with the interactions dialog.</li>
+</ul>
+
+<h1 id="notifications-on-android">Notifications on Android</h1>
+
+<p>Android also gets a new version today. Version 6.0 gets notifications and new custom reading fonts as well as the mark read on scroll behavior that iOS and web have enjoyed.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-android.png" alt="" /></p>
+
+<p>Here’s a list of what’s new and fixed on Android:</p>
+
+<ul>
+  <li>Mark as read on scroll is a new preference to automatically mark stories as read as you scroll past them.</li>
+  <li>New fonts for reading: Whitney, Chronicle, Gotham Narrow make their way to Android from the web.</li>
+  <li>Also supporting native Android fonts Noto Sans, Noto Serif, Open Sans Condensed, and Anonymous Pro.</li>
+  <li>Switching between Text and Story view is now sticky per-feed (similar to iOS and web).</li>
+  <li>Fixed issues where feed list would not update.</li>
+</ul>
+
+<h1 id="notifications-on-web">Notifications on Web</h1>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-options.png" alt="" /></p>
+
+<p>Browser notifications are handy for those sites that you only want to read on your desktop. For example, you could setup web notifications for an RSS feed for a status feed, letting you know when migrations and downtime will have some effect on you.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-sites.png" alt="" /></p>
+
+<p>Setting up and tuning notifications is also just as easy to do on the web. You’ll find it under Manage &gt; Notifications as well as in the Read Filter Popover (top right of the app) when reading an individual feed.</p>
+
+<h1 id="notifications-over-email">Notifications over Email</h1>
+
+<p>Finally, for those use cases not covered under web or mobile, you can now have websites automatically email you when they publish new stories.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-email.png" alt="" /></p>
+
+<p>This is for those stories that you don’t want to miss and want to ensure that you read. For instance, I use email notifications for <a href="http://www.newsblur.com/site/5586842/quotes-worrydream.com">worrydream’s quote blog that serves me a single paragraph of insight once a week</a> because I loved having quotes emailed to me.</p>
+
+<p>There you have it, four new ways to consume the news. If you love using NewsBlur and want to see it continue to launch new features like these, please tell friends and followers about your news reader. People often ask for ways to stay on top of the game and NewsBlur is the most powerful way to do it.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="android" />
+    
+    <category term="iOS" />
+    
+    
+    <summary type="html">
+      <![CDATA[For some sites, you want to know when they publish as soon as they publish. Maybe you want to immediately be notified of everything a site publishes, like a monthly meetup that posts an event only once a month. Or perhaps you want to be immediately notified of everything the...]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">NewsBlur now supports the new JSON Feed spec</title>
+    <link href="https://blog.newsblur.com/2017/05/23/newsblur-now-supports-the-new-json-feed-spec/" rel="alternate" type="text/html" title="NewsBlur now supports the new JSON Feed spec" />
+    <published>2017-05-23T05:00:11-04:00</published>
+    <updated>2017-05-23T05:00:11-04:00</updated>
+    <id>https://blog.newsblur.com/2017/05/23/newsblur-now-supports-the-new-json-feed-spec</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/05/23/newsblur-now-supports-the-new-json-feed-spec/">
+      <![CDATA[<p>Introduced and announced only last week by open web pioneers Manton Reece and Brent Simmons, JSON Feed is a new RSS-like spec that lets websites publish their stories in a much easier and human readable format.</p>
+
+<p>From the <a href="https://jsonfeed.org">JSON Feed spec</a> authors:</p>
+
+<p>We — Manton Reece and Brent Simmons — have noticed that JSON has become the developers’ choice for APIs, and that developers will often go out of their way to avoid XML. JSON is simpler to read and write, and it’s less prone to bugs.</p>
+
+<p><strong>Starting today, NewsBlur now officially supports the new JSON Feed spec</strong>. And there’s nothing extra you have to do. This means if a website syndicates their stories with the easy-to-write and easy-to-read JSON format, you can read it on NewsBlur. It should make no difference to you, since you’re reading the end product. But to website developers everywhere, supporting JSON Feeds is so much easier than supporting XML-based RSS/Atom.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/json-feeds.png" alt="" /></p>
+
+<p>Daring Fireball, as pictured above, supports the new JSON Feed. To you, the reader, it should look no different than any other RSS feed. But to the developer, publishing this as a JSON Feed instead of XML is an order of magnitude easier and quicker.</p>
+
+<p>This spec is a terrific effort by open web advocates to make it easier to keep the web open and free by lowering the cost to writing and publishing.</p>
+
+<p>Try it for yourself, just subscribe to this feed: <a href="https://daringfireball.net/feeds/json">https://daringfireball.net/feeds/json</a>. Even viewing it in a web browser is more pleasant than its <a href="https://daringfireball.net/feeds/main">XML counterpart</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Introduced and announced only last week by open web pioneers Manton Reece and Brent Simmons, JSON Feed is a new RSS-like spec that lets websites publish their stories in a much easier and human readable format.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Add your own Custom CSS and Custom JavaScript to NewsBlur on the web</title>
+    <link href="https://blog.newsblur.com/2017/05/22/add-your-own-custom-css-and-custom-javascript-to/" rel="alternate" type="text/html" title="Add your own Custom CSS and Custom JavaScript to NewsBlur on the web" />
+    <published>2017-05-22T05:00:41-04:00</published>
+    <updated>2017-05-22T05:00:41-04:00</updated>
+    <id>https://blog.newsblur.com/2017/05/22/add-your-own-custom-css-and-custom-javascript-to</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/05/22/add-your-own-custom-css-and-custom-javascript-to/">
+      <![CDATA[<p>Ever wanted to customize NewsBlur on the web but didn’t want to install custom browser extensions so you could shoe-horn in monkey-patched code? And if you did use a browser extension, didn’t you just hate having to keep it synchronized between your computers? Just for you, NewsBlur now has two new fields: Custom CSS and Custom Javascript.</p>
+
+<p>Head to <em>Manage &gt; Account &gt; Custom CSS/JS</em>. And here’s what you can do with this new feature.</p>
+
+<p><strong>Install an unofficial dark theme for NewsBlur</strong></p>
+
+<figure class="tmblr-full" data-orig-height="960" data-orig-width="1098" data-orig-src="https://userstyles.org/style_screenshots/124890_after.png"><img style="width: 650px;" data-orig-height="960" data-orig-width="1098" src="https://userstyles.org/style_screenshots/124890_after.png" /></figure>
+
+<p>Over on Stylish, a community for custom CSS, there are <a href="https://userstyles.org/styles/browse?search_terms=newsblur">a bunch of stylesheets that change how NewsBlur looks</a>. Have you ever wanted a dark theme? There’s a few and <a href="https://userstyles.org/styles/124890/newsblur-dark-theme-by-splike">the most popular is made by NewsBlur user Splike</a>. (Note: you will have to remove the @moz delcaraction along with the surrounding {}’s at the top and bottom lines.)</p>
+
+<p><strong>Hide that module or link that you don’t want to see on NewsBlur</strong></p>
+
+<figure class="tmblr-full" data-orig-height="1033" data-orig-width="1300" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/custom-css.png"><img style="width: 650px;" data-orig-height="1033" data-orig-width="1300" src="https://s3.amazonaws.com/static.newsblur.com/blog/custom-css.png" /></figure>
+
+<p>Don’t like seeing Global Shared Stories or the River of News on the Dashboard? You can hide them with this little bit of CSS:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/* Hides the Global Shared Stories feed */
+.NB-feeds-header-river-global-container { 
+    display: none !important; 
+}
+
+/* Hides the Dashboard River */
+.NB-module-river {
+    display: none !important;
+}
+</code></pre></div></div>
+
+<p><strong>Run a custom script</strong></p>
+
+<p>Ok, to be 100% truthful, I have no idea why you’d want to run custom JavaScript on NewsBlur. But if you figure out a reason please let me know! Either <a href="http://samuel@newsblur.com">shoot me an email</a> or mention it to <a href="https://twitter.com/newsblur">@newsblur on Twitter</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Ever wanted to customize NewsBlur on the web but didn’t want to install custom browser extensions so you could shoe-horn in monkey-patched code? And if you did use a browser extension, didn’t you just hate having to keep it synchronized between your computers? Just for you, NewsBlur now has two...]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">NewsBlur’s Twitter support just got a whole lot better</title>
+    <link href="https://blog.newsblur.com/2017/05/09/newsblurs-twitter-support-just-got-a-whole-lot/" rel="alternate" type="text/html" title="NewsBlur’s Twitter support just got a whole lot better" />
+    <published>2017-05-09T05:30:03-04:00</published>
+    <updated>2017-05-09T05:30:03-04:00</updated>
+    <id>https://blog.newsblur.com/2017/05/09/newsblurs-twitter-support-just-got-a-whole-lot</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/05/09/newsblurs-twitter-support-just-got-a-whole-lot/">
+      <![CDATA[<p>It was a little under a year ago that I declared <a href="http://blog.newsblur.com/2021/06/21/2016-06-01-twitters-back-baby.html">Twitter back, baby</a> on this blog. In that time, NewsBlur users have created over 80,000 Twitter feeds in NewsBlur. Since it’s such a popular feature, I decided to dive back into the code and make tweets look a whole lot better.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_upgrade.png" alt="" /></p>
+
+<p>Notice that NewsBlur now natively supports expanding truncated URLs (no more t.co links).</p>
+
+<p>And NewsBlur also supports native quoted tweets, where a user links to a tweet in their own tweet. NewsBlur expands the quoted tweet and blockquotes it for convenience.</p>
+
+<p>Plus retweets now show both the original tweet author and the retweeting author. This means that you can quickly scan tweets and see where the retweet originated from. And retweeted tweets that quote their own tweets also get expanded.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_retweets.png" alt="" /></p>
+
+<p>It’s almost as if NewsBlur is inching closer and closer to becoming its own full fledged Twitter client. While NewsBlur already hit <a href="http://www.catb.org/jargon/html/Z/Zawinskis-Law.html">Zawinski’s Law</a> (“Every program attempts to expand until it can read mail. Those programs which cannot so expand are replaced by ones which can.”) by supporting <a href="http://blog.newsblur.com/2021/06/21/2016-07-01-newsletters-in-your-newsblur.html">email-newsletters-to-rss</a>, Twitter is coming up fast.</p>
+
+<p>Speaking of which, I have this idea I’ve been noodling about better supporting Twitter habits that need to become less of a habit. I want to be able to automatically follow people from my Twitter tweetstream in NewsBlur based the frequency of their posting. I want to be able to infrequently dip into Twitter but still read the tweets from people who only post once a week or once a day.</p>
+
+<p>In other words, I want Twitter, the RSS killer, to better integrate with an RSS reader so that I can pull out the good stuff from the unending flow of tweets. RSS means never missing anything, but Twitter’s main use case is anathema to how we use RSS. I don’t like to preannounce features, but this one intrigues me and if you agree, please share this story to let me know or to give me feedback on how you would like to see NewsBlur be a better Twitter client.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[It was a little under a year ago that I declared Twitter back, baby on this blog. In that time, NewsBlur users have created over 80,000 Twitter feeds in NewsBlur. Since it’s such a popular feature, I decided to dive back into the code and make tweets look a whole...]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Saved searches make it easy to create custom feeds</title>
+    <link href="https://blog.newsblur.com/2017/03/28/saved-searches-make-it-easy-to-create-custom-feeds/" rel="alternate" type="text/html" title="Saved searches make it easy to create custom feeds" />
+    <published>2017-03-28T05:00:28-04:00</published>
+    <updated>2017-03-28T05:00:28-04:00</updated>
+    <id>https://blog.newsblur.com/2017/03/28/saved-searches-make-it-easy-to-create-custom-feeds</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/03/28/saved-searches-make-it-easy-to-create-custom-feeds/">
+      <![CDATA[<p>You can now save a search as a saved search feed. This works for individual sites, folders, All Site Stories, saved stories, and blurblogs.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/saved-search-list.png" alt="" /></p>
+
+<p>Saved searches are great for creating custom feeds with just the stories you want. Think of these new feeds as spotlights on parts of a folder or feed, ways to keep track of stories that share a theme across different sites.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/saved-search-grid.png" alt="" /></p>
+
+<p>Or use saved searches to keep a single tag together for handy reference.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[You can now save a search as a saved search feed. This works for individual sites, folders, All Site Stories, saved stories, and blurblogs.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Last day to back Turn Touch: NewsBlur’s beautiful remote</title>
+    <link href="https://blog.newsblur.com/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful/" rel="alternate" type="text/html" title="Last day to back Turn Touch: NewsBlur’s beautiful remote" />
+    <published>2017-03-09T05:00:33-05:00</published>
+    <updated>2017-03-09T05:00:33-05:00</updated>
+    <id>https://blog.newsblur.com/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/03/09/last-day-to-back-turn-touch-newsblurs-beautiful/">
+      <![CDATA[<p><strong>This is it, the final countdown!</strong></p>
+
+<p>Tonight at 8pm PT the <a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/">Turn Touch campaign</a> will end and the project will be successfully funded. Judging from the $50,000 raised already, I think Turn Touch has a long life ahead of it.</p>
+
+<p><a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/"><img src="https://s3.amazonaws.com/static.newsblur.com/turntouch/animated-newsblur-live.gif" alt="" /></a></p>
+
+<h5 id="watch-the-2-minute-demo-on-vimeo"><a href="https://vimeo.com/207556527">Watch the 2 minute demo on Vimeo</a></h5>
+
+<p>Apart from being the only remote control in the world built for a news reader, Turn Touch is the handiest shortcut for your lights, music, and apps. It’s basically a customizable remote with a knack for smart homes.</p>
+
+<p>Supporting Turn Touch is a way of supporting NewsBlur. They are part of the same suite of productivity tools made by the <a href="https://twitter.com/samuelclay">same person</a>. By buying a Turn Touch and backing this Kickstarter, you’re continuing to fund the development of great tools.</p>
+
+<p>So please <a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/">head to Kickstarter and buy yourself the $59 mahogany remote</a>, even if you do not yet have any smart home devices. This remote is the easiest way to start connecting your home.</p>
+
+<p><a href="https://www.kickstarter.com/projects/samuelclay/turn-touch-beautiful-control/"><img src="https://s3.amazonaws.com/static.newsblur.com/turntouch/padauk-book.jpg" alt="" /></a></p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="turntouch" />
+    
+    
+    <summary type="html">
+      <![CDATA[This is it, the final countdown!
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Introducing Turn Touch, a beautiful wooden remote for lights, devices, apps, and NewsBlur</title>
+    <link href="https://blog.newsblur.com/2017/02/07/introducing-turn-touch-a-beautiful-wooden-remote/" rel="alternate" type="text/html" title="Introducing Turn Touch, a beautiful wooden remote for lights, devices, apps, and NewsBlur" />
+    <published>2017-02-07T09:32:32-05:00</published>
+    <updated>2017-02-07T09:32:32-05:00</updated>
+    <id>https://blog.newsblur.com/2017/02/07/introducing-turn-touch-a-beautiful-wooden-remote</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/02/07/introducing-turn-touch-a-beautiful-wooden-remote/">
+      <![CDATA[<figure class="tmblr-full" data-orig-height="1333" data-orig-width="2000" data-orig-src="https://turntouch.com/static/images/media-kit/photos/Turn%20Touch-3259c.jpg"><img style="width: 650px;border: 1px solid #909090;" data-orig-height="1333" data-orig-width="2000" src="https://turntouch.com/static/images/media-kit/photos/Turn%20Touch-3259c.jpg" /></figure>
+
+<p><a href="https://turntouch.com/kickstarter">Turn Touch</a> is a solid wood remote… and it’s about to change the way you use NewsBlur.</p>
+
+<p><strong>Change how?</strong></p>
+
+<p>Here’s how. Turn Touch connects to apps and devices in your home. Think Hue lights and Sonos speakers. Your Mac, your phone, etc.</p>
+
+<p>It also connects to NewsBlur.</p>
+
+<figure class="tmblr-full" data-orig-height="760" data-orig-width="1360" data-orig-src="https://turntouch.com/static/images/media-kit/graphics/use-case-news@2x.jpg"><img style="width: 650px;border: 1px solid #909090;" data-orig-height="760" data-orig-width="1360" src="https://turntouch.com/static/images/media-kit/graphics/use-case-news@2x.jpg" /></figure>
+
+<p>This is big. It means you can wake up in the morning, grab a cup of coffee, and cycle through news from across the room. Or, hook your Mac up to a display (maybe your living room TV) and skip through photo blogs, headlines, and the day’s best writing.</p>
+
+<p>It’s kind of like getting a new set of speakers. Where before, you’d be chained to your computer with headphones; now, you can listen to music from anywhere you’d like. With Turn Touch, you can leave your computer and read the news no matter what you’re doing— laundry, the dishes, or enjoying a lazy Sunday on your couch.</p>
+
+<figure class="tmblr-full" data-orig-height="877" data-orig-width="2000" data-orig-src="https://turntouch.com/static/images/media-kit/photos/Turn%20Touch-3248c.jpg"><img style="width: 650px;border: 1px solid #909090;" data-orig-height="877" data-orig-width="2000" src="https://turntouch.com/static/images/media-kit/photos/Turn%20Touch-3248c.jpg" /></figure>
+
+<p><strong>Get one. Or all three.</strong></p>
+
+<p><a href="https://turntouch.com/kickstarter">Turn Touch is on Kickstarter</a>. Back the project to get your very own. Or—and this is my sincere recommendation—get the complete set, save some money, and give one away to a friend.</p>
+
+<p>I’ve been working on Turn Touch for years and I hope it shows.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="turntouch" />
+    
+    
+    <summary type="html">
+      <![CDATA[
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Preview NewsBlur&apos;s upcoming hardware device, Turn Touch</title>
+    <link href="https://blog.newsblur.com/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn/" rel="alternate" type="text/html" title="Preview NewsBlur&apos;s upcoming hardware device, Turn Touch" />
+    <published>2017-02-02T05:00:24-05:00</published>
+    <updated>2017-02-02T05:00:24-05:00</updated>
+    <id>https://blog.newsblur.com/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/02/02/preview-newsblurs-upcoming-hardware-device-turn/">
+      <![CDATA[<p>I have something very exciting to share with you today. I’ve been working on a secret project called Turn Touch and I’m just about ready to show it to you. <a href="https://www.turntouch.com">Signup on turntouch.com</a> to find out.</p>
+
+<p><a href="https://www.turntouch.com"><img src="https://s3.amazonaws.com/static.newsblur.com/turntouch/blog-preview-blur.jpg" alt="" /></a></p>
+
+<p>It’s a new kind of device and it’s machined out of solid wood. I built it to last, much like my other projects (for instance the news reader you’re likely reading this in). Turn Touch is built for NewsBlur, among many other things.</p>
+
+<p>Turn Touch will be launching on Kickstarter next week and I want to ask for your help. When I launch my campaign I’m going to need people like you to share it with people who look to you for recomendations on what’s good. You already use NewsBlur, so you’re already known for having good taste.</p>
+
+<p>Now, you probably want to know what Turn Touch is and actually looks like, yeah? Then <a href="https://www.turntouch.com">signup on turntouch.com</a>.</p>
+
+<p>You’ll get to preview the Kickstarter campaign and offer me any feedback you have. You’ll get to see Turn Touch and find out what it offers you.</p>
+
+<p>I’ve been working on this as a side project for that past few years. And by signing up you’ll have the first access to it.</p>
+
+]]>
+    </content>
+    
+    
+    
+    
+    <summary type="html">
+      <![CDATA[I have something very exciting to share with you today. I’ve been working on a secret project called Turn Touch and I’m just about ready to show it to you. Signup on turntouch.com to find out.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">A new NewsBlur Android release for the new year</title>
+    <link href="https://blog.newsblur.com/2017/01/25/a-new-newsblur-android-release-for-the-new-year/" rel="alternate" type="text/html" title="A new NewsBlur Android release for the new year" />
+    <published>2017-01-25T14:01:15-05:00</published>
+    <updated>2017-01-25T14:01:15-05:00</updated>
+    <id>https://blog.newsblur.com/2017/01/25/a-new-newsblur-android-release-for-the-new-year</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/01/25/a-new-newsblur-android-release-for-the-new-year/">
+      <![CDATA[<p>Version 5.0 has a bunch of new features. It’s got new gestures, better looking icons and thumbnail previews, and little UI design details to better match the rest of NewsBlur.</p>
+
+<p>Take a look:</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android-v5.png" alt="" /></p>
+
+<p>The full feature list:</p>
+
+<ul>
+  <li>New gesture to mark a story as read and unread by swiping on the story title</li>
+  <li>UI updates to story titles</li>
+  <li>New preferences for the font size of feed titles and story titles</li>
+  <li>Fleuron on the bottom of story lists better help you keep tracking of where you are in a feed.</li>
+  <li>Thumbnails in story lists</li>
+  <li>Recover a forgotten password</li>
+  <li>Higher resolution icons</li>
+  <li>Mute feeds</li>
+  <li>Option to enable confirmation for destructive mark-reads</li>
+  <li>Custom server support</li>
+</ul>
+
+<p>What a good way to close out January.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[Version 5.0 has a bunch of new features. It’s got new gestures, better looking icons and thumbnail previews, and little UI design details to better match the rest of NewsBlur.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">The dashboard river will keep you up-to-date in real-time</title>
+    <link href="https://blog.newsblur.com/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in/" rel="alternate" type="text/html" title="The dashboard river will keep you up-to-date in real-time" />
+    <published>2017-01-11T06:00:21-05:00</published>
+    <updated>2017-01-11T06:00:21-05:00</updated>
+    <id>https://blog.newsblur.com/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2017/01/11/the-dashboard-river-will-keep-you-up-to-date-in/">
+      <![CDATA[<p>This is a seriously cool feature and I’m glad it’s ready to launch. The dashboard river, the real-time stream of the top five stories of All Site Stories, is now on the dashboard of the web app.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/dashboard-river.png" alt="" /></p>
+
+<p>After testing this feature for the past few weeks I now realize that I could not live without it. By having the latest stories always loaded and instantly ready to go, I leave NewsBlur open and just take a quick glance to see if the top of my list is interesting.</p>
+
+<p>It also loads instantly, which means that if you see a story you want to read, clicking on it brings up the text without taking a single moment.</p>
+
+<p>One big change that this necessitated was the handling of the Text view when reading by folders. Used to be that a folder got its own feed/text/story view and every feed had to stay with the same story view. But on iOS and Android it’s different. Every feed gets to keep its own feed/text/story setting.</p>
+
+<p>This is now how it works on the web. If you read on feed by its Text (extracted original text) view and another by its Feed view, then you are automatically switched between the two views. Quite a bit of logic had to accomodate scrolling (you don’t automatically switch, since that would throw you from one scroll viewport into another) and switching between stories.</p>
+
+<p>Enjoy the dashboard river. And if you look closely you might even see the next big feature that itself is about to launch soon.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[This is a seriously cool feature and I’m glad it’s ready to launch. The dashboard river, the real-time stream of the top five stories of All Site Stories, is now on the dashboard of the web app.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Newsreel is a NewsBlur app for tv</title>
+    <link href="https://blog.newsblur.com/2016/07/14/newsreel-is-a-newsblur-app-for-tv/" rel="alternate" type="text/html" title="Newsreel is a NewsBlur app for tv" />
+    <published>2016-07-14T07:00:39-04:00</published>
+    <updated>2016-07-14T07:00:39-04:00</updated>
+    <id>https://blog.newsblur.com/2016/07/14/newsreel-is-a-newsblur-app-for-tv</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/07/14/newsreel-is-a-newsblur-app-for-tv/">
+      <![CDATA[<p>Check it out, David Berlin built <a href="http://itunes.apple.com/us/app/apple-store/id1080200978?mt=8">Newsreel</a>, a NewsBlur client for Apple TV. And from my first impression, it rocks. Just take a look at these screenshots.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsreel.png" alt="" /></p>
+
+<p>You can read your subscriptions as well as subscribe to new sites, right from your television.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsreel-add.png" alt="" /></p>
+
+<p>Not only does it look polished, but it’s smooth and seamless. Take a look at how it works in practice.</p>
+
+<p>&lt;</p>
+
+<p>video src=“https://s3.amazonaws.com/static.newsblur.com/blog/newsreel-780.mp4” style=“width: 650px; margin: 0 auto; border: 1px solid #606060” autoplay=“true” muted=“true” loop=“true”&gt;</p>
+
+<p>You can download <a href="http://itunes.apple.com/us/app/apple-store/id1080200978?mt=8">download Newsreel on the App Store</a>. What a beautiful app and it goes to show how nice it is to be able to read your news on a big screen.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="tv" />
+    
+    
+    <summary type="html">
+      <![CDATA[Check it out, David Berlin built Newsreel, a NewsBlur client for Apple TV. And from my first impression, it rocks. Just take a look at these screenshots.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Newsletters in your NewsBlur</title>
+    <link href="https://blog.newsblur.com/2016/07/01/newsletters-in-your-newsblur/" rel="alternate" type="text/html" title="Newsletters in your NewsBlur" />
+    <published>2016-07-01T07:00:16-04:00</published>
+    <updated>2016-07-01T07:00:16-04:00</updated>
+    <id>https://blog.newsblur.com/2016/07/01/newsletters-in-your-newsblur</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/07/01/newsletters-in-your-newsblur/">
+      <![CDATA[<p>It’s been three years to the day that Google Reader shut down. And here’s a feature they could never build. Introducing email newsletters in your RSS reader.</p>
+
+<p>You can now forward your email newsletters over to NewsBlur and then read your email newsletters right in your browser/phone/TV/tablet. A couple dozen users have been beta testing this feature for the last couple of months and everybody agrees, this feature is amazing.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsletters.png" alt="" /></p>
+
+<p>Newsletters are formatted to fit all of your screens, so it looks just as good on the web as it does on your phone.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsletters-ios.png" alt="" /></p>
+
+<p>Here’s the best part. If you get a lot of newsletters, you can group them into folders and even train them to highlight the newsletters you want to read first.</p>
+
+<p>Setting up newsletters on NewsBlur is easy. Just follow the personalized instructions on the web by going to Manage &gt; Email Newsletters on either the web dashboard or the manage menu.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsletters-setup.png" alt="" /></p>
+
+<p>You might ask why not just subscribe your custom NewsBlur newsletter email address directly to the newsletter instead of forwarding copies of the newsletter. The answer is that if you want a single source of truth for where newsletters are going, you want that in your email client and not on NewsBlur. If you ever change news readers (and with new features like this, why would you want to) you’ll want to change only a single filter rule instead of dozens of newsletter emails.</p>
+
+<p>And with this huge new feature, NewsBlur just became even better. NewsBlur has branched beyond RSS for a while now, fetching Twitter and YouTube stories even without RSS. With newsletters, NewsBlur becomes your single source.</p>
+
+<p>If you have suggestions on what NewsBlur can help you read next, post an idea on the <a href="http://getsatisfaction.com/newsblur">Get Satisfaction forums</a>.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[It’s been three years to the day that Google Reader shut down. And here’s a feature they could never build. Introducing email newsletters in your RSS reader.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Twitter’s back, baby</title>
+    <link href="https://blog.newsblur.com/2016/06/01/twitters-back-baby/" rel="alternate" type="text/html" title="Twitter’s back, baby" />
+    <published>2016-06-01T07:00:30-04:00</published>
+    <updated>2016-06-01T07:00:30-04:00</updated>
+    <id>https://blog.newsblur.com/2016/06/01/twitters-back-baby</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/06/01/twitters-back-baby/">
+      <![CDATA[<p>It’s been too long. Twitter <a href="https://blog.twitter.com/2013/api-v1-retirement-final-dates">unceremoniously knee-capped their API</a> a few years ago and a number of solutions popped up to fix the loss. However, those stopgaps also closed and left us with no good ways to read Twitter while in NewsBlur. Until now, that is.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_api.png" alt="" /></p>
+
+<p>You can now subscribe to <strong><a href="https://twitter.com/">https://twitter.com/</a><em>username</em></strong> to get individual Twitter accounts on NewsBlur. Put them all in a folder to recreate your tweetstream.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_add.png" alt="" /></p>
+
+<p>Not only do you get the full tweetstream for that user, but you can also filter out tweets that are replies, retweets, or contain any text in them. You can also train Twitter feeds to highlight tweets that contain photos, are retweeted or liked, or have a word you want.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/twitter_training.png" alt="" /></p>
+
+<p>YouTube also deprecated their API and NewsBlur came to the rescue with <a href="http://blog.newsblur.com/2021/06/21/2015-04-30-a-real-solution-to-the-deprecated-youtube-api.html">native YouTube API support</a>. Now Twitter joins that list of native support, giving you a better Twitter experience than ever before.</p>
+
+<p>And because this native Twitter support takes more work than normal RSS feeds do, this feature is only available to premium subscribers.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[It’s been too long. Twitter unceremoniously knee-capped their API a few years ago and a number of solutions popped up to fix the loss. However, those stopgaps also closed and left us with no good ways to read Twitter while in NewsBlur. Until now, that is.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">NewsBlur goes dark ... on iOS</title>
+    <link href="https://blog.newsblur.com/2016/04/12/newsblur-goes-dark-on-ios/" rel="alternate" type="text/html" title="NewsBlur goes dark ... on iOS" />
+    <published>2016-04-12T06:00:18-04:00</published>
+    <updated>2016-04-12T06:00:18-04:00</updated>
+    <id>https://blog.newsblur.com/2016/04/12/newsblur-goes-dark-on-ios</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/04/12/newsblur-goes-dark-on-ios/">
+      <![CDATA[<p>It’s like a whole new app. There’s so much to tell you about in the latest release of the NewsBlur iOS app. This is the release of all releases.</p>
+
+<p>The biggest addition are the new themes. We have a total of four themes now: white, sepia, grey, and dark.</p>
+
+<p>The dark theme is for when the lights are low (or off) and you want to read without disturbing anybody around you.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-dark.png" alt="" /></p>
+
+<p>The grey theme gives you the best of both worlds. It’s a dark theme that gives you low light, but still bright enough to easily see.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-grey.png" alt="" /></p>
+
+<p>Sepia is the paperback you carry around everywhere so you always have something to read. Preparation pays.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-sepia.png" alt="" /></p>
+
+<p>The iPad Pro gets full support and that means that keyboard shortcuts have been instrumented all over the app.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-keyboard.png" alt="" /></p>
+
+<p>Maybe you’re thinking about how much the app just advanced. Maybe you’ve been waiting a long, long time for a dark theme ever since Android got it a year ago. Who knows, maybe you’re 100% on your iphone and that there’s just one or two tasks that you still need the website for.</p>
+
+<p>Get ready for this. The Organizer is now on the iOS app. And this isn’t just any organizer. You can see all of your feeds, sorted in or out of their folders, ordered by number of subscribers, how often you read them, how often they publish, and even how recently they published.</p>
+
+<p>Use these lists to find feeds that no longer publish or the feeds that publish too much. Move and delete whole groups of feeds at once. This organizer is the real deal. Try finding this feature anywhere else.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-organizer.png" alt="" /></p>
+
+<p>And if there’s an organizer, that means there’s a way to mute and unmute sites directly from your iPhone.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v6-mute.png" alt="" /></p>
+
+<p>There’s plenty of other new features too:</p>
+
+<ul>
+  <li>New icons app-wide</li>
+  <li>New menus for deleting and muting feeds</li>
+  <li>Custom domain support</li>
+  <li>Mark all as read by long pressing</li>
+  <li>Search and Subscribe improvements</li>
+</ul>
+
+<p>And check it out, NewsBlur now has two additional developers working on the iOS app, David Sinclair and Nicholas Riley. They have worked for the last few months on making this update the biggest yet. <a href="http://www.newsblur.com/about">Their mugs are now on the About page</a> and I’m extremely pleased with their work. Nicholas built the keyboard support that iPad Pro owners will appreciate. And David gives us the new themes, new organizer, and all of the other goodies we’ve got.</p>
+
+<p>This is the one to beat.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="iOS" />
+    
+    
+    <summary type="html">
+      <![CDATA[It’s like a whole new app. There’s so much to tell you about in the latest release of the NewsBlur iOS app. This is the release of all releases.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">A heavier lifting Android app</title>
+    <link href="https://blog.newsblur.com/2016/04/09/a-heavier-lifting-android-app/" rel="alternate" type="text/html" title="A heavier lifting Android app" />
+    <published>2016-04-09T12:56:12-04:00</published>
+    <updated>2016-04-09T12:56:12-04:00</updated>
+    <id>https://blog.newsblur.com/2016/04/09/a-heavier-lifting-android-app</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/04/09/a-heavier-lifting-android-app/">
+      <![CDATA[<p>As performance updates go, this month’s upgrade to v4.8.0 of the NewsBlur Android app is a doozy. This one’s specifically made for those users with a heavier load of feeds.</p>
+
+<p>If you have over a hundred feeds, everything will suddenly feel smooth, just like it already does for those with only a few dozen subscriptions. And if you find yourself climbing up to several hundred feeds from only a dozen, you’ll be in good company.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android_heavy_lifting.png" alt="" /></p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[As performance updates go, this month’s upgrade to v4.8.0 of the NewsBlur Android app is a doozy. This one’s specifically made for those users with a heavier load of feeds.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Tracking story changes with NewsBlur</title>
+    <link href="https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur/" rel="alternate" type="text/html" title="Tracking story changes with NewsBlur" />
+    <published>2016-03-03T12:55:11-05:00</published>
+    <updated>2016-03-03T12:55:11-05:00</updated>
+    <id>https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur/">
+      <![CDATA[<p>NewsBlur has been tracking story changes for a long, long time now (first mentioned <a href="http://blog.newsblur.com/2021/06/21/2012-01-16-2011-year-in-review.html">on the blog five years ago in April 2011</a>). But I felt it was time for an upgrade and today I’m pleased to launch some changes to the story tracker.</p>
+
+<p>If you use a third-party client to read NewsBlur, like Reeder, ReadKit, or Unread, you may have noticed strange <ins style="text-decoration: underline;color: #006600">revision</ins> change highlighters that cross out what gets edited out by a publisher and highlights what gets added.</p>
+
+<p>This is great, except you probably don’t want this turned on for every single story.</p>
+
+<p>By default you will now only see the final edit of the story. And if you are on the web you will see a new Show Story Changes button in the heading of any story that has seen changes.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/show_changes_button.png" alt="" /></p>
+
+<p>You can also toggle back and forth between showing and hiding story changes, so you can take a peek behind the curtains and still come back to the read the story in its final, finished form.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/show_changes.png" alt="" /></p>
+
+<p>This should relieve the burden of having to implement a story change tracker in third-party clients when almost no other news readers have this feature. So third-party reading app makers neglected to include support, leading to a less than ideal NewsBlur reading experience. No longer!</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[NewsBlur has been tracking story changes for a long, long time now (first mentioned on the blog five years ago in April 2011). But I felt it was time for an upgrade and today I’m pleased to launch some changes to the story tracker.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Story thumbnails for story titles</title>
+    <link href="https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles/" rel="alternate" type="text/html" title="Story thumbnails for story titles" />
+    <published>2016-02-19T06:30:10-05:00</published>
+    <updated>2016-02-19T06:30:10-05:00</updated>
+    <id>https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles/">
+      <![CDATA[<p>The iOS app has enjoyed a feature that gives you a tiny preview of a story’s main image right in the story title. Today this feature launches on the web.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images.png" alt="" /></p>
+
+<p>What I’ve noticed is that while I don’t use the image to identify which stories I want to read, I do use them to act as a signature of a story.</p>
+
+<p>There’s precedence for this on NewsBlur. Every site already does this using the color of its favicon. NewsBlur liberally applies a two-tone color palette based on each feed’s favicon. This serves as a per-feed signature, giving context to a story when it’s in the same view as every other feed’s stories.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images_left.png" alt="" /></p>
+
+<p>These story preview thumbnails serve as the same signature. Stories are best remembered through their colors and photos, so thumbnails act as a visual signature that’s easy to recognize. It works on a subconscious but perceptable level.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images_pref.png" alt="" /></p>
+
+<p>Of course you can turn them right off.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[The iOS app has enjoyed a feature that gives you a tiny preview of a story’s main image right in the story title. Today this feature launches on the web.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Two new third-party NewsBlur apps for iOS and Windows</title>
+    <link href="https://blog.newsblur.com/2016/02/03/two-new-third-party-newsblur-apps-for-ios-and/" rel="alternate" type="text/html" title="Two new third-party NewsBlur apps for iOS and Windows" />
+    <published>2016-02-03T13:51:32-05:00</published>
+    <updated>2016-02-03T13:51:32-05:00</updated>
+    <id>https://blog.newsblur.com/2016/02/03/two-new-third-party-newsblur-apps-for-ios-and</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/02/03/two-new-third-party-newsblur-apps-for-ios-and/">
+      <![CDATA[<p>NewsBlur has an amazingly active third-party app community, thanks to the <a href="http://www.newsblur.com/api">well documented NewsBlur API</a>. Today I’d like to introduce you to two new apps built by developers on the NewsBlur API.</p>
+
+<h2 id="hypersonic-for-windows-10--windows-phone">Hypersonic for Windows 10 &amp; Windows Phone</h2>
+
+<p><a href="https://www.microsoft.com/en-us/store/apps/hypersonic/9nblggh5wnb6">Hypersonic</a> is clean, simple, beautiful, and designed to run across both mobile and desktop devices.</p>
+
+<p><img src="https://store-images.s-microsoft.com/image/apps.57443.13510798886379389.f16a7ef2-bbfc-4fb0-9af1-b4be3b6902c1.d4e474de-9462-4612-946f-55ef3a89e295?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
+
+<p><img src="https://store-images.s-microsoft.com/image/apps.35702.13510798886379389.51b7a825-88ad-466c-ba41-6870a81fff17.8672bf08-f8e1-47a9-b393-e22cbe6cb8ca?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
+
+<p><img src="https://store-images.s-microsoft.com/image/apps.35090.13510798886379389.acef2ff2-e379-47b0-957e-1265f82f6967.20046293-77d2-477b-8ffb-644eeba7c817?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
+
+<p><img src="https://store-images.s-microsoft.com/image/apps.6547.13510798886379389.edddb027-0403-4b79-9471-b53afd6793a7.7c3f7a94-959f-4910-a38c-db0474493f9a?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
+
+<h2 id="add-my-feed-for-ios">Add My Feed for iOS</h2>
+
+<p><a href="http://addmyfeed.cubesoft.fr">Add My Feed</a> is an extension allowing you to effortlessly add RSS feeds to your online reader of choice.</p>
+
+<p>When you encounter a site you would like to subscribe to, simply tap the Add My Feed extension and you’re done !</p>
+
+<p>Add My Feed works in Safari and in any app supporting the standard iOS share sheet.</p>
+
+<p><img src="https://lh3.googleusercontent.com/Fth086Rlw5rB9ljQgFiJrkqupdOY3Xv501DOxZ2M4MN4k9goHi-dz-2n4vDiBn6ZUa7dvbEFqzb9Y5HH_7twqqJiY9Mrxw" alt="" /></p>
+
+<p>Both of these apps and many more are on the <a href="http://www.newsblur.com/?next=goodies">Goodies &amp; Mobile Apps</a> dialog. If you’ve developed an app for NewsBlur and would like to add it to Goodies (and have it blogged about here), let me know!</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    <category term="windows" />
+    
+    
+    <summary type="html">
+      <![CDATA[NewsBlur has an amazingly active third-party app community, thanks to the well documented NewsBlur API. Today I’d like to introduce you to two new apps built by developers on the NewsBlur API.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Search for pizza with your Android device</title>
+    <link href="https://blog.newsblur.com/2016/01/28/search-for-pizza-with-your-android-device/" rel="alternate" type="text/html" title="Search for pizza with your Android device" />
+    <published>2016-01-28T14:26:36-05:00</published>
+    <updated>2016-01-28T14:26:36-05:00</updated>
+    <id>https://blog.newsblur.com/2016/01/28/search-for-pizza-with-your-android-device</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/01/28/search-for-pizza-with-your-android-device/">
+      <![CDATA[<p>I’m not sure what else you would search for, honestly. If not vanilla pizza, then perhaps a sicilian, or montanara, a deep-dish, slices of neapolitan, whole-wheat thin-crust, or stuffed crust?</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android_search.png" alt="" /></p>
+
+<p>Well now you can search for pizza to your heart’s content on the <a href="http://www.newsblur.com/android">NewsBlur Android app</a>. Good luck with your tomato pie.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[I’m not sure what else you would search for, honestly. If not vanilla pizza, then perhaps a sicilian, or montanara, a deep-dish, slices of neapolitan, whole-wheat thin-crust, or stuffed crust?
+]]>
+    </summary>
+    
+  </entry>
+  
+</feed>

@@ -28,6 +28,7 @@ from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierText,
     MClassifierTitle,
     compute_story_score,
 )
@@ -153,6 +154,46 @@ class MUserFeedNotification(mongo.Document):
         return notifications_by_feed
 
     @classmethod
+    def switch_feed(cls, original_feed_id, duplicate_feed_id):
+        """Migrate notification settings from duplicate feed to original feed."""
+        duplicate_notifications = cls.objects.filter(feed_id=duplicate_feed_id)
+        count = duplicate_notifications.count()
+        if count:
+            logging.info(
+                " ---> Switching %s notification settings from feed %s to %s"
+                % (count, duplicate_feed_id, original_feed_id)
+            )
+            for notification in duplicate_notifications:
+                # Check if user already has notifications for the original feed
+                try:
+                    existing = cls.objects.get(user_id=notification.user_id, feed_id=original_feed_id)
+                    # Merge notification settings - keep any enabled setting
+                    existing.is_email = existing.is_email or notification.is_email
+                    existing.is_web = existing.is_web or notification.is_web
+                    existing.is_ios = existing.is_ios or notification.is_ios
+                    existing.is_android = existing.is_android or notification.is_android
+                    existing.is_focus = existing.is_focus or notification.is_focus
+                    if notification.frequency and not existing.frequency:
+                        existing.frequency = notification.frequency
+                    if notification.last_notification_date and (
+                        not existing.last_notification_date
+                        or notification.last_notification_date > existing.last_notification_date
+                    ):
+                        existing.last_notification_date = notification.last_notification_date
+                    # Merge iOS tokens
+                    if notification.ios_tokens:
+                        existing_tokens = set(existing.ios_tokens or [])
+                        existing_tokens.update(notification.ios_tokens)
+                        existing.ios_tokens = list(existing_tokens)
+                    existing.save()
+                    notification.delete()
+                except cls.DoesNotExist:
+                    # No existing notification, just update feed_id
+                    notification.feed_id = original_feed_id
+                    notification.save()
+        return count
+
+    @classmethod
     def push_feed_notifications(cls, feed_id, new_stories, force=False):
         feed = Feed.get_by_id(feed_id)
         notifications = MUserFeedNotification.users_for_feed(feed.pk)
@@ -227,6 +268,13 @@ class MUserFeedNotification(mongo.Document):
             )
             classifiers["titles"] = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
             classifiers["tags"] = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
+            user = User.objects.get(pk=self.user_id)
+            if user.profile.premium_available_text_classifiers:
+                classifiers["texts"] = list(
+                    MClassifierText.objects(user_id=self.user_id, feed_id=self.feed_id)
+                )
+            else:
+                classifiers["texts"] = []
 
         return classifiers
 
@@ -493,6 +541,7 @@ class MUserFeedNotification(mongo.Document):
             classifier_titles=classifiers.get("titles", []),
             classifier_authors=classifiers.get("authors", []),
             classifier_tags=classifiers.get("tags", []),
+            classifier_texts=classifiers.get("texts", []),
             classifier_feeds=classifiers.get("feeds", []),
         )
 

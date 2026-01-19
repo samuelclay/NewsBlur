@@ -1,12 +1,14 @@
 fs     = require 'fs'
 redis  = require 'redis'
 log    = require './log.js'
+ask_ai = require './ask_ai.js'
+archive_assistant = require './archive_assistant.js'
 
 unread_counts = (server) =>
     ENV_DEV = process.env.NODE_ENV == 'development' or process.env.NODE_ENV == 'debug'
     ENV_PROD = process.env.NODE_ENV == 'production'
     ENV_DOCKER = process.env.NODE_ENV == 'docker'
-    REDIS_SERVER = "db_redis"
+    REDIS_SERVER = "newsblur_db_redis"
     if ENV_DEV
         REDIS_SERVER = 'localhost'
     else if ENV_PROD
@@ -158,12 +160,40 @@ unread_counts = (server) =>
                 socket.subscribe.subscribe username
 
             socket.subscribe.on 'message', (channel, message) =>
+                # Debug ask_ai message routing
+                is_ask_ai = typeof message == 'string' and message.indexOf('ask_ai:') >= 0
+                if is_ask_ai
+                    log.debug username, "Received ask_ai message on channel #{channel}: #{message.substring(0, 60)}..."
+                    log.debug username, "Message type: #{typeof message}, has startsWith: #{message.startsWith?}"
+
+                # Route ask_ai messages to dedicated handler
+                if message.startsWith?('ask_ai:')
+                    log.debug username, "Routing to ask_ai handler"
+                    handled = ask_ai.handle_ask_ai_message(socket, channel, message)
+                    if handled
+                        log.debug username, "Ask AI handler processed message"
+                        return
+                    else
+                        log.debug username, "Ask AI handler returned false"
+
+                # Route archive_assistant messages to dedicated handler
+                if message.startsWith?('archive_assistant:')
+                    log.debug username, "Routing to archive_assistant handler"
+                    handled = archive_assistant.handle_archive_assistant_message(socket, channel, message)
+                    if handled
+                        log.debug username, "Archive Assistant handler processed message"
+                        return
+
+                # Handle standard feed/user update messages
                 event_name = 'feed:update'
                 if channel == username
                     event_name = 'user:update'
                 else if channel.indexOf(':story') >= 0
                     event_name = 'feed:story:new'
-                log.info username, "Update on #{channel}: #{event_name} - #{message}"
+                if is_ask_ai
+                    log.debug username, "Ask AI message falling through to #{event_name}"
+                else
+                    log.info username, "Update on #{channel}: #{event_name} - #{message}"
                 socket.emit event_name, channel, message
 
         socket.on 'disconnect', (reason) ->

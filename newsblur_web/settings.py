@@ -161,10 +161,13 @@ OAUTH2_PROVIDER = {
         "read": "View new unread stories, saved stories, and shared stories.",
         "write": "Create new saved stories, shared stories, and subscriptions.",
         "ifttt": "Pair your NewsBlur account with other services.",
+        "email": "Access your email address for account identification.",
+        "archive": "Archive your browsing history and query it with AI.",
     },
     "CLIENT_ID_GENERATOR_CLASS": "oauth2_provider.generators.ClientIdGenerator",
     "ACCESS_TOKEN_EXPIRE_SECONDS": 60 * 60 * 24 * 365 * 10,  # 10 years
     "AUTHORIZATION_CODE_EXPIRE_SECONDS": 60 * 60,  # 1 hour
+    "PKCE_REQUIRED": False,  # Allow legacy OAuth clients that don't support PKCE (e.g., Unread, other third-party apps)
 }
 
 # ===========
@@ -357,6 +360,9 @@ INSTALLED_APPS = (
     "apps.oauth",
     "apps.search",
     "apps.categories",
+    "apps.ask_ai",
+    "apps.archive_extension",
+    "apps.archive_assistant",
     "utils",  # missing models so no migrations
     "vendor",
     "typogrify",
@@ -393,6 +399,10 @@ CELERY_TASK_ROUTES = {
         "queue": "discover_indexer",
         "binding_key": "discover_indexer",
     },
+    "archive-categorize": {"queue": "push_feeds", "binding_key": "push_feeds"},
+    "archive-index-elasticsearch": {"queue": "push_feeds", "binding_key": "push_feeds"},
+    "archive-process-batch": {"queue": "push_feeds", "binding_key": "push_feeds"},
+    "archive-cleanup-old": {"queue": "push_feeds", "binding_key": "push_feeds"},
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {
@@ -435,6 +445,11 @@ CELERY_TASK_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "discover_indexer",
     },
+    "ask_ai": {
+        "exchange": "ask_ai",
+        "exchange_type": "direct",
+        "binding_key": "ask_ai",
+    },
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"
 
@@ -447,6 +462,9 @@ CELERY_IMPORTS = (
     "apps.feed_import.tasks",
     "apps.search.tasks",
     "apps.statistics.tasks",
+    "apps.ask_ai.tasks",
+    "apps.archive_extension.tasks",
+    "apps.archive_assistant.tasks",
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
@@ -516,6 +534,11 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": datetime.timedelta(minutes=5),
         "options": {"queue": "cron_queue"},
     },
+    "email-feed-limit-notifications": {
+        "task": "email-feed-limit-notifications",
+        "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
 }
 
 # =========
@@ -527,11 +550,11 @@ if DOCKERBUILD:
 else:
     MONGO_PORT = 27017
 MONGO_DB = {
-    "host": f"db_mongo:{MONGO_PORT}",
+    "host": f"newsblur_db_mongo:{MONGO_PORT}",
     "name": "newsblur",
 }
 MONGO_ANALYTICS_DB = {
-    "host": f"db_mongo_analytics:{MONGO_PORT}",
+    "host": f"newsblur_db_mongo_analytics:{MONGO_PORT}",
     "name": "nbanalytics",
 }
 
@@ -742,7 +765,7 @@ monitoring.register(MONGO_COMMAND_LOGGER)
 
 MONGO_DB_DEFAULTS = {
     "name": "newsblur",
-    "host": f"db_mongo:{MONGO_PORT}",
+    "host": f"newsblur_db_mongo:{MONGO_PORT}",
     "alias": "default",
     "unicode_decode_error_handler": "ignore",
     "connect": False,
@@ -763,7 +786,7 @@ MONGODB = connect(MONGO_DB_NAME, **MONGO_DB)
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     "name": "nbanalytics",
-    "host": f"db_mongo_analytics:{MONGO_PORT}",
+    "host": f"newsblur_db_mongo_analytics:{MONGO_PORT}",
     "alias": "nbanalytics",
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
@@ -811,6 +834,8 @@ CELERY_BROKER_URL = "redis://%s:%s/%s" % (
     CELERY_REDIS_DB_NUM,
 )
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_WORKER_LOG_FORMAT = "%(message)s"
+CELERY_WORKER_TASK_LOG_FORMAT = "%(message)s"
 BROKER_TRANSPORT_OPTIONS = {
     "max_retries": 3,
     "interval_start": 0,
@@ -1019,3 +1044,13 @@ def monkey_patched_get_user(request):
 
 
 auth.get_user = monkey_patched_get_user
+
+# Patch Django's HttpResponseRedirect to allow chrome-extension:// URLs
+# This is needed for browser extension OAuth flows
+from django.http import HttpResponseRedirect
+
+if "chrome-extension" not in HttpResponseRedirect.allowed_schemes:
+    HttpResponseRedirect.allowed_schemes = list(HttpResponseRedirect.allowed_schemes) + [
+        "chrome-extension",
+        "moz-extension",
+    ]

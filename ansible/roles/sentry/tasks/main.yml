@@ -1,4 +1,8 @@
 ---
+- name: Load Sentry secrets
+  include_vars: secrets.yml
+  tags: always
+
 - name: Ensure /srv exists and is owned by user
   become: yes
   file:
@@ -12,24 +16,56 @@
   git:
     repo: https://github.com/getsentry/self-hosted.git
     dest: /srv/sentry/
-    version: 24.4.1
+    version: 25.10.0
+    force: yes
+
+- name: Configure Sentry with errors-only profile
+  lineinfile:
+    path: /srv/sentry/.env
+    regexp: "^COMPOSE_PROFILES="
+    line: "COMPOSE_PROFILES=errors-only"
+
+- name: Deploy Relay credentials
+  template:
+    src: relay_credentials.json.j2
+    dest: /srv/sentry/relay/credentials.json
+    mode: 0644
 
 - name: Updating Sentry
   command:
     chdir: /srv/sentry/
     cmd: ./install.sh --no-report-self-hosted-issues
 
-- name: docker-compuse up -d
+- name: Configure Sentry public URL (system.url-prefix)
+  lineinfile:
+    path: /srv/sentry/sentry/config.yml
+    regexp: "^system.url-prefix:"
+    line: "system.url-prefix: {{ sentry_url }}"
+    insertafter: "^#.*system.url-prefix:"
+
+- name: Enable SSL proxy headers in sentry.conf.py
+  lineinfile:
+    path: /srv/sentry/sentry/sentry.conf.py
+    regexp: "^{{ item.regexp }}"
+    line: "{{ item.line }}"
+    backrefs: yes
+  loop:
+    - { regexp: '^# SECURE_PROXY_SSL_HEADER = ', line: 'SECURE_PROXY_SSL_HEADER = ' }
+    - { regexp: '^# USE_X_FORWARDED_HOST = ', line: 'USE_X_FORWARDED_HOST = ' }
+    - { regexp: '^# SESSION_COOKIE_SECURE = ', line: 'SESSION_COOKIE_SECURE = ' }
+    - { regexp: '^# CSRF_COOKIE_SECURE = ', line: 'CSRF_COOKIE_SECURE = ' }
+    - { regexp: '^# SOCIAL_AUTH_REDIRECT_IS_HTTPS = ', line: 'SOCIAL_AUTH_REDIRECT_IS_HTTPS = ' }
+
+- name: docker-compose up with errors-only profile
   command:
     chdir: /srv/sentry/
-    cmd: docker-compose up -d
-
-- name: Register sentry in consul
-  tags: consul
-  become: yes
-  template:
-    src: consul_service.json
-    dest: /etc/consul.d/sentry.json
-  notify:
-    - reload consul
-  when: disable_consul_services_ie_staging is not defined
+    cmd: docker compose --profile errors-only up -d
+# - name: Register sentry in consul
+#   tags: consul
+#   become: yes
+#   template:
+#     src: consul_service.json
+#     dest: /etc/consul.d/sentry.json
+#   notify:
+#     - reload consul
+#   when: disable_consul_services_ie_staging is not defined

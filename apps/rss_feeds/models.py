@@ -426,15 +426,15 @@ class Feed(models.Model):
         return [f.pk for f in feeds]
 
     @classmethod
-    def autocomplete(self, prefix, limit=5):
-        results = SearchFeed.query(prefix)
-        feed_ids = [result["_source"]["feed_id"] for result in results[:5]]
+    def autocomplete(cls, prefix, limit=5):
+        # Fast text search first
+        results = SearchFeed.query(prefix, max_results=limit)
 
-        # results = SearchQuerySet().autocomplete(address=prefix).order_by('-num_subscribers')[:limit]
-        #
-        # if len(results) < limit:
-        #     results += SearchQuerySet().autocomplete(title=prefix).order_by('-num_subscribers')[:limit-len(results)]
-        #
+        # Fall back to hybrid (semantic) search if no text results
+        if not results:
+            results = SearchFeed.hybrid_query(prefix, max_results=limit)
+
+        feed_ids = [result["_source"]["feed_id"] for result in results[:limit]]
         return feed_ids
 
     @classmethod
@@ -1346,6 +1346,7 @@ class Feed(models.Model):
             MClassifierAuthor,
             MClassifierFeed,
             MClassifierTag,
+            MClassifierText,
             MClassifierTitle,
         )
 
@@ -1384,6 +1385,7 @@ class Feed(models.Model):
         scores = {}
         for cls, facet in [
             (MClassifierTitle, "title"),
+            (MClassifierText, "text"),
             (MClassifierAuthor, "author"),
             (MClassifierTag, "tag"),
             (MClassifierFeed, "feed_id"),
@@ -1422,8 +1424,8 @@ class Feed(models.Model):
     def fake_user_agent(self):
         ua = (
             '("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
-            "AppleWebKit/605.1.15 (KHTML, like Gecko) "
-            'Version/14.0.1 Safari/605.1.15")'
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            'Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0")'
         )
 
         return ua
@@ -1948,29 +1950,6 @@ class Feed(models.Model):
 
         return sum_bytes
 
-    def purge_feed_stories(self, update=True):
-        MStory.purge_feed_stories(feed=self, cutoff=self.story_cutoff)
-        if update:
-            self.update()
-
-    def purge_author(self, author):
-        all_stories = MStory.objects.filter(story_feed_id=self.pk)
-        author_stories = MStory.objects.filter(story_feed_id=self.pk, story_author_name__iexact=author)
-        logging.debug(
-            " ---> Deleting %s of %s stories in %s by '%s'."
-            % (author_stories.count(), all_stories.count(), self, author)
-        )
-        author_stories.delete()
-
-    def purge_tag(self, tag):
-        all_stories = MStory.objects.filter(story_feed_id=self.pk)
-        tagged_stories = MStory.objects.filter(story_feed_id=self.pk, story_tags__icontains=tag)
-        logging.debug(
-            " ---> Deleting %s of %s stories in %s by '%s'."
-            % (tagged_stories.count(), all_stories.count(), self, tag)
-        )
-        tagged_stories.delete()
-
     # @staticmethod
     # def clean_invalid_ids():
     #     history = MFeedFetchHistory.objects(status_code=500, exception__contains='InvalidId:')
@@ -1991,10 +1970,10 @@ class Feed(models.Model):
         date_filter_start=None,
         date_filter_end=None,
     ):
-        if order == "newest":
-            stories_db = MStory.objects(story_feed_id=self.pk)
-        elif order == "oldest":
+        if order == "oldest":
             stories_db = MStory.objects(story_feed_id=self.pk).order_by("story_date")
+        else:
+            stories_db = MStory.objects(story_feed_id=self.pk)
 
         if date_filter_start:
             stories_db = stories_db.filter(story_date__gte=date_filter_start)
@@ -2439,8 +2418,9 @@ class Feed(models.Model):
         story = {}
         story["story_hash"] = getattr(story_db, "story_hash", None)
         story["story_tags"] = story_db.story_tags or []
-        story["story_date"] = story_db.story_date.replace(tzinfo=None)
-        story["story_timestamp"] = story_db.story_date.strftime("%s")
+        story_date = story_db.story_date or datetime.datetime.now()
+        story["story_date"] = story_date.replace(tzinfo=None)
+        story["story_timestamp"] = story_date.strftime("%s")
         story["story_authors"] = story_db.story_author_name or ""
         story["story_title"] = story_title
         if blank_story_title:
@@ -2484,6 +2464,37 @@ class Feed(models.Model):
             story["text"] = text
 
         return story
+
+    # Compiled regex for YouTube embed URL matching (used by apply_youtube_captions)
+    YOUTUBE_EMBED_RE = re.compile(
+        r'src=["\']https?://(?:www\.)?(?:youtube\.com|youtube-nocookie\.com)/embed/[^"\']*["\']'
+    )
+
+    @staticmethod
+    def apply_youtube_captions(story_content):
+        """
+        Transform YouTube embed URLs to enable captions by adding cc_load_policy=1.
+        This makes captions show by default when videos are played.
+        """
+        if not story_content:
+            return story_content
+
+        def add_captions_param(match):
+            url = match.group(0)
+            if "cc_load_policy" in url:
+                return url
+            if "?" in url:
+                if url.endswith('"') or url.endswith("'"):
+                    quote = url[-1]
+                    return url[:-1] + "&cc_load_policy=1" + quote
+                return url + "&cc_load_policy=1"
+            else:
+                if url.endswith('"') or url.endswith("'"):
+                    quote = url[-1]
+                    return url[:-1] + "?cc_load_policy=1" + quote
+                return url + "?cc_load_policy=1"
+
+        return Feed.YOUTUBE_EMBED_RE.sub(add_captions_param, story_content)
 
     @classmethod
     def secure_image_urls(cls, urls):
@@ -2897,7 +2908,7 @@ class Feed(models.Model):
     def set_next_scheduled_update(self, verbose=False, skip_scheduling=False, delay_fetch_sec=None):
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
 
-        # Use Cache-Control max-age if provided
+        # Use Cache-Control max-age or Retry-After if provided
         if delay_fetch_sec is not None:
             minutes_until_next_fetch = delay_fetch_sec / 60
             base_total = minutes_until_next_fetch
@@ -2946,7 +2957,15 @@ class Feed(models.Model):
             base_total = minutes_until_next_fetch
             error_count = self.error_count
 
-            if error_count:
+            # Handle 429 rate limiting - enforce minimum 60 minute backoff
+            if self.exception_code == 429:
+                minutes_until_next_fetch = max(minutes_until_next_fetch, 60)
+                if verbose:
+                    logging.debug(
+                        "   ---> [%-30s] ~FY429 Rate Limited - enforcing minimum 60 min backoff"
+                        % (self.log_title[:30])
+                    )
+            elif error_count:
                 original_total = minutes_until_next_fetch
                 minutes_until_next_fetch = minutes_until_next_fetch * error_count
                 minutes_until_next_fetch = min(minutes_until_next_fetch, 60 * 24 * 7)
@@ -3294,6 +3313,16 @@ class MStory(mongo.Document):
 
         return story_content
 
+    @property
+    def original_text_str(self):
+        """
+        Returns cached original/full text if available, otherwise falls back to story content.
+        Unlike fetch_original_text(), this does NOT fetch if not cached.
+        """
+        if self.original_text_z:
+            return smart_str(zlib.decompress(self.original_text_z))
+        return self.story_content_str
+
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields["story_title"].max_length
         story_content_type_max = MStory._fields["story_content_type"].max_length
@@ -3338,15 +3367,6 @@ class MStory(mongo.Document):
                 "   ***> [%-30s] ~BMRedis is unavailable for real-time."
                 % (Feed.get_by_id(self.story_feed_id).title[:30],)
             )
-
-    @classmethod
-    def purge_feed_stories(cls, feed, cutoff, verbose=True):
-        stories = cls.objects(story_feed_id=feed.pk)
-        logging.debug(" ---> Deleting %s stories from %s" % (stories.count(), feed))
-        if stories.count() > cutoff * 1.25:
-            logging.debug(" ***> ~FRToo many stories in %s, not purging..." % (feed))
-            return
-        stories.delete()
 
     @classmethod
     def index_all_for_search(cls, offset=0, search=False, discover=False):
@@ -3576,6 +3596,8 @@ class MStory(mongo.Document):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         feed = Feed.get_by_id(self.story_feed_id)
+        if not feed:
+            return
 
         if self.id and self.story_date > feed.unread_cutoff:
             feed_key = "F:%s" % self.story_feed_id
@@ -3596,6 +3618,8 @@ class MStory(mongo.Document):
     def sync_feed_redis(cls, story_feed_id, allow_skip_resync=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
         feed = Feed.get_by_id(story_feed_id)
+        if not feed:
+            return
         stories = cls.objects.filter(story_feed_id=story_feed_id, story_date__gte=feed.unread_cutoff)
 
         if allow_skip_resync and stories.count() > 1000:
@@ -3906,6 +3930,11 @@ class MStarredStory(mongo.DynamicDocument):
         if date_filter_end:
             stories_db = stories_db.filter(starred_date__lt=date_filter_end)
 
+        if date_filter_start or date_filter_end:
+            start_log = date_filter_start.isoformat() if date_filter_start else ""
+            end_log = date_filter_end.isoformat() if date_filter_end else ""
+            logging.debug(f" ---> ~FBDate filter: start={start_log} end_exclusive={end_log}")
+
         stories_db = stories_db.order_by("%sstarred_date" % ("-" if order == "newest" else ""))[
             offset : offset + limit
         ]
@@ -3974,6 +4003,23 @@ class MStarredStory(mongo.DynamicDocument):
     @property
     def feed_guid_hash(self):
         return "%s:%s" % (self.story_feed_id or "0", self.guid_hash)
+
+    @classmethod
+    def switch_feed(cls, original_feed_id, duplicate_feed_id):
+        """Update starred stories to point to the new feed after a merge."""
+        starred_stories = cls.objects.filter(story_feed_id=duplicate_feed_id)
+        count = starred_stories.count()
+        if count:
+            logging.info(
+                " ---> Switching %s starred stories from feed %s to %s"
+                % (count, duplicate_feed_id, original_feed_id)
+            )
+            for story in starred_stories:
+                story.story_feed_id = original_feed_id
+                # Update story_hash to reflect new feed_id
+                story.story_hash = story.feed_guid_hash
+                story.save()
+        return count
 
     def fetch_original_text(self, force=False, request=None, debug=False):
         original_text_z = self.original_text_z
@@ -4170,6 +4216,37 @@ class MStarredStoryCounts(mongo.Document):
         if story_count and story_count.count <= 0:
             story_count.delete()
 
+    @classmethod
+    def switch_feed(cls, original_feed_id, duplicate_feed_id):
+        """Merge starred story counts from duplicate feed into original feed."""
+        # Get all counts for the duplicate feed
+        duplicate_counts = cls.objects.filter(feed_id=duplicate_feed_id)
+        count = duplicate_counts.count()
+        if count:
+            logging.info(
+                " ---> Switching %s starred story count records from feed %s to %s"
+                % (count, duplicate_feed_id, original_feed_id)
+            )
+            for dup_count in duplicate_counts:
+                # Find or create matching count for original feed
+                try:
+                    orig_count = cls.objects.get(
+                        user_id=dup_count.user_id,
+                        feed_id=original_feed_id,
+                        tag=dup_count.tag,
+                        is_highlights=dup_count.is_highlights,
+                    )
+                    # Merge counts
+                    orig_count.count += dup_count.count
+                    orig_count.save()
+                    dup_count.delete()
+                except cls.DoesNotExist:
+                    # Just update the feed_id
+                    dup_count.feed_id = original_feed_id
+                    dup_count.slug = "feed:%s" % original_feed_id if dup_count.feed_id else dup_count.slug
+                    dup_count.save()
+        return count
+
 
 class MSavedSearch(mongo.Document):
     user_id = mongo.IntField()
@@ -4356,7 +4433,8 @@ class DuplicateFeed(models.Model):
 
 
 def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
-    from apps.reader.models import UserSubscription
+    from apps.notifications.models import MUserFeedNotification
+    from apps.reader.models import MCustomFeedIcon, UserSubscription
     from apps.social.models import MSharedStory
 
     if original_feed_id == duplicate_feed_id:
@@ -4408,6 +4486,16 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     for user_sub in user_subs:
         user_sub.switch_feed(original_feed, duplicate_feed)
 
+    # Switch starred stories and their counts to the new feed
+    MStarredStory.switch_feed(original_feed.pk, duplicate_feed.pk)
+    MStarredStoryCounts.switch_feed(original_feed.pk, duplicate_feed.pk)
+
+    # Switch notification settings to the new feed
+    MUserFeedNotification.switch_feed(original_feed.pk, duplicate_feed.pk)
+
+    # Switch custom feed icons to the new feed
+    MCustomFeedIcon.switch_feed(original_feed.pk, duplicate_feed.pk)
+
     def delete_story_feed(model, feed_field="feed_id"):
         duplicate_stories = model.objects(**{feed_field: duplicate_feed.pk})
         # if duplicate_stories.count():
@@ -4416,6 +4504,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
 
     delete_story_feed(MStory, "story_feed_id")
     delete_story_feed(MFeedPage, "feed_id")
+    delete_story_feed(MFeedIcon, "feed_id")
 
     try:
         DuplicateFeed.objects.create(

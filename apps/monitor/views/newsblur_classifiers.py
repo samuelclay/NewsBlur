@@ -5,6 +5,7 @@ from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierText,
     MClassifierTitle,
 )
 
@@ -15,6 +16,7 @@ class Classifiers(View):
             "feeds": MClassifierFeed.objects._collection.count(),
             "authors": MClassifierAuthor.objects._collection.count(),
             "tags": MClassifierTag.objects._collection.count(),
+            "texts": MClassifierText.objects._collection.count(),
             "titles": MClassifierTitle.objects._collection.count(),
         }
 

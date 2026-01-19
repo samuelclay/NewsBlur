@@ -15,7 +15,7 @@ from django.contrib.sites.models import Site
 from django.core.mail import mail_admins
 from django.db.models.aggregates import Sum
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.decorators.http import require_POST
@@ -26,6 +26,7 @@ from apps.analyzer.models import (
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
+    MClassifierText,
     MClassifierTitle,
 )
 from apps.profile.forms import (
@@ -48,7 +49,13 @@ from apps.profile.models import (
 from apps.reader.forms import LoginForm, SignupForm
 from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
-from apps.social.models import MActivity, MSocialProfile, MSocialServices
+from apps.social.models import (
+    MActivity,
+    MSharedStory,
+    MSocialProfile,
+    MSocialServices,
+    MSocialSubscription,
+)
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import ajax_login_required, get_user
@@ -334,6 +341,38 @@ def set_collapsed_folders(request):
 def paypal_ipn(request):
     try:
         return paypal_standard_ipn(request)
+    except UnicodeDecodeError as e:
+        # PayPal may have returned an error page with non-ASCII characters instead of a proper IPN response
+        # Log comprehensive debugging info to diagnose the encoding issue
+        body = request.body
+        content_type = request.META.get("CONTENT_TYPE", "unknown")
+
+        # Try various encodings to see what works
+        encodings_tried = {}
+        for encoding in ["utf-8", "latin-1", "iso-8859-1", "windows-1252"]:
+            try:
+                decoded = body.decode(encoding)
+                encodings_tried[encoding] = f"SUCCESS (len={len(decoded)})"
+            except Exception as decode_error:
+                encodings_tried[encoding] = f"FAILED: {decode_error}"
+
+        # Get context around the problematic byte
+        error_pos = e.start if hasattr(e, "start") else 0
+        context_start = max(0, error_pos - 50)
+        context_end = min(len(body), error_pos + 50)
+        context_bytes = body[context_start:context_end]
+
+        logging.error(
+            f"PayPal IPN UnicodeDecodeError: {e}\n"
+            f"Content-Type: {content_type}\n"
+            f"Body length: {len(body)} bytes\n"
+            f"Error position: {error_pos}\n"
+            f"Context bytes (pos {context_start}-{context_end}): {context_bytes!r}\n"
+            f"Hex dump: {context_bytes.hex()}\n"
+            f"Encoding attempts: {encodings_tried}\n"
+            f"Full body (latin-1): {body.decode('latin-1', errors='replace')!r}"
+        )
+        return HttpResponse("Invalid PayPal IPN response encoding", status=400)
     except AssertionError:
         # Paypal may have sent webhooks to ipn, so redirect
         logging.user(request, f" ---> Paypal IPN to webhooks redirect: {request.body}")
@@ -451,6 +490,24 @@ def paypal_pro_return(request):
 @login_required
 def activate_premium(request):
     return HttpResponseRedirect(reverse("index"))
+
+
+@login_required
+def activate_premium_trial(request):
+    """Page that activates a premium trial and shows progress like payment returns."""
+    profile = request.user.profile
+    success = profile.start_premium_trial()
+
+    if not success:
+        return HttpResponseRedirect(reverse("index"))
+
+    return render(
+        request,
+        "reader/premium_trial_return.xhtml",
+        {
+            "user_profile": profile,
+        },
+    )
 
 
 @ajax_login_required
@@ -702,7 +759,9 @@ def stripe_form(request):
 
 @login_required
 def switch_stripe_subscription(request):
-    plan = request.POST["plan"]
+    plan = request.POST.get("plan")
+    if not plan:
+        return HttpResponseRedirect(reverse("index"))
     if plan == "change_stripe":
         return stripe_checkout(request)
     elif plan == "change_paypal":
@@ -724,7 +783,9 @@ def switch_stripe_subscription(request):
 
 
 def switch_paypal_subscription(request):
-    plan = request.POST["plan"]
+    plan = request.POST.get("plan")
+    if not plan:
+        return HttpResponseRedirect(reverse("index"))
     if plan == "change_stripe":
         return stripe_checkout(request)
     elif plan == "change_paypal":
@@ -752,7 +813,9 @@ def switch_paypal_subscription(request):
 def stripe_checkout(request):
     stripe.api_key = settings.STRIPE_SECRET
     domain = Site.objects.get_current().domain
-    plan = request.POST["plan"]
+    plan = request.POST.get("plan")
+    if not plan:
+        return HttpResponseRedirect(reverse("index"))
 
     if plan == "change_stripe":
         checkout_session = stripe.billing_portal.Session.create(
@@ -827,6 +890,8 @@ def payment_history(request):
             "title_ng": MClassifierTitle.objects.filter(user_id=user.pk, score__lt=0).count(),
             "tag_ps": MClassifierTag.objects.filter(user_id=user.pk, score__gt=0).count(),
             "tag_ng": MClassifierTag.objects.filter(user_id=user.pk, score__lt=0).count(),
+            "text_ps": MClassifierText.objects.filter(user_id=user.pk, score__gt=0).count(),
+            "text_ng": MClassifierText.objects.filter(user_id=user.pk, score__lt=0).count(),
             "author_ps": MClassifierAuthor.objects.filter(user_id=user.pk, score__gt=0).count(),
             "author_ng": MClassifierAuthor.objects.filter(user_id=user.pk, score__lt=0).count(),
             "feed_ps": MClassifierFeed.objects.filter(user_id=user.pk, score__gt=0).count(),
@@ -870,6 +935,36 @@ def payment_history(request):
         "statistics": statistics,
         "next_invoice": next_invoice,
     }
+
+
+@login_required
+def invoice(request, payment_id):
+    """
+    Generate a printable invoice for a specific payment.
+    Staff can view any invoice; regular users can only view their own.
+    """
+    if request.user.is_staff:
+        payment = get_object_or_404(PaymentHistory, id=payment_id)
+    else:
+        payment = get_object_or_404(PaymentHistory, id=payment_id, user=request.user)
+
+    invoice_number = f"NB-{payment.id:08d}"
+
+    # Calculate coverage period (1 year from payment date)
+    coverage_start = payment.payment_date
+    coverage_end = coverage_start + dateutil.relativedelta.relativedelta(years=1)
+
+    return render(
+        request,
+        "profile/invoice.xhtml",
+        {
+            "payment": payment,
+            "invoice_number": invoice_number,
+            "user": payment.user,
+            "coverage_start": coverage_start,
+            "coverage_end": coverage_end,
+        },
+    )
 
 
 @ajax_login_required
@@ -1030,6 +1125,71 @@ def delete_starred_stories(request):
     return dict(
         code=1, stories_deleted=stories_deleted, starred_counts=starred_counts, starred_count=starred_count
     )
+
+
+@ajax_login_required
+@json.json_view
+def count_starred_stories(request):
+    timestamp = request.POST.get("timestamp", None)
+    if timestamp:
+        delete_date = datetime.datetime.fromtimestamp(int(timestamp))
+    else:
+        delete_date = datetime.datetime.now()
+    count = MStarredStory.objects.filter(user_id=request.user.pk, starred_date__lte=delete_date).count()
+    return dict(code=1, count=count)
+
+
+@ajax_login_required
+@json.json_view
+def count_shared_stories(request):
+    timestamp = request.POST.get("timestamp", None)
+    if timestamp:
+        delete_date = datetime.datetime.fromtimestamp(int(timestamp))
+    else:
+        delete_date = datetime.datetime.now()
+    count = MSharedStory.objects.filter(user_id=request.user.pk, shared_date__lte=delete_date).count()
+    return dict(code=1, count=count)
+
+
+@ajax_login_required
+@json.json_view
+def delete_shared_stories(request):
+    timestamp = request.POST.get("timestamp", None)
+    if timestamp:
+        delete_date = datetime.datetime.fromtimestamp(int(timestamp))
+    else:
+        delete_date = datetime.datetime.now()
+
+    shared_stories = MSharedStory.objects.filter(user_id=request.user.pk, shared_date__lte=delete_date)
+    stories_deleted = shared_stories.count()
+
+    # Mark social subscriptions for unread recalculation
+    socialsubs = MSocialSubscription.objects.filter(
+        subscription_user_id=request.user.pk, needs_unread_recalc=False
+    )
+    for socialsub in socialsubs:
+        socialsub.needs_unread_recalc = True
+        socialsub.save()
+
+    # Delete each story (triggers cleanup: removes from Redis, removes activity)
+    for story in shared_stories:
+        story.delete()
+
+    # Update shared stories count in profile
+    try:
+        profile = MSocialProfile.objects.get(user_id=request.user.pk)
+        profile.count_follows()
+        shared_stories_count = profile.shared_stories_count
+    except MSocialProfile.DoesNotExist:
+        shared_stories_count = 0
+
+    logging.user(
+        request.user,
+        "~BC~FRDeleting %s/%s shared stories (%s)"
+        % (stories_deleted, stories_deleted + shared_stories_count, delete_date),
+    )
+
+    return dict(code=1, stories_deleted=stories_deleted, shared_stories_count=shared_stories_count)
 
 
 @ajax_login_required
