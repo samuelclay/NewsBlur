@@ -113,9 +113,9 @@
         self.scrollView.allowsKeyboardScrolling = NO;
     }
     
-    if (!self.isPhone) {
-        self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    }
+    // Ensure paging is edge-to-edge on iPhone (avoid safe-area inset offsets).
+    self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    self.scrollView.contentInset = UIEdgeInsetsZero;
     
 //    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
 //    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
