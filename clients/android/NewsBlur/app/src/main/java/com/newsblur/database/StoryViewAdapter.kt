@@ -28,9 +28,9 @@ import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.NbActivity
 import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
-import com.newsblur.util.CustomIconRenderer
 import com.newsblur.fragment.StoryIntelTrainerFragment
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.CustomIconRenderer
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.GestureAction
