@@ -160,8 +160,8 @@ public class CustomIconRenderer {
         }
 
         try {
-            // Load PNG from assets/icons/{iconSet}/{iconName}.png
-            String assetPath = "icons/" + iconSet + "/" + iconName + ".png";
+            // Load PNG from assets/icons/{iconSet}/{iconName}.webp
+            String assetPath = "icons/" + iconSet + "/" + iconName + ".webp";
             try (InputStream is = context.getAssets().open(assetPath)) {
                 Bitmap original = BitmapFactory.decodeStream(is);
 
