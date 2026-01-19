@@ -89,6 +89,16 @@ class LoginRegisterViewModel
             prefsRepo.clearCustomServer()
         }
 
+        fun getCustomServerCaPem() = prefsRepo.getCustomServerCaPem()
+
+        fun saveCustomServerCaPem(pem: String) {
+            prefsRepo.saveCustomServerCaPem(pem)
+        }
+
+        fun clearCustomServerCaPem() {
+            prefsRepo.clearCustomServerCaPem()
+        }
+
         fun backTo(backTo: BackTo) {
             val state =
                 when (backTo) {

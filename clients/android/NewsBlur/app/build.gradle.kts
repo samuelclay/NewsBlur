@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.androidx.browser)
     implementation(libs.material)
     implementation(libs.okhttp)
+    implementation(libs.okhttp.tls)
     implementation(libs.gson)
     implementation(libs.billing.ktx)
     implementation(libs.play.review)
