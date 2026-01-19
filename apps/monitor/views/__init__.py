@@ -3,10 +3,12 @@ from apps.monitor.views.newsblur_app_times import AppTimes
 from apps.monitor.views.newsblur_ask_ai import AskAI
 from apps.monitor.views.newsblur_classifiers import Classifiers
 from apps.monitor.views.newsblur_dbtimes import DbTimes
+from apps.monitor.views.newsblur_deleted_users import DeletedUsers
 from apps.monitor.views.newsblur_errors import Errors
 from apps.monitor.views.newsblur_feed_counts import FeedCounts
 from apps.monitor.views.newsblur_feed_sizes import FeedSizes
 from apps.monitor.views.newsblur_feeds import Feeds
+from apps.monitor.views.newsblur_llm_costs import LLMCosts
 from apps.monitor.views.newsblur_loadtimes import LoadTimes
 from apps.monitor.views.newsblur_stories import Stories
 from apps.monitor.views.newsblur_tasks_codes import TasksCodes

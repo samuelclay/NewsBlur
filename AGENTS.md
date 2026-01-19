@@ -1,5 +1,17 @@
 # NewsBlur Development Guidelines
 
+## Planning & Clarification
+**IMPORTANT: Before starting any implementation or creating a plan, use the AskUserQuestion tool to interview me thoroughly.** Ask as many clarifying questions as needed to understand:
+- The specific goals and desired outcomes
+- Edge cases and error handling preferences
+- UI/UX preferences (if applicable)
+- Performance or scalability requirements
+- Integration points with existing code
+- Testing expectations
+- Any constraints or preferences I might have
+
+Don't assume - ask. Multiple rounds of questions are encouraged before writing code.
+
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
 
@@ -115,19 +127,76 @@ sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p web --qu
 
 # List issues for other projects (task, node, monitor)
 sentry-cli --url https://sentry.newsblur.com issues list -o newsblur -p task --status unresolved
+
+# Resolve an issue after fixing (use issue ID from URL)
+sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -i 1037
 ```
+
+### Sentry Workflow
+1. Extract issue ID from URL (e.g., `.../issues/1037/` → `1037`)
+2. Get issue details with `--log-level debug` to find the file and function
+3. Fix the issue in code
+4. Commit the fix
+5. Resolve the issue with `sentry-cli issues resolve -i <issue_id>`
 
 ## Browser Testing with Chrome DevTools MCP
 - Local dev: `https://localhost` (when using containers directly)
-- Open All Site Stories: `NEWSBLUR.reader.open_river_stories()`
-- Get feed with unread stories: `NEWSBLUR.assets.feeds.find(f => f.get('nt') > 0)`
-- Open feed: `NEWSBLUR.reader.open_feed(feed.get('id'))`
-- Select first story: `document.querySelector('.NB-feed-story').click()`
-- Open story intelligence trainer: `document.querySelector('.NB-feed-story-train').click()`
-- Open feed options popover: Click `.NB-feedbar-options` element (no API)
-- Get feed IDs: `NEWSBLUR.assets.feeds` is a Backbone.js collection with underscore.js operations
-- Open folder: Click `.folder .folder_title` element (no API)
 - **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts
+
+### Test Query Parameters
+- `?test=growth` - Test growth prompts (bypasses premium check and cooldowns)
+- `?test=growth1` - Test feed_added growth prompt
+- `?test=growth2` - Test stories_read growth prompt
+
+### Theme Switching
+- `NEWSBLUR.reader.switch_theme('dark')` - Switch to dark mode
+- `NEWSBLUR.reader.switch_theme('light')` - Switch to light mode
+- `NEWSBLUR.reader.switch_theme('auto')` - Switch to auto/system theme
+
+### Opening Modals
+- `NEWSBLUR.reader.open_premium_upgrade_modal()` - Premium upgrade dialog
+- `NEWSBLUR.reader.open_feedchooser_modal()` - Feed chooser (mute sites)
+- `NEWSBLUR.reader.open_account_modal()` - Account settings
+- `NEWSBLUR.reader.open_preferences_modal()` - Preferences
+- `NEWSBLUR.reader.open_keyboard_shortcuts_modal()` - Keyboard shortcuts
+- `NEWSBLUR.reader.open_goodies_modal()` - Goodies & apps
+- `NEWSBLUR.reader.open_notifications_modal(feed_id)` - Notifications for feed
+- `NEWSBLUR.reader.open_newsletters_modal()` - Email newsletters
+- `NEWSBLUR.reader.open_organizer_modal()` - Organize feeds
+- `NEWSBLUR.reader.open_trainer_modal()` - Intelligence trainer
+- `NEWSBLUR.reader.open_add_feed_modal()` - Add new feed
+- `NEWSBLUR.reader.open_friends_modal()` - Find friends
+- `NEWSBLUR.reader.open_intro_modal()` - Intro/tutorial
+- `NEWSBLUR.reader.open_feed_statistics_modal(feed_id)` - Feed statistics
+- `NEWSBLUR.reader.open_feed_exception_modal(feed_id)` - Feed exceptions
+- `NEWSBLUR.reader.open_mark_read_modal()` - Mark as read options
+- `NEWSBLUR.reader.open_social_profile_modal(user_id)` - Social profile
+- `$.modal.close()` - Close any open modal
+
+### Feed & Story Operations
+- `NEWSBLUR.reader.open_river_stories()` - Open All Site Stories
+- `NEWSBLUR.reader.open_feed(feed_id)` - Open a specific feed
+- `NEWSBLUR.assets.feeds.find(f => f.get('nt') > 0)` - Get feed with unread stories
+- `NEWSBLUR.assets.feeds` - Backbone.js collection of all feeds
+- Click `.NB-feed-story` - Select first story
+- Click `.NB-feed-story-train` - Open story intelligence trainer
+- Click `.NB-feedbar-options` - Open feed options popover
+- Click `.folder .folder_title` - Open folder
+
+### User State (via Django shell)
+To test different subscription states, modify user profile in Django shell:
+```python
+docker exec -t newsblur_web_<worktree> python manage.py shell -c "
+from apps.profile.models import Profile
+p = Profile.objects.get(user__username='<username>')
+p.is_premium = True       # Enable premium
+p.is_premium_trial = True # Set as trial (False = paid)
+p.is_archive = False      # Archive tier
+p.is_pro = False          # Pro tier
+p.premium_renewal = True  # Has active renewal
+p.save()
+"
+```
 
 ## Server Maintenance
 - **DNS/Service Discovery**: Docker containers resolve services via dnsmasq → Consul (e.g., `redis-story.service.consul`)

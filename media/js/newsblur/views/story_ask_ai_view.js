@@ -192,7 +192,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                         </div>\
                         <div class="NB-story-ask-ai-model-dropdown NB-reask-dropdown">\
                             <div class="NB-model-option" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude Opus 4.5</div>\
-                            <div class="NB-model-option" data-model="gpt-5.1"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.1</div>\
+                            <div class="NB-model-option" data-model="gpt-5.2"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.2</div>\
                             <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
                             <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
                         </div>\
@@ -204,7 +204,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                         </div>\
                         <div class="NB-story-ask-ai-model-dropdown NB-send-dropdown">\
                             <div class="NB-model-option" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude Opus 4.5</div>\
-                            <div class="NB-model-option" data-model="gpt-5.1"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.1</div>\
+                            <div class="NB-model-option" data-model="gpt-5.2"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.2</div>\
                             <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
                             <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
                         </div>\
@@ -216,7 +216,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                         </div>\
                         <div class="NB-story-ask-ai-model-dropdown NB-finish-recording-dropdown">\
                             <div class="NB-model-option" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude Opus 4.5</div>\
-                            <div class="NB-model-option" data-model="gpt-5.1"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.1</div>\
+                            <div class="NB-model-option" data-model="gpt-5.2"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.2</div>\
                             <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
                             <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
                         </div>\
@@ -501,14 +501,16 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 section_index = 1;
             }
 
-            // Add pills after each <hr> for subsequent sections (only show if different from previous)
+            // Add pills after each <hr> for subsequent sections
+            // Always show pill in comparison mode, otherwise only show if model differs
             html = html.replace(/<hr>/g, function () {
                 var pill_html = '';
                 if (self.section_models[section_index]) {
                     var current_model = self.section_models[section_index];
                     var prev_model = self.section_models[section_index - 1];
                     var is_different = current_model !== prev_model;
-                    pill_html = self.create_model_pill_html(current_model, has_any_model_change && is_different);
+                    var should_show = self.is_comparison_response || (has_any_model_change && is_different);
+                    pill_html = self.create_model_pill_html(current_model, should_show);
                     section_index++;
                 }
                 return '<hr>\n' + pill_html;
@@ -875,7 +877,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     get_model_display_name: function (model) {
         var names = {
             'opus': 'Claude Opus 4.5',
-            'gpt-5.1': 'GPT 5.1',
+            'gpt-5.2': 'GPT 5.2',
             'gemini-3': 'Gemini 3 Pro',
             'grok-4.1': 'Grok 4.1 Fast'
         };
@@ -885,7 +887,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     get_model_provider: function (model) {
         var providers = {
             'opus': 'anthropic',
-            'gpt-5.1': 'openai',
+            'gpt-5.2': 'openai',
             'gemini-3': 'google',
             'grok-4.1': 'xai'
         };

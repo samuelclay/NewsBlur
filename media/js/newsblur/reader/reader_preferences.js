@@ -51,20 +51,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                     $.make('div', { className: 'NB-preference NB-preference-daysofunread' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-daysofunread-1', type: 'radio', name: 'days_of_unread', value: 9999 }),
+                                $.make('input', { id: 'NB-preference-daysofunread-1', type: 'radio', name: 'days_of_unread', value: 9999, disabled: !NEWSBLUR.Globals.is_archive }),
                                 $.make('label', { 'for': 'NB-preference-daysofunread-1' }, [
                                     'Manually mark every story as read'
                                 ])
                             ]),
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-daysofunread-2', type: 'radio', name: 'days_of_unread', value: 0 }),
+                                $.make('input', { id: 'NB-preference-daysofunread-2', type: 'radio', name: 'days_of_unread', value: 0, disabled: !NEWSBLUR.Globals.is_archive }),
                                 $.make('label', { 'for': 'NB-preference-daysofunread-2', className: 'NB-preference-daysofunread-slider-label' }, [
                                     'Mark stories as read after',
                                     $.make('span', { className: 'NB-tangle-daysofunread-control NB-preference-slider', 'data-var': 'arrow' }),
-                                    $.make('span', { className: 'NB-tangle-daysofunread' }, NEWSBLUR.Preferences.days_of_unread + ' days'),
-                                    $.make('input', { name: 'daysofunread_input', value: NEWSBLUR.Preferences.days_of_unread, type: 'hidden' })
+                                    $.make('span', { className: 'NB-tangle-daysofunread' }, (NEWSBLUR.Globals.is_archive ? NEWSBLUR.Preferences.days_of_unread : NEWSBLUR.Globals.default_days_of_unread) + ' days'),
+                                    $.make('input', { name: 'daysofunread_input', value: NEWSBLUR.Globals.is_archive ? NEWSBLUR.Preferences.days_of_unread : NEWSBLUR.Globals.default_days_of_unread, type: 'hidden' })
                                 ])
-                            ])
+                            ]),
+                            (!NEWSBLUR.Globals.is_archive && $.make('div', { className: 'NB-preference-archive-notice' }, [
+                                'Requires ',
+                                $.make('span', { className: 'NB-splash-link NB-premium-link' }, 'premium archive'),
+                                ' to change from ' + NEWSBLUR.Globals.default_days_of_unread + ' days.'
+                            ]))
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Days of unreads'
@@ -1283,8 +1288,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             min: 1,
             max: 365,
             step: 1,
-            value: NEWSBLUR.Preferences.days_of_unread,
-            slide: _.bind(this.slide_days_of_unread_slider, this)
+            value: NEWSBLUR.Globals.is_archive ? NEWSBLUR.Preferences.days_of_unread : NEWSBLUR.Globals.default_days_of_unread,
+            slide: _.bind(this.slide_days_of_unread_slider, this),
+            disabled: !NEWSBLUR.Globals.is_archive
         });
         $(".NB-tangle-readstorydelay", $modal).slider({
             range: 'min',
@@ -1321,6 +1327,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     slide_days_of_unread_slider: function (e, ui) {
         var value = (ui && ui.value) ||
             (NEWSBLUR.Preferences.days_of_unread);
+        if (!NEWSBLUR.Globals.is_archive && ui) {
+            value = NEWSBLUR.Preferences.days_of_unread;
+        }
         if (NEWSBLUR.Preferences.days_of_unread <= 365 || ui) {
             $(".NB-tangle-daysofunread", this.$modal).text(value == 1 ? value + ' day' : value + ' days');
             $("input[name=daysofunread_input]", this.$modal).val(value);
@@ -1445,6 +1454,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
     },
 
+    close_and_load_premium: function () {
+        this.close(function () {
+            NEWSBLUR.reader.open_premium_upgrade_modal();
+        });
+    },
+
     change_view_setting: function (view, setting) {
         if (view == 'order') {
             $('.NB-preference-view-setting-order-oldest').toggleClass('NB-active', setting == 'oldest');
@@ -1510,7 +1525,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $.targetIs(e, { tagSelector: '.NB-premium-link' }, function ($t, $p) {
             e.preventDefault();
-            self.close_and_load_feedchooser();
+            self.close_and_load_premium();
         });
         $.targetIs(e, { tagSelector: '.segmented-control.NB-preference-view-setting-order li' }, function ($t, $p) {
             e.preventDefault();

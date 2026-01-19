@@ -2162,23 +2162,38 @@ def load_river_stories_widget(request):
 
         # Ensure URL is properly encoded for non-ASCII characters and spaces
         parsed = urllib.parse.urlsplit(url)
+        needs_path_encoding = False
+        needs_query_encoding = False
+
         if parsed.path:
-            needs_encoding = False
             try:
                 # Check if path can be encoded as ASCII
                 parsed.path.encode("ascii")
                 # Also check for spaces which are valid ASCII but invalid in URLs
                 if " " in parsed.path:
-                    needs_encoding = True
+                    needs_path_encoding = True
             except UnicodeEncodeError:
-                needs_encoding = True
+                needs_path_encoding = True
 
-            if needs_encoding:
-                # Path contains characters that need encoding
+        if parsed.query:
+            # Check for spaces in query string (e.g., malformed srcset URLs like "w=16 16w")
+            if " " in parsed.query:
+                needs_query_encoding = True
+
+        if needs_path_encoding or needs_query_encoding:
+            encoded_path = parsed.path
+            encoded_query = parsed.query
+
+            if needs_path_encoding:
                 encoded_path = urllib.parse.quote(parsed.path, safe="/:@!$&'()*+,;=")
-                url = urllib.parse.urlunsplit(
-                    (parsed.scheme, parsed.netloc, encoded_path, parsed.query, parsed.fragment)
-                )
+
+            if needs_query_encoding:
+                # Encode spaces in query string
+                encoded_query = parsed.query.replace(" ", "%20")
+
+            url = urllib.parse.urlunsplit(
+                (parsed.scheme, parsed.netloc, encoded_path, encoded_query, parsed.fragment)
+            )
 
         scontext = ssl.SSLContext(ssl.PROTOCOL_TLS)
         scontext.verify_mode = ssl.VerifyMode.CERT_NONE
@@ -2192,7 +2207,12 @@ def load_river_stories_widget(request):
             url = url.replace("localhost", "haproxy")
             try:
                 conn = urllib.request.urlopen(url, context=scontext, timeout=timeout)
-            except (urllib.error.HTTPError, urllib.error.URLError, socket.timeout) as e:
+            except (
+                urllib.error.HTTPError,
+                urllib.error.URLError,
+                socket.timeout,
+                http.client.InvalidURL,
+            ) as e:
                 logging.user(
                     request.user, '~FB"%s" ~FRnot fetched~FB in %ss: ~SB%s' % (url, (time.time() - start), e)
                 )
@@ -3388,14 +3408,12 @@ def save_feed_chooser(request):
     incomplete approved_feeds list. For individual feed mute/unmute operations,
     use the safer /reader/set_feed_mute endpoint instead.
     """
+    max_feed_limit = request.user.profile.max_feed_limit
     is_premium = request.user.profile.is_premium
+    approve_all = request.POST.get("approve_all", "").lower() in ("true", "1", "yes")
     approved_feeds = request.POST.getlist("approved_feeds") or request.POST.getlist("approved_feeds[]")
     approved_feeds = [int(feed_id) for feed_id in approved_feeds if feed_id]
-    approve_all = False
-    if not is_premium:
-        approved_feeds = approved_feeds[:64]
-    elif is_premium and not approved_feeds:
-        approve_all = True
+    approved_feeds = approved_feeds[:max_feed_limit]
     activated = 0
     muted = 0
     usersubs = UserSubscription.objects.filter(user=request.user)
@@ -3418,7 +3436,7 @@ def save_feed_chooser(request):
 
     for sub in usersubs:
         try:
-            if sub.feed_id in approved_feeds or approve_all:
+            if sub.feed_id in approved_feeds:
                 activated += 1
                 if not sub.active:
                     sub.active = True

@@ -1,0 +1,375 @@
+/* NewsBlur Archive Extension - Options Page Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    background: #f8f8f8;
+}
+
+.options-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* Header */
+.options-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 24px;
+}
+
+.options-logo {
+    width: 48px;
+    height: 48px;
+}
+
+.options-header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Sections */
+.options-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.options-section h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.section-description {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+
+/* Account Section */
+.account-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #e53935;
+}
+
+.status-indicator.connected {
+    background: #43a047;
+}
+
+.status-text {
+    font-size: 14px;
+    color: #666;
+}
+
+.account-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* Setting Rows */
+.setting-row {
+    padding: 12px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.setting-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.setting-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.setting-label input[type="checkbox"],
+.setting-label input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Server Configuration */
+.radio-label {
+    margin-bottom: 4px;
+}
+
+.custom-server-row {
+    padding-left: 28px;
+    transition: opacity 0.2s, max-height 0.2s;
+}
+
+.custom-server-row.hidden {
+    display: none;
+}
+
+.server-url-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: monospace;
+    margin-bottom: 4px;
+}
+
+.server-url-input:focus {
+    outline: none;
+    border-color: #5C89C9;
+}
+
+.server-status {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid #5C89C9;
+}
+
+.server-url-display {
+    color: #666;
+    font-size: 13px;
+}
+
+.server-url-display strong {
+    color: #333;
+    font-family: monospace;
+}
+
+.setting-label select {
+    margin-left: auto;
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+}
+
+.setting-description {
+    color: #888;
+    font-size: 13px;
+    margin-top: 6px;
+    margin-left: 28px;
+}
+
+/* Buttons */
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    background: white;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.button:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+}
+
+.button.primary {
+    background: #5C89C9;
+    border-color: #5C89C9;
+    color: white;
+}
+
+.button.primary:hover {
+    background: #4A78B8;
+    border-color: #4A78B8;
+}
+
+.button.danger {
+    background: white;
+    border-color: #e53935;
+    color: #e53935;
+}
+
+.button.danger:hover {
+    background: #e53935;
+    color: white;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Blocklist */
+.blocklist-input-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.blocklist-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.blocklist-input:focus {
+    outline: none;
+    border-color: #5C89C9;
+}
+
+.blocklist {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+.blocklist-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.blocklist-item:last-child {
+    border-bottom: none;
+}
+
+.blocklist-domain {
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.blocklist-remove {
+    background: none;
+    border: none;
+    color: #e53935;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.blocklist-remove:hover {
+    background: #ffeaea;
+}
+
+.blocklist-empty {
+    padding: 24px;
+    text-align: center;
+    color: #888;
+}
+
+.loading {
+    padding: 24px;
+    text-align: center;
+    color: #888;
+}
+
+/* Data Section */
+.data-stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: #5C89C9;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #888;
+}
+
+.data-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* About Section */
+.about-text {
+    color: #666;
+    margin-bottom: 16px;
+}
+
+.about-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.about-links a {
+    color: #5C89C9;
+    text-decoration: none;
+}
+
+.about-links a:hover {
+    text-decoration: underline;
+}
+
+.version {
+    color: #aaa;
+    font-size: 12px;
+}
+
+/* Scrollbar styling */
+.blocklist::-webkit-scrollbar {
+    width: 6px;
+}
+
+.blocklist::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.blocklist::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.blocklist::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
