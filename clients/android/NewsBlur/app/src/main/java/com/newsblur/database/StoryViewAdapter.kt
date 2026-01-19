@@ -26,7 +26,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.newsblur.R
 import com.newsblur.activity.FeedItemsList
 import com.newsblur.activity.NbActivity
+import com.newsblur.domain.CustomIcon
 import com.newsblur.domain.Story
+import com.newsblur.util.CustomIconRenderer
 import com.newsblur.fragment.StoryIntelTrainerFragment
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.FeedSet
@@ -570,7 +572,19 @@ class StoryViewAdapter(
 
         // lists with mixed feeds get added info, but single feeds do not
         if (!singleFeed) {
-            iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView)
+            // Check for custom feed icon
+            val customFeedIcon: CustomIcon? = BlurDatabaseHelper.getFeedIcon(story.feedId)
+            if (customFeedIcon != null) {
+                val iconSize = UIUtils.dp2px(context, 18)
+                val iconBitmap = CustomIconRenderer.renderIcon(context, customFeedIcon, iconSize)
+                if (iconBitmap != null) {
+                    vh.feedIconView.setImageBitmap(iconBitmap)
+                } else {
+                    iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView)
+                }
+            } else {
+                iconLoader.displayImage(story.extern_faviconUrl, vh.feedIconView)
+            }
             vh.feedTitleView.text = story.extern_feedTitle
             vh.feedIconView.visibility = View.VISIBLE
             vh.feedTitleView.visibility = View.VISIBLE
