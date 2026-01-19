@@ -32,6 +32,7 @@
 @property (nonatomic, strong) NSString *fullStoryHTML;
 
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
+- (NSInteger)storyContentWidth;
 
 @end
 
@@ -84,7 +85,7 @@
 
     configuration.allowsInlineMediaPlayback = ![videoPlayback isEqualToString:@"fullscreen"];
 
-    self.webView = [[WKWebView alloc] initWithFrame:self.view.frame configuration:configuration];
+    self.webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
 
     [self.view addSubview:self.webView];
 
@@ -99,9 +100,8 @@
     [self.webView.scrollView setAutoresizingMask:(UIViewAutoresizingFlexibleWidth |
                                                      UIViewAutoresizingFlexibleHeight)];
     
-    if (!self.isPhone) {
-        self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    }
+    self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    self.webView.scrollView.contentInset = UIEdgeInsetsZero;
     
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
@@ -471,7 +471,7 @@
         lineSpacingClass = [lineSpacingClass stringByAppendingString:@"medium"];
     }
     
-    int contentWidth = CGRectGetWidth(self.webView.scrollView.bounds);
+    NSInteger contentWidth = [self storyContentWidth];
     NSString *contentWidthClass;
 //    NSLog(@"Drawing story: %@ / %d", [self.activeStory objectForKey:@"story_title"], contentWidth);
     
@@ -502,16 +502,13 @@
     }
 #endif
     
-    contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
-                         contentWidthClass, (int)floorf(CGRectGetWidth(self.view.frame))];
-    
-    NSLog(@"📚 drawStory: content width class: %@", contentWidthClass);  // log
+    contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%ld",
+                         contentWidthClass, (long)contentWidth];
     
     // if (appDelegate.feedsViewController.isOffline) {
         NSFileManager *manager = [NSFileManager defaultManager];
         NSString *storyHash = [self.activeStory objectForKey:@"story_hash"];
         NSArray *imageUrls = [appDelegate.activeCachedImages objectForKey:storyHash];
-        NSLog(@"📚 %@ %@ imageUrls: %@", activeStory[@"story_title"], storyHash, imageUrls);
         if (imageUrls) {
             NSString *storyImagesDirectory = [appDelegate.documentsURL.path
                                               stringByAppendingPathComponent:@"story_images"];
@@ -533,9 +530,7 @@
                 if (imageBase64 != nil) {
                     cachedUrl = [NSURL URLWithString:[NSString stringWithFormat:@"data:image/jpeg;base64,%@", imageBase64]];
                 }
-                
-                NSLog(@"📚 %@ %@ imageURL: %@ cachedURL: %@", activeStory[@"story_title"], storyHash, imageUrl, cachedUrl);
-                
+
                 storyContent = [storyContent
                                 stringByReplacingOccurrencesOfString:imageUrl
                                 withString:cachedUrl.absoluteString];
@@ -598,8 +593,8 @@
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
                     "<style>%@</style><style id=\"NB-theme-style\">%@</style>"
-                    "<meta name=\"viewport\" id=\"viewport\" content=\"width=%d, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
-                    mainCSS, themeCSS, contentWidth];
+                    "<meta name=\"viewport\" id=\"viewport\" content=\"width=%ld, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
+                    mainCSS, themeCSS, (long)contentWidth];
     footerString = [NSString stringWithFormat:@
                     "<script>%@</script>"
                     "<script>%@</script>"
@@ -669,19 +664,12 @@
     self.hasStory = NO;
     self.fullStoryHTML = htmlContent;
     
-    NSLog(@"📚 full story for: %@", self.activeStory[@"story_title"]);  // log
-    
     dispatch_async(dispatch_get_main_queue(), ^{
-//        NSLog(@"Drawing Story: %@", [self.activeStory objectForKey:@"story_title"]);
-        NSLog(@"📚 %@ story: %@", self.hasStory ? @"has" : @"hasn't", self.activeStory[@"story_title"]);  // log
-        
         if (self.hasStory)
             return;
         
         [self loadHTMLString:htmlTopAndBottom];
         [self.appDelegate.storyPagesViewController setTextButton:(StoryDetailViewController *)self];
-        
-        NSLog(@"📚 loaded top & bottom for: %@", self.activeStory[@"story_title"]);  // log
     });
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -776,6 +764,27 @@
     [self.activityIndicator startAnimating];
 
     [self loadHTMLString:@"<html><body></body></html>"];
+}
+
+- (NSInteger)storyContentWidth {
+    CGFloat width = 0.0;
+    if (self.webView) {
+        width = CGRectGetWidth(self.webView.scrollView.bounds);
+        if (width <= 0.0) {
+            width = CGRectGetWidth(self.webView.bounds);
+        }
+    }
+    if (width <= 0.0) {
+        width = CGRectGetWidth(self.view.bounds);
+    }
+    if (self.webView) {
+        UIEdgeInsets insets = self.webView.scrollView.adjustedContentInset;
+        width -= (insets.left + insets.right);
+    }
+    if (width < 1.0) {
+        width = CGRectGetWidth([UIScreen mainScreen].bounds);
+    }
+    return (NSInteger)floorf(width);
 }
 
 // Convert font and image URLs in CSS to inline base64 data URLs.
@@ -2016,8 +2025,6 @@
     if (!self.fullStoryHTML)
         return; // if we're loading anything other than a full story, the view will be hidden
     
-    NSLog(@"📚 loaded: %@", self.activeStory[@"story_title"]);  // log
-    
     [self.activityIndicator stopAnimating];
     
     self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhone || !self.appDelegate.detailViewController.storyTitlesInGridView;
@@ -2037,8 +2044,6 @@
     }
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"📚 showing webview for: %@; %@ current page", self.activeStory[@"story_title"], self == self.appDelegate.storyPagesViewController.currentPage ? @"is" : @"isn't");  // log
-        
         self.webView.hidden = NO;
         [self.webView setNeedsDisplay];
         
@@ -2052,6 +2057,7 @@
 }
 
 - (void)webViewNotifyLoaded {
+    [self changeWebViewWidth];
     [self scrollToLastPosition:YES];
 }
 
@@ -2577,8 +2583,9 @@
     
 //    NSLog(@"changeWebViewWidth: %@ / %@ / %@", NSStringFromCGSize(self.view.bounds.size), NSStringFromCGSize(webView.scrollView.bounds.size), NSStringFromCGSize(webView.scrollView.contentSize));
 
-    NSInteger contentWidth = CGRectGetWidth(webView.scrollView.bounds);
+    NSInteger contentWidth = [self storyContentWidth];
     NSString *contentWidthClass;
+    NSString *baseWidthClass;
 
 #if TARGET_OS_MACCATALYST
     // CATALYST: probably will want to add custom CSS for Macs.
@@ -2609,8 +2616,9 @@
     }
 #endif
     
-    contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%d",
-                         contentWidthClass, (int)floorf(CGRectGetWidth(webView.scrollView.bounds))];
+    baseWidthClass = contentWidthClass;
+    contentWidthClass = [NSString stringWithFormat:@"%@ NB-width-%ld",
+                         contentWidthClass, (long)contentWidth];
     
     NSString *alternateViewClass = @"";
     if (!self.isPhoneOrCompact) {
@@ -2621,8 +2629,6 @@
         }
     }
     
-    NSLog(@"📚 changeWebViewWidth: content width class: %@", contentWidthClass);  // log
-    
     NSString *riverClass = (appDelegate.storiesCollection.isRiverView ||
                             appDelegate.storiesCollection.isSocialView ||
                             appDelegate.storiesCollection.isSavedView ||
@@ -2631,9 +2637,11 @@
                             @"NB-river" : @"NB-non-river";
     
     NSString *jsString = [[NSString alloc] initWithFormat:
-                          @"$('body').attr('class', '%@ %@ %@');"
-                          "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%li;initial-scale=1; minimum-scale=1.0; maximum-scale=1.0; user-scalable=0;\");",
-                          contentWidthClass,
+                          @"var w = Math.floor(window.innerWidth || document.documentElement.clientWidth || %li);"
+                          "$('body').attr('class', '%@ %@ %@ NB-width-' + w);"
+                          "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%li, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\");",
+                          (long)contentWidth,
+                          baseWidthClass,
                           alternateViewClass,
                           riverClass,
                           (long)contentWidth];
