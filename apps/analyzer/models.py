@@ -159,6 +159,27 @@ class MClassifierTitle(mongo.Document):
         return "%s - %s/%s: (%s) %s%s" % (user, self.feed_id, self.social_user_id, self.score, self.title[:30], regex_indicator)
 
 
+class MClassifierUrl(mongo.Document):
+    user_id = mongo.IntField()
+    feed_id = mongo.IntField()
+    social_user_id = mongo.IntField()
+    url = mongo.StringField(max_length=2048)  # URLs can be long
+    score = mongo.IntField()
+    is_regex = mongo.BooleanField(default=False)
+    creation_date = mongo.DateTimeField()
+
+    meta = {
+        "collection": "classifier_url",
+        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
+        "allow_inheritance": False,
+    }
+
+    def __str__(self):
+        user = User.objects.get(pk=self.user_id)
+        regex_indicator = " [regex]" if self.is_regex else ""
+        return "%s - %s/%s: (%s) %s%s" % (user, self.feed_id, self.social_user_id, self.score, self.url[:50], regex_indicator)
+
+
 class MClassifierText(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField()
@@ -247,11 +268,15 @@ def compute_story_score(
     classifier_tags,
     classifier_feeds,
     classifier_texts=None,
+    classifier_urls=None,
     prompt_score=None,
+    user_is_premium=False,
     user_is_pro=False,
 ):
     if classifier_texts is None:
         classifier_texts = []
+    if classifier_urls is None:
+        classifier_urls = []
 
     intelligence = {
         "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
@@ -261,6 +286,8 @@ def compute_story_score(
         "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
         "text": apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro),
         "text_regex": apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro),
+        "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user_is_premium),
+        "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_is_pro),
     }
 
     # Include AI prompt classifier score if provided
@@ -274,8 +301,8 @@ def compute_story_score(
         return intelligence["prompt"]
 
     # Otherwise use the traditional classifier logic
-    score_max = max(intelligence["title"], intelligence["title_regex"], intelligence["author"], intelligence["tags"], intelligence["text"], intelligence["text_regex"])
-    score_min = min(intelligence["title"], intelligence["title_regex"], intelligence["author"], intelligence["tags"], intelligence["text"], intelligence["text_regex"])
+    score_max = max(intelligence["title"], intelligence["title_regex"], intelligence["author"], intelligence["tags"], intelligence["text"], intelligence["text_regex"], intelligence["url"], intelligence["url_regex"])
+    score_min = min(intelligence["title"], intelligence["title_regex"], intelligence["author"], intelligence["tags"], intelligence["text"], intelligence["text_regex"], intelligence["url"], intelligence["url_regex"])
     if score_max > 0:
         score = score_max
     elif score_min < 0:
@@ -435,6 +462,80 @@ def apply_classifier_regex(classifiers, story, user_is_pro=False):
     Use apply_classifier_text_regex for new code.
     """
     return apply_classifier_text_regex(classifiers, story, user_is_pro)
+
+
+def apply_classifier_urls(classifiers, story, user_is_premium=False):
+    """
+    Apply URL classifiers to a story (non-regex only).
+
+    Args:
+        classifiers: List of MClassifierUrl objects
+        story: Story dict with 'story_feed_id' and 'story_permalink'
+        user_is_premium: Whether the user has Premium subscription (required for URL filters)
+
+    Returns:
+        Score (1 for like, -1 for dislike, 0 for neutral)
+    """
+    if not user_is_premium:
+        return 0
+
+    score = 0
+    story_url = story.get("story_permalink", "")
+    if not story_url:
+        return score
+
+    story_url_lower = story_url.lower()
+
+    for classifier in classifiers:
+        if classifier.feed_id != story["story_feed_id"]:
+            continue
+
+        # Skip regex classifiers - they're handled by apply_classifier_url_regex
+        if getattr(classifier, "is_regex", False):
+            continue
+
+        # Standard substring matching (case-insensitive)
+        if classifier.url.lower() in story_url_lower:
+            score = classifier.score
+            if score > 0:
+                return score
+
+    return score
+
+
+def apply_classifier_url_regex(classifiers, story, user_is_pro=False):
+    """
+    Apply URL regex classifiers to a story. Matches permalink URL only.
+
+    Args:
+        classifiers: List of MClassifierUrl objects with is_regex=True
+        story: Story dict with 'story_feed_id' and 'story_permalink'
+        user_is_pro: Whether the user has PRO subscription (required for regex filters)
+
+    Returns:
+        Score (1 for like, -1 for dislike, 0 for neutral)
+    """
+    if not user_is_pro:
+        return 0
+
+    score = 0
+    story_url = story.get("story_permalink", "")
+    if not story_url:
+        return score
+
+    for classifier in classifiers:
+        if classifier.feed_id != story["story_feed_id"]:
+            continue
+
+        if not getattr(classifier, "is_regex", False):
+            continue
+
+        if safe_regex_match(classifier.url, story_url):
+            score = classifier.score
+            if score > 0:
+                return score
+
+    return score
 
 
 def apply_classifier_authors(classifiers, story):
@@ -640,6 +741,7 @@ def get_classifiers_for_user(
     classifier_titles=None,
     classifier_tags=None,
     classifier_texts=None,
+    classifier_urls=None,
 ):
     params = dict(user_id=user.pk)
     if isinstance(feed_id, list):
@@ -659,6 +761,8 @@ def get_classifiers_for_user(
         classifier_tags = list(MClassifierTag.objects(**params))
     if classifier_texts is None:
         classifier_texts = list(MClassifierText.objects(**params))
+    if classifier_urls is None:
+        classifier_urls = list(MClassifierUrl.objects(**params))
     if classifier_feeds is None:
         if not social_user_id and feed_id:
             params["social_user_id"] = 0
@@ -689,6 +793,15 @@ def get_classifiers_for_user(
         else:
             texts_dict[t.text] = t.score
 
+    # Build urls dict - only non-regex patterns
+    urls_dict = {}
+    url_regex_dict = {}
+    for u in classifier_urls:
+        if getattr(u, "is_regex", False):
+            url_regex_dict[u.url] = u.score
+        else:
+            urls_dict[u.url] = u.score
+
     payload = {
         "feeds": dict(feeds),
         "authors": dict([(a.author, a.score) for a in classifier_authors]),
@@ -697,6 +810,8 @@ def get_classifiers_for_user(
         "tags": dict([(t.tag, t.score) for t in classifier_tags]),
         "texts": texts_dict,
         "text_regex": text_regex_dict,
+        "urls": urls_dict,
+        "url_regex": url_regex_dict,
     }
 
     return payload
@@ -710,6 +825,7 @@ def sort_classifiers_by_feed(
     classifier_titles=None,
     classifier_tags=None,
     classifier_texts=None,
+    classifier_urls=None,
 ):
     def sort_by_feed(classifiers):
         feed_classifiers = defaultdict(list)
@@ -726,6 +842,7 @@ def sort_classifiers_by_feed(
         classifier_titles = sort_by_feed(classifier_titles)
         classifier_tags = sort_by_feed(classifier_tags)
         classifier_texts = sort_by_feed(classifier_texts)
+        classifier_urls = sort_by_feed(classifier_urls)
 
         for feed_id in feed_ids:
             classifiers[feed_id] = get_classifiers_for_user(
@@ -736,6 +853,7 @@ def sort_classifiers_by_feed(
                 classifier_titles=classifier_titles[feed_id],
                 classifier_tags=classifier_tags[feed_id],
                 classifier_texts=classifier_texts[feed_id],
+                classifier_urls=classifier_urls[feed_id],
             )
 
     return classifiers

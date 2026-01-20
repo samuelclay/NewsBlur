@@ -1,6 +1,6 @@
 NEWSBLUR.ReaderClassifierTrainer = function (options) {
     var defaults = {
-        'width': 620,
+        'width': 720,
         'training': true,
         modal_container_class: "NB-full-container NB-classifier-container"
     };
@@ -21,7 +21,7 @@ NEWSBLUR.ReaderClassifierTrainer = function (options) {
 
 NEWSBLUR.ReaderClassifierFeed = function (feed_id, options) {
     var defaults = {
-        'width': 620,
+        'width': 720,
         'training': false,
         'feed_loaded': true,
         modal_container_class: "NB-full-container NB-classifier-container"
@@ -44,7 +44,7 @@ NEWSBLUR.ReaderClassifierFeed = function (feed_id, options) {
 
 NEWSBLUR.ReaderClassifierStory = function (story_id, feed_id, options) {
     var defaults = {
-        'width': 620,
+        'width': 720,
         'feed_loaded': true,
         modal_container_class: "NB-full-container NB-classifier-container"
     };
@@ -517,11 +517,13 @@ var classifier_prototype = {
                     this.make_story_text_section(selected_text, story),
                     // Section 2: Story Title
                     this.make_story_title_section(story_title, story),
-                    // Section 3: Combined Authors (story author + feed authors)
+                    // Section 3: URL
+                    this.make_story_url_section(story),
+                    // Section 4: Combined Authors (story author + feed authors)
                     this.make_combined_authors_section(story),
-                    // Section 4: Combined Tags (story tags + feed tags)
+                    // Section 5: Combined Tags (story tags + feed tags)
                     this.make_combined_tags_section(story),
-                    // Section 5: Publisher
+                    // Section 6: Publisher
                     this.make_combined_publisher_section(feed)
                 ])
             ),
@@ -595,6 +597,47 @@ var classifier_prototype = {
         ]);
     },
 
+    make_story_url_section: function (story) {
+        var self = this;
+        // Strip protocol from URL for display, keep domain + path
+        var story_url = (story.get('story_permalink') || '').replace(/^https?:\/\//, '');
+
+        // Only show URL section for Premium+ users
+        if (!NEWSBLUR.Globals.is_premium) {
+            return '';
+        }
+
+        return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-url-section', 'data-section': 'url' }, [
+            $.make('h5', 'URL'),
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
+                $.make('div', { className: 'NB-classifier-help-text' }, 'Highlight portions of the URL below to train on specific patterns'),
+                $.make('div', { className: 'NB-classifier-input-row' }, [
+                    $.make('input', { type: 'text', value: story_url || '', className: 'NB-classifier-url-input', placeholder: 'Enter URL pattern to match...' }),
+                    $.make('div', { className: 'NB-classifier-match-type-control' }, [
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, 'Exact phrase'),
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, 'Regex')
+                    ])
+                ]),
+                $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-url-validation' }),
+                this.make_regex_tips(),
+                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
+                    this.make_classifier('<span class="NB-classifier-url-placeholder">Select URL portion above</span>', '', 'url'),
+                    $.make('span', this.make_user_urls()),
+                    $.make('span', this.make_user_url_regex())
+                ]),
+                (!NEWSBLUR.Globals.is_pro && $.make('div', { className: 'NB-classifier-url-pro-notice NB-classifier-pro-notice' }, [
+                    $.make('div', { className: 'NB-classifier-pro-notice-text' }, [
+                        'URL regex filters will be saved but not applied.',
+                        $.make('br'),
+                        'Upgrade to ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro'),
+                        ' to use regex filters.'
+                    ])
+                ]))
+            ])
+        ]);
+    },
+
     make_regex_tips: function () {
         var is_collapsed = NEWSBLUR.assets.preference('regex_tips_collapsed');
         return $.make('div', { className: 'NB-classifier-regex-tips' + (is_collapsed ? ' NB-collapsed' : '') }, [
@@ -603,45 +646,45 @@ var classifier_prototype = {
                 $.make('span', { className: 'NB-classifier-regex-tips-toggle' }, is_collapsed ? '▶ Show' : '▼ Hide')
             ]),
             $.make('div', { className: 'NB-classifier-regex-tips-content' }, [
-            $.make('div', { className: 'NB-classifier-regex-tips-columns' }, [
-                $.make('div', { className: 'NB-classifier-regex-tips-column' }, [
-                    $.make('div', { className: 'NB-regex-tip-category' }, 'Word Matching'),
-                    $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
-                        $.make('li', [$.make('code', '\\bcat\\b'), ' — Whole word "cat" only']),
-                        $.make('li', [$.make('code', '\\bthe cat\\b'), ' — Exact phrase "the cat"']),
-                        $.make('li', [$.make('code', 'cat|dog|bird'), ' — Any of these words']),
-                        $.make('li', [$.make('code', '\\b(new|latest) release\\b'), ' — "new release" or "latest release"']),
-                        $.make('li', [$.make('code', 'colou?r'), ' — "color" or "colour" (optional letter)'])
+                $.make('div', { className: 'NB-classifier-regex-tips-columns' }, [
+                    $.make('div', { className: 'NB-classifier-regex-tips-column' }, [
+                        $.make('div', { className: 'NB-regex-tip-category' }, 'Word Matching'),
+                        $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
+                            $.make('li', [$.make('code', '\\bcat\\b'), ' — Whole word "cat" only']),
+                            $.make('li', [$.make('code', '\\bthe cat\\b'), ' — Exact phrase "the cat"']),
+                            $.make('li', [$.make('code', 'cat|dog|bird'), ' — Any of these words']),
+                            $.make('li', [$.make('code', '\\b(new|latest) release\\b'), ' — "new release" or "latest release"']),
+                            $.make('li', [$.make('code', 'colou?r'), ' — "color" or "colour" (optional letter)'])
+                        ]),
+                        $.make('div', { className: 'NB-regex-tip-category' }, 'Position & Greedy'),
+                        $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
+                            $.make('li', [$.make('code', '^Breaking'), ' — Starts with "Breaking"']),
+                            $.make('li', [$.make('code', 'update$'), ' — Ends with "update"']),
+                            $.make('li', [$.make('code', '^\\[Video\\]'), ' — Starts with "[Video]"']),
+                            $.make('li', [$.make('code', 'breaking.*news'), ' — "breaking" then anything then "news"']),
+                            $.make('li', [$.make('code', '".*?"'), ' — Non-greedy: each quoted phrase'])
+                        ])
                     ]),
-                    $.make('div', { className: 'NB-regex-tip-category' }, 'Position & Greedy'),
-                    $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
-                        $.make('li', [$.make('code', '^Breaking'), ' — Starts with "Breaking"']),
-                        $.make('li', [$.make('code', 'update$'), ' — Ends with "update"']),
-                        $.make('li', [$.make('code', '^\\[Video\\]'), ' — Starts with "[Video]"']),
-                        $.make('li', [$.make('code', 'breaking.*news'), ' — "breaking" then anything then "news"']),
-                        $.make('li', [$.make('code', '".*?"'), ' — Non-greedy: each quoted phrase'])
+                    $.make('div', { className: 'NB-classifier-regex-tips-column' }, [
+                        $.make('div', { className: 'NB-regex-tip-category' }, 'Numbers & Symbols'),
+                        $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
+                            $.make('li', [$.make('code', 'v\\d+'), ' — "v" followed by numbers (v1, v2, v10)']),
+                            $.make('li', [$.make('code', '\\$\\d+'), ' — Dollar amounts ($5, $100)']),
+                            $.make('li', [$.make('code', '#\\w+'), ' — Hashtags (#news, #tech)']),
+                            $.make('li', [$.make('code', '@\\w+'), ' — Mentions (@user, @company)']),
+                            $.make('li', [$.make('code', '^\\d+\\.'), ' — Starts with number and period'])
+                        ]),
+                        $.make('div', { className: 'NB-regex-tip-category' }, 'Exclusions & Advanced'),
+                        $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
+                            $.make('li', [$.make('code', '^(?!.*sponsor)'), ' — NOT containing "sponsor"']),
+                            $.make('li', [$.make('code', '^(?!.*\\bad\\b)'), ' — NOT containing word "ad"']),
+                            $.make('li', [$.make('code', '\\d{4}'), ' — Exactly 4 digits (years)']),
+                            $.make('li', [$.make('code', '.{50,}'), ' — At least 50 characters']),
+                            $.make('li', [$.make('code', '[A-Z]{2,}'), ' — Two or more capital letters'])
+                        ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-classifier-regex-tips-column' }, [
-                    $.make('div', { className: 'NB-regex-tip-category' }, 'Numbers & Symbols'),
-                    $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
-                        $.make('li', [$.make('code', 'v\\d+'), ' — "v" followed by numbers (v1, v2, v10)']),
-                        $.make('li', [$.make('code', '\\$\\d+'), ' — Dollar amounts ($5, $100)']),
-                        $.make('li', [$.make('code', '#\\w+'), ' — Hashtags (#news, #tech)']),
-                        $.make('li', [$.make('code', '@\\w+'), ' — Mentions (@user, @company)']),
-                        $.make('li', [$.make('code', '^\\d+\\.'), ' — Starts with number and period'])
-                    ]),
-                    $.make('div', { className: 'NB-regex-tip-category' }, 'Exclusions & Advanced'),
-                    $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
-                        $.make('li', [$.make('code', '^(?!.*sponsor)'), ' — NOT containing "sponsor"']),
-                        $.make('li', [$.make('code', '^(?!.*\\bad\\b)'), ' — NOT containing word "ad"']),
-                        $.make('li', [$.make('code', '\\d{4}'), ' — Exactly 4 digits (years)']),
-                        $.make('li', [$.make('code', '.{50,}'), ' — At least 50 characters']),
-                        $.make('li', [$.make('code', '[A-Z]{2,}'), ' — Two or more capital letters'])
-                    ])
-                ])
-            ]),
-            $.make('div', { className: 'NB-classifier-regex-tips-note' }, 'All patterns are case-insensitive by default. Use \\b for word boundaries to avoid partial matches.')
+                $.make('div', { className: 'NB-classifier-regex-tips-note' }, 'All patterns are case-insensitive by default. Use \\b for word boundaries to avoid partial matches.')
             ]) // end content
         ]);
     },
@@ -803,6 +846,30 @@ var classifier_prototype = {
 
         _.each(_.keys(regex_classifiers), _.bind(function (pattern) {
             var $regex = this.make_classifier(pattern, pattern, 'text', null, null, true);
+            $regexes.push($regex);
+        }, this));
+
+        return $regexes;
+    },
+
+    make_user_urls: function () {
+        var $urls = [];
+        var url_classifiers = this.user_classifiers.urls || {};
+
+        _.each(_.keys(url_classifiers), _.bind(function (pattern) {
+            var $url = this.make_classifier(pattern, pattern, 'url');
+            $urls.push($url);
+        }, this));
+
+        return $urls;
+    },
+
+    make_user_url_regex: function () {
+        var $regexes = [];
+        var regex_classifiers = this.user_classifiers.url_regex || {};
+
+        _.each(_.keys(regex_classifiers), _.bind(function (pattern) {
+            var $regex = this.make_classifier(pattern, pattern, 'url', null, null, true);
             $regexes.push($regex);
         }, this));
 
@@ -1159,6 +1226,87 @@ var classifier_prototype = {
                 return false;
             }
         });
+
+        // Handle URL input (for Premium+ users only)
+        var $url_section = $('.NB-classifier-url-section', this.$modal);
+        if ($url_section.length) {
+            var $url_input = $('.NB-classifier-url-input', this.$modal);
+            var $url_placeholder = $('.NB-classifier-url-placeholder', this.$modal);
+            var $url_classifier = $url_placeholder.parents('.NB-classifier').eq(0);
+            var $url_checkboxes = $('.NB-classifier-input-like, .NB-classifier-input-dislike', $url_classifier);
+            var $url_validation = $('.NB-classifier-url-validation', this.$modal);
+
+            var last_url_selection = '';
+            var update_url = function (e) {
+                var is_regex_mode = $url_section.hasClass('NB-classifier-section-regex-active');
+                var text;
+
+                if (is_regex_mode) {
+                    // In regex mode, get text from input value (user can type or select)
+                    text = $.trim($url_input.val());
+                    // Clear selection tracking for regex mode
+                    last_url_selection = '';
+                } else {
+                    // In exact mode, get text from selection
+                    text = $.trim($url_input.getSelection().text);
+                }
+
+                // Only update when selection has actually changed (for exact mode) or on input event (for regex mode)
+                if (text.length && (is_regex_mode || (text != last_url_selection && $url_placeholder.text() != text))) {
+                    if (!is_regex_mode) {
+                        last_url_selection = text;
+                    }
+                    $url_placeholder.text(text);
+                    $url_placeholder.css('font-style', 'normal');
+                    $url_checkboxes.val(text);
+                    if (!$url_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                        self.change_classifier($url_classifier, 'like');
+                    }
+
+                    // Validate based on mode
+                    $url_validation.empty();
+                    var story_url = self.story ? (self.story.get('story_permalink') || '') : '';
+
+                    if (is_regex_mode) {
+                        // Regex validation
+                        var validation_result = self.validate_regex(text);
+                        if (validation_result.valid) {
+                            $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-valid' }, '✓ Valid'));
+                            if (validation_result.regex.test(story_url)) {
+                                $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Matches URL'));
+                            } else {
+                                $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'No match in URL'));
+                            }
+                        } else {
+                            $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
+                        }
+                    } else {
+                        // Exact phrase validation - substring check
+                        if (story_url.toLowerCase().indexOf(text.toLowerCase()) >= 0) {
+                            $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Found in URL'));
+                        } else {
+                            $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in URL'));
+                        }
+                    }
+                }
+            };
+
+            $url_input.on('select keyup mouseup input', update_url);
+
+            // Don't initialize checkbox value - user must select a portion
+            // $url_checkboxes.val($url_input.val());
+
+            // Store update function for mode switching
+            this.update_url_classifier = update_url;
+
+            // Clicking the placeholder does nothing - user must select URL text first
+            $url_placeholder.parents('.NB-classifier').bind('click', function (e) {
+                if ($url_placeholder.text() === 'Select URL portion above') {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        }
     },
 
     // ================================
@@ -1189,13 +1337,16 @@ var classifier_prototype = {
             if (match_type === 'regex') {
                 $section.addClass('NB-classifier-section-regex-active');
                 $section.find('.NB-classifier-regex-tips').addClass('NB-visible');
+                $section.find('.NB-classifier-pro-notice').addClass('NB-visible');
 
                 // Update input styling for regex mode
                 $input.addClass('NB-classifier-input-regex-mode');
                 if (section_type === 'text') {
                     $input.attr('placeholder', 'e.g., \\bcat\\b or dog|bird');
-                } else {
+                } else if (section_type === 'title') {
                     $input.attr('placeholder', 'e.g., \\bbreaking\\b or urgent|alert');
+                } else if (section_type === 'url') {
+                    $input.attr('placeholder', 'e.g., /news/\\d+ or /category/');
                 }
 
                 // Change classifier to regex type for saving
@@ -1213,11 +1364,14 @@ var classifier_prototype = {
             } else {
                 $section.removeClass('NB-classifier-section-regex-active');
                 $section.find('.NB-classifier-regex-tips').removeClass('NB-visible');
+                $section.find('.NB-classifier-pro-notice').removeClass('NB-visible');
 
                 // Update input styling for exact mode
                 $input.removeClass('NB-classifier-input-regex-mode');
                 if (section_type === 'text') {
                     $input.attr('placeholder', 'Enter text to match...');
+                } else if (section_type === 'url') {
+                    $input.attr('placeholder', 'Enter URL pattern to match...');
                 } else {
                     $input.attr('placeholder', '');
                 }
@@ -1238,6 +1392,8 @@ var classifier_prototype = {
                 self.update_text_classifier();
             } else if (section_type === 'title' && self.update_title_classifier) {
                 self.update_title_classifier();
+            } else if (section_type === 'url' && self.update_url_classifier) {
+                self.update_url_classifier();
             }
         });
     },
@@ -1249,19 +1405,19 @@ var classifier_prototype = {
         // Handle match type segmented control
         this.handle_match_type_control();
 
-        // Handle regex tips toggle
+        // Handle regex tips toggle - syncs all sections together
         $modal.on('click', '.NB-classifier-regex-tips-header', function () {
-            var $tips = $(this).closest('.NB-classifier-regex-tips');
-            var $toggle = $tips.find('.NB-classifier-regex-tips-toggle');
-            var is_collapsed = $tips.hasClass('NB-collapsed');
+            var $clicked_tips = $(this).closest('.NB-classifier-regex-tips');
+            var is_collapsed = $clicked_tips.hasClass('NB-collapsed');
+            var $all_tips = $modal.find('.NB-classifier-regex-tips');
 
             if (is_collapsed) {
-                $tips.removeClass('NB-collapsed');
-                $toggle.text('▼ Hide');
+                $all_tips.removeClass('NB-collapsed');
+                $all_tips.find('.NB-classifier-regex-tips-toggle').text('▼ Hide');
                 NEWSBLUR.assets.preference('regex_tips_collapsed', false);
             } else {
-                $tips.addClass('NB-collapsed');
-                $toggle.text('▶ Show');
+                $all_tips.addClass('NB-collapsed');
+                $all_tips.find('.NB-classifier-regex-tips-toggle').text('▶ Show');
                 NEWSBLUR.assets.preference('regex_tips_collapsed', true);
             }
         });
@@ -1482,6 +1638,16 @@ var classifier_prototype = {
                         self.model.classifiers[feed_id].text_regex = {};
                     }
                     self.model.classifiers[feed_id].text_regex[value] = score;
+                } else if (name == 'url') {
+                    if (!self.model.classifiers[feed_id].urls) {
+                        self.model.classifiers[feed_id].urls = {};
+                    }
+                    self.model.classifiers[feed_id].urls[value] = score;
+                } else if (name == 'url_regex') {
+                    if (!self.model.classifiers[feed_id].url_regex) {
+                        self.model.classifiers[feed_id].url_regex = {};
+                    }
+                    self.model.classifiers[feed_id].url_regex[value] = score;
                 } else if (name == 'author') {
                     self.model.classifiers[feed_id].authors[value] = score;
                 } else if (name == 'feed') {
@@ -1498,6 +1664,10 @@ var classifier_prototype = {
                     delete self.model.classifiers[feed_id].texts[value];
                 } else if (name == 'text_regex' && self.model.classifiers[feed_id].text_regex && self.model.classifiers[feed_id].text_regex[value] == score) {
                     delete self.model.classifiers[feed_id].text_regex[value];
+                } else if (name == 'url' && self.model.classifiers[feed_id].urls && self.model.classifiers[feed_id].urls[value] == score) {
+                    delete self.model.classifiers[feed_id].urls[value];
+                } else if (name == 'url_regex' && self.model.classifiers[feed_id].url_regex && self.model.classifiers[feed_id].url_regex[value] == score) {
+                    delete self.model.classifiers[feed_id].url_regex[value];
                 } else if (name == 'author' && self.model.classifiers[feed_id].authors[value] == score) {
                     delete self.model.classifiers[feed_id].authors[value];
                 } else if (name == 'feed' && self.model.classifiers[feed_id].feeds[feed_id] == score) {
