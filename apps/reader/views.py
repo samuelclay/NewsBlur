@@ -48,6 +48,7 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
@@ -55,6 +56,8 @@ from apps.analyzer.models import (
     apply_classifier_texts,
     apply_classifier_title_regex,
     apply_classifier_titles,
+    apply_classifier_url_regex,
+    apply_classifier_urls,
     get_classifiers_for_user,
     sort_classifiers_by_feed,
 )
@@ -944,12 +947,14 @@ def load_single_feed(request, feed_id):
         classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
         classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id=feed_id))
+        classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id=feed_id))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
         classifier_texts = []
+        classifier_urls = []
     classifiers = get_classifiers_for_user(
         user,
         feed_id=feed_id,
@@ -958,6 +963,7 @@ def load_single_feed(request, feed_id):
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
+        classifier_urls=classifier_urls,
     )
     checkpoint3 = time.time()
 
@@ -1569,12 +1575,14 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         )
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
         classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+        classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
         classifier_texts = []
+        classifier_urls = []
 
     sort_classifiers_by_feed(
         user=user,
@@ -1584,6 +1592,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
+        classifier_urls=classifier_urls,
     )
     user_is_pro = user.profile.is_pro
     for story in stories:
@@ -1603,6 +1612,8 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
+            "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
+            "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_is_pro),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
         if unread_filter == "focus" and story["score"] >= 1:
@@ -1990,12 +2001,14 @@ def load_river_stories__redis(request):
         )
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
         classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+        classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
         classifier_texts = []
+        classifier_urls = []
     classifiers = sort_classifiers_by_feed(
         user=user,
         feed_ids=found_feed_ids,
@@ -2004,6 +2017,7 @@ def load_river_stories__redis(request):
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
+        classifier_urls=classifier_urls,
     )
 
     # Just need to format stories
@@ -2052,6 +2066,8 @@ def load_river_stories__redis(request):
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
+            "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
+            "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_is_pro),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
@@ -3421,11 +3437,12 @@ def all_classifiers(request):
     classifier_tags = list(MClassifierTag.objects.filter(user_id=user.pk, score__ne=0))
     classifier_texts = list(MClassifierText.objects.filter(user_id=user.pk, score__ne=0))
     classifier_feeds = list(MClassifierFeed.objects.filter(user_id=user.pk, score__ne=0))
+    classifier_urls = list(MClassifierUrl.objects.filter(user_id=user.pk, score__ne=0))
 
     # Group classifiers by feed_id
     from collections import defaultdict
 
-    classifiers_by_feed = defaultdict(lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": []})
+    classifiers_by_feed = defaultdict(lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": [], "urls": []})
 
     for c in classifier_titles:
         classifiers_by_feed[c.feed_id]["titles"].append({"title": c.title, "score": c.score})
@@ -3437,6 +3454,8 @@ def all_classifiers(request):
         classifiers_by_feed[c.feed_id]["texts"].append({"text": c.text, "score": c.score})
     for c in classifier_feeds:
         classifiers_by_feed[c.feed_id]["feeds"].append({"feed_id": c.feed_id, "score": c.score})
+    for c in classifier_urls:
+        classifiers_by_feed[c.feed_id]["urls"].append({"url": c.url, "score": c.score, "is_regex": getattr(c, "is_regex", False)})
 
     # Build response organized by folder structure
     folders_with_classifiers = []
@@ -3484,7 +3503,7 @@ def all_classifiers(request):
         folders_with_classifiers.append({"folder_name": "Uncategorized", "feeds": orphan_feeds})
 
     total_classifiers = sum(
-        len(c["titles"]) + len(c["authors"]) + len(c["tags"]) + len(c["texts"]) + len(c["feeds"])
+        len(c["titles"]) + len(c["authors"]) + len(c["tags"]) + len(c["texts"]) + len(c["feeds"]) + len(c["urls"])
         for c in classifiers_by_feed.values()
     )
 

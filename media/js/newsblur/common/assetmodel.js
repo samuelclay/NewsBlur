@@ -37,7 +37,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 texts: {},
                 tags: {},
                 authors: {},
-                feeds: {}
+                feeds: {},
+                urls: {},
+                url_regex: {}
             }
         };
         this.feeds = new NEWSBLUR.Collections.Feeds();

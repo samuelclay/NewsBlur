@@ -7952,19 +7952,86 @@ form.opml_import_form input {
 }
 
 .NB-modal.NB-modal-classifiers {
-    position: static;
+    position: relative;
     overflow: hidden;
     height: 100%;
     max-height: 800px;
     padding: 18px;
     display: flex;
     flex-direction: column;
+    min-width: 700px;
+}
+
+/* Loading indicator positioned top right */
+.NB-modal-classifiers>.NB-modal-loading {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+}
+
+/* Title on its own line at the top */
+.NB-modal.NB-modal-classifiers .NB-modal-title {
+    flex-shrink: 0;
+    margin: 6px 0 20px 0;
+}
+
+/* Header row with subtitle on left, tabs on right */
+.NB-modal-classifiers .NB-modal-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.NB-modal-classifiers .NB-modal-header .NB-modal-subtitle {
+    flex: 1;
+    overflow: visible;
+    margin: 0;
+    padding: 8px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.NB-modal-classifiers .NB-modal-header .NB-modal-subtitle .NB-modal-feed-image {
+    flex-shrink: 0;
+    margin: 0px 0 0 6px;
+}
+
+.NB-modal-classifiers .NB-modal-header .NB-modal-feed-heading {
+    display: inline;
+    margin: 0;
+}
+
+.NB-modal-classifiers .NB-modal-header .NB-modal-tabs {
+    float: none;
+    position: relative;
+    bottom: -1px;
+    margin: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.NB-modal-classifiers .NB-modal-header .NB-modal-tab {
+    border-bottom: 1px solid transparent;
+}
+
+.NB-modal-classifiers .NB-modal-header .NB-modal-tab.NB-active {
+    border-bottom: 1px solid white;
 }
 
 .NB-modal-classifiers .NB-tab {
     flex: 1;
     overflow: hidden;
     min-height: 0;
+    padding-top: 16px;
+    flex-direction: column;
+    display: none;
+}
+
+.NB-modal-classifiers .NB-tab.NB-active {
+    display: flex;
 }
 
 .NB-modal-classifiers form {
@@ -9540,7 +9607,7 @@ form.opml_import_form input {
 }
 
 .NB-classifier-this-story+.NB-classifier-feed-items::before {
-    content: 'More from this feed';
+    content: 'More from this site';
     display: block;
     font-size: 9px;
     color: #999;
