@@ -30,6 +30,7 @@
 @interface StoryDetailObjCViewController ()
 
 @property (nonatomic, strong) NSString *fullStoryHTML;
+@property (nonatomic, strong) NSString *lastWidthClassKey;
 
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
 - (NSInteger)storyContentWidth;
@@ -313,6 +314,11 @@
         [appDelegate.feedDetailViewController.view endEditing:YES];
     }
 
+    UINavigationController *navController = appDelegate.storyPagesViewController.navigationController ?: self.navigationController;
+    if (navController.interactivePopGestureRecognizer) {
+        [self.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
+    }
+
     if (_orientation != self.view.window.windowScene.interfaceOrientation) {
         _orientation = self.view.window.windowScene.interfaceOrientation;
         NSLog(@"Found stale orientation in story detail: %@", NSStringFromCGSize(self.view.bounds.size));
@@ -423,6 +429,7 @@
         return;
     }
 
+    self.lastWidthClassKey = nil;
     scrollPct = 0;
     hasScrolled = NO;
     
@@ -681,17 +688,11 @@
 
 - (void)drawFeedGradient {
     BOOL shouldHideStatusBar = appDelegate.storyPagesViewController.shouldHideStatusBar;
-    CGFloat yOffset = -1;
+    CGFloat yOffset = [self feedTitleGradientBaseYOffset];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
                             objectForKey:@"story_feed_id"]];
     NSDictionary *feed = [appDelegate getFeed:feedIdStr];
-    
-    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0 && !appDelegate.storyPagesViewController.isNavigationBarHidden) {
-        // Push gradient down below the navigation bar on notched iPhones
-        CGFloat navBarHeight = appDelegate.feedsNavigationController.navigationBar.frame.size.height;
-        yOffset += navBarHeight;
-    }
     
     if (self.feedTitleGradient) {
         [self.feedTitleGradient removeFromSuperview];
@@ -728,6 +729,25 @@
             self.feedTitleGradient.alpha = self.appDelegate.storyPagesViewController.isNavigationBarHidden ? 0 : 1;
         }];
     }
+
+    [self updateFeedTitleGradientPosition];
+}
+
+- (CGFloat)feedTitleGradientBaseYOffset {
+    return -1;
+}
+
+- (void)updateFeedTitleGradientPosition {
+    if (!self.feedTitleGradient || self.feedTitleGradient.superview != self.webView) {
+        return;
+    }
+    CGFloat baseYOffset = [self feedTitleGradientBaseYOffset];
+    CGFloat yOffset = baseYOffset - self.webView.scrollView.contentOffset.y;
+    if (fabs(self.feedTitleGradient.frame.origin.y - yOffset) > 0.5) {
+        CGRect frame = self.feedTitleGradient.frame;
+        frame.origin.y = yOffset;
+        self.feedTitleGradient.frame = frame;
+    }
 }
 
 - (void)showStory {
@@ -757,6 +777,7 @@
 
 - (void)clearWebView {
     self.hasStory = NO;
+    self.lastWidthClassKey = nil;
 
     self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
     self.webView.hidden = YES;
@@ -1499,53 +1520,7 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqual:@"contentOffset"]) {
         BOOL isHorizontal = appDelegate.storyPagesViewController.isHorizontal;
-        BOOL isNavBarHidden = appDelegate.storyPagesViewController.isNavigationBarHidden;
-        
-        if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1 + self.webView.scrollView.verticalScrollIndicatorInsets.top)) {
-            // Pulling
-            if (!pullingScrollview) {
-                pullingScrollview = YES;
-                
-                for (id subview in self.webView.scrollView.subviews) {
-                    UIImageView *imgView = [subview isKindOfClass:[UIImageView class]] ?
-                    (UIImageView*)subview : nil;
-                    // image views whose image is 1px wide are shadow images, hide them
-                    if (imgView && imgView.image.size.width > 1) {
-                        [self.webView.scrollView insertSubview:self.feedTitleGradient
-                                                  belowSubview:subview];
-                        [self.webView.scrollView bringSubviewToFront:subview];
-                    }
-                }
-            }
-        } else {
-            // Normal reading
-            if (pullingScrollview) {
-                pullingScrollview = NO;
-                [self.feedTitleGradient.layer setShadowOpacity:0];
-                
-                if (!isNavBarHidden) {
-                    [self.webView insertSubview:self.feedTitleGradient aboveSubview:self.webView.scrollView];
-
-                    CGFloat yOffset = -1;
-                    if (appDelegate.storyPagesViewController.view.safeAreaInsets.top > 0.0) {
-                        CGFloat navBarHeight = appDelegate.feedsNavigationController.navigationBar.frame.size.height;
-                        yOffset += navBarHeight;
-                    }
-                    self.feedTitleGradient.frame = CGRectMake(0, yOffset,
-                                                              self.feedTitleGradient.frame.size.width,
-                                                              self.feedTitleGradient.frame.size.height);
-                }
-                
-                for (id subview in self.webView.scrollView.subviews) {
-                    UIImageView *imgView = [subview isKindOfClass:[UIImageView class]] ?
-                    (UIImageView*)subview : nil;
-                    // image views whose image is 1px wide are shadow images, hide them
-                    if (imgView && imgView.image.size.width == 1) {
-                        imgView.hidden = NO;
-                    }
-                }
-            }
-        }
+        [self updateFeedTitleGradientPosition];
         
         if (appDelegate.storyPagesViewController.currentPage != self) return;
 
@@ -1577,12 +1552,21 @@
         }
         
 #if !TARGET_OS_MACCATALYST
-        if (!isNavBarHidden && self.canHideNavigationBar && !nearTop) {
-            [appDelegate.storyPagesViewController setNavigationBarHidden:YES];
-        }
-        
-        if (isNavBarHidden && pullingDown) {
-            [appDelegate.storyPagesViewController setNavigationBarHidden:NO];
+        if (self.canHideNavigationBar) {
+            UIScrollView *scrollView = self.webView.scrollView;
+            if (scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating) {
+                CGFloat fadeStart = 0.0;
+                CGFloat fadeEnd = 80.0;
+                CGFloat clampedOffset = MAX(fadeStart, MIN(fadeEnd, topPosition));
+                CGFloat progress = (fadeEnd - fadeStart) > 0 ? (clampedOffset - fadeStart) / (fadeEnd - fadeStart) : 0.0;
+                CGFloat alpha = 1.0 - progress;
+                
+                if (topPosition < 0) {
+                    alpha = 1.0;
+                }
+                
+                [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:alpha];
+            }
         }
 #endif
         
@@ -2131,9 +2115,8 @@
 - (void)updateStoryTheme {
     self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
 
-    NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-theme-style').href='storyDetailView%@.css';",
-                          [ThemeManager themeManager].themeCSSSuffix];
-
+    NSString *jsString = [NSString stringWithFormat:@"var theme = document.getElementById('NB-theme-style'); if (theme) { theme.href = 'storyDetailView%@.css'; }",
+                [ThemeManager themeManager].themeCSSSuffix];
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
 
     self.webView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
@@ -2635,11 +2618,22 @@
                             appDelegate.storiesCollection.isWidgetView ||
                             appDelegate.storiesCollection.isReadView) ?
                             @"NB-river" : @"NB-non-river";
+
+    NSString *widthClassKey = [NSString stringWithFormat:@"%@|%@|%@|%ld",
+                               baseWidthClass,
+                               alternateViewClass,
+                               riverClass,
+                               (long)contentWidth];
+    if ([widthClassKey isEqualToString:self.lastWidthClassKey]) {
+        return;
+    }
+    self.lastWidthClassKey = widthClassKey;
     
     NSString *jsString = [[NSString alloc] initWithFormat:
                           @"var w = Math.floor(window.innerWidth || document.documentElement.clientWidth || %li);"
-                          "$('body').attr('class', '%@ %@ %@ NB-width-' + w);"
-                          "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%li, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\");",
+                          "if (document.body) { document.body.className = '%@ %@ %@ NB-width-' + w; }"
+                          "var viewport = document.getElementById('viewport');"
+                          "if (viewport) { viewport.setAttribute('content', 'width=%li, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'); }",
                           (long)contentWidth,
                           baseWidthClass,
                           alternateViewClass,
@@ -2651,22 +2645,22 @@
 - (void)refreshHeader {
     NSString *headerString = [[[self getHeader] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
                               stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
-    NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').innerHTML = '%@';",
+    NSString *jsString = [NSString stringWithFormat:@"var el = document.getElementById('NB-header-container'); if (el) { el.innerHTML = '%@'; }",
                           headerString];
     
     [self.webView evaluateJavaScript:jsString completionHandler:^(id result, NSError *error) {
-        [self.webView evaluateJavaScript:@"attachFastClick();" completionHandler:nil];
+        [self.webView evaluateJavaScript:@"if (typeof attachFastClick === 'function') { attachFastClick(); }" completionHandler:nil];
     }];
 }
 
 - (void)refreshSideOptions {
     NSString *sideOptionsString = [[[self getSideOptions] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
                               stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
-    NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-sideoptions-container').innerHTML = '%@';",
+    NSString *jsString = [NSString stringWithFormat:@"var el = document.getElementById('NB-sideoptions-container'); if (el) { el.innerHTML = '%@'; }",
                           sideOptionsString];
     
     [self.webView evaluateJavaScript:jsString completionHandler:^(id result, NSError *error) {
-        [self.webView evaluateJavaScript:@"attachFastClick();" completionHandler:nil];
+        [self.webView evaluateJavaScript:@"if (typeof attachFastClick === 'function') { attachFastClick(); }" completionHandler:nil];
     }];
 }
 

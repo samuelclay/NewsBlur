@@ -27,6 +27,9 @@
 
 @property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic) BOOL wasNavigationBarHidden;
+@property (nonatomic) BOOL isNavigationBarFaded;
+@property (nonatomic) CGFloat navigationBarFadeAlpha;
+@property (nonatomic) BOOL isUpdatingNavigationBarFade;
 @property (nonatomic) BOOL doneInitialRefresh;
 @property (nonatomic) BOOL doneInitialDisplay;
 @property (nonatomic, strong) NSTimer *autoscrollTimer;
@@ -246,12 +249,21 @@
     
     self.currentlyTogglingNavigationBar = NO;
     self.doneInitialDisplay = NO;
+    self.navigationBarFadeAlpha = 1.0;
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
     
-    appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    navController.interactivePopGestureRecognizer.enabled = swipeEnabled;
+    navController.interactivePopGestureRecognizer.delegate = nil;
+    if (swipeEnabled) {
+        if (navController.interactivePopGestureRecognizer) {
+            [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
+            [self.currentPage.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
+        }
+    }
     
     if (self.isPhoneOrCompact) {
         if (!appDelegate.storiesCollection.isSocialView) {
@@ -424,11 +436,15 @@
     [super viewWillDisappear:animated];
     
     previousPage.view.hidden = YES;
-    appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.enabled = YES;
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    navController.interactivePopGestureRecognizer.enabled = YES;
+    navController.interactivePopGestureRecognizer.delegate = appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate;
     
 #if !TARGET_OS_MACCATALYST
-    [appDelegate.detailViewController.parentNavigationController setNavigationBarHidden:NO animated:YES];
+    [navController setNavigationBarHidden:NO animated:YES];
 #endif
+    navController.navigationBar.alpha = 1.0;
+    navController.navigationBar.userInteractionEnabled = YES;
     
     self.autoscrollActive = NO;
 }
@@ -471,12 +487,7 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-    
-    if (self.isNavigationBarHidden && !self.shouldHideStatusBar) {
-        self.scrollViewTopConstraint.constant = self.statusBarHeight;
-    } else {
-        self.scrollViewTopConstraint.constant = 0;
-    }
+    self.scrollViewTopConstraint.constant = [self scrollViewTopOffsetForNavigationBarAlpha:self.navigationBarFadeAlpha];
     
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
@@ -492,7 +503,7 @@
 }
 
 - (BOOL)isNavigationBarHidden {
-    return self.navigationController.navigationBarHidden;
+    return self.isNavigationBarFaded;
 }
 
 - (void)updateStatusBarState {
@@ -525,43 +536,22 @@
 //    #warning temporarily disabled hiding menubar
 //    return;
     
-    if (appDelegate.isMac || self.navigationController == nil || self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar || !self.doneInitialDisplay) {
+    if (appDelegate.isMac || self.navigationController == nil || self.isNavigationBarFaded == hide || self.currentlyTogglingNavigationBar || !self.doneInitialDisplay) {
         return;
     }
     
     self.currentlyTogglingNavigationBar = YES;
     self.wasNavigationBarHidden = hide;
-    
-    [self.navigationController setNavigationBarHidden:hide animated:YES];
-    
+    self.isNavigationBarFaded = hide;
+
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
-    appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    navController.interactivePopGestureRecognizer.enabled = swipeEnabled;
+    navController.interactivePopGestureRecognizer.delegate = nil;
     
-    if (hide) {
-        appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.delegate = self;
-    } else if (appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate != nil) {
-        appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.delegate = appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate;
-    }
-    
-    CGPoint oldOffset = currentPage.webView.scrollView.contentOffset;
-    CGFloat navHeight = self.navigationController.navigationBar.bounds.size.height;
-    CGFloat statusAdjustment = 0.0;
-    
-//    // The top inset is zero when the status bar is hidden, so using the bottom one to confirm.
-//    if (self.view.safeAreaInsets.top > 0.0 || self.view.safeAreaInsets.bottom > 0.0) {
-//        statusAdjustment = 0.0;
-//    }
-    
-    if (oldOffset.y < 0.0) {
-        oldOffset.y = 0.0;
-    }
-    
-    CGFloat sign = hide ? -1.0 : 1.0;
-    CGFloat absoluteAdjustment = navHeight + statusAdjustment;
-    CGFloat totalAdjustment = sign * absoluteAdjustment;
-    CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
+    self.navigationController.navigationBar.userInteractionEnabled = !hide;
     
     if (alsoTraverse) {
         self.traversePinned = YES;
@@ -573,9 +563,8 @@
         }
     }
     
-    self.currentPage.webView.scrollView.contentOffset = newOffset;
-    
     [self.appDelegate.detailViewController adjustForAutoscroll];
+    [self.currentPage drawFeedGradient];
     
     if (alsoTraverse) {
         [self.view layoutIfNeeded];
@@ -595,22 +584,135 @@
         });
     }
     
-    [self.view layoutIfNeeded];
-    
     [UIView animateWithDuration:0.2 animations:^{
-        [self setNeedsStatusBarAppearanceUpdate];
+        [self setNavigationBarFadeAlpha:(hide ? 0.0 : 1.0)];
     } completion:^(BOOL finished) {
         self.currentlyTogglingNavigationBar = NO;
         [self updateStatusBarState];
     }];
 }
 
+- (void)setNavigationBarFadeAlpha:(CGFloat)alpha {
+    if (![NSThread isMainThread]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self setNavigationBarFadeAlpha:alpha];
+        });
+        return;
+    }
+
+    CGFloat clampedAlpha = MAX(0.0, MIN(1.0, alpha));
+    if (self.isUpdatingNavigationBarFade) {
+        return;
+    }
+
+    self.isUpdatingNavigationBarFade = YES;
+
+    UIView *loadedView = self.viewIfLoaded;
+    if (!loadedView || loadedView.window == nil) {
+        self.navigationBarFadeAlpha = clampedAlpha;
+        self.isUpdatingNavigationBarFade = NO;
+        return;
+    }
+
+    UINavigationController *navController = self.navigationController;
+    if (!navController) {
+        self.navigationBarFadeAlpha = clampedAlpha;
+        self.isUpdatingNavigationBarFade = NO;
+        return;
+    }
+
+    if (fabs(self.navigationBarFadeAlpha - clampedAlpha) < 0.001 &&
+        self.isNavigationBarFaded == (clampedAlpha < 0.05)) {
+        self.isUpdatingNavigationBarFade = NO;
+        return;
+    }
+    self.navigationBarFadeAlpha = clampedAlpha;
+    navController.navigationBar.alpha = clampedAlpha;
+    navController.navigationBar.userInteractionEnabled = clampedAlpha > 0.05;
+    [self updateScrollViewTopConstraintForNavigationBarAlpha:clampedAlpha];
+    
+    BOOL wasFaded = self.isNavigationBarFaded;
+    self.isNavigationBarFaded = clampedAlpha < 0.05;
+    
+    if (wasFaded != self.isNavigationBarFaded) {
+        [self.currentPage drawFeedGradient];
+        [self updateStatusBarState];
+    }
+
+    self.isUpdatingNavigationBarFade = NO;
+}
+
+- (CGFloat)scrollViewTopOffsetForNavigationBarAlpha:(CGFloat)alpha {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        return 0;
+    }
+    
+    UINavigationController *navController = self.navigationController;
+    if (!navController) {
+        return 0;
+    }
+    
+    CGFloat navBarHeight = navController.navigationBar.frame.size.height;
+    UIWindow *window = self.view.window ?: appDelegate.detailViewController.view.window;
+    CGFloat statusBarHeight = window.windowScene.statusBarManager.statusBarFrame.size.height;
+    if (statusBarHeight <= 0.0) {
+        CGFloat safeTop = self.view.safeAreaInsets.top;
+        if (safeTop > 0.0 && navBarHeight > 0.0) {
+            statusBarHeight = MAX(0.0, safeTop - navBarHeight);
+        } else {
+            statusBarHeight = safeTop;
+        }
+    }
+    
+    CGFloat navOffset = navBarHeight > 0.0 ? navBarHeight * alpha : 0.0;
+    return statusBarHeight + navOffset;
+}
+
+- (void)updateScrollViewTopConstraintForNavigationBarAlpha:(CGFloat)alpha {
+    CGFloat offset = [self scrollViewTopOffsetForNavigationBarAlpha:alpha];
+    
+    if (fabs(self.scrollViewTopConstraint.constant - offset) > 0.5) {
+        self.scrollViewTopConstraint.constant = offset;
+        if (self.currentlyTogglingNavigationBar) {
+            [self.view layoutIfNeeded];
+        } else {
+            [self.view setNeedsLayout];
+        }
+    }
+}
+
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    if (gestureRecognizer == navController.interactivePopGestureRecognizer) {
+        return navController.viewControllers.count > 1;
+    }
+    
     return YES;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    return ![otherGestureRecognizer isKindOfClass:[UIScreenEdgePanGestureRecognizer class]];
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    if (gestureRecognizer == navController.interactivePopGestureRecognizer) {
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    if (gestureRecognizer == navController.interactivePopGestureRecognizer) {
+        if (otherGestureRecognizer == self.scrollView.panGestureRecognizer ||
+            otherGestureRecognizer == self.currentPage.webView.scrollView.panGestureRecognizer) {
+            return YES;
+        }
+    }
+    
+    return NO;
 }
 
 - (void)highlightButton:(UIButton *)b {
@@ -954,6 +1056,11 @@
     } else if (!outOfBounds) {
         NSInteger location = [appDelegate.storiesCollection indexFromLocation:pageController.pageIndex];
         [pageController setActiveStoryAtIndex:location];
+        UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+        if (navController.interactivePopGestureRecognizer) {
+            [pageController.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
+            [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
+        }
         [pageController clearStory];
         if (self.isDraggingScrollview ||
             self.scrollingToPage < 0 ||
@@ -987,10 +1094,6 @@
     [self setTextButton];
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
-    
-    if (self.isNavigationBarHidden) {
-        [self setNavigationBarHidden:NO];
-    }
     
 //    if (self.currentPage != nil && pageController == self.currentPage) {
 //        [self.appDelegate.feedDetailViewController changedStoryHeight:currentPage.webView.scrollView.contentSize.height];

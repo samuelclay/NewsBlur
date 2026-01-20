@@ -97,6 +97,7 @@
 - (void)updateStatusBarState;
 - (void)setNavigationBarHidden:(BOOL)hide;
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse;
+- (void)setNavigationBarFadeAlpha:(CGFloat)alpha;
 
 //- (void)transitionFromFeedDetail;
 - (void)resetPages;
