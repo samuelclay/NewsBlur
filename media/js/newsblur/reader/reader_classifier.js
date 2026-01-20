@@ -1186,7 +1186,8 @@ var classifier_prototype = {
         }
 
         // Label shows the display type (Text, Title, etc.) not "Regex"
-        var classifier_type_title = Inflector.capitalize(classifier_type == 'feed' ? 'site' : classifier_type);
+        var display_type = classifier_type == 'feed' ? 'site' : (classifier_type == 'url' ? 'URL' : classifier_type);
+        var classifier_type_title = classifier_type == 'url' ? 'URL' : Inflector.capitalize(display_type);
 
         var css_class = 'NB-classifier NB-classifier-' + classifier_type;
         if (is_regex) {
