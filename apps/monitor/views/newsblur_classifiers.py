@@ -7,6 +7,7 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
 )
 
 
@@ -18,6 +19,7 @@ class Classifiers(View):
             "tags": MClassifierTag.objects._collection.count(),
             "texts": MClassifierText.objects._collection.count(),
             "titles": MClassifierTitle.objects._collection.count(),
+            "urls": MClassifierUrl.objects._collection.count(),
         }
 
         chart_name = "classifiers"

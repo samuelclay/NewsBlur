@@ -11,6 +11,7 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
     MPopularityQuery,
     get_classifiers_for_user,
     validate_regex_pattern,
@@ -75,8 +76,8 @@ def save_classifier(request):
             "remove_like_" + content_type: (0, False),
             "remove_dislike_" + content_type: (0, False),
         }
-        # Add regex classifier for title and text types
-        if content_type in ("title", "text"):
+        # Add regex classifier for title, text, and url types
+        if content_type in ("title", "text", "url"):
             classifiers.update(
                 {
                     "like_" + content_type + "_regex": (1, True),
@@ -105,11 +106,11 @@ def save_classifier(request):
                         "feed_id": feed_id or 0,
                         "social_user_id": social_user_id or 0,
                     }
-                    if content_type in ("author", "tag", "title", "text"):
+                    if content_type in ("author", "tag", "title", "text", "url"):
                         max_length = ClassifierCls._fields[content_type].max_length
                         classifier_dict.update({content_type: post_content[:max_length]})
-                        # Add is_regex for title and text classifiers
-                        if content_type in ("title", "text"):
+                        # Add is_regex for title, text, and url classifiers
+                        if content_type in ("title", "text", "url"):
                             classifier_dict["is_regex"] = is_regex
                     elif content_type == "feed":
                         if not post_content.startswith("social:"):
@@ -154,6 +155,7 @@ def save_classifier(request):
     _save_classifier(MClassifierTag, "tag")
     _save_classifier(MClassifierTitle, "title")
     _save_classifier(MClassifierText, "text")
+    _save_classifier(MClassifierUrl, "url")
     _save_classifier(MClassifierFeed, "feed")
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
