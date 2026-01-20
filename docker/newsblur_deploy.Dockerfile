@@ -21,10 +21,18 @@ RUN apt install -y nodejs build-essential
 RUN	npm -g install yuglify
 
 # Increase Node.js heap size for yuglify to handle large CSS bundles
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+# 8GB should provide headroom as CSS grows over time
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 
 # Cleanup
 RUN apt-get clean
 
 WORKDIR /srv/newsblur
-CMD python manage.py collectstatic --no-input --clear -v 1 -l
+CMD python manage.py collectstatic --no-input --clear -v 1 -l && \
+    echo "Validating static assets..." && \
+    CSS_SIZE=$(stat -c%s /srv/newsblur/static/css/common.css 2>/dev/null || echo 0) && \
+    JS_SIZE=$(stat -c%s /srv/newsblur/static/js/common.js 2>/dev/null || echo 0) && \
+    echo "common.css: ${CSS_SIZE} bytes, common.js: ${JS_SIZE} bytes" && \
+    if [ "$CSS_SIZE" -lt 1000 ]; then echo "ERROR: common.css is empty or too small (${CSS_SIZE} bytes) - yuglify likely crashed"; exit 1; fi && \
+    if [ "$JS_SIZE" -lt 1000 ]; then echo "ERROR: common.js is empty or too small (${JS_SIZE} bytes) - closure compiler likely crashed"; exit 1; fi && \
+    echo "Static assets validated successfully"
