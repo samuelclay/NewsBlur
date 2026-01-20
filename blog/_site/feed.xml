@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-16T18:27:14-05:00</updated>
+  <updated>2026-01-16T18:46:46-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,64 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Manage all of your training in one place</title>
+    <link href="https://blog.newsblur.com/2026/01/19/manage-all-your-training/" rel="alternate" type="text/html" title="Manage all of your training in one place" />
+    <published>2026-01-19T00:00:00-05:00</published>
+    <updated>2026-01-19T00:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2026/01/19/manage-all-your-training</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/01/19/manage-all-your-training/">
+      <![CDATA[<p>Over the years I’ve trained NewsBlur on hundreds of authors, tags, and titles across dozens of feeds. But when I wanted to review what I’d trained, I had to open each feed’s trainer individually and click through them one by one. That’s fine when you’re training a new feed, but it’s tedious when you want to see the big picture of all your training.</p>
+
+<p>Today I’m launching the Manage Training dialog, a consolidated view of every classifier you’ve ever trained, organized by folder. You can see everything at a glance, edit inline, and save changes across multiple feeds in a single click.</p>
+
+<p><img src="/assets/manage-training-overview.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Open the Intelligence Trainer from the sidebar menu (or press the <code class="language-plaintext highlighter-rouge">t</code> key). You’ll now see two tabs at the top: “Site by Site” and “Manage Training”.</p>
+
+<p>The Site by Site tab is the existing trainer you know—it walks you through each feed showing authors, tags, and titles you can train. That’s still the best way to train new feeds with lots of suggestions.</p>
+
+<p>The Manage Training tab shows only what you’ve already trained. Every thumbs up and thumbs down you’ve ever given, organized by folder just like your feed list. Each feed shows its trained classifiers as pills you can click to toggle.</p>
+
+<!-- SCREENSHOT: Close-up of a folder section showing feed names with their trained classifiers as pills (green for like, red for dislike) -->
+<p><img src="/assets/manage-training-folder.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="edit-inline-and-save-in-bulk">Edit inline and save in bulk</h3>
+
+<p>Click any classifier pill to toggle it between like, dislike, and neutral. The Save button shows exactly how many changes you’ve made, so you always know what’s pending. Made a mistake? Just click again to undo—the count updates automatically.</p>
+
+<!-- SCREENSHOT: The bottom of the Manage Training tab showing "Save 3 changes" button -->
+<p><img src="/assets/manage-training-save.png" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>When you click Save, all your changes across all feeds are saved in a single request. No more clicking through feeds one at a time to clean up old training.</p>
+
+<h3 id="why-this-matters">Why this matters</h3>
+
+<p>The Intelligence Trainer is one of NewsBlur’s most powerful features, but it’s only useful if you can manage what you’ve trained. Now you can:</p>
+
+<ul>
+  <li><strong>Audit your training</strong>: See at a glance which feeds you’ve trained heavily and which need attention</li>
+  <li><strong>Clean up old training</strong>: Remove classifiers that no longer make sense after a feed changed focus</li>
+  <li><strong>Fix mistakes</strong>: Quickly find and correct classifiers you set incorrectly</li>
+</ul>
+
+<p>The Manage Training tab is available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Over the years I’ve trained NewsBlur on hundreds of authors, tags, and titles across dozens of feeds. But when I wanted to review what I’d trained, I had to open each feed’s trainer individually and click through them one by one. That’s fine when you’re training a new feed, but...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Ask AI to make sense of the news</title>
@@ -1309,53 +1367,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     <summary type="html">
       <![CDATA[Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.
 ]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">The NewsBlur iOS app also hits version 8.0</title>
-    <link href="https://blog.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80/" rel="alternate" type="text/html" title="The NewsBlur iOS app also hits version 8.0" />
-    <published>2018-10-31T09:16:24-04:00</published>
-    <updated>2018-10-31T09:16:24-04:00</updated>
-    <id>https://blog.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80/">
-      <![CDATA[<p>Fresh off the heels of the Android app hitting version 8.0, today I’d like to announce the latest update to the iOS app. This is a huge release and it’s got a lot of new features packed in it. I also want to welcome David Sinclair back to the team. He’s the builder behind all the incredible features in this release. Really wonderful having you back, David, and thanks for making v8.0 of the best news reader on a phone.</p>
-
-<p>Here’s what’s new:</p>
-
-<ul>
-  <li>NEW: Save stories offline</li>
-  <li>NEW: Share stories from other apps into NewsBlur with the new share extension</li>
-  <li>NEW: Scroll vertically between stories (can be turned on while reading a story)</li>
-  <li>NEW: 3D Touch links in stories to preview them</li>
-  <li>NEW: search for sites directly from the feed list</li>
-  <li>Switching themes no longer reloads the story</li>
-  <li>iOS 12 compatibility fixes</li>
-  <li>Upgrading to a premium subscription now handles App Store payment updates</li>
-  <li>Fixed issue where locking the device while playing a video over Airplay would stop the video</li>
-</ul>
-
-<p>Here’s a preview of what a 3D touch on a link looks like:</p>
-
-<video src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-preview.mov" width="350" style="margin: 0 auto;border: 1px solid #606060" autoplay="" muted="" loop=""></video>
-
-<p>And sharing stories from other apps directly to your blurblog is now easy to do from the share menu.</p>
-
-<figure class="tmblr-full" data-orig-height="1334" data-orig-width="750" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-share.png"><img width="350" style="margin: 0 auto;border: 1px solid #606060" data-orig-height="1334" data-orig-width="750" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-share.png" /></figure>
-
-<p>Now that David’s back there’s a lot to look forward to.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="iOS" />
-    
-    
-    <summary type="html">
-      <![CDATA[Fresh off the heels of the Android app hitting version 8.0, today I’d like to announce the latest update to the iOS app. This is a huge release and it’s got a lot of new features packed in it. I also want to welcome David Sinclair back to the team....]]>
     </summary>
     
   </entry>
