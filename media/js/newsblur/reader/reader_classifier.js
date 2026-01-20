@@ -133,6 +133,13 @@ var classifier_prototype = {
         this.handle_cancel();
         this.open_modal(_.bind(function () {
             this.fit_classifiers();
+            // Initialize Tipsy tooltips for help icons (now that modal is in DOM)
+            this.$modal.find('.NB-classifier-help-icon').tipsy({
+                gravity: 's',
+                fade: true,
+                delayIn: 50,
+                opacity: 1
+            });
         }, this));
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
 
@@ -547,14 +554,18 @@ var classifier_prototype = {
             $.make('h5', 'Story Text'),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                 $.make('div', { className: 'NB-classifier-input-row' }, [
+                    $.make('span', { className: 'NB-classifier-help-icon', title: 'Enter a phrase or regex pattern. You can also highlight text in the story and click Train to populate this field.' }, 'ⓘ'),
                     $.make('input', { type: 'text', value: selected_text || '', className: 'NB-classifier-text-input', placeholder: 'Enter text to match...' }),
                     $.make('div', { className: 'NB-classifier-match-type-control' }, [
                         $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, 'Exact phrase'),
-                        $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, 'Regex')
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, [
+                            'Regex',
+                            $.make('span', { className: 'NB-regex-info-icon' }, 'ⓘ')
+                        ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-text-validation' }),
-                this.make_regex_tips(),
+                this.make_regex_popover(),
                 $.make('div', { className: 'NB-classifier-content-classifiers' }, [
                     this.make_classifier('<span class="NB-classifier-text-placeholder">Enter text above</span>', '', 'text'),
                     $.make('span', this.make_user_texts(story_content)),
@@ -578,16 +589,19 @@ var classifier_prototype = {
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-title-section', 'data-section': 'title' }, [
             $.make('h5', 'Story Title'),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $.make('div', { className: 'NB-classifier-help-text' }, 'Highlight phrases in the title below to train on specific words'),
                 $.make('div', { className: 'NB-classifier-input-row' }, [
+                    $.make('span', { className: 'NB-classifier-help-icon', title: 'Highlight phrases in the title to train on specific words' }, 'ⓘ'),
                     $.make('input', { type: 'text', value: story_title || '', className: 'NB-classifier-title-input' }),
                     $.make('div', { className: 'NB-classifier-match-type-control' }, [
                         $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, 'Exact phrase'),
-                        $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, 'Regex')
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, [
+                            'Regex',
+                            $.make('span', { className: 'NB-regex-info-icon' }, 'ⓘ')
+                        ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-title-validation' }),
-                this.make_regex_tips(),
+                this.make_regex_popover(),
                 $.make('div', { className: 'NB-classifier-content-classifiers' }, [
                     this.make_classifier('<span class="NB-classifier-title-placeholder">Select title phrase</span>', '', 'title'),
                     $.make('span', this.make_user_titles(story_title)),
@@ -610,16 +624,19 @@ var classifier_prototype = {
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-url-section', 'data-section': 'url' }, [
             $.make('h5', 'URL'),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $.make('div', { className: 'NB-classifier-help-text' }, 'Highlight portions of the URL below to train on specific patterns'),
                 $.make('div', { className: 'NB-classifier-input-row' }, [
+                    $.make('span', { className: 'NB-classifier-help-icon', title: 'Highlight portions of the URL to train on specific patterns' }, 'ⓘ'),
                     $.make('input', { type: 'text', value: story_url || '', className: 'NB-classifier-url-input', placeholder: 'Enter URL pattern to match...' }),
                     $.make('div', { className: 'NB-classifier-match-type-control' }, [
                         $.make('span', { className: 'NB-match-type-option NB-match-type-exact NB-active', 'data-type': 'exact' }, 'Exact phrase'),
-                        $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, 'Regex')
+                        $.make('span', { className: 'NB-match-type-option NB-match-type-regex', 'data-type': 'regex' }, [
+                            'Regex',
+                            $.make('span', { className: 'NB-regex-info-icon' }, 'ⓘ')
+                        ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-url-validation' }),
-                this.make_regex_tips(),
+                this.make_regex_popover(),
                 $.make('div', { className: 'NB-classifier-content-classifiers' }, [
                     this.make_classifier('<span class="NB-classifier-url-placeholder">Select URL portion above</span>', '', 'url'),
                     $.make('span', this.make_user_urls()),
@@ -638,18 +655,13 @@ var classifier_prototype = {
         ]);
     },
 
-    make_regex_tips: function () {
-        var is_collapsed = NEWSBLUR.assets.preference('regex_tips_collapsed');
-        return $.make('div', { className: 'NB-classifier-regex-tips' + (is_collapsed ? ' NB-collapsed' : '') }, [
-            $.make('div', { className: 'NB-classifier-regex-tips-header' }, [
-                $.make('span', { className: 'NB-classifier-regex-tips-title' }, 'Regex Pattern Guide'),
-                $.make('span', { className: 'NB-classifier-regex-tips-toggle' }, is_collapsed ? '▶ Show' : '▼ Hide')
-            ]),
-            $.make('div', { className: 'NB-classifier-regex-tips-content' }, [
-                $.make('div', { className: 'NB-classifier-regex-tips-columns' }, [
-                    $.make('div', { className: 'NB-classifier-regex-tips-column' }, [
+    make_regex_popover: function () {
+        return $.make('div', { className: 'NB-classifier-regex-popover' }, [
+            $.make('div', { className: 'NB-classifier-regex-popover-content' }, [
+                $.make('div', { className: 'NB-classifier-regex-popover-columns' }, [
+                    $.make('div', { className: 'NB-classifier-regex-popover-column' }, [
                         $.make('div', { className: 'NB-regex-tip-category' }, 'Word Matching'),
-                        $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
+                        $.make('ul', { className: 'NB-classifier-regex-popover-list' }, [
                             $.make('li', [$.make('code', '\\bcat\\b'), ' — Whole word "cat" only']),
                             $.make('li', [$.make('code', '\\bthe cat\\b'), ' — Exact phrase "the cat"']),
                             $.make('li', [$.make('code', 'cat|dog|bird'), ' — Any of these words']),
@@ -657,7 +669,7 @@ var classifier_prototype = {
                             $.make('li', [$.make('code', 'colou?r'), ' — "color" or "colour" (optional letter)'])
                         ]),
                         $.make('div', { className: 'NB-regex-tip-category' }, 'Position & Greedy'),
-                        $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
+                        $.make('ul', { className: 'NB-classifier-regex-popover-list' }, [
                             $.make('li', [$.make('code', '^Breaking'), ' — Starts with "Breaking"']),
                             $.make('li', [$.make('code', 'update$'), ' — Ends with "update"']),
                             $.make('li', [$.make('code', '^\\[Video\\]'), ' — Starts with "[Video]"']),
@@ -665,9 +677,9 @@ var classifier_prototype = {
                             $.make('li', [$.make('code', '".*?"'), ' — Non-greedy: each quoted phrase'])
                         ])
                     ]),
-                    $.make('div', { className: 'NB-classifier-regex-tips-column' }, [
+                    $.make('div', { className: 'NB-classifier-regex-popover-column' }, [
                         $.make('div', { className: 'NB-regex-tip-category' }, 'Numbers & Symbols'),
-                        $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
+                        $.make('ul', { className: 'NB-classifier-regex-popover-list' }, [
                             $.make('li', [$.make('code', 'v\\d+'), ' — "v" followed by numbers (v1, v2, v10)']),
                             $.make('li', [$.make('code', '\\$\\d+'), ' — Dollar amounts ($5, $100)']),
                             $.make('li', [$.make('code', '#\\w+'), ' — Hashtags (#news, #tech)']),
@@ -675,7 +687,7 @@ var classifier_prototype = {
                             $.make('li', [$.make('code', '^\\d+\\.'), ' — Starts with number and period'])
                         ]),
                         $.make('div', { className: 'NB-regex-tip-category' }, 'Exclusions & Advanced'),
-                        $.make('ul', { className: 'NB-classifier-regex-tips-list' }, [
+                        $.make('ul', { className: 'NB-classifier-regex-popover-list' }, [
                             $.make('li', [$.make('code', '^(?!.*sponsor)'), ' — NOT containing "sponsor"']),
                             $.make('li', [$.make('code', '^(?!.*\\bad\\b)'), ' — NOT containing word "ad"']),
                             $.make('li', [$.make('code', '\\d{4}'), ' — Exactly 4 digits (years)']),
@@ -684,8 +696,8 @@ var classifier_prototype = {
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-classifier-regex-tips-note' }, 'All patterns are case-insensitive by default. Use \\b for word boundaries to avoid partial matches.')
-            ]) // end content
+                $.make('div', { className: 'NB-classifier-regex-popover-note' }, 'All patterns are case-insensitive by default. Use \\b for word boundaries to avoid partial matches.')
+            ])
         ]);
     },
 
@@ -1114,6 +1126,7 @@ var classifier_prototype = {
                 // Validate based on mode
                 if (self.story) {
                     var story_content = $('<div>').html(self.story.get('story_content') || '').text();
+                    var is_full_match = self.check_full_content_match(text, story_content, is_regex_mode);
 
                     if (is_regex_mode) {
                         // Regex validation
@@ -1135,6 +1148,14 @@ var classifier_prototype = {
                         } else {
                             $text_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in story'));
                         }
+                    }
+
+                    // Warn if matching entire content
+                    if (is_full_match) {
+                        $text_validation.append($.make('div', { className: 'NB-regex-full-match-warning' }, [
+                            $.make('span', { className: 'NB-regex-warning-icon' }, '⚠'),
+                            $.make('span', { className: 'NB-regex-warning-text' }, 'This matches the entire story text and will only match this exact story. Consider using a shorter phrase or pattern.')
+                        ]));
                     }
                 }
             } else {
@@ -1188,6 +1209,7 @@ var classifier_prototype = {
                 // Validate based on mode
                 $title_validation.empty();
                 var story_title = self.story ? self.story.get('story_title') || '' : '';
+                var is_full_match = self.check_full_content_match(text, story_title, is_regex_mode);
 
                 if (is_regex_mode) {
                     // Regex validation
@@ -1207,6 +1229,14 @@ var classifier_prototype = {
                     if (story_title.toLowerCase().indexOf(text.toLowerCase()) === -1) {
                         $title_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in title'));
                     }
+                }
+
+                // Warn if matching entire title
+                if (is_full_match) {
+                    $title_validation.append($.make('div', { className: 'NB-regex-full-match-warning' }, [
+                        $.make('span', { className: 'NB-regex-warning-icon' }, '⚠'),
+                        $.make('span', { className: 'NB-regex-warning-text' }, 'This matches the entire title and will only match this exact story. Select a portion of the title instead.')
+                    ]));
                 }
             }
         };
@@ -1266,6 +1296,7 @@ var classifier_prototype = {
                     // Validate based on mode
                     $url_validation.empty();
                     var story_url = self.story ? (self.story.get('story_permalink') || '') : '';
+                    var is_full_match = self.check_full_content_match(text, story_url, is_regex_mode);
 
                     if (is_regex_mode) {
                         // Regex validation
@@ -1287,6 +1318,14 @@ var classifier_prototype = {
                         } else {
                             $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in URL'));
                         }
+                    }
+
+                    // Show warning if matching the entire URL
+                    if (is_full_match) {
+                        $url_validation.append($.make('div', { className: 'NB-regex-full-match-warning' }, [
+                            $.make('span', { className: 'NB-regex-warning-icon' }, '⚠'),
+                            $.make('span', { className: 'NB-regex-warning-text' }, 'This matches the entire URL and will only match this exact story. Select a portion of the URL instead.')
+                        ]));
                     }
                 }
             };
@@ -1336,7 +1375,6 @@ var classifier_prototype = {
             // Toggle section class for showing/hiding inputs (CSS controls visibility)
             if (match_type === 'regex') {
                 $section.addClass('NB-classifier-section-regex-active');
-                $section.find('.NB-classifier-regex-tips').addClass('NB-visible');
                 $section.find('.NB-classifier-pro-notice').addClass('NB-visible');
 
                 // Update input styling for regex mode
@@ -1363,7 +1401,7 @@ var classifier_prototype = {
                 }
             } else {
                 $section.removeClass('NB-classifier-section-regex-active');
-                $section.find('.NB-classifier-regex-tips').removeClass('NB-visible');
+                $section.find('.NB-classifier-regex-popover').removeClass('NB-visible');
                 $section.find('.NB-classifier-pro-notice').removeClass('NB-visible');
 
                 // Update input styling for exact mode
@@ -1405,21 +1443,65 @@ var classifier_prototype = {
         // Handle match type segmented control
         this.handle_match_type_control();
 
-        // Handle regex tips toggle - syncs all sections together
-        $modal.on('click', '.NB-classifier-regex-tips-header', function () {
-            var $clicked_tips = $(this).closest('.NB-classifier-regex-tips');
-            var is_collapsed = $clicked_tips.hasClass('NB-collapsed');
-            var $all_tips = $modal.find('.NB-classifier-regex-tips');
+        // Handle regex info icon hover - show popover on mouseenter, hide on mouseleave
+        // Use portal approach: move popover to body for proper overflow
+        $modal.on('mouseenter', '.NB-regex-info-icon', function (e) {
+            var $icon = $(this);
+            var $section = $icon.closest('.NB-classifier-content-section');
 
-            if (is_collapsed) {
-                $all_tips.removeClass('NB-collapsed');
-                $all_tips.find('.NB-classifier-regex-tips-toggle').text('▼ Hide');
-                NEWSBLUR.assets.preference('regex_tips_collapsed', false);
-            } else {
-                $all_tips.addClass('NB-collapsed');
-                $all_tips.find('.NB-classifier-regex-tips-toggle').text('▶ Show');
-                NEWSBLUR.assets.preference('regex_tips_collapsed', true);
-            }
+            // Get popover - either from stored reference or find in section
+            var $popover = $icon.data('popover') || $section.find('.NB-classifier-regex-popover');
+
+            if (!$popover || !$popover.length) return;
+
+            // Close any other open popovers
+            $('.NB-classifier-regex-popover.NB-visible').removeClass('NB-visible');
+
+            // Get icon position for popover placement
+            var iconRect = $icon[0].getBoundingClientRect();
+
+            // Move popover to body and position it
+            $popover.appendTo('body');
+            $popover.css({
+                position: 'fixed',
+                top: iconRect.bottom + 8,
+                right: window.innerWidth - iconRect.right,
+                left: 'auto',
+                bottom: 'auto'
+            });
+
+            // Show this popover
+            $popover.addClass('NB-visible');
+
+            // Store reference for subsequent hovers
+            $icon.data('popover', $popover);
+            $icon.data('section', $section);
+        });
+
+        // Hide popover when mouse leaves both icon and popover
+        $modal.on('mouseleave', '.NB-regex-info-icon', function (e) {
+            var $icon = $(this);
+            var $popover = $icon.data('popover');
+
+            if (!$popover) return;
+
+            // Small delay to allow mouse to move to popover
+            setTimeout(function () {
+                if ($popover && !$popover.is(':hover') && !$icon.is(':hover')) {
+                    $popover.removeClass('NB-visible');
+                }
+            }, 100);
+        });
+
+        $(document).on('mouseleave', '.NB-classifier-regex-popover', function (e) {
+            var $popover = $(this);
+
+            // Small delay to check if mouse moved back to icon
+            setTimeout(function () {
+                if ($popover && !$popover.is(':hover')) {
+                    $popover.removeClass('NB-visible');
+                }
+            }, 100);
         });
     },
 
@@ -1435,6 +1517,32 @@ var classifier_prototype = {
         } catch (e) {
             return { valid: false, error: 'Invalid regex: ' + e.message };
         }
+    },
+
+    check_full_content_match: function (pattern, content, is_regex_mode) {
+        if (!pattern || !content) return false;
+
+        var pattern_lower = pattern.toLowerCase().trim();
+        var content_lower = content.toLowerCase().trim();
+
+        // For exact phrase mode: check if pattern equals the entire content
+        if (!is_regex_mode) {
+            return pattern_lower === content_lower;
+        }
+
+        // For regex mode: check if the regex matches the entire content
+        // by testing if the match is essentially the full content
+        try {
+            var regex = new RegExp(pattern, 'i');
+            var match = content.match(regex);
+            if (match && match[0]) {
+                // If match is 90%+ of content length, consider it a full match
+                return match[0].length >= content.length * 0.9;
+            }
+        } catch (e) {
+            return false;
+        }
+        return false;
     },
 
     get_regex_matches: function (regex, content) {

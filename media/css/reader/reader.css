@@ -8990,6 +8990,7 @@ form.opml_import_form input {
 .NB-classifier-content-classifiers {
     clear: both;
     overflow: hidden;
+    margin-top: 24px;
 }
 
 /* Story-specific classifiers */
@@ -9011,7 +9012,7 @@ form.opml_import_form input {
     color: #999;
     text-transform: uppercase;
     letter-spacing: 0.3px;
-    margin-bottom: 4px;
+    margin-bottom: 12px;
 }
 
 /* Feed items container */
@@ -9042,11 +9043,16 @@ form.opml_import_form input {
     margin-bottom: 6px;
 }
 
+.NB-modal-classifiers .NB-classifier-input-row input[type="text"] {
+    margin-bottom: 0;
+}
+
 .NB-modal-field .NB-classifier-input-row .NB-classifier-exact-input,
 .NB-modal-field .NB-classifier-input-row .NB-classifier-regex-input-inline {
     flex: 1;
     margin-bottom: 0;
-    padding: 5px 8px;
+    padding: 0 10px;
+    height: 30px;
     box-sizing: border-box;
 }
 
@@ -9087,63 +9093,62 @@ form.opml_import_form input {
     color: white;
 }
 
-/* Regex tips panel */
-.NB-classifier-regex-tips {
+/* Help icon to left of input */
+.NB-classifier-help-icon {
+    font-size: 16px;
+    color: #aaa;
+    cursor: help;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 30px;
+}
+
+.NB-classifier-help-icon:hover {
+    color: #666;
+}
+
+/* Info icon inside Regex button */
+.NB-regex-info-icon {
+    margin-left: 4px;
+    font-size: 10px;
+    opacity: 0.7;
+    cursor: help;
+}
+
+.NB-regex-info-icon:hover {
+    opacity: 1;
+}
+
+/* Regex popover */
+.NB-classifier-regex-popover {
     display: none;
+    position: absolute;
+    z-index: 10000;
     background: linear-gradient(135deg, #f8f7ff 0%, #f0edff 100%);
     border: 1px solid #d8d4ff;
     border-radius: 6px;
     padding: 12px 14px;
-    margin: 8px 0;
     font-size: 11px;
     line-height: 1.5;
+    max-height: 350px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 520px;
 }
 
-.NB-classifier-regex-tips.NB-visible {
+.NB-classifier-regex-popover.NB-visible {
     display: block;
 }
 
-.NB-classifier-regex-tips-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    margin-bottom: 10px;
-}
-
-.NB-classifier-regex-tips-header:hover {
-    opacity: 0.8;
-}
-
-.NB-classifier-regex-tips-title {
-    font-weight: 600;
-    color: #5a4fcf;
-    font-size: 12px;
-}
-
-.NB-classifier-regex-tips-toggle {
-    font-size: 10px;
-    color: #888;
-}
-
-.NB-classifier-regex-tips-content {
-    transition: max-height 0.2s ease;
-}
-
-.NB-classifier-regex-tips.NB-collapsed .NB-classifier-regex-tips-content {
-    display: none;
-}
-
-.NB-classifier-regex-tips.NB-collapsed .NB-classifier-regex-tips-header {
-    margin-bottom: 0;
-}
-
-.NB-classifier-regex-tips-columns {
+.NB-classifier-regex-popover-columns {
     display: flex;
     gap: 20px;
 }
 
-.NB-classifier-regex-tips-column {
+.NB-classifier-regex-popover-column {
     flex: 1;
     min-width: 0;
 }
@@ -9163,20 +9168,20 @@ form.opml_import_form input {
     margin-top: 0;
 }
 
-.NB-classifier-regex-tips-list {
+.NB-classifier-regex-popover-list {
     margin: 0;
     padding-left: 0;
     list-style: none;
 }
 
-.NB-classifier-regex-tips-list li {
+.NB-classifier-regex-popover-list li {
     margin-bottom: 3px;
     color: #555;
     font-size: 10px;
     line-height: 1.4;
 }
 
-.NB-classifier-regex-tips-list code {
+.NB-classifier-regex-popover-list code {
     background: rgba(123, 104, 238, 0.15);
     padding: 1px 4px;
     border-radius: 3px;
@@ -9186,7 +9191,7 @@ form.opml_import_form input {
     white-space: nowrap;
 }
 
-.NB-classifier-regex-tips-note {
+.NB-classifier-regex-popover-note {
     margin-top: 10px;
     padding-top: 8px;
     border-top: 1px solid rgba(123, 104, 238, 0.2);
@@ -9195,11 +9200,18 @@ form.opml_import_form input {
     font-style: italic;
 }
 
-/* Unified text/title input styling */
+/* Input row positioning for popover */
+.NB-classifier-input-row {
+    position: relative;
+}
+
+/* Unified text/title/url input styling */
 .NB-classifier-text-input,
-.NB-classifier-title-input {
+.NB-classifier-title-input,
+.NB-classifier-url-input {
     flex: 1;
-    padding: 6px 8px;
+    height: 30px;
+    padding: 0 8px;
     font-size: 12px;
     border: 1px solid #ddd;
     border-radius: 3px;
@@ -9207,7 +9219,8 @@ form.opml_import_form input {
 }
 
 .NB-classifier-text-input:focus,
-.NB-classifier-title-input:focus {
+.NB-classifier-title-input:focus,
+.NB-classifier-url-input:focus {
     border-color: #4A90D9;
     outline: none;
 }
@@ -9227,11 +9240,16 @@ form.opml_import_form input {
 /* Unified validation div styling */
 .NB-classifier-validation-inline {
     font-size: 11px;
-    margin: 4px 0 6px;
+    margin: 12px 0 12px 36px;
     min-height: 18px;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+}
+
+.NB-classifier-validation-inline:empty {
+    display: none;
+    margin: 0;
 }
 
 /* Regex validation badges */
@@ -9265,6 +9283,30 @@ form.opml_import_form input {
     background: #ffebee;
     color: #c62828;
     border: 1px solid #ef9a9a;
+}
+
+/* Full content match warning */
+.NB-regex-full-match-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+    border: 1px solid #ffcc02;
+    border-radius: 6px;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.NB-regex-warning-icon {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: #f57c00;
+}
+
+.NB-regex-warning-text {
+    color: #5d4037;
 }
 
 /* =================== */
@@ -9988,7 +10030,7 @@ form.opml_import_form input {
     transform: translate(-50%, -50%);
     font-size: 24px;
     color: #fff;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .NB-module-trial .NB-module-trial-message {
@@ -16247,7 +16289,8 @@ form.opml_import_form input {
 /* Green checkmarks for free tier - override absolute positioning for flex layout */
 .NB-premium-tier-features-free li .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/accept.svg');
-    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);  /* green */
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
+    /* green */
     width: 12px;
     height: 12px;
     background-size: 12px;
@@ -16355,7 +16398,8 @@ form.opml_import_form input {
 /* Green checkmarks for self-hosted tier - override absolute positioning for flex layout */
 .NB-premium-tier-features-selfhosted li .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/accept.svg');
-    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);  /* green */
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
+    /* green */
     width: 12px;
     height: 12px;
     background-size: 12px;
@@ -16407,8 +16451,8 @@ form.opml_import_form input {
     right: 0;
     bottom: 0;
     background:
-        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 40%);
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 40%);
     pointer-events: none;
 }
 
@@ -16489,103 +16533,148 @@ form.opml_import_form input {
 /* Premium tier icons with individual vivid colors */
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-1 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-sheets-100.png');
-    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);  /* green */
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
+    /* green */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-2 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-lightning-bolt-100.png');
-    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%); /* orange */
+    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%);
+    /* orange */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-3 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-comics-magazine-100.png');
-    filter: invert(36%) sepia(87%) saturate(2000%) hue-rotate(310deg) brightness(95%) contrast(100%);  /* pink */
+    filter: invert(36%) sepia(87%) saturate(2000%) hue-rotate(310deg) brightness(95%) contrast(100%);
+    /* pink */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-4 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
-    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);  /* blue */
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
+    /* blue */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-5 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-tags-100.png');
-    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);  /* purple */
+    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);
+    /* purple */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-6 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-security-wi-fi-100.png');
-    filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(140deg) brightness(95%) contrast(95%);   /* teal */
+    filter: invert(55%) sepia(75%) saturate(1500%) hue-rotate(140deg) brightness(95%) contrast(95%);
+    /* teal */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-7 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-rss-100.png');
-    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);  /* red */
+    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);
+    /* red */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-8 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-activity-history-100.png');
-    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);   /* cyan */
+    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
+    /* cyan */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-9 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/direction_black.svg');
-    filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);  /* violet */
+    filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);
+    /* violet */
 }
+
 .NB-premium-tier-premium .NB-premium-tier-features li.NB-10 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-knife-and-spatchula-100.png');
-    filter: invert(60%) sepia(80%) saturate(1500%) hue-rotate(35deg) brightness(100%) contrast(100%);  /* yellow-gold */
+    filter: invert(60%) sepia(80%) saturate(1500%) hue-rotate(35deg) brightness(100%) contrast(100%);
+    /* yellow-gold */
 }
 
 /* Archive tier icons with individual vivid colors */
 .NB-premium-tier-features-archive li.NB-1 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-bursts-100.png');
-    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);  /* red */
+    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);
+    /* red */
 }
+
 .NB-premium-tier-features-archive li.NB-2 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-relax-with-book-100.png');
-    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);   /* green */
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
+    /* green */
 }
+
 .NB-premium-tier-features-archive li.NB-3 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-filing-cabinet-100.png');
-    filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);   /* brown-orange */
+    filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);
+    /* brown-orange */
 }
+
 .NB-premium-tier-features-archive li.NB-4 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-quadcopter-100.png');
-    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);  /* blue */
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
+    /* blue */
 }
+
 .NB-premium-tier-features-archive li.NB-5 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/train.svg');
-    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);  /* blue */
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
+    /* blue */
 }
+
 .NB-premium-tier-features-archive li.NB-6 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/direction_black.svg');
-    filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);  /* violet */
+    filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);
+    /* violet */
 }
+
 .NB-premium-tier-features-archive li.NB-7 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-rss-100.png');
-    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%); /* orange */
+    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%);
+    /* orange */
 }
+
 .NB-premium-tier-features-archive li.NB-8 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-calendar-100.png');
-    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);   /* cyan */
+    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
+    /* cyan */
 }
+
 .NB-premium-tier-features-archive li.NB-9 .NB-premium-bullet-image {
     background-image: url('/media/img/icons/nouns/prompt.svg');
-    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);  /* purple */
+    filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);
+    /* purple */
 }
 
 /* Pro tier icons with individual vivid colors */
 .NB-premium-tier-features-pro li.NB-1 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/stack.svg');
-    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);  /* green */
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(95%) contrast(100%);
+    /* green */
 }
+
 .NB-premium-tier-features-pro li.NB-2 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-lightning-bolt-100.png');
-    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%); /* orange */
+    filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%);
+    /* orange */
 }
+
 .NB-premium-tier-features-pro li.NB-3 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-pyramids-100.png');
-    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
+    /* gold */
 }
+
 .NB-premium-tier-features-pro li.NB-4 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/train.svg');
-    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
+    /* gold */
 }
+
 .NB-premium-tier-features-pro li.NB-5 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
-    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);  /* gold */
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
+    /* gold */
 }
 
 
@@ -16726,32 +16815,32 @@ form.opml_import_form input {
 
 .NB-premium-tier-premium .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green {
     background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
-    box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 1px 2px rgba(22, 163, 74, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .NB-premium-tier-premium .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green:hover {
     background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
-    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .NB-premium-tier-archive .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green {
     background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
-    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .NB-premium-tier-archive .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green:hover {
     background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .NB-premium-tier-pro .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green {
     background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
-    box-shadow: 0 1px 2px rgba(217, 119, 6, 0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 1px 2px rgba(217, 119, 6, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .NB-premium-tier-pro .NB-premium-tier-buttons .NB-modal-submit-button.NB-modal-submit-green:hover {
     background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
-    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .NB-premium-tier-buttons .NB-provider-alternate {
@@ -21824,7 +21913,7 @@ form.opml_import_form input {
     padding: 16px 18px 16px 40px;
 }
 
-.NB-social-card input[type="radio"]:checked + .NB-social-card-content {
+.NB-social-card input[type="radio"]:checked+.NB-social-card-content {
     border-color: #5c89b2;
     background: #f0f7fc;
 }
@@ -21834,7 +21923,7 @@ form.opml_import_form input {
     background: #f0f0f0;
 }
 
-.NB-social-card input[type="radio"]:checked + .NB-social-card-content:hover {
+.NB-social-card input[type="radio"]:checked+.NB-social-card-content:hover {
     background: #e8f2f8;
 }
 
@@ -21884,7 +21973,7 @@ form.opml_import_form input {
     background: #2a2a2a;
 }
 
-.NB-dark .NB-social-card input[type="radio"]:checked + .NB-social-card-content {
+.NB-dark .NB-social-card input[type="radio"]:checked+.NB-social-card-content {
     border-color: #5c89b2;
     background: #2d3a47;
 }
@@ -22414,9 +22503,17 @@ form.opml_import_form input {
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    75% { transform: translateX(4px); }
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-4px);
+    }
+
+    75% {
+        transform: translateX(4px);
+    }
 }
 
 .NB-blocklist-add-btn {
@@ -23114,6 +23211,7 @@ form.opml_import_form input {
         opacity: 0.3;
         transform: scale(0.8);
     }
+
     40% {
         opacity: 1;
         transform: scale(1);
@@ -23544,7 +23642,7 @@ form.opml_import_form input {
 
 .NB-archive-category-filter.NB-active .NB-archive-filter-count,
 .NB-archive-domain-filter.NB-active .NB-archive-filter-count {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     color: #FFF;
 }
 
@@ -23581,7 +23679,7 @@ form.opml_import_form input {
     background: #FFF;
     border: 1px solid #DDD;
     border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     padding: 16px;
 }
 
@@ -23640,7 +23738,7 @@ form.opml_import_form input {
 }
 
 .NB-archive-date-custom.NB-active .NB-archive-date-custom-clear {
-    color: rgba(255,255,255,0.6);
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .NB-archive-date-custom.NB-active .NB-archive-date-custom-clear:hover {
@@ -23985,10 +24083,12 @@ form.opml_import_form input {
         padding-bottom: 0;
         border-width: 0;
     }
+
     40% {
         opacity: 0.3;
         border-width: 1px;
     }
+
     100% {
         opacity: 1;
         max-height: 200px;
@@ -24008,6 +24108,7 @@ form.opml_import_form input {
         opacity: 0;
         transform: translateY(-8px) scale(0.9);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0) scale(1);
