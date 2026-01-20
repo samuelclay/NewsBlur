@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Intelligence Trainer: URL classifiers, regex mode, and manage all training in one place"
+title: "Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place"
 tags: ["web"]
 ---
 
@@ -34,6 +34,7 @@ A segmented control lets you switch between "Exact phrase" and "Regex" mode. In 
 
 - **Word boundaries** (`\b`): Match `\bapple\b` to find "apple" but not "pineapple"
 - **Alternation** (`|`): Match `iPhone|iPad|Mac` in a single classifier
+- **Optional characters** (`?`): Match `colou?r` to find both "color" and "colour"
 - **Anchors** (`^` and `$`): Match patterns at the start or end of text
 - **Character classes**: Match `[0-9]+` for any number sequence
 
@@ -51,7 +52,7 @@ The new Manage Training tab provides a consolidated view of every classifier you
 
 <img src="/assets/manage-training-overview.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
 
-Open the Intelligence Trainer from the sidebar menu (or press the `t` key). You'll now see two tabs at the top: "Site by Site" and "Manage Training".
+Open the Intelligence Trainer from the sidebar menu (or press the `t` key). You'll now see two tabs at the top: "Site by Site" and "Manage Training". The Manage Training tab is available everywhere you train—from the story trainer, feed trainer, or the main Intelligence Trainer dialog.
 
 The Site by Site tab is the existing trainer you know—it walks you through each feed showing authors, tags, and titles you can train. That's still the best way to train new feeds with lots of suggestions.
 
