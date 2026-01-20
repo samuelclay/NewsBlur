@@ -17333,18 +17333,24 @@ h5.NB-classifier-section-header {
 }
 
 .NB-premium-tier-features-pro li.NB-3 .NB-premium-bullet-image {
-    background-image: url('/media/embed/icons/icons8/icons8-pyramids-100.png');
-    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
-    /* gold */
-}
-
-.NB-premium-tier-features-pro li.NB-4 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/train.svg');
     filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
     /* gold */
 }
 
+.NB-premium-tier-features-pro li.NB-4 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-pyramids-100.png');
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
+    /* gold */
+}
+
 .NB-premium-tier-features-pro li.NB-5 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/train.svg');
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
+    /* gold */
+}
+
+.NB-premium-tier-features-pro li.NB-6 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
     filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
     /* gold */
@@ -17645,6 +17651,14 @@ h5.NB-classifier-section-header {
     width: 28px;
     height: 28px;
     margin: 0 0 8px 0;
+}
+
+.NB-premium-tier-status-included .NB-premium-tier-status-icon {
+    background: rgba(107, 114, 128, 0.12);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: 14px;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .NB-premium-tier-status-active .NB-premium-tier-status-text,
