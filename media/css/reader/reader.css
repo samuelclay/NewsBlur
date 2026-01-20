@@ -7985,29 +7985,40 @@ form.opml_import_form input {
 }
 
 .NB-modal-classifiers .NB-modal-header .NB-modal-subtitle {
-    flex: 1;
+    display: flex;
+    align-items: center;
     overflow: visible;
     margin: 0;
     padding: 8px 0;
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
+    flex: 1;
+    min-width: 0;
 }
 
 .NB-modal-classifiers .NB-modal-header .NB-modal-subtitle .NB-modal-feed-image {
+    float: none;
     flex-shrink: 0;
-    margin: 0px 0 0 6px;
+    margin: 0 8px 0 6px;
 }
 
 .NB-modal-classifiers .NB-modal-header .NB-modal-feed-heading {
     display: flex;
-    flex-wrap: wrap;
     align-items: baseline;
-    gap: 8px;
+    flex-wrap: wrap;
+    gap: 6px;
+    overflow: visible;
     margin: 0;
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-modal-classifiers .NB-modal-header .NB-modal-feed-title {
+    float: none;
+    display: inline;
 }
 
 .NB-modal-classifiers .NB-modal-header .NB-modal-feed-subscribers {
+    float: none;
+    display: inline-block;
     font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
@@ -8016,6 +8027,7 @@ form.opml_import_form input {
     padding: 2px 6px;
     border-radius: 3px;
     white-space: nowrap;
+    margin: 0;
 }
 
 .NB-modal-classifiers .NB-modal-header .NB-modal-tabs {
