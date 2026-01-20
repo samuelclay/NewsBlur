@@ -1052,9 +1052,7 @@ var classifier_prototype = {
         var $like = $('.NB-classifier-input-like', $classifier);
         var $dislike = $('.NB-classifier-input-dislike', $classifier);
 
-        var $save = $('.NB-modal-submit-save', this.$modal);
         var $close = $('.NB-modal-submit-grey', this.$modal);
-        var $back = $('.NB-modal-submit-back', this.$modal);
 
         if (classifier_opinion == 'like') {
             if ($classifier.is('.NB-classifier-like')) {
@@ -1083,9 +1081,34 @@ var classifier_prototype = {
         if (this.options['training']) {
             $close.text('Save & Close');
         } else {
-            $save.removeClass("NB-disabled").text('Save Training');
+            this.update_save_button();
         }
         // NEWSBLUR.log(['change_classifier', classifier_opinion, $classifier, $like.is(':checked'), $dislike.is(':checked')]);
+    },
+
+    count_selected_classifiers: function () {
+        return this.$modal.find('.NB-classifier.NB-classifier-like, .NB-classifier.NB-classifier-dislike').length;
+    },
+
+    get_save_button_text: function (count) {
+        if (count === 0) {
+            return 'Check what you like above...';
+        } else if (count === 1) {
+            return 'Save 1 classifier';
+        } else {
+            return 'Save ' + count + ' classifiers';
+        }
+    },
+
+    update_save_button: function () {
+        var $save = $('.NB-modal-submit-save', this.$modal);
+        var count = this.count_selected_classifiers();
+
+        if (count === 0) {
+            $save.addClass('NB-disabled').text(this.get_save_button_text(0));
+        } else {
+            $save.removeClass('NB-disabled').text(this.get_save_button_text(count));
+        }
     },
 
     end: function () {
