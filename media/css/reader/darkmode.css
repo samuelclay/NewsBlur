@@ -2686,14 +2686,29 @@ a.mention, a.mention-group {
     color: white;
 }
 
-/* Regex tips - dark mode */
-.NB-dark .NB-classifier-regex-tips {
-    background: linear-gradient(135deg, #2a2a3a 0%, #252535 100%);
-    border-color: #4a4a6a;
+/* Help icon - dark mode */
+.NB-dark .NB-classifier-help-icon {
+    color: #777;
 }
 
-.NB-dark .NB-classifier-regex-tips-title {
-    color: #9890e0;
+.NB-dark .NB-classifier-help-icon:hover {
+    color: #aaa;
+}
+
+/* Regex info icon - dark mode */
+.NB-dark .NB-regex-info-icon {
+    opacity: 0.7;
+}
+
+.NB-dark .NB-regex-info-icon:hover {
+    opacity: 1;
+}
+
+/* Regex popover - dark mode */
+.NB-dark .NB-classifier-regex-popover {
+    background: linear-gradient(135deg, #2a2a3a 0%, #252535 100%);
+    border-color: #4a4a6a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .NB-dark .NB-regex-tip-category {
@@ -2701,30 +2716,32 @@ a.mention, a.mention-group {
     border-bottom-color: rgba(123, 104, 238, 0.3);
 }
 
-.NB-dark .NB-classifier-regex-tips-list li {
+.NB-dark .NB-classifier-regex-popover-list li {
     color: #aaa;
 }
 
-.NB-dark .NB-classifier-regex-tips-list code {
+.NB-dark .NB-classifier-regex-popover-list code {
     background: rgba(123, 104, 238, 0.25);
     color: #b0a8f0;
 }
 
-.NB-dark .NB-classifier-regex-tips-note {
+.NB-dark .NB-classifier-regex-popover-note {
     color: #888;
     border-top-color: rgba(123, 104, 238, 0.3);
 }
 
-/* Unified text/title input - dark mode */
+/* Unified text/title/url input - dark mode */
 .NB-dark .NB-classifier-text-input,
-.NB-dark .NB-classifier-title-input {
+.NB-dark .NB-classifier-title-input,
+.NB-dark .NB-classifier-url-input {
     background: #2a2c2e;
     border-color: #4a4c4e;
     color: #e0e0e0;
 }
 
 .NB-dark .NB-classifier-text-input:focus,
-.NB-dark .NB-classifier-title-input:focus {
+.NB-dark .NB-classifier-title-input:focus,
+.NB-dark .NB-classifier-url-input:focus {
     border-color: #4A90D9;
 }
 
@@ -2757,6 +2774,20 @@ a.mention, a.mention-group {
     background: #3a1b1b;
     color: #ef6f6f;
     border-color: #5a2e2e;
+}
+
+/* Full content match warning - dark mode */
+.NB-dark .NB-regex-full-match-warning {
+    background: linear-gradient(135deg, #3a3020 0%, #4a3a20 100%);
+    border-color: #8b7b3b;
+}
+
+.NB-dark .NB-regex-warning-icon {
+    color: #ffb74d;
+}
+
+.NB-dark .NB-regex-warning-text {
+    color: #d7ccc8;
 }
 
 /* ===================================== */
