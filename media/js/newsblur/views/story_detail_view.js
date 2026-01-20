@@ -27,6 +27,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-header-title": "open_feed",
         "click .NB-feed-story-tag": "save_classifier",
         "click .NB-feed-story-author": "save_classifier",
+        "click .NB-feed-story-url": "save_url_classifier",
         "click .NB-feed-story-train": "open_story_trainer",
         "click .NB-feed-story-email": "open_email",
         "click .NB-sideoption-sharing": "click_sharing_service",
@@ -235,6 +236,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             authors_score: this.classifiers &&
                 this.classifiers.authors[this.model.get('story_authors')],
             tags_score: this.classifiers && this.classifiers.tags,
+            url_match: this.get_url_match(),
             options: this.options,
             truncatable: this.is_truncatable(),
             inline_story_title: this.options.inline_story_title,
@@ -245,6 +247,72 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
             show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai"),
             sharing_services: NEWSBLUR.assets.third_party_sharing_services,
+        };
+    },
+
+    get_url_match: function () {
+        if (!this.classifiers) return null;
+
+        var permalink = this.model.get('story_permalink') || '';
+        var url_match = null;
+        var max_display_length = 80;
+
+        // Check exact URL matches
+        _.each(this.classifiers.urls, function (classifier_score, classifier_url) {
+            if (url_match) return;
+            var index = permalink.toLowerCase().indexOf(classifier_url.toLowerCase());
+            if (index !== -1) {
+                var matched = permalink.substr(index, classifier_url.length);
+                url_match = this.format_url_match(permalink, index, matched.length, classifier_score, classifier_url, false, max_display_length);
+            }
+        }, this);
+
+        // Check regex URL matches (PRO only)
+        if (!url_match && NEWSBLUR.Globals.is_pro && this.classifiers.url_regex) {
+            _.each(this.classifiers.url_regex, function (classifier_score, pattern) {
+                if (url_match) return;
+                try {
+                    var regex = new RegExp(pattern, 'i');
+                    var match = permalink.match(regex);
+                    if (match) {
+                        var index = match.index;
+                        var matched = match[0];
+                        url_match = this.format_url_match(permalink, index, matched.length, classifier_score, pattern, true, max_display_length);
+                    }
+                } catch (e) {
+                    // Invalid regex, skip
+                }
+            }, this);
+        }
+
+        return url_match;
+    },
+
+    format_url_match: function (permalink, index, matched_length, score, pattern, is_regex, max_display_length) {
+        var matched = permalink.substr(index, matched_length);
+        var before = permalink.substr(0, index);
+        var after = permalink.substr(index + matched_length);
+
+        // Calculate how much space we have for before/after
+        var available_for_context = max_display_length - matched.length;
+        var before_max = Math.floor(available_for_context / 2);
+        var after_max = available_for_context - before_max;
+
+        // Truncate if needed
+        if (before.length > before_max) {
+            before = '…' + before.substr(before.length - before_max + 1);
+        }
+        if (after.length > after_max) {
+            after = after.substr(0, after_max - 1) + '…';
+        }
+
+        return {
+            score: score,
+            pattern: pattern,
+            is_regex: is_regex,
+            before: before,
+            matched: matched,
+            after: after
         };
     },
 
@@ -292,6 +360,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                                     <%= tag %>\
                                 </div>\
                             <% }) %>\
+                        </div>\
+                    <% } %>\
+                    <% if (url_match && url_match.score) { %>\
+                        <div class="NB-feed-story-url-match">\
+                            <span class="NB-feed-story-url NB-score-<%= url_match.score %>">\
+                                <span class="NB-feed-story-url-label">URL: </span><span class="NB-feed-story-url-before"><%= url_match.before %></span><span class="NB-feed-story-url-matched"><%= url_match.matched %></span><span class="NB-feed-story-url-after"><%= url_match.after %></span>\
+                            </span>\
                         </div>\
                     <% } %>\
                 </div>\
@@ -1415,6 +1490,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         this.model.trigger('change:intelligence');
         this.preserve_classifier_color(classifier_type, value, score);
+    },
+
+    save_url_classifier: function (e) {
+        // Open the Intelligence Trainer instead of toggling inline
+        // URL classifiers are complex and benefit from the full trainer interface
+        this.open_story_trainer();
     },
 
     open_story_trainer: function () {

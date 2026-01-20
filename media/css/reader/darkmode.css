@@ -1638,6 +1638,92 @@ color: #fff;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
 
+/* URL Match Display - Dark Mode */
+.NB-dark .NB-feed-story .NB-feed-story-url-match .NB-middot {
+    color: #606060;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url {
+    background-color: rgba(255, 255, 255, .05);
+    color: #909090;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url .NB-feed-story-url-label {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score-1 {
+    /* Green */
+    background-color: rgba(98, 124, 80, 0.3);
+    color: #8aaa70;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score-1 .NB-feed-story-url-matched {
+    color: #a0ca80;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score--1 {
+    /* Red */
+    background-color: rgba(144, 80, 81, 0.3);
+    color: #c08080;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score--1 .NB-feed-story-url-matched {
+    color: #d58586;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url:hover {
+    /* Gray, active -> Green */
+    background-color: rgba(98, 124, 80, 0.4);
+    color: #8aaa70;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score-1:hover {
+    /* Green, hover -> Darker Green */
+    background-color: rgba(98, 124, 80, 0.5);
+    color: #a0ca80;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score-1:hover .NB-feed-story-url-matched {
+    color: #b8dc98;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score--1:hover {
+    /* Red, hover -> Darker Red */
+    background-color: rgba(144, 80, 81, 0.5);
+    color: #d58586;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score--1:hover .NB-feed-story-url-matched {
+    color: #e89a9b;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score-now-0:hover {
+    /* Grey, active */
+    background-color: rgba(255, 255, 255, .05);
+    color: #909090;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score-now-1.NB-score-1:hover {
+    /* Green, active */
+    background-color: rgba(98, 124, 80, 0.5);
+    color: #a0ca80;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score-now-1.NB-score-1:hover .NB-feed-story-url-matched {
+    color: #a0ca80;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score-now--1.NB-score--1:hover {
+    /* Red, active */
+    background-color: rgba(144, 80, 81, 0.5);
+    color: #d58586;
+}
+
+.NB-dark .NB-feed-story .NB-feed-story-url.NB-score-now--1.NB-score--1:hover .NB-feed-story-url-matched {
+    color: #d58586;
+}
+
 
 /* Story title text color */
 .NB-dark .NB-feed-story a.NB-feed-story-title {

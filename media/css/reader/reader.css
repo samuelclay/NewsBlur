@@ -4473,6 +4473,143 @@ body {
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
 
+/* URL Match Display */
+.NB-feed-story .NB-feed-story-url-match {
+    margin: 5px 0 6px;
+    padding-left: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.NB-feed-story .NB-feed-story-url-match .NB-middot {
+    color: #A0A0A0;
+    font-size: 10px;
+    padding-right: 8px;
+    margin-left: -12px;
+    font-weight: normal;
+}
+
+.NB-feed-story .NB-feed-story-url {
+    display: inline-block;
+    cursor: pointer;
+    font-weight: normal;
+    font-size: 11px;
+    font-style: italic;
+    font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    border-radius: 4px;
+    padding: 2px 6px;
+    line-height: 14px;
+    background-color: rgba(0, 0, 0, .05);
+    color: #808080;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-feed-story .NB-feed-story-url .NB-feed-story-url-label {
+    font-style: normal;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.NB-theme-size-xs .NB-feed-story .NB-feed-story-url {
+    font-size: 8px;
+}
+
+.NB-theme-size-s .NB-feed-story .NB-feed-story-url {
+    font-size: 9px;
+}
+
+.NB-theme-size-l .NB-feed-story .NB-feed-story-url {
+    font-size: 12px;
+}
+
+.NB-theme-size-xl .NB-feed-story .NB-feed-story-url {
+    font-size: 13px;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score-1 {
+    /* Green */
+    background-color: rgba(163, 202, 135, 0.3);
+    color: #557a40;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score-1 .NB-feed-story-url-matched {
+    color: #34912E;
+    font-weight: bold;
+    font-style: normal;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score--1 {
+    /* Red */
+    background-color: rgba(213, 133, 134, 0.3);
+    color: #8a5556;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score--1 .NB-feed-story-url-matched {
+    color: #A90103;
+    font-weight: bold;
+    font-style: normal;
+}
+
+.NB-feed-story .NB-feed-story-url:hover {
+    /* Gray, active -> [Light] Green */
+    background-color: rgba(163, 202, 135, 0.5);
+    color: #557a40;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score-1:hover {
+    /* Green, hover -> Darker Green */
+    background-color: rgba(52, 145, 46, 0.3);
+    color: #34912E;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score-1:hover .NB-feed-story-url-matched {
+    color: #256b21;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score--1:hover {
+    /* Red, hover -> Darker Red */
+    background-color: rgba(169, 1, 3, 0.3);
+    color: #A90103;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score--1:hover .NB-feed-story-url-matched {
+    color: #800102;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score-now-0:hover {
+    /* Grey, active */
+    background-color: rgba(0, 0, 0, .05);
+    color: #808080;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score-now-0:hover .NB-feed-story-url-matched {
+    color: #808080;
+    font-weight: normal;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score-now-1.NB-score-1:hover {
+    /* Green, active */
+    background-color: rgba(52, 145, 46, 0.3);
+    color: #34912E;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score-now-1.NB-score-1:hover .NB-feed-story-url-matched {
+    color: #34912E;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score-now--1.NB-score--1:hover {
+    /* Red, active */
+    background-color: rgba(169, 1, 3, 0.3);
+    color: #A90103;
+}
+
+.NB-feed-story .NB-feed-story-url.NB-score-now--1.NB-score--1:hover .NB-feed-story-url-matched {
+    color: #A90103;
+}
+
 .NB-feed-story .NB-feed-story-title .NB-score-1 {
     color: #34912E;
 }
