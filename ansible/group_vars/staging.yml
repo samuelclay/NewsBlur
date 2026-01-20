@@ -1,3 +1,3 @@
 ---
-git_branch: main
+git_branch: trainer-dialog
 disable_consul_services_ie_staging: yes
