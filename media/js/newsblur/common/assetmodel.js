@@ -2222,7 +2222,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 tags: 0,
                 title: 0,
                 text: 0,
-                regex: 0
+                regex: 0,
+                url: 0,
+                url_regex: 0
             };
 
             _.each(this.classifiers[feed_id].titles, function (classifier_score, classifier_title) {
@@ -2274,6 +2276,33 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                             var content_match = regex.test(story.get('story_content', ''));
                             if (title_match || content_match) {
                                 intelligence.regex = classifier_score;
+                            }
+                        } catch (e) {
+                            // Invalid regex, skip
+                        }
+                    }
+                });
+            }
+
+            // URL exact phrase classifiers
+            _.each(this.classifiers[feed_id].urls, function (classifier_score, classifier_url) {
+                if (intelligence.url <= 0) {
+                    var permalink = story.get('story_permalink') || '';
+                    if (permalink.toLowerCase().indexOf(classifier_url.toLowerCase()) != -1) {
+                        intelligence.url = classifier_score;
+                    }
+                }
+            });
+
+            // URL regex classifiers (PRO only)
+            if (user_is_pro && this.classifiers[feed_id].url_regex) {
+                _.each(this.classifiers[feed_id].url_regex, function (classifier_score, pattern) {
+                    if (intelligence.url_regex <= 0) {
+                        try {
+                            var regex = new RegExp(pattern, 'i');
+                            var permalink = story.get('story_permalink') || '';
+                            if (regex.test(permalink)) {
+                                intelligence.url_regex = classifier_score;
                             }
                         } catch (e) {
                             // Invalid regex, skip

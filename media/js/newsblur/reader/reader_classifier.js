@@ -1335,10 +1335,8 @@ var classifier_prototype = {
                             $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-error' }, validation_result.error));
                         }
                     } else {
-                        // Exact phrase validation - substring check
-                        if (story_url.toLowerCase().indexOf(text.toLowerCase()) >= 0) {
-                            $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-match' }, '✓ Found in URL'));
-                        } else {
+                        // Exact phrase - only show badge when NOT found (since selected text is usually found)
+                        if (story_url.toLowerCase().indexOf(text.toLowerCase()) === -1) {
                             $url_validation.append($.make('span', { className: 'NB-regex-badge NB-regex-badge-no-match' }, 'Not found in URL'));
                         }
                     }
