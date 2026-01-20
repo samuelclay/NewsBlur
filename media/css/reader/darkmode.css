@@ -3406,3 +3406,102 @@ a.mention, a.mention-group {
     background: #444;
     border-color: #666;
 }
+
+/* ============================== */
+/* = Manage Training Tab Styles = */
+/* ============================== */
+
+.NB-dark .NB-manage-folder-title {
+    background-color: #2a2a2a;
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-manage-feed {
+    border-left-color: #404040;
+}
+
+.NB-dark .NB-manage-feed-title {
+    color: #d0d0d0;
+}
+
+.NB-dark .NB-manage-training-empty-icon {
+    filter: invert(1);
+    opacity: 0.4;
+}
+
+.NB-dark .NB-manage-training-empty-message h3 {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-manage-training-empty-message p {
+    color: #909090;
+}
+
+.NB-dark .NB-manage-loading-text {
+    color: #909090;
+}
+
+.NB-dark .NB-manage-training-error h3 {
+    color: #c0c0c0;
+}
+
+.NB-dark .NB-manage-training-error p {
+    color: #909090;
+}
+
+.NB-dark .NB-manage-saved-message {
+    color: #6ab04c;
+}
+
+.NB-dark .NB-manage-training-error-icon {
+    filter: invert(1);
+}
+
+.NB-dark .NB-manage-filter-bar {
+    border-bottom-color: #404040;
+}
+
+.NB-dark .NB-manage-filter-label {
+    color: #707070;
+}
+
+/* Bright green (like) and red (dislike) when inactive in dark mode */
+.NB-dark .NB-manage-filter-icon.NB-icon-like {
+    filter: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(436%) hue-rotate(87deg) brightness(92%) contrast(91%);
+}
+
+.NB-dark .NB-manage-filter-icon.NB-icon-dislike {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(100%) saturate(6000%) hue-rotate(0deg) brightness(90%) contrast(110%);
+}
+
+/* Yellowish-orange when active/selected in dark mode */
+.NB-dark .NB-manage-sentiment-control li.NB-active .NB-icon-like,
+.NB-dark .NB-manage-sentiment-control li.NB-active .NB-icon-dislike {
+    filter: invert(67%) sepia(89%) saturate(497%) hue-rotate(2deg) brightness(103%) contrast(104%);
+}
+
+/* Feed chooser dropdown in dark mode */
+.NB-dark .NB-manage-feed-chooser {
+    background: #303030;
+    border-color: #505050;
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-manage-feed-chooser:focus {
+    border-color: #50A050;
+}
+
+/* Search input in dark mode */
+.NB-dark .NB-manage-search-input {
+    background: #303030;
+    border-color: #505050;
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-manage-search-input:focus {
+    border-color: #50A050;
+}
+
+.NB-dark .NB-manage-search-input::placeholder {
+    color: #707070;
+}
