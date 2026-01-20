@@ -2400,8 +2400,7 @@
             [self.detailViewController checkLayout];
         }
         
-        BOOL animated = (!self.isPhone &&
-                         !self.tryFeedCategory);
+        BOOL animated = !self.tryFeedCategory;
         [self.storyPagesViewController view];
         [self.storyPagesViewController.view setNeedsLayout];
         [self.storyPagesViewController.view layoutIfNeeded];
