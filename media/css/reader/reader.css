@@ -8000,8 +8000,22 @@ form.opml_import_form input {
 }
 
 .NB-modal-classifiers .NB-modal-header .NB-modal-feed-heading {
-    display: inline;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
     margin: 0;
+}
+
+.NB-modal-classifiers .NB-modal-header .NB-modal-feed-subscribers {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #808080;
+    background: #e8e8e8;
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
 }
 
 .NB-modal-classifiers .NB-modal-header .NB-modal-tabs {
@@ -9908,6 +9922,52 @@ form.opml_import_form input {
 
 .NB-regex-warning-text {
     color: #5d4037;
+}
+
+/* Section header with inline notices */
+h5.NB-classifier-section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.NB-classifier-header-notices {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    font-size: 10px;
+    font-weight: normal;
+    text-align: right;
+}
+
+/* Archive notice - always visible for non-archive users */
+.NB-classifier-archive-notice,
+.NB-classifier-pro-notice {
+    color: #807060;
+    white-space: nowrap;
+}
+
+.NB-classifier-archive-notice a,
+.NB-classifier-pro-notice a {
+    color: #d97706;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.NB-classifier-archive-notice a:hover,
+.NB-classifier-pro-notice a:hover {
+    text-decoration: underline;
+}
+
+/* Pro/Regex notice - hidden by default, shown when regex selected */
+.NB-classifier-pro-notice {
+    display: none;
+}
+
+.NB-classifier-pro-notice.NB-visible {
+    display: block;
 }
 
 /* =================== */

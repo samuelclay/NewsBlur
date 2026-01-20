@@ -656,7 +656,19 @@ var classifier_prototype = {
         var story_content = story.get('story_content') || '';
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-text-section', 'data-section': 'text' }, [
-            $.make('h5', 'Story Text'),
+            $.make('h5', { className: 'NB-classifier-section-header' }, [
+                $.make('span', 'Story Text'),
+                $.make('span', { className: 'NB-classifier-header-notices' }, [
+                    (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-archive-notice' }, [
+                        'Requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                    ])),
+                    (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
+                        'Regex requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro')
+                    ]))
+                ])
+            ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                 $.make('div', { className: 'NB-classifier-input-row' }, [
                     $.make('span', { className: 'NB-classifier-help-icon', title: 'Enter a phrase or regex pattern. You can also highlight text in the story and click Train to populate this field.' }, 'ⓘ'),
@@ -675,16 +687,7 @@ var classifier_prototype = {
                     this.make_classifier('<span class="NB-classifier-text-placeholder">Enter text above</span>', '', 'text'),
                     $.make('span', this.make_user_texts(story_content)),
                     $.make('span', this.make_user_text_regex())
-                ]),
-                (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro && $.make('div', { className: 'NB-classifier-text-premium-notice' }, [
-                    $.make('div', { className: 'NB-classifier-text-premium-notice-text' }, [
-                        'Text classifiers will be saved but not applied.',
-                        $.make('br'),
-                        'Upgrade to ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive or Premium Pro'),
-                        ' to use text classifiers.'
-                    ])
-                ]))
+                ])
             ])
         ]);
     },
@@ -692,7 +695,15 @@ var classifier_prototype = {
     make_story_title_section: function (story_title, story) {
         var self = this;
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-title-section', 'data-section': 'title' }, [
-            $.make('h5', 'Story Title'),
+            $.make('h5', { className: 'NB-classifier-section-header' }, [
+                $.make('span', 'Story Title'),
+                $.make('span', { className: 'NB-classifier-header-notices' }, [
+                    (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
+                        'Regex requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro')
+                    ]))
+                ])
+            ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                 $.make('div', { className: 'NB-classifier-input-row' }, [
                     $.make('span', { className: 'NB-classifier-help-icon', title: 'Highlight phrases in the title to train on specific words' }, 'ⓘ'),
@@ -746,7 +757,15 @@ var classifier_prototype = {
             ]) : '';
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-url-section', 'data-section': 'url' }, [
-            $.make('h5', 'URL'),
+            $.make('h5', { className: 'NB-classifier-section-header' }, [
+                $.make('span', 'URL'),
+                $.make('span', { className: 'NB-classifier-header-notices' }, [
+                    (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
+                        'Regex requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro')
+                    ]))
+                ])
+            ]),
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
                 $.make('div', { className: 'NB-classifier-input-row' }, [
                     $.make('span', { className: 'NB-classifier-help-icon', title: 'Highlight portions of the URL to train on specific patterns' }, 'ⓘ'),
@@ -764,16 +783,7 @@ var classifier_prototype = {
                 $.make('div', { className: 'NB-classifier-content-classifiers' }, [
                     $this_story,
                     $non_matching
-                ]),
-                (!NEWSBLUR.Globals.is_pro && $.make('div', { className: 'NB-classifier-url-pro-notice NB-classifier-pro-notice' }, [
-                    $.make('div', { className: 'NB-classifier-pro-notice-text' }, [
-                        'URL regex filters will be saved but not applied.',
-                        $.make('br'),
-                        'Upgrade to ',
-                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro'),
-                        ' to use regex filters.'
-                    ])
-                ]))
+                ])
             ])
         ]);
     },

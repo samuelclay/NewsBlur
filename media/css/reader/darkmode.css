@@ -2726,6 +2726,11 @@ a.mention, a.mention-group {
     color: #888;
 }
 
+.NB-dark .NB-modal-classifiers .NB-modal-feed-subscribers {
+    background: #3a3c3e;
+    color: #999;
+}
+
 .NB-dark .NB-classifier-content-inputs label {
     color: #777;
 }
@@ -2874,6 +2879,24 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-regex-warning-text {
     color: #d7ccc8;
+}
+
+/* Archive notice - dark mode */
+.NB-dark .NB-classifier-archive-notice {
+    color: #a89070;
+}
+
+.NB-dark .NB-classifier-archive-notice a {
+    color: #f59e0b;
+}
+
+/* Pro notice - dark mode */
+.NB-dark .NB-classifier-pro-notice {
+    color: #a89070;
+}
+
+.NB-dark .NB-classifier-pro-notice a {
+    color: #f59e0b;
 }
 
 /* ===================================== */
