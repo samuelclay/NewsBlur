@@ -119,9 +119,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 request_type = 'POST';
             }
         }
-        this.ajax[options['ajax_group']].add(_.extend({
+
+        var ajax_options = {
             url: url,
-            data: data,
             type: request_type,
             cache: false,
             cacheResponse: false,
@@ -177,7 +177,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     callback({ 'message': message, status_code: e.status }, data);
                 }
             }
-        }, options));
+        };
+
+        // Handle JSON body requests
+        if (options.request_body_type === 'json') {
+            ajax_options.data = JSON.stringify(data);
+            ajax_options.contentType = 'application/json';
+        } else {
+            ajax_options.data = data;
+        }
+
+        this.ajax[options['ajax_group']].add(_.extend(ajax_options, options));
 
     },
 
@@ -1024,6 +1034,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/feeds_trainer', params, callback, null, { 'ajax_group': 'feed', 'request_type': 'GET' });
     },
 
+    get_all_classifiers: function (callback, error_callback) {
+        this.make_request('/reader/all_classifiers', {}, callback, error_callback, { 'ajax_group': 'feed', 'request_type': 'GET' });
+    },
+
     get_social_trainer: function (feed_id, callback) {
         var self = this;
         var params = {};
@@ -1342,6 +1356,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     save_classifier: function (data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/classifier/save', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+
+    save_all_classifiers: function (classifiers_by_feed, callback, error_callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/classifier/save_all', {
+                classifiers: classifiers_by_feed
+            }, callback, error_callback, {
+                request_type: 'POST',
+                request_body_type: 'json'
+            });
         } else {
             if ($.isFunction(callback)) callback();
         }

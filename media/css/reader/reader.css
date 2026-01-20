@@ -7947,17 +7947,29 @@ form.opml_import_form input {
     overflow: hidden !important;
 }
 
+#simplemodal-container.NB-full-container.NB-classifier-container {
+    height: 800px !important;
+}
+
 .NB-modal.NB-modal-classifiers {
     position: static;
     overflow: hidden;
-    max-height: 600px;
+    height: 100%;
+    max-height: 800px;
     padding: 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+.NB-modal-classifiers .NB-tab {
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
 }
 
 .NB-modal-classifiers form {
-    height: 500px;
-    padding: 12px 12px 12px 0;
-    margin: 1px 0;
+    padding: 12px 12px 36px 0;
+    margin: 1px 0 24px 0;
     overflow-y: auto;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -8155,6 +8167,391 @@ form.opml_import_form input {
     padding: 4px 4px 4px 24px;
     background: #FFE1DB url('/media/embed/icons/circular/exclamation.png') no-repeat 4px 4px;
     background-size: 16px;
+}
+
+/* ============================== */
+/* = Manage Training Tab Styles = */
+/* ============================== */
+
+/* Header with title and tabs on same row */
+.NB-modal-trainer .NB-trainer-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 0;
+}
+
+.NB-modal-trainer .NB-trainer-header .NB-modal-title {
+    margin-bottom: 8px;
+    border-bottom: none;
+}
+
+.NB-modal-trainer .NB-trainer-header .NB-modal-tabs {
+    float: none;
+    position: relative;
+    bottom: -1px;
+    margin: 0;
+}
+
+.NB-modal-trainer .NB-trainer-header .NB-modal-tab {
+    border-bottom: 1px solid transparent;
+}
+
+.NB-modal-trainer .NB-trainer-header .NB-modal-tab.NB-active {
+    border-bottom: 1px solid white;
+}
+
+.NB-modal-trainer .NB-tab {
+    display: none;
+}
+
+.NB-modal-trainer .NB-tab.NB-active {
+    display: block;
+}
+
+/* Add spacing above the "What do you like..." title */
+.NB-modal-trainer .NB-tab-sitebyside .NB-modal-title {
+    margin-top: 20px;
+    margin-bottom: 16px;
+}
+
+.NB-modal-trainer .NB-tab-sitebyside {
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.NB-modal-trainer .NB-tab-sitebyside>* {
+    flex-shrink: 0;
+}
+
+.NB-modal-trainer .NB-tab-sitebyside form {
+    flex: 1;
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.NB-modal-trainer .NB-tab-manage {
+    display: flex;
+    flex-direction: column;
+    padding-top: 16px;
+}
+
+.NB-manage-training-content {
+    padding: 0 0 12px 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    min-height: 0;
+}
+
+.NB-manage-training-content .NB-modal-submit-bottom {
+    flex-shrink: 0;
+}
+
+/* Manage tab filter bar */
+.NB-manage-filter-bar {
+    display: flex;
+    gap: 8px;
+    padding: 0 12px 12px;
+    border-bottom: 1px solid #E0E0E0;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.NB-manage-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.NB-manage-filter-label {
+    font-size: 11px;
+    font-weight: bold;
+    color: #808080;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.NB-manage-filter-bar .segmented-control {
+    margin: 0;
+}
+
+.NB-manage-filter-bar .segmented-control li {
+    padding: 4px 10px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.NB-manage-filter-icon {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 2px;
+}
+
+.NB-manage-filter-icon.NB-icon-like {
+    background: transparent url('/media/embed/icons/nouns/thumbs-up.svg') no-repeat center center;
+    background-size: contain;
+    /* Bright green when inactive - matches classifier like color rgb(52, 145, 46) */
+    filter: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(436%) hue-rotate(87deg) brightness(92%) contrast(91%);
+}
+
+.NB-manage-filter-icon.NB-icon-dislike {
+    background: transparent url('/media/embed/icons/nouns/thumbs-down.svg') no-repeat center center;
+    background-size: contain;
+    /* Bright red when inactive - matches classifier dislike color rgb(169, 1, 3) */
+    filter: brightness(0) saturate(100%) invert(12%) sepia(100%) saturate(6000%) hue-rotate(0deg) brightness(90%) contrast(110%);
+}
+
+/* Yellowish-orange when active/selected */
+.NB-manage-sentiment-control li.NB-active .NB-icon-like,
+.NB-manage-sentiment-control li.NB-active .NB-icon-dislike {
+    filter: invert(67%) sepia(89%) saturate(497%) hue-rotate(2deg) brightness(103%) contrast(104%);
+}
+
+/* Multi-select types control - show inactive state differently */
+.NB-manage-types-control li:not(.NB-active) {
+    opacity: 0.5;
+}
+
+/* Filter bar rows */
+.NB-manage-filter-row {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+}
+
+.NB-manage-filter-row-1 {
+    margin-bottom: 10px;
+}
+
+.NB-manage-filter-row-2 {
+    display: flex;
+    gap: 16px;
+}
+
+/* Feed/folder dropdown filter */
+.NB-manage-filter-feed {
+    flex: 0 0 auto;
+}
+
+.NB-manage-feed-chooser {
+    width: 200px;
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #D0D0D0;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+}
+
+.NB-manage-feed-chooser:focus {
+    outline: none;
+    border-color: #50A050;
+}
+
+/* Search input filter */
+.NB-manage-filter-search {
+    flex: 1;
+}
+
+.NB-manage-search-input {
+    width: 100%;
+    max-width: 300px;
+    padding: 4px 8px;
+    font-size: 12px;
+    border: 1px solid #D0D0D0;
+    border-radius: 4px;
+    background: white;
+}
+
+.NB-manage-search-input:focus {
+    outline: none;
+    border-color: #50A050;
+}
+
+.NB-manage-search-input::placeholder {
+    color: #A0A0A0;
+}
+
+.NB-manage-training-folders {
+    padding: 0 12px 24px;
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 24px;
+    min-height: 0;
+}
+
+.NB-manage-folder {
+    margin-bottom: 16px;
+}
+
+.NB-manage-folder-title {
+    font-weight: bold;
+    font-size: 13px;
+    color: #505050;
+    padding: 8px 12px;
+    background-color: #EAECE5;
+    border-radius: 3px;
+    margin-bottom: 8px;
+}
+
+.NB-manage-folder-feeds {
+    padding-left: 12px;
+}
+
+.NB-manage-feed {
+    margin-bottom: 12px;
+    border-left: 3px solid #E0E0E0;
+    padding-left: 12px;
+}
+
+.NB-manage-feed-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.NB-manage-feed-header .feed_favicon {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-manage-feed-title {
+    font-weight: bold;
+    font-size: 13px;
+    color: #303030;
+}
+
+.NB-manage-feed-classifiers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.NB-manage-classifier-item {
+    display: inline-block;
+}
+
+.NB-manage-classifier-item .NB-classifier {
+    font-size: 12px;
+}
+
+/* Manage tab submit area */
+.NB-manage-submit-area {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 36px;
+}
+
+.NB-manage-save {
+    display: none;
+}
+
+.NB-manage-saved-message {
+    display: none;
+    color: #4a8f29;
+    font-size: 13px;
+    font-weight: bold;
+    margin-right: 12px;
+}
+
+/* Empty state */
+.NB-manage-training-empty {
+    text-align: center;
+    padding: 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-manage-training-empty-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: transparent url('/media/embed/icons/nouns/thumbs-up.svg') no-repeat center center;
+    background-size: 60px;
+    opacity: 0.3;
+}
+
+.NB-manage-training-empty-message h3 {
+    font-size: 18px;
+    color: #505050;
+    margin-bottom: 8px;
+}
+
+.NB-manage-training-empty-message p {
+    font-size: 14px;
+    color: #808080;
+    margin-bottom: 20px;
+}
+
+/* Loading state */
+.NB-manage-loading {
+    text-align: center;
+    padding: 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-manage-loading .NB-modal-loading {
+    display: block;
+    position: relative;
+    width: 24px;
+    height: 24px;
+    margin: 0 auto 12px;
+}
+
+.NB-manage-loading-text {
+    font-size: 14px;
+    color: #808080;
+}
+
+/* Error state */
+.NB-manage-training-error {
+    text-align: center;
+    padding: 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-manage-training-error-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px;
+    background-image: url('/media/img/icons/nouns/alert.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.5;
+}
+
+.NB-manage-training-error h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+}
+
+.NB-manage-training-error p {
+    font-size: 13px;
+    color: #808080;
+    margin: 0 0 20px 0;
 }
 
 /* ======================= */

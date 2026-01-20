@@ -3398,6 +3398,101 @@ def feeds_trainer(request):
     return classifiers
 
 
+@json.json_view
+def all_classifiers(request):
+    """
+    Return all trained classifiers for a user, organized by feed and folder structure.
+    Only returns classifiers with non-zero scores (trained items).
+    """
+    user = get_user(request)
+    if not user.is_authenticated:
+        return {"folders": [], "total_classifiers": 0}
+
+    # Get folder structure for organizing output
+    try:
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        flat_folders = usf.flatten_folders()
+    except UserSubscriptionFolders.DoesNotExist:
+        flat_folders = {" ": []}
+
+    # Get all classifiers for user with non-zero scores
+    classifier_titles = list(MClassifierTitle.objects.filter(user_id=user.pk, score__ne=0))
+    classifier_authors = list(MClassifierAuthor.objects.filter(user_id=user.pk, score__ne=0))
+    classifier_tags = list(MClassifierTag.objects.filter(user_id=user.pk, score__ne=0))
+    classifier_texts = list(MClassifierText.objects.filter(user_id=user.pk, score__ne=0))
+    classifier_feeds = list(MClassifierFeed.objects.filter(user_id=user.pk, score__ne=0))
+
+    # Group classifiers by feed_id
+    from collections import defaultdict
+
+    classifiers_by_feed = defaultdict(lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": []})
+
+    for c in classifier_titles:
+        classifiers_by_feed[c.feed_id]["titles"].append({"title": c.title, "score": c.score})
+    for c in classifier_authors:
+        classifiers_by_feed[c.feed_id]["authors"].append({"author": c.author, "score": c.score})
+    for c in classifier_tags:
+        classifiers_by_feed[c.feed_id]["tags"].append({"tag": c.tag, "score": c.score})
+    for c in classifier_texts:
+        classifiers_by_feed[c.feed_id]["texts"].append({"text": c.text, "score": c.score})
+    for c in classifier_feeds:
+        classifiers_by_feed[c.feed_id]["feeds"].append({"feed_id": c.feed_id, "score": c.score})
+
+    # Build response organized by folder structure
+    folders_with_classifiers = []
+    all_folder_feed_ids = set()
+
+    for folder_name, feed_ids in flat_folders.items():
+        all_folder_feed_ids.update(feed_ids)
+        folder_feeds = []
+        for feed_id in feed_ids:
+            if feed_id in classifiers_by_feed:
+                feed = Feed.get_by_id(feed_id)
+                if feed:
+                    folder_feeds.append(
+                        {
+                            "feed_id": feed_id,
+                            "feed_title": feed.feed_title,
+                            "favicon_url": feed.favicon_url,
+                            "favicon_color": feed.favicon_color,
+                            "favicon_fetching": feed.favicon_fetching,
+                            "classifiers": classifiers_by_feed[feed_id],
+                        }
+                    )
+
+        if folder_feeds:
+            folders_with_classifiers.append({"folder_name": folder_name, "feeds": folder_feeds})
+
+    # Check for feeds with classifiers not in any folder
+    orphan_feeds = []
+    for feed_id, classifiers in classifiers_by_feed.items():
+        if feed_id not in all_folder_feed_ids:
+            feed = Feed.get_by_id(feed_id)
+            if feed:
+                orphan_feeds.append(
+                    {
+                        "feed_id": feed_id,
+                        "feed_title": feed.feed_title,
+                        "favicon_url": feed.favicon_url,
+                        "favicon_color": feed.favicon_color,
+                        "favicon_fetching": feed.favicon_fetching,
+                        "classifiers": classifiers,
+                    }
+                )
+
+    if orphan_feeds:
+        folders_with_classifiers.append({"folder_name": "Uncategorized", "feeds": orphan_feeds})
+
+    total_classifiers = sum(
+        len(c["titles"]) + len(c["authors"]) + len(c["tags"]) + len(c["texts"]) + len(c["feeds"])
+        for c in classifiers_by_feed.values()
+    )
+
+    logging.user(user, "~FGLoading All Classifiers: ~SB%s classifiers across %s feeds" % (total_classifiers, len(classifiers_by_feed)))
+
+    return {"folders": folders_with_classifiers, "total_classifiers": total_classifiers}
+
+
 @ajax_login_required
 @json.json_view
 def save_feed_chooser(request):

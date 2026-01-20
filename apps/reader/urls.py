@@ -80,6 +80,7 @@ urlpatterns = [
     url(r"^features", views.load_features, name="load-features"),
     url(r"^save_feed_order", views.save_feed_order, name="save-feed-order"),
     url(r"^feeds_trainer", views.feeds_trainer, name="feeds-trainer"),
+    url(r"^all_classifiers", views.all_classifiers, name="all-classifiers"),
     url(r"^save_feed_chooser", views.save_feed_chooser, name="save-feed-chooser"),
     url(r"^set_feed_mute", views.set_feed_mute, name="set-feed-mute"),
     url(r"^send_story_email", views.send_story_email, name="send-story-email"),
