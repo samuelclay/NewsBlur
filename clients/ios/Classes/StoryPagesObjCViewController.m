@@ -28,7 +28,7 @@
 @property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic) BOOL wasNavigationBarHidden;
 @property (nonatomic) BOOL isNavigationBarFaded;
-@property (nonatomic) CGFloat navigationBarFadeAlpha;
+@property (nonatomic, readwrite) CGFloat navigationBarFadeAlpha;
 @property (nonatomic) BOOL isUpdatingNavigationBarFade;
 @property (nonatomic) BOOL doneInitialRefresh;
 @property (nonatomic) BOOL doneInitialDisplay;
@@ -77,7 +77,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
+    // Enable edge-to-edge layout so content can appear under the nav bar when it fades
+    self.edgesForExtendedLayout = UIRectEdgeAll;
+    self.extendedLayoutIncludesOpaqueBars = YES;
+
 	currentPage = [[StoryDetailViewController alloc]
                    initWithNibName:@"StoryDetailViewController"
                    bundle:nil];
@@ -487,8 +491,9 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-    self.scrollViewTopConstraint.constant = [self scrollViewTopOffsetForNavigationBarAlpha:self.navigationBarFadeAlpha];
-    
+    // Scroll view is edge-to-edge; content inset handles nav bar spacing
+    self.scrollViewTopConstraint.constant = 0;
+
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
 }
@@ -629,11 +634,13 @@
     self.navigationBarFadeAlpha = clampedAlpha;
     navController.navigationBar.alpha = clampedAlpha;
     navController.navigationBar.userInteractionEnabled = clampedAlpha > 0.05;
-    [self updateScrollViewTopConstraintForNavigationBarAlpha:clampedAlpha];
-    
+
+    // Update content inset on the current page's web view (scroll view is always edge-to-edge)
+    [self.currentPage updateContentInsetForNavigationBarAlpha:clampedAlpha];
+
     BOOL wasFaded = self.isNavigationBarFaded;
     self.isNavigationBarFaded = clampedAlpha < 0.05;
-    
+
     if (wasFaded != self.isNavigationBarFaded) {
         [self.currentPage drawFeedGradient];
         [self updateStatusBarState];
@@ -642,43 +649,35 @@
     self.isUpdatingNavigationBarFade = NO;
 }
 
-- (CGFloat)scrollViewTopOffsetForNavigationBarAlpha:(CGFloat)alpha {
+- (CGFloat)topInsetForNavigationBarAlpha:(CGFloat)alpha {
     if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
         return 0;
     }
-    
+
     UINavigationController *navController = self.navigationController;
     if (!navController) {
         return 0;
     }
-    
+
     CGFloat navBarHeight = navController.navigationBar.frame.size.height;
     UIWindow *window = self.view.window ?: appDelegate.detailViewController.view.window;
-    CGFloat statusBarHeight = window.windowScene.statusBarManager.statusBarFrame.size.height;
-    if (statusBarHeight <= 0.0) {
-        CGFloat safeTop = self.view.safeAreaInsets.top;
-        if (safeTop > 0.0 && navBarHeight > 0.0) {
-            statusBarHeight = MAX(0.0, safeTop - navBarHeight);
-        } else {
-            statusBarHeight = safeTop;
-        }
-    }
-    
-    CGFloat navOffset = navBarHeight > 0.0 ? navBarHeight * alpha : 0.0;
-    return statusBarHeight + navOffset;
-}
 
-- (void)updateScrollViewTopConstraintForNavigationBarAlpha:(CGFloat)alpha {
-    CGFloat offset = [self scrollViewTopOffsetForNavigationBarAlpha:alpha];
-    
-    if (fabs(self.scrollViewTopConstraint.constant - offset) > 0.5) {
-        self.scrollViewTopConstraint.constant = offset;
-        if (self.currentlyTogglingNavigationBar) {
-            [self.view layoutIfNeeded];
-        } else {
-            [self.view setNeedsLayout];
-        }
+    // Use window's safe area insets for the status bar area (most reliable)
+    CGFloat safeAreaTop = window.safeAreaInsets.top;
+    if (safeAreaTop <= 0) {
+        safeAreaTop = self.view.safeAreaInsets.top;
     }
+    if (safeAreaTop <= 0) {
+        safeAreaTop = window.windowScene.statusBarManager.statusBarFrame.size.height;
+    }
+    if (safeAreaTop <= 0) {
+        safeAreaTop = 59;  // Fallback for notched devices
+    }
+
+    // When nav bar is fully visible (alpha=1), include full nav bar height
+    // When nav bar is faded out (alpha=0), just include safe area top
+    CGFloat navOffset = navBarHeight > 0.0 ? navBarHeight * alpha : 0.0;
+    return safeAreaTop + navOffset;
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {

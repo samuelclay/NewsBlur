@@ -102,7 +102,7 @@
                                                      UIViewAutoresizingFlexibleHeight)];
     
     self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    self.webView.scrollView.contentInset = UIEdgeInsetsZero;
+    // Content inset is set dynamically in updateContentInsetForNavigationBarAlpha:
     
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
@@ -304,12 +304,12 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+
 #if TARGET_OS_MACCATALYST
     [self.navigationController setNavigationBarHidden:YES animated:animated];
     [self.navigationController setToolbarHidden:YES animated:animated];
 #endif
-    
+
     if (!self.isPhoneOrCompact) {
         [appDelegate.feedDetailViewController.view endEditing:YES];
     }
@@ -319,11 +319,14 @@
         [self.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
     }
 
+    // Set initial content inset based on nav bar visibility
+    [self updateContentInsetForNavigationBarAlpha:appDelegate.storyPagesViewController.navigationBarFadeAlpha];
+
     if (_orientation != self.view.window.windowScene.interfaceOrientation) {
         _orientation = self.view.window.windowScene.interfaceOrientation;
         NSLog(@"Found stale orientation in story detail: %@", NSStringFromCGSize(self.view.bounds.size));
     }
-    
+
     if (!self.hasStory) {
         [self drawStory];
     }
@@ -734,20 +737,98 @@
 }
 
 - (CGFloat)feedTitleGradientBaseYOffset {
-    return -1;
+    // With content inset, gradient should be at the top of visible content
+    CGFloat contentInsetTop = self.webView.scrollView.contentInset.top;
+    return contentInsetTop > 0 ? contentInsetTop : -1;
 }
 
 - (void)updateFeedTitleGradientPosition {
     if (!self.feedTitleGradient || self.feedTitleGradient.superview != self.webView) {
         return;
     }
-    CGFloat baseYOffset = [self feedTitleGradientBaseYOffset];
-    CGFloat yOffset = baseYOffset - self.webView.scrollView.contentOffset.y;
-    if (fabs(self.feedTitleGradient.frame.origin.y - yOffset) > 0.5) {
+
+    // The gradient is a direct subview of webView (not scrollView), so it's in fixed coordinates.
+    // It doesn't scroll with content - we manually position it to create the sticky effect.
+
+    UINavigationBar *navBar = appDelegate.storyPagesViewController.navigationController.navigationBar;
+    CGFloat navBarAlpha = navBar.alpha;
+
+    // Get current scroll state
+    CGFloat contentInsetTop = self.webView.scrollView.contentInset.top;
+    CGFloat contentOffset = self.webView.scrollView.contentOffset.y;
+    CGFloat scrolledAmount = contentOffset + contentInsetTop;
+
+    // Calculate where the nav bar ends in window coordinates
+    CGFloat navBarBottom = navBar.frame.origin.y + navBar.frame.size.height;
+    // Convert webView origin to window coordinates
+    CGPoint webViewOriginInWindow = [self.webView convertPoint:CGPointZero toView:nil];
+
+    // Base position: where gradient should be to appear just below nav bar
+    CGFloat basePositionInWebView = navBarBottom - webViewOriginInWindow.y;
+
+    // As nav bar fades, we want gradient to move up toward the status bar
+    // When alpha=1, gradient is at basePosition (below nav bar)
+    // When alpha=0, gradient should be at top of visible area (below status bar)
+    CGFloat statusBarHeight = webViewOriginInWindow.y > 0 ? 0 : self.view.window.safeAreaInsets.top;
+
+    // Interpolate between basePosition (nav visible) and statusBarHeight (nav hidden)
+    CGFloat targetY = statusBarHeight + (basePositionInWebView - statusBarHeight) * navBarAlpha;
+
+    // Additionally, if user scrolls past where gradient would naturally be, keep it at the visible top
+    // When scrolling, the "natural" position moves up (basePosition - scrolledAmount)
+    CGFloat naturalPositionWhenScrolled = basePositionInWebView - scrolledAmount;
+    if (naturalPositionWhenScrolled < targetY) {
+        // Don't let gradient go below its natural scroll position
+        targetY = naturalPositionWhenScrolled;
+    }
+
+    // Clamp to safe area top (below status bar/notch) so gradient is always visible
+    // If webView starts at 0 (edge-to-edge), we need to account for safe area
+    CGFloat minY = 0;
+    if (webViewOriginInWindow.y == 0) {
+        // Edge-to-edge: clamp to safe area so gradient isn't hidden under notch
+        minY = self.view.window.safeAreaInsets.top;
+    }
+    targetY = MAX(minY, targetY);
+
+    if (fabs(self.feedTitleGradient.frame.origin.y - targetY) > 0.5) {
         CGRect frame = self.feedTitleGradient.frame;
-        frame.origin.y = yOffset;
+        frame.origin.y = targetY;
         self.feedTitleGradient.frame = frame;
     }
+}
+
+- (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        [self updateFeedTitleGradientPosition];
+        return;
+    }
+
+    // Use actual nav bar alpha, not the passed value which may be stale
+    UINavigationBar *navBar = appDelegate.storyPagesViewController.navigationController.navigationBar;
+    CGFloat actualAlpha = navBar.alpha;
+    CGFloat topInset = [appDelegate.storyPagesViewController topInsetForNavigationBarAlpha:actualAlpha];
+    UIEdgeInsets currentInset = self.webView.scrollView.contentInset;
+    CGFloat currentOffset = self.webView.scrollView.contentOffset.y;
+
+    // Debug logging disabled
+    // NSLog(@"updateContentInset: passedAlpha=%.2f actualAlpha=%.2f topInset=%.0f currentInset=%.0f",
+    //       alpha, actualAlpha, topInset, currentInset.top);
+
+    if (fabs(currentInset.top - topInset) > 0.5) {
+        // Calculate how far the content was scrolled from the top
+        CGFloat scrolledAmount = currentOffset + currentInset.top;
+
+        // Set new inset
+        UIEdgeInsets newInset = UIEdgeInsetsMake(topInset, 0, currentInset.bottom, 0);
+        self.webView.scrollView.contentInset = newInset;
+        self.webView.scrollView.scrollIndicatorInsets = newInset;
+
+        // Maintain scroll position relative to content
+        self.webView.scrollView.contentOffset = CGPointMake(0, -topInset + scrolledAmount);
+    }
+
+    [self updateFeedTitleGradientPosition];
 }
 
 - (void)showStory {
@@ -2030,7 +2111,10 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         self.webView.hidden = NO;
         [self.webView setNeedsDisplay];
-        
+
+        // Initialize content inset for edge-to-edge layout
+        [self updateContentInsetForNavigationBarAlpha:appDelegate.storyPagesViewController.navigationBarFadeAlpha];
+
         if (self == self.appDelegate.storyPagesViewController.currentPage && !self.appDelegate.detailViewController.isPhone && self.appDelegate.detailViewController.storyTitlesInGridView) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 //                [self.appDelegate.feedDetailViewController changedStoryHeight:self.webView.scrollView.contentSize.height];

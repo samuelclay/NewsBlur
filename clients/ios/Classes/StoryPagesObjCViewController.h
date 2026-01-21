@@ -85,6 +85,7 @@
 @property (nonatomic) NSInteger scrollingToPage;
 @property (nonatomic, readonly) BOOL shouldHideStatusBar;
 @property (nonatomic, readonly) BOOL isNavigationBarHidden;
+@property (nonatomic, readonly) CGFloat navigationBarFadeAlpha;
 @property (nonatomic, readonly) BOOL allowFullscreen;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
@@ -98,6 +99,7 @@
 - (void)setNavigationBarHidden:(BOOL)hide;
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse;
 - (void)setNavigationBarFadeAlpha:(CGFloat)alpha;
+- (CGFloat)topInsetForNavigationBarAlpha:(CGFloat)alpha;
 
 //- (void)transitionFromFeedDetail;
 - (void)resetPages;
