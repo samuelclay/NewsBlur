@@ -635,8 +635,12 @@
     navController.navigationBar.alpha = clampedAlpha;
     navController.navigationBar.userInteractionEnabled = clampedAlpha > 0.05;
 
-    // Update content inset on the current page's web view (scroll view is always edge-to-edge)
+    // Update content inset on all pages' web views so swiping between them is seamless
+    // Current page: uses wrapper that checks if actively scrolling (to avoid text acceleration)
     [self.currentPage updateContentInsetForNavigationBarAlpha:clampedAlpha];
+    // Adjacent pages: always maintain visual position to keep them at correct scroll position
+    [self.previousPage updateContentInsetForNavigationBarAlpha:clampedAlpha maintainVisualPosition:YES];
+    [self.nextPage updateContentInsetForNavigationBarAlpha:clampedAlpha maintainVisualPosition:YES];
 
     BOOL wasFaded = self.isNavigationBarFaded;
     self.isNavigationBarFaded = clampedAlpha < 0.05;
@@ -1540,6 +1544,10 @@
         [appDelegate.feedDetailViewController markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
         [appDelegate.feedDetailViewController redrawUnreadStory];
         [appDelegate.storyPagesViewController.currentPage refreshHeader];
+
+        // Sync the new current page's content inset and gradient with current nav bar state
+        [currentPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:YES];
+        [currentPage drawFeedGradient];
     }
     
     if (!appDelegate.storiesCollection.inSearch) {
