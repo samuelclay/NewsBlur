@@ -259,6 +259,7 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
     {
         "like_author": ["author1"],
         "dislike_tag": ["tag1"],
+        "like_title_regex": ["pattern.*"],
         ...
     }
     """
@@ -267,8 +268,12 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
         "tag": MClassifierTag,
         "title": MClassifierTitle,
         "text": MClassifierText,
+        "url": MClassifierUrl,
         "feed": MClassifierFeed,
     }
+
+    # Types that support regex matching
+    regex_types = ("title", "text", "url")
 
     classifiers_config = {
         "like_": 1,
@@ -279,61 +284,76 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
 
     for content_type, ClassifierCls in classifier_types.items():
         for prefix, score in classifiers_config.items():
-            key = prefix + content_type
-            if key not in classifier_data:
-                continue
+            # Build list of keys to check: standard and regex (for applicable types)
+            keys_to_check = [(prefix + content_type, False)]
+            if content_type in regex_types:
+                keys_to_check.append((prefix + content_type + "_regex", True))
 
-            values = classifier_data[key]
-            if not isinstance(values, list):
-                values = [values]
-
-            for value in values:
-                if not value:
+            for key, is_regex in keys_to_check:
+                if key not in classifier_data:
                     continue
 
-                classifier_dict = {
-                    "user_id": user_id,
-                    "feed_id": feed_id or 0,
-                    "social_user_id": social_user_id or 0,
-                }
+                values = classifier_data[key]
+                if not isinstance(values, list):
+                    values = [values]
 
-                if content_type in ("author", "tag", "title", "text"):
-                    max_length = ClassifierCls._fields[content_type].max_length
-                    classifier_dict[content_type] = value[:max_length]
-                elif content_type == "feed":
-                    if not str(value).startswith("social:"):
-                        try:
-                            classifier_dict["feed_id"] = int(value)
-                        except (ValueError, TypeError):
-                            # Skip invalid feed IDs
+                for value in values:
+                    if not value:
+                        continue
+
+                    # Validate regex patterns before saving
+                    if is_regex and score != 0:
+                        is_valid, error_msg = validate_regex_pattern(value)
+                        if not is_valid:
+                            logging.info("Invalid regex pattern: %s - %s" % (value, error_msg))
                             continue
 
-                try:
-                    classifier = ClassifierCls.objects.get(**classifier_dict)
-                except ClassifierCls.DoesNotExist:
-                    classifier = None
-                except ClassifierCls.MultipleObjectsReturned:
-                    classifiers = ClassifierCls.objects.filter(**classifier_dict)
-                    first_classifier = classifiers[0]
-                    first_classifier.score = score
-                    first_classifier.save()
-                    for dup in classifiers[1:]:
-                        dup.delete()
-                        break
-                    continue
+                    classifier_dict = {
+                        "user_id": user_id,
+                        "feed_id": feed_id or 0,
+                        "social_user_id": social_user_id or 0,
+                    }
 
-                if not classifier:
-                    if score != 0:
-                        try:
-                            classifier_dict["score"] = score
-                            ClassifierCls.objects.create(**classifier_dict)
-                        except NotUniqueError:
-                            pass
-                elif score == 0:
-                    classifier.delete()
-                elif classifier.score != score:
-                    classifier.score = score
-                    classifier.save()
+                    if content_type in ("author", "tag", "title", "text", "url"):
+                        max_length = ClassifierCls._fields[content_type].max_length
+                        classifier_dict[content_type] = value[:max_length]
+                        # Set is_regex for types that support it
+                        if content_type in regex_types:
+                            classifier_dict["is_regex"] = is_regex
+                    elif content_type == "feed":
+                        if not str(value).startswith("social:"):
+                            try:
+                                classifier_dict["feed_id"] = int(value)
+                            except (ValueError, TypeError):
+                                # Skip invalid feed IDs
+                                continue
+
+                    try:
+                        classifier = ClassifierCls.objects.get(**classifier_dict)
+                    except ClassifierCls.DoesNotExist:
+                        classifier = None
+                    except ClassifierCls.MultipleObjectsReturned:
+                        classifiers = ClassifierCls.objects.filter(**classifier_dict)
+                        first_classifier = classifiers[0]
+                        first_classifier.score = score
+                        first_classifier.save()
+                        for dup in classifiers[1:]:
+                            dup.delete()
+                            break
+                        continue
+
+                    if not classifier:
+                        if score != 0:
+                            try:
+                                classifier_dict["score"] = score
+                                ClassifierCls.objects.create(**classifier_dict)
+                            except NotUniqueError:
+                                pass
+                    elif score == 0:
+                        classifier.delete()
+                    elif classifier.score != score:
+                        classifier.score = score
+                        classifier.save()
 
 
 def popularity_query(request):
