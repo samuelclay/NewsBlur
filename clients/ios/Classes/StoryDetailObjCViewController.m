@@ -31,6 +31,7 @@
 
 @property (nonatomic, strong) NSString *fullStoryHTML;
 @property (nonatomic, strong) NSString *lastWidthClassKey;
+@property (nonatomic) BOOL isUpdatingContentInset;
 
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
 - (NSInteger)storyContentWidth;
@@ -799,10 +800,28 @@
 }
 
 - (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha {
+    // Determine if this is the current page and if the user is actively scrolling
+    BOOL isScrolling = self.webView.scrollView.isTracking || self.webView.scrollView.isDragging;
+    BOOL isCurrentPage = self == appDelegate.storyPagesViewController.currentPage;
+
+    // Only maintain visual position for the current page when NOT actively scrolling
+    // During active scrolling, changing contentOffset would compound with the user's scroll
+    BOOL maintainPosition = isCurrentPage && !isScrolling;
+
+    [self updateContentInsetForNavigationBarAlpha:alpha maintainVisualPosition:maintainPosition];
+}
+
+- (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha maintainVisualPosition:(BOOL)maintainVisualPosition {
     if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
         [self updateFeedTitleGradientPosition];
         return;
     }
+
+    // Prevent re-entry from KVO notifications when we change contentOffset
+    if (self.isUpdatingContentInset) {
+        return;
+    }
+    self.isUpdatingContentInset = YES;
 
     // Use actual nav bar alpha, not the passed value which may be stale
     UINavigationBar *navBar = appDelegate.storyPagesViewController.navigationController.navigationBar;
@@ -811,24 +830,31 @@
     UIEdgeInsets currentInset = self.webView.scrollView.contentInset;
     CGFloat currentOffset = self.webView.scrollView.contentOffset.y;
 
-    // Debug logging disabled
-    // NSLog(@"updateContentInset: passedAlpha=%.2f actualAlpha=%.2f topInset=%.0f currentInset=%.0f",
-    //       alpha, actualAlpha, topInset, currentInset.top);
-
     if (fabs(currentInset.top - topInset) > 0.5) {
-        // Calculate how far the content was scrolled from the top
-        CGFloat scrolledAmount = currentOffset + currentInset.top;
-
         // Set new inset
         UIEdgeInsets newInset = UIEdgeInsetsMake(topInset, 0, currentInset.bottom, 0);
         self.webView.scrollView.contentInset = newInset;
         self.webView.scrollView.scrollIndicatorInsets = newInset;
 
-        // Maintain scroll position relative to content
-        self.webView.scrollView.contentOffset = CGPointMake(0, -topInset + scrolledAmount);
+        // Only adjust content offset for the current page when not actively scrolling
+        // For adjacent pages, we just update the inset without shifting their content
+        if (maintainVisualPosition) {
+            // Calculate the visual position of content on screen
+            // Visual position = contentOffset + contentInset
+            // We want to keep this constant when inset changes
+            CGFloat visualPosition = currentOffset + currentInset.top;
+
+            // Calculate new offset to maintain the same visual position
+            // newOffset + newInset = visualPosition
+            // newOffset = visualPosition - newInset
+            CGFloat newOffset = visualPosition - topInset;
+            self.webView.scrollView.contentOffset = CGPointMake(0, newOffset);
+        }
     }
 
     [self updateFeedTitleGradientPosition];
+
+    self.isUpdatingContentInset = NO;
 }
 
 - (void)showStory {

@@ -54,6 +54,7 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 - (void)drawFeedGradient;
 - (void)updateFeedTitleGradientPosition;
 - (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha;
+- (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha maintainVisualPosition:(BOOL)maintainVisualPosition;
 - (void)showStory;
 - (void)clearStory;
 - (void)hideStory;
