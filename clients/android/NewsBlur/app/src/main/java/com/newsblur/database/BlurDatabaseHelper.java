@@ -32,12 +32,15 @@ import com.newsblur.util.ReadFilter;
 import com.newsblur.util.ReadingAction;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
+import com.newsblur.util.CustomIconRenderer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -45,6 +48,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import com.newsblur.domain.CustomIcon;
 
 /**
  * Utility class for executing DB operations on the local, private NB database.
@@ -57,6 +62,10 @@ public class BlurDatabaseHelper {
     // because the db transactions are made on the main thread
     public final static Object RW_MUTEX = new Object();
 
+    // Custom icons are stored in memory, refreshed with each sync
+    private static volatile Map<String, CustomIcon> folderIcons = Collections.emptyMap();
+    private static volatile Map<String, CustomIcon> feedIcons = Collections.emptyMap();
+
     private final BlurDatabase dbWrapper;
     private final SQLiteDatabase dbRO;
     private final SQLiteDatabase dbRW;
@@ -68,10 +77,14 @@ public class BlurDatabaseHelper {
             dbRO = dbWrapper.getRO();
             dbRW = dbWrapper.getRW();
         }
+        // Load custom icons from SQLite if not already in memory
+        if (folderIcons.isEmpty() && feedIcons.isEmpty()) {
+            loadCustomIconsFromDb();
+        }
     }
 
     public void close() {
-        // when asked to close, do so via an AsyncTask. This is so that (since becoming serial in android 4.0) 
+        // when asked to close, do so via an AsyncTask. This is so that (since becoming serial in android 4.0)
         // the closure will happen after other async tasks are done using the conn
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
@@ -82,9 +95,129 @@ public class BlurDatabaseHelper {
         executorService.shutdown();
     }
 
+    /**
+     * Set custom folder icons from API response and persist to SQLite.
+     */
+    public void setFolderIcons(@Nullable Map<String, CustomIcon> icons) {
+        folderIcons = icons != null ? new HashMap<>(icons) : Collections.emptyMap();
+        saveCustomIconsToDb(folderIcons, false);
+    }
+
+    /**
+     * Set custom feed icons from API response and persist to SQLite.
+     */
+    public void setFeedIcons(@Nullable Map<String, CustomIcon> icons) {
+        feedIcons = icons != null ? new HashMap<>(icons) : Collections.emptyMap();
+        saveCustomIconsToDb(feedIcons, true);
+    }
+
+    /**
+     * Get custom icon for a folder, or null if none set.
+     */
+    @Nullable
+    public static CustomIcon getFolderIcon(String folderName) {
+        return folderIcons.get(folderName);
+    }
+
+    /**
+     * Get custom icon for a feed, or null if none set.
+     */
+    @Nullable
+    public static CustomIcon getFeedIcon(String feedId) {
+        return feedIcons.get(feedId);
+    }
+
+    /**
+     * Clear all custom icons from memory and SQLite (e.g., on logout).
+     */
+    public void clearCustomIcons() {
+        resetCustomIcons();
+        synchronized (RW_MUTEX) {
+            dbRW.delete(DatabaseConstants.CUSTOM_ICON_TABLE, null, null);
+        }
+    }
+
+    private static void resetCustomIcons() {
+        folderIcons = Collections.emptyMap();
+        feedIcons = Collections.emptyMap();
+        CustomIconRenderer.clearCache();
+    }
+
+    /**
+     * Load custom icons from SQLite into memory.
+     */
+    private void loadCustomIconsFromDb() {
+        Map<String, CustomIcon> loadedFolderIcons = new HashMap<>();
+        Map<String, CustomIcon> loadedFeedIcons = new HashMap<>();
+
+        synchronized (RW_MUTEX) {
+            try (Cursor cursor = dbRO.query(
+                DatabaseConstants.CUSTOM_ICON_TABLE,
+                null, null, null, null, null, null
+            )) {
+                while (cursor.moveToNext()) {
+                    String iconId = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseConstants.CUSTOM_ICON_ID));
+                    int isFeed = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseConstants.CUSTOM_ICON_IS_FEED));
+                    String iconType = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseConstants.CUSTOM_ICON_TYPE));
+                    String iconData = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseConstants.CUSTOM_ICON_DATA));
+                    String iconColor = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseConstants.CUSTOM_ICON_COLOR));
+                    String iconSet = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseConstants.CUSTOM_ICON_SET));
+
+                    CustomIcon icon = new CustomIcon();
+                    icon.iconType = iconType;
+                    icon.iconData = iconData;
+                    icon.iconColor = iconColor;
+                    icon.iconSet = iconSet;
+
+                    if (isFeed == 1) {
+                        loadedFeedIcons.put(iconId, icon);
+                    } else {
+                        loadedFolderIcons.put(iconId, icon);
+                    }
+                }
+            }
+        }
+
+        folderIcons = loadedFolderIcons;
+        feedIcons = loadedFeedIcons;
+    }
+
+    /**
+     * Save custom icons to SQLite.
+     */
+    private void saveCustomIconsToDb(Map<String, CustomIcon> icons, boolean isFeed) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                // Delete existing icons of this type
+                dbRW.delete(
+                    DatabaseConstants.CUSTOM_ICON_TABLE,
+                    DatabaseConstants.CUSTOM_ICON_IS_FEED + " = ?",
+                    new String[]{isFeed ? "1" : "0"}
+                );
+
+                // Insert new icons
+                for (Map.Entry<String, CustomIcon> entry : icons.entrySet()) {
+                    ContentValues values = new ContentValues();
+                    values.put(DatabaseConstants.CUSTOM_ICON_ID, entry.getKey());
+                    values.put(DatabaseConstants.CUSTOM_ICON_IS_FEED, isFeed ? 1 : 0);
+                    values.put(DatabaseConstants.CUSTOM_ICON_TYPE, entry.getValue().iconType);
+                    values.put(DatabaseConstants.CUSTOM_ICON_DATA, entry.getValue().iconData);
+                    values.put(DatabaseConstants.CUSTOM_ICON_COLOR, entry.getValue().iconColor);
+                    values.put(DatabaseConstants.CUSTOM_ICON_SET, entry.getValue().iconSet);
+                    dbRW.insert(DatabaseConstants.CUSTOM_ICON_TABLE, null, values);
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
+    }
+
     public void dropAndRecreateTables() {
         com.newsblur.util.Log.i(this.getClass().getName(), "dropping and recreating all tables . . .");
         synchronized (RW_MUTEX) {
+            resetCustomIcons();
             dbWrapper.dropAndRecreateTables();
         }
         com.newsblur.util.Log.i(this.getClass().getName(), ". . . tables recreated.");
