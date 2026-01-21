@@ -1023,6 +1023,8 @@ def load_single_feed(request, feed_id):
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
+            "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
+            "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_is_pro),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
@@ -1388,6 +1390,8 @@ def load_starred_stories(request):
             "title_regex": 0,
             "text": 0,
             "text_regex": 0,
+            "url": 0,
+            "url_regex": 0,
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True
@@ -1801,6 +1805,8 @@ def load_read_stories(request):
             "title_regex": 0,
             "text": 0,
             "text_regex": 0,
+            "url": 0,
+            "url_regex": 0,
         }
         if story["story_hash"] in starred_stories:
             story["starred"] = True
