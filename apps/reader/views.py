@@ -3445,17 +3445,21 @@ def all_classifiers(request):
     classifiers_by_feed = defaultdict(lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": [], "urls": []})
 
     for c in classifier_titles:
-        classifiers_by_feed[c.feed_id]["titles"].append({"title": c.title, "score": c.score})
+        classifiers_by_feed[c.feed_id]["titles"].append({"title": c.title, "score": c.score, "is_regex": getattr(c, "is_regex", False)})
     for c in classifier_authors:
         classifiers_by_feed[c.feed_id]["authors"].append({"author": c.author, "score": c.score})
     for c in classifier_tags:
         classifiers_by_feed[c.feed_id]["tags"].append({"tag": c.tag, "score": c.score})
     for c in classifier_texts:
-        classifiers_by_feed[c.feed_id]["texts"].append({"text": c.text, "score": c.score})
+        classifiers_by_feed[c.feed_id]["texts"].append({"text": c.text, "score": c.score, "is_regex": getattr(c, "is_regex", False)})
     for c in classifier_feeds:
         classifiers_by_feed[c.feed_id]["feeds"].append({"feed_id": c.feed_id, "score": c.score})
     for c in classifier_urls:
         classifiers_by_feed[c.feed_id]["urls"].append({"url": c.url, "score": c.score, "is_regex": getattr(c, "is_regex", False)})
+
+    # Batch fetch all feeds with classifiers to avoid N+1 queries
+    all_classifier_feed_ids = set(classifiers_by_feed.keys())
+    feeds_by_id = {f.pk: f for f in Feed.objects.filter(pk__in=all_classifier_feed_ids)}
 
     # Build response organized by folder structure
     folders_with_classifiers = []
@@ -3466,7 +3470,7 @@ def all_classifiers(request):
         folder_feeds = []
         for feed_id in feed_ids:
             if feed_id in classifiers_by_feed:
-                feed = Feed.get_by_id(feed_id)
+                feed = feeds_by_id.get(feed_id)
                 if feed:
                     folder_feeds.append(
                         {
@@ -3486,7 +3490,7 @@ def all_classifiers(request):
     orphan_feeds = []
     for feed_id, classifiers in classifiers_by_feed.items():
         if feed_id not in all_folder_feed_ids:
-            feed = Feed.get_by_id(feed_id)
+            feed = feeds_by_id.get(feed_id)
             if feed:
                 orphan_feeds.append(
                     {

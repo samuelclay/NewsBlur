@@ -339,7 +339,6 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
                         first_classifier.save()
                         for dup in classifiers[1:]:
                             dup.delete()
-                            break
                         continue
 
                     if not classifier:
