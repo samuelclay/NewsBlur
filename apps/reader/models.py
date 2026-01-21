@@ -1342,6 +1342,8 @@ class UserSubscription(models.Model):
             scores.get("title_regex", 0),
             scores.get("text", 0),
             scores.get("text_regex", 0),
+            scores.get("url", 0),
+            scores.get("url_regex", 0),
         )
         min_score = min(
             scores["author"],
@@ -1350,6 +1352,8 @@ class UserSubscription(models.Model):
             scores.get("title_regex", 0),
             scores.get("text", 0),
             scores.get("text_regex", 0),
+            scores.get("url", 0),
+            scores.get("url_regex", 0),
         )
 
         if max_score > 0:
