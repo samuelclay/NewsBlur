@@ -20,6 +20,9 @@ class Classifiers(View):
             "texts": MClassifierText.objects._collection.count(),
             "titles": MClassifierTitle.objects._collection.count(),
             "urls": MClassifierUrl.objects._collection.count(),
+            "titles_regex": MClassifierTitle.objects(is_regex=True).count(),
+            "texts_regex": MClassifierText.objects(is_regex=True).count(),
+            "urls_regex": MClassifierUrl.objects(is_regex=True).count(),
         }
 
         chart_name = "classifiers"
