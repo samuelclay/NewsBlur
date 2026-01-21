@@ -34,7 +34,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.defaults = {
             classifiers: {
                 titles: {},
+                title_regex: {},
                 texts: {},
+                text_regex: {},
                 tags: {},
                 authors: {},
                 feeds: {},
@@ -2250,8 +2252,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 feed: 0,
                 tags: 0,
                 title: 0,
+                title_regex: 0,
                 text: 0,
-                regex: 0,
+                text_regex: 0,
                 url: 0,
                 url_regex: 0
             };
@@ -2295,16 +2298,30 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 }
             });
 
-            // Regex classifiers (PRO only) - match against both title AND content
-            if (user_is_pro && this.classifiers[feed_id].regex) {
-                _.each(this.classifiers[feed_id].regex, function (classifier_score, pattern) {
-                    if (intelligence.regex <= 0) {
+            // Title regex classifiers (PRO only)
+            if (user_is_pro && this.classifiers[feed_id].title_regex) {
+                _.each(this.classifiers[feed_id].title_regex, function (classifier_score, pattern) {
+                    if (intelligence.title_regex <= 0) {
                         try {
                             var regex = new RegExp(pattern, 'i');
-                            var title_match = regex.test(story.get('story_title', ''));
-                            var content_match = regex.test(story.get('story_content', ''));
-                            if (title_match || content_match) {
-                                intelligence.regex = classifier_score;
+                            if (regex.test(story.get('story_title', ''))) {
+                                intelligence.title_regex = classifier_score;
+                            }
+                        } catch (e) {
+                            // Invalid regex, skip
+                        }
+                    }
+                });
+            }
+
+            // Text regex classifiers (PRO only)
+            if (user_is_pro && this.classifiers[feed_id].text_regex) {
+                _.each(this.classifiers[feed_id].text_regex, function (classifier_score, pattern) {
+                    if (intelligence.text_regex <= 0) {
+                        try {
+                            var regex = new RegExp(pattern, 'i');
+                            if (regex.test(story.get('story_content', ''))) {
+                                intelligence.text_regex = classifier_score;
                             }
                         } catch (e) {
                             // Invalid regex, skip

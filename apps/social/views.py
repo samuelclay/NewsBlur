@@ -29,7 +29,9 @@ from apps.analyzer.models import (
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
+    apply_classifier_text_regex,
     apply_classifier_texts,
+    apply_classifier_title_regex,
     apply_classifier_titles,
     apply_classifier_url_regex,
     apply_classifier_urls,
@@ -287,9 +289,15 @@ def load_social_stories(request, user_id, username=None):
             ),
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story),
+            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user.profile.is_pro),
+            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user.profile.is_pro),
             "text": (
-                apply_classifier_texts(classifier_texts, story)
+                apply_classifier_texts(classifier_texts, story, user_is_pro=user.profile.is_pro)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
+            "text_regex": (
+                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user.profile.is_pro)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
@@ -491,9 +499,15 @@ def load_river_blurblog(request):
             ),
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story),
+            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user.profile.is_pro),
+            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user.profile.is_pro),
             "text": (
-                apply_classifier_texts(classifier_texts, story)
+                apply_classifier_texts(classifier_texts, story, user_is_pro=user.profile.is_pro)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
+            "text_regex": (
+                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user.profile.is_pro)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
