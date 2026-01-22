@@ -8,7 +8,7 @@ groups:
     rules:
       - uid: sentry_exceptions_web
         title: Sentry Exceptions - Web
-        condition: B
+        condition: C
         data:
           - refId: A
             relativeTimeRange:
@@ -34,9 +34,21 @@ groups:
               to: 0
             datasourceUid: __expr__
             model:
-              type: threshold
+              type: reduce
               refId: B
               expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
               conditions:
                 - evaluator:
                     params:
@@ -46,7 +58,7 @@ groups:
                     type: and
                   query:
                     params:
-                      - A
+                      - C
                   reducer:
                     params: []
                     type: last
@@ -57,8 +69,8 @@ groups:
         annotations:
           __dashboardUid__: T86VjXrG2
           __panelId__: "86"
-          summary: "Sentry Web exceptions high: {{ printf \"%.0f\" $values.A.Value }} errors"
-          description: "Sentry Web project is receiving {{ printf \"%.0f\" $values.A.Value }} exceptions in the last 30 minutes (threshold: 100)"
+          summary: "Sentry Web exceptions high: {{ printf \"%.0f\" $values.B.Value }} errors"
+          description: "Sentry Web project is receiving {{ printf \"%.0f\" $values.B.Value }} exceptions in the last 30 minutes (threshold: 100)"
         labels:
           severity: warning
           project: web
@@ -66,7 +78,7 @@ groups:
 
       - uid: sentry_exceptions_task
         title: Sentry Exceptions - Task
-        condition: B
+        condition: C
         data:
           - refId: A
             relativeTimeRange:
@@ -92,9 +104,21 @@ groups:
               to: 0
             datasourceUid: __expr__
             model:
-              type: threshold
+              type: reduce
               refId: B
               expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
               conditions:
                 - evaluator:
                     params:
@@ -104,7 +128,7 @@ groups:
                     type: and
                   query:
                     params:
-                      - A
+                      - C
                   reducer:
                     params: []
                     type: last
@@ -115,8 +139,8 @@ groups:
         annotations:
           __dashboardUid__: T86VjXrG2
           __panelId__: "86"
-          summary: "Sentry Task exceptions high: {{ printf \"%.0f\" $values.A.Value }} errors"
-          description: "Sentry Task project is receiving {{ printf \"%.0f\" $values.A.Value }} exceptions in the last 30 minutes (threshold: 100)"
+          summary: "Sentry Task exceptions high: {{ printf \"%.0f\" $values.B.Value }} errors"
+          description: "Sentry Task project is receiving {{ printf \"%.0f\" $values.B.Value }} exceptions in the last 30 minutes (threshold: 100)"
         labels:
           severity: warning
           project: task
@@ -124,7 +148,7 @@ groups:
 
       - uid: sentry_exceptions_node
         title: Sentry Exceptions - Node
-        condition: B
+        condition: C
         data:
           - refId: A
             relativeTimeRange:
@@ -150,9 +174,21 @@ groups:
               to: 0
             datasourceUid: __expr__
             model:
-              type: threshold
+              type: reduce
               refId: B
               expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
               conditions:
                 - evaluator:
                     params:
@@ -162,7 +198,7 @@ groups:
                     type: and
                   query:
                     params:
-                      - A
+                      - C
                   reducer:
                     params: []
                     type: last
@@ -173,8 +209,8 @@ groups:
         annotations:
           __dashboardUid__: T86VjXrG2
           __panelId__: "86"
-          summary: "Sentry Node exceptions high: {{ printf \"%.0f\" $values.A.Value }} errors"
-          description: "Sentry Node project is receiving {{ printf \"%.0f\" $values.A.Value }} exceptions in the last 30 minutes (threshold: 100)"
+          summary: "Sentry Node exceptions high: {{ printf \"%.0f\" $values.B.Value }} errors"
+          description: "Sentry Node project is receiving {{ printf \"%.0f\" $values.B.Value }} exceptions in the last 30 minutes (threshold: 100)"
         labels:
           severity: warning
           project: node
@@ -182,7 +218,7 @@ groups:
 
       - uid: sentry_exceptions_monitor
         title: Sentry Exceptions - Monitor
-        condition: B
+        condition: C
         data:
           - refId: A
             relativeTimeRange:
@@ -208,9 +244,21 @@ groups:
               to: 0
             datasourceUid: __expr__
             model:
-              type: threshold
+              type: reduce
               refId: B
               expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
               conditions:
                 - evaluator:
                     params:
@@ -220,7 +268,7 @@ groups:
                     type: and
                   query:
                     params:
-                      - A
+                      - C
                   reducer:
                     params: []
                     type: last
@@ -231,8 +279,8 @@ groups:
         annotations:
           __dashboardUid__: T86VjXrG2
           __panelId__: "86"
-          summary: "Sentry Monitor exceptions high: {{ printf \"%.0f\" $values.A.Value }} errors"
-          description: "Sentry Monitor project is receiving {{ printf \"%.0f\" $values.A.Value }} exceptions in the last 30 minutes (threshold: 100)"
+          summary: "Sentry Monitor exceptions high: {{ printf \"%.0f\" $values.B.Value }} errors"
+          description: "Sentry Monitor project is receiving {{ printf \"%.0f\" $values.B.Value }} exceptions in the last 30 minutes (threshold: 100)"
         labels:
           severity: warning
           project: monitor
