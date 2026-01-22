@@ -7,5 +7,5 @@ contactPoints:
       - uid: email-alerts
         type: email
         settings:
-          addresses: {{ alert_receiver_email }}
+          addresses: samuel@newsblur.com
         disableResolveMessage: false
