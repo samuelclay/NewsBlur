@@ -749,8 +749,18 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     open_auto_mark_read: function () {
+        var is_river = _.string.contains(this.options.feed_id, 'river:');
+        var folder_title = is_river ? this.options.feed_id.replace('river:', '') : null;
+
         this.close(_.bind(function () {
-            NEWSBLUR.reader.open_feed_exception_modal(this.options.feed_id, { scroll_to_auto_mark_read: true });
+            if (is_river) {
+                NEWSBLUR.reader.open_feed_exception_modal(folder_title, {
+                    folder_title: folder_title,
+                    scroll_to_auto_mark_read: true
+                });
+            } else {
+                NEWSBLUR.reader.open_feed_exception_modal(this.options.feed_id, { scroll_to_auto_mark_read: true });
+            }
         }, this));
     },
 
@@ -828,7 +838,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             return;
         }
 
-        var feed = NEWSBLUR.assets.get_feed(this.options.feed_id);
+        var is_river = _.string.contains(this.options.feed_id, 'river:');
+        var folder_title = is_river ? this.options.feed_id.replace('river:', '') : null;
+        var feed = is_river ? null : NEWSBLUR.assets.get_feed(this.options.feed_id);
 
         // Auto-select "Days" option when slider is moved
         this.$('.NB-auto-mark-read-option').removeClass('NB-active');
@@ -839,7 +851,11 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             clearTimeout(this._auto_mark_read_timer);
         }
         this._auto_mark_read_timer = setTimeout(_.bind(function () {
-            this.save_auto_mark_read(feed, days);
+            if (is_river) {
+                this.save_folder_auto_mark_read(folder_title, days);
+            } else {
+                this.save_auto_mark_read(feed, days);
+            }
         }, this), 300);
     },
 
@@ -854,6 +870,13 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     save_auto_mark_read: function (feed, days) {
         NEWSBLUR.assets.save_feed_auto_mark_read(feed.id, days, function () {
             feed.set('auto_mark_read_days', days);
+            // Reload feed to update unread counts
+            NEWSBLUR.reader.reload_feed();
+        });
+    },
+
+    save_folder_auto_mark_read: function (folder_title, days) {
+        NEWSBLUR.assets.save_folder_auto_mark_read(folder_title, days, function () {
             // Reload feed to update unread counts
             NEWSBLUR.reader.reload_feed();
         });
