@@ -8402,31 +8402,70 @@ form.opml_import_form input {
     filter: brightness(0) saturate(100%) invert(12%) sepia(100%) saturate(6000%) hue-rotate(0deg) brightness(90%) contrast(110%);
 }
 
-/* Yellowish-orange when active/selected */
-.NB-manage-sentiment-control li.NB-active .NB-icon-like,
-.NB-manage-sentiment-control li.NB-active .NB-icon-dislike {
-    filter: invert(67%) sepia(89%) saturate(497%) hue-rotate(2deg) brightness(103%) contrast(104%);
-}
-
-/* Multi-select types control - show inactive state differently */
-.NB-manage-types-control li:not(.NB-active) {
-    opacity: 0.5;
-}
-
 /* Filter bar rows */
 .NB-manage-filter-row {
     display: flex;
-    gap: 24px;
+    gap: 16px;
     width: 100%;
+    align-items: center;
 }
 
 .NB-manage-filter-row-1 {
     margin-bottom: 10px;
 }
 
+.NB-manage-filter-row-1 .NB-manage-filter-search {
+    flex: 1;
+}
+
+.NB-manage-filter-row-1 .NB-manage-filter-sentiment {
+    flex: 0 0 auto;
+}
+
 .NB-manage-filter-row-2 {
     display: flex;
-    gap: 16px;
+}
+
+.NB-manage-filter-row-2 .NB-manage-types-control {
+    width: 100%;
+    display: flex;
+}
+
+.NB-manage-filter-row-2 .NB-manage-types-control li {
+    flex: 1;
+    justify-content: center;
+}
+
+/* Type filter count badges */
+.NB-type-label {
+    margin-right: 4px;
+}
+
+.NB-type-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 16px;
+    padding: 0 5px;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    color: #666;
+}
+
+.NB-manage-types-control li.NB-active .NB-type-count,
+.NB-manage-sentiment-control li.NB-active .NB-type-count {
+    background: rgba(80, 120, 80, 0.25);
+    color: #3a5a3a;
+}
+
+/* Dim items with zero count */
+.NB-manage-types-control li.NB-zero-count,
+.NB-manage-sentiment-control li.NB-zero-count {
+    opacity: 0.5;
 }
 
 /* Feed/folder dropdown filter */
@@ -8456,7 +8495,6 @@ form.opml_import_form input {
 
 .NB-manage-search-input {
     width: 100%;
-    max-width: 300px;
     padding: 4px 8px;
     font-size: 12px;
     border: 1px solid #D0D0D0;
