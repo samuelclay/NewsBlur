@@ -754,11 +754,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     preserve_classifier_color: function (classifier_type, value, score) {
         var $tag;
         this.$('.NB-feed-story-' + classifier_type).each(function () {
-            if (_.string.trim($(this).text()) == value) {
+            // Use html() for tags to match HTML entities, text() for authors
+            var el_value = classifier_type === 'tag' ? _.string.trim($(this).html()) : _.string.trim($(this).text());
+            if (el_value == value) {
                 $tag = $(this);
                 return false;
             }
         });
+        if (!$tag) return;
         $tag.removeClass('NB-score-now-1')
             .removeClass('NB-score-now--1')
             .removeClass('NB-score-now-0')
@@ -1467,7 +1470,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     save_classifier: function (e) {
         var $tag = $(e.currentTarget);
         var classifier_type = $tag.hasClass('NB-feed-story-tag') ? 'tag' : 'author';
-        var value = _.string.trim($tag.text());
+        // Use innerHTML for tags to preserve HTML entities that match the classifier keys
+        var value = classifier_type === 'tag' ? _.string.trim($tag.html()) : _.string.trim($tag.text());
         var score = $tag.hasClass('NB-score-1') ? -1 : $tag.hasClass('NB-score--1') ? 0 : 1;
         var feed_id = this.model.get('story_feed_id');
         var data = {
@@ -1492,7 +1496,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.preserve_classifier_color(classifier_type, value, score);
     },
 
-    save_url_classifier: function (e) {
+    save_url_classifier: function () {
         // Open the Intelligence Trainer instead of toggling inline
         // URL classifiers are complex and benefit from the full trainer interface
         this.open_story_trainer();
