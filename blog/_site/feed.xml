@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-20T18:24:16-05:00</updated>
+  <updated>2026-01-22T14:12:44-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -23,11 +23,11 @@ A new sound of an old instrument.
   
   <entry>
     <title type="html">Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place</title>
-    <link href="https://blog.newsblur.com/2026/01/20/intelligence-trainer-overhaul/" rel="alternate" type="text/html" title="Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place" />
-    <published>2026-01-20T00:00:00-05:00</published>
-    <updated>2026-01-20T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2026/01/20/intelligence-trainer-overhaul</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/01/20/intelligence-trainer-overhaul/">
+    <link href="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/" rel="alternate" type="text/html" title="Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place" />
+    <published>2026-01-22T00:00:00-05:00</published>
+    <updated>2026-01-22T00:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/01/22/intelligence-trainer-overhaul/">
       <![CDATA[<p>The Intelligence Trainer is one of NewsBlur’s most powerful features. It lets you train on authors, tags, titles, and text to automatically sort stories into Focus, Unread, or Hidden. But until now, there were limits—you couldn’t train on URLs, regex support was something power users had been requesting for years, and managing hundreds of classifiers meant clicking through feeds one by one.</p>
 
 <p>Today I’m launching three major improvements: URL classifiers, regex mode for power users, and a completely redesigned Manage Training tab.</p>
