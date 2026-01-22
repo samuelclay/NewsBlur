@@ -3503,6 +3503,18 @@ a.mention, a.mention-group {
     filter: invert(67%) sepia(89%) saturate(497%) hue-rotate(2deg) brightness(103%) contrast(104%);
 }
 
+/* Count badges need light text for dark mode */
+.NB-dark .NB-type-count {
+    background: rgba(255, 255, 255, 0.1);
+    color: #A0A0A0;
+}
+
+.NB-dark .NB-manage-types-control li.NB-active .NB-type-count,
+.NB-dark .NB-manage-sentiment-control li.NB-active .NB-type-count {
+    background: rgba(255, 255, 255, 0.2);
+    color: #F0F0F0;
+}
+
 /* Feed chooser dropdown in dark mode */
 .NB-dark .NB-manage-feed-chooser {
     background: #303030;
