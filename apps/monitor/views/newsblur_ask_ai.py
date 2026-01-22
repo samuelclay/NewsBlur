@@ -168,16 +168,16 @@ class AskAI(View):
             if profile.is_premium:
                 if count > 0:
                     tier_stats["premium"]["using"] += 1
-                if count >= AskAIUsageTracker.WEEKLY_LIMIT_PREMIUM:
+                if count >= AskAIUsageTracker.WEEKLY_LIMIT:
                     tier_stats["premium"]["at_limit"] += 1
-                add_bucket("premium", count, AskAIUsageTracker.WEEKLY_LIMIT_PREMIUM)
+                add_bucket("premium", count, AskAIUsageTracker.WEEKLY_LIMIT)
             else:
                 # Free users
                 if count > 0:
                     tier_stats["free"]["using"] += 1
-                if count >= AskAIUsageTracker.WEEKLY_LIMIT_FREE:
+                if count >= AskAIUsageTracker.WEEKLY_LIMIT:
                     tier_stats["free"]["at_limit"] += 1
-                add_bucket("free", count, AskAIUsageTracker.WEEKLY_LIMIT_FREE)
+                add_bucket("free", count, AskAIUsageTracker.WEEKLY_LIMIT)
 
         # Process daily counts for archive users
         for user_id, count in daily_counts.items():
