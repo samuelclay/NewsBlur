@@ -691,7 +691,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         }
 
         // Show/hide header clear link based on whether there's an icon
-        var has_icon = this.folder_icon && this.folder_icon.icon_type && this.folder_icon.icon_type !== 'none';
+        var has_icon = !!(this.folder_icon && this.folder_icon.icon_type && this.folder_icon.icon_type !== 'none');
         $('.NB-folder-icon-clear-header', this.$modal).toggle(has_icon);
 
         // Add click handler for header clear link
@@ -753,7 +753,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         }
 
         // Show/hide header clear link based on whether there's an icon
-        var has_icon = this.feed_icon && this.feed_icon.icon_type && this.feed_icon.icon_type !== 'none';
+        var has_icon = !!(this.feed_icon && this.feed_icon.icon_type && this.feed_icon.icon_type !== 'none');
         $('.NB-folder-icon-clear-header', this.$modal).toggle(has_icon);
 
         // Update header clear link text for feeds
@@ -961,7 +961,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         }
 
         // Show/hide the clear link based on whether there's a custom icon
-        var has_custom_icon = icon && icon.icon_type && icon.icon_type !== 'none';
+        var has_custom_icon = !!(icon && icon.icon_type && icon.icon_type !== 'none');
         $('.NB-folder-icon-clear-header', this.$modal).toggle(has_custom_icon);
     },
 
