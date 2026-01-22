@@ -286,6 +286,7 @@ class Profile(models.Model):
             MClassifierTag,
             MClassifierText,
             MClassifierTitle,
+            MClassifierUrl,
         )
         from apps.social.models import MSharedStory, MSocialProfile
 
@@ -338,6 +339,8 @@ class Profile(models.Model):
             "author_ng": MClassifierAuthor.objects.filter(user_id=self.user.pk, score__lt=0).count(),
             "feed_ps": MClassifierFeed.objects.filter(user_id=self.user.pk, score__gt=0).count(),
             "feed_ng": MClassifierFeed.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "url_ps": MClassifierUrl.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "url_ng": MClassifierUrl.objects.filter(user_id=self.user.pk, score__lt=0).count(),
         }
 
         # Create the archived record

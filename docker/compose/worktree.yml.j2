@@ -60,15 +60,27 @@ services:
     volumes:
       - ${PWD}/docker/nginx/nginx.local.conf:/etc/nginx/conf.d/nginx.conf
       - ${PWD}:/srv/newsblur
+    networks:
+      - default
+      - newsblur_default
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /var/run/nginx.pid ] && kill -0 $$(cat /var/run/nginx.pid)"]
+      interval: 2s
+      timeout: 2s
+      retries: 3
+      start_period: 5s
 
   haproxy:
     container_name: newsblur_haproxy_{{ workspace_name }}
     image: haproxy:latest
     restart: "no"
     depends_on:
-      - nginx
-      - newsblur_web
-      - newsblur_node
+      nginx:
+        condition: service_healthy
+      newsblur_web:
+        condition: service_started
+      newsblur_node:
+        condition: service_started
     ports:
       - {{ haproxy_http_port }}:80
       - {{ haproxy_https_port }}:443

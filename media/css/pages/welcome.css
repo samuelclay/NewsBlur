@@ -1069,18 +1069,24 @@
 }
 
 .NB-pricing-tier-pro .NB-pricing-tier-features li.NB-3 .NB-pricing-bullet {
-    background-image: url('/media/embed/icons/icons8/icons8-pyramids-100.png');
-    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
-    /* gold */
-}
-
-.NB-pricing-tier-pro .NB-pricing-tier-features li.NB-4 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/nouns/train.svg');
     filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
     /* gold */
 }
 
+.NB-pricing-tier-pro .NB-pricing-tier-features li.NB-4 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/icons8/icons8-pyramids-100.png');
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
+    /* gold */
+}
+
 .NB-pricing-tier-pro .NB-pricing-tier-features li.NB-5 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/train.svg');
+    filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
+    /* gold */
+}
+
+.NB-pricing-tier-pro .NB-pricing-tier-features li.NB-6 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/icons8/icons8-search-100.png');
     filter: invert(65%) sepia(90%) saturate(1200%) hue-rotate(15deg) brightness(100%) contrast(100%);
     /* gold */

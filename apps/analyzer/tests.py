@@ -11,11 +11,14 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
     apply_classifier_texts,
     apply_classifier_titles,
+    apply_classifier_url_regex,
+    apply_classifier_urls,
     compute_story_score,
     get_classifiers_for_user,
 )
@@ -45,6 +48,7 @@ class Test_Classifiers(TransactionTestCase):
         MClassifierAuthor.objects(user_id=self.user.pk).delete()
         MClassifierTag.objects(user_id=self.user.pk).delete()
         MClassifierFeed.objects(user_id=self.user.pk).delete()
+        MClassifierUrl.objects(user_id=self.user.pk).delete()
 
     def test_create_classifier_title(self):
         classifier = MClassifierTitle.objects.create(
@@ -412,10 +416,14 @@ class Test_Classifiers(TransactionTestCase):
         self.assertIn("authors", classifiers)
         self.assertIn("tags", classifiers)
         self.assertIn("feeds", classifiers)
+        self.assertIn("urls", classifiers)
 
+        # titles and texts are simple score dicts, regex is separate
         self.assertEqual(classifiers["titles"]["important"], 1)
         self.assertEqual(classifiers["texts"]["exclusive"], 1)
         self.assertEqual(classifiers["authors"]["Good Author"], 1)
+        self.assertIn("text_regex", classifiers)  # text_regex should always be present
+        self.assertIn("url_regex", classifiers)  # url_regex should always be present
 
     def test_text_classifiers_premium_tiers(self):
         # Create text classifier for testing
@@ -553,3 +561,327 @@ class Test_Classifiers(TransactionTestCase):
         usersub.refresh_from_db()
         self.assertTrue(usersub.is_trained)
         self.assertTrue(usersub.needs_unread_recalc)
+
+    # ================================
+    # = URL Classifier Tests         =
+    # ================================
+
+    def test_create_classifier_url_exact(self):
+        """Test creating an exact URL classifier (is_regex=False)"""
+        classifier = MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url="/news/technology",
+            score=1,
+            is_regex=False,
+            creation_date=datetime.datetime.now(),
+        )
+        self.assertEqual(classifier.url, "/news/technology")
+        self.assertEqual(classifier.score, 1)
+        self.assertEqual(classifier.is_regex, False)
+        self.assertEqual(classifier.user_id, self.user.pk)
+        self.assertEqual(classifier.feed_id, self.feed.pk)
+
+    def test_create_classifier_url_regex(self):
+        """Test creating a regex URL classifier (is_regex=True)"""
+        classifier = MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url=r"/news/\d{4}/",
+            score=1,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+        self.assertEqual(classifier.url, r"/news/\d{4}/")
+        self.assertEqual(classifier.score, 1)
+        self.assertEqual(classifier.is_regex, True)
+
+    def test_apply_classifier_urls_exact_match(self):
+        """Test that exact URL classifier matches as substring (case-insensitive)"""
+        # Create exact URL classifier (is_regex=False)
+        MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url="/technology/",
+            score=1,
+            is_regex=False,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_permalink": "https://example.com/news/technology/article-123",
+        }
+
+        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        score = apply_classifier_urls(classifiers, story, user_is_premium=True)
+
+        self.assertEqual(score, 1)
+
+    def test_apply_classifier_urls_exact_no_match(self):
+        """Test that exact URL classifier returns 0 when no match"""
+        MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url="/sports/",
+            score=1,
+            is_regex=False,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_permalink": "https://example.com/news/technology/article-123",
+        }
+
+        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        score = apply_classifier_urls(classifiers, story, user_is_premium=True)
+
+        self.assertEqual(score, 0)
+
+    def test_apply_classifier_urls_case_insensitive(self):
+        """Test that exact URL classifier is case-insensitive"""
+        MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url="/TECHNOLOGY/",
+            score=1,
+            is_regex=False,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_permalink": "https://example.com/news/technology/article-123",
+        }
+
+        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        score = apply_classifier_urls(classifiers, story, user_is_premium=True)
+
+        self.assertEqual(score, 1)
+
+    def test_apply_classifier_urls_requires_premium(self):
+        """Test that exact URL classifiers require Premium tier"""
+        MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url="/technology/",
+            score=1,
+            is_regex=False,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_permalink": "https://example.com/news/technology/article-123",
+        }
+
+        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        # Without Premium, should return 0
+        score = apply_classifier_urls(classifiers, story, user_is_premium=False)
+
+        self.assertEqual(score, 0)
+
+    def test_apply_classifier_url_regex_match(self):
+        """Test that regex URL classifier matches patterns"""
+        MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url=r"/article-\d+",
+            score=1,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_permalink": "https://example.com/news/article-12345",
+        }
+
+        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        score = apply_classifier_url_regex(classifiers, story, user_is_pro=True)
+
+        self.assertEqual(score, 1)
+
+    def test_apply_classifier_url_regex_no_match(self):
+        """Test that regex URL classifier returns 0 when pattern doesn't match"""
+        MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url=r"/video-\d+",
+            score=1,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_permalink": "https://example.com/news/article-12345",
+        }
+
+        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        score = apply_classifier_url_regex(classifiers, story, user_is_pro=True)
+
+        self.assertEqual(score, 0)
+
+    def test_apply_classifier_url_regex_requires_pro(self):
+        """Test that regex URL classifiers require PRO tier"""
+        MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url=r"/article-\d+",
+            score=1,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_permalink": "https://example.com/news/article-12345",
+        }
+
+        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        # Without PRO, should return 0
+        score = apply_classifier_url_regex(classifiers, story, user_is_pro=False)
+
+        self.assertEqual(score, 0)
+
+    def test_apply_classifier_url_regex_dislike(self):
+        """Test that regex URL classifier with negative score works"""
+        MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url=r"/sponsored/",
+            score=-1,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+
+        story = {
+            "story_feed_id": self.feed.pk,
+            "story_permalink": "https://example.com/sponsored/article",
+        }
+
+        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        score = apply_classifier_url_regex(classifiers, story, user_is_pro=True)
+
+        self.assertEqual(score, -1)
+
+    def test_save_classifier_url_exact_endpoint(self):
+        """Test saving an exact URL classifier via the API endpoint"""
+        self.client.login(username="testuser", password="testpass")
+
+        response = self.client.post(
+            "/classifier/save/", {"feed_id": self.feed.pk, "like_url": ["/technology/"]}
+        )
+
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], 0)
+
+        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        self.assertEqual(len(classifiers), 1)
+        self.assertEqual(classifiers[0].url, "/technology/")
+        self.assertEqual(classifiers[0].score, 1)
+        self.assertEqual(classifiers[0].is_regex, False)
+
+    def test_save_classifier_url_regex_endpoint(self):
+        """Test saving a regex URL classifier via the API endpoint"""
+        self.client.login(username="testuser", password="testpass")
+
+        response = self.client.post(
+            "/classifier/save/", {"feed_id": self.feed.pk, "like_url_regex": [r"/article-\d+"]}
+        )
+
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], 0)
+
+        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        self.assertEqual(len(classifiers), 1)
+        self.assertEqual(classifiers[0].url, r"/article-\d+")
+        self.assertEqual(classifiers[0].score, 1)
+        self.assertEqual(classifiers[0].is_regex, True)
+
+    def test_save_classifier_dislike_url_endpoint(self):
+        """Test saving a dislike URL classifier via the API endpoint"""
+        self.client.login(username="testuser", password="testpass")
+
+        response = self.client.post(
+            "/classifier/save/", {"feed_id": self.feed.pk, "dislike_url": ["/sponsored/"]}
+        )
+
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], 0)
+
+        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        self.assertEqual(len(classifiers), 1)
+        self.assertEqual(classifiers[0].url, "/sponsored/")
+        self.assertEqual(classifiers[0].score, -1)
+        self.assertEqual(classifiers[0].is_regex, False)
+
+    def test_remove_classifier_url_endpoint(self):
+        """Test removing a URL classifier via the API endpoint"""
+        # First create a classifier
+        MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url="/technology/",
+            score=1,
+            is_regex=False,
+            creation_date=datetime.datetime.now(),
+        )
+
+        self.client.login(username="testuser", password="testpass")
+
+        # Remove it
+        response = self.client.post(
+            "/classifier/save/", {"feed_id": self.feed.pk, "remove_like_url": ["/technology/"]}
+        )
+
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], 0)
+
+        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        self.assertEqual(len(classifiers), 0)
+
+    def test_get_classifiers_includes_urls(self):
+        """Test that get_classifiers_for_user includes URL classifiers"""
+        # Make user Premium to enable URL classifiers
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+
+        MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url="/technology/",
+            score=1,
+            is_regex=False,
+            creation_date=datetime.datetime.now(),
+        )
+        MClassifierUrl.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            url=r"/article-\d+",
+            score=-1,
+            is_regex=True,
+            creation_date=datetime.datetime.now(),
+        )
+
+        classifiers = get_classifiers_for_user(self.user, feed_id=self.feed.pk)
+
+        self.assertIn("urls", classifiers)
+        self.assertIn("url_regex", classifiers)
+        self.assertEqual(classifiers["urls"]["/technology/"], 1)
+        self.assertEqual(classifiers["url_regex"][r"/article-\d+"], -1)
