@@ -47,6 +47,8 @@ groups:
         execErrState: Alerting
         for: 15m
         annotations:
+          __dashboardUid__: T86VjXrG2
+          __panelId__: "85"
           summary: "Consul service {{ $labels.service }} is unhealthy"
           description: "Service {{ $labels.service }} has been in an unhealthy state (value: {{ printf \"%.0f\" $values.A.Value }}) for more than 15 minutes. Status codes: 9=passing, 8=warning, 2=critical, 0=unknown"
         labels:
