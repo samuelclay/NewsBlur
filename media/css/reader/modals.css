@@ -166,11 +166,11 @@ fieldset legend {
 
 .NB-modal .NB-modal-field h5 {}
 
-.NB-modal .NB-modal-field input[type=text] {
+.NB-modal-field input[type=text] {
     width: 446px;
     font-size: 14px;
     font-size: 14px;
-    padding: 2px;
+    padding: 4px 6px;
     margin: 0px 4px 6px;
     border: 1px solid #606060;
     -moz-box-shadow: 2px 2px 0 rgba(50, 50, 50, 0.15);

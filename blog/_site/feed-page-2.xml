@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-16T18:27:14-05:00</updated>
+  <updated>2026-01-22T14:12:44-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,53 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">The NewsBlur iOS app also hits version 8.0</title>
+    <link href="https://blog.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80/" rel="alternate" type="text/html" title="The NewsBlur iOS app also hits version 8.0" />
+    <published>2018-10-31T09:16:24-04:00</published>
+    <updated>2018-10-31T09:16:24-04:00</updated>
+    <id>https://blog.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2018/10/31/the-newsblur-ios-app-also-hits-version-80/">
+      <![CDATA[<p>Fresh off the heels of the Android app hitting version 8.0, today I’d like to announce the latest update to the iOS app. This is a huge release and it’s got a lot of new features packed in it. I also want to welcome David Sinclair back to the team. He’s the builder behind all the incredible features in this release. Really wonderful having you back, David, and thanks for making v8.0 of the best news reader on a phone.</p>
+
+<p>Here’s what’s new:</p>
+
+<ul>
+  <li>NEW: Save stories offline</li>
+  <li>NEW: Share stories from other apps into NewsBlur with the new share extension</li>
+  <li>NEW: Scroll vertically between stories (can be turned on while reading a story)</li>
+  <li>NEW: 3D Touch links in stories to preview them</li>
+  <li>NEW: search for sites directly from the feed list</li>
+  <li>Switching themes no longer reloads the story</li>
+  <li>iOS 12 compatibility fixes</li>
+  <li>Upgrading to a premium subscription now handles App Store payment updates</li>
+  <li>Fixed issue where locking the device while playing a video over Airplay would stop the video</li>
+</ul>
+
+<p>Here’s a preview of what a 3D touch on a link looks like:</p>
+
+<video src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-preview.mov" width="350" style="margin: 0 auto;border: 1px solid #606060" autoplay="" muted="" loop=""></video>
+
+<p>And sharing stories from other apps directly to your blurblog is now easy to do from the share menu.</p>
+
+<figure class="tmblr-full" data-orig-height="1334" data-orig-width="750" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-share.png"><img width="350" style="margin: 0 auto;border: 1px solid #606060" data-orig-height="1334" data-orig-width="750" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios8-share.png" /></figure>
+
+<p>Now that David’s back there’s a lot to look forward to.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="iOS" />
+    
+    
+    <summary type="html">
+      <![CDATA[Fresh off the heels of the Android app hitting version 8.0, today I’d like to announce the latest update to the iOS app. This is a huge release and it’s got a lot of new features packed in it. I also want to welcome David Sinclair back to the team....]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">The NewsBlur Android app hits version 8.0 with a new Grid view</title>
@@ -1082,34 +1129,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[NewsBlur has an amazingly active third-party app community, thanks to the well documented NewsBlur API. Today I’d like to introduce you to two new apps built by developers on the NewsBlur API.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Search for pizza with your Android device</title>
-    <link href="https://blog.newsblur.com/2016/01/28/search-for-pizza-with-your-android-device/" rel="alternate" type="text/html" title="Search for pizza with your Android device" />
-    <published>2016-01-28T14:26:36-05:00</published>
-    <updated>2016-01-28T14:26:36-05:00</updated>
-    <id>https://blog.newsblur.com/2016/01/28/search-for-pizza-with-your-android-device</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/01/28/search-for-pizza-with-your-android-device/">
-      <![CDATA[<p>I’m not sure what else you would search for, honestly. If not vanilla pizza, then perhaps a sicilian, or montanara, a deep-dish, slices of neapolitan, whole-wheat thin-crust, or stuffed crust?</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android_search.png" alt="" /></p>
-
-<p>Well now you can search for pizza to your heart’s content on the <a href="http://www.newsblur.com/android">NewsBlur Android app</a>. Good luck with your tomato pie.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[I’m not sure what else you would search for, honestly. If not vanilla pizza, then perhaps a sicilian, or montanara, a deep-dish, slices of neapolitan, whole-wheat thin-crust, or stuffed crust?
 ]]>
     </summary>
     
