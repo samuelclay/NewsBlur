@@ -8,7 +8,7 @@ groups:
     rules:
       - uid: consul_service_unhealthy
         title: Consul Service Unhealthy
-        condition: B
+        condition: C
         data:
           - refId: A
             relativeTimeRange:
@@ -26,19 +26,31 @@ groups:
               to: 0
             datasourceUid: __expr__
             model:
-              type: threshold
+              type: reduce
               refId: B
               expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
               conditions:
                 - evaluator:
                     params:
-                      - -1
+                      - 0
                     type: gt
                   operator:
                     type: and
                   query:
                     params:
-                      - A
+                      - C
                   reducer:
                     params: []
                     type: last
@@ -50,7 +62,7 @@ groups:
           __dashboardUid__: T86VjXrG2
           __panelId__: "85"
           summary: "Consul service {{ $labels.service }} is unhealthy"
-          description: "Service {{ $labels.service }} has been in an unhealthy state (value: {{ printf \"%.0f\" $values.A.Value }}) for more than 15 minutes. Status codes: 9=passing, 8=warning, 2=critical, 0=unknown"
+          description: "Service {{ $labels.service }} has been in an unhealthy state (value: {{ printf \"%.0f\" $values.B.Value }}) for more than 15 minutes. Status codes: 9=passing, 8=warning, 2=critical, 0=unknown"
         labels:
           severity: critical
         isPaused: false
