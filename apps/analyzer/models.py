@@ -149,7 +149,7 @@ class MClassifierTitle(mongo.Document):
 
     meta = {
         "collection": "classifier_title",
-        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
+        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id", "is_regex"],
         "allow_inheritance": False,
     }
 
@@ -170,7 +170,7 @@ class MClassifierUrl(mongo.Document):
 
     meta = {
         "collection": "classifier_url",
-        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
+        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id", "is_regex"],
         "allow_inheritance": False,
     }
 
@@ -191,7 +191,7 @@ class MClassifierText(mongo.Document):
 
     meta = {
         "collection": "classifier_text",
-        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
+        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id", "is_regex"],
         "allow_inheritance": False,
     }
 
