@@ -23,11 +23,16 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
+    apply_classifier_text_regex,
     apply_classifier_texts,
+    apply_classifier_title_regex,
     apply_classifier_titles,
+    apply_classifier_url_regex,
+    apply_classifier_urls,
 )
 from apps.analyzer.tfidf import tfidf
 from apps.reader.managers import UserSubscriptionManager
@@ -1293,6 +1298,7 @@ class UserSubscription(models.Model):
             classifier_titles = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
             classifier_tags = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
             classifier_texts = list(MClassifierText.objects(user_id=self.user_id, feed_id=self.feed_id))
+            classifier_urls = list(MClassifierUrl.objects(user_id=self.user_id, feed_id=self.feed_id))
 
             if (
                 not len(classifier_feeds)
@@ -1300,6 +1306,7 @@ class UserSubscription(models.Model):
                 and not len(classifier_titles)
                 and not len(classifier_tags)
                 and not len(classifier_texts)
+                and not len(classifier_urls)
             ):
                 logging.user(self.user, "~FB~BMTurning off is_trained, no classifiers")
                 self.is_trained = False
@@ -1311,18 +1318,25 @@ class UserSubscription(models.Model):
                 "feed": apply_classifier_feeds(classifier_feeds, self.feed),
             }
 
+            user_is_pro = self.user.profile.is_pro
+            user_is_premium = self.user.profile.is_premium
+
             for story in unread_stories:
                 scores.update(
                     {
                         "author": apply_classifier_authors(classifier_authors, story),
                         "tags": apply_classifier_tags(classifier_tags, story),
-                        "title": apply_classifier_titles(classifier_titles, story),
-                        "text": apply_classifier_texts(classifier_texts, story),
+                        "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
+                        "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
+                        "text": apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro),
+                        "text_regex": apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro),
+                        "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user_is_premium),
+                        "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_is_pro),
                     }
                 )
 
-                max_score = max(scores["author"], scores["tags"], scores["title"], scores["text"])
-                min_score = min(scores["author"], scores["tags"], scores["title"], scores["text"])
+                max_score = max(scores["author"], scores["tags"], scores["title"], scores["title_regex"], scores["text"], scores["text_regex"], scores["url"], scores["url_regex"])
+                min_score = min(scores["author"], scores["tags"], scores["title"], scores["title_regex"], scores["text"], scores["text_regex"], scores["url"], scores["url_regex"])
                 if max_score > 0:
                     feed_scores["positive"] += 1
                 elif min_score < 0:
@@ -1405,8 +1419,26 @@ class UserSubscription(models.Model):
 
     @staticmethod
     def score_story(scores):
-        max_score = max(scores["author"], scores["tags"], scores["title"], scores.get("text", 0))
-        min_score = min(scores["author"], scores["tags"], scores["title"], scores.get("text", 0))
+        max_score = max(
+            scores["author"],
+            scores["tags"],
+            scores["title"],
+            scores.get("title_regex", 0),
+            scores.get("text", 0),
+            scores.get("text_regex", 0),
+            scores.get("url", 0),
+            scores.get("url_regex", 0),
+        )
+        min_score = min(
+            scores["author"],
+            scores["tags"],
+            scores["title"],
+            scores.get("title_regex", 0),
+            scores.get("text", 0),
+            scores.get("text_regex", 0),
+            scores.get("url", 0),
+            scores.get("url_regex", 0),
+        )
 
         if max_score > 0:
             return 1

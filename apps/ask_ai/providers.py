@@ -82,6 +82,14 @@ class AnthropicProvider(LLMProvider):
     def format_error(self, error: Exception) -> str:
         if isinstance(error, anthropic.APIConnectionError):
             return "Anthropic API connection error"
+        if isinstance(error, anthropic.APIStatusError):
+            # Check for common error types
+            if error.status_code == 401:
+                return "Anthropic API key is invalid. Please check your ANTHROPIC_API_KEY setting."
+            if error.status_code == 403:
+                return "Anthropic API access denied. Your API key may be invalid, expired, or lack permissions. Please check your ANTHROPIC_API_KEY setting."
+            if error.status_code == 429:
+                return "Anthropic API rate limit exceeded. Please try again later."
         return f"Anthropic API error: {str(error)}"
 
 
@@ -115,6 +123,13 @@ class OpenAIProvider(LLMProvider):
     def format_error(self, error: Exception) -> str:
         if isinstance(error, openai.APITimeoutError):
             return "OpenAI API timeout"
+        if isinstance(error, openai.APIStatusError):
+            if error.status_code == 401:
+                return "OpenAI API key is invalid. Please check your OPENAI_API_KEY setting."
+            if error.status_code == 403:
+                return "OpenAI API access denied. Your API key may be invalid or lack permissions. Please check your OPENAI_API_KEY setting."
+            if error.status_code == 429:
+                return "OpenAI API rate limit exceeded. Please try again later."
         return f"OpenAI API error: {str(error)}"
 
 
@@ -151,6 +166,13 @@ class XAIProvider(LLMProvider):
     def format_error(self, error: Exception) -> str:
         if isinstance(error, openai.APITimeoutError):
             return "xAI API timeout"
+        if isinstance(error, openai.APIStatusError):
+            if error.status_code == 401:
+                return "xAI API key is invalid. Please check your XAI_GROK_API_KEY setting."
+            if error.status_code == 403:
+                return "xAI API access denied. Your API key may be invalid or lack permissions. Please check your XAI_GROK_API_KEY setting."
+            if error.status_code == 429:
+                return "xAI API rate limit exceeded. Please try again later."
         return f"xAI API error: {str(error)}"
 
 

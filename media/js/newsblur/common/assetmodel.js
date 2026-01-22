@@ -34,10 +34,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.defaults = {
             classifiers: {
                 titles: {},
+                title_regex: {},
                 texts: {},
+                text_regex: {},
                 tags: {},
                 authors: {},
-                feeds: {}
+                feeds: {},
+                urls: {},
+                url_regex: {}
             }
         };
         this.feeds = new NEWSBLUR.Collections.Feeds();
@@ -120,9 +124,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 request_type = 'POST';
             }
         }
-        this.ajax[options['ajax_group']].add(_.extend({
+
+        var ajax_options = {
             url: url,
-            data: data,
             type: request_type,
             cache: false,
             cacheResponse: false,
@@ -178,7 +182,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     callback({ 'message': message, status_code: e.status }, data);
                 }
             }
-        }, options));
+        };
+
+        // Handle JSON body requests
+        if (options.request_body_type === 'json') {
+            ajax_options.data = JSON.stringify(data);
+            ajax_options.contentType = 'application/json';
+        } else {
+            ajax_options.data = data;
+        }
+
+        this.ajax[options['ajax_group']].add(_.extend(ajax_options, options));
 
     },
 
@@ -1026,6 +1040,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/feeds_trainer', params, callback, null, { 'ajax_group': 'feed', 'request_type': 'GET' });
     },
 
+    get_all_classifiers: function (callback, error_callback) {
+        this.make_request('/reader/all_classifiers', {}, callback, error_callback, { 'ajax_group': 'feed', 'request_type': 'GET' });
+    },
+
     get_social_trainer: function (feed_id, callback) {
         var self = this;
         var params = {};
@@ -1344,6 +1362,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     save_classifier: function (data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/classifier/save', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+
+    save_all_classifiers: function (classifiers_by_feed, callback, error_callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/classifier/save_all', {
+                classifiers: classifiers_by_feed
+            }, callback, error_callback, {
+                request_type: 'POST',
+                request_body_type: 'json'
+            });
         } else {
             if ($.isFunction(callback)) callback();
         }
@@ -2297,6 +2328,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     recalculate_story_scores: function (feed_id, options) {
         options = options || {};
+        var user_is_pro = NEWSBLUR.Globals.is_pro;
+
         this.stories.each(_.bind(function (story, i) {
             if (story.get('story_feed_id') != feed_id) return;
             var intelligence = {
@@ -2304,13 +2337,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 feed: 0,
                 tags: 0,
                 title: 0,
-                text: 0
+                title_regex: 0,
+                text: 0,
+                text_regex: 0,
+                url: 0,
+                url_regex: 0
             };
 
             _.each(this.classifiers[feed_id].titles, function (classifier_score, classifier_title) {
-                if (intelligence.title <= 0 &&
-                    story.get('story_title', '').toLowerCase().indexOf(classifier_title.toLowerCase()) != -1) {
-                    intelligence.title = classifier_score;
+                if (intelligence.title <= 0) {
+                    // Standard substring matching
+                    if (story.get('story_title', '').toLowerCase().indexOf(classifier_title.toLowerCase()) != -1) {
+                        intelligence.title = classifier_score;
+                    }
                 }
             });
 
@@ -2336,11 +2375,72 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             });
 
             _.each(this.classifiers[feed_id].texts, function (classifier_score, classifier_text) {
-                if (intelligence.text <= 0 &&
-                    story.get('story_content', '').toLowerCase().indexOf(classifier_text.toLowerCase()) != -1) {
-                    intelligence.text = classifier_score;
+                if (intelligence.text <= 0) {
+                    // Standard substring matching
+                    if (story.get('story_content', '').toLowerCase().indexOf(classifier_text.toLowerCase()) != -1) {
+                        intelligence.text = classifier_score;
+                    }
                 }
             });
+
+            // Title regex classifiers (PRO only)
+            if (user_is_pro && this.classifiers[feed_id].title_regex) {
+                _.each(this.classifiers[feed_id].title_regex, function (classifier_score, pattern) {
+                    if (intelligence.title_regex <= 0) {
+                        try {
+                            var regex = new RegExp(pattern, 'i');
+                            if (regex.test(story.get('story_title', ''))) {
+                                intelligence.title_regex = classifier_score;
+                            }
+                        } catch (e) {
+                            // Invalid regex, skip
+                        }
+                    }
+                });
+            }
+
+            // Text regex classifiers (PRO only)
+            if (user_is_pro && this.classifiers[feed_id].text_regex) {
+                _.each(this.classifiers[feed_id].text_regex, function (classifier_score, pattern) {
+                    if (intelligence.text_regex <= 0) {
+                        try {
+                            var regex = new RegExp(pattern, 'i');
+                            if (regex.test(story.get('story_content', ''))) {
+                                intelligence.text_regex = classifier_score;
+                            }
+                        } catch (e) {
+                            // Invalid regex, skip
+                        }
+                    }
+                });
+            }
+
+            // URL exact phrase classifiers
+            _.each(this.classifiers[feed_id].urls, function (classifier_score, classifier_url) {
+                if (intelligence.url <= 0) {
+                    var permalink = story.get('story_permalink') || '';
+                    if (permalink.toLowerCase().indexOf(classifier_url.toLowerCase()) != -1) {
+                        intelligence.url = classifier_score;
+                    }
+                }
+            });
+
+            // URL regex classifiers (PRO only)
+            if (user_is_pro && this.classifiers[feed_id].url_regex) {
+                _.each(this.classifiers[feed_id].url_regex, function (classifier_score, pattern) {
+                    if (intelligence.url_regex <= 0) {
+                        try {
+                            var regex = new RegExp(pattern, 'i');
+                            var permalink = story.get('story_permalink') || '';
+                            if (regex.test(permalink)) {
+                                intelligence.url_regex = classifier_score;
+                            }
+                        } catch (e) {
+                            // Invalid regex, skip
+                        }
+                    }
+                });
+            }
 
             story.set('intelligence', intelligence, options);
         }, this));
