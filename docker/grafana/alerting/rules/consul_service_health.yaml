@@ -1,0 +1,54 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: consul_service_alerts
+    folder: Infrastructure
+    interval: 1m
+    rules:
+      - uid: consul_service_unhealthy
+        title: Consul Service Unhealthy
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: prometheus
+            model:
+              expr: 'consul_service_state < 9'
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 900
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: B
+              expr: A
+              conditions:
+                - evaluator:
+                    params:
+                      - -1
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - A
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: NoData
+        execErrState: Alerting
+        for: 15m
+        annotations:
+          summary: "Consul service {{ $labels.service }} is unhealthy"
+          description: "Service {{ $labels.service }} has been in an unhealthy state (value: {{ printf \"%.0f\" $values.A.Value }}) for more than 15 minutes. Status codes: 9=passing, 8=warning, 2=critical, 0=unknown"
+        labels:
+          severity: critical
+        isPaused: false
