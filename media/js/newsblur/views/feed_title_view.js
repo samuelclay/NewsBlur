@@ -127,6 +127,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                           &middot;\
                           <div class="NB-feedbar-notifications-icon"></div>\
                       <% } %>\
+                      <% if (has_auto_mark_read) { %>\
+                          &middot;\
+                          <div class="NB-feedbar-auto-mark-read-icon"></div>\
+                      <% } %>\
                   </span>\
               </div>\
               <div class="NB-story-title-indicator">\
@@ -183,7 +187,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             organizer: this.options.organizer,
             pluralize: Inflector.pluralize,
             show_discover: NEWSBLUR.assets.preference("show_discover"),
-            has_notifications: this.model.get('notification_types') || []
+            has_notifications: this.model.get('notification_types') || [],
+            has_auto_mark_read: this.model.get('auto_mark_read_days') !== null && this.model.get('auto_mark_read_days') !== undefined
         }));
 
         if (this.options.type == 'story') {
