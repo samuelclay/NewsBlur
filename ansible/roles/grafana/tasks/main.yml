@@ -32,10 +32,10 @@
     - /srv/newsblur/docker/grafana/datasources
     - /srv/newsblur/docker/grafana/alerting
 
-- name: Template grafana alert contact points
+- name: Copy grafana alert contact points
   become: yes
-  template:
-    src: /srv/newsblur/docker/grafana/alerting/email.yaml.j2
+  copy:
+    src: /srv/newsblur/docker/grafana/alerting/email.yaml
     dest: /srv/newsblur/docker/grafana/alerting/email.yaml
   notify: restart grafana
   tags:
