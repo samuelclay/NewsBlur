@@ -14,7 +14,7 @@ groups:
             relativeTimeRange:
               from: 900
               to: 0
-            datasourceUid: prometheus
+            datasourceUid: U1-fPO3Mk
             model:
               expr: 'consul_service_state < 9'
               refId: A
