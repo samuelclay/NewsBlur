@@ -28,7 +28,7 @@ groups:
             model:
               type: threshold
               refId: B
-              expr: A
+              expression: A
               conditions:
                 - evaluator:
                     params:
