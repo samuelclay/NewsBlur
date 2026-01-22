@@ -45,6 +45,19 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
         this.$modal.bind('input', $.rescope(this.handle_input, this));
+
+        if (this.options.scroll_to_auto_mark_read) {
+            _.delay(_.bind(function () {
+                var $auto_mark_read = $('.NB-exception-option-auto-mark-read', this.$modal);
+                if ($auto_mark_read.length) {
+                    $auto_mark_read[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    $auto_mark_read.addClass('NB-highlighted');
+                    _.delay(function () {
+                        $auto_mark_read.removeClass('NB-highlighted');
+                    }, 2000);
+                }
+            }, this), 100);
+        }
     },
 
     initialize_feed: function (feed_id) {
@@ -231,7 +244,11 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-auto-mark-read NB-modal-submit NB-settings-only' }, [
                 $.make('h5', [
                     $.make('div', { className: 'NB-exception-option-status NB-right' }),
-                    'Auto-mark read'
+                    $.make('span', 'Auto-mark read'),
+                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-auto-mark-read-archive-notice' }, [
+                        'Requires ',
+                        $.make('a', { href: '#', className: 'NB-premium-archive-link' }, 'Premium Archive')
+                    ]))
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
                     $.make('div', { className: 'NB-auto-mark-read-options' }, [
@@ -260,12 +277,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                             }),
                             $.make('span', { className: 'NB-auto-mark-read-days-value' }, '14 days')
                         ])
-                    ]),
-                    (!NEWSBLUR.Globals.is_archive && $.make('div', { className: 'NB-auto-mark-read-archive-notice' }, [
-                        'Requires ',
-                        $.make('span', { className: 'NB-splash-link NB-premium-link' }, 'premium archive'),
-                        ' to customize.'
-                    ]))
+                    ])
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-retry NB-modal-submit NB-exception-block-only' }, [
@@ -573,6 +585,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             self.change_feed_link();
         });
         $.targetIs(e, { tagSelector: '.NB-premium-only-link' }, function ($t, $p) {
+            e.preventDefault();
+
+            self.close(function () {
+                NEWSBLUR.reader.open_premium_upgrade_modal();
+            });
+        });
+        $.targetIs(e, { tagSelector: '.NB-premium-archive-link' }, function ($t, $p) {
             e.preventDefault();
 
             self.close(function () {
@@ -1446,12 +1465,14 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         if (this.folder) {
             NEWSBLUR.assets.save_folder_auto_mark_read(this.folder_title, days, function () {
                 self.animate_auto_mark_read_saved($status);
+                NEWSBLUR.reader.reload_feed();
             });
         } else if (this.feed) {
             NEWSBLUR.assets.save_feed_auto_mark_read(this.feed_id, days, function () {
                 // Update the feed model
                 self.feed.set('auto_mark_read_days', days);
                 self.animate_auto_mark_read_saved($status);
+                NEWSBLUR.reader.reload_feed();
             });
         }
     },

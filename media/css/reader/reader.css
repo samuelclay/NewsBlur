@@ -10692,6 +10692,11 @@ h5.NB-classifier-section-header {
     background-size: 36px;
 }
 
+.NB-module-premium-archive-icon.NB-9 {
+    background: transparent url('/media/embed/icons/nouns/mark-read.svg') no-repeat 0 0;
+    background-size: 36px;
+}
+
 .NB-module-premium-reason {
     padding: 0 24px;
 }
@@ -14452,11 +14457,29 @@ h5.NB-classifier-section-header {
     min-width: 55px;
 }
 
-/* Archive-only notice */
+/* Auto-mark read header with premium notice */
+.NB-exception-option-auto-mark-read h5 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .NB-auto-mark-read-archive-notice {
-    margin: 8px 0 0;
+    margin-left: auto;
     font-size: 11px;
-    color: #808080;
+    font-weight: normal;
+    color: #807060;
+    white-space: nowrap;
+}
+
+.NB-auto-mark-read-archive-notice a {
+    color: #d97706;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.NB-auto-mark-read-archive-notice a:hover {
+    text-decoration: underline;
 }
 
 /* Disabled state for non-Archive users */
@@ -17441,42 +17464,48 @@ h5.NB-classifier-section-header {
 }
 
 .NB-premium-tier-features-archive li.NB-3 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/mark-read.svg');
+    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
+    /* cyan */
+}
+
+.NB-premium-tier-features-archive li.NB-4 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-filing-cabinet-100.png');
     filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);
     /* brown-orange */
 }
 
-.NB-premium-tier-features-archive li.NB-4 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-5 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-quadcopter-100.png');
     filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
     /* blue */
 }
 
-.NB-premium-tier-features-archive li.NB-5 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-6 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/train.svg');
     filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
     /* blue */
 }
 
-.NB-premium-tier-features-archive li.NB-6 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-7 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/direction_black.svg');
     filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);
     /* violet */
 }
 
-.NB-premium-tier-features-archive li.NB-7 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-8 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-rss-100.png');
     filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%);
     /* orange */
 }
 
-.NB-premium-tier-features-archive li.NB-8 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-9 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-calendar-100.png');
     filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
     /* cyan */
 }
 
-.NB-premium-tier-features-archive li.NB-9 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-10 .NB-premium-bullet-image {
     background-image: url('/media/img/icons/nouns/prompt.svg');
     filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);
     /* purple */
@@ -22261,6 +22290,158 @@ h5.NB-classifier-section-header {
     height: 12px;
     display: inline-block;
     margin: 0px 0 -2px 0;
+}
+
+.NB-feedbar-auto-mark-read-icon {
+    background: transparent url("/media/embed/icons/nouns/calendar.svg") no-repeat center center;
+    background-size: 12px;
+    filter: hue-rotate(180deg) saturate(2);
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin: 0px 0 -2px 0;
+}
+
+.NB-exception-option-auto-mark-read.NB-highlighted {
+    background-color: rgba(255, 200, 0, 0.3);
+    transition: background-color 0.3s ease;
+}
+
+/* Auto Mark as Read Popover Section */
+.NB-filter-popover .NB-auto-mark-read-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.NB-filter-popover .NB-auto-mark-read-title-row .NB-popover-section-title {
+    margin: 0;
+    margin-right: auto;
+}
+
+.NB-filter-popover .NB-auto-mark-read-title-row .NB-filter-popover-auto-mark-read-icon {
+    width: 18px;
+    height: 18px;
+    background: transparent url("/media/embed/icons/nouns/calendar.svg") no-repeat center center;
+    background-size: 14px;
+    filter: hue-rotate(180deg) saturate(2);
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+}
+
+.NB-filter-popover .NB-auto-mark-read-title-row .NB-filter-popover-auto-mark-read-icon:hover {
+    opacity: 1;
+}
+
+.NB-filter-popover .segmented-control.NB-menu-manage-auto-mark-read {
+    margin-left: 0;
+}
+
+.NB-filter-popover .segmented-control.NB-menu-manage-auto-mark-read li {
+    flex-grow: 1;
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider-container {
+    margin: 4px 0 4px 0;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #4a90d9;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease;
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: #4a90d9;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider-value {
+    font-size: 11px;
+    color: #666;
+    text-align: center;
+    font-weight: 500;
+}
+
+.NB-filter-popover .NB-auto-mark-read-effective-value {
+    font-size: 11px;
+    color: #808080;
+    margin: 0 0 6px 0;
+    font-style: italic;
+}
+
+/* Upgrade notice for non-archive users */
+.NB-filter-popover .NB-auto-mark-read-upgrade-notice {
+    font-size: 11px;
+    text-decoration: none;
+    color: #707070;
+    padding: 3px 8px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.NB-filter-popover .NB-auto-mark-read-upgrade-notice:hover {
+    background-color: rgba(74, 144, 217, 0.1);
+    color: #4a90d9;
+}
+
+.NB-filter-popover .NB-auto-mark-read-upgrade-notice .NB-archive-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.NB-filter-popover .NB-auto-mark-read-upgrade-notice.NB-flash {
+    animation: flash-upgrade 0.6s ease;
+    background-color: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
+}
+
+@keyframes flash-upgrade {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.05); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.03); }
 }
 
 /* =========== */
