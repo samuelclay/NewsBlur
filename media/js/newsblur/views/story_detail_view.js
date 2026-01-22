@@ -27,6 +27,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-header-title": "open_feed",
         "click .NB-feed-story-tag": "save_classifier",
         "click .NB-feed-story-author": "save_classifier",
+        "click .NB-feed-story-url": "save_url_classifier",
         "click .NB-feed-story-train": "open_story_trainer",
         "click .NB-feed-story-email": "open_email",
         "click .NB-sideoption-sharing": "click_sharing_service",
@@ -235,6 +236,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             authors_score: this.classifiers &&
                 this.classifiers.authors[this.model.get('story_authors')],
             tags_score: this.classifiers && this.classifiers.tags,
+            url_match: this.get_url_match(),
             options: this.options,
             truncatable: this.is_truncatable(),
             inline_story_title: this.options.inline_story_title,
@@ -245,6 +247,72 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_related: NEWSBLUR.assets.preference("show_sideoption_related"),
             show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai"),
             sharing_services: NEWSBLUR.assets.third_party_sharing_services,
+        };
+    },
+
+    get_url_match: function () {
+        if (!this.classifiers) return null;
+
+        var permalink = this.model.get('story_permalink') || '';
+        var url_match = null;
+        var max_display_length = 80;
+
+        // Check exact URL matches
+        _.each(this.classifiers.urls, function (classifier_score, classifier_url) {
+            if (url_match) return;
+            var index = permalink.toLowerCase().indexOf(classifier_url.toLowerCase());
+            if (index !== -1) {
+                var matched = permalink.substr(index, classifier_url.length);
+                url_match = this.format_url_match(permalink, index, matched.length, classifier_score, classifier_url, false, max_display_length);
+            }
+        }, this);
+
+        // Check regex URL matches (PRO only)
+        if (!url_match && NEWSBLUR.Globals.is_pro && this.classifiers.url_regex) {
+            _.each(this.classifiers.url_regex, function (classifier_score, pattern) {
+                if (url_match) return;
+                try {
+                    var regex = new RegExp(pattern, 'i');
+                    var match = permalink.match(regex);
+                    if (match) {
+                        var index = match.index;
+                        var matched = match[0];
+                        url_match = this.format_url_match(permalink, index, matched.length, classifier_score, pattern, true, max_display_length);
+                    }
+                } catch (e) {
+                    // Invalid regex, skip
+                }
+            }, this);
+        }
+
+        return url_match;
+    },
+
+    format_url_match: function (permalink, index, matched_length, score, pattern, is_regex, max_display_length) {
+        var matched = permalink.substr(index, matched_length);
+        var before = permalink.substr(0, index);
+        var after = permalink.substr(index + matched_length);
+
+        // Calculate how much space we have for before/after
+        var available_for_context = max_display_length - matched.length;
+        var before_max = Math.floor(available_for_context / 2);
+        var after_max = available_for_context - before_max;
+
+        // Truncate if needed
+        if (before.length > before_max) {
+            before = '…' + before.substr(before.length - before_max + 1);
+        }
+        if (after.length > after_max) {
+            after = after.substr(0, after_max - 1) + '…';
+        }
+
+        return {
+            score: score,
+            pattern: pattern,
+            is_regex: is_regex,
+            before: before,
+            matched: matched,
+            after: after
         };
     },
 
@@ -292,6 +360,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                                     <%= tag %>\
                                 </div>\
                             <% }) %>\
+                        </div>\
+                    <% } %>\
+                    <% if (url_match && url_match.score) { %>\
+                        <div class="NB-feed-story-url-match">\
+                            <span class="NB-feed-story-url NB-score-<%= url_match.score %>">\
+                                <span class="NB-feed-story-url-label">URL: </span><span class="NB-feed-story-url-before"><%= url_match.before %></span><span class="NB-feed-story-url-matched"><%= url_match.matched %></span><span class="NB-feed-story-url-after"><%= url_match.after %></span>\
+                            </span>\
                         </div>\
                     <% } %>\
                 </div>\
@@ -679,11 +754,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     preserve_classifier_color: function (classifier_type, value, score) {
         var $tag;
         this.$('.NB-feed-story-' + classifier_type).each(function () {
-            if (_.string.trim($(this).text()) == value) {
+            // Use html() for tags to match HTML entities, text() for authors
+            var el_value = classifier_type === 'tag' ? _.string.trim($(this).html()) : _.string.trim($(this).text());
+            if (el_value == value) {
                 $tag = $(this);
                 return false;
             }
         });
+        if (!$tag) return;
         $tag.removeClass('NB-score-now-1')
             .removeClass('NB-score-now--1')
             .removeClass('NB-score-now-0')
@@ -1205,12 +1283,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     apply_starred_story_selections: function (force) {
         var highlights = this.model.user_highlights();
         var text_classifiers = this.classifiers && this.classifiers.texts ? _.keys(this.classifiers.texts) : [];
+        var text_regex_classifiers = this.classifiers && this.classifiers.text_regex ? _.keys(this.classifiers.text_regex) : [];
+        // Support legacy 'regex' key for backward compatibility
+        var legacy_regex_classifiers = this.classifiers && this.classifiers.regex ? _.keys(this.classifiers.regex) : [];
         var search_query = NEWSBLUR.reader.flags.search;
 
         if (!force) {
-            if ((!highlights || !highlights.length) && !text_classifiers.length && !search_query) return;
+            if ((!highlights || !highlights.length) && !text_classifiers.length && !text_regex_classifiers.length && !legacy_regex_classifiers.length && !search_query) return;
         }
-        // console.log(['Applying highlights', highlights, 'text_classifiers', text_classifiers, 'search_query', search_query]);
 
         var $doc = this.$(".NB-feed-story-content");
         $doc.unmark();
@@ -1239,6 +1319,36 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 "acrossElements": true,
                 "caseSensitive": false
             });
+        }, this));
+
+        // Apply text regex classifier highlights
+        _.each(text_regex_classifiers, _.bind(function (pattern) {
+            try {
+                var classifier_score = this.classifiers.text_regex[pattern];
+                var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+                var regex = new RegExp(pattern, 'gi');
+                $doc.markRegExp(regex, {
+                    "className": className,
+                    "acrossElements": true
+                });
+            } catch (e) {
+                console.log(['Invalid regex pattern for highlighting', pattern, e]);
+            }
+        }, this));
+
+        // Apply legacy regex classifier highlights (backward compatibility)
+        _.each(legacy_regex_classifiers, _.bind(function (pattern) {
+            try {
+                var classifier_score = this.classifiers.regex[pattern];
+                var className = classifier_score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+                var regex = new RegExp(pattern, 'gi');
+                $doc.markRegExp(regex, {
+                    "className": className,
+                    "acrossElements": true
+                });
+            } catch (e) {
+                console.log(['Invalid regex pattern for highlighting', pattern, e]);
+            }
         }, this));
 
         // Apply search highlights (last, so they appear on top)
@@ -1360,7 +1470,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     save_classifier: function (e) {
         var $tag = $(e.currentTarget);
         var classifier_type = $tag.hasClass('NB-feed-story-tag') ? 'tag' : 'author';
-        var value = _.string.trim($tag.text());
+        // Use innerHTML for tags to preserve HTML entities that match the classifier keys
+        var value = classifier_type === 'tag' ? _.string.trim($tag.html()) : _.string.trim($tag.text());
         var score = $tag.hasClass('NB-score-1') ? -1 : $tag.hasClass('NB-score--1') ? 0 : 1;
         var feed_id = this.model.get('story_feed_id');
         var data = {
@@ -1383,6 +1494,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         this.model.trigger('change:intelligence');
         this.preserve_classifier_color(classifier_type, value, score);
+    },
+
+    save_url_classifier: function () {
+        // Open the Intelligence Trainer instead of toggling inline
+        // URL classifiers are complex and benefit from the full trainer interface
+        this.open_story_trainer();
     },
 
     open_story_trainer: function () {
