@@ -1465,14 +1465,26 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         if (this.folder) {
             NEWSBLUR.assets.save_folder_auto_mark_read(this.folder_title, days, function () {
                 self.animate_auto_mark_read_saved($status);
-                NEWSBLUR.reader.reload_feed();
+                // Refresh all feeds in the folder, then reload after refresh completes
+                var folder = NEWSBLUR.assets.get_folder(self.folder_title);
+                if (folder) {
+                    var feed_ids = folder.feed_ids_in_folder();
+                    NEWSBLUR.reader.force_feeds_refresh(function () {
+                        NEWSBLUR.reader.reload_feed();
+                    }, false, feed_ids);
+                } else {
+                    NEWSBLUR.reader.reload_feed();
+                }
             });
         } else if (this.feed) {
             NEWSBLUR.assets.save_feed_auto_mark_read(this.feed_id, days, function () {
                 // Update the feed model
                 self.feed.set('auto_mark_read_days', days);
                 self.animate_auto_mark_read_saved($status);
-                NEWSBLUR.reader.reload_feed();
+                // Refresh feed to recalculate unread counts, then reload after refresh completes
+                NEWSBLUR.reader.force_feeds_refresh(function () {
+                    NEWSBLUR.reader.reload_feed();
+                }, false, self.feed_id);
             });
         }
     },

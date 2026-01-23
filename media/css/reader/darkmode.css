@@ -959,6 +959,19 @@ color: #a85b40;
     color: #7CA4D8;
 }
 
+/* Filter popover auto-mark-read slider dark mode */
+.NB-dark .NB-filter-popover .NB-auto-mark-read-slider-container {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-filter-popover .NB-auto-mark-read-slider-value {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-filter-popover .NB-auto-mark-read-slider-value b {
+    color: #7CA4D8;
+}
+
 /* Site Statistics: Text color */
 .NB-dark .NB-modal-statistics .NB-statistics-stat .NB-statistics-label,
 .NB-dark .NB-statistics-count,
@@ -3469,6 +3482,11 @@ a.mention, a.mention-group {
 .NB-dark .NB-popover-section-folder-icon .NB-filter-popover-folder-icon-button:hover {
     background: #444;
     border-color: #666;
+}
+
+/* Date filter upgrade notice dark mode */
+.NB-dark .NB-date-filter-upgrade-notice {
+    color: #909090;
 }
 
 /* ============================== */

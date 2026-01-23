@@ -2135,13 +2135,24 @@ class UserSubscriptionFolders(models.Model):
         return flat_folders
 
     def find_feed_folders(self, feed_id):
-        """Find the folder(s) containing a feed. Returns a list of folder titles."""
+        """Find the folder(s) containing a feed. Returns a list of immediate folder titles.
+
+        Note: flatten_folders() returns full nested paths like "Parent - Child - Grandchild",
+        but folder auto_mark_read settings are stored with just the immediate folder name.
+        This method extracts the immediate folder name from the path.
+        """
         flat_folders = self.flatten_folders()
         folders_with_feed = []
         for folder_title, feed_ids in flat_folders.items():
             if feed_id in feed_ids:
-                # Use empty string for root folder instead of " "
-                folders_with_feed.append(folder_title.strip() if folder_title.strip() else "")
+                folder_title = folder_title.strip() if folder_title else ""
+                if folder_title:
+                    # Extract just the immediate folder name (last part of path)
+                    # "Parent - Child - Grandchild" -> "Grandchild"
+                    immediate_folder = folder_title.split(" - ")[-1] if " - " in folder_title else folder_title
+                    folders_with_feed.append(immediate_folder)
+                else:
+                    folders_with_feed.append("")
         return folders_with_feed
 
     def delete_feed(self, feed_id, in_folder, commit_delete=True):

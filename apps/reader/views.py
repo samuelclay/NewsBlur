@@ -862,6 +862,10 @@ def load_single_feed(request, feed_id):
         date_filter_start = None
     if date_filter_end in ("null", "None", "", None):
         date_filter_end = None
+    # Date filtering is a Premium Archive feature
+    if not user.profile.is_archive:
+        date_filter_start = None
+        date_filter_end = None
     query = request.GET.get("query", "").strip()
     include_story_content = is_true(request.GET.get("include_story_content", True))
     include_hidden = is_true(request.GET.get("include_hidden", False))
@@ -916,6 +920,18 @@ def load_single_feed(request, feed_id):
             read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
         )
 
+        # Calculate cutoff date based on auto_mark_read_days setting (for archive users)
+        default_cutoff = user.profile.unread_cutoff
+        if usersub:
+            auto_mark_read_cutoff = usersub.get_auto_mark_read_cutoff()
+            # Use the more restrictive (newer) cutoff date
+            if auto_mark_read_cutoff:
+                cutoff_date = max(auto_mark_read_cutoff, default_cutoff)
+            else:
+                cutoff_date = default_cutoff
+        else:
+            cutoff_date = default_cutoff
+
         if read_filter == "starred":
             mstories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).order_by(
                 "%sstarred_date" % ("-" if order == "newest" else "")
@@ -927,6 +943,7 @@ def load_single_feed(request, feed_id):
                 read_filter=read_filter,
                 offset=offset,
                 limit=limit,
+                cutoff_date=cutoff_date,
                 date_filter_start=date_filter_start_utc,
                 date_filter_end=date_filter_end_utc,
             )
@@ -979,12 +996,20 @@ def load_single_feed(request, feed_id):
     unread_story_hashes = []
     if stories:
         if (read_filter == "all" or query) and usersub:
+            # Calculate cutoff date for determining unread status
+            # This handles both query and non-query cases
+            default_cutoff = user.profile.unread_cutoff
+            auto_mark_read_cutoff = usersub.get_auto_mark_read_cutoff()
+            if auto_mark_read_cutoff:
+                unread_cutoff_date = max(auto_mark_read_cutoff, default_cutoff)
+            else:
+                unread_cutoff_date = default_cutoff
             unread_story_hashes = UserSubscription.story_hashes(
                 user.pk,
                 read_filter="unread",
                 feed_ids=[usersub.feed_id],
                 usersubs=[usersub],
-                cutoff_date=user.profile.unread_cutoff,
+                cutoff_date=unread_cutoff_date,
             )
         story_hashes = [story["story_hash"] for story in stories if story["story_hash"]]
         starred_stories = MStarredStory.objects(
@@ -1249,6 +1274,10 @@ def load_starred_stories(request):
     if date_filter_start in ("null", "None", "", None):
         date_filter_start = None
     if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
+    # Date filtering is a Premium Archive feature
+    if not user.profile.is_archive:
+        date_filter_start = None
         date_filter_end = None
     tag = request.GET.get("tag")
     highlights = is_true(request.GET.get("highlights", False))
@@ -1729,6 +1758,10 @@ def load_read_stories(request):
         date_filter_start = None
     if date_filter_end in ("null", "None", "", None):
         date_filter_end = None
+    # Date filtering is a Premium Archive feature
+    if not user.profile.is_archive:
+        date_filter_start = None
+        date_filter_end = None
     query = request.GET.get("query", "").strip()
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
@@ -1866,6 +1899,10 @@ def load_river_stories__redis(request):
     if date_filter_start in ("null", "None", "", None):
         date_filter_start = None
     if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
+    # Date filtering is a Premium Archive feature
+    if not user.profile.is_archive:
+        date_filter_start = None
         date_filter_end = None
 
     query = get_post.get("query", "").strip()

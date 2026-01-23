@@ -2070,25 +2070,28 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     // =============================
 
     get_feed_folders: function (feed_id) {
-        // Find all folders containing a given feed_id
+        // Find the immediate folder containing a given feed_id
+        // Returns folder titles (not full nested paths) to match folder_auto_mark_read keys
         var folders = [];
         feed_id = parseInt(feed_id, 10);
 
-        var search_collection = function (collection, parent_title) {
+        var search_collection = function (collection, current_folder_title) {
             if (!collection || !collection.each) return;
 
             collection.each(function (item) {
                 if (item.is_feed && item.is_feed()) {
                     // This is a feed - check if it matches
-                    if (item.get('id') === feed_id) {
-                        folders.push(parent_title || '');
+                    // FeedInFolder stores the feed reference in item.feed
+                    var item_feed_id = item.feed ? item.feed.id : item.get('feed_id');
+                    if (item_feed_id === feed_id) {
+                        // Return the immediate folder title, not the full path
+                        folders.push(current_folder_title || '');
                     }
                 } else if (item.is_folder && item.is_folder()) {
-                    // This is a folder - recurse into it
+                    // This is a folder - recurse into it with this folder's title
                     var folder_title = item.get('folder_title') || '';
-                    var full_title = parent_title ? (parent_title + ' - ' + folder_title) : folder_title;
                     if (item.folders) {
-                        search_collection(item.folders, full_title);
+                        search_collection(item.folders, folder_title);
                     }
                 }
             });

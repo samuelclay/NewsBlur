@@ -159,6 +159,7 @@ def render_premium_archive_module(context):
         "Choose when stories are automatically marked as read",
         "Ask AI questions about stories",
         "Customize auto-read settings by site or folder",
+        "Filter stories by date range to find exactly what you need",
     ]
     rand_int = (datetime.datetime.now().timetuple().tm_sec) % len(reasons)
 

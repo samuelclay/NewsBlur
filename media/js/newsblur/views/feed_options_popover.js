@@ -36,7 +36,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-date-filter-duration": "change_date_filter_duration",
         "click .NB-auto-mark-read-option": "change_auto_mark_read_setting",
         "input .NB-auto-mark-read-slider": "on_auto_mark_read_slider_input",
-        "click .NB-auto-mark-read-upgrade-notice": "open_premium_modal"
+        "click .NB-auto-mark-read-upgrade-notice": "open_premium_modal",
+        "click .NB-date-filter-upgrade-notice": "open_premium_modal"
     },
 
     initialize: function (options) {
@@ -157,7 +158,12 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         $.make('li', { className: 'NB-view-setting-option NB-view-setting-infrequent-90', role: "button" }, '90')
                     ])
                 ])),
-                $.make('div', { className: 'NB-popover-section-title' }, 'Filter by date range'),
+                $.make('div', { className: 'NB-date-filter-title-row' }, [
+                    $.make('div', { className: 'NB-popover-section-title' }, 'Filter by date range'),
+                    (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-date-filter-upgrade-notice NB-premium-link', href: '#' }, [
+                        $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                    ]))
+                ]),
                 $.make('div', { className: 'NB-date-filter-container' }, [
                     $.make('div', { className: 'NB-date-filter-column' }, [
                         $.make('div', { className: 'NB-date-filter-label' }, 'Newer:'),
@@ -306,21 +312,20 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     ])),
                     $.make('div', { className: 'NB-filter-popover-auto-mark-read-icon' })
                 ]),
-                (NEWSBLUR.Globals.is_archive && $.make('div', { className: 'NB-auto-mark-read-effective-value' })),
                 $.make('ul', { className: 'segmented-control NB-menu-manage-auto-mark-read' }, [
                     $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-default', 'data-value': 'default', role: 'button' }, 'Default'),
-                    $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-never', 'data-value': 'never', role: 'button' }, 'Never'),
-                    $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-days', 'data-value': 'days', role: 'button' }, 'Days')
+                    $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-days', 'data-value': 'days', role: 'button' }, 'Days'),
+                    $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-never', 'data-value': 'never', role: 'button' }, 'Never')
                 ]),
                 $.make('div', { className: 'NB-auto-mark-read-slider-container' }, [
                     $.make('input', {
                         type: 'range',
                         className: 'NB-auto-mark-read-slider',
                         min: '1',
-                        max: '365',
+                        max: '400',
                         value: '14'
                     }),
-                    $.make('div', { className: 'NB-auto-mark-read-slider-value' }, '14 days')
+                    $.make('div', { className: 'NB-auto-mark-read-slider-value' })
                 ])
             ]))
         ]));
@@ -474,106 +479,103 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var $slider = this.$('.NB-auto-mark-read-slider');
         var $slider_value = this.$('.NB-auto-mark-read-slider-value');
 
+        // Calculate the default/inherited value
+        var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
+        var default_days = site_wide_days;
+        var default_source = 'site-wide';
+
+        if (!is_river && feed) {
+            var folders = NEWSBLUR.assets.get_feed_folders(feed.id);
+            var feed_folder_title = folders && folders.length > 0 ? folders[0] : null;
+            var folder_setting = feed_folder_title ? NEWSBLUR.assets.get_folder_auto_mark_read(feed_folder_title) : null;
+
+            if (folder_setting !== null && folder_setting !== undefined) {
+                default_days = folder_setting;
+                default_source = feed_folder_title;
+            }
+        }
+
         // For non-archive users, just show Default as active
         if (!NEWSBLUR.Globals.is_archive) {
             $default.addClass('NB-active');
             $never.removeClass('NB-active');
             $days.removeClass('NB-active');
-            $slider.val(14);
-            $slider_value.text('Stories will be marked as read at 14 days');
-            this.update_slider_gradient($slider, 14);
+            var display_days = default_days === 0 ? 400 : default_days;
+            $slider.val(display_days);
+            this.update_slider_status_text($slider_value, 'default', default_days, default_source);
+            this.update_slider_gradient($slider, display_days);
             return;
         }
 
-        var $effective = this.$('.NB-auto-mark-read-effective-value');
-
+        // Get current setting
+        var auto_mark_days;
         if (is_river) {
-            // Folder case
-            var auto_mark_days = NEWSBLUR.assets.get_folder_auto_mark_read(folder_title);
-            var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
-
-            // For folders, the default is site-wide preference
-            var effective_text = '';
-            if (site_wide_days === 0) {
-                effective_text = 'Default: never (from site-wide)';
-            } else {
-                effective_text = 'Default: ' + site_wide_days + ' day' + (site_wide_days !== 1 ? 's' : '') + ' (from site-wide)';
-            }
-            $effective.text(effective_text);
-
-            $default.removeClass('NB-active');
-            $never.removeClass('NB-active');
-            $days.removeClass('NB-active');
-
-            var days_to_show;
-            if (auto_mark_days === null || auto_mark_days === undefined) {
-                $default.addClass('NB-active');
-                days_to_show = site_wide_days || 14;
-            } else if (auto_mark_days === 0) {
-                $never.addClass('NB-active');
-                days_to_show = site_wide_days || 14;
-            } else {
-                $days.addClass('NB-active');
-                days_to_show = auto_mark_days;
-            }
-
-            $slider.val(days_to_show);
-            $slider_value.text('Stories will be marked as read at ' + days_to_show + ' day' + (days_to_show !== 1 ? 's' : ''));
-            this.update_slider_gradient($slider, days_to_show);
+            auto_mark_days = NEWSBLUR.assets.get_folder_auto_mark_read(folder_title);
         } else {
-            // Feed case
-            var auto_mark_days = feed.get('auto_mark_read_days');
-
-            // Calculate inherited value for display
-            var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
-            var folders = NEWSBLUR.assets.get_feed_folders(feed.id);
-            var feed_folder_title = folders && folders.length > 0 ? folders[0] : null;
-            var folder_setting = feed_folder_title ? NEWSBLUR.assets.get_folder_auto_mark_read(feed_folder_title) : null;
-
-            var effective_days = site_wide_days;
-            var source = 'site-wide';
-
-            if (folder_setting !== null && folder_setting !== undefined) {
-                effective_days = folder_setting;
-                source = feed_folder_title;
-            }
-
-            // Format effective value text
-            var effective_text = '';
-            if (effective_days === 0) {
-                effective_text = 'Default: never (from ' + source + ')';
-            } else {
-                effective_text = 'Default: ' + effective_days + ' day' + (effective_days !== 1 ? 's' : '') + ' (from ' + source + ')';
-            }
-            $effective.text(effective_text);
-
-            $default.removeClass('NB-active');
-            $never.removeClass('NB-active');
-            $days.removeClass('NB-active');
-
-            var days_to_show;
-            if (auto_mark_days === null || auto_mark_days === undefined) {
-                $default.addClass('NB-active');
-                days_to_show = effective_days || 14;
-            } else if (auto_mark_days === 0) {
-                $never.addClass('NB-active');
-                days_to_show = effective_days || 14;
-            } else {
-                $days.addClass('NB-active');
-                days_to_show = auto_mark_days;
-            }
-
-            $slider.val(days_to_show);
-            $slider_value.text('Stories will be marked as read at ' + days_to_show + ' day' + (days_to_show !== 1 ? 's' : ''));
-            this.update_slider_gradient($slider, days_to_show);
+            auto_mark_days = feed.get('auto_mark_read_days');
         }
+
+        // Clear all active states
+        $default.removeClass('NB-active');
+        $never.removeClass('NB-active');
+        $days.removeClass('NB-active');
+
+        var slider_value;
+        var mode;
+
+        if (auto_mark_days === null || auto_mark_days === undefined) {
+            // Default mode - show inherited value on slider
+            $default.addClass('NB-active');
+            mode = 'default';
+            slider_value = default_days === 0 ? 400 : default_days;
+        } else if (auto_mark_days === 0) {
+            // Never mode - slider at max
+            $never.addClass('NB-active');
+            mode = 'never';
+            slider_value = 400;
+        } else {
+            // Days mode - show actual days
+            $days.addClass('NB-active');
+            mode = 'days';
+            slider_value = auto_mark_days;
+        }
+
+        $slider.val(slider_value);
+        this.update_slider_status_text($slider_value, mode, mode === 'days' ? auto_mark_days : default_days, default_source);
+        this.update_slider_gradient($slider, slider_value);
+    },
+
+    update_slider_status_text: function ($element, mode, days, source) {
+        var html = '';
+        if (mode === 'default') {
+            if (days === 0) {
+                html = 'Using default: <b>never</b> (from ' + source + ')';
+            } else {
+                html = 'Using default: <b>' + days + ' day' + (days !== 1 ? 's' : '') + '</b> (from ' + source + ')';
+            }
+        } else if (mode === 'never') {
+            html = 'Stories will <b>never</b> be marked as read';
+        } else {
+            html = 'Stories marked as read at <b>' + days + ' day' + (days !== 1 ? 's' : '') + '</b>';
+        }
+        $element.html(html);
     },
 
     update_slider_gradient: function ($slider, value) {
         var min = parseInt($slider.attr('min'), 10) || 1;
-        var max = parseInt($slider.attr('max'), 10) || 365;
+        var max = parseInt($slider.attr('max'), 10) || 400;
         var percent = ((value - min) / (max - min)) * 100;
-        $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + percent + '%, #ddd ' + percent + '%, #ddd 100%)');
+
+        // Create gradient: blue for filled, light gray for unfilled, darker gray for "never" zone (366-400)
+        var never_zone_start = ((365 - min) / (max - min)) * 100;
+
+        if (value > 365) {
+            // In never zone - all blue up to never zone, then purple for never
+            $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + never_zone_start + '%, #8b5cf6 ' + never_zone_start + '%, #8b5cf6 100%)');
+        } else {
+            // Normal days - blue up to value, gray for rest, purple for never zone
+            $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + percent + '%, #e0e0e0 ' + percent + '%, #e0e0e0 ' + never_zone_start + '%, #d4d0e8 ' + never_zone_start + '%, #d4d0e8 100%)');
+        }
     },
 
 
@@ -778,6 +780,27 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
         var $target = $(e.currentTarget);
         var value = $target.data('value');
+        var $slider = this.$('.NB-auto-mark-read-slider');
+        var $slider_value = this.$('.NB-auto-mark-read-slider-value');
+
+        // Calculate default values for slider positioning
+        var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
+        var default_days = site_wide_days;
+        var default_source = 'site-wide';
+
+        var is_river = _.string.contains(this.options.feed_id, 'river:');
+        var folder_title = is_river ? this.options.feed_id.replace('river:', '') : null;
+        var feed = is_river ? null : NEWSBLUR.assets.get_feed(this.options.feed_id);
+
+        if (!is_river && feed) {
+            var folders = NEWSBLUR.assets.get_feed_folders(feed.id);
+            var feed_folder_title = folders && folders.length > 0 ? folders[0] : null;
+            var folder_setting = feed_folder_title ? NEWSBLUR.assets.get_folder_auto_mark_read(feed_folder_title) : null;
+            if (folder_setting !== null && folder_setting !== undefined) {
+                default_days = folder_setting;
+                default_source = feed_folder_title;
+            }
+        }
 
         if (!NEWSBLUR.Globals.is_archive) {
             // Snap back to default and flash the upgrade notice
@@ -789,38 +812,56 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             return;
         }
 
-        var is_river = _.string.contains(this.options.feed_id, 'river:');
-        var folder_title = is_river ? this.options.feed_id.replace('river:', '') : null;
-        var feed = is_river ? null : NEWSBLUR.assets.get_feed(this.options.feed_id);
-
         if (!feed && !is_river) return;
 
-        var $slider = this.$('.NB-auto-mark-read-slider');
+        // Update UI immediately
+        this.$('.NB-auto-mark-read-option').removeClass('NB-active');
+        $target.addClass('NB-active');
+
         var days = null;
+        var slider_value;
 
         if (value === 'default') {
             days = null;
+            slider_value = default_days === 0 ? 400 : default_days;
+            this.update_slider_status_text($slider_value, 'default', default_days, default_source);
         } else if (value === 'never') {
             days = 0;
+            slider_value = 400;
+            this.update_slider_status_text($slider_value, 'never', 0, default_source);
         } else if (value === 'days') {
-            days = parseInt($slider.val(), 10);
+            var current_slider = parseInt($slider.val(), 10);
+            // If slider is in never zone, default to 30 days
+            days = current_slider > 365 ? 30 : current_slider;
+            slider_value = days;
+            this.update_slider_status_text($slider_value, 'days', days, default_source);
         }
+
+        $slider.val(slider_value);
+        this.update_slider_gradient($slider, slider_value);
 
         if (is_river) {
             this.save_folder_auto_mark_read(folder_title, days);
         } else {
             this.save_auto_mark_read(feed, days);
         }
-        this.update_auto_mark_read_ui();
     },
 
     on_auto_mark_read_slider_input: function (e) {
         var $slider = $(e.currentTarget);
-        var days = parseInt($slider.val(), 10);
+        var slider_val = parseInt($slider.val(), 10);
         var $slider_value = this.$('.NB-auto-mark-read-slider-value');
 
-        $slider_value.text('Stories will be marked as read at ' + days + ' day' + (days !== 1 ? 's' : ''));
-        this.update_slider_gradient($slider, days);
+        // Determine if we're in the "never" zone (366+)
+        var is_never = slider_val > 365;
+        var days = is_never ? 0 : slider_val;
+
+        // Update gradient
+        this.update_slider_gradient($slider, slider_val);
+
+        // Calculate default source for status text
+        var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
+        var default_source = 'site-wide';
 
         if (!NEWSBLUR.Globals.is_archive) {
             // Let them see the slider move but snap back after a moment
@@ -828,13 +869,21 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 clearTimeout(this._slider_snap_timer);
             }
             this._slider_snap_timer = setTimeout(_.bind(function () {
-                $slider.val(14);
-                $slider_value.text('Stories will be marked as read at 14 days');
-                this.update_slider_gradient($slider, 14);
+                var default_days = site_wide_days;
+                var snap_val = default_days === 0 ? 400 : default_days;
+                $slider.val(snap_val);
+                this.update_slider_status_text($slider_value, 'default', default_days, default_source);
+                this.update_slider_gradient($slider, snap_val);
                 this.$('.NB-auto-mark-read-option').removeClass('NB-active');
                 this.$('.NB-auto-mark-read-default').addClass('NB-active');
                 this.flash_upgrade_notice();
             }, this), 150);
+            // Still update text while dragging
+            if (is_never) {
+                this.update_slider_status_text($slider_value, 'never', 0, default_source);
+            } else {
+                this.update_slider_status_text($slider_value, 'days', slider_val, default_source);
+            }
             return;
         }
 
@@ -842,9 +891,15 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         var folder_title = is_river ? this.options.feed_id.replace('river:', '') : null;
         var feed = is_river ? null : NEWSBLUR.assets.get_feed(this.options.feed_id);
 
-        // Auto-select "Days" option when slider is moved
+        // Auto-select appropriate option based on slider position
         this.$('.NB-auto-mark-read-option').removeClass('NB-active');
-        this.$('.NB-auto-mark-read-days').addClass('NB-active');
+        if (is_never) {
+            this.$('.NB-auto-mark-read-never').addClass('NB-active');
+            this.update_slider_status_text($slider_value, 'never', 0, default_source);
+        } else {
+            this.$('.NB-auto-mark-read-days').addClass('NB-active');
+            this.update_slider_status_text($slider_value, 'days', slider_val, default_source);
+        }
 
         // Debounce the save
         if (this._auto_mark_read_timer) {
@@ -867,18 +922,36 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         }, 600);
     },
 
+    flash_date_filter_upgrade_notice: function () {
+        var $notice = this.$('.NB-date-filter-upgrade-notice');
+        $notice.addClass('NB-flash');
+        setTimeout(function () {
+            $notice.removeClass('NB-flash');
+        }, 600);
+    },
+
     save_auto_mark_read: function (feed, days) {
         NEWSBLUR.assets.save_feed_auto_mark_read(feed.id, days, function () {
             feed.set('auto_mark_read_days', days);
-            // Reload feed to update unread counts
-            NEWSBLUR.reader.reload_feed();
+            // Refresh feed to recalculate unread counts, then reload feed after refresh completes
+            NEWSBLUR.reader.force_feeds_refresh(function () {
+                NEWSBLUR.reader.reload_feed();
+            }, false, feed.id);
         });
     },
 
     save_folder_auto_mark_read: function (folder_title, days) {
         NEWSBLUR.assets.save_folder_auto_mark_read(folder_title, days, function () {
-            // Reload feed to update unread counts
-            NEWSBLUR.reader.reload_feed();
+            // Refresh all feeds in the folder to update unread counts, then reload
+            var folder = NEWSBLUR.assets.get_folder(folder_title);
+            if (folder) {
+                var feed_ids = folder.feed_ids_in_folder();
+                NEWSBLUR.reader.force_feeds_refresh(function () {
+                    NEWSBLUR.reader.reload_feed();
+                }, false, feed_ids);
+            } else {
+                NEWSBLUR.reader.reload_feed();
+            }
         });
     },
 
@@ -952,6 +1025,13 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     change_date_range: function () {
+        if (!NEWSBLUR.Globals.is_archive) {
+            this.$('.NB-date-start').val('');
+            this.$('.NB-date-end').val('');
+            this.flash_date_filter_upgrade_notice();
+            return;
+        }
+
         var start_date = this.$('.NB-date-start').val();
         var end_date = this.$('.NB-date-end').val();
 
@@ -982,6 +1062,11 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     clear_date_range: function () {
+        if (!NEWSBLUR.Globals.is_archive) {
+            this.flash_date_filter_upgrade_notice();
+            return;
+        }
+
         this.$('.NB-date-start').val('');
         this.$('.NB-date-end').val('');
 
@@ -1000,6 +1085,13 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     change_date_filter_duration: function (e) {
         e.preventDefault();
         e.stopPropagation();
+
+        if (!NEWSBLUR.Globals.is_archive) {
+            this.$('.NB-date-start').val('');
+            this.$('.NB-date-end').val('');
+            this.flash_date_filter_upgrade_notice();
+            return;
+        }
 
         var $target = $(e.currentTarget);
         var options = {};

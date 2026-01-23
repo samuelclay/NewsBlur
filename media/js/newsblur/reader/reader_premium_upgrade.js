@@ -160,6 +160,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-10' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Ask AI questions about stories'
+                        ]),
+                        $.make('li', { className: 'NB-11' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Filter stories by date range'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
