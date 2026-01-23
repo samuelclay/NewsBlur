@@ -65,6 +65,56 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Jan 23, 2026</span>
+          <h3>
+            <a class="post-link" href="/2026/01/23/per-feed-auto-mark-read/">
+              Per-feed and per-folder auto-mark-as-read settings
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Some feeds I want to read every single story. Others I’m happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren’t worth catching up on. The site-wide “days of unread” setting was too blunt, applying the same rule to everything. Now you can set how long stories stay unread on a per-feed and per-folder basis.</p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Open the feed options popover (click the gear icon in the feed header) and you’ll see a new “Auto Mark as Read” section. Choose how many days stories should remain unread before NewsBlur automatically marks them as read:</p>
+
+<!-- SCREENSHOT: Feed options popover showing Auto Mark as Read section with slider -->
+<p><img src="/assets/auto-mark-read-popover.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The slider goes from 1 day to 365 days, with a “never” zone at the far right for feeds where you truly want to read every story regardless of age. Choose “Default” to inherit from the parent folder or site-wide setting, “Days” to set a specific duration, or “Never” to disable auto-marking entirely.</p>
+
+<h3 id="folder-inheritance">Folder inheritance</h3>
+
+<p>Settings cascade down from folders to feeds. Set a folder to 7 days, and all feeds inside inherit that setting unless they have their own override. This is perfect for organizing feeds by how aggressively you want to age them out:</p>
+
+<ul>
+  <li><strong>Must Read</strong> folder: Set to “Never” so nothing ages out</li>
+  <li><strong>News</strong> folder: Set to 2 days since news gets stale fast</li>
+  <li><strong>Blogs</strong> folder: Set to 30 days for long-form content worth revisiting</li>
+  <li>Individual feeds can still override their folder’s setting</li>
+</ul>
+
+<!-- SCREENSHOT: Folder settings dialog showing Auto Mark as Read with inheritance text -->
+<p><img src="/assets/auto-mark-read-folder-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The status text below the slider shows where the current setting comes from: the site-wide preference, a parent folder, or an explicit setting on this feed.</p>
+
+<h3 id="site-settings-dialog">Site settings dialog</h3>
+
+<p>You can also configure auto-mark-read from the site settings dialog (right-click a feed and choose “Site settings”). The same controls are available there, redesigned to match the popover style.</p>
+
+<!-- SCREENSHOT: Site settings dialog showing Auto Mark as Read section -->
+<p><img src="/assets/auto-mark-read-site-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Per-feed and per-folder auto-mark-as-read settings are a Premium Archive feature, available now on the web. They work alongside the existing site-wide “days of unread” preference in Manage → Preferences → General → Days of unreads.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">Jan 22, 2026</span>
           <h3>
             <a class="post-link" href="/2026/01/22/intelligence-trainer-overhaul/">
@@ -507,31 +557,6 @@
 <p>If you have any ideas you’d like to see on macOS, feel free to post an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>.</p>
 
 <p>Coming up soon are the discover feeds feature, where you can see related feeds based purely on semantic similarity (and not based on mined usage data), as well as real-time updates to the macOS app similar to the dashboard on the web.</p>
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Dec 6, 2023</span>
-          <h3>
-            <a class="post-link" href="/2023/12/06/ios-grid-view/">
-              Introducing the Grid view on iOS
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>The Grid view is now on iOS. Read stories with large thumbnails in a magazine-like format, where you can see a customizable number of story previews at once. Works beautifully for both iPhone and iPad.
-<img src="/assets/ipad-grid-1.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>Just like on the web, you can customize how many stories you see and how large each story is, giving you the freedom to read stories with large thumbnails or small image previews.</p>
-
-<p><img src="/assets/ipad-grid-2.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>It even works on iPhone!</p>
-
-<p><img src="/assets/iphone-grid.png" style="width: 100%;border: 1px solid #A0A0A0;margin: 24px auto;display: block;" /></p>
-
-<p>If you have any other ideas you’d like to see on iPad and iPhone, feel free to post an idea on the <a href="https://forum.newsblur.com">NewsBlur Forum</a>.</p>
-
-<p>This is a huge release and has been a year in the making. Coming up soon: a new Mac app and intelligent feed discovery.</p>
 
         </div>
       </li></ul>

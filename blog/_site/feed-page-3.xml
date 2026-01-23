@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-22T14:12:44-05:00</updated>
+  <updated>2026-01-23T14:41:37-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,56 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Two new third-party NewsBlur apps for iOS and Windows</title>
+    <link href="https://blog.newsblur.com/2016/02/03/two-new-third-party-newsblur-apps-for-ios-and/" rel="alternate" type="text/html" title="Two new third-party NewsBlur apps for iOS and Windows" />
+    <published>2016-02-03T13:51:32-05:00</published>
+    <updated>2016-02-03T13:51:32-05:00</updated>
+    <id>https://blog.newsblur.com/2016/02/03/two-new-third-party-newsblur-apps-for-ios-and</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/02/03/two-new-third-party-newsblur-apps-for-ios-and/">
+      <![CDATA[<p>NewsBlur has an amazingly active third-party app community, thanks to the <a href="http://www.newsblur.com/api">well documented NewsBlur API</a>. Today I’d like to introduce you to two new apps built by developers on the NewsBlur API.</p>
+
+<h2 id="hypersonic-for-windows-10--windows-phone">Hypersonic for Windows 10 &amp; Windows Phone</h2>
+
+<p><a href="https://www.microsoft.com/en-us/store/apps/hypersonic/9nblggh5wnb6">Hypersonic</a> is clean, simple, beautiful, and designed to run across both mobile and desktop devices.</p>
+
+<p><img src="https://store-images.s-microsoft.com/image/apps.57443.13510798886379389.f16a7ef2-bbfc-4fb0-9af1-b4be3b6902c1.d4e474de-9462-4612-946f-55ef3a89e295?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
+
+<p><img src="https://store-images.s-microsoft.com/image/apps.35702.13510798886379389.51b7a825-88ad-466c-ba41-6870a81fff17.8672bf08-f8e1-47a9-b393-e22cbe6cb8ca?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
+
+<p><img src="https://store-images.s-microsoft.com/image/apps.35090.13510798886379389.acef2ff2-e379-47b0-957e-1265f82f6967.20046293-77d2-477b-8ffb-644eeba7c817?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
+
+<p><img src="https://store-images.s-microsoft.com/image/apps.6547.13510798886379389.edddb027-0403-4b79-9471-b53afd6793a7.7c3f7a94-959f-4910-a38c-db0474493f9a?w=712&amp;h=400&amp;mode=letterbox&amp;background=black" alt="" /></p>
+
+<h2 id="add-my-feed-for-ios">Add My Feed for iOS</h2>
+
+<p><a href="http://addmyfeed.cubesoft.fr">Add My Feed</a> is an extension allowing you to effortlessly add RSS feeds to your online reader of choice.</p>
+
+<p>When you encounter a site you would like to subscribe to, simply tap the Add My Feed extension and you’re done !</p>
+
+<p>Add My Feed works in Safari and in any app supporting the standard iOS share sheet.</p>
+
+<p><img src="https://lh3.googleusercontent.com/Fth086Rlw5rB9ljQgFiJrkqupdOY3Xv501DOxZ2M4MN4k9goHi-dz-2n4vDiBn6ZUa7dvbEFqzb9Y5HH_7twqqJiY9Mrxw" alt="" /></p>
+
+<p>Both of these apps and many more are on the <a href="http://www.newsblur.com/?next=goodies">Goodies &amp; Mobile Apps</a> dialog. If you’ve developed an app for NewsBlur and would like to add it to Goodies (and have it blogged about here), let me know!</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    <category term="windows" />
+    
+    
+    <summary type="html">
+      <![CDATA[NewsBlur has an amazingly active third-party app community, thanks to the well documented NewsBlur API. Today I’d like to introduce you to two new apps built by developers on the NewsBlur API.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Search for pizza with your Android device</title>
@@ -937,52 +987,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[Last Summer Simple Search was launched, giving you the ability to search a single feed at a time. Obviously not ideal, but it was far less effort than the big enchilada: full text search across every site you subscribe to. It took a few months to come back to attack...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Unread is a new iOS app with NewsBlur support</title>
-    <link href="https://blog.newsblur.com/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support/" rel="alternate" type="text/html" title="Unread is a new iOS app with NewsBlur support" />
-    <published>2014-04-24T11:56:00-04:00</published>
-    <updated>2014-04-24T11:56:00-04:00</updated>
-    <id>https://blog.newsblur.com/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support/">
-      <![CDATA[<p>NewsBlur has a <a href="http://www.newsblur.com/api">free and open API</a> that all of the native mobile apps and website are built on. But the API is not just for official apps. Numerous third-party developers have built apps on the API and today I’m proud to announce a new native iOS app has launched with NewsBlur support.</p>
-
-<p><a href="http://jaredsinclair.com/unread/"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/unread_app_logo.png" alt="" /></a></p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/unread_app_screenshot.jpeg" alt="" /></p>
-
-<p><a href="http://jaredsinclair.com/unread/">Unread</a>, by <a href="https://twitter.com/jaredsinclair">Jared Sinclair</a>, is a unique RSS reader, with a focus on simplicity and cleanliness. Sinclair built Unread because he wanted to see a different kind of reading experience, one where he could focus more on reading well written stories than consuming lots of content. Unread app has a different feel than any other news reader I’ve seen and I think many of the choices made by Sinclair work in a quiet harmony.</p>
-
-<p>In Sinclair’s own words:</p>
-
-<blockquote>
-  <p>Most RSS apps are patterned after email. Noisy parades of dots, dates, and tags trample over their screens. Their source lists look like overflowing inboxes instead of stately tables of contents. Toolbars bristling with options obscure the text. Putting it bluntly, using these apps feels like work.</p>
-</blockquote>
-
-<p>NewsBlur’s native iOS app certainly does fit this description. And if you want an incredibly well-made alternative, look no further than Unread, <a href="https://itunes.apple.com/us/app/unread-an-rss-reader/id754143884">available on the App Store</a>.</p>
-
-<style>
-.NB-unread-app-post p {
-clear: none;
-}
-.NB-unread-app-post blockquote {
-color: #606060;
-}
-</style>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="ios" />
-    
-    
-    <summary type="html">
-      <![CDATA[NewsBlur has a free and open API that all of the native mobile apps and website are built on. But the API is not just for official apps. Numerous third-party developers have built apps on the API and today I’m proud to announce a new native iOS app has launched...]]>
     </summary>
     
   </entry>
