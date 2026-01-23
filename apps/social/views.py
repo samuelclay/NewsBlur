@@ -290,7 +290,9 @@ def load_social_stories(request, user_id, username=None):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user.profile.is_pro),
-            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user.profile.is_pro),
+            "title_regex": apply_classifier_title_regex(
+                classifier_titles, story, user_is_pro=user.profile.is_pro
+            ),
             "text": (
                 apply_classifier_texts(classifier_texts, story, user_is_pro=user.profile.is_pro)
                 if user.profile.premium_available_text_classifiers
@@ -500,7 +502,9 @@ def load_river_blurblog(request):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user.profile.is_pro),
-            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user.profile.is_pro),
+            "title_regex": apply_classifier_title_regex(
+                classifier_titles, story, user_is_pro=user.profile.is_pro
+            ),
             "text": (
                 apply_classifier_texts(classifier_texts, story, user_is_pro=user.profile.is_pro)
                 if user.profile.premium_available_text_classifiers

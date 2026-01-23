@@ -1243,16 +1243,40 @@ class UserSubscription(models.Model):
                         "author": apply_classifier_authors(classifier_authors, story),
                         "tags": apply_classifier_tags(classifier_tags, story),
                         "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
-                        "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
+                        "title_regex": apply_classifier_title_regex(
+                            classifier_titles, story, user_is_pro=user_is_pro
+                        ),
                         "text": apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro),
-                        "text_regex": apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro),
+                        "text_regex": apply_classifier_text_regex(
+                            classifier_texts, story, user_is_pro=user_is_pro
+                        ),
                         "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user_is_premium),
-                        "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_is_pro),
+                        "url_regex": apply_classifier_url_regex(
+                            classifier_urls, story, user_is_pro=user_is_pro
+                        ),
                     }
                 )
 
-                max_score = max(scores["author"], scores["tags"], scores["title"], scores["title_regex"], scores["text"], scores["text_regex"], scores["url"], scores["url_regex"])
-                min_score = min(scores["author"], scores["tags"], scores["title"], scores["title_regex"], scores["text"], scores["text_regex"], scores["url"], scores["url_regex"])
+                max_score = max(
+                    scores["author"],
+                    scores["tags"],
+                    scores["title"],
+                    scores["title_regex"],
+                    scores["text"],
+                    scores["text_regex"],
+                    scores["url"],
+                    scores["url_regex"],
+                )
+                min_score = min(
+                    scores["author"],
+                    scores["tags"],
+                    scores["title"],
+                    scores["title_regex"],
+                    scores["text"],
+                    scores["text_regex"],
+                    scores["url"],
+                    scores["url_regex"],
+                )
                 if max_score > 0:
                     feed_scores["positive"] += 1
                 elif min_score < 0:
