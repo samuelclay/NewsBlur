@@ -9,13 +9,19 @@ from django.contrib.auth.models import User
 from apps.rss_feeds.models import MStory
 from newsblur_web.celeryapp import app
 from utils import log as logging
+from utils.llm_costs import LLMCostTracker
 from utils.story_functions import html_to_text
 
 from .models import MAskAIResponse
 from .prompts import get_full_prompt
-from .providers import DEFAULT_MODEL, LLM_EXCEPTIONS, MODEL_VENDORS, MODELS, get_provider
+from .providers import (
+    DEFAULT_MODEL,
+    LLM_EXCEPTIONS,
+    MODEL_VENDORS,
+    MODELS,
+    get_provider,
+)
 from .usage import AskAIUsageTracker
-from utils.llm_costs import LLMCostTracker
 
 
 @app.task(name="ask-ai-question", time_limit=120, soft_time_limit=110)

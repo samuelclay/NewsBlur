@@ -9,11 +9,10 @@ content instead of storing new content.
 import zlib
 from dataclasses import dataclass
 from typing import Optional
-from urllib.parse import urlparse, parse_qs, urlencode
+from urllib.parse import parse_qs, urlencode, urlparse
 
-from apps.rss_feeds.models import MStory
 from apps.reader.models import UserSubscription
-
+from apps.rss_feeds.models import MStory
 from utils import log as logging
 
 
@@ -109,9 +108,7 @@ def normalize_url(url: str) -> str:
 
         # Parse and filter query parameters
         params = parse_qs(parsed.query, keep_blank_values=False)
-        filtered_params = {
-            k: v for k, v in params.items() if k.lower() not in TRACKING_PARAMS
-        }
+        filtered_params = {k: v for k, v in params.items() if k.lower() not in TRACKING_PARAMS}
 
         # Rebuild query string (sorted for consistency)
         query = urlencode(sorted(filtered_params.items()), doseq=True) if filtered_params else ""
@@ -186,9 +183,7 @@ def find_matching_story(user, url):
     normalized_url = normalize_url_for_matching(url)
 
     # Get all feed IDs the user is subscribed to
-    feed_ids = list(
-        UserSubscription.objects.filter(user=user, active=True).values_list("feed_id", flat=True)
-    )
+    feed_ids = list(UserSubscription.objects.filter(user=user, active=True).values_list("feed_id", flat=True))
 
     if not feed_ids:
         return None, None

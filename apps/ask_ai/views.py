@@ -8,6 +8,7 @@ from django.views.decorators.http import require_http_methods
 from apps.rss_feeds.models import MStory
 from utils import json_functions as json
 from utils import log as logging
+from utils.llm_costs import LLMCostTracker
 from utils.user_functions import ajax_login_required
 from utils.view_functions import required_params
 
@@ -15,7 +16,6 @@ from .prompts import get_prompt
 from .providers import VALID_MODELS
 from .tasks import AskAIQuestion
 from .usage import AskAIUsageTracker, TranscriptionUsageTracker
-from utils.llm_costs import LLMCostTracker
 
 MAX_CUSTOM_QUESTION_LENGTH = 5000
 MAX_AUDIO_SIZE_MB = 25  # OpenAI Whisper API limit

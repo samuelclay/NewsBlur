@@ -400,10 +400,10 @@ CELERY_TASK_ROUTES = {
         "queue": "discover_indexer",
         "binding_key": "discover_indexer",
     },
-    "archive-categorize": {"queue": "archive_queue", "binding_key": "archive_queue"},
-    "archive-index-elasticsearch": {"queue": "archive_queue", "binding_key": "archive_queue"},
-    "archive-process-batch": {"queue": "archive_queue", "binding_key": "archive_queue"},
-    "archive-cleanup-old": {"queue": "archive_queue", "binding_key": "archive_queue"},
+    "archive-categorize": {"queue": "push_feeds", "binding_key": "push_feeds"},
+    "archive-index-elasticsearch": {"queue": "push_feeds", "binding_key": "push_feeds"},
+    "archive-process-batch": {"queue": "push_feeds", "binding_key": "push_feeds"},
+    "archive-cleanup-old": {"queue": "push_feeds", "binding_key": "push_feeds"},
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {
@@ -450,11 +450,6 @@ CELERY_TASK_QUEUES = {
         "exchange": "ask_ai",
         "exchange_type": "direct",
         "binding_key": "ask_ai",
-    },
-    "archive_queue": {
-        "exchange": "archive_queue",
-        "exchange_type": "direct",
-        "binding_key": "archive_queue",
     },
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"

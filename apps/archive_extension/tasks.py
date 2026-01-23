@@ -28,11 +28,7 @@ def _publish_category_update(user_id, archive_id, categories):
     try:
         user = User.objects.get(pk=user_id)
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-        payload = json.encode({
-            "type": "categories",
-            "archive_id": str(archive_id),
-            "categories": categories
-        })
+        payload = json.encode({"type": "categories", "archive_id": str(archive_id), "categories": categories})
         r.publish(user.username, f"archive:{payload}")
     except Exception as e:
         logging.error(f"Error publishing category update event: {e}")
@@ -167,7 +163,7 @@ def _get_user_categories(user_id):
     from apps.archive_extension.models import MArchivedStory
 
     breakdown = MArchivedStory.get_category_breakdown(user_id)
-    return [item["_id"] for item in breakdown[:50]]
+    return [item["category"] for item in breakdown[:50]]
 
 
 def _categorize_single_archive(archive, user_categories=None):
@@ -293,7 +289,7 @@ def _parse_category_response(response):
     cleaned = []
     for cat in categories:
         # Remove quotes and extra whitespace
-        cat = cat.strip('"\'').strip()
+        cat = cat.strip("\"'").strip()
         # Skip categories with line breaks or explanations
         if "\n" in cat:
             cat = cat.split("\n")[0].strip()
