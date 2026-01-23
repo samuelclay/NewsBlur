@@ -1972,7 +1972,9 @@ def load_river_stories__redis(request):
 
     # Find starred stories
     if found_feed_ids:
-        if read_filter == "starred":
+        # Only reuse mstories directly when we know it contains MStarredStory objects
+        # (i.e., when read_filter is "starred" and we're not searching or fetching specific hashes)
+        if read_filter == "starred" and not query and not requested_hashes:
             starred_stories = mstories
         else:
             story_hashes = [s["story_hash"] for s in stories]
@@ -3448,20 +3450,28 @@ def all_classifiers(request):
     # Group classifiers by feed_id
     from collections import defaultdict
 
-    classifiers_by_feed = defaultdict(lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": [], "urls": []})
+    classifiers_by_feed = defaultdict(
+        lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": [], "urls": []}
+    )
 
     for c in classifier_titles:
-        classifiers_by_feed[c.feed_id]["titles"].append({"title": c.title, "score": c.score, "is_regex": getattr(c, "is_regex", False)})
+        classifiers_by_feed[c.feed_id]["titles"].append(
+            {"title": c.title, "score": c.score, "is_regex": getattr(c, "is_regex", False)}
+        )
     for c in classifier_authors:
         classifiers_by_feed[c.feed_id]["authors"].append({"author": c.author, "score": c.score})
     for c in classifier_tags:
         classifiers_by_feed[c.feed_id]["tags"].append({"tag": c.tag, "score": c.score})
     for c in classifier_texts:
-        classifiers_by_feed[c.feed_id]["texts"].append({"text": c.text, "score": c.score, "is_regex": getattr(c, "is_regex", False)})
+        classifiers_by_feed[c.feed_id]["texts"].append(
+            {"text": c.text, "score": c.score, "is_regex": getattr(c, "is_regex", False)}
+        )
     for c in classifier_feeds:
         classifiers_by_feed[c.feed_id]["feeds"].append({"feed_id": c.feed_id, "score": c.score})
     for c in classifier_urls:
-        classifiers_by_feed[c.feed_id]["urls"].append({"url": c.url, "score": c.score, "is_regex": getattr(c, "is_regex", False)})
+        classifiers_by_feed[c.feed_id]["urls"].append(
+            {"url": c.url, "score": c.score, "is_regex": getattr(c, "is_regex", False)}
+        )
 
     # Batch fetch all feeds with classifiers to avoid N+1 queries
     all_classifier_feed_ids = set(classifiers_by_feed.keys())
@@ -3513,11 +3523,20 @@ def all_classifiers(request):
         folders_with_classifiers.append({"folder_name": "Uncategorized", "feeds": orphan_feeds})
 
     total_classifiers = sum(
-        len(c["titles"]) + len(c["authors"]) + len(c["tags"]) + len(c["texts"]) + len(c["feeds"]) + len(c["urls"])
+        len(c["titles"])
+        + len(c["authors"])
+        + len(c["tags"])
+        + len(c["texts"])
+        + len(c["feeds"])
+        + len(c["urls"])
         for c in classifiers_by_feed.values()
     )
 
-    logging.user(user, "~FGLoading All Classifiers: ~SB%s classifiers across %s feeds" % (total_classifiers, len(classifiers_by_feed)))
+    logging.user(
+        user,
+        "~FGLoading All Classifiers: ~SB%s classifiers across %s feeds"
+        % (total_classifiers, len(classifiers_by_feed)),
+    )
 
     return {"folders": folders_with_classifiers, "total_classifiers": total_classifiers}
 
