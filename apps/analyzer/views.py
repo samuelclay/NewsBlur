@@ -98,7 +98,9 @@ def save_classifier(request):
                     if is_regex and score != 0:
                         is_valid, error_msg = validate_regex_pattern(post_content)
                         if not is_valid:
-                            logging.user(request, "~FRInvalid regex pattern: %s - %s" % (post_content, error_msg))
+                            logging.user(
+                                request, "~FRInvalid regex pattern: %s - %s" % (post_content, error_msg)
+                            )
                             continue
 
                     classifier_dict = {
@@ -240,9 +242,7 @@ def save_all_classifiers(request):
                 pass
 
         # Process each classifier type
-        _save_classifiers_for_feed(
-            request.user.pk, feed_id, social_user_id, classifier_data
-        )
+        _save_classifiers_for_feed(request.user.pk, feed_id, social_user_id, classifier_data)
         feeds_updated.append(feed_id_str)
 
     # Publish update notification

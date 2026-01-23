@@ -149,14 +149,27 @@ class MClassifierTitle(mongo.Document):
 
     meta = {
         "collection": "classifier_title",
-        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
+        "indexes": [
+            ("user_id", "feed_id"),
+            "feed_id",
+            ("user_id", "social_user_id"),
+            "social_user_id",
+            "is_regex",
+        ],
         "allow_inheritance": False,
     }
 
     def __str__(self):
         user = User.objects.get(pk=self.user_id)
         regex_indicator = " [regex]" if self.is_regex else ""
-        return "%s - %s/%s: (%s) %s%s" % (user, self.feed_id, self.social_user_id, self.score, self.title[:30], regex_indicator)
+        return "%s - %s/%s: (%s) %s%s" % (
+            user,
+            self.feed_id,
+            self.social_user_id,
+            self.score,
+            self.title[:30],
+            regex_indicator,
+        )
 
 
 class MClassifierUrl(mongo.Document):
@@ -170,14 +183,27 @@ class MClassifierUrl(mongo.Document):
 
     meta = {
         "collection": "classifier_url",
-        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
+        "indexes": [
+            ("user_id", "feed_id"),
+            "feed_id",
+            ("user_id", "social_user_id"),
+            "social_user_id",
+            "is_regex",
+        ],
         "allow_inheritance": False,
     }
 
     def __str__(self):
         user = User.objects.get(pk=self.user_id)
         regex_indicator = " [regex]" if self.is_regex else ""
-        return "%s - %s/%s: (%s) %s%s" % (user, self.feed_id, self.social_user_id, self.score, self.url[:50], regex_indicator)
+        return "%s - %s/%s: (%s) %s%s" % (
+            user,
+            self.feed_id,
+            self.social_user_id,
+            self.score,
+            self.url[:50],
+            regex_indicator,
+        )
 
 
 class MClassifierText(mongo.Document):
@@ -191,14 +217,27 @@ class MClassifierText(mongo.Document):
 
     meta = {
         "collection": "classifier_text",
-        "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
+        "indexes": [
+            ("user_id", "feed_id"),
+            "feed_id",
+            ("user_id", "social_user_id"),
+            "social_user_id",
+            "is_regex",
+        ],
         "allow_inheritance": False,
     }
 
     def __str__(self):
         user = User.objects.get(pk=self.user_id)
         regex_indicator = " [regex]" if self.is_regex else ""
-        return "%s - %s/%s: (%s) %s%s" % (user, self.feed_id, self.social_user_id, self.score, self.text[:30], regex_indicator)
+        return "%s - %s/%s: (%s) %s%s" % (
+            user,
+            self.feed_id,
+            self.social_user_id,
+            self.score,
+            self.text[:30],
+            regex_indicator,
+        )
 
 
 class MClassifierAuthor(mongo.Document):
@@ -301,8 +340,26 @@ def compute_story_score(
         return intelligence["prompt"]
 
     # Otherwise use the traditional classifier logic
-    score_max = max(intelligence["title"], intelligence["title_regex"], intelligence["author"], intelligence["tags"], intelligence["text"], intelligence["text_regex"], intelligence["url"], intelligence["url_regex"])
-    score_min = min(intelligence["title"], intelligence["title_regex"], intelligence["author"], intelligence["tags"], intelligence["text"], intelligence["text_regex"], intelligence["url"], intelligence["url_regex"])
+    score_max = max(
+        intelligence["title"],
+        intelligence["title_regex"],
+        intelligence["author"],
+        intelligence["tags"],
+        intelligence["text"],
+        intelligence["text_regex"],
+        intelligence["url"],
+        intelligence["url_regex"],
+    )
+    score_min = min(
+        intelligence["title"],
+        intelligence["title_regex"],
+        intelligence["author"],
+        intelligence["tags"],
+        intelligence["text"],
+        intelligence["text_regex"],
+        intelligence["url"],
+        intelligence["url_regex"],
+    )
     if score_max > 0:
         score = score_max
     elif score_min < 0:

@@ -143,6 +143,12 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 - Local dev: `https://localhost` (when using containers directly)
 - **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts
 
+### Dev Auto-Login (DEBUG mode only)
+- `https://localhost/reader/dev/autologin/` - Login as default dev user (configured in `DEV_AUTOLOGIN_USERNAME`)
+- `https://localhost/reader/dev/autologin/<username>/` - Login as specific user
+- Add `?next=/path` to redirect after login
+- Returns 403 Forbidden in production (DEBUG=False)
+
 ### Test Query Parameters
 - `?test=growth` - Test growth prompts (bypasses premium check and cooldowns)
 - `?test=growth1` - Test feed_added growth prompt

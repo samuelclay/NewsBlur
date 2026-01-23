@@ -911,7 +911,8 @@ class ExtensionAuthorizationView(BaseAuthorizationView):
 
         # Log the redirect for debugging
         logging.info(
-            "~FBArchive OAuth redirect: app=%s, redirect_to=%s" % (application.name if application else "none", redirect_to[:100])
+            "~FBArchive OAuth redirect: app=%s, redirect_to=%s"
+            % (application.name if application else "none", redirect_to[:100])
         )
 
         # Check if this is a browser extension redirect
