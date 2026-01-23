@@ -91,6 +91,8 @@
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
 @property (nonatomic) BOOL temporarilyMarkedUnread;
+@property (nonatomic) CGFloat navBarHiddenOffset;
+@property (nonatomic) BOOL hasNavBarHiddenOffset;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
