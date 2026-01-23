@@ -8,4 +8,5 @@ contactPoints:
         type: email
         settings:
           addresses: samuel@newsblur.com
+          subject: '{{ if eq .Status "firing" }}[FIRING]{{ else }}[RESOLVED]{{ end }} {{ range .Alerts }}{{ .Labels.service }}{{ end }}: {{ .CommonLabels.alertname }}'
         disableResolveMessage: false
