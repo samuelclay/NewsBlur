@@ -1652,11 +1652,27 @@ class MSocialSubscription(mongo.Document):
                     else 0
                 ),
                 "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user_profile.is_premium),
-                "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_profile.is_pro),
+                "url_regex": apply_classifier_url_regex(
+                    classifier_urls, story, user_is_pro=user_profile.is_pro
+                ),
             }
 
-            max_score = max(scores["author"], scores["tags"], scores["title"], scores["text"], scores["url"], scores["url_regex"])
-            min_score = min(scores["author"], scores["tags"], scores["title"], scores["text"], scores["url"], scores["url_regex"])
+            max_score = max(
+                scores["author"],
+                scores["tags"],
+                scores["title"],
+                scores["text"],
+                scores["url"],
+                scores["url_regex"],
+            )
+            min_score = min(
+                scores["author"],
+                scores["tags"],
+                scores["title"],
+                scores["text"],
+                scores["url"],
+                scores["url_regex"],
+            )
 
             if max_score > 0:
                 feed_scores["positive"] += 1
