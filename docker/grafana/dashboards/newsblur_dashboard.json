@@ -3764,6 +3764,319 @@
         "x": 0,
         "y": 154
       },
+      "id": 220,
+      "panels": [],
+      "title": "Replication Lag",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 10,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 0,
+        "y": 155
+      },
+      "id": 221,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "expr": "max(redis_replication_lag_seconds)",
+          "legendFormat": "Redis",
+          "refId": "A"
+        }
+      ],
+      "title": "Redis Replication Lag",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 10,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 8,
+        "y": 155
+      },
+      "id": 222,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "expr": "max(postgres_replication_lag_seconds)",
+          "legendFormat": "Postgres",
+          "refId": "A"
+        }
+      ],
+      "title": "Postgres Replication Lag",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 10,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 155
+      },
+      "id": 223,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "expr": "max(mongo_replication_max_lag_seconds)",
+          "legendFormat": "Mongo",
+          "refId": "A"
+        }
+      ],
+      "title": "Mongo Replication Lag",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 161
+      },
+      "id": 224,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "expr": "redis_replication_lag_seconds",
+          "legendFormat": "Redis {{instance}} slave {{slave}}",
+          "refId": "A"
+        },
+        {
+          "expr": "postgres_replication_lag_seconds",
+          "legendFormat": "Postgres {{instance}} \u2192 {{client}}",
+          "refId": "B"
+        },
+        {
+          "expr": "mongo_replication_lag_seconds",
+          "legendFormat": "Mongo {{db}} \u2192 {{secondary}}",
+          "refId": "C"
+        }
+      ],
+      "title": "All Replication Lag Over Time",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 169
+      },
       "id": 62,
       "panels": [],
       "targets": [
@@ -3838,7 +4151,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 155
+        "y": 170
       },
       "id": 80,
       "options": {
@@ -3930,7 +4243,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 155
+        "y": 170
       },
       "id": 116,
       "options": {
@@ -4019,7 +4332,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 163
+        "y": 178
       },
       "id": 75,
       "options": {
@@ -4115,7 +4428,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 163
+        "y": 178
       },
       "id": 136,
       "options": {
@@ -4205,7 +4518,7 @@
         "h": 7,
         "w": 6,
         "x": 0,
-        "y": 171
+        "y": 186
       },
       "id": 114,
       "options": {
@@ -4297,7 +4610,7 @@
         "h": 7,
         "w": 6,
         "x": 6,
-        "y": 171
+        "y": 186
       },
       "id": 78,
       "options": {
@@ -4389,7 +4702,7 @@
         "h": 7,
         "w": 6,
         "x": 12,
-        "y": 171
+        "y": 186
       },
       "id": 120,
       "options": {
@@ -4478,7 +4791,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 171
+        "y": 186
       },
       "id": 118,
       "options": {
@@ -4568,7 +4881,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 178
+        "y": 193
       },
       "id": 130,
       "options": {
@@ -4657,7 +4970,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 178
+        "y": 193
       },
       "id": 128,
       "options": {
@@ -4748,7 +5061,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 178
+        "y": 193
       },
       "id": 126,
       "options": {
@@ -4837,7 +5150,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 178
+        "y": 193
       },
       "id": 122,
       "options": {
@@ -4930,7 +5243,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 186
+        "y": 201
       },
       "id": 66,
       "options": {
@@ -5093,7 +5406,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 186
+        "y": 201
       },
       "id": 110,
       "options": {
@@ -5241,7 +5554,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 194
+        "y": 209
       },
       "id": 71,
       "options": {
@@ -5389,7 +5702,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 194
+        "y": 209
       },
       "id": 111,
       "options": {
@@ -5537,7 +5850,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 202
+        "y": 217
       },
       "id": 72,
       "options": {
@@ -5671,7 +5984,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 202
+        "y": 217
       },
       "id": 112,
       "options": {
@@ -5816,7 +6129,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 210
+        "y": 225
       },
       "id": 73,
       "options": {
@@ -5915,7 +6228,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 210
+        "y": 225
       },
       "id": 64,
       "options": {
@@ -6006,7 +6319,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 216
+        "y": 231
       },
       "id": 138,
       "options": {
@@ -6045,7 +6358,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 224
+        "y": 239
       },
       "id": 68,
       "panels": [],
@@ -6122,7 +6435,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 225
+        "y": 240
       },
       "id": 70,
       "options": {
@@ -6215,7 +6528,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 225
+        "y": 240
       },
       "id": 76,
       "options": {
@@ -6307,7 +6620,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 230
+        "y": 245
       },
       "id": 146,
       "options": {
@@ -6397,7 +6710,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 230
+        "y": 245
       },
       "id": 144,
       "options": {
@@ -6486,7 +6799,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 238
+        "y": 253
       },
       "id": 142,
       "options": {
@@ -6575,7 +6888,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 238
+        "y": 253
       },
       "id": 140,
       "options": {
@@ -6615,7 +6928,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 246
+        "y": 261
       },
       "id": 16,
       "panels": [],
@@ -6717,7 +7030,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 247
+        "y": 262
       },
       "id": 35,
       "options": {
@@ -6809,7 +7122,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 247
+        "y": 262
       },
       "id": 18,
       "options": {
@@ -6901,7 +7214,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 247
+        "y": 262
       },
       "id": 8,
       "options": {
@@ -6993,7 +7306,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 255
+        "y": 270
       },
       "id": 14,
       "options": {
@@ -7085,7 +7398,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 255
+        "y": 270
       },
       "id": 24,
       "options": {
@@ -7177,7 +7490,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 255
+        "y": 270
       },
       "id": 134,
       "options": {
@@ -7268,7 +7581,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 263
+        "y": 278
       },
       "id": 148,
       "options": {
@@ -7308,7 +7621,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 270
+        "y": 285
       },
       "id": 40,
       "panels": [],
@@ -7385,7 +7698,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 271
+        "y": 286
       },
       "id": 108,
       "options": {
@@ -7476,7 +7789,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 271
+        "y": 286
       },
       "id": 95,
       "options": {
@@ -7546,7 +7859,7 @@
         "h": 43,
         "w": 24,
         "x": 0,
-        "y": 279
+        "y": 294
       },
       "id": 37,
       "options": {
@@ -7591,7 +7904,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 323
+        "y": 338
       },
       "id": 149,
       "panels": [],
@@ -7668,7 +7981,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 324
+        "y": 339
       },
       "id": 150,
       "options": {
@@ -7761,7 +8074,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 324
+        "y": 339
       },
       "id": 151,
       "options": {
@@ -7854,7 +8167,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 324
+        "y": 339
       },
       "id": 152,
       "options": {
@@ -7947,7 +8260,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 332
+        "y": 347
       },
       "id": 153,
       "options": {
@@ -8040,7 +8353,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 332
+        "y": 347
       },
       "id": 154,
       "options": {
@@ -8133,7 +8446,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 332
+        "y": 347
       },
       "id": 155,
       "options": {
@@ -8226,7 +8539,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 340
+        "y": 355
       },
       "id": 156,
       "options": {
@@ -8319,7 +8632,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 340
+        "y": 355
       },
       "id": 157,
       "options": {
@@ -8412,7 +8725,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 340
+        "y": 355
       },
       "id": 158,
       "options": {
@@ -8505,7 +8818,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 348
+        "y": 363
       },
       "id": 159,
       "options": {
@@ -8598,7 +8911,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 348
+        "y": 363
       },
       "id": 160,
       "options": {
@@ -8636,7 +8949,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 356
+        "y": 371
       },
       "id": 200,
       "panels": [],
@@ -8685,7 +8998,7 @@
         "h": 5,
         "w": 4,
         "x": 0,
-        "y": 357
+        "y": 372
       },
       "id": 201,
       "options": {
@@ -8755,7 +9068,7 @@
         "h": 5,
         "w": 4,
         "x": 4,
-        "y": 357
+        "y": 372
       },
       "id": 202,
       "options": {
@@ -8825,7 +9138,7 @@
         "h": 5,
         "w": 4,
         "x": 8,
-        "y": 357
+        "y": 372
       },
       "id": 203,
       "options": {
@@ -8882,7 +9195,7 @@
         "h": 5,
         "w": 4,
         "x": 12,
-        "y": 357
+        "y": 372
       },
       "id": 204,
       "options": {
@@ -8939,7 +9252,7 @@
         "h": 5,
         "w": 4,
         "x": 16,
-        "y": 357
+        "y": 372
       },
       "id": 208,
       "options": {
@@ -8996,7 +9309,7 @@
         "h": 5,
         "w": 4,
         "x": 20,
-        "y": 357
+        "y": 372
       },
       "id": 209,
       "options": {
@@ -9052,7 +9365,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 362
+        "y": 377
       },
       "id": 205,
       "options": {
@@ -9117,7 +9430,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 362
+        "y": 377
       },
       "id": 206,
       "options": {
@@ -9182,7 +9495,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 362
+        "y": 377
       },
       "id": 210,
       "options": {
@@ -9279,7 +9592,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 362
+        "y": 377
       },
       "id": 207,
       "options": {
@@ -9312,7 +9625,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 369
+        "y": 384
       },
       "id": 161,
       "panels": [],
@@ -9490,7 +9803,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 370
+        "y": 385
       },
       "id": 162,
       "options": {
@@ -9745,7 +10058,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 380
+        "y": 395
       },
       "id": 208,
       "options": {
@@ -9846,7 +10159,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 400
+        "y": 415
       },
       "id": 163,
       "options": {
@@ -9916,7 +10229,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 400
+        "y": 415
       },
       "id": 164,
       "options": {
@@ -9986,7 +10299,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 400
+        "y": 415
       },
       "id": 165,
       "options": {
@@ -10077,7 +10390,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 408
+        "y": 423
       },
       "id": 166,
       "options": {
@@ -10165,7 +10478,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 408
+        "y": 423
       },
       "id": 167,
       "options": {
@@ -10232,7 +10545,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 416
+        "y": 431
       },
       "id": 168,
       "options": {
@@ -10302,7 +10615,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 416
+        "y": 431
       },
       "id": 169,
       "options": {
@@ -10342,7 +10655,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 424
+        "y": 439
       },
       "id": 171,
       "panels": [],
@@ -10476,7 +10789,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 380
+        "y": 395
       },
       "id": 172,
       "options": {
@@ -10575,7 +10888,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 425
+        "y": 440
       },
       "id": 173,
       "options": {
@@ -10645,7 +10958,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 425
+        "y": 440
       },
       "id": 174,
       "options": {
@@ -10737,7 +11050,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 425
+        "y": 440
       },
       "id": 175,
       "options": {
@@ -10778,7 +11091,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 434
+        "y": 449
       },
       "id": 176,
       "panels": [],
@@ -10855,7 +11168,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 435
+        "y": 450
       },
       "id": 177,
       "options": {
@@ -10947,7 +11260,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 435
+        "y": 450
       },
       "id": 178,
       "options": {
@@ -11219,7 +11532,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 443
+        "y": 458
       },
       "id": 211,
       "options": {
