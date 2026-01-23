@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('profile', '0022_profile_is_grandfathered'),
+        ("profile", "0022_profile_is_grandfathered"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='hide_trial_module',
+            model_name="profile",
+            name="hide_trial_module",
             field=models.BooleanField(blank=True, default=False, null=True),
         ),
     ]

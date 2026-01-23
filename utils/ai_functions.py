@@ -105,7 +105,9 @@ You MUST use the classify_stories tool to return your classifications."""
             system=system_message,
             tools=[tool_definition],
             tool_choice={"type": "tool", "name": "classify_stories"},
-            messages=[{"role": "user", "content": f"Please classify these stories: {json.dumps(story_items)}"}],
+            messages=[
+                {"role": "user", "content": f"Please classify these stories: {json.dumps(story_items)}"}
+            ],
         )
 
         # Record LLM cost
@@ -125,7 +127,9 @@ You MUST use the classify_stories tool to return your classifications."""
                 try:
                     result = block.input
                     # Convert to dictionary mapping story_id to classification
-                    classifications = {item["id"]: item["classification"] for item in result["classifications"]}
+                    classifications = {
+                        item["id"]: item["classification"] for item in result["classifications"]
+                    }
                     return classifications
                 except (KeyError, TypeError) as e:
                     logging.error(f"Error parsing AI classification response: {e}")

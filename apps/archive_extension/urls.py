@@ -21,11 +21,14 @@ urlpatterns = [
     path("categories/merge", views.merge_categories, name="archive-categories-merge"),
     path("categories/rename", views.rename_category, name="archive-categories-rename"),
     path("categories/split", views.split_category, name="archive-categories-split"),
-    path("categories/suggest-merges", views.suggest_category_merges, name="archive-categories-suggest-merges"),
+    path(
+        "categories/suggest-merges", views.suggest_category_merges, name="archive-categories-suggest-merges"
+    ),
     path("categories/bulk-categorize", views.bulk_categorize, name="archive-categories-bulk"),
     path("recategorize", views.recategorize_archives, name="archive-recategorize"),
     # Management
     path("delete", views.delete_archives, name="archive-delete"),
+    path("delete_by_domain", views.delete_archives_by_domain, name="archive-delete-by-domain"),
     # Blocklist management
     path("blocklist", views.get_blocklist, name="archive-blocklist-get"),
     path("blocklist/update", views.update_blocklist, name="archive-blocklist-update"),

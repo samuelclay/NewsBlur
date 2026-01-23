@@ -125,6 +125,16 @@
     - staging
   when: item in inventory_hostname
 
+- name: Create imageproxy cache directory
+  file:
+    path: /srv/imageproxy-cache
+    state: directory
+    mode: '0755'
+  with_items:
+    - node-images
+    - staging
+  when: item in inventory_hostname
+
 - name: Start non-newsblur node docker containers
   docker_container:
     name: "{{ item.container_name }}"
@@ -140,18 +150,21 @@
       - "{{ item.ports }}"
     env:
       NODE_ENV: "production"
-      IMAGEPROXY_CACHE: "memory:200:4h"
+      IMAGEPROXY_CACHE: "memory:50:1h /srv/imageproxy-cache"
       IMAGEPROXY_SIGNATUREKEY: "@/srv/imageproxy.key"
       IMAGEPROXY_VERBOSE: "1"
+    memory: "{{ item.memory | default(omit) }}"
     restart_policy: unless-stopped
     volumes:
       - /srv/newsblur/node:/srv/node
       - /srv/imageproxy.key:/srv/imageproxy.key
+      - /srv/imageproxy-cache:/srv/imageproxy-cache
   with_items:
     - container_name: imageproxy
       image: ghcr.io/willnorris/imageproxy
       ports: 8088:8080
       target_host: node-images
+      memory: 2g
   when: item.target_host in inventory_hostname
 
 - name: Register nodes in consul

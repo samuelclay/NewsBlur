@@ -14,13 +14,21 @@ NEWSBLUR.utils = {
         var intelligence = story.get('intelligence');
         if (!intelligence) return score;
         var score_max = Math.max(intelligence['title'],
+            intelligence['title_regex'] || 0,
             intelligence['author'],
             intelligence['tags'],
-            intelligence['text'] || 0);
+            intelligence['text'] || 0,
+            intelligence['text_regex'] || 0,
+            intelligence['url'] || 0,
+            intelligence['url_regex'] || 0);
         var score_min = Math.min(intelligence['title'],
+            intelligence['title_regex'] || 0,
             intelligence['author'],
             intelligence['tags'],
-            intelligence['text'] || 0);
+            intelligence['text'] || 0,
+            intelligence['text_regex'] || 0,
+            intelligence['url'] || 0,
+            intelligence['url_regex'] || 0);
         if (score_max > 0) score = score_max;
         else if (score_min < 0) score = score_min;
 
@@ -179,6 +187,8 @@ NEWSBLUR.utils = {
         var make_feed_option = function (feed) {
             if (!feed.get('feed_title')) return;
             if (!feed.get('active')) return;
+            // If filter_feed_ids is provided, only include feeds in that set
+            if (options.filter_feed_ids && !options.filter_feed_ids[feed.id]) return;
             var prefix = 'feed:';
             if (feed.is_starred()) prefix = '';
             else if (feed.is_social()) prefix = '';
@@ -217,7 +227,7 @@ NEWSBLUR.utils = {
         }
 
         if (options.include_folders) {
-            var $folders = NEWSBLUR.utils.make_folders(options.feed_id, options.toplevel, options.name, options.include_special_folders);
+            var $folders = NEWSBLUR.utils.make_folders(options.feed_id, options.toplevel, options.name, options.include_special_folders, options.filter_feed_ids);
             $('option', $folders).each(function () {
                 $(this).appendTo($folders_optgroup);
             });
@@ -250,7 +260,7 @@ NEWSBLUR.utils = {
         return $chooser;
     },
 
-    make_folders: function (selected_folder_title, toplevel, select_name, include_special_folders) {
+    make_folders: function (selected_folder_title, toplevel, select_name, include_special_folders, filter_feed_ids) {
         // console.log('make_folders', selected_folder_title);
         var folders = NEWSBLUR.assets.get_folders();
         var $options = $.make('select', { className: 'NB-folders', name: select_name });
@@ -275,21 +285,42 @@ NEWSBLUR.utils = {
             }
         }
 
-        var $option = $.make('option', { value: 'river:' }, toplevel || "Top Level");
-        $options.append($option);
-        if (selected_folder_title == "river:") {
-            $option.attr('selected', true);
+        // Only show Top Level if not filtering, or if it contains filtered feeds
+        var show_top_level = !filter_feed_ids;
+        if (filter_feed_ids) {
+            // Check if top-level folder has any feeds with classifiers
+            var top_feeds = NEWSBLUR.assets.get_feeds().filter(function (f) {
+                return !f.get('folder') || f.get('folder') === '';
+            });
+            show_top_level = _.any(top_feeds, function (f) {
+                return filter_feed_ids[f.id];
+            });
+        }
+        if (show_top_level) {
+            var $option = $.make('option', { value: 'river:' }, toplevel || "Top Level");
+            $options.append($option);
+            if (selected_folder_title == "river:") {
+                $option.attr('selected', true);
+            }
         }
 
-        $options = this.make_folder_options($options, folders, '&nbsp;&nbsp;&nbsp;', selected_folder_title);
+        $options = this.make_folder_options($options, folders, '&nbsp;&nbsp;&nbsp;', selected_folder_title, filter_feed_ids);
 
         return $options;
     },
 
-    make_folder_options: function ($options, items, depth, selected_folder_title) {
+    make_folder_options: function ($options, items, depth, selected_folder_title, filter_feed_ids) {
         var self = this;
         items.each(function (item) {
             if (item.is_folder()) {
+                // If filtering, check if folder contains any feeds with classifiers
+                if (filter_feed_ids) {
+                    var folder_feeds = item.feed_ids_in_folder();
+                    var has_filtered_feed = _.any(folder_feeds, function (feed_id) {
+                        return filter_feed_ids[feed_id];
+                    });
+                    if (!has_filtered_feed) return;
+                }
                 var $option = $.make('option', {
                     value: 'river:' + item.get('folder_title')
                 }, depth + ' ' + item.get('folder_title'));
@@ -297,7 +328,7 @@ NEWSBLUR.utils = {
                 if (item.get('folder_title') == selected_folder_title) {
                     $option.attr('selected', true);
                 }
-                $options = self.make_folder_options($options, item.folders, depth + '&nbsp;&nbsp;&nbsp;', selected_folder_title);
+                $options = self.make_folder_options($options, item.folders, depth + '&nbsp;&nbsp;&nbsp;', selected_folder_title, filter_feed_ids);
             }
         });
 

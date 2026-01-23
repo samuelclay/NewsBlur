@@ -12,7 +12,11 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from apps.archive_assistant.models import MArchiveConversation, MArchiveQuery, MArchiveAssistantUsage
+from apps.archive_assistant.models import (
+    MArchiveAssistantUsage,
+    MArchiveConversation,
+    MArchiveQuery,
+)
 from apps.archive_assistant.prompts import get_suggested_questions
 from apps.archive_assistant.tasks import process_archive_query
 from apps.archive_extension.models import MArchivedStory
@@ -99,7 +103,7 @@ def submit_query(request):
     )
     query.save()
 
-    # Queue async processing (route to archive_queue for worktree celery)
+    # Queue async processing (route to push_feeds for worktree celery)
     process_archive_query.apply_async(
         kwargs={
             "user_id": user.pk,
@@ -109,7 +113,7 @@ def submit_query(request):
             "model": model,
             "is_premium_archive": is_premium_archive,
         },
-        queue="archive_queue",
+        queue="push_feeds",
     )
 
     return _json_response(
@@ -253,11 +257,11 @@ def get_suggestions(request):
 
     # Get user's top categories
     categories = MArchivedStory.get_category_breakdown(user.pk)
-    category_names = [c["_id"] for c in categories[:5]]
+    category_names = [c["category"] for c in categories[:5]]
 
     # Get recent domains
     domains = MArchivedStory.get_domain_breakdown(user.pk, limit=10)
-    domain_names = [d["_id"] for d in domains]
+    domain_names = [d["domain"] for d in domains]
 
     suggestions = get_suggested_questions(categories=category_names, recent_domains=domain_names)
 

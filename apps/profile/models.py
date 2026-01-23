@@ -278,10 +278,115 @@ class Profile(models.Model):
         except DatabaseError as e:
             print(f" ---> Profile not saved: {e}")
 
+    def archive_deleted_user(self):
+        """Archive user data before deletion for analytics and tracking."""
+        from apps.analyzer.models import (
+            MClassifierAuthor,
+            MClassifierFeed,
+            MClassifierTag,
+            MClassifierText,
+            MClassifierTitle,
+            MClassifierUrl,
+        )
+        from apps.social.models import MSharedStory, MSocialProfile
+
+        # Get payment history
+        payments = PaymentHistory.objects.filter(user=self.user)
+        payment_history = []
+        total_payments = 0
+        for payment in payments:
+            if not payment.refunded:
+                total_payments += payment.payment_amount
+            payment_history.append(
+                {
+                    "date": payment.payment_date.isoformat() if payment.payment_date else None,
+                    "amount": payment.payment_amount,
+                    "provider": payment.payment_provider,
+                    "refunded": payment.refunded,
+                }
+            )
+
+        # Get feed stats
+        feeds_count = UserSubscription.objects.filter(user=self.user).count()
+        feed_opens = (
+            UserSubscription.objects.filter(user=self.user).aggregate(sum=Sum("feed_opens"))["sum"] or 0
+        )
+
+        # Get story stats
+        read_story_count = RUserStory.read_story_count(self.user.pk)
+        starred_stories_count = MStarredStory.objects.filter(user_id=self.user.pk).count()
+        shared_stories_count = MSharedStory.objects.filter(user_id=self.user.pk).count()
+
+        # Get social stats
+        following_count = 0
+        follower_count = 0
+        try:
+            social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
+            following_count = social_profile.following_count
+            follower_count = social_profile.follower_count
+        except MSocialProfile.DoesNotExist:
+            pass
+
+        # Get training stats
+        training = {
+            "title_ps": MClassifierTitle.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "title_ng": MClassifierTitle.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "tag_ps": MClassifierTag.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "tag_ng": MClassifierTag.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "text_ps": MClassifierText.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "text_ng": MClassifierText.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "author_ps": MClassifierAuthor.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "author_ng": MClassifierAuthor.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "feed_ps": MClassifierFeed.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "feed_ng": MClassifierFeed.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "url_ps": MClassifierUrl.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "url_ng": MClassifierUrl.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+        }
+
+        # Create the archived record
+        deleted_user = MDeletedUser(
+            user_id=self.user.pk,
+            username=self.user.username,
+            email=self.user.email,
+            date_joined=self.user.date_joined,
+            last_seen_on=self.last_seen_on,
+            last_seen_ip=self.last_seen_ip,
+            timezone=str(self.timezone) if self.timezone else None,
+            is_premium=self.is_premium,
+            is_premium_trial=self.is_premium_trial or False,
+            is_archive=self.is_archive or False,
+            is_pro=self.is_pro or False,
+            premium_expire=self.premium_expire,
+            premium_renewal=self.premium_renewal or False,
+            payment_count=len(payments),
+            total_payments=total_payments,
+            payment_history=payment_history,
+            stripe_id=self.stripe_id,
+            paypal_email=self.latest_paypal_email,
+            feeds_count=feeds_count,
+            feed_opens=feed_opens,
+            read_story_count=read_story_count,
+            starred_stories_count=starred_stories_count,
+            shared_stories_count=shared_stories_count,
+            following_count=following_count,
+            follower_count=follower_count,
+            training=training,
+        )
+        deleted_user.save()
+
+        logging.user(
+            self.user,
+            "~FBArchived deleted user data: %s feeds, %s payments ($%s), %s stories read"
+            % (feeds_count, len(payments), total_payments, read_story_count),
+        )
+
     def delete_user(self, confirm=False, fast=False):
         if not confirm:
             print(" ---> You must pass confirm=True to delete this user.")
             return
+
+        # Archive user data BEFORE deletion for analytics
+        self.archive_deleted_user()
 
         logging.user(self.user, "Deleting user: %s / %s" % (self.user.email, self.user.profile.last_seen_ip))
         try:
@@ -704,9 +809,9 @@ class Profile(models.Model):
             if settings.DEBUG:
                 application_context["return_url"] = f"https://a6d3-161-77-224-226.ngrok.io{paypal_return}"
             else:
-                application_context["return_url"] = (
-                    f"https://{Site.objects.get_current().domain}{paypal_return}"
-                )
+                application_context[
+                    "return_url"
+                ] = f"https://{Site.objects.get_current().domain}{paypal_return}"
             paypal_subscription = paypal_api.post(
                 f"/v1/billing/subscriptions",
                 {
@@ -2954,3 +3059,57 @@ class RNewUserQueue:
         r.zrem(cls.KEY, user)
 
         return user
+
+
+class MDeletedUser(mongo.Document):
+    """Archive of deleted user data for analytics and tracking."""
+
+    # User identifiers
+    user_id = mongo.IntField(required=True)
+    username = mongo.StringField(max_length=255)
+    email = mongo.StringField(max_length=255)
+
+    # Dates
+    date_joined = mongo.DateTimeField()
+    date_deleted = mongo.DateTimeField(default=datetime.datetime.now)
+    last_seen_on = mongo.DateTimeField()
+    last_seen_ip = mongo.StringField(max_length=50)
+    timezone = mongo.StringField(max_length=50)
+
+    # Subscription status at deletion
+    is_premium = mongo.BooleanField(default=False)
+    is_premium_trial = mongo.BooleanField(default=False)
+    is_archive = mongo.BooleanField(default=False)
+    is_pro = mongo.BooleanField(default=False)
+    premium_expire = mongo.DateTimeField()
+    premium_renewal = mongo.BooleanField(default=False)
+
+    # Payment data
+    payment_count = mongo.IntField(default=0)
+    total_payments = mongo.IntField(default=0)  # in dollars
+    payment_history = mongo.ListField(mongo.DictField())  # [{date, amount, provider}]
+    stripe_id = mongo.StringField(max_length=255)
+    paypal_email = mongo.StringField(max_length=255)
+
+    # Usage stats
+    feeds_count = mongo.IntField(default=0)
+    feed_opens = mongo.IntField(default=0)
+    read_story_count = mongo.IntField(default=0)
+    starred_stories_count = mongo.IntField(default=0)
+    shared_stories_count = mongo.IntField(default=0)
+
+    # Social stats
+    following_count = mongo.IntField(default=0)
+    follower_count = mongo.IntField(default=0)
+
+    # Training stats (from classifiers)
+    training = mongo.DictField()  # {title_ps, title_ng, tag_ps, tag_ng, etc.}
+
+    meta = {
+        "collection": "deleted_users",
+        "indexes": [
+            "user_id",
+            "date_deleted",
+        ],
+        "allow_inheritance": False,
+    }

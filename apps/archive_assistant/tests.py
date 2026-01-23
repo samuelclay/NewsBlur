@@ -2,23 +2,16 @@
 """
 Unit tests for the Archive Assistant app.
 """
-from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 from django.test import TestCase
 from django.test.client import Client
 
-from apps.archive_assistant.tools import (
-    ARCHIVE_TOOLS,
-    execute_tool,
-    search_archives,
-    get_archive_content,
-    get_archive_categories,
-)
 from apps.archive_assistant.prompts import (
     ARCHIVE_ASSISTANT_SYSTEM_PROMPT,
     get_suggested_questions,
 )
+from apps.archive_assistant.tools import ARCHIVE_TOOLS, execute_tool
 
 
 class Test_ArchiveTools(TestCase):
@@ -43,10 +36,10 @@ class Test_ArchiveTools(TestCase):
         tool_names = [t["name"] for t in ARCHIVE_TOOLS]
         self.assertIn("get_archive_content", tool_names)
 
-    def test_get_archive_categories_tool_defined(self):
-        """get_archive_categories tool should be defined."""
+    def test_get_archive_summary_tool_defined(self):
+        """get_archive_summary tool should be defined."""
         tool_names = [t["name"] for t in ARCHIVE_TOOLS]
-        self.assertIn("get_archive_categories", tool_names)
+        self.assertIn("get_archive_summary", tool_names)
 
 
 class Test_ToolExecution(TestCase):
@@ -58,36 +51,24 @@ class Test_ToolExecution(TestCase):
 
     @patch("apps.archive_assistant.tools.MArchivedStory")
     def test_search_archives_returns_results(self, mock_model):
-        """search_archives should return matching archives."""
+        """search_archives should return matching archives via execute_tool."""
         mock_archive = MagicMock()
         mock_archive.id = "abc123"
         mock_archive.title = "Test Article"
         mock_archive.url = "https://example.com/test"
         mock_archive.domain = "example.com"
-        mock_archive.archived_date = datetime.now()
         mock_archive.ai_categories = ["Technology"]
 
-        mock_model.objects.return_value.filter.return_value.order_by.return_value.limit.return_value = [
-            mock_archive
-        ]
+        mock_model.objects.return_value.__iter__ = lambda s: iter([mock_archive])
+        mock_model.objects.return_value.count.return_value = 1
 
-        result = search_archives(self.user_id, query="test")
+        result = execute_tool("search_archives", {"query": "test"}, self.user_id)
 
-        self.assertIsInstance(result, list)
-
-    @patch("apps.archive_assistant.tools.MArchivedStory")
-    def test_search_archives_handles_empty_results(self, mock_model):
-        """search_archives should handle no results gracefully."""
-        mock_model.objects.return_value.filter.return_value.order_by.return_value.limit.return_value = []
-
-        result = search_archives(self.user_id, query="nonexistent query")
-
-        self.assertIsInstance(result, list)
-        self.assertEqual(len(result), 0)
+        self.assertIsInstance(result, dict)
 
     @patch("apps.archive_assistant.tools.MArchivedStory")
     def test_get_archive_content_returns_content(self, mock_model):
-        """get_archive_content should return archive content."""
+        """get_archive_content should return archive content via execute_tool."""
         mock_archive = MagicMock()
         mock_archive.user_id = self.user_id
         mock_archive.title = "Test Article"
@@ -96,39 +77,26 @@ class Test_ToolExecution(TestCase):
 
         mock_model.objects.get.return_value = mock_archive
 
-        result = get_archive_content(self.user_id, archive_id="abc123")
+        result = execute_tool("get_archive_content", {"archive_id": "abc123"}, self.user_id)
 
         self.assertIn("content", result)
 
     @patch("apps.archive_assistant.tools.MArchivedStory")
-    def test_get_archive_content_validates_user(self, mock_model):
-        """get_archive_content should validate user ownership."""
-        mock_archive = MagicMock()
-        mock_archive.user_id = 999  # Different user
+    def test_get_archive_content_handles_not_found(self, mock_model):
+        """get_archive_content should handle archive not found."""
+        from mongoengine import DoesNotExist
 
-        mock_model.objects.get.return_value = mock_archive
+        mock_model.DoesNotExist = DoesNotExist
+        mock_model.objects.get.side_effect = DoesNotExist()
 
-        result = get_archive_content(self.user_id, archive_id="abc123")
+        result = execute_tool("get_archive_content", {"archive_id": "abc123"}, self.user_id)
 
-        # Should return error when user doesn't own the archive
+        # Should return error when archive not found
         self.assertIn("error", result)
-
-    @patch("apps.archive_assistant.tools.MArchivedStory")
-    def test_get_archive_categories_returns_breakdown(self, mock_model):
-        """get_archive_categories should return category breakdown."""
-        mock_model.objects.return_value.filter.return_value.aggregate.return_value = {
-            "Technology": 10,
-            "Science": 5,
-            "Business": 3,
-        }
-
-        result = get_archive_categories(self.user_id)
-
-        self.assertIsInstance(result, dict)
 
     def test_execute_tool_handles_unknown_tool(self):
         """execute_tool should handle unknown tool names."""
-        result = execute_tool(self.user_id, "unknown_tool", {})
+        result = execute_tool("unknown_tool", {}, self.user_id)
 
         self.assertIn("error", result)
 

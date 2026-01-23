@@ -6,6 +6,14 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         "click .NB-archive-tab": "switch_tab",
         "click .NB-archive-category-filter": "toggle_category_filter",
         "click .NB-archive-domain-filter": "toggle_domain_filter",
+        "click .NB-archive-date-filter": "toggle_date_filter",
+        "click .NB-archive-date-picker-toggle": "toggle_date_picker",
+        "click .NB-date-picker-apply": "apply_custom_date",
+        "click .NB-date-picker-clear": "clear_custom_date",
+        "click .NB-custom-date-clear": "clear_custom_date",
+        "click .NB-archive-date-custom-clear": "clear_custom_date",
+        "click .NB-filter-chip-remove": "remove_filter_chip",
+        "click .NB-clear-all-filters": "clear_all_filters",
         "click .NB-archive-item": "open_archive_item",
         "click .NB-archive-item-newsblur-link": "open_story_in_newsblur",
         "keypress .NB-archive-assistant-input": "handle_assistant_keypress",
@@ -65,7 +73,19 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         // Browser extension events
         "click .NB-archive-extensions-button": "toggle_extensions_popover",
         "click .NB-archive-extension-link": "track_extension_click",
-        "click .NB-archive-assistant-extensions-close": "dismiss_extension_promo"
+        "click .NB-archive-assistant-extensions-close": "dismiss_extension_promo",
+        // Blocklist settings events
+        "click .NB-blocklist-add-domain": "add_blocked_domain",
+        "click .NB-blocklist-add-pattern": "add_blocked_pattern",
+        "click .NB-blocklist-add-allowed": "add_allowed_domain",
+        "click .NB-blocklist-remove": "remove_blocklist_item",
+        "click .NB-blocklist-save": "save_blocklist",
+        "keypress .NB-blocklist-input": "handle_blocklist_keypress",
+        // Domain browser events
+        "click .NB-domain-browser-item": "show_block_domain_dialog",
+        "click .NB-block-dialog-overlay": "close_block_dialog",
+        "click .NB-block-dialog-cancel": "close_block_dialog",
+        "click .NB-block-dialog-confirm": "confirm_block_domain"
     },
 
     initialize: function (options) {
@@ -80,17 +100,25 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.is_loading = false;
         this.active_category = null;
         this.active_domain = null;
+        this.active_date = null;
+        this.custom_date_from = null;
+        this.custom_date_to = null;
+        this.date_picker_open = false;
         this.suggestions = [];
         this.active_conversation = null;
         this.conversation_history = [];
         this.is_streaming = false;
         this.response_text = '';
+        this.response_segments = [];  // Track text segments (pre-tool text becomes a segment)
         this.usage = null;
         this.active_query_id = null;
         this.tool_status = null;
         this.current_tool_calls = [];  // Track tool calls for process log
         this.websocket_timeout = null;
         this.response_completed = false;
+        // Scroll pinning state
+        this.scroll_pinned = true;  // Start pinned to bottom
+        this.last_scroll_top = 0;   // Track scroll position to detect direction
         // Category management state
         this.selected_categories = [];
         this.category_manager_open = false;
@@ -115,6 +143,13 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         // Search state
         this.search_query = '';
         this.search_debounced = _.debounce(_.bind(this.perform_search, this), 300);
+        // Filter intersection - debounced refresh for sidebar filters
+        this.date_counts = {};
+        this.refresh_sidebar_filters_debounced = _.debounce(_.bind(this.refresh_sidebar_filters, this), 150);
+        // Blocklist state
+        this.blocklist = null;
+        this.blocklist_loading = false;
+        this.blocklist_dirty = false;
 
         this.fetch_initial_data();
     },
@@ -159,16 +194,52 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.fetch_conversations(check_complete);
     },
 
-    fetch_filters: function (callback) {
+    fetch_filters: function (callback, filters) {
         var self = this;
+        filters = filters || {};
 
-        this.model.make_request('/api/archive/categories', {}, function (data) {
+        var params = {};
+        if (filters.category) params.category = filters.category;
+        if (filters.domain) params.domain = filters.domain;
+        if (filters.date_from) params.date_from = filters.date_from;
+        if (filters.date_to) params.date_to = filters.date_to;
+        // Send client timezone offset so date buckets align with user's local time
+        params.tz_offset = new Date().getTimezoneOffset();
+
+        this.model.make_request('/api/archive/categories', params, function (data) {
             if (data.code === 0) {
                 self.categories = data.categories || [];
                 self.domains = data.domains || [];
+                self.date_counts = data.dates || {};
+
+                // Update sidebar UI if already rendered
+                if (self.$('.NB-archive-categories').length) {
+                    self.$('.NB-archive-categories').html(self.render_category_filters());
+                    self.$('.NB-archive-domains').html(self.render_domain_filters());
+                    self.$('.NB-archive-dates').html(self.render_date_filters());
+                }
             }
             if (callback) callback();
         }, callback, { request_type: 'GET' });
+    },
+
+    refresh_sidebar_filters: function () {
+        var filters = {};
+
+        if (this.active_category) filters.category = this.active_category;
+        if (this.active_domain) filters.domain = this.active_domain;
+
+        // Handle date range
+        if (this.custom_date_from || this.custom_date_to) {
+            if (this.custom_date_from) filters.date_from = this.custom_date_from;
+            if (this.custom_date_to) filters.date_to = this.custom_date_to;
+        } else if (this.active_date) {
+            var date_range = this.get_date_range(this.active_date);
+            if (date_range.date_from) filters.date_from = date_range.date_from;
+            if (date_range.date_to) filters.date_to = date_range.date_to;
+        }
+
+        this.fetch_filters(null, filters);
     },
 
     fetch_conversations: function (callback) {
@@ -218,6 +289,23 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         }
         if (this.search_query) {
             params.search = this.search_query;
+        }
+        if (this.custom_date_from || this.custom_date_to) {
+            // Custom date range takes precedence
+            if (this.custom_date_from) {
+                params.date_from = this.custom_date_from;
+            }
+            if (this.custom_date_to) {
+                params.date_to = this.custom_date_to;
+            }
+        } else if (this.active_date) {
+            var date_range = this.get_date_range(this.active_date);
+            if (date_range.date_from) {
+                params.date_from = date_range.date_from;
+            }
+            if (date_range.date_to) {
+                params.date_to = date_range.date_to;
+            }
         }
 
         this.model.make_request('/api/archive/list', params, function (data) {
@@ -297,6 +385,13 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     }, [
                         $.make('img', { src: '/media/img/icons/nouns/archive.svg', className: 'NB-archive-tab-icon' }),
                         'Browse Archives'
+                    ]),
+                    $.make('div', {
+                        className: 'NB-archive-tab' + (this.active_tab === 'settings' ? ' NB-active' : ''),
+                        'data-tab': 'settings'
+                    }, [
+                        $.make('img', { src: '/media/img/icons/lucide/shield.svg', className: 'NB-archive-tab-icon' }),
+                        'Blocklist'
                     ])
                 ]),
                 $.make('div', { className: 'NB-archive-extensions-container' }, [
@@ -318,13 +413,21 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 // Browser tab
                 $.make('div', {
                     className: 'NB-archive-browser-tab' + (this.active_tab === 'browser' ? ' NB-active' : '')
-                }, this.render_browser_tab())
+                }, this.render_browser_tab()),
+
+                // Settings tab
+                $.make('div', {
+                    className: 'NB-archive-settings-tab' + (this.active_tab === 'settings' ? ' NB-active' : '')
+                }, this.render_settings_tab())
             ])
         ]));
 
         // Set up scroll handler for infinite scroll in browser tab
         this.throttled_check_scroll = _.throttle(_.bind(this.check_scroll, this), 100);
         this.$('.NB-archive-browser-content').on('scroll', this.throttled_check_scroll);
+
+        // Set up scroll handler for chat auto-scroll pinning
+        this.$('.NB-archive-assistant-chat').on('scroll', _.bind(this.handle_chat_scroll, this));
 
         // Store view reference for WebSocket event lookup
         this.$el.data('view', this);
@@ -485,29 +588,6 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         });
     },
 
-    format_relative_date: function (date) {
-        if (!date || isNaN(date.getTime())) return '';
-
-        var now = new Date();
-        var diff = now - date;
-        var seconds = Math.floor(diff / 1000);
-        var minutes = Math.floor(seconds / 60);
-        var hours = Math.floor(minutes / 60);
-        var days = Math.floor(hours / 24);
-
-        if (days > 7) {
-            return date.toLocaleDateString();
-        } else if (days > 0) {
-            return days === 1 ? 'Yesterday' : days + ' days ago';
-        } else if (hours > 0) {
-            return hours === 1 ? '1 hour ago' : hours + ' hours ago';
-        } else if (minutes > 0) {
-            return minutes === 1 ? '1 minute ago' : minutes + ' minutes ago';
-        } else {
-            return 'Just now';
-        }
-    },
-
     render_conversation_messages: function () {
         var self = this;
         var elements = [];
@@ -520,55 +600,80 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     'Ask questions about everything you\'ve read. I can search your browsing history and find relevant information.')
             ]));
         } else {
-            _.each(this.conversation_history, function (message, index) {
+            _.each(this.conversation_history, function (message) {
                 var is_user = message.role === 'user';
 
-                // Render tool calls before assistant messages (same structure as streaming)
-                if (!is_user && message.tool_calls && message.tool_calls.length > 0) {
-                    _.each(message.tool_calls, function (tool_call) {
-                        // Support both 'summary' (live WebSocket) and 'result_summary' (saved history)
-                        var summary_text = tool_call.summary || tool_call.result_summary || '';
-                        // Tool call line with checkmark - same as streaming completed
-                        elements.push($.make('div', { className: 'NB-archive-tool-line NB-complete' }, [
-                            $.make('span', { className: 'NB-tool-icon NB-tool-check' }),
-                            $.make('span', { className: 'NB-tool-message' }, summary_text)
-                        ]));
-                        // Preview items indented below
-                        if (tool_call.preview && tool_call.preview.length > 0) {
-                            _.each(tool_call.preview, function (title) {
-                                elements.push($.make('div', { className: 'NB-archive-tool-preview' }, title));
-                            });
-                        }
-                    });
-                }
-
-                var message_class = 'NB-archive-assistant-message' + (is_user ? ' NB-user' : ' NB-assistant');
-                if (!is_user && message.truncated) {
-                    message_class += ' NB-archive-assistant-premium-only';
-                }
-                var $message = $.make('div', {
-                    className: message_class
-                }, [
-                    $.make('div', { className: 'NB-archive-message-content' },
-                        is_user ? message.content : self.markdown_to_html(message.content))
-                ]);
-
-                // Add fade and upgrade notice for truncated messages
-                if (!is_user && message.truncated) {
-                    $message.append($.make('div', { className: 'NB-archive-assistant-premium-fade' }));
-                    $message.append($.make('div', { className: 'NB-archive-assistant-premium-notice' }, [
-                        'Full Archive Assistant responses are a ',
-                        $.make('a', { href: '#', className: 'NB-splash-link NB-premium-link' }, 'premium archive feature'),
-                        '.'
+                if (is_user) {
+                    // User message - single bubble
+                    elements.push($.make('div', {
+                        className: 'NB-archive-assistant-message NB-user'
+                    }, [
+                        $.make('div', { className: 'NB-archive-message-content' }, message.content)
                     ]));
-                }
+                } else {
+                    // Assistant message - may have multiple segments and tool calls
+                    // Render segments with tool calls between first and rest
+                    var text_segments = message.segments || (message.content ? [message.content] : []);
 
-                elements.push($message);
+                    // First segment (pre-tool text)
+                    if (text_segments.length > 0) {
+                        elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant' }, [
+                            $.make('div', { className: 'NB-archive-message-content' }, self.markdown_to_html(text_segments[0]))
+                        ]));
+                    }
+
+                    // Tool calls (between first and remaining segments)
+                    if (message.tool_calls && message.tool_calls.length > 0) {
+                        _.each(message.tool_calls, function (tool_call) {
+                            var summary_text = tool_call.summary || tool_call.result_summary || '';
+                            elements.push($.make('div', { className: 'NB-archive-tool-line NB-complete' }, [
+                                $.make('span', { className: 'NB-tool-icon NB-tool-check' }),
+                                $.make('span', { className: 'NB-tool-message' }, summary_text)
+                            ]));
+                            if (tool_call.preview && tool_call.preview.length > 0) {
+                                _.each(tool_call.preview, function (title) {
+                                    elements.push($.make('div', { className: 'NB-archive-tool-preview' }, title));
+                                });
+                            }
+                        });
+                    }
+
+                    // Remaining segments (post-tool text) - each as separate bubble
+                    for (var i = 1; i < text_segments.length; i++) {
+                        var segment_class = 'NB-archive-assistant-message NB-assistant';
+                        if (message.truncated && i === text_segments.length - 1) {
+                            segment_class += ' NB-archive-assistant-premium-only';
+                        }
+                        var $segment = $.make('div', { className: segment_class }, [
+                            $.make('div', { className: 'NB-archive-message-content' }, self.markdown_to_html(text_segments[i]))
+                        ]);
+                        if (message.truncated && i === text_segments.length - 1) {
+                            $segment.append($.make('div', { className: 'NB-archive-assistant-premium-fade' }));
+                            $segment.append($.make('div', { className: 'NB-archive-assistant-premium-notice' }, [
+                                'Full Archive Assistant responses are a ',
+                                $.make('a', { href: '#', className: 'NB-splash-link NB-premium-link' }, 'premium archive feature'),
+                                '.'
+                            ]));
+                        }
+                        elements.push($segment);
+                    }
+                }
             });
         }
 
         // Show streaming response or tool status
         if (this.is_streaming) {
+            // Show pre-tool text segment if it exists (as its own bubble)
+            if (this.response_segments.length > 0) {
+                _.each(this.response_segments, function (segment) {
+                    if (segment.type === 'text' && segment.content) {
+                        elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant' }, [
+                            $.make('div', { className: 'NB-archive-message-content' }, self.markdown_to_html(segment.content))
+                        ]));
+                    }
+                });
+            }
+
             // Show completed tool calls with optional preview items
             _.each(this.current_tool_calls, function (tool_call) {
                 // Tool call header line with checkmark
@@ -584,6 +689,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 }
             });
 
+            // Show current state: tool spinner, streaming text, or thinking
             if (this.tool_status) {
                 // Show current active tool call with spinner
                 elements.push($.make('div', { className: 'NB-archive-tool-line NB-active' }, [
@@ -591,12 +697,12 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     $.make('span', { className: 'NB-tool-message' }, this.tool_status)
                 ]));
             } else if (this.response_text) {
-                // Show streaming text
+                // Show streaming text (either pre-tool or post-tool depending on state)
                 elements.push($.make('div', { className: 'NB-archive-assistant-message NB-assistant NB-streaming' }, [
                     $.make('div', { className: 'NB-archive-message-content' }, this.markdown_to_html(this.response_text))
                 ]));
-            } else {
-                // Show thinking animation while waiting for next action
+            } else if (this.response_segments.length === 0 && this.current_tool_calls.length === 0) {
+                // Show thinking animation only at the very start
                 elements.push($.make('div', { className: 'NB-archive-tool-line NB-thinking' }, [
                     $.make('span', { className: 'NB-tool-icon NB-tool-spinner' }),
                     $.make('span', { className: 'NB-tool-message' }, 'Thinking...')
@@ -653,6 +759,19 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                 $.make('div', { className: 'NB-archive-filter-list NB-archive-domains' },
                     this.render_domain_filters()
                 )
+            ]),
+            // Date ranges - shown inline like categories
+            $.make('div', { className: 'NB-archive-filter-section NB-archive-date-section' }, [
+                $.make('div', { className: 'NB-archive-filter-header' }, [
+                    $.make('div', { className: 'NB-archive-filter-title' }, 'Time Period'),
+                    $.make('div', { className: 'NB-archive-date-picker-toggle', title: 'Custom date range' }, [
+                        $.make('img', { src: '/media/img/icons/nouns/calendar.svg', className: 'NB-date-picker-icon' })
+                    ])
+                ]),
+                $.make('div', { className: 'NB-archive-filter-list NB-archive-dates' },
+                    this.render_date_filters()
+                ),
+                this.render_date_picker_popover()
             ])
         ]));
 
@@ -672,18 +791,194 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         return this.render_filters(this.domains, 'domain', this.active_domain);
     },
 
+    render_date_filters: function () {
+        var self = this;
+        var filters = [];
+        var date_counts = this.date_counts || {};
+        var date_options = [
+            { value: 'today', label: 'Today' },
+            { value: 'yesterday', label: 'Yesterday' },
+            { value: 'this_week', label: 'This Week' },
+            { value: 'last_7_days', label: 'Last 7 Days' },
+            { value: 'last_30_days', label: 'Last 30 Days' },
+            { value: 'last_90_days', label: 'Last 90 Days' },
+            { value: 'this_month', label: 'This Month' },
+            { value: 'this_year', label: 'This Year' }
+        ];
+
+        // Add custom date range if set
+        if (this.custom_date_from || this.custom_date_to) {
+            var from_str = this.custom_date_from ? new Date(this.custom_date_from).toLocaleDateString(undefined, {
+                month: 'short', day: 'numeric'
+            }) : 'Any';
+            var to_str = this.custom_date_to ? new Date(this.custom_date_to).toLocaleDateString(undefined, {
+                month: 'short', day: 'numeric'
+            }) : 'Now';
+            var is_custom_active = this.custom_date_from || this.custom_date_to;
+
+            filters.push($.make('div', {
+                className: 'NB-archive-date-filter NB-archive-date-custom' + (is_custom_active ? ' NB-active' : ''),
+                'data-date': 'custom'
+            }, [
+                $.make('span', { className: 'NB-archive-filter-name' }, from_str + ' → ' + to_str),
+                $.make('span', { className: 'NB-archive-date-custom-clear', title: 'Clear custom range' }, '×')
+            ]));
+        }
+
+        // Add relative date options with counts
+        _.each(date_options, function (option) {
+            var is_active = self.active_date === option.value && !self.custom_date_from && !self.custom_date_to;
+            var count = date_counts[option.value];
+            var is_disabled = count === 0;
+
+            // Don't disable active filter (allow user to deselect)
+            if (is_active) is_disabled = false;
+
+            filters.push($.make('div', {
+                className: 'NB-archive-date-filter' +
+                           (is_active ? ' NB-active' : '') +
+                           (is_disabled ? ' NB-disabled' : ''),
+                'data-date': option.value
+            }, [
+                $.make('span', { className: 'NB-archive-filter-name' }, option.label),
+                count !== undefined ? $.make('span', { className: 'NB-archive-filter-count' }, count) : ''
+            ]));
+        });
+
+        return filters;
+    },
+
+    render_custom_date_display: function () {
+        if (!this.custom_date_from && !this.custom_date_to) {
+            return '';
+        }
+
+        var from_str = this.custom_date_from ? new Date(this.custom_date_from).toLocaleDateString(undefined, {
+            month: 'short', day: 'numeric', year: 'numeric'
+        }) : 'Any';
+        var to_str = this.custom_date_to ? new Date(this.custom_date_to).toLocaleDateString(undefined, {
+            month: 'short', day: 'numeric', year: 'numeric'
+        }) : 'Now';
+
+        return $.make('div', { className: 'NB-custom-date-display NB-active' }, [
+            $.make('div', { className: 'NB-custom-date-range' }, [
+                $.make('span', { className: 'NB-custom-date-label' }, from_str + ' → ' + to_str)
+            ]),
+            $.make('div', { className: 'NB-custom-date-clear', title: 'Clear date range' }, '×')
+        ]);
+    },
+
+    render_date_picker_popover: function () {
+        var today = new Date().toISOString().split('T')[0];
+        var from_value = this.custom_date_from ? new Date(this.custom_date_from).toISOString().split('T')[0] : '';
+        var to_value = this.custom_date_to ? new Date(this.custom_date_to).toISOString().split('T')[0] : '';
+
+        return $.make('div', {
+            className: 'NB-date-picker-popover' + (this.date_picker_open ? ' NB-active' : '')
+        }, [
+            $.make('div', { className: 'NB-date-picker-content' }, [
+                $.make('div', { className: 'NB-date-picker-title' }, 'Custom Date Range'),
+                $.make('div', { className: 'NB-date-picker-row' }, [
+                    $.make('label', { className: 'NB-date-picker-label' }, 'From'),
+                    $.make('input', {
+                        type: 'date',
+                        className: 'NB-date-picker-input NB-date-from',
+                        value: from_value,
+                        max: today
+                    })
+                ]),
+                $.make('div', { className: 'NB-date-picker-row' }, [
+                    $.make('label', { className: 'NB-date-picker-label' }, 'To'),
+                    $.make('input', {
+                        type: 'date',
+                        className: 'NB-date-picker-input NB-date-to',
+                        value: to_value,
+                        max: today
+                    })
+                ]),
+                $.make('div', { className: 'NB-date-picker-actions' }, [
+                    $.make('button', { className: 'NB-date-picker-clear' }, 'Clear'),
+                    $.make('button', { className: 'NB-date-picker-apply' }, 'Apply')
+                ])
+            ])
+        ]);
+    },
+
+    render_no_results_state: function () {
+        var self = this;
+        var filter_chips = [];
+
+        // Build filter chip elements for active filters
+        if (this.search_query) {
+            filter_chips.push($.make('div', { className: 'NB-filter-chip', 'data-filter': 'search' }, [
+                $.make('span', { className: 'NB-filter-chip-label' }, 'Search: "' + this.search_query + '"'),
+                $.make('span', { className: 'NB-filter-chip-remove', 'data-filter': 'search' }, '×')
+            ]));
+        }
+        if (this.active_category) {
+            filter_chips.push($.make('div', { className: 'NB-filter-chip', 'data-filter': 'category' }, [
+                $.make('span', { className: 'NB-filter-chip-label' }, 'Category: ' + this.active_category),
+                $.make('span', { className: 'NB-filter-chip-remove', 'data-filter': 'category' }, '×')
+            ]));
+        }
+        if (this.active_domain) {
+            filter_chips.push($.make('div', { className: 'NB-filter-chip', 'data-filter': 'domain' }, [
+                $.make('span', { className: 'NB-filter-chip-label' }, 'Domain: ' + this.active_domain),
+                $.make('span', { className: 'NB-filter-chip-remove', 'data-filter': 'domain' }, '×')
+            ]));
+        }
+        if (this.active_date) {
+            var date_labels = {
+                'today': 'Today',
+                'yesterday': 'Yesterday',
+                'this_week': 'This Week',
+                'last_7_days': 'Last 7 Days',
+                'last_30_days': 'Last 30 Days',
+                'last_90_days': 'Last 90 Days',
+                'this_month': 'This Month',
+                'this_year': 'This Year'
+            };
+            filter_chips.push($.make('div', { className: 'NB-filter-chip', 'data-filter': 'date' }, [
+                $.make('span', { className: 'NB-filter-chip-label' }, 'Time: ' + (date_labels[this.active_date] || this.active_date)),
+                $.make('span', { className: 'NB-filter-chip-remove', 'data-filter': 'date' }, '×')
+            ]));
+        }
+        if (this.custom_date_from || this.custom_date_to) {
+            var from_str = this.custom_date_from ? new Date(this.custom_date_from).toLocaleDateString(undefined, {
+                month: 'short', day: 'numeric'
+            }) : 'Any';
+            var to_str = this.custom_date_to ? new Date(this.custom_date_to).toLocaleDateString(undefined, {
+                month: 'short', day: 'numeric'
+            }) : 'Now';
+            filter_chips.push($.make('div', { className: 'NB-filter-chip', 'data-filter': 'custom_date' }, [
+                $.make('span', { className: 'NB-filter-chip-label' }, 'Date: ' + from_str + ' → ' + to_str),
+                $.make('span', { className: 'NB-filter-chip-remove', 'data-filter': 'custom_date' }, '×')
+            ]));
+        }
+
+        return $.make('div', { className: 'NB-archive-no-results' }, [
+            $.make('div', { className: 'NB-no-results-icon' }, [
+                $.make('img', { src: '/media/img/icons/lucide/search-x.svg', className: 'NB-no-results-img' })
+            ]),
+            $.make('div', { className: 'NB-no-results-title' }, 'No archives match your filters'),
+            $.make('div', { className: 'NB-no-results-subtitle' }, 'Try removing some filters to see more results'),
+            $.make('div', { className: 'NB-filter-chips' }, filter_chips),
+            $.make('div', { className: 'NB-clear-all-filters' }, 'Clear all filters')
+        ]);
+    },
+
     render_filters: function (items, filter_type, active_value) {
         var visible_items = items.slice(0, 10);
 
         // Ensure active filter is always visible, even if not in top 10
         if (active_value) {
             var active_in_list = _.find(visible_items, function (item) {
-                return item._id === active_value;
+                return item[filter_type] === active_value;
             });
             if (!active_in_list) {
                 // Find it in the full list or create a placeholder
                 var active_item = _.find(items, function (item) {
-                    return item._id === active_value;
+                    return item[filter_type] === active_value;
                 });
                 if (active_item) {
                     // Insert at top, remove last to keep 10
@@ -691,21 +986,31 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                     visible_items = visible_items.slice(0, 10);
                 } else {
                     // Not in list at all (edge case), add placeholder at top
-                    visible_items.unshift({ _id: active_value, count: '?' });
+                    var placeholder = { count: '?' };
+                    placeholder[filter_type] = active_value;
+                    visible_items.unshift(placeholder);
                     visible_items = visible_items.slice(0, 10);
                 }
             }
         }
 
         return _.map(visible_items, function (item) {
-            var is_active = active_value === item._id;
+            var item_value = item[filter_type];
+            var is_active = active_value === item_value;
+            var is_disabled = item.count === 0;
+
+            // Don't disable active filter (allow user to deselect)
+            if (is_active) is_disabled = false;
+
             var attrs = {
-                className: 'NB-archive-' + filter_type + '-filter' + (is_active ? ' NB-active' : '')
+                className: 'NB-archive-' + filter_type + '-filter' +
+                           (is_active ? ' NB-active' : '') +
+                           (is_disabled ? ' NB-disabled' : '')
             };
-            attrs['data-' + filter_type] = item._id;
+            attrs['data-' + filter_type] = item_value;
 
             return $.make('div', attrs, [
-                $.make('span', { className: 'NB-archive-filter-name' }, item._id),
+                $.make('span', { className: 'NB-archive-filter-name' }, item_value),
                 $.make('span', { className: 'NB-archive-filter-count' }, item.count)
             ]);
         });
@@ -720,69 +1025,79 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         $content.find('.NB-end-line').remove();
 
         if (this.archives.length === 0 && !this.is_loading) {
-            $list.html($.make('div', { className: 'NB-archive-empty' }, [
-                $.make('div', { className: 'NB-archive-empty-hero' }, [
-                    $.make('img', { src: '/media/img/icons/lucide/puzzle.svg', className: 'NB-archive-empty-icon' }),
-                    $.make('div', { className: 'NB-archive-empty-title' }, 'Get Started with Archive'),
-                    $.make('div', { className: 'NB-archive-empty-subtitle' },
-                        'Install the browser extension to automatically save every page you visit. Ask AI questions about anything you\'ve read.')
-                ]),
-                $.make('div', { className: 'NB-archive-empty-extensions' }, [
-                    $.make('div', { className: 'NB-archive-empty-extensions-title' }, 'Choose your browser'),
-                    $.make('div', { className: 'NB-archive-empty-extension-buttons' }, [
-                        $.make('a', {
-                            className: 'NB-archive-empty-extension-btn',
-                            href: 'https://chrome.google.com/webstore/detail/newsblur-archive/PLACEHOLDER',
-                            target: '_blank',
-                            'data-browser': 'chrome'
-                        }, [
-                            $.make('img', { src: '/media/img/reader/chrome.png', className: 'NB-empty-ext-icon' }),
-                            $.make('div', { className: 'NB-empty-ext-info' }, [
-                                $.make('div', { className: 'NB-empty-ext-name' }, 'Chrome'),
-                                $.make('div', { className: 'NB-empty-ext-desc' }, 'Also works with Edge')
-                            ])
-                        ]),
-                        $.make('a', {
-                            className: 'NB-archive-empty-extension-btn',
-                            href: 'https://addons.mozilla.org/firefox/addon/newsblur-archive/',
-                            target: '_blank',
-                            'data-browser': 'firefox'
-                        }, [
-                            $.make('img', { src: '/media/img/reader/firefox.png', className: 'NB-empty-ext-icon' }),
-                            $.make('div', { className: 'NB-empty-ext-info' }, [
-                                $.make('div', { className: 'NB-empty-ext-name' }, 'Firefox'),
-                                $.make('div', { className: 'NB-empty-ext-desc' }, 'Get the add-on')
-                            ])
-                        ]),
-                        $.make('a', {
-                            className: 'NB-archive-empty-extension-btn',
-                            href: 'https://apps.apple.com/app/newsblur-archive/PLACEHOLDER',
-                            target: '_blank',
-                            'data-browser': 'safari'
-                        }, [
-                            $.make('img', { src: '/media/img/reader/safari.png', className: 'NB-empty-ext-icon' }),
-                            $.make('div', { className: 'NB-empty-ext-info' }, [
-                                $.make('div', { className: 'NB-empty-ext-name' }, 'Safari'),
-                                $.make('div', { className: 'NB-empty-ext-desc' }, 'For Mac')
+            // Check if any filters are active
+            var has_filters = this.active_category || this.active_domain || this.active_date ||
+                              this.custom_date_from || this.custom_date_to || this.search_query;
+
+            if (has_filters) {
+                // Show "no results" with filter clearing options
+                $list.html(this.render_no_results_state());
+            } else {
+                // Show "Get Started" for new users
+                $list.html($.make('div', { className: 'NB-archive-empty' }, [
+                    $.make('div', { className: 'NB-archive-empty-hero' }, [
+                        $.make('img', { src: '/media/img/icons/lucide/puzzle.svg', className: 'NB-archive-empty-icon' }),
+                        $.make('div', { className: 'NB-archive-empty-title' }, 'Get Started with Archive'),
+                        $.make('div', { className: 'NB-archive-empty-subtitle' },
+                            'Install the browser extension to automatically save every page you visit. Ask AI questions about anything you\'ve read.')
+                    ]),
+                    $.make('div', { className: 'NB-archive-empty-extensions' }, [
+                        $.make('div', { className: 'NB-archive-empty-extensions-title' }, 'Choose your browser'),
+                        $.make('div', { className: 'NB-archive-empty-extension-buttons' }, [
+                            $.make('a', {
+                                className: 'NB-archive-empty-extension-btn',
+                                href: 'https://chrome.google.com/webstore/detail/newsblur-archive/PLACEHOLDER',
+                                target: '_blank',
+                                'data-browser': 'chrome'
+                            }, [
+                                $.make('img', { src: '/media/img/reader/chrome.png', className: 'NB-empty-ext-icon' }),
+                                $.make('div', { className: 'NB-empty-ext-info' }, [
+                                    $.make('div', { className: 'NB-empty-ext-name' }, 'Chrome'),
+                                    $.make('div', { className: 'NB-empty-ext-desc' }, 'Also works with Edge')
+                                ])
+                            ]),
+                            $.make('a', {
+                                className: 'NB-archive-empty-extension-btn',
+                                href: 'https://addons.mozilla.org/firefox/addon/newsblur-archive/',
+                                target: '_blank',
+                                'data-browser': 'firefox'
+                            }, [
+                                $.make('img', { src: '/media/img/reader/firefox.png', className: 'NB-empty-ext-icon' }),
+                                $.make('div', { className: 'NB-empty-ext-info' }, [
+                                    $.make('div', { className: 'NB-empty-ext-name' }, 'Firefox'),
+                                    $.make('div', { className: 'NB-empty-ext-desc' }, 'Get the add-on')
+                                ])
+                            ]),
+                            $.make('a', {
+                                className: 'NB-archive-empty-extension-btn',
+                                href: 'https://apps.apple.com/app/newsblur-archive/PLACEHOLDER',
+                                target: '_blank',
+                                'data-browser': 'safari'
+                            }, [
+                                $.make('img', { src: '/media/img/reader/safari.png', className: 'NB-empty-ext-icon' }),
+                                $.make('div', { className: 'NB-empty-ext-info' }, [
+                                    $.make('div', { className: 'NB-empty-ext-name' }, 'Safari'),
+                                    $.make('div', { className: 'NB-empty-ext-desc' }, 'For Mac')
+                                ])
                             ])
                         ])
-                    ])
-                ]),
-                $.make('div', { className: 'NB-archive-empty-features' }, [
-                    $.make('div', { className: 'NB-archive-empty-feature' }, [
-                        $.make('div', { className: 'NB-archive-feature-icon' }, '🔒'),
-                        $.make('div', { className: 'NB-archive-feature-text' }, 'Private by default — banking, medical, and email sites are never archived')
                     ]),
-                    $.make('div', { className: 'NB-archive-empty-feature' }, [
-                        $.make('div', { className: 'NB-archive-feature-icon' }, '⚡'),
-                        $.make('div', { className: 'NB-archive-feature-text' }, 'Runs silently — pages are captured after 5 seconds of reading')
-                    ]),
-                    $.make('div', { className: 'NB-archive-empty-feature' }, [
-                        $.make('div', { className: 'NB-archive-feature-icon' }, '🤖'),
-                        $.make('div', { className: 'NB-archive-feature-text' }, 'Ask AI anything about your browsing history')
+                    $.make('div', { className: 'NB-archive-empty-features' }, [
+                        $.make('div', { className: 'NB-archive-empty-feature' }, [
+                            $.make('div', { className: 'NB-archive-feature-icon' }, '🔒'),
+                            $.make('div', { className: 'NB-archive-feature-text' }, 'Private by default — banking, medical, and email sites are never archived')
+                        ]),
+                        $.make('div', { className: 'NB-archive-empty-feature' }, [
+                            $.make('div', { className: 'NB-archive-feature-icon' }, '⚡'),
+                            $.make('div', { className: 'NB-archive-feature-text' }, 'Runs silently — pages are captured after 5 seconds of reading')
+                        ]),
+                        $.make('div', { className: 'NB-archive-empty-feature' }, [
+                            $.make('div', { className: 'NB-archive-feature-icon' }, '🤖'),
+                            $.make('div', { className: 'NB-archive-feature-text' }, 'Ask AI anything about your browsing history')
+                        ])
                     ])
-                ])
-            ]));
+                ]));
+            }
             return;
         }
 
@@ -938,6 +1253,54 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         });
     },
 
+    get_date_range: function (date_value) {
+        var now = new Date();
+        var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        var result = { date_from: null, date_to: null };
+
+        switch (date_value) {
+            case 'today':
+                result.date_from = today.toISOString();
+                break;
+            case 'yesterday':
+                var yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                result.date_from = yesterday.toISOString();
+                result.date_to = today.toISOString();
+                break;
+            case 'this_week':
+                var weekStart = new Date(today);
+                weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+                result.date_from = weekStart.toISOString();
+                break;
+            case 'last_7_days':
+                var sevenDaysAgo = new Date(today);
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                result.date_from = sevenDaysAgo.toISOString();
+                break;
+            case 'last_30_days':
+                var thirtyDaysAgo = new Date(today);
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                result.date_from = thirtyDaysAgo.toISOString();
+                break;
+            case 'last_90_days':
+                var ninetyDaysAgo = new Date(today);
+                ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+                result.date_from = ninetyDaysAgo.toISOString();
+                break;
+            case 'this_month':
+                var monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                result.date_from = monthStart.toISOString();
+                break;
+            case 'this_year':
+                var yearStart = new Date(now.getFullYear(), 0, 1);
+                result.date_from = yearStart.toISOString();
+                break;
+        }
+
+        return result;
+    },
+
     switch_tab: function (e) {
         var $tab = $(e.currentTarget);
         var tab = $tab.data('tab');
@@ -951,12 +1314,29 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         $tab.addClass('NB-active');
 
         // Update tab content
-        this.$('.NB-archive-assistant-tab, .NB-archive-browser-tab').removeClass('NB-active');
+        this.$('.NB-archive-assistant-tab, .NB-archive-browser-tab, .NB-archive-settings-tab').removeClass('NB-active');
         this.$('.NB-archive-' + tab + '-tab').addClass('NB-active');
 
         // Load archives when switching to browser tab
         if (tab === 'browser' && this.archives.length === 0) {
             this.fetch_archives(true);
+        }
+
+        // Load blocklist and domains when switching to settings tab
+        if (tab === 'settings') {
+            // Load domains if not loaded yet (needed for domain browser section)
+            if (this.domains.length === 0) {
+                this.fetch_filters(function () {
+                    // Re-render settings content after domains are loaded
+                    if (this.blocklist) {
+                        this.render_settings_content();
+                    }
+                }.bind(this));
+            }
+            // Load blocklist if not loaded yet
+            if (!this.blocklist) {
+                this.fetch_blocklist();
+            }
         }
     },
 
@@ -1037,6 +1417,161 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.toggle_filter(e, 'domain');
     },
 
+    toggle_date_filter: function (e) {
+        var $filter = $(e.currentTarget);
+        var value = $filter.data('date');
+
+        // Clear custom date when selecting a preset
+        this.custom_date_from = null;
+        this.custom_date_to = null;
+        this.$('.NB-custom-date-display').remove();
+
+        if (this.active_date === value) {
+            this.active_date = null;
+            $filter.removeClass('NB-active');
+        } else {
+            this.$('.NB-archive-date-filter').removeClass('NB-active');
+            this.active_date = value;
+            $filter.addClass('NB-active');
+        }
+
+        // Clear search when clicking a filter to avoid conflicting constraints
+        if (this.search_query) {
+            this.search_query = '';
+            this.$('.NB-archive-search-input').val('');
+        }
+
+        // Refresh other filter sidebars with intersection counts
+        this.refresh_sidebar_filters_debounced();
+
+        this.fetch_archives(true);
+    },
+
+    toggle_date_picker: function (e) {
+        e.stopPropagation();
+        this.date_picker_open = !this.date_picker_open;
+        this.$('.NB-date-picker-popover').toggleClass('NB-active', this.date_picker_open);
+
+        if (this.date_picker_open) {
+            // Close when clicking outside
+            var self = this;
+            setTimeout(function () {
+                $(document).one('click', function (e) {
+                    if (!$(e.target).closest('.NB-date-picker-popover').length) {
+                        self.date_picker_open = false;
+                        self.$('.NB-date-picker-popover').removeClass('NB-active');
+                    }
+                });
+            }, 0);
+        }
+    },
+
+    apply_custom_date: function (e) {
+        e.stopPropagation();
+        var from_val = this.$('.NB-date-from').val();
+        var to_val = this.$('.NB-date-to').val();
+
+        if (from_val) {
+            this.custom_date_from = new Date(from_val + 'T00:00:00').toISOString();
+        } else {
+            this.custom_date_from = null;
+        }
+
+        if (to_val) {
+            // Set to end of day
+            this.custom_date_to = new Date(to_val + 'T23:59:59').toISOString();
+        } else {
+            this.custom_date_to = null;
+        }
+
+        // Clear preset date filter
+        this.active_date = null;
+        this.$('.NB-archive-date-filter').removeClass('NB-active');
+
+        // Close popover
+        this.date_picker_open = false;
+        this.$('.NB-date-picker-popover').removeClass('NB-active');
+
+        // Re-render date filters list to show custom date at top
+        this.$('.NB-archive-dates').html(this.render_date_filters());
+
+        // Refresh other filter sidebars with intersection counts
+        this.refresh_sidebar_filters_debounced();
+
+        this.fetch_archives(true);
+    },
+
+    clear_custom_date: function (e) {
+        e.stopPropagation();
+        this.custom_date_from = null;
+        this.custom_date_to = null;
+        this.$('.NB-date-from').val('');
+        this.$('.NB-date-to').val('');
+
+        // Close popover if open
+        this.date_picker_open = false;
+        this.$('.NB-date-picker-popover').removeClass('NB-active');
+
+        // Re-render date filters list to remove custom date
+        this.$('.NB-archive-dates').html(this.render_date_filters());
+
+        // Refresh other filter sidebars with intersection counts
+        this.refresh_sidebar_filters_debounced();
+
+        this.fetch_archives(true);
+    },
+
+    remove_filter_chip: function (e) {
+        var filter_type = $(e.currentTarget).data('filter');
+
+        switch (filter_type) {
+            case 'search':
+                this.search_query = '';
+                this.$('.NB-archive-search-input').val('');
+                break;
+            case 'category':
+                this.active_category = null;
+                this.$('.NB-archive-category-filter').removeClass('NB-active');
+                break;
+            case 'domain':
+                this.active_domain = null;
+                this.$('.NB-archive-domain-filter').removeClass('NB-active');
+                break;
+            case 'date':
+                this.active_date = null;
+                this.$('.NB-archive-date-filter').removeClass('NB-active');
+                break;
+            case 'custom_date':
+                this.custom_date_from = null;
+                this.custom_date_to = null;
+                this.$('.NB-custom-date-display').remove();
+                break;
+        }
+
+        this.fetch_archives(true);
+    },
+
+    clear_all_filters: function () {
+        this.search_query = '';
+        this.active_category = null;
+        this.active_domain = null;
+        this.active_date = null;
+        this.custom_date_from = null;
+        this.custom_date_to = null;
+
+        // Update UI
+        this.$('.NB-archive-search-input').val('');
+        this.$('.NB-archive-category-filter').removeClass('NB-active');
+        this.$('.NB-archive-domain-filter').removeClass('NB-active');
+        this.$('.NB-archive-date-filter').removeClass('NB-active');
+        this.$('.NB-custom-date-display').remove();
+
+        // Refresh sidebar filters to show unfiltered counts
+        this.refresh_sidebar_filters_debounced();
+
+        this.fetch_archives(true);
+    },
+
     toggle_filter: function (e, filter_type) {
         var $filter = $(e.currentTarget);
         var value = $filter.data(filter_type);
@@ -1058,6 +1593,9 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             this.$('.NB-archive-search-input').val('');
             this.restore_full_sidebar();
         }
+
+        // Refresh other filter sidebars with intersection counts
+        this.refresh_sidebar_filters_debounced();
 
         this.fetch_archives(true);
     },
@@ -1305,6 +1843,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.active_conversation = conversation_id;
         this.is_streaming = false;
         this.response_text = '';
+        this.response_segments = [];
         this.tool_status = null;
 
         // Show loading state
@@ -1339,6 +1878,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.conversation_history = [];
         this.is_streaming = false;
         this.response_text = '';
+        this.response_segments = [];
         this.tool_status = null;
 
         this.render_assistant_messages();
@@ -1414,6 +1954,10 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         $input.val('');
         this.is_streaming = true;
         this.response_text = '';
+        this.response_segments = [];
+        this.current_tool_calls = [];
+        this.tool_status = null;
+        this.scroll_pinned = true;  // Re-pin scroll for new query
 
         // Re-render messages
         this.render_assistant_messages();
@@ -1493,6 +2037,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
                         self.response_completed = true;
                         self.is_streaming = false;
                         self.response_text = '';
+                        self.response_segments = [];
 
                         // Add assistant response to history
                         self.conversation_history.push({
@@ -1525,11 +2070,19 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.active_query_id = null;
         this.clear_websocket_timeout();
 
-        // Build error content, preserving any partial response
+        // Build error content, preserving any partial response (including segments)
         var error_content = '';
+        _.each(this.response_segments, function (segment) {
+            if (segment.type === 'text' && segment.content) {
+                if (error_content) error_content += '\n\n';
+                error_content += segment.content;
+            }
+        });
         if (this.response_text) {
-            error_content = this.response_text + '\n\n';
+            if (error_content) error_content += '\n\n';
+            error_content += this.response_text;
         }
+        if (error_content) error_content += '\n\n';
         error_content += '**Error:** ' + message;
 
         // Save to history with any tool calls that were completed
@@ -1541,6 +2094,7 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
 
         // Clear streaming state after preserving
         this.response_text = '';
+        this.response_segments = [];
         this.current_tool_calls = [];
 
         this.render_assistant_messages();
@@ -1583,6 +2137,15 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
             'search_feed_stories': 'Searching RSS feeds...'
         };
 
+        // Save any existing response_text as a completed segment before tool call
+        if (this.response_text) {
+            this.response_segments.push({
+                type: 'text',
+                content: this.response_text
+            });
+            this.response_text = '';
+        }
+
         this.tool_status = status_messages[tool_name] || 'Processing...';
         NEWSBLUR.log(['Archive Assistant: Tool call', tool_name, tool_input]);
         this.render_assistant_messages();
@@ -1619,15 +2182,28 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.active_query_id = null;
         this.clear_websocket_timeout();
 
+        // Build segments array for history (keeps separate bubbles)
+        var segments = [];
+        _.each(this.response_segments, function (segment) {
+            if (segment.type === 'text' && segment.content) {
+                segments.push(segment.content);
+            }
+        });
         if (this.response_text) {
+            segments.push(this.response_text);
+        }
+
+        if (segments.length > 0) {
             this.conversation_history.push({
                 role: 'assistant',
-                content: this.response_text,
+                content: segments.length === 1 ? segments[0] : null,
+                segments: segments.length > 1 ? segments : null,
                 tool_calls: this.current_tool_calls || []
             });
         }
 
         this.response_text = '';
+        this.response_segments = [];
         this.current_tool_calls = [];
         this.render_assistant_messages();
         this.scroll_to_bottom();
@@ -1654,16 +2230,30 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.active_query_id = null;
         this.clear_websocket_timeout();
 
-        // Add truncated response to history with premium notice
+        // Combine all text segments into truncated response
+        var truncated_response = '';
+        _.each(this.response_segments, function (segment) {
+            if (segment.type === 'text' && segment.content) {
+                if (truncated_response) truncated_response += '\n\n';
+                truncated_response += segment.content;
+            }
+        });
         if (this.response_text) {
+            if (truncated_response) truncated_response += '\n\n';
+            truncated_response += this.response_text;
+        }
+
+        // Add truncated response to history with premium notice
+        if (truncated_response) {
             this.conversation_history.push({
                 role: 'assistant',
-                content: this.response_text,
+                content: truncated_response,
                 truncated: true
             });
         }
 
         this.response_text = '';
+        this.response_segments = [];
         this.render_assistant_messages();
         this.scroll_to_bottom();
     },
@@ -1683,10 +2273,34 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         }
     },
 
+    handle_chat_scroll: function () {
+        var $chat = this.$('.NB-archive-assistant-chat');
+        if (!$chat.length) return;
+
+        var scroll_top = $chat.scrollTop();
+        var scroll_height = $chat[0].scrollHeight;
+        var client_height = $chat[0].clientHeight;
+        var distance_from_bottom = scroll_height - scroll_top - client_height;
+
+        // Detect scroll direction
+        if (scroll_top < this.last_scroll_top) {
+            // Scrolling UP - unpin
+            this.scroll_pinned = false;
+        } else if (scroll_top > this.last_scroll_top && distance_from_bottom < 150) {
+            // Scrolling DOWN and near bottom - re-pin
+            this.scroll_pinned = true;
+        }
+
+        this.last_scroll_top = scroll_top;
+    },
+
     scroll_to_bottom: function () {
+        if (!this.scroll_pinned) return;
+
         var $chat = this.$('.NB-archive-assistant-chat');
         if ($chat.length) {
             $chat.scrollTop($chat[0].scrollHeight);
+            this.last_scroll_top = $chat.scrollTop();
         }
     },
 
@@ -3358,6 +3972,484 @@ NEWSBLUR.Views.ArchiveView = Backbone.View.extend({
         this.$('.NB-archive-search-input').val('');
         this.$('.NB-archive-search-wrapper').removeClass('NB-has-query');
         this.fetch_archives(true);
+    },
+
+    // ==========================
+    // = Blocklist Settings Tab =
+    // ==========================
+
+    render_settings_tab: function () {
+        if (this.blocklist_loading) {
+            return $.make('div', { className: 'NB-archive-settings-container' }, [
+                $.make('div', { className: 'NB-archive-settings-loading' }, [
+                    $.make('div', { className: 'NB-loading NB-active' })
+                ])
+            ]);
+        }
+
+        if (!this.blocklist) {
+            return $.make('div', { className: 'NB-archive-settings-container' }, [
+                $.make('div', { className: 'NB-archive-settings-empty' }, [
+                    $.make('img', { src: '/media/img/icons/lucide/shield.svg', className: 'NB-settings-empty-icon' }),
+                    $.make('div', { className: 'NB-settings-empty-title' }, 'Blocklist Settings'),
+                    $.make('div', { className: 'NB-settings-empty-subtitle' }, 'Loading your blocklist settings...')
+                ])
+            ]);
+        }
+
+        var elements = [];
+
+        // Header
+        elements.push($.make('div', { className: 'NB-archive-settings-header' }, [
+            $.make('h2', { className: 'NB-archive-settings-title' }, 'Blocklist Settings'),
+            $.make('p', { className: 'NB-archive-settings-desc' },
+                'Control which websites are archived. Blocked sites will not be saved by the browser extension.')
+        ]));
+
+        // Custom blocked domains section
+        elements.push(this.render_blocklist_section(
+            'Blocked Domains',
+            'Add domains you never want to archive.',
+            this.blocklist.custom_blocked_domains || [],
+            'blocked_domains',
+            'e.g., facebook.com'
+        ));
+
+        // Custom blocked patterns section
+        elements.push(this.render_blocklist_section(
+            'Blocked URL Patterns',
+            'Block URLs matching these patterns (supports wildcards like *.example.com).',
+            this.blocklist.custom_blocked_patterns || [],
+            'blocked_patterns',
+            'e.g., *.internal.company.com'
+        ));
+
+        // Allowed domains section (override defaults)
+        elements.push(this.render_blocklist_section(
+            'Allowed Domains',
+            'Override the default blocklist for these domains. These sites WILL be archived even if normally blocked.',
+            this.blocklist.allowed_domains || [],
+            'allowed_domains',
+            'e.g., mail.google.com'
+        ));
+
+        // Domain browser section - browse and block domains from your archives
+        elements.push(this.render_domain_browser_section());
+
+        // Default blocklist section (read-only)
+        elements.push(this.render_default_blocklist_section());
+
+        // Save button
+        elements.push($.make('div', { className: 'NB-archive-settings-actions' }, [
+            $.make('button', {
+                className: 'NB-blocklist-save NB-modal-submit-button' + (this.blocklist_dirty ? '' : ' NB-disabled'),
+                disabled: !this.blocklist_dirty
+            }, this.blocklist_dirty ? 'Save Changes' : 'No Changes')
+        ]));
+
+        return $.make('div', { className: 'NB-archive-settings-container' }, elements);
+    },
+
+    render_blocklist_section: function (title, description, items, type, placeholder) {
+        var item_elements = _.map(items, function (item) {
+            return $.make('div', { className: 'NB-blocklist-item', 'data-type': type, 'data-value': item }, [
+                $.make('span', { className: 'NB-blocklist-item-text' }, item),
+                $.make('button', { className: 'NB-blocklist-remove', title: 'Remove' }, [
+                    $.make('img', { src: '/media/img/icons/lucide/x.svg', className: 'NB-blocklist-remove-icon' })
+                ])
+            ]);
+        });
+
+        if (items.length === 0) {
+            item_elements.push($.make('div', { className: 'NB-blocklist-empty' }, 'No items added yet.'));
+        }
+
+        var add_button_class = 'NB-blocklist-add-' + type.replace('_', '-').replace('blocked-', '').replace('allowed-', 'allowed');
+        if (type === 'blocked_domains') add_button_class = 'NB-blocklist-add-domain';
+        else if (type === 'blocked_patterns') add_button_class = 'NB-blocklist-add-pattern';
+        else if (type === 'allowed_domains') add_button_class = 'NB-blocklist-add-allowed';
+
+        return $.make('div', { className: 'NB-archive-settings-section' }, [
+            $.make('div', { className: 'NB-archive-settings-section-header' }, [
+                $.make('h3', { className: 'NB-archive-settings-section-title' }, title),
+                $.make('p', { className: 'NB-archive-settings-section-desc' }, description)
+            ]),
+            $.make('div', { className: 'NB-blocklist-items', 'data-type': type }, item_elements),
+            $.make('div', { className: 'NB-blocklist-add-row' }, [
+                $.make('input', {
+                    type: 'text',
+                    className: 'NB-blocklist-input',
+                    'data-type': type,
+                    placeholder: placeholder
+                }),
+                $.make('button', { className: add_button_class + ' NB-blocklist-add-btn' }, 'Add')
+            ])
+        ]);
+    },
+
+    render_default_blocklist_section: function () {
+        var default_domains = this.blocklist.default_blocked_domains || [];
+
+        var domain_elements = _.map(default_domains, function (domain) {
+            return $.make('span', { className: 'NB-default-blocklist-item' }, domain);
+        });
+
+        return $.make('div', { className: 'NB-archive-settings-section NB-default-blocklist-section' }, [
+            $.make('div', { className: 'NB-archive-settings-section-header' }, [
+                $.make('h3', { className: 'NB-archive-settings-section-title' }, [
+                    'Default Blocklist',
+                    $.make('span', { className: 'NB-default-blocklist-count' }, ' (' + default_domains.length + ' domains)')
+                ]),
+                $.make('p', { className: 'NB-archive-settings-section-desc' },
+                    'These domains are blocked by default (search engines, social media, etc.). Add them to "Allowed Domains" above to override.')
+            ]),
+            $.make('div', { className: 'NB-default-blocklist-items' }, domain_elements)
+        ]);
+    },
+
+    render_domain_browser_section: function () {
+        var self = this;
+        var archived_domains = this.domains || [];
+
+        if (archived_domains.length === 0) {
+            return $.make('div', { className: 'NB-archive-settings-section NB-domain-browser-section' }, [
+                $.make('div', { className: 'NB-archive-settings-section-header' }, [
+                    $.make('h3', { className: 'NB-archive-settings-section-title' }, 'Your Archived Domains'),
+                    $.make('p', { className: 'NB-archive-settings-section-desc' },
+                        'Browse domains from your archives and click to block them.')
+                ]),
+                $.make('div', { className: 'NB-domain-browser-empty' },
+                    'No archived domains found. Start browsing to build your archive!')
+            ]);
+        }
+
+        // Sort domains by count (descending)
+        var sorted_domains = _.sortBy(archived_domains, function (d) { return -d.count; });
+
+        var domain_elements = _.map(sorted_domains, function (domain_data) {
+            var domain = domain_data.domain;
+            var count = domain_data.count;
+            var is_blocked = self.is_domain_blocked(domain);
+
+            return $.make('div', {
+                className: 'NB-domain-browser-item' + (is_blocked ? ' NB-blocked' : ''),
+                'data-domain': domain,
+                'data-count': count
+            }, [
+                $.make('span', { className: 'NB-domain-browser-favicon' }, [
+                    $.make('img', {
+                        src: 'https://www.google.com/s2/favicons?domain=' + domain + '&sz=32',
+                        onerror: "this.src='/media/img/icons/nouns/world.svg'"
+                    })
+                ]),
+                $.make('span', { className: 'NB-domain-browser-name' }, domain),
+                $.make('span', { className: 'NB-domain-browser-count' }, count + ' pages'),
+                is_blocked ?
+                    $.make('span', { className: 'NB-domain-browser-status NB-blocked-status' }, 'Blocked') :
+                    $.make('span', { className: 'NB-domain-browser-action' }, 'Click to block')
+            ]);
+        });
+
+        return $.make('div', { className: 'NB-archive-settings-section NB-domain-browser-section' }, [
+            $.make('div', { className: 'NB-archive-settings-section-header' }, [
+                $.make('h3', { className: 'NB-archive-settings-section-title' }, [
+                    'Your Archived Domains',
+                    $.make('span', { className: 'NB-domain-browser-count-total' }, ' (' + archived_domains.length + ' domains)')
+                ]),
+                $.make('p', { className: 'NB-archive-settings-section-desc' },
+                    'Browse domains from your archives. Click on a domain to block it from future archiving.')
+            ]),
+            $.make('div', { className: 'NB-domain-browser-list' }, domain_elements)
+        ]);
+    },
+
+    is_domain_blocked: function (domain) {
+        if (!this.blocklist) return false;
+
+        // Check custom blocked domains
+        var custom_blocked = this.blocklist.custom_blocked_domains || [];
+        if (_.contains(custom_blocked, domain)) return true;
+
+        // Check default blocked domains
+        var default_blocked = this.blocklist.default_blocked_domains || [];
+        if (_.contains(default_blocked, domain)) return true;
+
+        // Check blocked patterns (simple wildcard matching)
+        var patterns = this.blocklist.custom_blocked_patterns || [];
+        for (var i = 0; i < patterns.length; i++) {
+            var pattern = patterns[i];
+            if (pattern.startsWith('*.')) {
+                var suffix = pattern.slice(2);
+                if (domain === suffix || domain.endsWith('.' + suffix)) return true;
+            } else if (domain === pattern) {
+                return true;
+            }
+        }
+
+        // Check if allowed (not blocked even if it would be by default)
+        var allowed = this.blocklist.allowed_domains || [];
+        if (_.contains(allowed, domain)) return false;
+
+        return false;
+    },
+
+    show_block_domain_dialog: function (e) {
+        var $item = $(e.currentTarget);
+        var domain = $item.data('domain');
+        var count = $item.data('count');
+
+        // Don't show dialog for already blocked domains
+        if ($item.hasClass('NB-blocked')) {
+            return;
+        }
+
+        // Create and show the dialog
+        var $dialog = $.make('div', { className: 'NB-block-dialog-overlay' }, [
+            $.make('div', { className: 'NB-block-dialog' }, [
+                $.make('div', { className: 'NB-block-dialog-header' }, [
+                    $.make('img', {
+                        src: 'https://www.google.com/s2/favicons?domain=' + domain + '&sz=32',
+                        className: 'NB-block-dialog-favicon',
+                        onerror: "this.src='/media/img/icons/nouns/world.svg'"
+                    }),
+                    $.make('h3', { className: 'NB-block-dialog-title' }, 'Block ' + domain + '?')
+                ]),
+                $.make('div', { className: 'NB-block-dialog-body' }, [
+                    $.make('p', { className: 'NB-block-dialog-message' },
+                        'This will prevent the browser extension from archiving pages from this domain in the future.'),
+                    $.make('div', { className: 'NB-block-dialog-option' }, [
+                        $.make('label', { className: 'NB-block-dialog-checkbox-label' }, [
+                            $.make('input', {
+                                type: 'checkbox',
+                                className: 'NB-block-dialog-delete-checkbox',
+                                'data-domain': domain
+                            }),
+                            $.make('span', { className: 'NB-block-dialog-checkbox-text' },
+                                'Also delete ' + count + ' existing archive' + (count === 1 ? '' : 's') + ' from this domain')
+                        ])
+                    ])
+                ]),
+                $.make('div', { className: 'NB-block-dialog-actions' }, [
+                    $.make('button', { className: 'NB-block-dialog-cancel NB-modal-cancel-button' }, 'Cancel'),
+                    $.make('button', {
+                        className: 'NB-block-dialog-confirm NB-modal-submit-button',
+                        'data-domain': domain
+                    }, 'Block Domain')
+                ])
+            ])
+        ]);
+
+        this.$el.append($dialog);
+
+        // Animate in
+        setTimeout(function () {
+            $dialog.addClass('NB-visible');
+        }, 10);
+    },
+
+    close_block_dialog: function (e) {
+        // Only close if clicking overlay or cancel button
+        if (e && $(e.target).hasClass('NB-block-dialog')) {
+            return;
+        }
+
+        var $dialog = this.$('.NB-block-dialog-overlay');
+        $dialog.removeClass('NB-visible');
+
+        setTimeout(function () {
+            $dialog.remove();
+        }, 200);
+    },
+
+    confirm_block_domain: function (e) {
+        var self = this;
+        var $button = $(e.currentTarget);
+        var domain = $button.data('domain');
+        var $checkbox = this.$('.NB-block-dialog-delete-checkbox');
+        var delete_archives = $checkbox.is(':checked');
+
+        // Disable button and show loading state
+        $button.prop('disabled', true).text('Blocking...');
+
+        // Add to blocked domains
+        this.blocklist.custom_blocked_domains = this.blocklist.custom_blocked_domains || [];
+        if (!_.contains(this.blocklist.custom_blocked_domains, domain)) {
+            this.blocklist.custom_blocked_domains.push(domain);
+        }
+        this.blocklist_dirty = true;
+
+        // Save the blocklist
+        this.model.make_request('/api/archive/blocklist', {
+            blocked_domains: JSON.stringify(this.blocklist.custom_blocked_domains || []),
+            blocked_patterns: JSON.stringify(this.blocklist.custom_blocked_patterns || []),
+            allowed_domains: JSON.stringify(this.blocklist.allowed_domains || [])
+        }, function (data) {
+            if (data.code === 0) {
+                self.blocklist_dirty = false;
+
+                // If user wanted to delete archives, do that too
+                if (delete_archives) {
+                    self.delete_archives_for_domain(domain, function () {
+                        self.close_block_dialog();
+                        self.render_settings_content();
+                        // Refresh domains list
+                        self.fetch_categories();
+                        self.fetch_domains();
+                    });
+                } else {
+                    self.close_block_dialog();
+                    self.render_settings_content();
+                }
+            } else {
+                $button.prop('disabled', false).text('Block Domain');
+            }
+        }, function () {
+            $button.prop('disabled', false).text('Block Domain');
+        });
+    },
+
+    delete_archives_for_domain: function (domain, callback) {
+        var self = this;
+
+        this.model.make_request('/api/archive/delete_by_domain', {
+            domain: domain
+        }, function (data) {
+            if (callback) callback(data);
+        }, function () {
+            if (callback) callback(null);
+        });
+    },
+
+    fetch_blocklist: function () {
+        var self = this;
+        this.blocklist_loading = true;
+        this.render_settings_content();
+
+        this.model.make_request('/api/archive/blocklist', {}, function (data) {
+            self.blocklist_loading = false;
+            if (data.code === 0) {
+                self.blocklist = data;
+                self.blocklist_dirty = false;
+            }
+            self.render_settings_content();
+        }, function () {
+            self.blocklist_loading = false;
+            self.render_settings_content();
+        }, { request_type: 'GET' });
+    },
+
+    render_settings_content: function () {
+        this.$('.NB-archive-settings-tab').html(this.render_settings_tab());
+    },
+
+    add_blocked_domain: function (e) {
+        this.add_blocklist_item('blocked_domains');
+    },
+
+    add_blocked_pattern: function (e) {
+        this.add_blocklist_item('blocked_patterns');
+    },
+
+    add_allowed_domain: function (e) {
+        this.add_blocklist_item('allowed_domains');
+    },
+
+    add_blocklist_item: function (type) {
+        var $input = this.$('.NB-blocklist-input[data-type="' + type + '"]');
+        var value = $input.val().trim().toLowerCase();
+
+        if (!value) return;
+
+        // Validate the value
+        if (type === 'blocked_domains' || type === 'allowed_domains') {
+            // Remove protocol if present
+            value = value.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+        }
+
+        // Check if already exists
+        var list = this.blocklist[type === 'blocked_domains' ? 'custom_blocked_domains' :
+                                   type === 'blocked_patterns' ? 'custom_blocked_patterns' : 'allowed_domains'] || [];
+
+        if (_.contains(list, value)) {
+            $input.addClass('NB-error');
+            setTimeout(function () { $input.removeClass('NB-error'); }, 500);
+            return;
+        }
+
+        // Add to list
+        if (type === 'blocked_domains') {
+            this.blocklist.custom_blocked_domains = this.blocklist.custom_blocked_domains || [];
+            this.blocklist.custom_blocked_domains.push(value);
+        } else if (type === 'blocked_patterns') {
+            this.blocklist.custom_blocked_patterns = this.blocklist.custom_blocked_patterns || [];
+            this.blocklist.custom_blocked_patterns.push(value);
+        } else if (type === 'allowed_domains') {
+            this.blocklist.allowed_domains = this.blocklist.allowed_domains || [];
+            this.blocklist.allowed_domains.push(value);
+        }
+
+        this.blocklist_dirty = true;
+        $input.val('');
+        this.render_settings_content();
+    },
+
+    remove_blocklist_item: function (e) {
+        var $item = $(e.currentTarget).closest('.NB-blocklist-item');
+        var type = $item.data('type');
+        var value = $item.data('value');
+
+        if (type === 'blocked_domains') {
+            this.blocklist.custom_blocked_domains = _.without(this.blocklist.custom_blocked_domains || [], value);
+        } else if (type === 'blocked_patterns') {
+            this.blocklist.custom_blocked_patterns = _.without(this.blocklist.custom_blocked_patterns || [], value);
+        } else if (type === 'allowed_domains') {
+            this.blocklist.allowed_domains = _.without(this.blocklist.allowed_domains || [], value);
+        }
+
+        this.blocklist_dirty = true;
+        this.render_settings_content();
+    },
+
+    handle_blocklist_keypress: function (e) {
+        if (e.which === 13) {  // Enter key
+            var $input = $(e.currentTarget);
+            var type = $input.data('type');
+            this.add_blocklist_item(type);
+        }
+    },
+
+    save_blocklist: function () {
+        var self = this;
+        var $button = this.$('.NB-blocklist-save');
+
+        if (!this.blocklist_dirty) return;
+
+        $button.text('Saving...').prop('disabled', true);
+
+        this.model.make_request('/api/archive/blocklist', {
+            blocked_domains: JSON.stringify(this.blocklist.custom_blocked_domains || []),
+            blocked_patterns: JSON.stringify(this.blocklist.custom_blocked_patterns || []),
+            allowed_domains: JSON.stringify(this.blocklist.allowed_domains || [])
+        }, function (data) {
+            if (data.code === 0) {
+                self.blocklist_dirty = false;
+                $button.text('Saved!').addClass('NB-success');
+                setTimeout(function () {
+                    $button.removeClass('NB-success');
+                    self.render_settings_content();
+                }, 1500);
+            } else {
+                $button.text('Error saving').addClass('NB-error');
+                setTimeout(function () {
+                    $button.removeClass('NB-error').text('Save Changes').prop('disabled', false);
+                }, 2000);
+            }
+        }, function () {
+            $button.text('Error saving').addClass('NB-error');
+            setTimeout(function () {
+                $button.removeClass('NB-error').text('Save Changes').prop('disabled', false);
+            }, 2000);
+        }, { method: 'POST' });
     },
 
     close: function () {
