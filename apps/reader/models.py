@@ -179,9 +179,23 @@ class UserSubscription(models.Model):
         manual_unread_pipeline = r.pipeline()
         manual_unread_feed_oldest_date = dict()
         oldest_manual_unread = None
+
+        # Pre-fetch folder settings for auto_mark_read calculation
+        folder_settings = None
+        if is_archive and usersubs:
+            folder_settings = {}
+            for setting in MFolderAutoMarkRead.get_folder_settings_for_user(user_id):
+                folder_settings[setting.folder_title] = setting.auto_mark_read_days
+
         # usersub_count = len(usersubs)
         for us in usersubs:
-            read_dates[us.feed_id] = int(max(us.mark_read_date, cutoff_date).strftime("%s"))
+            # Calculate effective cutoff for this feed based on auto_mark_read settings
+            effective_cutoff = cutoff_date
+            if is_archive:
+                auto_mark_read_cutoff = us.get_auto_mark_read_cutoff(folder_settings)
+                if auto_mark_read_cutoff:
+                    effective_cutoff = max(auto_mark_read_cutoff, cutoff_date)
+            read_dates[us.feed_id] = int(max(us.mark_read_date, effective_cutoff).strftime("%s"))
             if read_filter == "unread":
                 needs_unread_recalc[us.feed_id] = us.needs_unread_recalc  # or usersub_count == 1
                 user_manual_unread_stories_feed_key = f"uU:{user_id}:{us.feed_id}"
@@ -232,12 +246,14 @@ class UserSubscription(models.Model):
                         pipeline.zdiffstore(unread_ranked_stories_key, [sorted_stories_key, read_stories_key])
                         # pipeline.expire(unread_ranked_stories_key, unread_cutoff_diff.days*24*60*60)
                         pipeline.expire(unread_ranked_stories_key, 1 * 60 * 60)  # 1 hours
-                        if order == "oldest":
-                            pipeline.zremrangebyscore(ranked_stories_key, 0, min_score - 1)
-                            pipeline.zremrangebyscore(ranked_stories_key, max_score + 1, 2 * max_score)
-                        else:
-                            pipeline.zremrangebyscore(ranked_stories_key, 0, max_score - 1)
-                            pipeline.zremrangebyscore(ranked_stories_key, min_score + 1, 2 * min_score)
+                    # Always apply score filtering to ensure per-feed auto_mark_read cutoffs are enforced
+                    # even when reading from existing cache. This is safe because zremrangebyscore is idempotent.
+                    if order == "oldest":
+                        pipeline.zremrangebyscore(ranked_stories_key, 0, min_score - 1)
+                        pipeline.zremrangebyscore(ranked_stories_key, max_score + 1, 2 * max_score)
+                    else:
+                        pipeline.zremrangebyscore(ranked_stories_key, 0, max_score - 1)
+                        pipeline.zremrangebyscore(ranked_stories_key, min_score + 1, 2 * min_score)
                 else:
                     ranked_stories_key = sorted_stories_key
 
@@ -2159,24 +2175,18 @@ class UserSubscriptionFolders(models.Model):
         return flat_folders
 
     def find_feed_folders(self, feed_id):
-        """Find the folder(s) containing a feed. Returns a list of immediate folder titles.
+        """Find the folder(s) containing a feed. Returns a list of folder paths.
 
-        Note: flatten_folders() returns full nested paths like "Parent - Child - Grandchild",
-        but folder auto_mark_read settings are stored with just the immediate folder name.
-        This method extracts the immediate folder name from the path.
+        Note: flatten_folders() returns full nested paths like "Parent - Child - Grandchild".
+        This method returns the full path so that _resolve_folder_auto_mark_read can walk up
+        the hierarchy to find inherited folder settings.
         """
         flat_folders = self.flatten_folders()
         folders_with_feed = []
         for folder_title, feed_ids in flat_folders.items():
             if feed_id in feed_ids:
                 folder_title = folder_title.strip() if folder_title else ""
-                if folder_title:
-                    # Extract just the immediate folder name (last part of path)
-                    # "Parent - Child - Grandchild" -> "Grandchild"
-                    immediate_folder = folder_title.split(" - ")[-1] if " - " in folder_title else folder_title
-                    folders_with_feed.append(immediate_folder)
-                else:
-                    folders_with_feed.append("")
+                folders_with_feed.append(folder_title)
         return folders_with_feed
 
     def delete_feed(self, feed_id, in_folder, commit_delete=True):
