@@ -243,40 +243,28 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-auto-mark-read NB-modal-submit NB-settings-only' }, [
                 $.make('h5', [
-                    $.make('div', { className: 'NB-exception-option-status NB-right' }),
-                    $.make('span', 'Auto-mark read'),
-                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-auto-mark-read-archive-notice' }, [
-                        'Requires ',
-                        $.make('a', { href: '#', className: 'NB-premium-archive-link' }, 'Premium Archive')
+                    $.make('div', { className: 'NB-exception-option-status' }),
+                    'Auto Mark as Read',
+                    (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-auto-mark-read-upgrade-notice NB-premium-link', href: '#' }, [
+                        $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
                     ]))
                 ]),
                 $.make('div', { className: 'NB-fieldset-fields' }, [
-                    $.make('div', { className: 'NB-auto-mark-read-options' }, [
-                        $.make('div', [
-                            $.make('input', { type: 'radio', name: 'auto_mark_read_type', value: 'inherit', id: 'NB-auto-mark-read-inherit', checked: true, disabled: !NEWSBLUR.Globals.is_archive }),
-                            $.make('label', { 'for': 'NB-auto-mark-read-inherit' }, [
-                                'Use default',
-                                $.make('span', { className: 'NB-auto-mark-read-inherit-value' })
-                            ])
-                        ]),
-                        $.make('div', [
-                            $.make('input', { type: 'radio', name: 'auto_mark_read_type', value: 'never', id: 'NB-auto-mark-read-never', disabled: !NEWSBLUR.Globals.is_archive }),
-                            $.make('label', { 'for': 'NB-auto-mark-read-never' }, 'Never auto-mark as read')
-                        ]),
-                        $.make('div', { className: 'NB-auto-mark-read-days-row' }, [
-                            $.make('input', { type: 'radio', name: 'auto_mark_read_type', value: 'days', id: 'NB-auto-mark-read-days', disabled: !NEWSBLUR.Globals.is_archive }),
-                            $.make('label', { 'for': 'NB-auto-mark-read-days' }, 'Mark stories as read after'),
-                            $.make('input', {
-                                type: 'range',
-                                className: 'NB-auto-mark-read-slider',
-                                name: 'auto_mark_read_days',
-                                min: 1,
-                                max: 365,
-                                value: 14,
-                                disabled: !NEWSBLUR.Globals.is_archive
-                            }),
-                            $.make('span', { className: 'NB-auto-mark-read-days-value' }, '14 days')
-                        ])
+                    $.make('ul', { className: 'segmented-control NB-menu-manage-auto-mark-read' }, [
+                        $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-default', 'data-value': 'default', role: 'button' }, 'Default'),
+                        $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-days', 'data-value': 'days', role: 'button' }, 'Days'),
+                        $.make('li', { className: 'NB-auto-mark-read-option NB-auto-mark-read-never', 'data-value': 'never', role: 'button' }, 'Never')
+                    ]),
+                    $.make('div', { className: 'NB-auto-mark-read-slider-container' }, [
+                        $.make('input', {
+                            type: 'range',
+                            className: 'NB-auto-mark-read-slider',
+                            name: 'auto_mark_read_days',
+                            min: '1',
+                            max: '400',
+                            value: '14'
+                        }),
+                        $.make('div', { className: 'NB-auto-mark-read-slider-value' })
                     ])
                 ])
             ]),
@@ -597,6 +585,17 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             self.close(function () {
                 NEWSBLUR.reader.open_premium_upgrade_modal();
             });
+        });
+        $.targetIs(e, { tagSelector: '.NB-auto-mark-read-upgrade-notice' }, function ($t, $p) {
+            e.preventDefault();
+
+            self.close(function () {
+                NEWSBLUR.reader.open_premium_upgrade_modal();
+            });
+        });
+        $.targetIs(e, { tagSelector: '.NB-auto-mark-read-option' }, function ($t, $p) {
+            e.preventDefault();
+            self.handle_auto_mark_read_option_click($t);
         });
         // Tab handlers (work for both folder and feed)
         $.targetIs(e, { tagSelector: '.NB-modal-tab-settings' }, function ($t, $p) {
@@ -1249,9 +1248,6 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             }
             self.animate_saved();
         });
-        $.targetIs(e, { tagSelector: 'input[name=auto_mark_read_type]' }, function ($t, $p) {
-            self.handle_auto_mark_read_change();
-        });
         $.targetIs(e, { tagSelector: 'input[name=auto_mark_read_days]' }, function ($t, $p) {
             self.handle_auto_mark_read_slider_change();
         });
@@ -1262,16 +1258,8 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
         // Update slider label in real-time (without saving)
         $.targetIs(e, { tagSelector: 'input[name=auto_mark_read_days]' }, function ($t, $p) {
-            self.update_auto_mark_read_slider_label();
+            self.on_auto_mark_read_slider_input();
         });
-    },
-
-    update_auto_mark_read_slider_label: function () {
-        var $slider = $('input[name=auto_mark_read_days]', this.$modal);
-        var $days_value = $('.NB-auto-mark-read-days-value', this.$modal);
-        var days = parseInt($slider.val(), 10);
-
-        $days_value.text(days + ' day' + (days !== 1 ? 's' : ''));
     },
 
     // ===================
@@ -1279,26 +1267,25 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     // ===================
 
     setup_auto_mark_read_for_folder: function () {
-        var self = this;
         var $section = $('.NB-exception-option-auto-mark-read', this.$modal);
 
         // Check if user is Archive tier
         if (!NEWSBLUR.Globals.is_archive) {
-            $section.find('input').prop('disabled', true);
+            $section.find('.NB-auto-mark-read-slider').prop('disabled', true);
+            $section.find('.segmented-control').addClass('NB-disabled');
             return;
         }
 
-        // Get current folder setting
-        var folder_setting = NEWSBLUR.assets.get_folder_auto_mark_read(this.folder_title);
-        var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
-
-        // Initialize UI based on current value
-        this.init_auto_mark_read_ui(folder_setting, site_wide_days, null);
+        this.update_auto_mark_read_ui();
     },
 
     setup_auto_mark_read_for_feed: function () {
-        var self = this;
         var $section = $('.NB-exception-option-auto-mark-read', this.$modal);
+
+        // Skip if no feed (shouldn't happen, but guard against it)
+        if (!this.feed) {
+            return;
+        }
 
         // Skip for starred/social feeds
         if (this.feed.is_starred() || this.feed.is_social()) {
@@ -1308,105 +1295,109 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
         // Check if user is Archive tier
         if (!NEWSBLUR.Globals.is_archive) {
-            $section.find('input').prop('disabled', true);
+            $section.find('.NB-auto-mark-read-slider').prop('disabled', true);
+            $section.find('.segmented-control').addClass('NB-disabled');
             return;
         }
 
-        // Get current feed setting
-        var feed_setting = this.feed.get('auto_mark_read_days');
+        this.update_auto_mark_read_ui();
+    },
+
+    update_auto_mark_read_ui: function () {
+        var $options = $('.NB-auto-mark-read-option', this.$modal);
+        var $slider = $('.NB-auto-mark-read-slider', this.$modal);
+        var $slider_value = $('.NB-auto-mark-read-slider-value', this.$modal);
+
+        // Calculate default values
         var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
+        var default_days = site_wide_days;
+        var default_source = 'site-wide preference';
 
-        // Get folder setting for inheritance display
-        var folders = NEWSBLUR.assets.get_feed_folders(this.feed_id);
-        var folder_title = folders && folders.length > 0 ? folders[0] : null;
-        var folder_setting = folder_title ? NEWSBLUR.assets.get_folder_auto_mark_read(folder_title) : null;
-
-        // Initialize UI based on current value
-        this.init_auto_mark_read_ui(feed_setting, site_wide_days, folder_title, folder_setting);
-    },
-
-    init_auto_mark_read_ui: function (current_setting, site_wide_days, folder_title, folder_setting) {
-        var $radios = $('input[name=auto_mark_read_type]', this.$modal);
-        var $slider = $('input[name=auto_mark_read_days]', this.$modal);
-        var $days_value = $('.NB-auto-mark-read-days-value', this.$modal);
-        var $inherit_value = $('.NB-auto-mark-read-inherit-value', this.$modal);
-
-        // Determine which radio to select and slider value
-        if (current_setting === null || current_setting === undefined) {
-            // Inherit from folder/account
-            $radios.filter('[value=inherit]').prop('checked', true);
-        } else if (current_setting === 0) {
-            // Never auto-mark
-            $radios.filter('[value=never]').prop('checked', true);
-        } else {
-            // Specific days value
-            $radios.filter('[value=days]').prop('checked', true);
-            $slider.val(current_setting);
-            $days_value.text(current_setting + ' day' + (current_setting !== 1 ? 's' : ''));
-        }
-
-        // Show inherited value inline
-        this.update_inherited_value($inherit_value, site_wide_days, folder_title, folder_setting);
-    },
-
-    update_inherited_value: function ($inherit_value, site_wide_days, folder_title, folder_setting) {
-        var self = this;
-        var effective_days = null;
-        var source = '';
-        var is_site_wide = false;
-
+        var auto_mark_days;
         if (this.folder) {
-            // For folders, inherit from parent folder or site-wide
+            // For folders, check parent folder first
             var parent_folder_title = this.get_parent_folder_title(this.folder_title);
             if (parent_folder_title) {
                 var parent_setting = NEWSBLUR.assets.get_folder_auto_mark_read(parent_folder_title);
                 if (parent_setting !== null && parent_setting !== undefined) {
-                    effective_days = parent_setting;
-                    source = parent_folder_title;
+                    default_days = parent_setting;
+                    default_source = parent_folder_title;
                 }
             }
-            if (effective_days === null) {
-                effective_days = site_wide_days;
-                source = 'site-wide';
-                is_site_wide = true;
-            }
+            auto_mark_days = NEWSBLUR.assets.get_folder_auto_mark_read(this.folder_title);
         } else {
-            // For feeds, inherit from folder or site-wide
-            if (folder_setting !== null && folder_setting !== undefined) {
-                effective_days = folder_setting;
-                source = folder_title;
+            // For feeds, check folder first
+            var folders = NEWSBLUR.assets.get_feed_folders(this.feed_id);
+            var feed_folder_title = folders && folders.length > 0 ? folders[0] : null;
+            if (feed_folder_title) {
+                var folder_setting = NEWSBLUR.assets.get_folder_auto_mark_read(feed_folder_title);
+                if (folder_setting !== null && folder_setting !== undefined) {
+                    default_days = folder_setting;
+                    default_source = feed_folder_title;
+                }
+            }
+            auto_mark_days = this.feed.get('auto_mark_read_days');
+        }
+
+        // Determine mode: default (null/undefined), never (0), or days (positive number)
+        var mode = 'default';
+        if (auto_mark_days === 0) {
+            mode = 'never';
+        } else if (auto_mark_days !== null && auto_mark_days !== undefined) {
+            mode = 'days';
+        }
+
+        // Update segmented control selection
+        $options.removeClass('NB-active');
+        $('.NB-auto-mark-read-' + mode, this.$modal).addClass('NB-active');
+
+        // Update slider value based on mode
+        var slider_value;
+        var display_days;
+        if (mode === 'default') {
+            display_days = default_days === 0 ? 400 : default_days;
+            slider_value = display_days;
+        } else if (mode === 'never') {
+            slider_value = 400;
+        } else {
+            slider_value = auto_mark_days;
+        }
+
+        $slider.val(slider_value);
+        this.update_slider_status_text($slider_value, mode, mode === 'days' ? auto_mark_days : default_days, default_source);
+        this.update_slider_gradient($slider, slider_value);
+    },
+
+    update_slider_status_text: function ($element, mode, days, source) {
+        var html = '';
+        if (mode === 'default') {
+            if (days === 0) {
+                html = 'Using default: <b>never</b> (from ' + source + ')';
             } else {
-                effective_days = site_wide_days;
-                source = 'site-wide';
-                is_site_wide = true;
+                html = 'Using default: <b>' + days + ' day' + (days !== 1 ? 's' : '') + '</b> (from ' + source + ')';
             }
-        }
-
-        // Format the inherited value text
-        var value_text = '';
-        if (effective_days === 0) {
-            value_text = 'never';
-        } else if (effective_days) {
-            value_text = effective_days + ' day' + (effective_days !== 1 ? 's' : '');
+        } else if (mode === 'never') {
+            html = 'Stories will <b>never</b> be marked as read';
         } else {
-            value_text = '14 days';
+            html = 'Stories marked as read at <b>' + days + ' day' + (days !== 1 ? 's' : '') + '</b>';
         }
+        $element.html(html);
+    },
 
-        // Show inherited value with link to Preferences if site-wide
-        $inherit_value.empty();
-        if (is_site_wide) {
-            $inherit_value.append(
-                $.make('span', value_text + ' from '),
-                $.make('a', { href: '#', className: 'NB-auto-mark-read-preferences-link' }, source)
-            );
-            $inherit_value.find('.NB-auto-mark-read-preferences-link').on('click', function (e) {
-                e.preventDefault();
-                self.close(function () {
-                    NEWSBLUR.reader.open_preferences_modal();
-                });
-            });
+    update_slider_gradient: function ($slider, value) {
+        var min = parseInt($slider.attr('min'), 10) || 1;
+        var max = parseInt($slider.attr('max'), 10) || 400;
+        var percent = ((value - min) / (max - min)) * 100;
+
+        // Create gradient: blue for filled, light gray for unfilled, darker gray for "never" zone (366-400)
+        var never_zone_start = ((365 - min) / (max - min)) * 100;
+
+        if (value > 365) {
+            // In never zone - all blue up to never zone, then purple for never
+            $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + never_zone_start + '%, #8b5cf6 ' + never_zone_start + '%, #8b5cf6 100%)');
         } else {
-            $inherit_value.text(value_text + ' from ' + source);
+            // Normal days zone
+            $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + percent + '%, #e0e0e0 ' + percent + '%, #e0e0e0 ' + never_zone_start + '%, #d4d0e8 ' + never_zone_start + '%, #d4d0e8 100%)');
         }
     },
 
@@ -1420,46 +1411,127 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         return null;
     },
 
-    handle_auto_mark_read_change: function () {
-        var $selected = $('input[name=auto_mark_read_type]:checked', this.$modal);
-        var value = $selected.val();
+    get_auto_mark_read_defaults: function () {
+        var site_wide_days = NEWSBLUR.Preferences.days_of_unread || 14;
+        var default_days = site_wide_days;
+        var default_source = 'site-wide preference';
 
-        // Auto-select the "days" radio when slider is changed
-        if (value === 'days') {
-            $('input[name=auto_mark_read_type][value=days]', this.$modal).prop('checked', true);
+        if (this.folder) {
+            var parent_folder_title = this.get_parent_folder_title(this.folder_title);
+            if (parent_folder_title) {
+                var parent_setting = NEWSBLUR.assets.get_folder_auto_mark_read(parent_folder_title);
+                if (parent_setting !== null && parent_setting !== undefined) {
+                    default_days = parent_setting;
+                    default_source = parent_folder_title;
+                }
+            }
+        } else {
+            var folders = NEWSBLUR.assets.get_feed_folders(this.feed_id);
+            var feed_folder_title = folders && folders.length > 0 ? folders[0] : null;
+            if (feed_folder_title) {
+                var folder_setting = NEWSBLUR.assets.get_folder_auto_mark_read(feed_folder_title);
+                if (folder_setting !== null && folder_setting !== undefined) {
+                    default_days = folder_setting;
+                    default_source = feed_folder_title;
+                }
+            }
         }
 
-        this.save_auto_mark_read_setting();
+        return { default_days: default_days, default_source: default_source };
+    },
+
+    handle_auto_mark_read_option_click: function ($option) {
+        if (!NEWSBLUR.Globals.is_archive) {
+            this.flash_auto_mark_read_upgrade_notice();
+            return;
+        }
+
+        var value = $option.data('value');
+        var $options = $('.NB-auto-mark-read-option', this.$modal);
+        var $slider = $('.NB-auto-mark-read-slider', this.$modal);
+        var $slider_value = $('.NB-auto-mark-read-slider-value', this.$modal);
+
+        // Update selection
+        $options.removeClass('NB-active');
+        $option.addClass('NB-active');
+
+        var defaults = this.get_auto_mark_read_defaults();
+        var default_days = defaults.default_days;
+        var default_source = defaults.default_source;
+
+        var days;
+        var slider_value;
+
+        if (value === 'default') {
+            days = null;
+            slider_value = default_days === 0 ? 400 : default_days;
+            this.update_slider_status_text($slider_value, 'default', default_days, default_source);
+        } else if (value === 'never') {
+            days = 0;
+            slider_value = 400;
+            this.update_slider_status_text($slider_value, 'never', 0, default_source);
+        } else {
+            var current_slider = parseInt($slider.val(), 10);
+            days = current_slider > 365 ? 30 : current_slider;
+            slider_value = days;
+            this.update_slider_status_text($slider_value, 'days', days, default_source);
+        }
+
+        $slider.val(slider_value);
+        this.update_slider_gradient($slider, slider_value);
+
+        this.save_auto_mark_read_setting(days);
     },
 
     handle_auto_mark_read_slider_change: function () {
-        var $slider = $('input[name=auto_mark_read_days]', this.$modal);
-        var $days_value = $('.NB-auto-mark-read-days-value', this.$modal);
-        var days = parseInt($slider.val(), 10);
-
-        $days_value.text(days + ' day' + (days !== 1 ? 's' : ''));
-
-        // Auto-select "days" radio when slider is moved
-        $('input[name=auto_mark_read_type][value=days]', this.$modal).prop('checked', true);
-
-        this.save_auto_mark_read_setting();
+        this.on_auto_mark_read_slider_input(true);
     },
 
-    save_auto_mark_read_setting: function () {
-        var self = this;
-        var $selected = $('input[name=auto_mark_read_type]:checked', this.$modal);
-        var $slider = $('input[name=auto_mark_read_days]', this.$modal);
-        var value = $selected.val();
-        var days = null;
+    on_auto_mark_read_slider_input: function (save) {
+        var $slider = $('.NB-auto-mark-read-slider', this.$modal);
+        var slider_val = parseInt($slider.val(), 10);
+        var $slider_value = $('.NB-auto-mark-read-slider-value', this.$modal);
+        var $options = $('.NB-auto-mark-read-option', this.$modal);
 
-        if (value === 'inherit') {
-            days = null;
-        } else if (value === 'never') {
-            days = 0;
-        } else if (value === 'days') {
-            days = parseInt($slider.val(), 10);
+        var is_never = slider_val > 365;
+        var days = is_never ? 0 : slider_val;
+
+        this.update_slider_gradient($slider, slider_val);
+
+        if (!NEWSBLUR.Globals.is_archive) {
+            this.flash_auto_mark_read_upgrade_notice();
+            return;
         }
 
+        var defaults = this.get_auto_mark_read_defaults();
+        var default_source = defaults.default_source;
+
+        // Auto-select appropriate option based on slider position
+        $options.removeClass('NB-active');
+        if (is_never) {
+            $('.NB-auto-mark-read-never', this.$modal).addClass('NB-active');
+            this.update_slider_status_text($slider_value, 'never', 0, default_source);
+        } else {
+            $('.NB-auto-mark-read-days', this.$modal).addClass('NB-active');
+            this.update_slider_status_text($slider_value, 'days', slider_val, default_source);
+        }
+
+        // Save on change event (not input)
+        if (save) {
+            this.save_auto_mark_read_setting(days);
+        }
+    },
+
+    flash_auto_mark_read_upgrade_notice: function () {
+        var $notice = $('.NB-auto-mark-read-upgrade-notice', this.$modal);
+        $notice.addClass('NB-flash');
+        setTimeout(function () {
+            $notice.removeClass('NB-flash');
+        }, 600);
+    },
+
+    save_auto_mark_read_setting: function (days) {
+        var self = this;
         var $status = $('.NB-exception-option-auto-mark-read .NB-exception-option-status', this.$modal);
 
         if (this.folder) {

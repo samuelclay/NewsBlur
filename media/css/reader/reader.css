@@ -14363,143 +14363,143 @@ h5.NB-classifier-section-header {
 /* = Auto-Mark Read Settings    = */
 /* ============================== */
 
-.NB-exception-option-auto-mark-read .NB-exception-option-status {
-    opacity: 0;
-    color: #4A9937;
-    font-size: 11px;
-    font-weight: bold;
-    float: right;
-}
-
-/* Auto-mark-read options - matching Preferences modal style */
-.NB-auto-mark-read-options {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin: 4px 0;
-}
-
-.NB-auto-mark-read-options > div {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.NB-auto-mark-read-options label {
-    cursor: pointer;
-    font-size: 13px;
-}
-
-.NB-auto-mark-read-inherit-value {
-    font-size: 12px;
-    color: #707070;
-    font-style: italic;
-    margin-left: 4px;
-}
-
-.NB-auto-mark-read-preferences-link {
-    color: #5C89C9;
-    text-decoration: none;
-}
-
-.NB-auto-mark-read-preferences-link:hover {
-    text-decoration: underline;
-}
-
-/* Slider row - inline with radio button */
-.NB-auto-mark-read-days-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    width: 100%;
-}
-
-.NB-auto-mark-read-days-row label {
-    white-space: nowrap;
-}
-
-.NB-auto-mark-read-slider {
-    flex: 1;
-    cursor: pointer;
-    height: 6px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: #d0d0d0;
-    border-radius: 3px;
-    outline: none;
-}
-
-.NB-auto-mark-read-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #5C89C9;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.NB-auto-mark-read-slider::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #5C89C9;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.NB-auto-mark-read-days-value {
-    font-size: 13px;
-    font-weight: 600;
-    color: #5C89C9;
-    min-width: 55px;
-}
-
-/* Auto-mark read header with premium notice */
+/* Header with premium badge */
 .NB-exception-option-auto-mark-read h5 {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.NB-auto-mark-read-archive-notice {
-    margin-left: auto;
+.NB-exception-option-auto-mark-read .NB-exception-option-status {
+    opacity: 0;
+    color: #4A9937;
     font-size: 11px;
-    font-weight: normal;
-    color: #807060;
-    white-space: nowrap;
+    font-weight: bold;
+    order: 999;
+    margin-left: auto;
 }
 
-.NB-auto-mark-read-archive-notice a {
-    color: #d97706;
-    font-weight: 600;
+/* Upgrade notice badge */
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-upgrade-notice {
+    font-size: 11px;
     text-decoration: none;
+    color: #707070;
+    padding: 3px 8px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.NB-auto-mark-read-archive-notice a:hover {
-    text-decoration: underline;
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-upgrade-notice:hover {
+    background-color: rgba(74, 144, 217, 0.1);
+    color: #4a90d9;
 }
 
-/* Disabled state for non-Archive users */
-.NB-exception-option-auto-mark-read input:disabled {
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-upgrade-notice .NB-archive-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-upgrade-notice.NB-flash {
+    animation: flash-upgrade 0.6s ease;
+    background-color: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
+}
+
+/* Segmented control - uses site-wide styles from controls.css */
+.NB-exception-option-auto-mark-read .segmented-control.NB-menu-manage-auto-mark-read {
+    margin: 0 0 8px 0;
+}
+
+.NB-exception-option-auto-mark-read .segmented-control.NB-menu-manage-auto-mark-read li {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.NB-exception-option-auto-mark-read .segmented-control.NB-menu-manage-auto-mark-read.NB-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Slider container */
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider-container {
+    margin: 4px 0 4px 0;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Slider */
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider {
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    margin: 4px 0;
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #4a90d9;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    margin-top: 0;
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #4a90d9;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.NB-exception-option-auto-mark-read input:disabled + label {
-    opacity: 0.5;
-    cursor: not-allowed;
+/* Slider value text */
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider-value {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    line-height: 1.4;
 }
 
-.NB-auto-mark-read-slider:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.NB-auto-mark-read-slider:disabled + .NB-auto-mark-read-days-value {
-    opacity: 0.5;
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider-value b {
+    color: #4a90d9;
+    font-weight: 600;
 }
 
 .NB-modal-statistics .NB-statistics-classifiers {
@@ -20228,7 +20228,6 @@ h5.NB-classifier-section-header {
     float: right;
     margin: 12px 0 0;
     position: relative;
-    bottom: auto;
 }
 
 .NB-modal-exception.NB-modal-feed-settings .NB-modal-feed-heading {
@@ -22450,10 +22449,21 @@ h5.NB-classifier-section-header {
 }
 
 @keyframes flash-upgrade {
-    0%, 100% { transform: scale(1); }
-    25% { transform: scale(1.05); }
-    50% { transform: scale(1); }
-    75% { transform: scale(1.03); }
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    25% {
+        transform: scale(1.05);
+    }
+
+    50% {
+        transform: scale(1);
+    }
+
+    75% {
+        transform: scale(1.03);
+    }
 }
 
 /* Date filter title row */
