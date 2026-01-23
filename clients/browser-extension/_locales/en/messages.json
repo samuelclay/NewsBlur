@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "NewsBlur Archive",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Automatically archive your browsing history for AI-powered search and discovery",
+    "description": "Extension description"
+  }
+}

@@ -66,6 +66,9 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # Set this to the username that is shown on the homepage to unauthenticated users.
 HOMEPAGE_USERNAME = "popular"
 
+# Default username for dev autologin (only works when DEBUG=True)
+DEV_AUTOLOGIN_USERNAME = "samuel"
+
 # Google Reader OAuth API Keys
 OAUTH_KEY = "www.example.com"
 OAUTH_SECRET = "SECRET_KEY_FROM_GOOGLE"
@@ -143,7 +146,7 @@ BACKED_BY_AWS = {
 OPENAI_API_KEY = "sk-svcacct-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ANTHROPIC_API_KEY = "sk-ant-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 GOOGLE_GEMINI_API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-ASK_AI_MODEL = "opus"  # Options: opus, gpt-5.1, gemini-3, grok-4.1
+ASK_AI_MODEL = "opus"  # Options: opus, gpt-5.2, gemini-3, grok-4.1
 
 # ===========
 # = Logging =

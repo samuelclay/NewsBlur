@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "mcp__*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/mcp-response-limit.py"
+          }
+        ]
+      }
+    ]
+  }
+}

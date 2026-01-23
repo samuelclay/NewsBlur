@@ -10,11 +10,13 @@ urlpatterns = [
     re_path(r"^facebook_disconnect/?$", views.facebook_disconnect, name="facebook-disconnect"),
     re_path(r"^follow_twitter_account/?$", views.follow_twitter_account, name="social-follow-twitter"),
     re_path(r"^unfollow_twitter_account/?$", views.unfollow_twitter_account, name="social-unfollow-twitter"),
-    # Django OAuth Toolkit
+    # Django OAuth Toolkit - use ExtensionAuthorizationView to allow chrome-extension:// redirects
     re_path(r"^status/?$", views.ifttt_status, name="ifttt-status"),
-    re_path(r"^authorize/?$", op_views.AuthorizationView.as_view(), name="oauth-authorize"),
+    re_path(r"^authorize/?$", views.ExtensionAuthorizationView.as_view(), name="oauth-authorize"),
     re_path(r"^token/?$", op_views.TokenView.as_view(), name="oauth-token"),
-    re_path(r"^oauth2/authorize/?$", op_views.AuthorizationView.as_view(), name="ifttt-authorize"),
+    # Browser extension OAuth callback - displays success page while extension intercepts the code
+    re_path(r"^extension-callback/?$", views.extension_oauth_callback, name="oauth-extension-callback"),
+    re_path(r"^oauth2/authorize/?$", views.ExtensionAuthorizationView.as_view(), name="ifttt-authorize"),
     re_path(r"^oauth2/token/?$", op_views.TokenView.as_view(), name="ifttt-token"),
     re_path(r"^user/info/?$", views.api_user_info, name="ifttt-user-info"),
     re_path(

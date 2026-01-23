@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('profile', '0021_add_grandfather_expires'),
+        ("profile", "0021_add_grandfather_expires"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='is_grandfathered',
+            model_name="profile",
+            name="is_grandfathered",
             field=models.BooleanField(blank=True, default=False, null=True),
         ),
     ]
