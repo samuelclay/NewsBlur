@@ -397,6 +397,27 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/starred_counts', {}, pre_callback, pre_callback, { request_type: 'GET' });
     },
 
+    rename_starred_tag: function (old_tag_name, new_tag_name, callback, error_callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/rename_starred_tag', {
+                'old_tag_name': old_tag_name,
+                'new_tag_name': new_tag_name
+            }, callback, error_callback);
+        } else {
+            if ($.isFunction(callback)) callback({ code: -1, message: 'Not authenticated' });
+        }
+    },
+
+    delete_starred_tag: function (tag_name, callback, error_callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/delete_starred_tag', {
+                'tag_name': tag_name
+            }, callback, error_callback);
+        } else {
+            if ($.isFunction(callback)) callback({ code: -1, message: 'Not authenticated' });
+        }
+    },
+
     mark_feed_as_read: function (feed_id, cutoff_timestamp, direction, options, callback) {
         var self = this;
         var feed_ids = _.isArray(feed_id)

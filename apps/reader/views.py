@@ -3976,6 +3976,51 @@ def starred_counts(request):
 
 @ajax_login_required
 @json.json_view
+def rename_starred_tag(request):
+    """Rename a user's saved story tag across all their starred stories."""
+    old_tag = request.POST.get("old_tag_name", "").strip()
+    new_tag = request.POST.get("new_tag_name", "").strip()
+
+    if not old_tag:
+        return {"code": -1, "message": "Original tag name is required."}
+
+    if not new_tag:
+        return {"code": -1, "message": "New tag name is required."}
+
+    if len(new_tag) > 128:
+        return {"code": -1, "message": "Tag name must be 128 characters or less."}
+
+    logging.user(request, "~FCRenaming starred tag: ~SB%s~SN to ~SB%s" % (old_tag, new_tag))
+
+    starred_counts = MStarredStoryCounts.rename_tag(request.user.pk, old_tag, new_tag)
+
+    if starred_counts is None:
+        return {"code": -1, "message": "Failed to rename tag."}
+
+    return {"code": 1, "starred_counts": starred_counts}
+
+
+@ajax_login_required
+@json.json_view
+def delete_starred_tag(request):
+    """Remove a tag from all user's starred stories (stories remain saved)."""
+    tag_name = request.POST.get("tag_name", "").strip()
+
+    if not tag_name:
+        return {"code": -1, "message": "Tag name is required."}
+
+    logging.user(request, "~FCDeleting starred tag: ~SB%s" % tag_name)
+
+    starred_counts = MStarredStoryCounts.delete_tag(request.user.pk, tag_name)
+
+    if starred_counts is None:
+        return {"code": -1, "message": "Failed to delete tag."}
+
+    return {"code": 1, "starred_counts": starred_counts}
+
+
+@ajax_login_required
+@json.json_view
 def send_story_email(request):
     def validate_email_as_bool(email):
         try:
