@@ -18463,27 +18463,138 @@ h5.NB-classifier-section-header {
     box-shadow: 2px 2px 0 #D0D0D0;
 }
 
-.NB-modal-preferences .NB-preference-daysofunread .NB-tangle-daysofunread-control {
-    margin-top: 4px;
-    margin-left: 32px;
-    width: 300px;
+/* Days of Unread Segmented Control */
+.NB-modal-preferences .NB-preference-daysofunread .NB-preference-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.NB-modal-preferences .NB-preference-daysofunread .NB-preference-options label {
-    float: none;
+.NB-modal-preferences .NB-preference-daysofunread .NB-preference-daysofunread-control {
+    display: flex;
+    margin: 0;
+    width: 100%;
 }
 
-.NB-modal-preferences .NB-preference-archive-notice {
-    margin-top: 8px;
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-option {
+    padding: 6px 16px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-preference-daysofunread-control.NB-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Days of Unread Slider container */
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider-container {
+    margin: 0;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Days of Unread Slider */
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider {
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    margin: 4px 0;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #4a90d9;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    margin-top: 0;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #4a90d9;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Days of Unread Slider value text */
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider-value {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider-value b {
+    color: #4a90d9;
+    font-weight: 600;
+}
+
+/* Days of Unread Upgrade notice */
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice {
     font-size: 11px;
-    color: #606060;
-    font-style: italic;
+    text-decoration: none;
+    color: #707070;
+    padding: 3px 8px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    display: inline-block;
+    margin-top: 0;
 }
 
-.NB-modal-preferences .NB-preference-archive-notice .NB-premium-link {
-    color: #5090C0;
-    font-style: normal;
-    text-decoration: underline;
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice:hover {
+    background-color: rgba(74, 144, 217, 0.1);
+    color: #4a90d9;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice .NB-archive-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice.NB-flash {
+    animation: flash-upgrade 0.6s ease;
+    background-color: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
 }
 
 .NB-modal-preferences .NB-preference-readstorydelay .NB-tangle-readstorydelay,

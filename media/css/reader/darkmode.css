@@ -964,6 +964,35 @@ color: #a85b40;
     color: #7CA4D8;
 }
 
+/* Preferences Days of Unread dark mode */
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider-container {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider {
+    background: #404040;
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider::-webkit-slider-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider::-moz-range-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider-value {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider-value b {
+    color: #7CA4D8;
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice {
+    color: #909090;
+}
+
 /* Site Statistics: Text color */
 .NB-dark .NB-modal-statistics .NB-statistics-stat .NB-statistics-label,
 .NB-dark .NB-statistics-count,
