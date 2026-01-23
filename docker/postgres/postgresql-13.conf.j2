@@ -1,5 +1,6 @@
-{% if (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ["hdb-postgres", "db-postgres-secondary"] %}
+{% if (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ["hdb-postgres", "db-postgres-secondary", "hdb-postgres-secondary"] %}
 primary_conninfo      = 'host=db-postgres.service.consul port=5432 user=postgres'
+primary_slot_name     = 'secondary_slot'
 {% endif %}
 # -----------------------------
 # PostgreSQL configuration file
