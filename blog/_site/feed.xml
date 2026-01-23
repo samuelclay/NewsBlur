@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-22T14:12:44-05:00</updated>
+  <updated>2026-01-23T14:41:37-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,66 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Per-feed and per-folder auto-mark-as-read settings</title>
+    <link href="https://blog.newsblur.com/2026/01/23/per-feed-auto-mark-read/" rel="alternate" type="text/html" title="Per-feed and per-folder auto-mark-as-read settings" />
+    <published>2026-01-23T00:00:00-05:00</published>
+    <updated>2026-01-23T00:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2026/01/23/per-feed-auto-mark-read</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/01/23/per-feed-auto-mark-read/">
+      <![CDATA[<p>Some feeds I want to read every single story. Others I’m happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren’t worth catching up on. The site-wide “days of unread” setting was too blunt, applying the same rule to everything. Now you can set how long stories stay unread on a per-feed and per-folder basis.</p>
+
+<h3 id="how-it-works">How it works</h3>
+
+<p>Open the feed options popover (click the gear icon in the feed header) and you’ll see a new “Auto Mark as Read” section. Choose how many days stories should remain unread before NewsBlur automatically marks them as read:</p>
+
+<!-- SCREENSHOT: Feed options popover showing Auto Mark as Read section with slider -->
+<p><img src="/assets/auto-mark-read-popover.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The slider goes from 1 day to 365 days, with a “never” zone at the far right for feeds where you truly want to read every story regardless of age. Choose “Default” to inherit from the parent folder or site-wide setting, “Days” to set a specific duration, or “Never” to disable auto-marking entirely.</p>
+
+<h3 id="folder-inheritance">Folder inheritance</h3>
+
+<p>Settings cascade down from folders to feeds. Set a folder to 7 days, and all feeds inside inherit that setting unless they have their own override. This is perfect for organizing feeds by how aggressively you want to age them out:</p>
+
+<ul>
+  <li><strong>Must Read</strong> folder: Set to “Never” so nothing ages out</li>
+  <li><strong>News</strong> folder: Set to 2 days since news gets stale fast</li>
+  <li><strong>Blogs</strong> folder: Set to 30 days for long-form content worth revisiting</li>
+  <li>Individual feeds can still override their folder’s setting</li>
+</ul>
+
+<!-- SCREENSHOT: Folder settings dialog showing Auto Mark as Read with inheritance text -->
+<p><img src="/assets/auto-mark-read-folder-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The status text below the slider shows where the current setting comes from: the site-wide preference, a parent folder, or an explicit setting on this feed.</p>
+
+<h3 id="site-settings-dialog">Site settings dialog</h3>
+
+<p>You can also configure auto-mark-read from the site settings dialog (right-click a feed and choose “Site settings”). The same controls are available there, redesigned to match the popover style.</p>
+
+<!-- SCREENSHOT: Site settings dialog showing Auto Mark as Read section -->
+<p><img src="/assets/auto-mark-read-site-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Per-feed and per-folder auto-mark-as-read settings are a Premium Archive feature, available now on the web. They work alongside the existing site-wide “days of unread” preference in Manage → Preferences → General → Days of unreads.</p>
+
+<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Some feeds I want to read every single story. Others I’m happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren’t worth catching up on. The site-wide “days of unread” setting was too blunt, applying the...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Intelligence Trainer Overhaul: URL classifiers, regex mode, and manage all training in one place</title>
@@ -1402,49 +1462,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     
     <summary type="html">
       <![CDATA[A whopper of a release with many, many new features!
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Updates to the Android app and a new addition to the team</title>
-    <link href="https://blog.newsblur.com/2019/06/01/updates-to-the-android-app-and-a-new-addition-to/" rel="alternate" type="text/html" title="Updates to the Android app and a new addition to the team" />
-    <published>2019-06-01T08:51:21-04:00</published>
-    <updated>2019-06-01T08:51:21-04:00</updated>
-    <id>https://blog.newsblur.com/2019/06/01/updates-to-the-android-app-and-a-new-addition-to</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2019/06/01/updates-to-the-android-app-and-a-new-addition-to/">
-      <![CDATA[<p>Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.</p>
-
-<figure class="tmblr-full" data-orig-height="1920" data-orig-width="1080" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png"><img width="600" style="width: 600px; margin: 0 auto;border:1px solid #606060" data-orig-height="1920" data-orig-width="1080" src="https://s3.amazonaws.com/static.newsblur.com/blog/android-9.png" /></figure>
-
-<p>Here’s the full list of changes for version 9.0:</p>
-
-<ul>
-  <li>Fixes black background for stories while reading with the Light theme.</li>
-  <li>Total rewrite of the backend story management platform. This fixes the oldest issues known in story paging and scroll state. The story rivers should now act like dynamic views instead of static lists.</li>
-  <li>New feature: renaming feeds directly in the app.</li>
-  <li>Improved messaging and display behavior for the original text view.</li>
-  <li>Fixes for the dark theme’s menu color.</li>
-  <li>Many other bug fixes and performance tweaks.</li>
-</ul>
-
-<p>I’d also like to introduce our newest developer, <a href="https://github.com/caleb-allen">Caleb Allen</a>.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/caleb-allen.jpeg" alt="" /></p>
-
-<p>Caleb will be working on the Android app. Our Android developer Daniel spent the last 5 years with us working many, many versions of the NewsBlur app. I want to thank Daniel for his years of service and we wish him well on his next adventure. And here’s hoping for many fruitful years with Caleb!</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[Today we have a nice update, version 9.0, of the Android app that includes a rewrite of the story management backend as well as fixes for some critical display issues.
 ]]>
     </summary>
     
