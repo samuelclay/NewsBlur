@@ -416,6 +416,42 @@ def autologin(request, username, secret):
         return HttpResponseRedirect(reverse("index"))
 
 
+def dev_autologin(request, username=None):
+    """
+    Development-only autologin endpoint. ONLY works in local dev environment.
+    Requires both DEBUG=True AND 'localhost' in NEWSBLUR_URL.
+
+    Usage:
+        /reader/dev/autologin/           - Login as DEV_AUTOLOGIN_USERNAME
+        /reader/dev/autologin/<username>/ - Login as specific user
+    """
+    is_local_dev = settings.DEBUG and "localhost" in getattr(settings, "NEWSBLUR_URL", "")
+    if not is_local_dev:
+        return HttpResponseForbidden("Dev autologin only available in local development")
+
+    next_url = request.GET.get("next", "")
+
+    if not username:
+        username = getattr(settings, "DEV_AUTOLOGIN_USERNAME", None)
+        if not username:
+            return HttpResponseForbidden("No username provided and DEV_AUTOLOGIN_USERNAME not set")
+
+    try:
+        user = User.objects.get(username__iexact=username)
+    except User.DoesNotExist:
+        return HttpResponseForbidden(f"User '{username}' not found")
+
+    user.backend = settings.AUTHENTICATION_BACKENDS[0]
+    login_user(request, user, backend="django.contrib.auth.backends.ModelBackend")
+    logging.user(user, "~FG~BB~SK[DEV] Auto-Login. Next: %s~FW" % (next_url or "Homepage"))
+
+    if next_url and not next_url.startswith("/"):
+        return HttpResponseRedirect(reverse("index") + "?next=" + next_url)
+    elif next_url:
+        return HttpResponseRedirect(next_url)
+    return HttpResponseRedirect(reverse("index"))
+
+
 @ratelimit(minutes=1, requests=60)
 @never_cache
 @json.json_view
