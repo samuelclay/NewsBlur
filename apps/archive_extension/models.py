@@ -3,6 +3,7 @@ import zlib
 from datetime import datetime
 
 import mongoengine as mongo
+from mongoengine.errors import NotUniqueError
 
 from utils import log as logging
 
@@ -256,8 +257,35 @@ class MArchivedStory(mongo.Document):
             if content:
                 archive.set_content(content)
 
-            archive.save()
-            return archive, True, False
+            try:
+                archive.save()
+                return archive, True, False
+            except NotUniqueError:
+                # Race condition: another request inserted this URL between our
+                # .get() check and .save(). Retry as an update.
+                existing = cls.objects.get(user_id=user_id, url_hash=url_hash)
+                existing.last_visited = now
+                existing.visit_count += 1
+                existing.time_on_page_seconds += time_on_page
+
+                if not existing.domain:
+                    existing.domain = domain
+                if title and (not existing.title or len(title) > len(existing.title)):
+                    existing.title = title
+                if author and not existing.author:
+                    existing.author = author
+                if content and len(content) > (existing.content_length or 0):
+                    existing.set_content(content)
+                    existing.content_source = content_source
+                if matched_story_hash:
+                    existing.matched_story_hash = matched_story_hash
+                    existing.matched_feed_id = matched_feed_id
+                if existing.deleted:
+                    existing.deleted = False
+                    existing.deleted_date = None
+
+                existing.save()
+                return existing, False, True
 
     @classmethod
     def get_user_archives(

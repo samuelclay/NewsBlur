@@ -1,5 +1,17 @@
 # NewsBlur Development Guidelines
 
+## Planning & Clarification
+**IMPORTANT: Before starting any implementation or creating a plan, use the AskUserQuestion tool to interview me thoroughly.** Ask as many clarifying questions as needed to understand:
+- The specific goals and desired outcomes
+- Edge cases and error handling preferences
+- UI/UX preferences (if applicable)
+- Performance or scalability requirements
+- Integration points with existing code
+- Testing expectations
+- Any constraints or preferences I might have
+
+Don't assume - ask. Multiple rounds of questions are encouraged before writing code.
+
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
   - **All new iOS files must be written in Swift** (not Objective-C)
@@ -131,6 +143,12 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 ## Browser Testing with Chrome DevTools MCP
 - Local dev: `https://localhost` (when using containers directly)
 - **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts
+
+### Dev Auto-Login (DEBUG mode only)
+- `https://localhost/reader/dev/autologin/` - Login as default dev user (configured in `DEV_AUTOLOGIN_USERNAME`)
+- `https://localhost/reader/dev/autologin/<username>/` - Login as specific user
+- Add `?next=/path` to redirect after login
+- Returns 403 Forbidden in production (DEBUG=False)
 
 ### Test Query Parameters
 - `?test=growth` - Test growth prompts (bypasses premium check and cooldowns)
