@@ -1,11 +1,11 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from apps.analyzer import views
 
 urlpatterns = [
-    url(r"^$", views.index),
-    url(r"^save/?$", views.save_classifier),
-    url(r"^save_all/?$", views.save_all_classifiers),
-    url(r"^popularity/?", views.popularity_query),
-    url(r"^(?P<feed_id>\d+)", views.get_classifiers_feed),
+    re_path(r"^$", views.index),
+    re_path(r"^save/?$", views.save_classifier),
+    re_path(r"^save_all/?$", views.save_all_classifiers),
+    re_path(r"^popularity/?", views.popularity_query),
+    re_path(r"^(?P<feed_id>\d+)", views.get_classifiers_feed),
 ]

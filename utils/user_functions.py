@@ -1,10 +1,10 @@
 import hashlib
+from urllib.parse import quote as urlquote
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseForbidden
-from django.utils.http import urlquote
 from simplejson.decoder import JSONDecodeError
 
 from utils import json_functions as json

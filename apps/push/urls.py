@@ -1,7 +1,7 @@
-from django.conf.urls import *
+from django.urls import re_path
 
 from apps.push import views
 
 urlpatterns = [
-    url(r"^(?P<push_id>\d+)/?$", views.push_callback, name="push-callback"),
+    re_path(r"^(?P<push_id>\d+)/?$", views.push_callback, name="push-callback"),
 ]

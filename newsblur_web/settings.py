@@ -83,6 +83,7 @@ TIME_ZONE = "GMT"
 LANGUAGE_CODE = "en-us"
 SITE_ID = 1
 USE_I18N = False
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/account/login"
 MEDIA_URL = "/media/"
@@ -365,7 +366,7 @@ INSTALLED_APPS = (
     "apps.archive_assistant",
     "utils",  # missing models so no migrations
     "vendor",
-    "typogrify",
+    "vendor.typogrify",  # Vendored for Django 4.x compatibility
     "vendor.zebra",
     "anymail",
     "oauth2_provider",
@@ -836,7 +837,8 @@ CELERY_BROKER_URL = "redis://%s:%s/%s" % (
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_WORKER_LOG_FORMAT = "%(message)s"
 CELERY_WORKER_TASK_LOG_FORMAT = "%(message)s"
-BROKER_TRANSPORT_OPTIONS = {
+# Celery 5.x requires CELERY_ prefix for all config options
+CELERY_BROKER_TRANSPORT_OPTIONS = {
     "max_retries": 3,
     "interval_start": 0,
     "interval_step": 0.2,
@@ -903,9 +905,11 @@ accept_content = ["pickle", "json", "msgpack", "yaml"]
 
 STATIC_URL = "/static/"
 
-# STATICFILES_STORAGE = 'pipeline.storage.PipelineManifestStorage'
-STATICFILES_STORAGE = "utils.pipeline_utils.PipelineStorage"
-# STATICFILES_STORAGE = 'utils.pipeline_utils.GzipPipelineStorage'
+# Django 4.2+ STORAGES format (replaces STATICFILES_STORAGE)
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "utils.pipeline_utils.PipelineStorage"},
+}
 STATICFILES_FINDERS = (
     # 'pipeline.finders.FileSystemFinder',
     # 'django.contrib.staticfiles.finders.FileSystemFinder',

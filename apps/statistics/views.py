@@ -65,7 +65,6 @@ def slow(request):
     r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
     if not request.user.is_staff and not settings.DEBUG:
         logging.user(request, "~SKNON-STAFF VIEWING SLOW STATUS!")
-        assert False
         return HttpResponseForbidden()
 
     now = datetime.datetime.now()

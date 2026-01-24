@@ -10,7 +10,7 @@ import urllib.request
 import warnings
 
 from django.utils.encoding import smart_str
-from django.utils.translation import ungettext
+from django.utils.translation import ngettext
 from qurl import qurl
 
 from utils import log as logging
@@ -133,10 +133,10 @@ def relative_timesince(value):
         return ""
 
     chunks = (
-        (60 * 60 * 24, lambda n: ungettext("day", "days", n)),
-        (60 * 60, lambda n: ungettext("hour", "hours", n)),
-        (60, lambda n: ungettext("minute", "minutes", n)),
-        (1, lambda n: ungettext("second", "seconds", n)),
+        (60 * 60 * 24, lambda n: ngettext("day", "days", n)),
+        (60 * 60, lambda n: ngettext("hour", "hours", n)),
+        (60, lambda n: ngettext("minute", "minutes", n)),
+        (1, lambda n: ngettext("second", "seconds", n)),
         (0, lambda n: "just now"),
     )
     return _do_timesince(value, chunks)
@@ -147,8 +147,8 @@ def relative_timeuntil(value):
         return ""
 
     chunks = (
-        (60 * 60, lambda n: ungettext("hour", "hours", n)),
-        (60, lambda n: ungettext("minute", "minutes", n)),
+        (60 * 60, lambda n: ngettext("hour", "hours", n)),
+        (60, lambda n: ngettext("minute", "minutes", n)),
     )
 
     now = datetime.datetime.utcnow()
@@ -231,7 +231,7 @@ def mail_feed_error_to_admin(feed, e, local_vars=None, subject=None):
         subject = "Feed update error"
     exc_info = sys.exc_info()
     subject = "%s: %s" % (subject, repr(e))
-    message = "Traceback:\n%s\n\Feed:\n%s\nLocals:\n%s" % (
+    message = "Traceback:\n%s\nFeed:\n%s\nLocals:\n%s" % (
         "\n".join(traceback.format_exception(*exc_info)),
         pprint.pformat(feed.__dict__),
         pprint.pformat(local_vars),

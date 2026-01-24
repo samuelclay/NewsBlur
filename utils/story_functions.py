@@ -25,7 +25,7 @@ from utils.tornado_escape import linkify as linkify_tornado
 from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
 
 # COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
-COMMENTS_RE = re.compile("\<!--.*?--\>")
+COMMENTS_RE = re.compile(r"\<!--.*?--\>")
 
 
 def midnight_today(now=None):

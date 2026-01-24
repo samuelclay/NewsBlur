@@ -222,7 +222,7 @@ class Test_Reader(TransactionTestCase):
         usf.compact()
         compact_folders = usf.folders
 
-        self.assertNotEquals(dupe_folders, compact_folders)
+        self.assertNotEqual(dupe_folders, compact_folders)
 
     def test_compact_user_subscription_folders2(self):
         user = User.objects.all()[0]
@@ -233,7 +233,7 @@ class Test_Reader(TransactionTestCase):
         usf.compact()
         compact_folders = usf.folders
 
-        self.assertNotEquals(dupe_folders, compact_folders)
+        self.assertNotEqual(dupe_folders, compact_folders)
 
     def test_save_feed_chooser(self):
         """Test save_feed_chooser endpoint handles parameters correctly."""
