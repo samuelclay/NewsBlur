@@ -386,6 +386,8 @@ def find_paypal_user(data, custom_field="custom_id"):
     1. custom_id or custom field (set during subscription creation)
     2. PaypalIds lookup by subscription ID
     3. User lookup by subscriber email
+
+    Returns None silently for non-NewsBlur webhooks (e.g., Crabigator).
     """
     resource = data.get("resource", {})
 
@@ -415,17 +417,22 @@ def find_paypal_user(data, custom_field="custom_id"):
         except User.DoesNotExist:
             pass
 
-    # Log error if user not found - this will show up in Sentry
-    logging.user(
-        None,
-        f" ~FR~SBPayPal webhook user not found - "
-        f"event_type={data.get('event_type')} "
-        f"resource_id={resource.get('id')} "
-        f"billing_agreement_id={resource.get('billing_agreement_id')} "
-        f"subscriber_email={email} "
-        f"payer_id={subscriber.get('payer_id')} "
-        f"custom_field={custom_field}={custom_value}",
-    )
+    # Only log error if there was a custom field (indicating an intended NewsBlur webhook)
+    # If no custom field, this is likely a non-NewsBlur webhook (e.g., Crabigator) - ignore silently
+    if custom_value:
+        logging.user(
+            None,
+            f" ~FR~SBPayPal webhook user not found - "
+            f"event_type={data.get('event_type')} "
+            f"resource_id={resource.get('id')} "
+            f"billing_agreement_id={resource.get('billing_agreement_id')} "
+            f"subscriber_email={email} "
+            f"payer_id={subscriber.get('payer_id')} "
+            f"custom_field={custom_field}={custom_value}",
+        )
+    else:
+        logging.debug(f" ---> PayPal webhook for non-NewsBlur product, ignoring: {data.get('event_type')}")
+
     return None
 
 
