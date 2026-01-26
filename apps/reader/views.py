@@ -1,6 +1,7 @@
 import base64
 import concurrent
 import datetime
+import hashlib
 import http.client
 import random
 import re
@@ -116,6 +117,7 @@ from utils.story_functions import (
 )
 from utils.user_functions import ajax_login_required, extract_user_agent, get_user
 from utils.view_functions import (
+    RequestDeduplicator,
     get_argument_or_404,
     is_true,
     render_to,
@@ -1962,6 +1964,21 @@ def load_river_stories__redis(request):
     offset = (page - 1) * limit
     story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
 
+    # Android app duplicate request deduplication - only kicks in when concurrent requests detected
+    # The Android app has a bug where it fires multiple identical requests simultaneously
+    platform = extract_user_agent(request)
+    is_android = platform in ["Androd", "androd"]
+    deduper = None
+    if is_android and not story_hashes and not query:
+        feeds_hash = hashlib.md5(",".join(str(f) for f in sorted(feed_ids)).encode()).hexdigest()[:12]
+        cache_key = (
+            f"river:{user.pk}:{feeds_hash}:{page}:{order}:{read_filter}:{date_filter_start}:{date_filter_end}"
+        )
+        deduper = RequestDeduplicator(request, cache_key)
+        cached = deduper.check_for_duplicate()
+        if cached is not None:
+            return cached
+
     if infrequent:
         feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
 
@@ -2251,6 +2268,10 @@ def load_river_stories__redis(request):
         data["feeds"] = feeds
     if not include_hidden:
         data["hidden_stories_removed"] = hidden_stories_removed
+
+    # Cache result briefly for any waiting duplicate Android requests
+    if deduper:
+        deduper.cache_result(data)
 
     return data
 
@@ -4018,6 +4039,51 @@ def starred_counts(request):
     )
 
     return {"starred_count": starred_count, "starred_counts": starred_counts}
+
+
+@ajax_login_required
+@json.json_view
+def rename_starred_tag(request):
+    """Rename a user's saved story tag across all their starred stories."""
+    old_tag = request.POST.get("old_tag_name", "").strip()
+    new_tag = request.POST.get("new_tag_name", "").strip()
+
+    if not old_tag:
+        return {"code": -1, "message": "Original tag name is required."}
+
+    if not new_tag:
+        return {"code": -1, "message": "New tag name is required."}
+
+    if len(new_tag) > 128:
+        return {"code": -1, "message": "Tag name must be 128 characters or less."}
+
+    logging.user(request, "~FCRenaming starred tag: ~SB%s~SN to ~SB%s" % (old_tag, new_tag))
+
+    starred_counts = MStarredStoryCounts.rename_tag(request.user.pk, old_tag, new_tag)
+
+    if starred_counts is None:
+        return {"code": -1, "message": "Failed to rename tag."}
+
+    return {"code": 1, "starred_counts": starred_counts}
+
+
+@ajax_login_required
+@json.json_view
+def delete_starred_tag(request):
+    """Remove a tag from all user's starred stories (stories remain saved)."""
+    tag_name = request.POST.get("tag_name", "").strip()
+
+    if not tag_name:
+        return {"code": -1, "message": "Tag name is required."}
+
+    logging.user(request, "~FCDeleting starred tag: ~SB%s" % tag_name)
+
+    starred_counts = MStarredStoryCounts.delete_tag(request.user.pk, tag_name)
+
+    if starred_counts is None:
+        return {"code": -1, "message": "Failed to delete tag."}
+
+    return {"code": 1, "starred_counts": starred_counts}
 
 
 @ajax_login_required

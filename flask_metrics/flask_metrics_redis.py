@@ -212,6 +212,102 @@ def memory_used():
     return Response(html_body, content_type="text/plain")
 
 
+@app.route("/replication-lag/")
+def replication_lag():
+    """
+    Query each Redis primary for INFO replication and parse slave lag values.
+    Returns Prometheus metrics for replication lag in seconds.
+    """
+    formatted_data = {}
+    metric_index = 0
+
+    for instance, redis_config in INSTANCES.items():
+        if not settings.DOCKERBUILD and instance not in settings.SERVER_NAME:
+            continue
+
+        host = f"{settings.SERVER_NAME}.node.nyc1.consul"
+        if instance == "db-redis-session":
+            port = redis_config.get("port", settings.REDIS_SESSION_PORT)
+        elif instance == "db-redis-story":
+            port = redis_config.get("port", settings.REDIS_STORY_PORT)
+        elif instance == "db-redis-pubsub":
+            port = redis_config.get("port", settings.REDIS_PUBSUB_PORT)
+        elif instance == "db-redis-user":
+            port = redis_config.get("port", settings.REDIS_USER_PORT)
+        else:
+            continue
+
+        try:
+            r = redis.Redis(host, port)
+            info = r.info("replication")
+
+            role = info.get("role", "unknown")
+            connected_slaves = info.get("connected_slaves", 0)
+
+            # Add role metric
+            role_value = 1 if role == "master" else 0
+            formatted_data[
+                f"role_{metric_index}"
+            ] = f'redis_replication_role{{instance="{instance}", role="{role}"}} {role_value}'
+            metric_index += 1
+
+            # Add connected slaves metric
+            formatted_data[
+                f"slaves_{metric_index}"
+            ] = f'redis_connected_slaves{{instance="{instance}"}} {connected_slaves}'
+            metric_index += 1
+
+            # Parse slave info - format: slaveN:ip=X,port=Y,state=Z,offset=N,lag=N
+            for key, value in info.items():
+                if key.startswith("slave") and key[5:].isdigit():
+                    slave_num = key[5:]
+                    # Parse the slave info string
+                    slave_info = {}
+                    if isinstance(value, str):
+                        for part in value.split(","):
+                            if "=" in part:
+                                k, v = part.split("=", 1)
+                                slave_info[k] = v
+                    elif isinstance(value, dict):
+                        slave_info = value
+
+                    slave_ip = slave_info.get("ip", "unknown")
+                    slave_state = slave_info.get("state", "unknown")
+                    lag = slave_info.get("lag", "0")
+
+                    # State as numeric: online=1, other=0
+                    state_value = 1 if slave_state == "online" else 0
+                    formatted_data[
+                        f"state_{metric_index}"
+                    ] = f'redis_slave_state{{instance="{instance}", slave="{slave_num}", slave_ip="{slave_ip}"}} {state_value}'
+                    metric_index += 1
+
+                    # Lag in seconds
+                    formatted_data[
+                        f"lag_{metric_index}"
+                    ] = f'redis_replication_lag_seconds{{instance="{instance}", slave="{slave_num}", slave_ip="{slave_ip}"}} {lag}'
+                    metric_index += 1
+
+        except redis.ConnectionError as e:
+            formatted_data[
+                f"error_{metric_index}"
+            ] = f'redis_replication_error{{instance="{instance}", error="connection_error"}} 1'
+            metric_index += 1
+        except redis.TimeoutError as e:
+            formatted_data[
+                f"error_{metric_index}"
+            ] = f'redis_replication_error{{instance="{instance}", error="timeout"}} 1'
+            metric_index += 1
+
+    context = {
+        "data": formatted_data,
+        "chart_name": "redis_replication",
+        "chart_type": "gauge",
+    }
+    html_body = render_template("prometheus_data.html", **context)
+    return Response(html_body, content_type="text/plain")
+
+
 if __name__ == "__main__":
     print(" ---> Starting NewsBlur Flask Metrics server...")
     app.run(host="0.0.0.0", port=5569)
