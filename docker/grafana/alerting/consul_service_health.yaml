@@ -55,7 +55,7 @@ groups:
                     params: []
                     type: last
                   type: query
-        noDataState: NoData
+        noDataState: OK
         execErrState: Alerting
         for: 15m
         annotations:
