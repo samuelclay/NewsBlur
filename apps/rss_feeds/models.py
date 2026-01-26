@@ -4247,6 +4247,75 @@ class MStarredStoryCounts(mongo.Document):
                     dup_count.save()
         return count
 
+    @classmethod
+    def rename_tag(cls, user_id, old_tag, new_tag):
+        """
+        Rename a tag for a user: update all starred stories and recalculate counts.
+        If new_tag already exists, merges the stories (case-insensitive).
+        Returns the updated starred counts.
+        """
+        from django.template.defaultfilters import slugify
+
+        if not old_tag or not new_tag:
+            return None
+
+        old_tag = old_tag.strip()
+        new_tag = new_tag.strip()
+
+        if not old_tag or not new_tag:
+            return None
+
+        # Case-insensitive comparison: if old and new are the same (ignoring case), just normalize
+        if old_tag.lower() == new_tag.lower():
+            # Just update the tag name to the new casing if different
+            if old_tag != new_tag:
+                MStarredStory.objects(user_id=user_id, user_tags=old_tag).update(set__user_tags__S=new_tag)
+                cls.objects(user_id=user_id, tag=old_tag).update(set__tag=new_tag, set__slug=slugify(new_tag))
+            return cls.user_counts(user_id)
+
+        # Update all stories: for each story that has old_tag, add new_tag (if not present) and remove old_tag
+        # Use MongoDB's atomic operators for efficiency
+        stories_with_old_tag = MStarredStory.objects(user_id=user_id, user_tags=old_tag)
+        for story in stories_with_old_tag:
+            user_tags = story.user_tags or []
+            # Remove old_tag and add new_tag if not already present (case-insensitive check)
+            new_tags = [t for t in user_tags if t.lower() != old_tag.lower()]
+            # Check if new_tag (case-insensitive) is already present
+            has_new_tag = any(t.lower() == new_tag.lower() for t in new_tags)
+            if not has_new_tag:
+                new_tags.append(new_tag)
+            story.user_tags = new_tags
+            story.save()
+
+        # Delete the old tag count entry
+        cls.objects(user_id=user_id, tag=old_tag).delete()
+
+        # Recalculate counts for the user (this will create/update the new tag count)
+        cls.count_tags_for_user(user_id)
+
+        return cls.user_counts(user_id)
+
+    @classmethod
+    def delete_tag(cls, user_id, tag):
+        """
+        Delete a tag from all user's starred stories (stories remain saved, just without the tag).
+        Returns the updated starred counts.
+        """
+        if not tag:
+            return None
+
+        tag = tag.strip()
+        if not tag:
+            return None
+
+        # Remove the tag from all stories that have it
+        MStarredStory.objects(user_id=user_id, user_tags=tag).update(pull__user_tags=tag)
+
+        # Delete the tag count entry
+        cls.objects(user_id=user_id, tag=tag).delete()
+
+        return cls.user_counts(user_id)
+
 
 class MSavedSearch(mongo.Document):
     user_id = mongo.IntField()
