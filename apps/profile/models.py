@@ -2409,7 +2409,14 @@ invalid_ipn_received.connect(paypal_payment_was_flagged)
 
 
 def stripe_checkout_session_completed(sender, full_json, **kwargs):
-    newsblur_user_id = full_json["data"]["object"]["metadata"]["newsblur_user_id"]
+    metadata = full_json["data"]["object"].get("metadata", {})
+    newsblur_user_id = metadata.get("newsblur_user_id")
+
+    # If no newsblur_user_id in metadata, this is not a NewsBlur checkout (e.g., Crabigator)
+    if not newsblur_user_id:
+        logging.debug(" ---> Stripe checkout webhook for non-NewsBlur product, ignoring")
+        return
+
     stripe_id = full_json["data"]["object"]["customer"]
     profile = None
     try:
