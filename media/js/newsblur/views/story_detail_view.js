@@ -252,7 +252,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         <div class="NB-feed-story-header-feed">\
             <% if (feed) { %>\
                 <div class="NB-feed-story-feed">\
-                    <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                    <%= $.favicon_html(feed) %>\
                     <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
                 </div>\
             <% } %>\
@@ -660,7 +660,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             bottom: -1 * $expander.outerHeight() - 76
         }, {
             duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(200 * height_ratio, 10)),
-            easing: 'easeInOutQuart'
+            easing: 'easeInOutQuart',
+            complete: function () {
+                $expander.hide();
+            }
         });
 
     },
@@ -1260,6 +1263,24 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var terms = [];
         var remaining = query;
 
+        // Common English stop words that shouldn't be highlighted individually
+        // These are only filtered for single-word terms, not phrases
+        var stop_words = [
+            'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+            'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been',
+            'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would',
+            'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need',
+            'it', 'its', 'this', 'that', 'these', 'those', 'i', 'you', 'he',
+            'she', 'we', 'they', 'what', 'which', 'who', 'whom', 'when', 'where',
+            'why', 'how', 'all', 'each', 'every', 'both', 'few', 'more', 'most',
+            'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same',
+            'so', 'than', 'too', 'very', 'just', 'also', 'now', 'here', 'there',
+            'then', 'once', 'if', 'about', 'into', 'through', 'during', 'before',
+            'after', 'above', 'below', 'between', 'under', 'again', 'further',
+            'any', 'because', 'being', 'get', 'got', 'him', 'her', 'his', 'hers',
+            'me', 'my', 'our', 'ours', 'their', 'them', 'up', 'down', 'out', 'off'
+        ];
+
         // Extract quoted phrases first (strip the quotes)
         // Handle straight quotes (") and curly/smart quotes (" ")
         var phrase_regex = /[""\u201C\u201D]([^""\u201C\u201D]+)[""\u201C\u201D]/g;
@@ -1283,15 +1304,23 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // Generate all contiguous n-grams from longest to shortest
         // For "a b c d e", generate: "a b c d e", then "a b c d", "b c d e",
         // then "a b c", "b c d", "c d e", etc.
+        // Single-word stop words are filtered out to avoid highlighting common words
         if (words.length > 1) {
             for (var n = words.length; n >= 1; n--) {
                 for (var i = 0; i <= words.length - n; i++) {
                     var ngram = words.slice(i, i + n).join(' ');
+                    // Filter out single-word stop words
+                    if (n === 1 && stop_words.indexOf(ngram.toLowerCase()) !== -1) {
+                        continue;
+                    }
                     terms.push(ngram);
                 }
             }
         } else if (words.length === 1) {
-            terms.push(words[0]);
+            // Only add single word if it's not a stop word
+            if (stop_words.indexOf(words[0].toLowerCase()) === -1) {
+                terms.push(words[0]);
+            }
         }
 
         return terms;
@@ -1514,7 +1543,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             </div>\
                             <div class="NB-menu-ask-ai-model-dropdown">\
                                 <div class="NB-model-option NB-selected" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude Opus 4.5</div>\
-                                <div class="NB-model-option" data-model="gpt-5.1"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.1</div>\
+                                <div class="NB-model-option" data-model="gpt-5.2"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.2</div>\
                                 <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
                                 <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
                             </div>\

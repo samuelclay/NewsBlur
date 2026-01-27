@@ -1,0 +1,53 @@
+package com.newsblur.activity
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.core.net.toUri
+import androidx.fragment.app.FragmentActivity
+import com.newsblur.compose.LoginScreen
+import com.newsblur.design.NewsBlurTheme
+import com.newsblur.design.toVariant
+import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.AppConstants
+import com.newsblur.util.UIUtils
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+
+@AndroidEntryPoint
+class LoginActivity : FragmentActivity() {
+    @Inject
+    lateinit var prefsRepo: PrefsRepo
+
+    @SuppressLint("UseKtx")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        val variant = prefsRepo.getSelectedTheme().toVariant()
+        setContent {
+            NewsBlurTheme(variant = variant) {
+                LoginScreen(
+                    onAuthCompleted = ::onAuthCompleted,
+                    onOpenForgotPassword = ::onOpenForgotPassword,
+                )
+            }
+        }
+    }
+
+    private fun onAuthCompleted() {
+        val startMain =
+            Intent(this, Main::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+        startActivity(startMain)
+    }
+
+    private fun onOpenForgotPassword() {
+        try {
+            UIUtils.handleUri(this, prefsRepo, AppConstants.FORGOT_PASWORD_URL.toUri())
+        } catch (_: Exception) {
+        }
+    }
+}

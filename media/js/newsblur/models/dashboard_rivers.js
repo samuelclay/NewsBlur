@@ -5,13 +5,6 @@ NEWSBLUR.Models.DashboardRiver = Backbone.Model.extend({
         this.set('feed_title', "\"<b>" + this.get('query') + "</b>\" in <b>" + feed_title + "</b>");
     },
 
-    favicon_url: function () {
-        var url;
-        var river_id = this.get('river_id');
-
-        return $.favicon(river_id);
-    },
-
     change_feed: function (river_id) {
         this.set('river_id', river_id);
         NEWSBLUR.assets.save_dashboard_river(river_id, this.get('river_side'), this.get('river_order'));

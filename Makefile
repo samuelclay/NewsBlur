@@ -107,22 +107,33 @@ worktree-stop:
 	@WORKSPACE_NAME=$$(basename "$$(pwd)"); \
 	echo "Stopping workspace: $$WORKSPACE_NAME"; \
 	if [ -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" ]; then \
-		docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" down --remove-orphans; \
-		echo "✓ Stopped containers for workspace: $$WORKSPACE_NAME"; \
-	else \
-		echo "No worktree configuration found"; \
-	fi
+		COMPOSE_PROJECT_NAME="$$WORKSPACE_NAME" docker compose -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml" down --remove-orphans 2>/dev/null || true; \
+	fi; \
+	echo "Removing containers for workspace: $$WORKSPACE_NAME"; \
+	docker rm -f newsblur_web_$$WORKSPACE_NAME newsblur_node_$$WORKSPACE_NAME newsblur_celery_$$WORKSPACE_NAME newsblur_nginx_$$WORKSPACE_NAME newsblur_haproxy_$$WORKSPACE_NAME 2>/dev/null || true; \
+	echo "✓ Stopped containers for workspace: $$WORKSPACE_NAME"
 
-worktree-close: worktree-stop
+worktree-close:
 	@if [ -f ".git" ]; then \
 		echo "Detected git worktree"; \
-		$(MAKE) worktree-permissions; \
+		WORKSPACE_NAME=$$(basename "$$(pwd)"); \
+		WORKTREE_PATH=$$(pwd); \
+		MAIN_REPO=$$(git rev-parse --git-common-dir | sed 's|/\.git$$||'); \
+		echo "Syncing permissions before cleanup..."; \
+		$(MAKE) worktree-permissions || true; \
+		echo "Stopping containers..."; \
+		$(MAKE) worktree-stop; \
 		if [ -z "$$(git status --porcelain)" ]; then \
-			WORKTREE_PATH=$$(pwd); \
-			cd ..; \
+			echo "Cleaning up config files..."; \
+			rm -f ".worktree/docker-compose.$${WORKSPACE_NAME}.yml"; \
+			rm -rf ".worktree/haproxy"; \
+			rmdir .worktree 2>/dev/null || true; \
+			echo "Removing files that may have root ownership..."; \
+			docker run --rm -v "$$WORKTREE_PATH:/workdir" alpine rm -rf /workdir/node /workdir/docker 2>/dev/null || rm -rf node docker 2>/dev/null || true; \
+			cd "$$MAIN_REPO"; \
 			echo "Removing worktree: $$WORKTREE_PATH"; \
-			git worktree remove "$$WORKTREE_PATH"; \
-			echo "✓ Removed worktree"; \
+			git worktree remove "$$WORKTREE_PATH" --force; \
+			echo "✓ Removed worktree. You are now in: $$MAIN_REPO"; \
 		else \
 			echo "⚠ Worktree has uncommitted changes. Commit or stash changes before closing."; \
 			git status --short; \
@@ -175,6 +186,26 @@ worktree-permissions:
 	else \
 		echo "✓ Permissions synced"; \
 	fi
+
+# Clean up orphaned worktree containers and directories
+# Run from main repo to remove artifacts from worktrees that no longer exist
+worktree-cleanup:
+	@echo "Cleaning up orphaned worktree artifacts..."
+	@# Stop and remove any containers from worktrees that no longer exist
+	@for name in $$(docker ps -a --format '{{.Names}}' | grep -E 'newsblur_(web|node|celery|nginx|haproxy)_' | sed 's/newsblur_[^_]*_//' | sort -u); do \
+		if [ ! -d ".worktree/$$name" ] || [ ! -f ".worktree/$$name/.git" ]; then \
+			echo "Removing orphaned containers for: $$name"; \
+			docker rm -f newsblur_web_$$name newsblur_node_$$name newsblur_celery_$$name newsblur_nginx_$$name newsblur_haproxy_$$name 2>/dev/null || true; \
+		fi; \
+	done
+	@# Clean up orphaned directories in .worktree that aren't valid git worktrees
+	@for dir in .worktree/*/; do \
+		if [ -d "$$dir" ] && [ ! -f "$${dir}.git" ]; then \
+			echo "Removing orphaned directory: $$dir"; \
+			docker run --rm -v "$$(pwd)/$$dir:/workdir" alpine rm -rf /workdir 2>/dev/null || rm -rf "$$dir" 2>/dev/null || true; \
+		fi; \
+	done
+	@echo "✓ Cleanup complete"
 
 coffee:
 	coffee -c -w **/*.coffee

@@ -10,16 +10,18 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class NotifyDismissReceiver : BroadcastReceiver() {
-
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
 
-    override fun onReceive(c: Context, i: Intent) {
+    override fun onReceive(
+        c: Context,
+        i: Intent,
+    ) {
         val storyHash = i.getStringExtra(Reading.EXTRA_STORY_HASH)
         NBScope.executeAsyncTask(
-                doInBackground = {
-                    dbHelper.putStoryDismissed(storyHash)
-                }
+            doInBackground = {
+                dbHelper.putStoryDismissed(storyHash)
+            },
         )
     }
 }
