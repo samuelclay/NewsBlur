@@ -301,10 +301,6 @@
     
     self.errorLabel.hidden = !hasError;
     self.forgotPasswordButton.hidden = !hasError;
-    
-    if (!self.isPhone) {
-        self.loginOptionalLabel.hidden = hasError;
-    }
 }
 
 - (IBAction)findLoginFrom1Password:(id)sender {
