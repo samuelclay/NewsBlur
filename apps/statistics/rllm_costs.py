@@ -124,7 +124,15 @@ class RLLMCosts:
 
     # Known dimensions for direct key lookups (avoid scan_iter)
     PROVIDERS = ["anthropic", "openai", "google", "xai"]
-    FEATURES = ["archive_assistant", "ask_ai", "story_classification", "transcription"]
+    FEATURES = [
+        "archive_assistant",
+        "ask_ai",
+        "story_classification",
+        "transcription",
+        "search_story_embedding",
+        "search_query_embedding",
+        "search_feed_embedding",
+    ]
     METRICS = ["tokens", "cost", "requests"]
 
     @classmethod

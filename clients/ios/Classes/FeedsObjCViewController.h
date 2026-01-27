@@ -13,6 +13,8 @@
 #import "NBNotifier.h"
 #import "MCSwipeTableViewCell.h"
 
+@class SyncNotifierView;
+
 // indices in appDelegate.dictFoldersArray and button tags
 // keep in sync with NewsBlurTopSectionNames
 static enum {
@@ -26,7 +28,7 @@ static enum {
 NSCacheDelegate,
 UIPopoverControllerDelegate,
 MCSwipeTableViewCellDelegate,
-UIGestureRecognizerDelegate, UISearchBarDelegate> {
+UIGestureRecognizerDelegate, UITextFieldDelegate> {
     NSMutableDictionary * activeFeedLocations;
     NSMutableDictionary *stillVisibleFeeds;
     NSMutableDictionary *visibleFolders;
@@ -80,7 +82,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 #if !TARGET_OS_MACCATALYST
 @property (nonatomic) UIRefreshControl *refreshControl;
 #endif
-@property (nonatomic) UISearchBar *searchBar;
+@property (nonatomic) UITextField *searchField;
 @property (nonatomic, strong) NSArray<NSString *> *searchFeedIds;
 @property (nonatomic) NSCache *imageCache;
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
@@ -90,6 +92,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 @property (strong, nonatomic) IBOutlet UILabel *noFocusLabel;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *toolbarLeftMargin;
 @property (nonatomic, retain) NBNotifier *notifier;
+@property (nonatomic, strong) SyncNotifierView *syncNotifier;
 @property (nonatomic, retain) UIImageView *avatarImageView;
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
@@ -119,6 +122,9 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)markEverythingReadWithDays:(NSInteger)days;
 - (void)markVisibleStoriesRead;
 - (void)didCollapseFolder:(UIButton *)button;
+- (void)didToggleAllFolders:(UIButton *)button;
+- (BOOL)anyFolderExpanded;
+- (void)updateAllStoriesCollapseButton;
 - (BOOL)isFeedVisible:(id)feedId;
 - (void)changeToAllMode;
 - (void)calculateFeedLocations;

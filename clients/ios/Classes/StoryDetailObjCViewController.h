@@ -52,6 +52,10 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation;
 - (void)updateStoryTheme;
 - (void)drawFeedGradient;
+- (void)updateFeedTitleGradientPosition;
+- (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha;
+- (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha maintainVisualPosition:(BOOL)maintainVisualPosition;
+- (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha maintainVisualPosition:(BOOL)maintainVisualPosition force:(BOOL)force;
 - (void)showStory;
 - (void)clearStory;
 - (void)hideStory;
@@ -86,6 +90,9 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 - (void)refreshSideOptions;
 
 - (CGPoint)pointForGesture:(UIGestureRecognizer *)gestureRecognizer;
+
+- (void)captureNavBarHiddenOffsetIfNeeded;
+- (void)clearNavBarHiddenOffset;
 
 - (void)showTextOrStoryView;
 - (void)showStoryView;

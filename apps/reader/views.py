@@ -1,6 +1,7 @@
 import base64
 import concurrent
 import datetime
+import hashlib
 import http.client
 import random
 import re
@@ -48,11 +49,16 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
+    apply_classifier_text_regex,
     apply_classifier_texts,
+    apply_classifier_title_regex,
     apply_classifier_titles,
+    apply_classifier_url_regex,
+    apply_classifier_urls,
     get_classifiers_for_user,
     sort_classifiers_by_feed,
 )
@@ -110,6 +116,7 @@ from utils.story_functions import (
 )
 from utils.user_functions import ajax_login_required, extract_user_agent, get_user
 from utils.view_functions import (
+    RequestDeduplicator,
     get_argument_or_404,
     is_true,
     render_to,
@@ -409,6 +416,42 @@ def autologin(request, username, secret):
         return HttpResponseRedirect(next)
     else:
         return HttpResponseRedirect(reverse("index"))
+
+
+def dev_autologin(request, username=None):
+    """
+    Development-only autologin endpoint. ONLY works in local dev environment.
+    Requires both DEBUG=True AND 'localhost' in NEWSBLUR_URL.
+
+    Usage:
+        /reader/dev/autologin/           - Login as DEV_AUTOLOGIN_USERNAME
+        /reader/dev/autologin/<username>/ - Login as specific user
+    """
+    is_local_dev = settings.DEBUG and "localhost" in getattr(settings, "NEWSBLUR_URL", "")
+    if not is_local_dev:
+        return HttpResponseForbidden("Dev autologin only available in local development")
+
+    next_url = request.GET.get("next", "")
+
+    if not username:
+        username = getattr(settings, "DEV_AUTOLOGIN_USERNAME", None)
+        if not username:
+            return HttpResponseForbidden("No username provided and DEV_AUTOLOGIN_USERNAME not set")
+
+    try:
+        user = User.objects.get(username__iexact=username)
+    except User.DoesNotExist:
+        return HttpResponseForbidden(f"User '{username}' not found")
+
+    user.backend = settings.AUTHENTICATION_BACKENDS[0]
+    login_user(request, user, backend="django.contrib.auth.backends.ModelBackend")
+    logging.user(user, "~FG~BB~SK[DEV] Auto-Login. Next: %s~FW" % (next_url or "Homepage"))
+
+    if next_url and not next_url.startswith("/"):
+        return HttpResponseRedirect(reverse("index") + "?next=" + next_url)
+    elif next_url:
+        return HttpResponseRedirect(next_url)
+    return HttpResponseRedirect(reverse("index"))
 
 
 @ratelimit(minutes=1, requests=60)
@@ -942,12 +985,14 @@ def load_single_feed(request, feed_id):
         classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
         classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id=feed_id))
+        classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id=feed_id))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
         classifier_texts = []
+        classifier_urls = []
     classifiers = get_classifiers_for_user(
         user,
         feed_id=feed_id,
@@ -956,6 +1001,7 @@ def load_single_feed(request, feed_id):
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
+        classifier_urls=classifier_urls,
     )
     checkpoint3 = time.time()
 
@@ -995,18 +1041,28 @@ def load_single_feed(request, feed_id):
     user_preferences = json.decode(user.profile.preferences)
     youtube_captions_enabled = user_preferences.get("youtube_captions", False)
 
+    user_is_pro = user.profile.is_pro
+
     for story in stories:
         # Calculate intelligence BEFORE deleting story content (text classifier needs it)
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, feed),
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story),
+            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
+            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
             "text": (
-                apply_classifier_texts(classifier_texts, story)
+                apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
+            "text_regex": (
+                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
+            "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
+            "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_is_pro),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
@@ -1369,7 +1425,11 @@ def load_starred_stories(request):
             "author": 0,
             "tags": 0,
             "title": 0,
+            "title_regex": 0,
             "text": 0,
+            "text_regex": 0,
+            "url": 0,
+            "url_regex": 0,
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True
@@ -1557,12 +1617,14 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         )
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
         classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+        classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
         classifier_texts = []
+        classifier_urls = []
 
     sort_classifiers_by_feed(
         user=user,
@@ -1572,18 +1634,28 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
+        classifier_urls=classifier_urls,
     )
+    user_is_pro = user.profile.is_pro
     for story in stories:
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story),
+            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
+            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
             "text": (
-                apply_classifier_texts(classifier_texts, story)
+                apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
+            "text_regex": (
+                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
+            "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
+            "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_is_pro),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
         if unread_filter == "focus" and story["score"] >= 1:
@@ -1768,7 +1840,11 @@ def load_read_stories(request):
             "author": 0,
             "tags": 0,
             "title": 0,
+            "title_regex": 0,
             "text": 0,
+            "text_regex": 0,
+            "url": 0,
+            "url_regex": 0,
         }
         if story["story_hash"] in starred_stories:
             story["starred"] = True
@@ -1841,6 +1917,21 @@ def load_river_stories__redis(request):
     user_search = None
     offset = (page - 1) * limit
     story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
+
+    # Android app duplicate request deduplication - only kicks in when concurrent requests detected
+    # The Android app has a bug where it fires multiple identical requests simultaneously
+    platform = extract_user_agent(request)
+    is_android = platform in ["Androd", "androd"]
+    deduper = None
+    if is_android and not story_hashes and not query:
+        feeds_hash = hashlib.md5(",".join(str(f) for f in sorted(feed_ids)).encode()).hexdigest()[:12]
+        cache_key = (
+            f"river:{user.pk}:{feeds_hash}:{page}:{order}:{read_filter}:{date_filter_start}:{date_filter_end}"
+        )
+        deduper = RequestDeduplicator(request, cache_key)
+        cached = deduper.check_for_duplicate()
+        if cached is not None:
+            return cached
 
     if infrequent:
         feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
@@ -1934,7 +2025,9 @@ def load_river_stories__redis(request):
 
     # Find starred stories
     if found_feed_ids:
-        if read_filter == "starred":
+        # Only reuse mstories directly when we know it contains MStarredStory objects
+        # (i.e., when read_filter is "starred" and we're not searching or fetching specific hashes)
+        if read_filter == "starred" and not query and not requested_hashes:
             starred_stories = mstories
         else:
             story_hashes = [s["story_hash"] for s in stories]
@@ -1969,12 +2062,14 @@ def load_river_stories__redis(request):
         )
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
         classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+        classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
         classifier_texts = []
+        classifier_urls = []
     classifiers = sort_classifiers_by_feed(
         user=user,
         feed_ids=found_feed_ids,
@@ -1983,6 +2078,7 @@ def load_river_stories__redis(request):
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
+        classifier_urls=classifier_urls,
     )
 
     # Just need to format stories
@@ -1991,6 +2087,8 @@ def load_river_stories__redis(request):
     # Check if user wants YouTube captions enabled
     user_preferences = json.decode(user.profile.preferences)
     youtube_captions_enabled = user_preferences.get("youtube_captions", False)
+
+    user_is_pro = user.profile.is_pro
 
     for story in stories:
         if read_filter == "starred":
@@ -2017,12 +2115,20 @@ def load_river_stories__redis(request):
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story),
+            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
+            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
             "text": (
-                apply_classifier_texts(classifier_texts, story)
+                apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
+            "text_regex": (
+                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro)
+                if user.profile.premium_available_text_classifiers
+                else 0
+            ),
+            "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
+            "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_is_pro),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
@@ -2116,6 +2222,10 @@ def load_river_stories__redis(request):
         data["feeds"] = feeds
     if not include_hidden:
         data["hidden_stories_removed"] = hidden_stories_removed
+
+    # Cache result briefly for any waiting duplicate Android requests
+    if deduper:
+        deduper.cache_result(data)
 
     return data
 
@@ -3367,6 +3477,125 @@ def feeds_trainer(request):
     logging.user(user, "~FGLoading Trainer: ~SB%s feeds" % (len(classifiers)))
 
     return classifiers
+
+
+@json.json_view
+def all_classifiers(request):
+    """
+    Return all trained classifiers for a user, organized by feed and folder structure.
+    Only returns classifiers with non-zero scores (trained items).
+    """
+    user = get_user(request)
+    if not user.is_authenticated:
+        return {"folders": [], "total_classifiers": 0}
+
+    # Get folder structure for organizing output
+    try:
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        flat_folders = usf.flatten_folders()
+    except UserSubscriptionFolders.DoesNotExist:
+        flat_folders = {" ": []}
+
+    # Get all classifiers for user with non-zero scores
+    classifier_titles = list(MClassifierTitle.objects.filter(user_id=user.pk, score__ne=0))
+    classifier_authors = list(MClassifierAuthor.objects.filter(user_id=user.pk, score__ne=0))
+    classifier_tags = list(MClassifierTag.objects.filter(user_id=user.pk, score__ne=0))
+    classifier_texts = list(MClassifierText.objects.filter(user_id=user.pk, score__ne=0))
+    classifier_feeds = list(MClassifierFeed.objects.filter(user_id=user.pk, score__ne=0))
+    classifier_urls = list(MClassifierUrl.objects.filter(user_id=user.pk, score__ne=0))
+
+    # Group classifiers by feed_id
+    from collections import defaultdict
+
+    classifiers_by_feed = defaultdict(
+        lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": [], "urls": []}
+    )
+
+    for c in classifier_titles:
+        classifiers_by_feed[c.feed_id]["titles"].append(
+            {"title": c.title, "score": c.score, "is_regex": getattr(c, "is_regex", False)}
+        )
+    for c in classifier_authors:
+        classifiers_by_feed[c.feed_id]["authors"].append({"author": c.author, "score": c.score})
+    for c in classifier_tags:
+        classifiers_by_feed[c.feed_id]["tags"].append({"tag": c.tag, "score": c.score})
+    for c in classifier_texts:
+        classifiers_by_feed[c.feed_id]["texts"].append(
+            {"text": c.text, "score": c.score, "is_regex": getattr(c, "is_regex", False)}
+        )
+    for c in classifier_feeds:
+        classifiers_by_feed[c.feed_id]["feeds"].append({"feed_id": c.feed_id, "score": c.score})
+    for c in classifier_urls:
+        classifiers_by_feed[c.feed_id]["urls"].append(
+            {"url": c.url, "score": c.score, "is_regex": getattr(c, "is_regex", False)}
+        )
+
+    # Batch fetch all feeds with classifiers to avoid N+1 queries
+    all_classifier_feed_ids = set(classifiers_by_feed.keys())
+    feeds_by_id = {f.pk: f for f in Feed.objects.filter(pk__in=all_classifier_feed_ids)}
+
+    # Build response organized by folder structure
+    folders_with_classifiers = []
+    all_folder_feed_ids = set()
+
+    for folder_name, feed_ids in flat_folders.items():
+        all_folder_feed_ids.update(feed_ids)
+        folder_feeds = []
+        for feed_id in feed_ids:
+            if feed_id in classifiers_by_feed:
+                feed = feeds_by_id.get(feed_id)
+                if feed:
+                    folder_feeds.append(
+                        {
+                            "feed_id": feed_id,
+                            "feed_title": feed.feed_title,
+                            "favicon_url": feed.favicon_url,
+                            "favicon_color": feed.favicon_color,
+                            "favicon_fetching": feed.favicon_fetching,
+                            "classifiers": classifiers_by_feed[feed_id],
+                        }
+                    )
+
+        if folder_feeds:
+            folders_with_classifiers.append({"folder_name": folder_name, "feeds": folder_feeds})
+
+    # Check for feeds with classifiers not in any folder
+    orphan_feeds = []
+    for feed_id, classifiers in classifiers_by_feed.items():
+        if feed_id not in all_folder_feed_ids:
+            feed = feeds_by_id.get(feed_id)
+            if feed:
+                orphan_feeds.append(
+                    {
+                        "feed_id": feed_id,
+                        "feed_title": feed.feed_title,
+                        "favicon_url": feed.favicon_url,
+                        "favicon_color": feed.favicon_color,
+                        "favicon_fetching": feed.favicon_fetching,
+                        "classifiers": classifiers,
+                    }
+                )
+
+    if orphan_feeds:
+        folders_with_classifiers.append({"folder_name": "Uncategorized", "feeds": orphan_feeds})
+
+    total_classifiers = sum(
+        len(c["titles"])
+        + len(c["authors"])
+        + len(c["tags"])
+        + len(c["texts"])
+        + len(c["feeds"])
+        + len(c["urls"])
+        for c in classifiers_by_feed.values()
+    )
+
+    logging.user(
+        user,
+        "~FGLoading All Classifiers: ~SB%s classifiers across %s feeds"
+        % (total_classifiers, len(classifiers_by_feed)),
+    )
+
+    return {"folders": folders_with_classifiers, "total_classifiers": total_classifiers}
 
 
 @ajax_login_required

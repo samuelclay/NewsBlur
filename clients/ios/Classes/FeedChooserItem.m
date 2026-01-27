@@ -71,7 +71,15 @@
 - (UIImage *)icon {
     if (!_icon) {
         if (!self.identifier) {
-            self.icon = [UIImage imageNamed:@"folder-open"];
+            // Check for custom folder icon
+            NSString *folderName = self.info[@"feed_title"];
+            NSDictionary *customIcon = self.appDelegate.dictFolderIcons[folderName];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                self.icon = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(20, 20)];
+            }
+            if (!self.icon) {
+                self.icon = [UIImage imageNamed:@"folder-open"];
+            }
         } else {
             NSString *identifier = self.identifierString;
             BOOL isSocial = [self.appDelegate isSocialFeed:identifier];
@@ -79,7 +87,7 @@
             self.icon = [self.appDelegate getFavicon:identifier isSocial:isSocial isSaved:isSaved];
         }
     }
-    
+
     return _icon;
 }
 
