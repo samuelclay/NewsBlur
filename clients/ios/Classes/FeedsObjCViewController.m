@@ -38,6 +38,16 @@ static const CGFloat kPhoneBlurblogTableViewRowHeight = 9.0f;
 static const CGFloat kFolderTitleHeight = 12.0f;
 static UIFont *userLabelFont;
 
+static UIImage *NBImageFromColor(UIColor *color) {
+    CGRect rect = CGRectMake(0, 0, 1, 1);
+    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0.0);
+    [color setFill];
+    UIRectFill(rect);
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}
+
 static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 @interface FeedsObjCViewController () <PreferencesViewDelegate>
@@ -120,25 +130,43 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedViewToolbar.translatesAutoresizingMaskIntoConstraints = NO;
 #endif
     
-    self.searchBar = [[UISearchBar alloc]
-                      initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 44.)];
-    self.searchBar.delegate = self;
-    [self.searchBar setReturnKeyType:UIReturnKeySearch];
-    self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
-    self.searchBar.tintColor = UIColorFromRGB(0x0);
-    self.searchBar.nb_searchField.textColor = UIColorFromRGB(0x0);
-    [self.searchBar setSearchBarStyle:UISearchBarStyleMinimal];
-    [self.searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-#if TARGET_OS_MACCATALYST
-    // Workaround for Catalyst bug.
-    self.searchBar.frame = CGRectMake(10, 0, CGRectGetWidth(self.feedTitlesTable.frame) - 20, 44.);
-    self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    UIView *searchContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 44.)];
-    [searchContainerView addSubview:self.searchBar];
+    // Create compact search field with theme colors
+    UIView *searchContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 28.)];
+    searchContainerView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xf4f4f4, 0xF3E2CB, 0x333333, 0x222222);
+    searchContainerView.tag = 100; // Tag for theme updates
+
+    self.searchField = [[UITextField alloc] initWithFrame:CGRectMake(8, 2, CGRectGetWidth(self.feedTitlesTable.frame) - 16, 24.)];
+    self.searchField.delegate = self;
+    self.searchField.returnKeyType = UIReturnKeySearch;
+    self.searchField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x444444, 0x333333);
+    self.searchField.textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
+    self.searchField.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
+    self.searchField.font = [UIFont systemFontOfSize:13];
+    self.searchField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.searchField.autocorrectionType = UITextAutocorrectionTypeNo;
+    self.searchField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.searchField.placeholder = @"Search feeds";
+    self.searchField.layer.cornerRadius = 6;
+    self.searchField.layer.masksToBounds = YES;
+    self.searchField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+
+    // Add search icon as left view
+    UIImageView *searchIcon = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"magnifyingglass"]];
+    searchIcon.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
+    searchIcon.contentMode = UIViewContentModeScaleAspectFit;
+    searchIcon.frame = CGRectMake(0, 0, 24, 16);
+    searchIcon.tag = 101; // Tag for theme updates
+    UIView *leftPaddingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 24)];
+    searchIcon.center = CGPointMake(16, 12);
+    [leftPaddingView addSubview:searchIcon];
+    self.searchField.leftView = leftPaddingView;
+    self.searchField.leftViewMode = UITextFieldViewModeAlways;
+
+    // Add target for text change events
+    [self.searchField addTarget:self action:@selector(searchFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+
+    [searchContainerView addSubview:self.searchField];
     self.feedTitlesTable.tableHeaderView = searchContainerView;
-#else
-    self.feedTitlesTable.tableHeaderView = self.searchBar;
-#endif
     
     userLabelFont = [UIFont fontWithName:@"WhitneySSm-Medium" size:15.0];
     
@@ -170,7 +198,22 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.intelligenceControl.subviews objectAtIndex:2].accessibilityLabel = @"Unread";
     [self.intelligenceControl.subviews objectAtIndex:1].accessibilityLabel = @"Focus";
     [self.intelligenceControl.subviews objectAtIndex:0].accessibilityLabel = @"Saved";
-    
+
+    // Set segmented control styling and size
+    self.intelligenceControl.layer.cornerRadius = 8;
+    self.intelligenceControl.clipsToBounds = YES;
+
+    // Set explicit segment widths to control overall size
+    [self.intelligenceControl setWidth:42 forSegmentAtIndex:0]; // All
+    [self.intelligenceControl setWidth:68 forSegmentAtIndex:1]; // Unread
+    [self.intelligenceControl setWidth:58 forSegmentAtIndex:2]; // Focus
+    [self.intelligenceControl setWidth:58 forSegmentAtIndex:3]; // Saved
+
+    // Set height via Auto Layout, constrain width to prevent expansion
+    self.intelligenceControl.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.intelligenceControl.heightAnchor constraintEqualToConstant:36].active = YES;
+    [self.intelligenceControl.widthAnchor constraintEqualToConstant:232].active = YES;
+
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
                                                                UIColorFromFixedRGB(0x8F918B)}
@@ -203,20 +246,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.feedTitlesTable];
     
     [self updateTheme];
-    
-    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."
-                                           withOffset:CGPointMake(0, 0)];
-    [self.view insertSubview:self.notifier belowSubview:self.feedViewToolbar];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.innerView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.innerView attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:NOTIFIER_HEIGHT]];
-    self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.feedViewToolbar attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
-    [self.view addConstraint:self.notifier.topOffsetConstraint];
-    
+    [self layoutHeaderCounts:0];
+
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.feedTitlesTable.separatorColor = [UIColor clearColor];
     self.feedTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.feedTitlesTable.estimatedRowHeight = 0;
+    self.feedTitlesTable.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     
 #if TARGET_OS_MACCATALYST
     // Workaround for Catalyst bug.
@@ -227,7 +263,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (@available(iOS 15.0, *)) {
         self.feedTitlesTable.sectionHeaderTopPadding = 0;
     }
-    
+
     self.currentRowAtIndexPath = nil;
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -323,15 +359,30 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     if (self.searchFeedIds) {
 //        [self.feedTitlesTable setContentOffset:CGPointMake(0, 0)];
-        [self.searchBar becomeFirstResponder];
+        [self.searchField becomeFirstResponder];
     } else {
-        [self.searchBar setText:@""];
-//        [self.feedTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+        self.searchField.text = @"";
+//        [self.feedTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchField.frame))];
     }
     
-    [self.searchBar setShowsCancelButton:self.searchBar.text.length > 0 animated:YES];
-    
 //    NSLog(@"Feed List timing 2: %f", [NSDate timeIntervalSinceReferenceDate] - start);
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+
+    // Set content inset so feed list can scroll above the toolbar
+    // Toolbar is positioned 8pt above safe area bottom per storyboard constraint
+    CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
+    CGFloat toolbarBottomGap = 8.0; // From storyboard constraint
+    CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
+    CGFloat totalBottomInset = toolbarHeight + toolbarBottomGap + safeAreaBottom;
+
+    UIEdgeInsets currentInset = self.feedTitlesTable.contentInset;
+    if (currentInset.bottom != totalBottomInset) {
+        self.feedTitlesTable.contentInset = UIEdgeInsetsMake(currentInset.top, currentInset.left, totalBottomInset, currentInset.right);
+        self.feedTitlesTable.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, totalBottomInset, 0);
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -374,7 +425,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
 //    NSLog(@"Show feeds after being read (%@): %d / %@ -> %@", feedIdStr, [preferences boolForKey:@"show_feeds_after_being_read"], [self.stillVisibleFeeds objectForKey:feedIdStr], self.stillVisibleFeeds);
-    NSIndexPath *visiblePath = [self.stillVisibleFeeds objectForKey:feedIdStr];
+    id visiblePathValue = [self.stillVisibleFeeds objectForKey:feedIdStr];
+    // Ensure visiblePath is actually an NSIndexPath (not a boolean marker from NewsBlurAppDelegate)
+    NSIndexPath *visiblePath = [visiblePathValue isKindOfClass:[NSIndexPath class]] ? visiblePathValue : nil;
     if (visiblePath) {
         [self.feedTitlesTable beginUpdates];
         NSMutableArray *paths = (indexPath.section == visiblePath.section &&
@@ -416,13 +469,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)viewWillDisappear:(BOOL)animated {
     [self.appDelegate hidePopoverAnimated:YES];
     [super viewWillDisappear:animated];
-    [self.searchBar resignFirstResponder];
+    [self.searchField resignFirstResponder];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    [self.searchBar resignFirstResponder];
+    [self.searchField resignFirstResponder];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -503,10 +556,60 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    self.intelligenceControl.frame = intelFrame;
 }
 
+- (void)updateIntelligenceControlAppearance {
+#if !TARGET_OS_MACCATALYST
+    if (@available(iOS 26.0, *)) {
+        NSArray<NSNumber *> *barMetrics = @[@(UIBarMetricsDefault), @(UIBarMetricsCompact)];
+        for (NSNumber *metric in barMetrics) {
+            UIBarMetrics barMetric = metric.integerValue;
+            [self.intelligenceControl setBackgroundImage:nil forState:UIControlStateNormal barMetrics:barMetric];
+            [self.intelligenceControl setBackgroundImage:nil forState:UIControlStateSelected barMetrics:barMetric];
+            [self.intelligenceControl setBackgroundImage:nil forState:UIControlStateHighlighted barMetrics:barMetric];
+            [self.intelligenceControl setBackgroundImage:nil forState:UIControlStateDisabled barMetrics:barMetric];
+            [self.intelligenceControl setDividerImage:nil forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateNormal barMetrics:barMetric];
+            [self.intelligenceControl setDividerImage:nil forLeftSegmentState:UIControlStateSelected rightSegmentState:UIControlStateNormal barMetrics:barMetric];
+            [self.intelligenceControl setDividerImage:nil forLeftSegmentState:UIControlStateNormal rightSegmentState:UIControlStateSelected barMetrics:barMetric];
+            [self.intelligenceControl setDividerImage:nil forLeftSegmentState:UIControlStateSelected rightSegmentState:UIControlStateSelected barMetrics:barMetric];
+        }
+        self.intelligenceControl.backgroundColor = nil;
+        self.intelligenceControl.selectedSegmentTintColor = nil;
+        self.intelligenceControl.tintColor = nil;
+        self.intelligenceControl.layer.borderWidth = 0.0;
+        self.intelligenceControl.layer.borderColor = nil;
+        self.intelligenceControl.layer.cornerRadius = 0.0;
+        self.intelligenceControl.clipsToBounds = NO;
+        return;
+    }
+#endif
+
+#if !TARGET_OS_MACCATALYST
+    UIColor *unselectedColor = UIColorFromLightSepiaMediumDarkRGB(0xe7e6e7, 0xE8DED0, 0x707070, 0x303030);
+    UIColor *selectedColor = UIColorFromLightSepiaMediumDarkRGB(0xffffff, 0xFAF5ED, 0x555555, 0x6f6f75);
+    UIImage *unselectedImage = NBImageFromColor(unselectedColor);
+    UIImage *selectedImage = NBImageFromColor(selectedColor);
+
+    NSArray<NSNumber *> *barMetrics = @[@(UIBarMetricsDefault), @(UIBarMetricsCompact)];
+    for (NSNumber *metric in barMetrics) {
+        UIBarMetrics barMetric = metric.integerValue;
+        [self.intelligenceControl setBackgroundImage:unselectedImage forState:UIControlStateNormal barMetrics:barMetric];
+        [self.intelligenceControl setBackgroundImage:selectedImage forState:UIControlStateSelected barMetrics:barMetric];
+        [self.intelligenceControl setBackgroundImage:selectedImage forState:UIControlStateHighlighted barMetrics:barMetric];
+        [self.intelligenceControl setBackgroundImage:unselectedImage forState:UIControlStateDisabled barMetrics:barMetric];
+    }
+#endif
+    self.intelligenceControl.layer.borderWidth = 1.0 / UIScreen.mainScreen.scale;
+    self.intelligenceControl.layer.borderColor = UIColorFromLightSepiaMediumDarkRGB(0xc0c0c0, 0xC8B8A8, 0x555555, 0x444444).CGColor;
+}
+
 // allow keyboard comands
 - (BOOL)canBecomeFirstResponder {
     return YES;
 }
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+    [super buildMenuWithBuilder:builder];
+}
+
 
 #pragma mark -
 #pragma mark State Restoration
@@ -663,7 +766,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     // Doing this here avoids the search bar from appearing on initial load, but doesn't help when only a few rows visible.
 //    if (!self.searchFeedIds && self.feedTitlesTable.contentOffset.y == 0) {
-//        self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchBar.frame));
+//        self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchField.frame));
 //    }
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -699,21 +802,23 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    settingsButton.accessibilityLabel = @"Settings";
 //    [settingsBarButton setCustomView:settingsButton];
     
-    UIImage *activityImage = [Utilities templateImageNamed:@"dialog-notifications" sized:32];
-    [self.activityButton removeFromSuperview];
-    self.activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
-    self.activityButton.accessibilityLabel = @"Activities";
-    [self.activityButton setImage:activityImage forState:UIControlStateNormal];
-    self.activityButton.tintColor = UIColorFromRGB(0x8F918B);
-    [self.activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
-    [self.activityButton addTarget:self
-                       action:@selector(showInteractionsPopover:)
-             forControlEvents:UIControlEventTouchUpInside];
-    activitiesButton = [[UIBarButtonItem alloc]
-                        initWithCustomView:self.activityButton];
-    activitiesButton.width = 32;
-//    self.activityButton.backgroundColor = UIColor.redColor;
-    self.navigationItem.rightBarButtonItem = activitiesButton;
+    // Activity button moved to sidebar as "Interactions" folder
+    // Keeping code commented for reference:
+    // UIImage *activityImage = [Utilities templateImageNamed:@"dialog-notifications" sized:32];
+    // [self.activityButton removeFromSuperview];
+    // self.activityButton = [NBBarButtonItem buttonWithType:UIButtonTypeCustom];
+    // self.activityButton.accessibilityLabel = @"Activities";
+    // [self.activityButton setImage:activityImage forState:UIControlStateNormal];
+    // self.activityButton.tintColor = UIColorFromRGB(0x8F918B);
+    // [self.activityButton setImageEdgeInsets:UIEdgeInsetsMake(4, 0, 4, 0)];
+    // [self.activityButton addTarget:self
+    //                    action:@selector(showInteractionsPopover:)
+    //          forControlEvents:UIControlEventTouchUpInside];
+    // activitiesButton = [[UIBarButtonItem alloc]
+    //                     initWithCustomView:self.activityButton];
+    // activitiesButton.width = 32;
+    // self.navigationItem.rightBarButtonItem = activitiesButton;
+    self.navigationItem.rightBarButtonItem = nil;
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
@@ -782,7 +887,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [appDelegate.dictFeeds addEntriesFromDictionary:appDelegate.dictInactiveFeeds];
     [appDelegate populateDictUnreadCounts];
     [appDelegate populateDictTextFeeds];
-    
+
+    // Store custom folder and feed icons
+    appDelegate.dictFolderIcons = [results objectForKey:@"folder_icons"];
+    appDelegate.dictFeedIcons = [results objectForKey:@"feed_icons"];
+
     NSString *sortOrder = [userPreferences stringForKey:@"feed_list_sort_order"];
     BOOL sortByMostUsed = [sortOrder isEqualToString:@"usage"];
     
@@ -860,7 +969,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     // Add Read Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"read_stories"];
     [appDelegate.dictFoldersArray addObject:@"read_stories"];
-    
+
     // Add Global Shared Stories folder to bottom
     [appDelegate.dictFoldersArray removeObject:@"river_global"];
     [appDelegate.dictFoldersArray addObject:@"river_global"];
@@ -1116,7 +1225,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [viewController addTitle:@"Notifications" iconName:@"dialog-notifications" iconColor:UIColorFromRGB(0xD58B4F) selectionShouldDismiss:YES handler:^{
         [self.appDelegate openNotificationsWithFeed:nil];
     }];
-    
+
+    [viewController addTitle:@"Interactions" iconName:@"pulse" iconColor:UIColorFromRGB(0x8F918B) selectionShouldDismiss:YES handler:^{
+        [self showInteractionsPopover:nil];
+    }];
+
     [viewController addTitle:@"Find Friends" iconName:@"followers" iconColor:UIColorFromRGB(0x5FA1E7) selectionShouldDismiss:YES handler:^{
         [self.appDelegate showFindFriends];
     }];
@@ -1211,12 +1324,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
         return;
     }
-    
+
     CGSize size = CGSizeMake(self.view.frame.size.width - 36,
                              self.view.frame.size.height - 60);
-    
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.activitiesButton];
-    
+
+    // Use settings button as the popover anchor since activities button was removed from nav bar
+    [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.settingsBarButton];
+
     [appDelegate.activitiesViewController refreshInteractions];
     [appDelegate.activitiesViewController refreshActivity];
 }
@@ -1322,20 +1436,59 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
    
     [self.appDelegate hidePopoverAnimated:YES];
     
+    UIColor *tintColor = [UINavigationBar appearance].tintColor;
+    if (!tintColor) {
+        tintColor = UIColorFromLightSepiaMediumDarkRGB(0x0, 0x0, 0x9a8f73, 0x9a8f73);
+    }
     UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
     appearance.backgroundColor = [UINavigationBar appearance].barTintColor;
+    appearance.titleTextAttributes = [UINavigationBar appearance].titleTextAttributes;
+    if (@available(iOS 13.0, *)) {
+        UIBarButtonItemAppearance *buttonAppearance = [[UIBarButtonItemAppearance alloc] init];
+        NSDictionary *textAttributes = @{NSForegroundColorAttributeName: tintColor};
+        [buttonAppearance.normal setTitleTextAttributes:textAttributes];
+        [buttonAppearance.highlighted setTitleTextAttributes:textAttributes];
+        [buttonAppearance.disabled setTitleTextAttributes:textAttributes];
+        appearance.buttonAppearance = buttonAppearance;
+        appearance.backButtonAppearance = buttonAppearance;
+        appearance.doneButtonAppearance = buttonAppearance;
+    }
     
     self.navigationController.navigationBar.scrollEdgeAppearance = appearance;
     self.navigationController.navigationBar.standardAppearance = appearance;
-    self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.navigationController.navigationBar.compactAppearance = appearance;
+    self.navigationController.navigationBar.tintColor = tintColor;
     self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
     self.navigationController.toolbar.tintColor = [UIToolbar appearance].tintColor;
     self.navigationController.toolbar.barTintColor = [UIToolbar appearance].barTintColor;
-    self.feedViewToolbar.tintColor = [UINavigationBar appearance].tintColor;
-    self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
-    self.addBarButton.tintColor = UIColorFromRGB(0x8F918B);
-    self.settingsBarButton.tintColor = UIColorFromRGB(0x8F918B);
+    if (@available(iOS 15.0, *)) {
+        self.feedViewToolbar.translucent = YES;
+        UIToolbarAppearance *toolbarAppearance = [[UIToolbarAppearance alloc] init];
+        [toolbarAppearance configureWithTransparentBackground];
+
+        UIBlurEffectStyle blurStyle = UIBlurEffectStyleSystemChromeMaterial;
+        if (ThemeManager.shared.isDarkTheme) {
+            blurStyle = UIBlurEffectStyleSystemChromeMaterialDark;
+        }
+
+        toolbarAppearance.backgroundEffect = [UIBlurEffect effectWithStyle:blurStyle];
+
+        UIColor *toolbarColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
+        CGFloat backgroundAlpha = ThemeManager.shared.isDarkTheme ? 0.85 : 0.75;
+        toolbarAppearance.backgroundColor = [toolbarColor colorWithAlphaComponent:backgroundAlpha];
+
+        self.feedViewToolbar.standardAppearance = toolbarAppearance;
+        self.feedViewToolbar.scrollEdgeAppearance = toolbarAppearance;
+        self.feedViewToolbar.compactAppearance = toolbarAppearance;
+        self.feedViewToolbar.tintColor = tintColor;
+    } else {
+        self.feedViewToolbar.tintColor = tintColor;
+        self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
+    }
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
+    self.addBarButton.tintColor = toolbarButtonTint;
+    self.settingsBarButton.tintColor = toolbarButtonTint;
 #if TARGET_OS_MACCATALYST
     if (ThemeManager.themeManager.isLikeSystem) {
         self.view.backgroundColor = UIColor.clearColor;
@@ -1349,26 +1502,44 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 #endif
     
     [[ThemeManager themeManager] updateSegmentedControl:self.intelligenceControl];
+    [self updateIntelligenceControlAppearance];
     
-    NBBarButtonItem *barButton = self.addBarButton.customView;
-    [barButton setImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"nav_icn_add.png"]] forState:UIControlStateNormal];
+    UIImage *addImage = [[UIImage imageNamed:@"nav_icn_add.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    if ([self.addBarButton.customView isKindOfClass:[UIButton class]]) {
+        UIButton *addButton = (UIButton *)self.addBarButton.customView;
+        [addButton setImage:addImage forState:UIControlStateNormal];
+        addButton.tintColor = toolbarButtonTint;
+    } else {
+        self.addBarButton.image = addImage;
+    }
     
-    self.settingsBarButton.image = [Utilities imageNamed:@"settings" sized:self.isMac ? 24 : 30];
+    UIImage *settingsImage = [[UIImage imageNamed:@"nav_icn_settings.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    if ([self.settingsBarButton.customView isKindOfClass:[UIButton class]]) {
+        UIButton *settingsButton = (UIButton *)self.settingsBarButton.customView;
+        [settingsButton setImage:settingsImage forState:UIControlStateNormal];
+        settingsButton.tintColor = toolbarButtonTint;
+    } else {
+        self.settingsBarButton.image = settingsImage;
+    }
     
     [self layoutHeaderCounts:0];
     [self refreshHeaderCounts];
     
-    self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
-    self.searchBar.tintColor = UIColorFromRGB(0xffffff);
-    self.searchBar.nb_searchField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
-    self.searchBar.nb_searchField.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
-    
+    // Update search field colors for theme
+    self.feedTitlesTable.tableHeaderView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xf4f4f4, 0xF3E2CB, 0x333333, 0x222222);
+    self.searchField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x444444, 0x333333);
+    self.searchField.textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
+    self.searchField.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
+    // Update search icon color
+    UIImageView *searchIcon = [self.searchField.leftView viewWithTag:101];
+    searchIcon.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
+
     if ([ThemeManager themeManager].isDarkTheme) {
         self.feedTitlesTable.indicatorStyle = UIScrollViewIndicatorStyleWhite;
-        self.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.searchField.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
         self.feedTitlesTable.indicatorStyle = UIScrollViewIndicatorStyleBlack;
-        self.searchBar.keyboardAppearance = UIKeyboardAppearanceDefault;
+        self.searchField.keyboardAppearance = UIKeyboardAppearanceDefault;
     }
     
     self.feedTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
@@ -1629,7 +1800,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
                          [appDelegate.dictSavedStoryTags objectForKey:feedIdStr] :
                          [appDelegate.dictFeeds objectForKey:feedIdStr];
     NSDictionary *unreadCounts = [appDelegate.dictUnreadCounts objectForKey:feedIdStr];
-    cell.feedFavicon = [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
+
+    // Check for custom feed icon (only for regular feeds, not social or saved)
+    UIImage *customFeedIcon = nil;
+    if (!isSocial && !isSaved) {
+        NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+        if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+            customFeedIcon = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+        }
+    }
+    cell.feedFavicon = customFeedIcon ?: [appDelegate getFavicon:feedIdStr isSocial:isSocial isSaved:isSaved];
+
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.isSocial      = isSocial;
     cell.isSearch      = isSavedSearch;
@@ -1967,7 +2148,12 @@ heightForHeaderInSection:(NSInteger)section {
         [[prefs stringForKey:@"dashboard_layout"] isEqualToString:@"none"]) {
         return 0;
     }
-    
+
+    // Hide Dashboard on iPhone, only show on iPad
+    if (section == NewsBlurTopSectionDashboard && self.isPhone) {
+        return 0;
+    }
+
     if (section == NewsBlurTopSectionInfrequentSiteStories &&
         ![prefs boolForKey:@"show_infrequent_site_stories"]) {
         return 0;
@@ -2020,7 +2206,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     [self clearDashboard];
-    
+
     if ([folder isEqualToString:@"dashboard"]) {
         appDelegate.detailViewController.storyTitlesInDashboard = YES;
         [self loadDashboard];
@@ -2442,21 +2628,74 @@ heightForHeaderInSection:(NSInteger)section {
     [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:button.tag]
                         withRowAnimation:UITableViewRowAnimationFade];
     [self.feedTitlesTable endUpdates];
-    
-//    // Scroll to section header if collapse causes it to scroll far off screen
-//    NSArray *indexPathsVisibleCells = [self.feedTitlesTable indexPathsForVisibleRows];
-//    BOOL firstFeedInFolderVisible = NO;
-//    for (NSIndexPath *indexPath in indexPathsVisibleCells) {
-//        if (indexPath.row == 0 && indexPath.section == button.tag) {
-//            firstFeedInFolderVisible = YES;
-//        }
-//    }
-//    if (!firstFeedInFolderVisible) {
-//        CGRect headerRect = [self.feedTitlesTable rectForHeaderInSection:button.tag];
-//        CGPoint headerPoint = CGPointMake(headerRect.origin.x, headerRect.origin.y);
-////        [self.feedTitlesTable setContentOffset:headerPoint animated:YES];
-//    }
-    
+
+    [self updateAllStoriesCollapseButton];
+}
+
+- (BOOL)anyFolderExpanded {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    for (NSString *folderName in appDelegate.dictFoldersArray) {
+        // Skip special folders that don't have collapse functionality
+        if ([folderName isEqualToString:@"dashboard"] ||
+            [folderName isEqualToString:@"everything"] ||
+            [folderName isEqualToString:@"infrequent"] ||
+            [folderName isEqualToString:@"saved_stories"] ||
+            [folderName isEqualToString:@"saved_searches"] ||
+            [folderName isEqualToString:@"read_stories"] ||
+            [folderName isEqualToString:@"interactions"] ||
+            [folderName isEqualToString:@"river_global"] ||
+            [folderName isEqualToString:@"river_blurblogs"] ||
+            [folderName isEqualToString:@"widget_stories"]) {
+            continue;
+        }
+
+        NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
+        if (![userPreferences boolForKey:collapseKey]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (void)didToggleAllFolders:(UIButton *)button {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    BOOL shouldCollapse = [self anyFolderExpanded];
+    NSMutableIndexSet *sectionsToReload = [NSMutableIndexSet indexSet];
+
+    for (NSInteger i = 0; i < appDelegate.dictFoldersArray.count; i++) {
+        NSString *folderName = appDelegate.dictFoldersArray[i];
+        // Skip special folders that don't have collapse functionality
+        if ([folderName isEqualToString:@"dashboard"] ||
+            [folderName isEqualToString:@"everything"] ||
+            [folderName isEqualToString:@"infrequent"] ||
+            [folderName isEqualToString:@"saved_stories"] ||
+            [folderName isEqualToString:@"saved_searches"] ||
+            [folderName isEqualToString:@"read_stories"] ||
+            [folderName isEqualToString:@"interactions"] ||
+            [folderName isEqualToString:@"river_global"] ||
+            [folderName isEqualToString:@"river_blurblogs"] ||
+            [folderName isEqualToString:@"widget_stories"]) {
+            continue;
+        }
+
+        NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
+        [userPreferences setBool:shouldCollapse forKey:collapseKey];
+        [sectionsToReload addIndex:i];
+    }
+    [userPreferences synchronize];
+    appDelegate.collapsedFolders = nil;
+
+    [self resetRowHeights];
+    [self.feedTitlesTable beginUpdates];
+    [self.feedTitlesTable reloadSections:sectionsToReload withRowAnimation:UITableViewRowAnimationFade];
+    [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:NewsBlurTopSectionAllStories]
+                        withRowAnimation:UITableViewRowAnimationNone];
+    [self.feedTitlesTable endUpdates];
+}
+
+- (void)updateAllStoriesCollapseButton {
+    [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:NewsBlurTopSectionAllStories]
+                        withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)expandFolderIfNecessary:(NSString *)folderName {
@@ -2769,62 +3008,63 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 #pragma mark -
-#pragma mark Search
+#pragma mark Search (UITextFieldDelegate)
 
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
-    [self updateTheme];
-    
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    if (textField == self.searchField) {
+        [self updateTheme];
+    }
     return YES;
 }
 
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-    [self.searchBar setShowsCancelButton:YES animated:YES];
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+    // Search field is now active
 }
 
-- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
-    if ([self.searchBar.text length]) {
-        [self.searchBar setShowsCancelButton:YES animated:YES];
-    } else {
-        [self.searchBar setShowsCancelButton:NO animated:YES];
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    // Search field editing ended
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if (textField == self.searchField) {
+        [self.searchField resignFirstResponder];
     }
-    [self.searchBar resignFirstResponder];
+    return YES;
 }
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-    [self.searchBar setText:@""];
-    [self.searchBar resignFirstResponder];
-    self.searchFeedIds = nil;
-    [self reloadFeedTitlesTable];
-}
-
-- (void)searchBarSearchButtonClicked:(UISearchBar*) theSearchBar {
-    [self.searchBar resignFirstResponder];
+- (BOOL)textFieldShouldClear:(UITextField *)textField {
+    if (textField == self.searchField) {
+        self.searchFeedIds = nil;
+        [self reloadFeedTitlesTable];
+    }
+    return YES;
 }
 
 - (BOOL)disablesAutomaticKeyboardDismissal {
     return NO;
 }
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+- (void)searchFieldDidChange:(UITextField *)textField {
+    NSString *searchText = textField.text;
     if (searchText.length) {
         NSMutableArray *array = [NSMutableArray array];
-        
+
         for (NSString *folderName in appDelegate.dictFoldersArray) {
             NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
-            
+
             for (id feedId in folder) {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
                 NSDictionary *feed = [appDelegate getFeed:feedIdStr];
                 NSString *title = [feed objectForKey:@"feed_title"];
-                
+
                 if ([title localizedStandardContainsString:searchText]) {
                     [array addObject:feedIdStr];
                 }
             }
         }
-        
+
         NSLog(@"search: '%@' matches %@ feeds", searchText, @(array.count));  // log
-        
+
         if (array.count) {
             self.searchFeedIds = array;
             [self reloadFeedTitlesTable];
@@ -2851,6 +3091,9 @@ heightForHeaderInSection:(NSInteger)section {
 #if !TARGET_OS_MACCATALYST
     [self.refreshControl endRefreshing];
 #endif
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.syncNotifier updateFrameInSuperview];
+    });
 }
 
 - (void)refreshFeedList {
@@ -2967,7 +3210,7 @@ heightForHeaderInSection:(NSInteger)section {
             [self loadFavicons];
 //            if (!self.searchFeedIds && self.feedTitlesTable.contentOffset.y == 0) {
 //                [UIView animateWithDuration:0.2 animations:^{
-//                    self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchBar.frame));
+//                    self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchField.frame));
 //                }];
 //
 //            }
@@ -3008,7 +3251,7 @@ heightForHeaderInSection:(NSInteger)section {
     }
     
     int xOffset = 50;
-    int yOffset = isShort ? 0 : 6;
+    int yOffset = isShort ? 0 : 12;
     
     self.userInfoView = [[UIView alloc]
                          initWithFrame:CGRectMake(0, 0,
@@ -3017,42 +3260,65 @@ heightForHeaderInSection:(NSInteger)section {
 #endif
     
     // adding user avatar to left
+    NSString *userId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
     NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@",
                                             [appDelegate.dictSocialProfile
                                              objectForKey:@"large_photo_url"]]];
-    userAvatarButton = [UIButton systemButtonWithImage:[UIImage imageNamed:@"user"]
-                                                target:self action:@selector(showUserProfile)];
+
+    // Check for cached avatar first, otherwise use default
+    UIImage *cachedAvatar = [appDelegate getCachedUserAvatar:userId];
+    UIImage *initialImage = cachedAvatar ?: [appDelegate defaultUserAvatar];
+    initialImage = [Utilities roundCorneredImage:initialImage radius:6 convertToSize:CGSizeMake(38, 38)];
+    initialImage = [initialImage imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+
+    userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [userAvatarButton setImage:initialImage forState:UIControlStateNormal];
+    [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
+    userAvatarButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
     userAvatarButton.pointerInteractionEnabled = YES;
     userAvatarButton.accessibilityLabel = @"User info";
 #if TARGET_OS_MACCATALYST
     userAvatarButton.accessibilityHint = @"Double-click for information about your account.";
-    CGRect frame = userAvatarButton.frame;
-    userAvatarButton.frame = frame;
+    userAvatarButton.frame = CGRectMake(0, yOffset, 38, 38);
+    int avatarXOffset = 48; // avatar width (38) + padding (10)
 #else
     userAvatarButton.accessibilityHint = @"Double-tap for information about your account.";
-    UIEdgeInsets insets = UIEdgeInsetsMake(0, -10, 10, 0);
-    userAvatarButton.contentEdgeInsets = insets;
+    userAvatarButton.frame = CGRectMake(-10, yOffset, 38, 38);
+    int avatarXOffset = 38; // avatar end (-10 + 38 = 28) + padding (10)
 #endif
 //    userAvatarButton.backgroundColor = UIColor.blueColor;
-    
+
+    // Fetch avatar from network and cache it
     NSMutableURLRequest *avatarRequest = [NSMutableURLRequest requestWithURL:imageURL];
     [avatarRequest addValue:@"image/*" forHTTPHeaderField:@"Accept"];
     [avatarRequest setTimeoutInterval:30.0];
     avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.frame];
     typeof(self) __weak weakSelf = self;
+    NSString *currentUserId = userId;
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         typeof(weakSelf) __strong strongSelf = weakSelf;
+        // Cache the original image for future use
+        [appDelegate saveUserAvatar:image forUserId:currentUserId];
+        // Apply rounded corners for display
         image = [Utilities roundCorneredImage:image radius:6 convertToSize:CGSizeMake(38, 38)];
         image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         UIButton *button = strongSelf.userAvatarButton;
         [button setImage:image forState:UIControlStateNormal];
     } failure:^(NSURLRequest * _Nonnull request, NSHTTPURLResponse * _Nonnull response, NSError * _Nonnull error) {
         NSLog(@"Could not fetch user avatar: %@", error);
+        // If we don't have a cached avatar, show the default
+        typeof(weakSelf) __strong strongSelf = weakSelf;
+        if (![appDelegate getCachedUserAvatar:currentUserId]) {
+            UIImage *defaultAvatar = [appDelegate defaultUserAvatar];
+            defaultAvatar = [Utilities roundCorneredImage:defaultAvatar radius:6 convertToSize:CGSizeMake(38, 38)];
+            defaultAvatar = [defaultAvatar imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+            [strongSelf.userAvatarButton setImage:defaultAvatar forState:UIControlStateNormal];
+        }
     }];
-    
+
     [self.userInfoView addSubview:userAvatarButton];
-    
-    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(xOffset, yOffset, self.userInfoView.frame.size.width, 16)];
+
+    userLabel = [[UILabel alloc] initWithFrame:CGRectMake(avatarXOffset, yOffset, self.userInfoView.frame.size.width, 16)];
     userLabel.text = appDelegate.activeUsername;
     userLabel.font = userLabelFont;
     userLabel.textColor = UIColorFromRGB(0x404040);
@@ -3081,9 +3347,17 @@ heightForHeaderInSection:(NSInteger)section {
     positiveCount.textColor = UIColorFromRGB(0x707070);
     positiveCount.backgroundColor = [UIColor clearColor];
     [self.userInfoView addSubview:positiveCount];
-    
+
+    // Add sync notifier to userInfoView (titleView) so it only appears on feed list
+    if (!self.syncNotifier) {
+        self.syncNotifier = [[SyncNotifierView alloc] initWithTitle:@""];
+    }
+    // Re-add to userInfoView since userInfoView is recreated each time
+    [self.syncNotifier removeFromSuperview];
+    [self.userInfoView addSubview:self.syncNotifier];
+
 //    self.userInfoView.backgroundColor = UIColor.blueColor;
-    
+
 #if TARGET_OS_MACCATALYST
     self.activityButton.frame = CGRectMake(self.innerView.bounds.size.width - 36, 10, 32, 32);
     
@@ -3177,79 +3451,62 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)showRefreshNotifier {
-    self.notifier.style = NBSyncingStyle;
-    self.notifier.title = @"On its way...";
-    [self.notifier setProgress:0];
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleSyncing title:@"On its way..."];
+    [self finishRefresh];
 }
 
 - (void)showCountingNotifier {
-    self.notifier.style = NBSyncingStyle;
-    self.notifier.title = @"Counting is difficult...";
-    [self.notifier setProgress:0];
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleSyncing title:@"Counting is difficult..."];
     [self finishRefresh];
 }
 
 - (void)showSyncingNotifier {
-    self.notifier.style = NBSyncingStyle;
-    self.notifier.title = @"Syncing stories...";
-    [self.notifier setProgress:0];
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleSyncing title:@"Syncing stories..."];
     [self finishRefresh];
 }
 
 - (void)showDoneNotifier {
-    self.notifier.style = NBDoneStyle;
-    self.notifier.title = @"All done";
-    [self.notifier setProgress:0];
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleDone title:@"All done"];
     [self finishRefresh];
+
+    // Auto-hide after 5 seconds (cancels if new sync starts)
+    [self.syncNotifier hideAfter:5.0];
 }
 
 - (void)showSyncingNotifier:(float)progress hoursBack:(NSInteger)hours {
-//    [self.notifier hide];
-    self.notifier.style = NBSyncingProgressStyle;
+    NSString *title;
     if (hours < 2) {
-        self.notifier.title = @"Storing past hour";
+        title = @"Storing past hour";
     } else if (hours < 24) {
-        self.notifier.title = [NSString stringWithFormat:@"Storing past %ld hours", (long)hours];
+        title = [NSString stringWithFormat:@"Storing past %ld hours", (long)hours];
     } else if (hours < 48) {
-        self.notifier.title = @"Storing yesterday";
+        title = @"Storing yesterday";
     } else {
-        self.notifier.title = [NSString stringWithFormat:@"Storing past %d days", (int)round(hours / 24.f)];
+        title = [NSString stringWithFormat:@"Storing past %d days", (int)round(hours / 24.f)];
     }
-    [self.notifier setProgress:progress];
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleSyncingProgress title:title progress:progress];
 }
 
 - (void)showCachingNotifier:(NSString *)prefix progress:(float)progress hoursBack:(NSInteger)hours {
-    //    [self.notifier hide];
-    self.notifier.style = NBSyncingProgressStyle;
+    NSString *title;
     if (hours < 2) {
-        self.notifier.title = [NSString stringWithFormat:@"%@ from last hour", prefix];
+        title = [NSString stringWithFormat:@"%@ from last hour", prefix];
     } else if (hours < 24) {
-        self.notifier.title = [NSString stringWithFormat:@"%@ from %ld hours ago", prefix, (long)hours];
+        title = [NSString stringWithFormat:@"%@ from %ld hours ago", prefix, (long)hours];
     } else if (hours < 48) {
-        self.notifier.title = [NSString stringWithFormat:@"%@ from yesterday", prefix];
+        title = [NSString stringWithFormat:@"%@ from yesterday", prefix];
     } else {
-        self.notifier.title = [NSString stringWithFormat:@"%@ from %d days ago", prefix, (int)round(hours / 24.f)];
+        title = [NSString stringWithFormat:@"%@ from %d days ago", prefix, (int)round(hours / 24.f)];
     }
-    [self.notifier setProgress:progress];
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleSyncingProgress title:title progress:progress];
 }
 
 - (void)showOfflineNotifier {
-    self.notifier.style = NBOfflineStyle;
-    self.notifier.title = @"Offline";
-    [self.notifier show];
+    [self.syncNotifier showWithStyle:SyncNotifierStyleOffline title:@"Offline"];
 }
 
 - (void)hideNotifier {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.25 * NSEC_PER_SEC),
-                   dispatch_get_main_queue(), ^{
-        [self.notifier hide];
-    });
+    [self.syncNotifier hideAfter:0.25];
 }
 
 @end

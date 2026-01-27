@@ -138,10 +138,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.feedsBarButton.accessibilityLabel = @"Show Sites";
     
     UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:self.isMac ? 24 : 30];
+    settingsImage = [settingsImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     settingsBarButton = [UIBarButtonItem barItemWithImage:settingsImage target:self action:@selector(doOpenSettingsMenu:)];
     settingsBarButton.accessibilityLabel = @"Settings";
     
     UIImage *markreadImage = [Utilities imageNamed:@"mark-read" sized:self.isMac ? 24 : 30];
+    markreadImage = [markreadImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     feedMarkReadButton = [UIBarButtonItem barItemWithImage:markreadImage target:self action:@selector(doOpenMarkReadMenu:)];
     feedMarkReadButton.accessibilityLabel = @"Mark all as read";
     
@@ -153,6 +155,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [view addGestureRecognizer:markReadLongPress];
     
     titleImageBarButton = [UIBarButtonItem alloc];
+
+    [self updateTheme];
     
 #if TARGET_OS_MACCATALYST
     if (@available(macCatalyst 16.0, *)) {
@@ -430,6 +434,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             self.messageView.hidden = NO;
         }
     }
+
+    [self updateTheme];
     
     NSArray *items = [NSArray arrayWithObjects:
                       settingsBarButton,
@@ -767,7 +773,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         for (NSDictionary *story in stories) {
             NSString *storyHash = story[@"story_hash"];
             NSArray *imageURLs = story[@"image_urls"];
-            self.appDelegate.cachedStoryImages[storyHash] = [NSNull null];
+            [self.appDelegate cacheStoryImagePlaceholder:storyHash];
             [self getFirstImage:imageURLs forStoryHash:storyHash withManager:manager];
         }
     }];
@@ -802,7 +808,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             
             CGSize maxImageSize = CGSizeMake(300, 300);
             image = [image imageByScalingAndCroppingForSize:maxImageSize];
-            self.appDelegate.cachedStoryImages[storyHash] = image;
+            [self.appDelegate cacheStoryImage:image forStoryHash:storyHash];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self showImageForStoryHash:storyHash];
             });
@@ -3301,13 +3307,28 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
 - (void)updateTheme {
     [super updateTheme];
+
+    [self applyToolbarButtonTint];
     
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
     UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
     appearance.backgroundColor = [UINavigationBar appearance].barTintColor;
+    appearance.titleTextAttributes = [UINavigationBar appearance].titleTextAttributes;
+    if (@available(iOS 13.0, *)) {
+        UIBarButtonItemAppearance *buttonAppearance = [[UIBarButtonItemAppearance alloc] init];
+        NSDictionary *textAttributes = @{NSForegroundColorAttributeName: toolbarButtonTint};
+        [buttonAppearance.normal setTitleTextAttributes:textAttributes];
+        [buttonAppearance.highlighted setTitleTextAttributes:textAttributes];
+        [buttonAppearance.disabled setTitleTextAttributes:textAttributes];
+        appearance.buttonAppearance = buttonAppearance;
+        appearance.backButtonAppearance = buttonAppearance;
+        appearance.doneButtonAppearance = buttonAppearance;
+    }
     
     self.navigationController.navigationBar.scrollEdgeAppearance = appearance;
     self.navigationController.navigationBar.standardAppearance = appearance;
-    self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
+    self.navigationController.navigationBar.compactAppearance = appearance;
+    self.navigationController.navigationBar.tintColor = toolbarButtonTint;
     self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
     self.navigationController.toolbar.barTintColor = [UINavigationBar appearance].barTintColor;
@@ -3341,6 +3362,24 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
     
     [self reload];
+}
+
+- (void)applyToolbarButtonTint {
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
+
+    self.feedsBarButton.tintColor = toolbarButtonTint;
+    self.settingsBarButton.tintColor = toolbarButtonTint;
+    self.feedMarkReadButton.tintColor = toolbarButtonTint;
+    UIButton *settingsButton = (UIButton *)self.settingsBarButton.customView;
+    if ([settingsButton isKindOfClass:[UIButton class]]) {
+        settingsButton.tintColor = toolbarButtonTint;
+    }
+    UIButton *markReadButton = (UIButton *)self.feedMarkReadButton.customView;
+    if ([markReadButton isKindOfClass:[UIButton class]]) {
+        markReadButton.tintColor = toolbarButtonTint;
+    }
+    self.navigationController.navigationBar.tintColor = toolbarButtonTint;
+    self.navigationController.toolbar.tintColor = toolbarButtonTint;
 }
 
 //- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {

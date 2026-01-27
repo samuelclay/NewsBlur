@@ -183,14 +183,18 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         ]),
                         $.make('li', { className: 'NB-3' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Train stories with regular expressions'
+                        ]),
+                        $.make('li', { className: 'NB-4' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Priority support'
                         ]),
                         $.make('li', { className: 'NB-premium-tier-upcoming-header' }, 'Coming soon:'),
-                        $.make('li', { className: 'NB-upcoming NB-4' }, [
+                        $.make('li', { className: 'NB-upcoming NB-5' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Natural language filters'
                         ]),
-                        $.make('li', { className: 'NB-upcoming NB-5' }, [
+                        $.make('li', { className: 'NB-upcoming NB-6' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Natural language search'
                         ])

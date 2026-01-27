@@ -118,6 +118,7 @@
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize cachedFavicons;
 @synthesize cachedStoryImages;
+@synthesize cachedUserAvatars;
 @synthesize activeUsername;
 @synthesize activeUserProfileId;
 @synthesize activeUserProfileName;
@@ -214,8 +215,13 @@
     
     cachedFavicons = [[PINCache alloc] initWithName:@"NBFavicons"];
     cachedFavicons.memoryCache.removeAllObjectsOnEnteringBackground = NO;
+    cachedFavicons.memoryCache.costLimit = 5 * 1024 * 1024; // 5 MB
     cachedStoryImages = [[PINCache alloc] initWithName:@"NBStoryImages"];
     cachedStoryImages.memoryCache.removeAllObjectsOnEnteringBackground = NO;
+    cachedStoryImages.memoryCache.costLimit = 20 * 1024 * 1024; // 20 MB
+    cachedUserAvatars = [[PINCache alloc] initWithName:@"NBUserAvatars"];
+    cachedUserAvatars.memoryCache.removeAllObjectsOnEnteringBackground = NO;
+    cachedUserAvatars.memoryCache.costLimit = 10 * 1024 * 1024; // 10 MB
     isPremium = NO;
     isPremiumArchive = NO;
     premiumExpire = 0;
@@ -261,7 +267,7 @@
     }
     
     [self registerBackgroundTask];
-    
+
     return YES;
 }
 
@@ -680,10 +686,15 @@
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
+
 #if !TARGET_OS_MACCATALYST
     // Release any cached data, images, etc that aren't in use.
-    [cachedStoryImages removeAllObjects];
+    // Only clear memory caches, not disk caches
+    [cachedStoryImages.memoryCache removeAllObjects];
+    [cachedFavicons.memoryCache removeAllObjects];
+    [cachedUserAvatars.memoryCache removeAllObjects];
+    [activeCachedImages removeAllObjects];
+    [recentlyReadStories removeAllObjects];
 #endif
 }
 
@@ -781,25 +792,28 @@
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
     self.userProfileNavigationController = navController;
     self.userProfileNavigationController.navigationBar.translucent = NO;
-    
-    
-    // adding Done button
-    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Close"
-                                   style:UIBarButtonItemStyleDone
-                                   target:self
-                                   action:@selector(hideUserProfileModal)];
-    
-    newUserProfile.navigationItem.rightBarButtonItem = donebutton;
+
     newUserProfile.navigationItem.title = self.activeUserProfileName;
     newUserProfile.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [newUserProfile getUserProfile];
     if (!self.isPhone) {
+        // iPad: show as popover with Close button
+        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
+                                       initWithTitle:@"Close"
+                                       style:UIBarButtonItemStyleDone
+                                       target:self
+                                       action:@selector(hideUserProfileModal)];
+        newUserProfile.navigationItem.rightBarButtonItem = donebutton;
         [self showPopoverWithViewController:self.userProfileNavigationController contentSize:CGSizeMake(320, 454) sender:sender];
     } else {
+        // iPhone: show as sheet with grabber, no Close button needed
+        navController.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (navController.sheetPresentationController) {
+            navController.sheetPresentationController.prefersGrabberVisible = YES;
+        }
         [self.feedsNavigationController presentViewController:navController animated:YES completion:nil];
     }
-    
+
 }
 
 - (void)pushUserProfile {
@@ -2386,8 +2400,7 @@
             [self.detailViewController checkLayout];
         }
         
-        BOOL animated = (!self.isPhone &&
-                         !self.tryFeedCategory);
+        BOOL animated = !self.tryFeedCategory;
         [self.storyPagesViewController view];
         [self.storyPagesViewController.view setNeedsLayout];
         [self.storyPagesViewController.view layoutIfNeeded];
@@ -3472,16 +3485,20 @@
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sender:(id)sender {
     if ([sender isKindOfClass:[UITableViewCell class]]) {
         UITableViewCell *cell = (UITableViewCell *)sender;
-        
+
         [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:cell sourceRect:cell.bounds];
-    } else if ([sender class] == [UIBarButtonItem class] || [sender class] == [UIButton class]) {
+    } else if ([sender isKindOfClass:[UIBarButtonItem class]]) {
         [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:sender];
-    } else if ([sender class] == [UIView class]) {
-        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:sender sourceRect:[sender frame]];
-    } else {
+    } else if ([sender isKindOfClass:[UIView class]]) {
+        UIView *view = (UIView *)sender;
+        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:view sourceRect:view.bounds];
+    } else if ([sender isKindOfClass:[NSValue class]]) {
         CGRect frame = [sender CGRectValue];
-        
+
         [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:self.storyPagesViewController.view sourceRect:frame];
+    } else {
+        // Fallback: use the feeds view as source
+        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:self.feedsViewController.view sourceRect:CGRectMake(0, 0, 1, 1)];
     }
 }
 
@@ -3960,9 +3977,24 @@
         } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
             titleImage = [UIImage imageNamed:@"saved-stories"];
         } else if (storiesCollection.isRiverView) {
-            titleImage = [UIImage imageNamed:@"folder-open"];
+            // Check for custom folder icon
+            NSString *folderName = storiesCollection.activeFolder;
+            NSDictionary *customIcon = self.dictFolderIcons[folderName];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+            }
+            if (!titleImage) {
+                titleImage = [UIImage imageNamed:@"folder-open"];
+            }
         } else {
-            titleImage = [self getFavicon:feedIdStr];
+            // Check for custom feed icon
+            NSDictionary *customIcon = self.dictFeedIcons[feedIdStr];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+            }
+            if (!titleImage) {
+                titleImage = [self getFavicon:feedIdStr];
+            }
         }
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
@@ -4017,6 +4049,14 @@
     } else if ([folder isEqualToString:@"saved_stories"]) {
         return [UIImage imageNamed:@"saved-stories"];
     } else {
+        // Check for custom folder icon
+        NSDictionary *customIcon = self.dictFolderIcons[folder];
+        if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+            UIImage *customImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(20, 20)];
+            if (customImage) {
+                return customImage;
+            }
+        }
         return [UIImage imageNamed:@"folder-open"];
     }
 }
@@ -4024,7 +4064,10 @@
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename {
     if (image && filename && ![image isKindOfClass:[NSNull class]] &&
         [filename class] != [NSNull class]) {
-        [self.cachedFavicons setObject:image forKey:filename];
+        // Set cost based on image memory size for proper cache eviction
+        NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
+        [self.cachedFavicons.memoryCache setObject:image forKey:filename withCost:cost];
+        [self.cachedFavicons.diskCache setObject:image forKey:filename];
     }
 }
 
@@ -4051,6 +4094,27 @@
             return [UIImage imageNamed:@"world.png"];
         }
     }
+}
+
+- (void)saveUserAvatar:(UIImage *)image forUserId:(NSString *)userId {
+    if (image && userId && ![image isKindOfClass:[NSNull class]] &&
+        [userId class] != [NSNull class]) {
+        // Set cost based on image memory size for proper cache eviction
+        NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
+        [self.cachedUserAvatars.memoryCache setObject:image forKey:userId withCost:cost];
+        [self.cachedUserAvatars.diskCache setObject:image forKey:userId];
+    }
+}
+
+- (UIImage *)getCachedUserAvatar:(NSString *)userId {
+    if (!userId || [userId class] == [NSNull class]) {
+        return nil;
+    }
+    return [self.cachedUserAvatars objectForKey:userId];
+}
+
+- (UIImage *)defaultUserAvatar {
+    return [UIImage imageNamed:@"default_profile_avatar"];
 }
 
 #pragma mark -
@@ -4921,6 +4985,22 @@
 
 - (UIImage *)cachedImageForStoryHash:(NSString *)storyHash {
     return self.cachedStoryImages[storyHash];
+}
+
+- (void)cacheStoryImage:(UIImage *)image forStoryHash:(NSString *)storyHash {
+    if (!image || !storyHash) return;
+
+    // Set cost based on image memory size for proper cache eviction
+    NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
+    [self.cachedStoryImages.memoryCache setObject:image forKey:storyHash withCost:cost];
+    [self.cachedStoryImages.diskCache setObject:image forKey:storyHash];
+}
+
+- (void)cacheStoryImagePlaceholder:(NSString *)storyHash {
+    if (!storyHash) return;
+
+    // Use NSNull as placeholder with minimal cost
+    [self.cachedStoryImages.memoryCache setObject:[NSNull null] forKey:storyHash withCost:1];
 }
 
 - (void)cleanImageCache {

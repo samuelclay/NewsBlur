@@ -181,14 +181,33 @@
         [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
         disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2-1, disclosureHeight, disclosureHeight);
 
-        // Add collapse button to all folders except Everything
-        if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionInfrequentSiteStories && section != NewsBlurTopSectionAllStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"]) {
+        // Add collapse-all button for All Site Stories
+        if (section == NewsBlurTopSectionAllStories) {
+            BOOL anyExpanded = [appDelegate.feedsViewController anyFolderExpanded];
+            UIImage *disclosureImage = anyExpanded ?
+                [UIImage imageNamed:@"disclosure_down.png"] :
+                [UIImage imageNamed:@"disclosure.png"];
+            [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
+
+            disclosureButton.tag = section;
+            [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didToggleAllFolders:) forControlEvents:UIControlEventTouchUpInside];
+
+            UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border"];
+            if ([[[ThemeManager themeManager] theme] isEqualToString:ThemeStyleSepia]) {
+                disclosureBorder = [UIImage imageNamed:@"disclosure_border_sepia"];
+            } else if ([[[ThemeManager themeManager] theme] isEqualToString:ThemeStyleMedium]) {
+                disclosureBorder = [UIImage imageNamed:@"disclosure_border_medium"];
+            } else if ([[[ThemeManager themeManager] theme] isEqualToString:ThemeStyleDark]) {
+                disclosureBorder = [UIImage imageNamed:@"disclosure_border_dark"];
+            }
+            [disclosureBorder drawInRect:CGRectMake(rect.origin.x + customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight)];
+        // Add collapse button to regular folders
+        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"]) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
-//                disclosureButton.transform = CGAffineTransformMakeRotation(M_PI_2);
             }
-            
+
             disclosureButton.tag = section;
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didCollapseFolder:) forControlEvents:UIControlEventTouchUpInside];
 
@@ -202,7 +221,7 @@
             }
             [disclosureBorder drawInRect:CGRectMake(rect.origin.x + customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight)];
         } else {
-            // Everything/Saved folder doesn't get a button
+            // Dashboard/Infrequent/other special sections don't get a button
             [disclosureButton setUserInteractionEnabled:NO];
         }
         [customView addSubview:disclosureButton];
@@ -211,9 +230,10 @@
     UIImage *folderImage;
     int folderImageViewX = 10;
     BOOL allowLongPress = NO;
+    BOOL hasCustomIcon = NO;
     int width = 20;
     int height = 20;
-    
+
     if (section == NewsBlurTopSectionDashboard) {
         folderImage = [UIImage imageNamed:@"saved-stories"];
         if (!appDelegate.isPhone) {
@@ -281,10 +301,23 @@
             folderImageViewX = 7;
         }
     } else {
-        if (isFolderCollapsed) {
-            folderImage = [UIImage imageNamed:@"folder-closed"];
-        } else {
-            folderImage = [UIImage imageNamed:@"folder-open"];
+        // Check for custom folder icon first
+        NSDictionary *customIcon = appDelegate.dictFolderIcons[folderName];
+        if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+            UIImage *customImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(width, height)];
+            if (customImage) {
+                folderImage = customImage;
+                hasCustomIcon = YES;
+            }
+        }
+
+        // Fall back to default folder icon if no custom icon
+        if (!folderImage) {
+            if (isFolderCollapsed) {
+                folderImage = [UIImage imageNamed:@"folder-closed"];
+            } else {
+                folderImage = [UIImage imageNamed:@"folder-open"];
+            }
         }
         if (!appDelegate.isPhone) {
         } else {
@@ -292,8 +325,11 @@
         }
         allowLongPress = YES;
     }
-    
-    folderImage = [folderImage imageWithTintColor:UIColorFromLightDarkRGB(0x95968F, 0x95968F)];
+
+    // Only tint default icons, not custom icons (custom icons already have their color applied)
+    if (!hasCustomIcon) {
+        folderImage = [folderImage imageWithTintColor:UIColorFromLightDarkRGB(0x95968F, 0x95968F)];
+    }
     
     [folderImage drawInRect:CGRectMake(rect.origin.x + folderImageViewX, CGRectGetMidY(rect)-height/2, width, height)];
     

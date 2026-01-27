@@ -298,11 +298,11 @@
             <viewLayoutGuide key="safeArea" id="ir3-jV-2M5"/>
             <color key="backgroundColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="5" firstAttribute="trailing" secondItem="ir3-jV-2M5" secondAttribute="trailing" id="A4p-mh-u6O"/>
+                <constraint firstItem="5" firstAttribute="trailing" secondItem="3" secondAttribute="trailing" id="A4p-mh-u6O"/>
                 <constraint firstItem="5" firstAttribute="bottom" secondItem="3" secondAttribute="bottom" id="AOS-qV-fjZ"/>
                 <constraint firstAttribute="bottomMargin" secondItem="LNI-9u-7l4" secondAttribute="bottom" constant="90" id="E9T-hc-jPk"/>
                 <constraint firstItem="LNI-9u-7l4" firstAttribute="centerX" secondItem="3" secondAttribute="centerXWithinMargins" id="HUr-0Q-AhZ"/>
-                <constraint firstItem="5" firstAttribute="leading" secondItem="ir3-jV-2M5" secondAttribute="leading" id="Pnz-qi-mdZ"/>
+                <constraint firstItem="5" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="Pnz-qi-mdZ"/>
                 <constraint firstAttribute="bottomMargin" secondItem="75" secondAttribute="bottom" constant="24" id="PrE-ov-FD3"/>
                 <constraint firstItem="75" firstAttribute="leading" secondItem="5" secondAttribute="leading" id="htz-P9-PfM"/>
                 <constraint firstItem="75" firstAttribute="trailingMargin" secondItem="5" secondAttribute="trailingMargin" id="k4E-iI-ANK"/>

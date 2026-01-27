@@ -25,7 +25,7 @@
     - consul
     - always
 
-- name: Permissions for mongo
+- name: Permissions for mongo log directory
   become: yes
   file:
     state: directory
@@ -33,6 +33,17 @@
     owner: "{{ ansible_effective_user_id|int }}"
     group: "{{ ansible_effective_group_id|int }}"
     path: /var/log/mongodb
+
+- name: Create mongo log file
+  become: yes
+  file:
+    state: touch
+    mode: 0600
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+    path: /var/log/mongodb/mongod.log
+    modification_time: preserve
+    access_time: preserve
 
 - name: Copy MongoDB keyfile
   become: yes

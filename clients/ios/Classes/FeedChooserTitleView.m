@@ -76,13 +76,24 @@
                     forControlEvents:UIControlEventTouchUpInside];
     [customView addSubview:self.invisibleHeaderButton];
     
-    UIImage *folderImage = [UIImage imageNamed:self.imageName];
+    UIImage *folderImage = nil;
+    NewsBlurAppDelegate *appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+
+    // Check for custom folder icon
+    NSDictionary *customIcon = appDelegate.dictFolderIcons[self.title];
+    if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+        folderImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(20, 20)];
+    }
+    if (!folderImage) {
+        folderImage = [UIImage imageNamed:self.imageName];
+    }
+
     CGFloat folderImageViewX = 10.0;
-    
-    if (((NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]).isPhone) {
+
+    if (appDelegate.isPhone) {
         folderImageViewX = 7.0;
     }
-    
+
     [folderImage drawInRect:CGRectMake(folderImageViewX, 8.0, 20.0, 20.0)];
     
     [self addSubview:customView];

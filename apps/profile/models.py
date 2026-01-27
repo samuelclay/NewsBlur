@@ -286,6 +286,7 @@ class Profile(models.Model):
             MClassifierTag,
             MClassifierText,
             MClassifierTitle,
+            MClassifierUrl,
         )
         from apps.social.models import MSharedStory, MSocialProfile
 
@@ -338,6 +339,8 @@ class Profile(models.Model):
             "author_ng": MClassifierAuthor.objects.filter(user_id=self.user.pk, score__lt=0).count(),
             "feed_ps": MClassifierFeed.objects.filter(user_id=self.user.pk, score__gt=0).count(),
             "feed_ng": MClassifierFeed.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "url_ps": MClassifierUrl.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "url_ng": MClassifierUrl.objects.filter(user_id=self.user.pk, score__lt=0).count(),
         }
 
         # Create the archived record
@@ -350,6 +353,7 @@ class Profile(models.Model):
             last_seen_ip=self.last_seen_ip,
             timezone=str(self.timezone) if self.timezone else None,
             is_premium=self.is_premium,
+            is_premium_trial=self.is_premium_trial or False,
             is_archive=self.is_archive or False,
             is_pro=self.is_pro or False,
             premium_expire=self.premium_expire,
@@ -3074,6 +3078,7 @@ class MDeletedUser(mongo.Document):
 
     # Subscription status at deletion
     is_premium = mongo.BooleanField(default=False)
+    is_premium_trial = mongo.BooleanField(default=False)
     is_archive = mongo.BooleanField(default=False)
     is_pro = mongo.BooleanField(default=False)
     premium_expire = mongo.DateTimeField()

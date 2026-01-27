@@ -1,4 +1,11 @@
 ---
+- name: Pull newsblur repo
+  git:
+    repo: https://github.com/samuelclay/NewsBlur.git
+    dest: /srv/newsblur/
+    version: main
+    force: yes
+
 - name: Template grafana config
   become: yes
   template:
@@ -24,14 +31,12 @@
   loop:
     - /srv/newsblur/docker/grafana/datasources
     - /srv/newsblur/docker/grafana/alerting
-    - /srv/newsblur/docker/grafana/alerting/contact-points
-    - /srv/newsblur/docker/grafana/alerting/rules
 
-- name: Template grafana alert contact points
+- name: Copy grafana alert contact points
   become: yes
-  template:
-    src: /srv/newsblur/docker/grafana/alerting/contact-points/email.yaml.j2
-    dest: /srv/newsblur/docker/grafana/alerting/contact-points/email.yaml
+  copy:
+    src: /srv/newsblur/docker/grafana/alerting/email.yaml
+    dest: /srv/newsblur/docker/grafana/alerting/email.yaml
   notify: restart grafana
   tags:
     - grafana-alerts

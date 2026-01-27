@@ -85,11 +85,14 @@
 @property (nonatomic) NSInteger scrollingToPage;
 @property (nonatomic, readonly) BOOL shouldHideStatusBar;
 @property (nonatomic, readonly) BOOL isNavigationBarHidden;
+@property (nonatomic, readonly) CGFloat navigationBarFadeAlpha;
 @property (nonatomic, readonly) BOOL allowFullscreen;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
 @property (nonatomic) BOOL temporarilyMarkedUnread;
+@property (nonatomic) CGFloat navBarHiddenOffset;
+@property (nonatomic) BOOL hasNavBarHiddenOffset;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
@@ -97,6 +100,8 @@
 - (void)updateStatusBarState;
 - (void)setNavigationBarHidden:(BOOL)hide;
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse;
+- (void)setNavigationBarFadeAlpha:(CGFloat)alpha;
+- (CGFloat)topInsetForNavigationBarAlpha:(CGFloat)alpha;
 
 //- (void)transitionFromFeedDetail;
 - (void)resetPages;

@@ -465,7 +465,7 @@
 
 - (IBAction)findInFeeds:(id)sender {
     [self.appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"findInFeeds" animated:YES];
-    [self.appDelegate.feedsViewController.searchBar becomeFirstResponder];
+    [self.appDelegate.feedsViewController.searchField becomeFirstResponder];
 }
 
 - (IBAction)findInFeedDetail:(id)sender {

@@ -184,7 +184,7 @@
                                     <constraint firstItem="Uec-kH-7Z4" firstAttribute="centerX" secondItem="hRx-bd-6Da" secondAttribute="centerX" id="yZy-1W-Yat"/>
                                 </constraints>
                             </view>
-                            <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pWr-U1-GMQ">
+                            <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translucent="YES" translatesAutoresizingMaskIntoConstraints="NO" id="pWr-U1-GMQ">
                                 <rect key="frame" x="-4" y="731" width="338" height="44"/>
                                 <items>
                                     <barButtonItem image="nav_icn_add.png" width="34" style="plain" id="Wu8-MQ-nN6">
@@ -222,12 +222,11 @@
                         <constraints>
                             <constraint firstItem="hRx-bd-6Da" firstAttribute="top" secondItem="B68-yP-FpJ" secondAttribute="topMargin" id="33F-U6-DjY"/>
                             <constraint firstItem="pWr-U1-GMQ" firstAttribute="leading" secondItem="B68-yP-FpJ" secondAttribute="leadingMargin" constant="-20" id="6Ck-3q-gU2"/>
-                            <constraint firstItem="pWr-U1-GMQ" firstAttribute="top" secondItem="hRx-bd-6Da" secondAttribute="bottom" id="96U-Nk-Lrg"/>
-                            <constraint firstItem="pWr-U1-GMQ" firstAttribute="top" secondItem="hRx-bd-6Da" secondAttribute="bottom" id="gIn-2c-HGI"/>
                             <constraint firstAttribute="trailingMargin" secondItem="pWr-U1-GMQ" secondAttribute="trailing" constant="-20" id="hrX-Bt-Ta2"/>
                             <constraint firstItem="hRx-bd-6Da" firstAttribute="trailing" secondItem="zHe-OK-YwO" secondAttribute="trailing" id="uwt-28-3hy"/>
                             <constraint firstItem="hRx-bd-6Da" firstAttribute="leading" secondItem="zHe-OK-YwO" secondAttribute="leading" id="vxe-gN-94P"/>
-                            <constraint firstItem="pWr-U1-GMQ" firstAttribute="bottom" secondItem="zHe-OK-YwO" secondAttribute="bottom" id="znm-Mg-YTQ"/>
+                            <constraint firstItem="hRx-bd-6Da" firstAttribute="bottom" secondItem="B68-yP-FpJ" secondAttribute="bottom" id="tbl-bot-saf"/>
+                            <constraint firstItem="pWr-U1-GMQ" firstAttribute="bottom" secondItem="zHe-OK-YwO" secondAttribute="bottom" constant="-8" id="znm-Mg-YTQ"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="ejU-V5-SiF"/>
@@ -249,8 +248,8 @@
             </objects>
             <point key="canvasLocation" x="180.90452261306532" y="285.61151079136692"/>
         </scene>
-        <!--Root-->
-        <scene sceneID="eNE-X1-NXV">
+        <!--Root menu scene removed for iOS 26 compatibility-->
+        <scene sceneID="eNE-X1-NXV-REMOVED">
             <objects>
                 <menu isSystemItem="YES" title="Root" identifier="com.apple.menu.root" id="YWi-Ju-M3z" sceneMemberID="viewController">
                     <children>
