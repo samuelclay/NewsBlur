@@ -97,4 +97,9 @@ urlpatterns = [
     url(r"^remove_dashboard_river", views.remove_dashboard_river, name="remove-dashboard-river"),
     url(r"^trending_feeds", views.trending_feeds, name="trending-feeds"),
     url(r"^print", views.print_story, name="print-story"),
+    url(r"^save_feed_auto_mark_read", views.save_feed_auto_mark_read, name="save-feed-auto-mark-read"),
+    url(r"^save_folder_auto_mark_read", views.save_folder_auto_mark_read, name="save-folder-auto-mark-read"),
+    url(
+        r"^get_auto_mark_read_settings", views.get_auto_mark_read_settings, name="get-auto-mark-read-settings"
+    ),
 ]

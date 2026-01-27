@@ -10,7 +10,7 @@
   
   
 
-  <updated>2026-01-22T14:12:44-05:00</updated>
+  <updated>2026-01-27T15:45:03-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,43 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Do the robot: the official NewsBlur Android app is here</title>
+    <link href="https://blog.newsblur.com/2012/10/18/do-the-robot-the-official-newsblur-android-app-is/" rel="alternate" type="text/html" title="Do the robot: the official NewsBlur Android app is here" />
+    <published>2012-10-18T11:47:00-04:00</published>
+    <updated>2012-10-18T11:47:00-04:00</updated>
+    <id>https://blog.newsblur.com/2012/10/18/do-the-robot-the-official-newsblur-android-app-is</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2012/10/18/do-the-robot-the-official-newsblur-android-app-is/">
+      <![CDATA[<p>You’ve been bugging us for two years about it, and now it’s finally here: NewsBlur’s expansion to mobile is complete, with our first-ever <a href="http://www.newsblur.com/android">official Android app</a> ready and waiting for your device. Thanks to the gifts of money and time from Y Combinator and the programming prowess of Papermill creator Ryan Bateman (otherwise known as <a href="http://twitter.com/secretsquirrel">@secretsquirrel</a>), you can now join your iOS brethren on the couch with your daily dose of RSS goodness. Level of accompanying smugness is up to you.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/v1%20-%201.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/v1%20-%203.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/v1%20-%203.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/v1%20-%204.png" alt="image" /></p>
+
+<p>The Android app has all the features of the iOS app, including:</p>
+
+<ul>
+  <li>All your sites, folders, and friends’ blurblogs</li>
+  <li>Speedy downloading of sites and general alacrity of use</li>
+  <li>The ability to share and comment on stories on your blurblog</li>
+  <li>Direct imports from Google Reader: download the app without ever having to hit the Web to set up an account</li>
+  <li>Follow new people, read their shares, and generally expand your knowledge, worldview, and personal magnetism</li>
+</ul>
+
+<p>Plus, it has that delicious Android flavor, with half the calories.</p>
+
+<p>Download the official <a href="http://www.newsblur.com/android">NewsBlur Android app</a>. Tell your friends! Tip your waitstaff. Try the veal. Floss twice a day. Call your mom, she misses you.</p>
+
+]]>
+    </content>
+    
+    
+    
+    
+    <summary type="html">
+      <![CDATA[You’ve been bugging us for two years about it, and now it’s finally here: NewsBlur’s expansion to mobile is complete, with our first-ever official Android app ready and waiting for your device. Thanks to the gifts of money and time from Y Combinator and the programming prowess of Papermill creator...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Giving Life to &quot;The People Have Spoken&quot;</title>

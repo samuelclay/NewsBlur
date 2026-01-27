@@ -67,6 +67,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.starred_count = 0;
         this.folder_icons = {};
         this.feed_icons = {};
+        this.folder_auto_mark_read = {};
         this.flags = {
             'favicons_fetching': false,
             'has_chosen_feeds': false
@@ -601,6 +602,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.dashboard_rivers.reset(subscriptions.dashboard_rivers);
             self.folder_icons = subscriptions.folder_icons || {};
             self.feed_icons = subscriptions.feed_icons || {};
+            self.folder_auto_mark_read = subscriptions.folder_auto_mark_read || {};
 
             if (selected && self.feeds.get(selected)) {
                 self.feeds.get(selected).set('selected', true);
@@ -2082,6 +2084,92 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     remove_feed_icon: function (feed_id, callback, error_callback) {
         this.save_feed_icon(feed_id, 'none', null, null, null, callback, error_callback);
+    },
+
+    // =============================
+    // = Auto Mark Read Settings =
+    // =============================
+
+    get_feed_folders: function (feed_id) {
+        // Find the immediate folder containing a given feed_id
+        // Returns folder titles (not full nested paths) to match folder_auto_mark_read keys
+        var folders = [];
+        feed_id = parseInt(feed_id, 10);
+
+        var search_collection = function (collection, current_folder_title) {
+            if (!collection || !collection.each) return;
+
+            collection.each(function (item) {
+                if (item.is_feed && item.is_feed()) {
+                    // This is a feed - check if it matches
+                    // FeedInFolder stores the feed reference in item.feed
+                    var item_feed_id = item.feed ? item.feed.id : item.get('feed_id');
+                    if (item_feed_id === feed_id) {
+                        // Return the immediate folder title, not the full path
+                        folders.push(current_folder_title || '');
+                    }
+                } else if (item.is_folder && item.is_folder()) {
+                    // This is a folder - recurse into it with this folder's title
+                    var folder_title = item.get('folder_title') || '';
+                    if (item.folders) {
+                        search_collection(item.folders, folder_title);
+                    }
+                }
+            });
+        };
+
+        // Start from the root folders collection
+        if (this.folders) {
+            search_collection(this.folders, '');
+        }
+
+        return folders;
+    },
+
+    get_folder_auto_mark_read: function (folder_title) {
+        var setting = this.folder_auto_mark_read[folder_title];
+        return setting ? setting.auto_mark_read_days : null;
+    },
+
+    save_feed_auto_mark_read: function (feed_id, days, callback, error_callback) {
+        var self = this;
+        var feed = this.get_feed(feed_id);
+        this.make_request('/reader/save_feed_auto_mark_read', {
+            feed_id: feed_id,
+            auto_mark_read_days: days
+        }, function (response) {
+            if (response.code == 1 && feed) {
+                if (days === null || days === '') {
+                    feed.unset('auto_mark_read_days');
+                } else {
+                    feed.set('auto_mark_read_days', parseInt(days, 10));
+                }
+            }
+            callback && callback(response);
+        }, error_callback);
+    },
+
+    save_folder_auto_mark_read: function (folder_title, days, callback, error_callback) {
+        var self = this;
+        this.make_request('/reader/save_folder_auto_mark_read', {
+            folder_title: folder_title,
+            auto_mark_read_days: days
+        }, function (response) {
+            if (response.code == 1) {
+                self.folder_auto_mark_read = response.folder_auto_mark_read || {};
+            }
+            callback && callback(response);
+        }, error_callback);
+    },
+
+    get_auto_mark_read_settings: function (callback, error_callback) {
+        var self = this;
+        this.make_request('/reader/get_auto_mark_read_settings', {}, function (response) {
+            if (response.code == 1) {
+                self.folder_auto_mark_read = response.folder_auto_mark_read || {};
+            }
+            callback && callback(response);
+        }, error_callback, { request_type: 'GET' });
     },
 
     save_dashboard_river: function (river_id, river_side, river_order, callback, error_callback) {
