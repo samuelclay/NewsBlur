@@ -180,19 +180,22 @@ class UserSubscription(models.Model):
         manual_unread_feed_oldest_date = dict()
         oldest_manual_unread = None
 
-        # Pre-fetch folder settings for auto_mark_read calculation
+        # Pre-fetch folder settings and feed-to-folder mapping for auto_mark_read calculation
         folder_settings = None
+        feed_folder_mapping = None
         if is_archive and usersubs:
             folder_settings = {}
             for setting in MFolderAutoMarkRead.get_folder_settings_for_user(user_id):
                 folder_settings[setting.folder_title] = setting.auto_mark_read_days
+            # Pre-compute feed-to-folder mapping to avoid N+1 queries
+            feed_folder_mapping = UserSubscriptionFolders.get_feed_folder_mapping(user)
 
         # usersub_count = len(usersubs)
         for us in usersubs:
             # Calculate effective cutoff for this feed based on auto_mark_read settings
             effective_cutoff = cutoff_date
             if is_archive:
-                auto_mark_read_cutoff = us.get_auto_mark_read_cutoff(folder_settings)
+                auto_mark_read_cutoff = us.get_auto_mark_read_cutoff(folder_settings, feed_folder_mapping)
                 if auto_mark_read_cutoff:
                     effective_cutoff = max(auto_mark_read_cutoff, cutoff_date)
             read_dates[us.feed_id] = int(max(us.mark_read_date, effective_cutoff).strftime("%s"))
@@ -1161,12 +1164,17 @@ class UserSubscription(models.Model):
 
         return data
 
-    def get_effective_auto_mark_read_days(self, folder_settings=None):
+    def get_effective_auto_mark_read_days(self, folder_settings=None, feed_folder_mapping=None):
         """
         Returns the effective auto_mark_read_days setting following inheritance:
         feed -> folder (walking up nested hierarchy) -> site-wide
 
         Returns tuple of (days, source) where source is 'feed', 'folder:FolderName', or 'site-wide'
+
+        Args:
+            folder_settings: Pre-fetched dict of folder_title -> auto_mark_read_days
+            feed_folder_mapping: Pre-fetched dict of feed_id -> list of folder titles
+                                 (use UserSubscriptionFolders.get_feed_folder_mapping() to generate)
         """
         # First check if feed has explicit setting
         if self.auto_mark_read_days is not None:
@@ -1175,11 +1183,14 @@ class UserSubscription(models.Model):
             return (self.auto_mark_read_days, "feed")
 
         # Find folders containing this feed
-        try:
-            usf = UserSubscriptionFolders.objects.get(user=self.user)
-            feed_folders = usf.find_feed_folders(self.feed_id)
-        except UserSubscriptionFolders.DoesNotExist:
-            feed_folders = []
+        if feed_folder_mapping is not None:
+            feed_folders = feed_folder_mapping.get(self.feed_id, [])
+        else:
+            try:
+                usf = UserSubscriptionFolders.objects.get(user=self.user)
+                feed_folders = usf.find_feed_folders(self.feed_id)
+            except UserSubscriptionFolders.DoesNotExist:
+                feed_folders = []
 
         # Get all folder settings for this user if not provided
         if folder_settings is None:
@@ -1222,13 +1233,17 @@ class UserSubscription(models.Model):
 
         return (None, "default")
 
-    def get_auto_mark_read_cutoff(self, folder_settings=None):
+    def get_auto_mark_read_cutoff(self, folder_settings=None, feed_folder_mapping=None):
         """
         Returns the unread cutoff date based on auto_mark_read_days setting.
         Takes into account feed, folder, and site-wide settings.
         Returns None if no aging should be applied.
+
+        Args:
+            folder_settings: Pre-fetched dict of folder_title -> auto_mark_read_days
+            feed_folder_mapping: Pre-fetched dict of feed_id -> list of folder titles
         """
-        days, source = self.get_effective_auto_mark_read_days(folder_settings)
+        days, source = self.get_effective_auto_mark_read_days(folder_settings, feed_folder_mapping)
         if days is None:
             return None
         return datetime.datetime.utcnow() - datetime.timedelta(days=days)
@@ -2062,6 +2077,27 @@ class UserSubscriptionFolders(models.Model):
             return
 
         usf.compact()
+
+    @classmethod
+    def get_feed_folder_mapping(cls, user):
+        """Returns dict mapping feed_id -> list of folder titles for all feeds.
+
+        This is used to avoid N+1 queries when calculating auto_mark_read cutoffs
+        for multiple feeds in a loop.
+        """
+        try:
+            usf = cls.objects.get(user=user)
+            flat_folders = usf.flatten_folders()
+            feed_to_folders = {}
+            for folder_title, feed_ids in flat_folders.items():
+                folder_title = folder_title.strip() if folder_title else ""
+                for feed_id in feed_ids:
+                    if feed_id not in feed_to_folders:
+                        feed_to_folders[feed_id] = []
+                    feed_to_folders[feed_id].append(folder_title)
+            return feed_to_folders
+        except cls.DoesNotExist:
+            return {}
 
     def compact(self):
         folders = json.decode(self.folders)
