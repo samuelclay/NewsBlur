@@ -12,7 +12,6 @@ import org.junit.Assert
 import org.junit.Test
 
 class ReadingKeyboardShortcutsTest {
-
     private val manager = KeyboardManager()
 
     @After

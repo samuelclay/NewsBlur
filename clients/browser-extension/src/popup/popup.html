@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsBlur Archive</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="popup-container">
+        <!-- Header -->
+        <div class="popup-header">
+            <img src="../../icons/icon-32.png" alt="NewsBlur Archive" class="popup-logo">
+            <h1 class="popup-title">NewsBlur Archive</h1>
+            <button class="settings-button" title="Settings">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 4a4 4 0 100 8 4 4 0 000-8zm0 6.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
+                    <path d="M13.85 6.15l-1.4-.35a4.85 4.85 0 00-.4-.95l.75-1.25a.5.5 0 00-.1-.6l-.7-.7a.5.5 0 00-.6-.1l-1.25.75c-.3-.15-.6-.3-.95-.4l-.35-1.4A.5.5 0 008.35 1h-1a.5.5 0 00-.5.4l-.35 1.4c-.35.1-.65.25-.95.4L4.3 2.45a.5.5 0 00-.6.1l-.7.7a.5.5 0 00-.1.6l.75 1.25c-.15.3-.3.6-.4.95l-1.4.35a.5.5 0 00-.4.5v1a.5.5 0 00.4.5l1.4.35c.1.35.25.65.4.95l-.75 1.25a.5.5 0 00.1.6l.7.7a.5.5 0 00.6.1l1.25-.75c.3.15.6.3.95.4l.35 1.4a.5.5 0 00.5.4h1a.5.5 0 00.5-.4l.35-1.4c.35-.1.65-.25.95-.4l1.25.75a.5.5 0 00.6-.1l.7-.7a.5.5 0 00.1-.6l-.75-1.25c.15-.3.3-.6.4-.95l1.4-.35a.5.5 0 00.4-.5v-1a.5.5 0 00-.4-.5z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Login Section (shown when not authenticated) -->
+        <div class="login-section hidden" id="loginSection">
+            <div class="login-message">
+                <p>Connect your NewsBlur account to start archiving your browsing history.</p>
+            </div>
+            <button class="login-button" id="loginButton">Connect NewsBlur Account</button>
+        </div>
+
+        <!-- Main Content (shown when authenticated) -->
+        <div class="main-section hidden" id="mainSection">
+            <!-- Current Page Actions -->
+            <div class="current-page-section">
+                <div class="current-page-info">
+                    <img class="current-page-favicon" id="currentFavicon" src="" alt="">
+                    <div class="current-page-title" id="currentTitle">Current Page</div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-button" id="saveButton" title="Save to Starred Stories">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 1l2.5 5 5.5.8-4 3.9.9 5.5L8 13.5l-4.9 2.7.9-5.5-4-3.9 5.5-.8L8 1z"/>
+                        </svg>
+                        Save
+                    </button>
+                    <button class="action-button" id="shareButton" title="Share Story">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M13 5a2 2 0 100-4 2 2 0 000 4zm0 10a2 2 0 100-4 2 2 0 000 4zM3 10a2 2 0 100-4 2 2 0 000 4z"/>
+                            <path d="M5 7.5l6-3M5 8.5l6 3"/>
+                        </svg>
+                        Share
+                    </button>
+                    <button class="action-button" id="subscribeButton" title="Subscribe to Site">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 1v14M1 8h14"/>
+                        </svg>
+                        Subscribe
+                    </button>
+                </div>
+            </div>
+
+            <!-- Archive Status -->
+            <div class="archive-status" id="archiveStatus">
+                <span class="status-badge archived" id="archivedBadge">Archived</span>
+                <span class="status-badge pending" id="pendingBadge">Pending</span>
+                <span class="status-text" id="statusText"></span>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <div class="stat">
+                    <span class="stat-value" id="pendingCount">0</span>
+                    <span class="stat-label">Pending</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="totalArchived">0</span>
+                    <span class="stat-label">Archived</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="lastSync">Never</span>
+                    <span class="stat-label">Last Sync</span>
+                </div>
+            </div>
+
+            <!-- Recent Archives -->
+            <div class="recent-section">
+                <h2 class="section-title">Recent Archives</h2>
+                <div class="recent-list" id="recentList">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Search Link -->
+            <a href="#" class="search-link" id="searchArchivesLink">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M11.5 6.5a5 5 0 11-10 0 5 5 0 0110 0zm-1 5l4 4"/>
+                </svg>
+                Search Archives in NewsBlur
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div class="popup-footer">
+            <span class="server-badge" id="serverBadge" title="Connected server">
+                <span class="server-icon">●</span>
+                <span class="server-name" id="serverName">newsblur.com</span>
+            </span>
+            <span class="footer-divider">|</span>
+            <a href="#" class="footer-link" id="openArchiveLink">Archive</a>
+            <span class="footer-divider">|</span>
+            <a href="#" class="footer-link" id="aboutLink">About</a>
+        </div>
+    </div>
+
+    <script src="popup-simple.js"></script>
+</body>
+</html>

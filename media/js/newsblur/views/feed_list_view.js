@@ -57,11 +57,12 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         $('.NB-feeds-header-river-global .NB-feeds-header-icon').attr('src', $.favicon('river:global'));
         $('.NB-feeds-header-river-blurblogs .NB-feeds-header-icon').attr('src', $.favicon('river:blurblogs'));
         $('.NB-feeds-header-river-infrequent .NB-feeds-header-icon').attr('src', $.favicon('river:infrequent'));
+        $('.NB-feeds-header-river-trending .NB-feeds-header-icon').attr('src', $.favicon('river:trending'));
         $('.NB-feeds-header-river-sites .NB-feeds-header-icon').attr('src', $.favicon('river:'));
         $('.NB-feeds-header-read .NB-feeds-header-icon').attr('src', $.favicon('read'));
         $('.NB-feeds-header-searches .NB-feeds-header-icon').attr('src', $.favicon('searches'));
-        $('.NB-feeds-header-read .NB-feeds-header-icon').attr('src', $.favicon('read'));
         $('.NB-feeds-header-starred .NB-feeds-header-icon').attr('src', $.favicon('starred'));
+        $('.NB-feeds-header-archive .NB-feeds-header-icon').attr('src', $.favicon('archive'));
     },
 
     make_feeds: function (options) {
@@ -123,6 +124,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
                     'display': 'block',
                     'opacity': 0
                 }).animate({ 'opacity': 1 }, { 'duration': 700 });
+                NEWSBLUR.app.sidebar.update_toggle_all_folders_icon();
             }
 
             if (NEWSBLUR.reader.flags['showing_feed_in_tryfeed_view'] ||
@@ -178,13 +180,38 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             });
         }
 
-        if (NEWSBLUR.assets.preference('show_infrequent_site_stories')) {
+        if (NEWSBLUR.assets.preference('show_infrequent_site_stories') && NEWSBLUR.assets.folders.length) {
             $('.NB-feeds-header-river-infrequent-container').css({
                 'display': 'block',
                 'opacity': 0
             }).animate({ 'opacity': 1 }, { 'duration': 700 });
         } else {
             $('.NB-feeds-header-river-infrequent-container').css({
+                'display': 'none',
+                'opacity': 0
+            });
+        }
+
+        if (NEWSBLUR.Globals.is_staff && NEWSBLUR.assets.preference('show_trending_sites')) {
+            $('.NB-feeds-header-river-trending-container').css({
+                'display': 'block',
+                'opacity': 0
+            }).animate({ 'opacity': 1 }, { 'duration': 700 });
+        } else {
+            $('.NB-feeds-header-river-trending-container').css({
+                'display': 'none',
+                'opacity': 0
+            });
+        }
+
+        // Show Archive folder for staff users only
+        if (NEWSBLUR.Globals.is_staff) {
+            $('.NB-feeds-header-archive-container').css({
+                'display': 'block',
+                'opacity': 0
+            }).animate({ 'opacity': 1 }, { 'duration': 700 });
+        } else {
+            $('.NB-feeds-header-archive-container').css({
                 'display': 'none',
                 'opacity': 0
             });
@@ -321,12 +348,10 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_intro_modal({ page_number: 2 });
         } else if (next == 'organizer') {
             NEWSBLUR.reader.open_organizer_modal();
-        } else if (next == 'chooser') {
+        } else if (next == 'chooser' || next == 'feedchooser') {
             NEWSBLUR.reader.open_feedchooser_modal();
-        } else if (next == 'premium') {
-            NEWSBLUR.reader.open_feedchooser_modal({ 'premium_only': true });
-        } else if (next == 'renew') {
-            NEWSBLUR.reader.open_feedchooser_modal({ 'premium_only': true });
+        } else if (next == 'premium' || next == 'renew') {
+            NEWSBLUR.reader.open_premium_upgrade_modal();
         } else if (next == 'password') {
             NEWSBLUR.reader.open_account_modal({ 'change_password': true });
         } else if (next == 'notifications') {
@@ -345,7 +370,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             }
         }
 
-        // This removes the query string from the URL.
+        // This removes the query string from the URL (unless ?test= is present).
         if (!route_found && window.history.replaceState && !$.getQueryString('test')) {
             // In case this needs to be found again: window.location.href = BACKBONE
             window.history.replaceState({}, null, '/');

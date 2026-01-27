@@ -1,12 +1,15 @@
 package com.newsblur.activity
 
 import android.os.Bundle
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.newsblur.R
 import com.newsblur.databinding.ActivityNotificationsBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Feed
+import com.newsblur.util.EdgeToEdgeUtil.applyView
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.UIUtils
 import com.newsblur.util.setViewGone
@@ -14,11 +17,13 @@ import com.newsblur.util.setViewVisible
 import com.newsblur.viewModel.NotificationsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotificationsActivity : NbActivity(), NotificationsAdapter.Listener {
-
+class NotificationsActivity :
+    NbActivity(),
+    NotificationsAdapter.Listener {
     @IconLoader
     @Inject
     lateinit var imageLoader: ImageLoader
@@ -31,7 +36,7 @@ class NotificationsActivity : NbActivity(), NotificationsAdapter.Listener {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[NotificationsViewModel::class.java]
         binding = ActivityNotificationsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        applyView(binding)
 
         setupUI()
         setupListeners()
@@ -39,23 +44,28 @@ class NotificationsActivity : NbActivity(), NotificationsAdapter.Listener {
 
     private fun setupUI() {
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.notifications_title), true)
-        adapter = NotificationsAdapter(imageLoader, this).also {
-            binding.recyclerViewFeeds.adapter = it
-        }
+        adapter =
+            NotificationsAdapter(imageLoader, this).also {
+                binding.content.adapter = it
+            }
     }
 
     private fun setupListeners() {
-        lifecycleScope.launchWhenStarted {
-            viewModel.feeds.collectLatest {
-                val feeds = it.values
-                if (feeds.isNotEmpty()) {
-                    binding.recyclerViewFeeds.setViewVisible()
-                    binding.txtNoNotifications.setViewGone()
-                } else {
-                    binding.recyclerViewFeeds.setViewGone()
-                    binding.txtNoNotifications.setViewVisible()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.feeds.collectLatest {
+                        val feeds = it.values
+                        if (feeds.isNotEmpty()) {
+                            binding.content.setViewVisible()
+                            binding.txtNoNotifications.setViewGone()
+                        } else {
+                            binding.content.setViewGone()
+                            binding.txtNoNotifications.setViewVisible()
+                        }
+                        adapter.refreshFeeds(feeds)
+                    }
                 }
-                adapter.refreshFeeds(feeds)
             }
         }
     }

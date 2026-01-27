@@ -44,6 +44,12 @@ from vendor.timezones.fields import TimeZoneField
 
 
 class Profile(models.Model):
+    # Feed limits by subscription tier
+    FREE_FEED_LIMIT = 64
+    PREMIUM_FEED_LIMIT = 1024
+    ARCHIVE_FEED_LIMIT = 4096
+    PRO_FEED_LIMIT = 10000
+
     user = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
     is_premium = models.BooleanField(default=False)
     is_archive = models.BooleanField(default=False, blank=True, null=True)
@@ -57,6 +63,7 @@ class Profile(models.Model):
     days_of_unread = models.IntegerField(default=settings.DAYS_OF_UNREAD, blank=True, null=True)
     tutorial_finished = models.BooleanField(default=False)
     hide_getting_started = models.BooleanField(default=False, null=True, blank=True)
+    hide_trial_module = models.BooleanField(default=False, null=True, blank=True)
     has_setup_feeds = models.BooleanField(default=False, null=True, blank=True)
     has_found_friends = models.BooleanField(default=False, null=True, blank=True)
     has_trained_intelligence = models.BooleanField(default=False, null=True, blank=True)
@@ -71,6 +78,9 @@ class Profile(models.Model):
     # paypal_payer_id   = models.CharField(max_length=24, blank=True, null=True)
     premium_renewal = models.BooleanField(default=False, blank=True, null=True)
     active_provider = models.CharField(max_length=24, blank=True, null=True)
+    is_premium_trial = models.BooleanField(default=None, blank=True, null=True)
+    is_grandfathered = models.BooleanField(default=False, blank=True, null=True)
+    grandfather_expires = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return "%s <%s>%s%s%s" % (
@@ -137,6 +147,99 @@ class Profile(models.Model):
             return settings.DAYS_OF_STORY_HASHES_ARCHIVE
         return settings.DAYS_OF_STORY_HASHES
 
+    @property
+    def is_on_trial(self):
+        """Returns True if user is currently on a premium trial."""
+        return self.is_premium_trial is True and self.is_premium
+
+    @property
+    def trial_days_remaining(self):
+        """Returns number of days remaining in trial, or None if not on trial."""
+        if not self.is_on_trial or not self.premium_expire:
+            return None
+        delta = self.premium_expire - datetime.datetime.now()
+        return max(0, delta.days)
+
+    @property
+    def can_start_trial(self):
+        """Returns True if user is eligible to start a premium trial."""
+        if self.is_premium:
+            return False
+        if self.is_premium_trial is False:
+            return False
+        return True
+
+    @property
+    def is_feed_limit_temporarily_exempt(self):
+        """
+        Returns True if this premium user is temporarily exempt from feed limits.
+
+        This applies to grandfathered users who had 2000+ feeds at launch.
+        They get a one-year grace period (grandfather_expires) to either upgrade
+        to Archive or mute down to the 2000 feed limit.
+        """
+        # Only applies to grandfathered premium users (not archive/pro)
+        if not self.is_premium or self.is_archive or self.is_pro:
+            return False
+        if not self.is_grandfathered:
+            return False
+
+        # If grandfather_expires is set and in the future, user is temporarily exempt
+        if self.grandfather_expires:
+            expires = self.grandfather_expires
+            if expires.tzinfo is None:
+                expires = expires.replace(tzinfo=datetime.timezone.utc)
+            now = datetime.datetime.now(datetime.timezone.utc)
+            if now < expires:
+                return True
+
+        return False
+
+    @property
+    def max_feed_limit(self):
+        """
+        Returns the maximum number of feeds allowed for this user's subscription tier.
+
+        Grandfathering: Users with > 1024 feeds at launch get 1 year grace period.
+        During grace period (grandfather_expires in future), no limit applies.
+        After grace period expires, standard 1024 limit applies.
+        """
+        if self.is_pro:
+            return self.PRO_FEED_LIMIT
+        if self.is_archive:
+            return self.ARCHIVE_FEED_LIMIT
+        if self.is_premium:
+            # Grandfathered users in grace period have no limit
+            if self.is_feed_limit_temporarily_exempt:
+                return None
+            return self.PREMIUM_FEED_LIMIT
+        return self.FREE_FEED_LIMIT
+
+    @property
+    def premium_feed_limit(self):
+        """Returns the Premium tier feed limit (for upgrade prompts)."""
+        return self.PREMIUM_FEED_LIMIT
+
+    @property
+    def archive_feed_limit(self):
+        """Returns the Archive tier feed limit (for upgrade prompts)."""
+        return self.ARCHIVE_FEED_LIMIT
+
+    @property
+    def pro_feed_limit(self):
+        """Returns the Pro tier feed limit (for upgrade prompts)."""
+        return self.PRO_FEED_LIMIT
+
+    @property
+    def add_feed_limit(self):
+        """
+        Returns the feed limit for adding new feeds, or None if no limit.
+
+        Grandfathered premium users have no limit (returns None).
+        Same as max_feed_limit - grandfathered users can add feeds freely.
+        """
+        return self.max_feed_limit
+
     def can_use_ask_ai(self):
         return AskAIUsageTracker(self.user).can_use()
 
@@ -153,10 +256,14 @@ class Profile(models.Model):
             "is_premium": self.is_premium,
             "is_archive": self.is_archive,
             "is_pro": self.is_pro,
+            "is_premium_trial": self.is_premium_trial,
+            "trial_days_remaining": self.trial_days_remaining,
+            "can_start_trial": self.can_start_trial,
             "premium_expire": int(self.premium_expire.strftime("%s")) if self.premium_expire else 0,
             "preferences": json.decode(self.preferences),
             "tutorial_finished": self.tutorial_finished,
             "hide_getting_started": self.hide_getting_started,
+            "hide_trial_module": self.hide_trial_module,
             "has_setup_feeds": self.has_setup_feeds,
             "has_found_friends": self.has_found_friends,
             "has_trained_intelligence": self.has_trained_intelligence,
@@ -171,10 +278,111 @@ class Profile(models.Model):
         except DatabaseError as e:
             print(f" ---> Profile not saved: {e}")
 
+    def archive_deleted_user(self):
+        """Archive user data before deletion for analytics and tracking."""
+        from apps.analyzer.models import (
+            MClassifierAuthor,
+            MClassifierFeed,
+            MClassifierTag,
+            MClassifierText,
+            MClassifierTitle,
+        )
+        from apps.social.models import MSharedStory, MSocialProfile
+
+        # Get payment history
+        payments = PaymentHistory.objects.filter(user=self.user)
+        payment_history = []
+        total_payments = 0
+        for payment in payments:
+            if not payment.refunded:
+                total_payments += payment.payment_amount
+            payment_history.append(
+                {
+                    "date": payment.payment_date.isoformat() if payment.payment_date else None,
+                    "amount": payment.payment_amount,
+                    "provider": payment.payment_provider,
+                    "refunded": payment.refunded,
+                }
+            )
+
+        # Get feed stats
+        feeds_count = UserSubscription.objects.filter(user=self.user).count()
+        feed_opens = (
+            UserSubscription.objects.filter(user=self.user).aggregate(sum=Sum("feed_opens"))["sum"] or 0
+        )
+
+        # Get story stats
+        read_story_count = RUserStory.read_story_count(self.user.pk)
+        starred_stories_count = MStarredStory.objects.filter(user_id=self.user.pk).count()
+        shared_stories_count = MSharedStory.objects.filter(user_id=self.user.pk).count()
+
+        # Get social stats
+        following_count = 0
+        follower_count = 0
+        try:
+            social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
+            following_count = social_profile.following_count
+            follower_count = social_profile.follower_count
+        except MSocialProfile.DoesNotExist:
+            pass
+
+        # Get training stats
+        training = {
+            "title_ps": MClassifierTitle.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "title_ng": MClassifierTitle.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "tag_ps": MClassifierTag.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "tag_ng": MClassifierTag.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "text_ps": MClassifierText.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "text_ng": MClassifierText.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "author_ps": MClassifierAuthor.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "author_ng": MClassifierAuthor.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "feed_ps": MClassifierFeed.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "feed_ng": MClassifierFeed.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+        }
+
+        # Create the archived record
+        deleted_user = MDeletedUser(
+            user_id=self.user.pk,
+            username=self.user.username,
+            email=self.user.email,
+            date_joined=self.user.date_joined,
+            last_seen_on=self.last_seen_on,
+            last_seen_ip=self.last_seen_ip,
+            timezone=str(self.timezone) if self.timezone else None,
+            is_premium=self.is_premium,
+            is_archive=self.is_archive or False,
+            is_pro=self.is_pro or False,
+            premium_expire=self.premium_expire,
+            premium_renewal=self.premium_renewal or False,
+            payment_count=len(payments),
+            total_payments=total_payments,
+            payment_history=payment_history,
+            stripe_id=self.stripe_id,
+            paypal_email=self.latest_paypal_email,
+            feeds_count=feeds_count,
+            feed_opens=feed_opens,
+            read_story_count=read_story_count,
+            starred_stories_count=starred_stories_count,
+            shared_stories_count=shared_stories_count,
+            following_count=following_count,
+            follower_count=follower_count,
+            training=training,
+        )
+        deleted_user.save()
+
+        logging.user(
+            self.user,
+            "~FBArchived deleted user data: %s feeds, %s payments ($%s), %s stories read"
+            % (feeds_count, len(payments), total_payments, read_story_count),
+        )
+
     def delete_user(self, confirm=False, fast=False):
         if not confirm:
             print(" ---> You must pass confirm=True to delete this user.")
             return
+
+        # Archive user data BEFORE deletion for analytics
+        self.archive_deleted_user()
 
         logging.user(self.user, "Deleting user: %s / %s" % (self.user.email, self.user.profile.last_seen_ip))
         try:
@@ -254,8 +462,64 @@ class Profile(models.Model):
         logging.user(self.user, "Deleting user: %s" % self.user)
         self.user.delete()
 
+    def start_premium_trial(self):
+        """Start a 30-day premium trial for existing free user."""
+        from apps.profile.tasks import EmailNewPremiumTrial
+
+        if self.is_premium:
+            logging.user(self.user, "~FRCannot start trial - already premium")
+            return False
+        if self.is_premium_trial is False:
+            logging.user(self.user, "~FRCannot start trial - already used trial")
+            return False
+
+        now = datetime.datetime.now()
+        self.is_premium = True
+        self.is_premium_trial = True
+        self.premium_expire = now + datetime.timedelta(days=30)
+        self.save()
+        self.user.is_active = True
+        self.user.save()
+
+        subs = UserSubscription.objects.filter(user=self.user)
+        for sub in subs:
+            if not sub.active:
+                sub.active = True
+                try:
+                    sub.save()
+                except (IntegrityError, Feed.DoesNotExist):
+                    pass
+
+        try:
+            scheduled_feeds = [sub.feed.pk for sub in subs]
+        except Feed.DoesNotExist:
+            scheduled_feeds = []
+        logging.user(
+            self.user,
+            "~SN~FMTasking the scheduling immediate premium trial setup of ~SB%s~SN feeds..."
+            % len(scheduled_feeds),
+        )
+        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+
+        UserSubscription.queue_new_feeds(self.user)
+
+        EmailNewPremiumTrial.delay(user_id=self.user.pk)
+
+        logging.user(
+            self.user,
+            "~BY~SK~FW~SBNEW PREMIUM TRIAL! ~FR%s subscriptions, expires %s~SN!"
+            % (subs.count(), self.premium_expire),
+        )
+
+        return True
+
     def activate_premium(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremium
+
+        # Clear trial status when converting to paid premium
+        if self.is_premium_trial:
+            self.is_premium_trial = False
+            logging.user(self.user, "~FMClearing trial status - converting to paid premium")
 
         EmailNewPremium.delay(user_id=self.user.pk)
 
@@ -650,15 +914,18 @@ class Profile(models.Model):
                         refunded = None
                         if transaction["status"] in ["PARTIALLY_REFUNDED", "REFUNDED"]:
                             refunded = True
-                        PaymentHistory.objects.get_or_create(
-                            user=self.user,
-                            payment_date=created,
-                            payment_amount=int(
-                                float(transaction["amount_with_breakdown"]["gross_amount"]["value"])
-                            ),
-                            payment_provider="paypal",
-                            refunded=refunded,
-                        )
+                        try:
+                            PaymentHistory.objects.get_or_create(
+                                user=self.user,
+                                payment_date=created,
+                                payment_amount=int(
+                                    float(transaction["amount_with_breakdown"]["gross_amount"]["value"])
+                                ),
+                                payment_provider="paypal",
+                                refunded=refunded,
+                            )
+                        except PaymentHistory.MultipleObjectsReturned:
+                            pass  # Duplicate records exist, skip
 
                     ipns = PayPalIPN.objects.filter(
                         Q(custom=self.user.username) | Q(payer_email=self.user.email) | Q(custom=self.user.pk)
@@ -671,12 +938,15 @@ class Profile(models.Model):
                             continue
                         seen_payments.add(created)
                         total_paypal_payments += 1
-                        PaymentHistory.objects.get_or_create(
-                            user=self.user,
-                            payment_date=created,
-                            payment_amount=int(transaction.payment_gross),
-                            payment_provider="paypal",
-                        )
+                        try:
+                            PaymentHistory.objects.get_or_create(
+                                user=self.user,
+                                payment_date=created,
+                                payment_amount=int(transaction.payment_gross),
+                                payment_provider="paypal",
+                            )
+                        except PaymentHistory.MultipleObjectsReturned:
+                            pass  # Duplicate records exist, skip
         else:
             logging.user(self.user, "~FBNo Paypal payments")
 
@@ -720,13 +990,16 @@ class Profile(models.Model):
                     refunded = None
                     if payment.refunded:
                         refunded = True
-                    PaymentHistory.objects.get_or_create(
-                        user=self.user,
-                        payment_date=created,
-                        payment_amount=payment.amount / 100.0,
-                        payment_provider="stripe",
-                        refunded=refunded,
-                    )
+                    try:
+                        PaymentHistory.objects.get_or_create(
+                            user=self.user,
+                            payment_date=created,
+                            payment_amount=payment.amount / 100.0,
+                            payment_provider="stripe",
+                            refunded=refunded,
+                        )
+                    except PaymentHistory.MultipleObjectsReturned:
+                        pass  # Duplicate records exist, skip
         else:
             logging.user(self.user, "~FBNo Stripe payments")
 
@@ -1908,6 +2181,69 @@ class Profile(models.Model):
             "~BB~FM~SBSending premium expire email for user: %s months, %s" % (months_ago, self.user.email),
         )
 
+    def send_premium_trial_welcome_email(self, force=False):
+        """Send welcome email for new premium trial users."""
+        if not self.user.email or not self.send_emails:
+            logging.user(self.user, "~FM~SBNot sending trial welcome - no email or send_emails disabled")
+            return
+
+        params = dict(receiver_user_id=self.user.pk, email_type="premium_trial_welcome")
+        try:
+            MSentEmail.objects.get(**params)
+            if not force:
+                return
+        except MSentEmail.DoesNotExist:
+            MSentEmail.objects.create(**params)
+
+        user = self.user
+        days_remaining = self.trial_days_remaining or 30
+        data = dict(user=user, days_remaining=days_remaining)
+        text = render_to_string("mail/email_premium_trial_welcome.txt", data)
+        html = render_to_string("mail/email_premium_trial_welcome.xhtml", data)
+        subject = "Welcome to NewsBlur! Your 30-day premium trial has started"
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
+            to=["%s <%s>" % (user, user.email)],
+        )
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+
+        logging.user(self.user, "~BB~FM~SBSending trial welcome email: %s" % self.user.email)
+
+    def send_premium_trial_expire_email(self, force=False):
+        """Send email when premium trial expires."""
+        if not self.user.email:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending trial expire for user: %s" % (self.user))
+            return
+
+        emails_sent = MSentEmail.objects.filter(
+            receiver_user_id=self.user.pk, email_type="premium_trial_expire"
+        )
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
+        for email in emails_sent:
+            if email.date_sent > day_ago and not force:
+                logging.user(self.user, "~FM~SBNot sending trial expire email, already sent before.")
+                return
+
+        user = self.user
+        data = dict(user=user)
+        text = render_to_string("mail/email_premium_trial_expire.txt", data)
+        html = render_to_string("mail/email_premium_trial_expire.xhtml", data)
+        subject = "Your 30-day NewsBlur premium trial has ended"
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
+            to=["%s <%s>" % (user, user.email)],
+        )
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+
+        MSentEmail.record(receiver_user_id=self.user.pk, email_type="premium_trial_expire")
+        logging.user(self.user, "~BB~FM~SBSending trial expire email for: %s" % self.user.email)
+
     def autologin_url(self, next=None):
         return reverse("autologin", kwargs={"username": self.user.username, "secret": self.secret_token}) + (
             "?" + next + "=1" if next else ""
@@ -1945,7 +2281,20 @@ class PaypalIds(models.Model):
 
 def create_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(user=instance)
+        from apps.profile.tasks import EmailNewPremiumTrial
+
+        now = datetime.datetime.now()
+        profile = Profile.objects.create(
+            user=instance,
+            is_premium=True,
+            is_premium_trial=True,
+            premium_expire=now + datetime.timedelta(days=30),
+        )
+        EmailNewPremiumTrial.delay(user_id=instance.pk)
+        logging.user(
+            instance,
+            "~BY~SK~FW~SBNEW USER WITH PREMIUM TRIAL! Expires %s~SN" % profile.premium_expire,
+        )
     else:
         Profile.objects.get_or_create(user=instance)
 
@@ -2271,6 +2620,7 @@ class PaymentHistory(models.Model):
 
     def canonical(self):
         return {
+            "id": self.id,
             "payment_date": self.payment_date.strftime("%Y-%m-%d"),
             "payment_amount": self.payment_amount,
             "payment_provider": self.payment_provider,
@@ -2705,3 +3055,56 @@ class RNewUserQueue:
         r.zrem(cls.KEY, user)
 
         return user
+
+
+class MDeletedUser(mongo.Document):
+    """Archive of deleted user data for analytics and tracking."""
+
+    # User identifiers
+    user_id = mongo.IntField(required=True)
+    username = mongo.StringField(max_length=255)
+    email = mongo.StringField(max_length=255)
+
+    # Dates
+    date_joined = mongo.DateTimeField()
+    date_deleted = mongo.DateTimeField(default=datetime.datetime.now)
+    last_seen_on = mongo.DateTimeField()
+    last_seen_ip = mongo.StringField(max_length=50)
+    timezone = mongo.StringField(max_length=50)
+
+    # Subscription status at deletion
+    is_premium = mongo.BooleanField(default=False)
+    is_archive = mongo.BooleanField(default=False)
+    is_pro = mongo.BooleanField(default=False)
+    premium_expire = mongo.DateTimeField()
+    premium_renewal = mongo.BooleanField(default=False)
+
+    # Payment data
+    payment_count = mongo.IntField(default=0)
+    total_payments = mongo.IntField(default=0)  # in dollars
+    payment_history = mongo.ListField(mongo.DictField())  # [{date, amount, provider}]
+    stripe_id = mongo.StringField(max_length=255)
+    paypal_email = mongo.StringField(max_length=255)
+
+    # Usage stats
+    feeds_count = mongo.IntField(default=0)
+    feed_opens = mongo.IntField(default=0)
+    read_story_count = mongo.IntField(default=0)
+    starred_stories_count = mongo.IntField(default=0)
+    shared_stories_count = mongo.IntField(default=0)
+
+    # Social stats
+    following_count = mongo.IntField(default=0)
+    follower_count = mongo.IntField(default=0)
+
+    # Training stats (from classifiers)
+    training = mongo.DictField()  # {title_ps, title_ng, tag_ps, tag_ng, etc.}
+
+    meta = {
+        "collection": "deleted_users",
+        "indexes": [
+            "user_id",
+            "date_deleted",
+        ],
+        "allow_inheritance": False,
+    }

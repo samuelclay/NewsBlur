@@ -14,7 +14,6 @@ import org.junit.runner.RunWith
 @RequiresApi(Build.VERSION_CODES.P)
 @RunWith(AndroidJUnit4::class)
 class BaselineProfileGenerator {
-
     @get:Rule
     val rule = BaselineProfileRule()
 

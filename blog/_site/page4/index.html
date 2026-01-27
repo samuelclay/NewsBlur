@@ -66,6 +66,113 @@
       <div class="wrapper">
         <div class="home">
     <ul class="post-list"><li><div class="post-header-sticky">
+          <span class="post-meta">Jun 14, 2017</span>
+          <h3>
+            <a class="post-link" href="/2017/06/14/launching-real-time-filterable-push-notifications/">
+              Launching real-time filterable push notifications for iOS, Android, web, and email
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>For some sites, you want to know when they publish as soon as they publish. Maybe you want to immediately be notified of everything a site publishes, like a monthly meetup that posts an event only once a month. Or perhaps you want to be immediately notified of everything the NYTimes publishes about the companies in your stock portfolio. Or you just really enjoy reading your daily comics and want them emailed to you so you never miss a beat.</p>
+
+<p><img src="http://www.newsblur.com/media/blog/notifications-announcement.png" alt="" /></p>
+
+<p>Today I’m proud to launch push notifications simultaneously across all three native platforms on NewsBlur (that’s web, iOS, and Android). That means that you can setup notifications for all Unread stories or only Focus stories that you’ve trained to be pushed to you over email, iOS, Android, or through browser notifications on the web.</p>
+
+<p>You can setup all four types of notifications on both web and mobile. And you can employ your intelligence training to only surface the stories that have use certain tags, have specific keywords in the titles, or are written by specific authors. Additionally, it’s easy to hide stories using that same training so that you don’t receive notifications that you want to ignore.</p>
+
+<h2 id="push-notifications-on-ios">Push notifications on iOS</h2>
+
+<p>To start with notifications on iOS, you can use the new swipe-to-the right gesture on the feed list (replacing the trainer on the swipe gesture). It’s very easy to turn notifications on and off or to even step up the filtering on a site so that you only get Focus stories instead.</p>
+
+<p>This way you can overprovision notifications for yourself and easily dial them back to where you get just the right number of notifications.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-ios.png" alt="" /></p>
+
+<p>Today version 7.0 of the NewsBlur iOS app is being released and here’s a list of what’s new and fixed on iOS:</p>
+
+<ul>
+  <li>Push notifications: real-time push notifications on a per-feed basis.</li>
+  <li>Swipe-to-the-right on a feed to change its notifications.</li>
+  <li>A new optional app badge for unread counts. Enable under Preferences.</li>
+  <li>Stories now automatically are marked as read on scroll. Disable under Preferences.</li>
+  <li>Better image support on iPad and fixes for drag-and-dropping the story titles bar (at bottom of the story detail).</li>
+  <li>A note on that: you can move story titles to the bottom on iPad. Just drag the bottom bar up.</li>
+  <li>Fixed issue with sharing stories not working or disappearing on iPad.</li>
+  <li>Fixed theme issues in the activity share sheet.</li>
+  <li>Fixed a crash from opening stories with no permalink.</li>
+  <li>Fixed size of intelligence control on bottom of feed list on iPhone SE.</li>
+  <li>Fixed issues when story titles are set to the bottom layout on iPad.</li>
+  <li>Fixed issues with the interactions dialog.</li>
+</ul>
+
+<h1 id="notifications-on-android">Notifications on Android</h1>
+
+<p>Android also gets a new version today. Version 6.0 gets notifications and new custom reading fonts as well as the mark read on scroll behavior that iOS and web have enjoyed.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-android.png" alt="" /></p>
+
+<p>Here’s a list of what’s new and fixed on Android:</p>
+
+<ul>
+  <li>Mark as read on scroll is a new preference to automatically mark stories as read as you scroll past them.</li>
+  <li>New fonts for reading: Whitney, Chronicle, Gotham Narrow make their way to Android from the web.</li>
+  <li>Also supporting native Android fonts Noto Sans, Noto Serif, Open Sans Condensed, and Anonymous Pro.</li>
+  <li>Switching between Text and Story view is now sticky per-feed (similar to iOS and web).</li>
+  <li>Fixed issues where feed list would not update.</li>
+</ul>
+
+<h1 id="notifications-on-web">Notifications on Web</h1>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-options.png" alt="" /></p>
+
+<p>Browser notifications are handy for those sites that you only want to read on your desktop. For example, you could setup web notifications for an RSS feed for a status feed, letting you know when migrations and downtime will have some effect on you.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-sites.png" alt="" /></p>
+
+<p>Setting up and tuning notifications is also just as easy to do on the web. You’ll find it under Manage &gt; Notifications as well as in the Read Filter Popover (top right of the app) when reading an individual feed.</p>
+
+<h1 id="notifications-over-email">Notifications over Email</h1>
+
+<p>Finally, for those use cases not covered under web or mobile, you can now have websites automatically email you when they publish new stories.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/notifications-email.png" alt="" /></p>
+
+<p>This is for those stories that you don’t want to miss and want to ensure that you read. For instance, I use email notifications for <a href="http://www.newsblur.com/site/5586842/quotes-worrydream.com">worrydream’s quote blog that serves me a single paragraph of insight once a week</a> because I loved having quotes emailed to me.</p>
+
+<p>There you have it, four new ways to consume the news. If you love using NewsBlur and want to see it continue to launch new features like these, please tell friends and followers about your news reader. People often ask for ways to stay on top of the game and NewsBlur is the most powerful way to do it.</p>
+
+
+        </div>
+      </li><li><div class="post-header-sticky">
+          <span class="post-meta">May 23, 2017</span>
+          <h3>
+            <a class="post-link" href="/2017/05/23/newsblur-now-supports-the-new-json-feed-spec/">
+              NewsBlur now supports the new JSON Feed spec
+            </a>
+          </h3>
+        </div>
+        <div class="post-content e-content" itemprop="articleBody">
+          <p>Introduced and announced only last week by open web pioneers Manton Reece and Brent Simmons, JSON Feed is a new RSS-like spec that lets websites publish their stories in a much easier and human readable format.</p>
+
+<p>From the <a href="https://jsonfeed.org">JSON Feed spec</a> authors:</p>
+
+<p>We — Manton Reece and Brent Simmons — have noticed that JSON has become the developers’ choice for APIs, and that developers will often go out of their way to avoid XML. JSON is simpler to read and write, and it’s less prone to bugs.</p>
+
+<p><strong>Starting today, NewsBlur now officially supports the new JSON Feed spec</strong>. And there’s nothing extra you have to do. This means if a website syndicates their stories with the easy-to-write and easy-to-read JSON format, you can read it on NewsBlur. It should make no difference to you, since you’re reading the end product. But to website developers everywhere, supporting JSON Feeds is so much easier than supporting XML-based RSS/Atom.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/json-feeds.png" alt="" /></p>
+
+<p>Daring Fireball, as pictured above, supports the new JSON Feed. To you, the reader, it should look no different than any other RSS feed. But to the developer, publishing this as a JSON Feed instead of XML is an order of magnitude easier and quicker.</p>
+
+<p>This spec is a terrific effort by open web advocates to make it easier to keep the web open and free by lowering the cost to writing and publishing.</p>
+
+<p>Try it for yourself, just subscribe to this feed: <a href="https://daringfireball.net/feeds/json">https://daringfireball.net/feeds/json</a>. Even viewing it in a web browser is more pleasant than its <a href="https://daringfireball.net/feeds/main">XML counterpart</a>.</p>
+
+
+        </div>
+      </li><li><div class="post-header-sticky">
           <span class="post-meta">May 22, 2017</span>
           <h3>
             <a class="post-link" href="/2017/05/22/add-your-own-custom-css-and-custom-javascript-to/">
@@ -300,66 +407,6 @@
 <p>This is now how it works on the web. If you read on feed by its Text (extracted original text) view and another by its Feed view, then you are automatically switched between the two views. Quite a bit of logic had to accomodate scrolling (you don’t automatically switch, since that would throw you from one scroll viewport into another) and switching between stories.</p>
 
 <p>Enjoy the dashboard river. And if you look closely you might even see the next big feature that itself is about to launch soon.</p>
-
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Jul 14, 2016</span>
-          <h3>
-            <a class="post-link" href="/2016/07/14/newsreel-is-a-newsblur-app-for-tv/">
-              Newsreel is a NewsBlur app for tv
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>Check it out, David Berlin built <a href="http://itunes.apple.com/us/app/apple-store/id1080200978?mt=8">Newsreel</a>, a NewsBlur client for Apple TV. And from my first impression, it rocks. Just take a look at these screenshots.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsreel.png" alt="" /></p>
-
-<p>You can read your subscriptions as well as subscribe to new sites, right from your television.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsreel-add.png" alt="" /></p>
-
-<p>Not only does it look polished, but it’s smooth and seamless. Take a look at how it works in practice.</p>
-
-<p>&lt;</p>
-
-<p>video src=“https://s3.amazonaws.com/static.newsblur.com/blog/newsreel-780.mp4” style=“width: 650px; margin: 0 auto; border: 1px solid #606060” autoplay=“true” muted=“true” loop=“true”&gt;</p>
-
-<p>You can download <a href="http://itunes.apple.com/us/app/apple-store/id1080200978?mt=8">download Newsreel on the App Store</a>. What a beautiful app and it goes to show how nice it is to be able to read your news on a big screen.</p>
-
-
-        </div>
-      </li><li><div class="post-header-sticky">
-          <span class="post-meta">Jul 1, 2016</span>
-          <h3>
-            <a class="post-link" href="/2016/07/01/newsletters-in-your-newsblur/">
-              Newsletters in your NewsBlur
-            </a>
-          </h3>
-        </div>
-        <div class="post-content e-content" itemprop="articleBody">
-          <p>It’s been three years to the day that Google Reader shut down. And here’s a feature they could never build. Introducing email newsletters in your RSS reader.</p>
-
-<p>You can now forward your email newsletters over to NewsBlur and then read your email newsletters right in your browser/phone/TV/tablet. A couple dozen users have been beta testing this feature for the last couple of months and everybody agrees, this feature is amazing.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsletters.png" alt="" /></p>
-
-<p>Newsletters are formatted to fit all of your screens, so it looks just as good on the web as it does on your phone.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsletters-ios.png" alt="" /></p>
-
-<p>Here’s the best part. If you get a lot of newsletters, you can group them into folders and even train them to highlight the newsletters you want to read first.</p>
-
-<p>Setting up newsletters on NewsBlur is easy. Just follow the personalized instructions on the web by going to Manage &gt; Email Newsletters on either the web dashboard or the manage menu.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/newsletters-setup.png" alt="" /></p>
-
-<p>You might ask why not just subscribe your custom NewsBlur newsletter email address directly to the newsletter instead of forwarding copies of the newsletter. The answer is that if you want a single source of truth for where newsletters are going, you want that in your email client and not on NewsBlur. If you ever change news readers (and with new features like this, why would you want to) you’ll want to change only a single filter rule instead of dozens of newsletter emails.</p>
-
-<p>And with this huge new feature, NewsBlur just became even better. NewsBlur has branched beyond RSS for a while now, fetching Twitter and YouTube stories even without RSS. With newsletters, NewsBlur becomes your single source.</p>
-
-<p>If you have suggestions on what NewsBlur can help you read next, post an idea on the <a href="http://getsatisfaction.com/newsblur">Get Satisfaction forums</a>.</p>
 
 
         </div>

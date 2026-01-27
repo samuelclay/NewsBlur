@@ -51,20 +51,25 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                     $.make('div', { className: 'NB-preference NB-preference-daysofunread' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-daysofunread-1', type: 'radio', name: 'days_of_unread', value: 9999 }),
+                                $.make('input', { id: 'NB-preference-daysofunread-1', type: 'radio', name: 'days_of_unread', value: 9999, disabled: !NEWSBLUR.Globals.is_archive }),
                                 $.make('label', { 'for': 'NB-preference-daysofunread-1' }, [
                                     'Manually mark every story as read'
                                 ])
                             ]),
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-daysofunread-2', type: 'radio', name: 'days_of_unread', value: 0 }),
+                                $.make('input', { id: 'NB-preference-daysofunread-2', type: 'radio', name: 'days_of_unread', value: 0, disabled: !NEWSBLUR.Globals.is_archive }),
                                 $.make('label', { 'for': 'NB-preference-daysofunread-2', className: 'NB-preference-daysofunread-slider-label' }, [
                                     'Mark stories as read after',
                                     $.make('span', { className: 'NB-tangle-daysofunread-control NB-preference-slider', 'data-var': 'arrow' }),
-                                    $.make('span', { className: 'NB-tangle-daysofunread' }, NEWSBLUR.Preferences.days_of_unread + ' days'),
-                                    $.make('input', { name: 'daysofunread_input', value: NEWSBLUR.Preferences.days_of_unread, type: 'hidden' })
+                                    $.make('span', { className: 'NB-tangle-daysofunread' }, (NEWSBLUR.Globals.is_archive ? NEWSBLUR.Preferences.days_of_unread : NEWSBLUR.Globals.default_days_of_unread) + ' days'),
+                                    $.make('input', { name: 'daysofunread_input', value: NEWSBLUR.Globals.is_archive ? NEWSBLUR.Preferences.days_of_unread : NEWSBLUR.Globals.default_days_of_unread, type: 'hidden' })
                                 ])
-                            ])
+                            ]),
+                            (!NEWSBLUR.Globals.is_archive && $.make('div', { className: 'NB-preference-archive-notice' }, [
+                                'Requires ',
+                                $.make('span', { className: 'NB-splash-link NB-premium-link' }, 'premium archive'),
+                                ' to change from ' + NEWSBLUR.Globals.default_days_of_unread + ' days.'
+                            ]))
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Days of unreads'
@@ -210,6 +215,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                 $.make('input', { id: 'NB-preference-showinfrequentsitestories-1', type: 'checkbox', name: 'show_infrequent_site_stories', value: 0 }),
                                 $.make('label', { 'for': 'NB-preference-showinfrequentsitestories-1' }, [
                                     'Show Infrequent Site Stories'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-showtrendingsites-1', type: 'checkbox', name: 'show_trending_sites', value: 0 }),
+                                $.make('label', { 'for': 'NB-preference-showtrendingsites-1' }, [
+                                    'Show Trending Sites'
                                 ])
                             ])
                         ]),
@@ -707,6 +718,35 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Discover sites'
                         ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-disablesocial' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', { className: 'NB-social-card NB-social-card-enable' }, [
+                                $.make('input', { id: 'NB-preference-disablesocial-0', type: 'radio', name: 'disable_social', value: "false" }),
+                                $.make('label', { 'for': 'NB-preference-disablesocial-0', className: 'NB-social-card-content' }, [
+                                    $.make('span', { className: 'NB-social-card-icon' }, ''),
+                                    $.make('span', { className: 'NB-social-card-title' }, 'Enable social features'),
+                                    $.make('ul', { className: 'NB-social-features-list' }, [
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Blurblogs']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Share stories']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Comment on stories']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'See shared stories']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Public comments'])
+                                    ])
+                                ])
+                            ]),
+                            $.make('div', { className: 'NB-social-card NB-social-card-disable' }, [
+                                $.make('input', { id: 'NB-preference-disablesocial-1', type: 'radio', name: 'disable_social', value: "true" }),
+                                $.make('label', { 'for': 'NB-preference-disablesocial-1', className: 'NB-social-card-content' }, [
+                                    $.make('span', { className: 'NB-social-card-icon' }, ''),
+                                    $.make('span', { className: 'NB-social-card-title' }, 'Disable social features'),
+                                    $.make('span', { className: 'NB-social-card-desc' }, 'Hide all sharing, comments, and blurblog features')
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Sharing'
+                        ])
                     ])
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-stories' }, [
@@ -1059,6 +1099,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        $('input[name=show_trending_sites]', $modal).each(function () {
+            if (NEWSBLUR.Preferences.show_trending_sites) {
+                $(this).prop('checked', true);
+                return false;
+            }
+        });
         $('input[name=youtube_captions]', $modal).each(function () {
             if (NEWSBLUR.Preferences.youtube_captions) {
                 $(this).prop('checked', true);
@@ -1073,6 +1119,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=show_discover]', $modal).each(function () {
             if ($(this).val() == "" + NEWSBLUR.Preferences.show_discover) {
+                $(this).prop('checked', true);
+                return false;
+            }
+        });
+        $('input[name=disable_social]', $modal).each(function () {
+            if ($(this).val() == "" + (NEWSBLUR.Preferences.disable_social || false)) {
                 $(this).prop('checked', true);
                 return false;
             }
@@ -1236,8 +1288,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             min: 1,
             max: 365,
             step: 1,
-            value: NEWSBLUR.Preferences.days_of_unread,
-            slide: _.bind(this.slide_days_of_unread_slider, this)
+            value: NEWSBLUR.Globals.is_archive ? NEWSBLUR.Preferences.days_of_unread : NEWSBLUR.Globals.default_days_of_unread,
+            slide: _.bind(this.slide_days_of_unread_slider, this),
+            disabled: !NEWSBLUR.Globals.is_archive
         });
         $(".NB-tangle-readstorydelay", $modal).slider({
             range: 'min',
@@ -1274,6 +1327,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     slide_days_of_unread_slider: function (e, ui) {
         var value = (ui && ui.value) ||
             (NEWSBLUR.Preferences.days_of_unread);
+        if (!NEWSBLUR.Globals.is_archive && ui) {
+            value = NEWSBLUR.Preferences.days_of_unread;
+        }
         if (NEWSBLUR.Preferences.days_of_unread <= 365 || ui) {
             $(".NB-tangle-daysofunread", this.$modal).text(value == 1 ? value + ' day' : value + ' days');
             $("input[name=daysofunread_input]", this.$modal).val(value);
@@ -1372,7 +1428,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 NEWSBLUR.app.feed_list.make_social_feeds();
             }
             if (self.original_preferences['show_global_shared_stories'] != form['show_global_shared_stories'] ||
-                self.original_preferences['show_infrequent_site_stories'] != form['show_infrequent_site_stories']) {
+                self.original_preferences['show_infrequent_site_stories'] != form['show_infrequent_site_stories'] ||
+                self.original_preferences['show_trending_sites'] != form['show_trending_sites']) {
                 NEWSBLUR.app.feed_list.toggle_filter_feeds();
             }
             if (self.original_preferences['ssl'] != form['ssl']) {
@@ -1394,6 +1451,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     close_and_load_feedchooser: function () {
         this.close(function () {
             NEWSBLUR.reader.open_feedchooser_modal();
+        });
+    },
+
+    close_and_load_premium: function () {
+        this.close(function () {
+            NEWSBLUR.reader.open_premium_upgrade_modal();
         });
     },
 
@@ -1462,7 +1525,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $.targetIs(e, { tagSelector: '.NB-premium-link' }, function ($t, $p) {
             e.preventDefault();
-            self.close_and_load_feedchooser();
+            self.close_and_load_premium();
         });
         $.targetIs(e, { tagSelector: '.segmented-control.NB-preference-view-setting-order li' }, function ($t, $p) {
             e.preventDefault();

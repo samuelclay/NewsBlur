@@ -13,18 +13,23 @@ import com.newsblur.util.setViewGone
 import com.newsblur.util.setViewVisible
 
 class FeedSearchAdapter(
-        private val onClickListener: OnFeedSearchResultClickListener,
-        private val iconLoader: ImageLoader
+    private val onClickListener: OnFeedSearchResultClickListener,
+    private val iconLoader: ImageLoader,
 ) : RecyclerView.Adapter<FeedSearchAdapter.ViewHolder>() {
-
     private val resultsList: MutableList<FeedResult> = mutableListOf()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.view_feed_search_row, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: ViewHolder,
+        position: Int,
+    ) {
         val result = resultsList[position]
         holder.bind(result)
     }
@@ -39,8 +44,9 @@ class FeedSearchAdapter(
         diffResult.dispatchUpdatesTo(this)
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
+    inner class ViewHolder(
+        itemView: View,
+    ) : RecyclerView.ViewHolder(itemView) {
         private val binding: ViewFeedSearchRowBinding = ViewFeedSearchRowBinding.bind(itemView)
 
         fun bind(result: FeedResult) {
@@ -74,20 +80,26 @@ class FeedSearchAdapter(
     }
 
     class ResultDiffCallback(
-            private val oldList: List<FeedResult>,
-            private val newList: List<FeedResult>) : DiffUtil.Callback() {
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        private val oldList: List<FeedResult>,
+        private val newList: List<FeedResult>,
+    ) : DiffUtil.Callback() {
+        override fun areItemsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ): Boolean {
             val oldFeedResult = oldList[oldItemPosition]
             val newFeedResult = newList[newItemPosition]
             return oldFeedResult == newFeedResult
         }
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        override fun areContentsTheSame(
+            oldItemPosition: Int,
+            newItemPosition: Int,
+        ): Boolean {
             val oldFeedResult = oldList[oldItemPosition]
             val newFeedResult = newList[newItemPosition]
-            return oldFeedResult.id == newFeedResult.id
-                    && oldFeedResult.label == newFeedResult.label
+            return oldFeedResult.id == newFeedResult.id &&
+                oldFeedResult.label == newFeedResult.label
         }
 
         override fun getOldListSize(): Int = oldList.size
@@ -96,7 +108,6 @@ class FeedSearchAdapter(
     }
 
     interface OnFeedSearchResultClickListener {
-
         fun onFeedSearchResultClickListener(result: FeedResult)
     }
 }

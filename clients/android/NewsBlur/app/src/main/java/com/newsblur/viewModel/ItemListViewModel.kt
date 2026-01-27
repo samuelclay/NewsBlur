@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import com.newsblur.util.Session
 
 class ItemListViewModel : ViewModel() {
-
     private val _nextSession = MutableLiveData<Session>()
     val nextSession: LiveData<Session> = _nextSession
 

@@ -1,6 +1,5 @@
 package com.newsblur.fragment
 
-import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
@@ -21,8 +20,9 @@ import com.newsblur.databinding.DialogAddFeedBinding
 import com.newsblur.databinding.RowAddFeedFolderBinding
 import com.newsblur.domain.Folder
 import com.newsblur.fragment.AddFeedFragment.AddFeedAdapter.FolderViewHolder
-import com.newsblur.network.APIManager
-import com.newsblur.service.NBSyncService
+import com.newsblur.network.FeedApi
+import com.newsblur.network.FolderApi
+import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppConstants
 import com.newsblur.util.executeAsyncTask
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,12 +31,17 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddFeedFragment : DialogFragment() {
+    @Inject
+    lateinit var folderApi: FolderApi
 
     @Inject
-    lateinit var apiManager: APIManager
+    lateinit var feedApi: FeedApi
 
     @Inject
     lateinit var dbHelper: BlurDatabaseHelper
+
+    @Inject
+    lateinit var syncServiceState: SyncServiceState
 
     private lateinit var binding: DialogAddFeedBinding
 
@@ -46,11 +51,14 @@ class AddFeedFragment : DialogFragment() {
         val builder = AlertDialog.Builder(requireActivity())
         builder.setTitle("Choose folder for " + requireArguments().getString(FEED_NAME))
         builder.setView(binding.root)
-        val adapter = AddFeedAdapter(object : OnFolderClickListener {
-            override fun onItemClick(folder: Folder) {
-                addFeed(requireActivity(), apiManager, folder.name)
-            }
-        })
+        val adapter =
+            AddFeedAdapter(
+                object : OnFolderClickListener {
+                    override fun onItemClick(folder: Folder) {
+                        addFeed(folder.name)
+                    }
+                },
+            )
         binding.textAddFolderTitle.setOnClickListener {
             if (binding.containerAddFolder.visibility == View.GONE) {
                 binding.containerAddFolder.visibility = View.VISIBLE
@@ -62,7 +70,7 @@ class AddFeedFragment : DialogFragment() {
             if (binding.inputFolderName.text.isEmpty()) {
                 Toast.makeText(requireContext(), R.string.add_folder_name, Toast.LENGTH_SHORT).show()
             } else {
-                addFeedToNewFolder(requireActivity(), apiManager, binding.inputFolderName.text.toString())
+                addFeedToNewFolder(binding.inputFolderName.text.toString())
             }
         }
         binding.recyclerViewFolders.addItemDecoration(DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL))
@@ -71,63 +79,70 @@ class AddFeedFragment : DialogFragment() {
         return builder.create()
     }
 
-    private fun addFeedToNewFolder(activity: Activity, apiManager: APIManager, folderName: String) {
+    private fun addFeedToNewFolder(folderName: String) {
         binding.icCreateFolder.visibility = View.GONE
         binding.progressBar.visibility = View.VISIBLE
         binding.inputFolderName.isEnabled = false
 
         lifecycleScope.executeAsyncTask(
-                doInBackground = {
-                    apiManager.addFolder(folderName)
-                },
-                onPostExecute = {
-                    binding.inputFolderName.isEnabled = true
-                    if (!it.isError) {
-                        binding.containerAddFolder.visibility = View.GONE
-                        binding.inputFolderName.text.clear()
-                        addFeed(activity, apiManager, folderName)
-                    } else {
-                        Toast.makeText(activity, R.string.add_folder_error, Toast.LENGTH_SHORT).show()
-                    }
+            doInBackground = {
+                folderApi.addFolder(folderName)
+            },
+            onPostExecute = {
+                binding.inputFolderName.isEnabled = true
+                if (!it.isError) {
+                    binding.containerAddFolder.visibility = View.GONE
+                    binding.inputFolderName.text.clear()
+                    addFeed(folderName)
+                } else {
+                    Toast.makeText(activity, R.string.add_folder_error, Toast.LENGTH_SHORT).show()
                 }
+            },
         )
     }
 
-    private fun addFeed(activity: Activity, apiManager: APIManager, folderName: String?) {
+    private fun addFeed(folderName: String?) {
         binding.containerSyncStatus.visibility = View.VISIBLE
         lifecycleScope.executeAsyncTask(
-                doInBackground = {
-                    (activity as AddFeedProgressListener).addFeedStarted()
-                    val feedUrl = requireArguments().getString(FEED_URI)
-                    apiManager.addFeed(feedUrl, folderName)
-                },
-                onPostExecute = {
-                    binding.containerSyncStatus.visibility = View.GONE
-                    val intent = Intent(activity, Main::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    if (!it.isError) {
-                        // trigger a sync when we return to Main so that the new feed will show up
-                        NBSyncService.forceFeedsFolders()
-                        intent.putExtra(Main.EXTRA_FORCE_SHOW_FEED_ID, it.feed.feedId)
-                    } else {
-                        Toast.makeText(activity, R.string.add_feed_error, Toast.LENGTH_SHORT).show()
-                    }
-                    activity.startActivity(intent)
-                    activity.finish()
+            doInBackground = {
+                (activity as? AddFeedProgressListener)?.addFeedStarted()
+                val feedUrl = requireArguments().getString(FEED_URI)
+                feedApi.addFeed(feedUrl, folderName)
+            },
+            onPostExecute = {
+                binding.containerSyncStatus.visibility = View.GONE
+                val intent = Intent(activity, Main::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                if (it != null && !it.isError) {
+                    // trigger a sync when we return to Main so that the new feed will show up
+                    syncServiceState.forceFeedsFolders()
+                    intent.putExtra(Main.EXTRA_FORCE_SHOW_FEED_ID, it.feed.feedId)
+                } else {
+                    Toast.makeText(activity, R.string.add_feed_error, Toast.LENGTH_SHORT).show()
                 }
+                activity?.startActivity(intent)
+                activity?.finish()
+            },
         )
     }
 
-    private class AddFeedAdapter(private val listener: OnFolderClickListener) : RecyclerView.Adapter<FolderViewHolder>() {
-
+    private class AddFeedAdapter(
+        private val listener: OnFolderClickListener,
+    ) : RecyclerView.Adapter<FolderViewHolder>() {
         private val folders: MutableList<Folder> = ArrayList()
 
-        override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): FolderViewHolder {
+        override fun onCreateViewHolder(
+            viewGroup: ViewGroup,
+            position: Int,
+        ): FolderViewHolder {
             val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.row_add_feed_folder, viewGroup, false)
             return FolderViewHolder(view)
         }
 
-        override fun onBindViewHolder(viewHolder: FolderViewHolder, position: Int) {
+        override fun onBindViewHolder(
+            viewHolder: FolderViewHolder,
+            position: Int,
+        ) {
             val folder = folders[position]
             if (folder.name == AppConstants.ROOT_FOLDER) {
                 viewHolder.binding.textFolderTitle.setText(R.string.top_level)
@@ -146,7 +161,9 @@ class AddFeedFragment : DialogFragment() {
             this.notifyDataSetChanged()
         }
 
-        class FolderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        class FolderViewHolder(
+            itemView: View,
+        ) : RecyclerView.ViewHolder(itemView) {
             val binding: RowAddFeedFolderBinding = RowAddFeedFolderBinding.bind(itemView)
         }
     }
@@ -160,12 +177,14 @@ class AddFeedFragment : DialogFragment() {
     }
 
     companion object {
-
         private const val FEED_URI = "feed_url"
         private const val FEED_NAME = "feed_name"
 
         @JvmStatic
-        fun newInstance(feedUri: String, feedName: String): AddFeedFragment {
+        fun newInstance(
+            feedUri: String,
+            feedName: String,
+        ): AddFeedFragment {
             val frag = AddFeedFragment()
             val args = Bundle()
             args.putString(FEED_URI, feedUri)

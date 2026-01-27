@@ -6,12 +6,16 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         "click .NB-feeds-header-starred .NB-feedlist-collapse-icon": "collapse_starred_stories",
         "click .NB-feeds-header-starred": "open_starred_stories",
         "click .NB-feeds-header-read": "open_read_stories",
+        "mouseenter .NB-feeds-header-river-sites": "update_toggle_all_folders_icon",
+        "click .NB-feeds-header-river-sites .NB-feedlist-toggle-all-icon": "toggle_all_folders",
         "click .NB-feeds-header-river-sites": "open_river_stories",
         "click .NB-feeds-header-river-infrequent": "open_river_infrequent_stories",
         "click .NB-feeds-header-river-blurblogs .NB-feedlist-collapse-icon": "collapse_river_blurblog",
         "click .NB-feeds-header-river-blurblogs": "open_river_blurblogs_stories",
         "click .NB-feeds-header-river-global": "open_river_global_stories",
-        "click .NB-feeds-header-river-dashboard": "show_splash_page"
+        "click .NB-feeds-header-river-trending": "open_trending_sites",
+        "click .NB-feeds-header-river-dashboard": "show_splash_page",
+        "click .NB-feeds-header-archive": "open_archive"
     },
 
     initialize: function () { },
@@ -277,6 +281,117 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
 
     open_river_global_stories: function () {
         return NEWSBLUR.reader.open_river_blurblogs_stories({ 'global': true });
+    },
+
+    open_trending_sites: function () {
+        return NEWSBLUR.reader.open_trending_sites();
+    },
+
+    open_archive: function () {
+        return NEWSBLUR.reader.open_archive();
+    },
+
+    toggle_all_folders: function (e) {
+        e.stopPropagation();
+        var self = this;
+        var $feed_list = NEWSBLUR.reader.$s.$feed_list;
+        var $header = NEWSBLUR.reader.$s.$river_sites_header;
+        var $toggle_icon = $header.find('.NB-feedlist-toggle-all-icon');
+        // Skip the root folder - only get folders that have a named title
+        var $folders = $feed_list.find('li.folder').filter(function () {
+            var $title = $(this).children('.folder_title').find('.folder_title_text');
+            return $title.length && $title.text().trim().length > 0;
+        });
+        var folder_names = NEWSBLUR.assets.folders.child_folder_names();
+
+        // Determine current state: are all folders collapsed?
+        var all_collapsed = folder_names.length > 0 && _.all(folder_names, function (name) {
+            return _.contains(NEWSBLUR.Preferences.collapsed_folders, name);
+        });
+
+        if (all_collapsed) {
+            // Expand all folders (only when everything is collapsed)
+            NEWSBLUR.Preferences.collapsed_folders = _.difference(
+                NEWSBLUR.Preferences.collapsed_folders,
+                folder_names
+            );
+
+            NEWSBLUR.assets.make_request('/profile/set_collapsed_folders', {
+                'collapsed_folders': $.toJSON(NEWSBLUR.Preferences.collapsed_folders)
+            });
+
+            $folders.each(function () {
+                var $folder = $(this);
+                var $children = $folder.children('ul.folder');
+
+                if ($children.length && !$children.eq(0).is(':visible')) {
+                    $folder.removeClass('NB-folder-collapsed');
+                    $children.css({ 'opacity': 0 }).slideDown({
+                        'duration': 240,
+                        'easing': 'easeInOutCubic',
+                        'complete': function () {
+                            $children.animate({ 'opacity': 1 }, { 'queue': false, 'duration': 200 });
+                        }
+                    });
+                }
+            });
+
+            $header.removeClass('NB-all-folders-collapsed');
+            $toggle_icon.attr('title', 'Collapse All Folders');
+        } else {
+            // Collapse all folders (when any folder is expanded)
+            _.each(folder_names, function (folder_name) {
+                if (!_.contains(NEWSBLUR.Preferences.collapsed_folders, folder_name)) {
+                    NEWSBLUR.Preferences.collapsed_folders.push(folder_name);
+                }
+            });
+
+            NEWSBLUR.assets.make_request('/profile/set_collapsed_folders', {
+                'collapsed_folders': $.toJSON(NEWSBLUR.Preferences.collapsed_folders)
+            });
+
+            $folders.each(function () {
+                var $folder = $(this);
+                var $children = $folder.children('ul.folder');
+
+                if ($children.length && $children.eq(0).is(':visible')) {
+                    $folder.addClass('NB-folder-collapsed');
+                    $children.animate({ 'opacity': 0 }, {
+                        'queue': false,
+                        'duration': 200,
+                        'complete': function () {
+                            $children.slideUp({
+                                'duration': 270,
+                                'easing': 'easeOutQuart'
+                            });
+                        }
+                    });
+                }
+            });
+
+            $header.addClass('NB-all-folders-collapsed');
+            $toggle_icon.attr('title', 'Expand All Folders');
+        }
+
+        return false;
+    },
+
+    update_toggle_all_folders_icon: function () {
+        var $header = NEWSBLUR.reader.$s.$river_sites_header;
+        var $toggle_icon = $header.find('.NB-feedlist-toggle-all-icon');
+        var folder_names = NEWSBLUR.assets.folders.child_folder_names();
+
+        var all_collapsed = folder_names.length > 0 && _.all(folder_names, function (name) {
+            return _.contains(NEWSBLUR.Preferences.collapsed_folders, name);
+        });
+
+        if (all_collapsed) {
+            $header.addClass('NB-all-folders-collapsed');
+            $toggle_icon.attr('title', 'Expand All Folders');
+        } else {
+            $header.removeClass('NB-all-folders-collapsed');
+            $toggle_icon.attr('title', 'Collapse All Folders');
+        }
     }
 
 });

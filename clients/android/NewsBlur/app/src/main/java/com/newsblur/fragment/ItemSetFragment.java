@@ -1,23 +1,20 @@
 package com.newsblur.fragment;
 
-import android.database.Cursor;
-import android.graphics.Typeface;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.GestureDetector;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.newsblur.R;
@@ -30,12 +27,12 @@ import com.newsblur.databinding.RowFleuronBinding;
 import com.newsblur.di.IconLoader;
 import com.newsblur.di.ThumbnailLoader;
 import com.newsblur.domain.Story;
-import com.newsblur.service.NBSyncService;
+import com.newsblur.preference.PrefsRepo;
+import com.newsblur.service.SyncServiceState;
 import com.newsblur.util.CursorFilters;
 import com.newsblur.util.FeedSet;
 import com.newsblur.util.FeedUtils;
 import com.newsblur.util.ImageLoader;
-import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.SpacingStyle;
 import com.newsblur.util.StoryListStyle;
@@ -43,6 +40,11 @@ import com.newsblur.util.ThumbnailStyle;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
 import com.newsblur.viewModel.StoriesViewModel;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -65,9 +67,15 @@ public class ItemSetFragment extends NbFragment {
     @ThumbnailLoader
     ImageLoader thumbnailLoader;
 
+    @Inject
+    PrefsRepo prefsRepo;
+
+    @Inject
+    SyncServiceState syncServiceState;
+
     private static final String BUNDLE_GRIDSTATE = "gridstate";
 
-    private boolean cursorSeenYet = false; // have we yet seen a valid cursor for our particular feedset?
+    private boolean dataSeenYet = false;
 
     /**
      * Flag used to ensure that when the adapter resumes,
@@ -108,12 +116,12 @@ public class ItemSetFragment extends NbFragment {
     private RowFleuronBinding fleuronBinding;
     private StoriesViewModel storiesViewModel;
 
-	public static ItemSetFragment newInstance() {
-		ItemSetFragment fragment = new ItemSetFragment();
-		Bundle arguments = new Bundle();
-		fragment.setArguments(arguments);
-		return fragment;
-	}
+    public static ItemSetFragment newInstance() {
+        ItemSetFragment fragment = new ItemSetFragment();
+        Bundle arguments = new Bundle();
+        fragment.setArguments(arguments);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -126,7 +134,7 @@ public class ItemSetFragment extends NbFragment {
         // a pause/resume cycle will depopulate and repopulate the list and trigger bad scroll
         // readings and cause zero-index refreshes, wasting massive cycles. hold the refresh logic
         // until the loaders reset
-        cursorSeenYet = false;
+        dataSeenYet = false;
         skipBackFillingStories = true;
         super.onPause();
     }
@@ -148,9 +156,9 @@ public class ItemSetFragment extends NbFragment {
         // data are ready.
     }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_itemgrid, null);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_itemgrid, container, false);
         binding = FragmentItemgridBinding.bind(v);
         View fleuronView = inflater.inflate(R.layout.row_fleuron, null);
         fleuronBinding = RowFleuronBinding.bind(fleuronView);
@@ -176,7 +184,7 @@ public class ItemSetFragment extends NbFragment {
             }
         });
 
-        StoryListStyle listStyle = PrefsUtils.getStoryListStyle(getActivity(), getFeedSet());
+        StoryListStyle listStyle = prefsRepo.getStoryListStyle(getFeedSet());
 
         calcColumnCount(listStyle);
         layoutManager = new GridLayoutManager(getActivity(), columnCount);
@@ -191,7 +199,7 @@ public class ItemSetFragment extends NbFragment {
             }
         });
 
-        adapter = new StoryViewAdapter(((NbActivity) getActivity()), this, getFeedSet(), listStyle, iconLoader, thumbnailLoader, feedUtils, getOnStoryClickListener());
+        adapter = new StoryViewAdapter(((NbActivity) getActivity()), getFeedSet(), listStyle, iconLoader, thumbnailLoader, feedUtils, prefsRepo, getOnStoryClickListener());
         adapter.addFooterView(footerView);
         adapter.addFooterView(fleuronBinding.getRoot());
         binding.itemgridfragmentGrid.setAdapter(adapter);
@@ -211,20 +219,18 @@ public class ItemSetFragment extends NbFragment {
 
         binding.itemgridfragmentGrid.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                ItemSetFragment.this.onScrolled(recyclerView, dx, dy);
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                ItemSetFragment.this.onScrolled(dy);
             }
         });
 
-        setupGestureDetector(binding.itemgridfragmentGrid);
-
-		return v;
-	}
+        return v;
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        storiesViewModel.getActiveStoriesLiveData().observe(getViewLifecycleOwner(), this::setCursor);
+        storiesViewModel.getActiveStories().observe(getViewLifecycleOwner(), this::setStories);
 
         FeedSet fs = getFeedSet();
         if (fs == null) {
@@ -237,19 +243,39 @@ public class ItemSetFragment extends NbFragment {
         }
     }
 
+    private void setStories(StoriesViewModel.@NotNull StoryBatch storyBatch) {
+        if (!dbHelper.isFeedSetReady(getFeedSet())) {
+            com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
+            updateAdapter(Collections.emptyList(), storyBatch.getLoadId());
+            triggerRefresh(1, null);
+        } else {
+            dataSeenYet = true;
+            com.newsblur.util.Log.d(this.getClass().getName(), "loaded stories count: ${batch.stories.size}");
+            updateAdapter(storyBatch.getStories(), storyBatch.getLoadId());
+            if (storyBatch.getStories().isEmpty()) {
+                triggerRefresh(1, 0);
+            }
+            storyThawCompleted(storyBatch.getIndexOfLastUnread());
+        }
+        updateLoadingIndicators();
+    }
+
     protected void triggerRefresh(int desiredStoryCount, Integer totalSeen) {
         // ask the sync service for as many stories as we want
-        boolean gotSome = NBSyncService.requestMoreForFeed(getFeedSet(), desiredStoryCount, totalSeen);
-        // if the service thinks it can get more, or if we haven't even seen a cursor yet, start the service
-        if (gotSome || (totalSeen == null)) triggerSync();
+        FeedSet fs = getFeedSet();
+        if (fs != null) {
+            boolean gotSome = syncServiceState.requestMoreForFeed(fs, desiredStoryCount, totalSeen);
+            // if the service thinks it can get more, or if we haven't even seen a cursor yet, start the service
+            if (gotSome || (totalSeen == null)) triggerSync();
+        }
     }
 
     /**
      * Indicate that the DB was cleared.
      */
     public void resetEmptyState() {
-        updateAdapter(null);
-        cursorSeenYet = false;
+        updateAdapter(Collections.emptyList(), -1L);
+        dataSeenYet = false;
     }
 
     /**
@@ -278,50 +304,31 @@ public class ItemSetFragment extends NbFragment {
         return ((ItemsList) requireActivity()).getFeedSet();
     }
 
-	public void hasUpdated() {
+    public void hasUpdated() {
         FeedSet fs = getFeedSet();
         if (isAdded() && fs != null) {
-            storiesViewModel.getActiveStories(fs, new CursorFilters(requireContext(), fs));
+            storiesViewModel.loadActiveStories(fs, new CursorFilters(prefsRepo, fs));
         }
-	}
-
-    protected void updateAdapter(@Nullable Cursor cursor) {
-        adapter.swapCursor(cursor, binding.itemgridfragmentGrid, gridState, skipBackFillingStories);
-        gridState = null;
-        adapter.updateFeedSet(getFeedSet());
-        if ((cursor != null) && (cursor.getCount() > 0)) {
-            binding.emptyView.setVisibility(View.INVISIBLE);
-        } else {
-            binding.emptyView.setVisibility(View.VISIBLE);
-        }
-
-        // though we have stories, we might not yet have as many as we want
-        ensureSufficientStories();
     }
 
-    private void setCursor(@Nullable Cursor cursor) {
-        if (cursor != null) {
-            if (!dbHelper.isFeedSetReady(getFeedSet())) {
-                // the DB hasn't caught up yet from the last story list; don't display stale stories.
-                com.newsblur.util.Log.i(this.getClass().getName(), "stale load");
-                updateAdapter(null);
-                triggerRefresh(1, null);
-            } else {
-                cursorSeenYet = true;
-                com.newsblur.util.Log.d(this.getClass().getName(), "loaded cursor with count: " + cursor.getCount());
-                updateAdapter(cursor);
-                if (cursor.getCount() < 1) {
-                    triggerRefresh(1, 0);
-                }
-            }
-		}
-        updateLoadingIndicators();
+    private void updateAdapter(@NonNull List<Story> stories, Long loadId) {
+        adapter.submitStories(stories, loadId, binding.itemgridfragmentGrid, gridState, skipBackFillingStories);
+        gridState = null;
+        adapter.updateFeedSet(getFeedSet());
+
+        if (stories.isEmpty()) {
+            binding.emptyView.setVisibility(View.VISIBLE);
+        } else {
+            binding.emptyView.setVisibility(View.INVISIBLE);
+        }
+
+        ensureSufficientStories();
     }
 
     private void updateLoadingIndicators() {
         calcFleuronPadding();
 
-        if (cursorSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(requireContext(), getFeedSet())) {
+        if (dataSeenYet && adapter.getRawStoryCount() > 0 && UIUtils.needsSubscriptionAccess(getFeedSet(), prefsRepo)) {
             fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             fleuronBinding.containerSubscribe.setVisibility(View.VISIBLE);
             binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
@@ -330,12 +337,12 @@ public class ItemSetFragment extends NbFragment {
             return;
         }
 
-        if ( (!cursorSeenYet) || NBSyncService.isFeedSetSyncing(getFeedSet(), getActivity()) ) {
+        if ((!dataSeenYet) || syncServiceState.isFeedSetSyncing(getFeedSet())) {
             binding.emptyViewText.setText(R.string.empty_list_view_loading);
             binding.emptyViewText.setTypeface(binding.emptyViewText.getTypeface(), Typeface.ITALIC);
             binding.emptyViewImage.setVisibility(View.INVISIBLE);
 
-            if (NBSyncService.isFeedSetStoriesFresh(getFeedSet())) {
+            if (syncServiceState.isFeedSetStoriesFresh(getFeedSet())) {
                 binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
                 bottomProgressView.setVisibility(View.VISIBLE);
             } else {
@@ -344,7 +351,7 @@ public class ItemSetFragment extends NbFragment {
             }
             fleuronBinding.getRoot().setVisibility(View.INVISIBLE);
         } else {
-            ReadFilter readFilter = PrefsUtils.getReadFilter(getActivity(), getFeedSet());
+            ReadFilter readFilter = prefsRepo.getReadFilter(getFeedSet());
             if (readFilter == ReadFilter.UNREAD) {
                 binding.emptyViewText.setText(R.string.empty_list_view_no_stories_unread);
             } else {
@@ -355,7 +362,7 @@ public class ItemSetFragment extends NbFragment {
 
             binding.topLoadingIndicator.setVisibility(View.INVISIBLE);
             bottomProgressView.setVisibility(View.INVISIBLE);
-            if (cursorSeenYet && NBSyncService.isFeedSetExhausted(getFeedSet()) && (adapter.getRawStoryCount() > 0)) {
+            if (dataSeenYet && syncServiceState.isFeedSetExhausted(getFeedSet()) && (adapter.getRawStoryCount() > 0)) {
                 fleuronBinding.containerSubscribe.setVisibility(View.GONE);
                 fleuronBinding.getRoot().setVisibility(View.VISIBLE);
             }
@@ -367,13 +374,13 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void updateThumbnailStyle() {
-        ThumbnailStyle thumbnailStyle = PrefsUtils.getThumbnailStyle(requireContext());
+        ThumbnailStyle thumbnailStyle = prefsRepo.getThumbnailStyle();
         adapter.setThumbnailStyle(thumbnailStyle);
         adapter.notifyAllItemsChanged();
     }
 
     public void updateListStyle() {
-        StoryListStyle listStyle = PrefsUtils.getStoryListStyle(getActivity(), getFeedSet());
+        StoryListStyle listStyle = prefsRepo.getStoryListStyle(getFeedSet());
         calcColumnCount(listStyle);
         calcGridSpacing(listStyle);
         layoutManager.setSpanCount(columnCount);
@@ -382,13 +389,13 @@ public class ItemSetFragment extends NbFragment {
     }
 
     public void updateSpacingStyle() {
-        SpacingStyle spacingStyle = PrefsUtils.getSpacingStyle(requireContext());
+        SpacingStyle spacingStyle = prefsRepo.getSpacingStyle();
         adapter.setSpacingStyle(spacingStyle);
         adapter.notifyAllItemsChanged();
     }
 
     public void updateTextSize() {
-        float textSize = PrefsUtils.getListTextSize(requireContext());
+        float textSize = prefsRepo.getListTextSize();
         adapter.setTextSize(textSize);
         adapter.notifyAllItemsChanged();
     }
@@ -408,7 +415,7 @@ public class ItemSetFragment extends NbFragment {
             // sanity check the counts are strictly increasing
             if (colsCoarse < 1) colsCoarse = 1;
             if (colsMed <= colsCoarse) colsMed = colsCoarse + 1;
-            if (colsFine <= colsMed) colsFine = colsMed +1;
+            if (colsFine <= colsMed) colsFine = colsMed + 1;
         }
 
         if (listStyle == StoryListStyle.GRID_F) {
@@ -445,34 +452,35 @@ public class ItemSetFragment extends NbFragment {
         }
 
         RecyclerView.ItemAnimator anim = binding.itemgridfragmentGrid.getItemAnimator();
-        anim.setAddDuration((anim.getAddDuration() + targetAddDuration)/2L);
-        anim.setMoveDuration((anim.getMoveDuration() + targetMovDuration)/2L);
+        anim.setAddDuration((anim.getAddDuration() + targetAddDuration) / 2L);
+        anim.setMoveDuration((anim.getMoveDuration() + targetMovDuration) / 2L);
     }
 
-    private void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+    private void onScrolled(int dy) {
         // the framework likes to trigger this on init before we even known counts, so disregard those
-        if (!cursorSeenYet) return;
+        if (!dataSeenYet) return;
 
         // don't bother checking on scroll up
         if (dy < 1) return;
 
         // skip fetching more stories if premium access is required
-        if (UIUtils.needsSubscriptionAccess(requireContext(), getFeedSet()) && adapter.getItemCount() >= 3) return;
+        if (UIUtils.needsSubscriptionAccess(getFeedSet(), prefsRepo) && adapter.getItemCount() >= 3)
+            return;
 
         ensureSufficientStories();
 
         // the list can be scrolled past the last item thanks to the offset footer, but don't fling
         // past the last item, which can be confusing to users who don't know about or need the offset
-        if ( (!fullFlingComplete) &&
-             (layoutManager.findLastCompletelyVisibleItemPosition() >= adapter.getStoryCount()) ) {
+        if ((!fullFlingComplete) &&
+                (layoutManager.findLastCompletelyVisibleItemPosition() >= adapter.getStoryCount())) {
             binding.itemgridfragmentGrid.stopScroll();
             // but after halting at the end once, do allow scrolling past the bottom
             fullFlingComplete = true;
         }
 
         // if flinging downwards, pause at the last unread as a convenience
-        if ( (indexOfLastUnread >= 0) &&
-             (layoutManager.findLastCompletelyVisibleItemPosition() >= indexOfLastUnread) ) {
+        if ((indexOfLastUnread >= 0) &&
+                (layoutManager.findLastCompletelyVisibleItemPosition() >= indexOfLastUnread)) {
             // but don't interrupt if already past the last unread
             if (indexOfLastUnread >= layoutManager.findFirstCompletelyVisibleItemPosition()) {
                 binding.itemgridfragmentGrid.stopScroll();
@@ -480,13 +488,13 @@ public class ItemSetFragment extends NbFragment {
             indexOfLastUnread = -1;
         }
 
-        if (PrefsUtils.isMarkReadOnFeedScroll(requireContext())) {
+        if (prefsRepo.isMarkReadOnFeedScroll()) {
             // we want the top row of stories that is partially obscured. go back one from the first fully visible
             int markEnd = layoutManager.findFirstCompletelyVisibleItemPosition() - 1;
             if (markEnd > lastAutoMarkIndex) {
                 lastAutoMarkIndex = markEnd;
                 // iterate backwards through that row, marking read
-                for (int i=0; i<columnCount; i++) {
+                for (int i = 0; i < columnCount; i++) {
                     int index = markEnd - i;
                     Story story = adapter.getStory(index);
                     if (story != null) {
@@ -502,39 +510,11 @@ public class ItemSetFragment extends NbFragment {
         int totalCount = adapter.getRawStoryCount();
         int visibleCount = layoutManager.getChildCount();
         int lastVisible = layoutManager.findLastVisibleItemPosition();
-        
+
         // load an extra page worth of stories past the viewport plus at least two rows to prime the height calc
-        int desiredStoryCount = lastVisible + (visibleCount*2) + (columnCount*2);
+        int desiredStoryCount = lastVisible + (visibleCount * 2) + (columnCount * 2);
         triggerRefresh(desiredStoryCount, totalCount);
         //com.newsblur.util.Log.d(this, String.format(" total:%d  bound:%d  last%d  desire:%d", totalCount, visibleCount, lastVisible, desiredStoryCount));
-    }
-
-    private void setupGestureDetector(RecyclerView v) {
-        final GestureDetector gestureDetector = new GestureDetector(getActivity(), new SwipeBackGestureDetector());
-        v.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                return gestureDetector.onTouchEvent(e);
-            }
-        });
-    }
-
-    /**
-     * A detector for the standard "swipe back out of activity" Android gesture.  Note that this does
-     * not necessarily wait for an UP event, as RecyclerViews like to capture them.
-     */
-    class SwipeBackGestureDetector extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            if (e1 == null) return false;
-            if ((e1.getX() < 60f) &&                  // the gesture should start from the left bezel and
-                ((e2.getX()-e1.getX()) > 90f) &&      // move horizontally to the right and
-                (Math.abs(e1.getY()-e2.getY()) < 40f) // have minimal vertical travel, so we don't capture scrolling gestures
-                ) {
-                ItemSetFragment.this.getActivity().finish();
-                return true;
-            }
-            return false;
-        }
     }
 
     /**
@@ -550,7 +530,7 @@ public class ItemSetFragment extends NbFragment {
         int marginPx_4dp = UIUtils.dp2px(requireContext(), 4);
         int fleuronFooterHeightPx = fleuronBinding.getRoot().getMeasuredHeight();
         if (listHeight > 1) {
-            newLayout.setMargins(0, marginPx_4dp, 0, listHeight-fleuronFooterHeightPx);
+            newLayout.setMargins(0, marginPx_4dp, 0, listHeight - fleuronFooterHeightPx);
             fleuronResized = true;
         } else {
             int defaultPx_100dp = UIUtils.dp2px(requireContext(), 100);
@@ -567,9 +547,9 @@ public class ItemSetFragment extends NbFragment {
     }
 
     @Override
-    public void onSaveInstanceState (Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(BUNDLE_GRIDSTATE, binding.itemgridfragmentGrid.getLayoutManager().onSaveInstanceState());
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelable(BUNDLE_GRIDSTATE, binding.itemgridfragmentGrid.getLayoutManager().onSaveInstanceState());
     }
 
 }
