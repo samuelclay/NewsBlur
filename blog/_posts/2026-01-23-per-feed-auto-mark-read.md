@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Per-feed and per-folder auto-mark-as-read settings
+title: "Premium Archive: Per-feed and per-folder auto-mark-as-read settings"
 tags: ["web"]
 ---
 
-Some feeds I want to read every single story. Others I'm happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren't worth catching up on. The site-wide "days of unread" setting was too blunt, applying the same rule to everything. Now you can set how long stories stay unread on a per-feed and per-folder basis.
+Some feeds I want to read every single story. Others I'm happy to skim once a week. And a few high-volume feeds I only check occasionally, so stories older than a day or two aren't worth catching up on. <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscribers get the site-wide "days of unread" setting, but it was too blunt, applying the same rule to everything. Now you can set how long stories stay unread on a per-feed and per-folder basis.
 
 ### How it works
 
@@ -38,6 +38,6 @@ You can also configure auto-mark-read from the site settings dialog (right-click
 
 ### Availability
 
-Per-feed and per-folder auto-mark-as-read settings are a Premium Archive feature, available now on the web. They work alongside the existing site-wide "days of unread" preference in Manage → Preferences → General → Days of unreads.
+Per-feed and per-folder auto-mark-as-read settings are a <a href="https://newsblur.com/?next=premium">Premium Archive</a> feature, available now on the web. They work alongside the existing site-wide "days of unread" preference in Manage → Preferences → General → Days of unreads, which is also a Premium Archive feature.
 
 If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.
