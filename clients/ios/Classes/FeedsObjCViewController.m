@@ -209,10 +209,16 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.intelligenceControl setWidth:58 forSegmentAtIndex:2]; // Focus
     [self.intelligenceControl setWidth:58 forSegmentAtIndex:3]; // Saved
 
-    // Set height via Auto Layout, constrain width to prevent expansion
     self.intelligenceControl.translatesAutoresizingMaskIntoConstraints = NO;
     [self.intelligenceControl.heightAnchor constraintEqualToConstant:36].active = YES;
-    [self.intelligenceControl.widthAnchor constraintEqualToConstant:232].active = YES;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.intelligenceControl.widthAnchor constraintEqualToConstant:232].active = YES;
+    } else {
+        [self.intelligenceControl setContentHuggingPriority:UILayoutPriorityRequired
+                                                    forAxis:UILayoutConstraintAxisHorizontal];
+        [self.intelligenceControl setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                                                  forAxis:UILayoutConstraintAxisHorizontal];
+    }
 
     [[UIBarButtonItem appearance] setTintColor:UIColorFromRGB(0x8F918B)];
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:
@@ -236,6 +242,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.navigationController.navigationBar.translucent = NO;
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
+
+    [self configureFeedToolbarItemsForPad];
     
     UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
                                                initWithTarget:self action:@selector(handleLongPress:)];
@@ -292,6 +300,52 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self addKeyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(selectPreviousIntelligence:) discoverabilityTitle:@"Switch Views"];
     [self addKeyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(selectNextIntelligence:) discoverabilityTitle:@"Switch Views"];
     [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierCommand action:@selector(tapAddSite:) discoverabilityTitle:@"Add Site"];
+}
+
+- (void)configureFeedToolbarItemsForPad {
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+        return;
+    }
+
+    UIBarButtonItem *intelligenceItem = nil;
+    for (UIBarButtonItem *item in self.feedViewToolbar.items) {
+        if (item.customView == self.intelligenceControl) {
+            intelligenceItem = item;
+            break;
+        }
+    }
+    if (!intelligenceItem) {
+        intelligenceItem = [[UIBarButtonItem alloc] initWithCustomView:self.intelligenceControl];
+    }
+
+    UIBarButtonItem *leadingFlexibleSpace = [[UIBarButtonItem alloc]
+                                             initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                             target:nil
+                                             action:nil];
+    UIBarButtonItem *trailingFlexibleSpace = [[UIBarButtonItem alloc]
+                                              initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                              target:nil
+                                              action:nil];
+    UIBarButtonItem *leftSpacing = [[UIBarButtonItem alloc]
+                                    initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                    target:nil
+                                    action:nil];
+    UIBarButtonItem *rightSpacing = [[UIBarButtonItem alloc]
+                                     initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                     target:nil
+                                     action:nil];
+    leftSpacing.width = 8.0;
+    rightSpacing.width = 8.0;
+
+    self.feedViewToolbar.items = @[
+        leadingFlexibleSpace,
+        self.addBarButton,
+        leftSpacing,
+        intelligenceItem,
+        rightSpacing,
+        self.settingsBarButton,
+        trailingFlexibleSpace
+    ];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
