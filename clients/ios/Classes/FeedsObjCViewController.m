@@ -60,6 +60,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, FolderTitleView *> *folderTitleViews;
 @property (nonatomic, strong) NSIndexPath *lastRowAtIndexPath;
 @property (nonatomic) NSInteger lastSection;
+@property (nonatomic, strong) NSArray<UIBarButtonItem *> *defaultFeedToolbarItems;
 
 @end
 
@@ -129,6 +130,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.feedTitlesTable.refreshControl = self.refreshControl;
     self.feedViewToolbar.translatesAutoresizingMaskIntoConstraints = NO;
 #endif
+    if (!self.defaultFeedToolbarItems) {
+        self.defaultFeedToolbarItems = self.feedViewToolbar.items;
+    }
     
     // Create compact search field with theme colors
     UIView *searchContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.feedTitlesTable.frame), 28.)];
@@ -242,8 +246,6 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.navigationController.navigationBar.translucent = NO;
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
-
-    [self configureFeedToolbarItemsForPad];
     
     UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
                                                initWithTarget:self action:@selector(handleLongPress:)];
@@ -302,8 +304,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierCommand action:@selector(tapAddSite:) discoverabilityTitle:@"Add Site"];
 }
 
-- (void)configureFeedToolbarItemsForPad {
-    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+- (void)configureFeedToolbarItemsForOrientation:(UIInterfaceOrientation)orientation {
+    BOOL isPad = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
+    BOOL isPhoneLandscape = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
+                             UIInterfaceOrientationIsLandscape(orientation));
+    if (!isPad && !isPhoneLandscape) {
+        if (self.defaultFeedToolbarItems.count > 0) {
+            self.feedViewToolbar.items = self.defaultFeedToolbarItems;
+        }
         return;
     }
 
@@ -568,6 +576,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.notifier.offset = CGPointMake(0, 0);
     
     [self updateIntelligenceControlForOrientation:interfaceOrientation];
+    [self configureFeedToolbarItemsForOrientation:interfaceOrientation];
     [self layoutHeaderCounts:interfaceOrientation];
     [self refreshHeaderCounts];
 }
