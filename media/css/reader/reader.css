@@ -23712,6 +23712,28 @@ h5.NB-classifier-section-header {
     display: none;
 }
 
+/* Search Spinner */
+.NB-add-site-search-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #E0E0E0;
+    border-top-color: #5C89C9;
+    border-radius: 50%;
+    animation: nb-search-spin 0.8s linear infinite;
+    flex-shrink: 0;
+    margin-right: 4px;
+}
+
+.NB-add-site-search-spinner.NB-hidden {
+    display: none;
+}
+
+@keyframes nb-search-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* View Toggle */
 .NB-add-site-view-toggles {
     display: flex;
@@ -23725,7 +23747,8 @@ h5.NB-classifier-section-header {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
+    gap: 6px;
+    padding: 0 12px;
     height: 36px;
     border-radius: 6px;
     cursor: pointer;
@@ -23738,12 +23761,23 @@ h5.NB-classifier-section-header {
     opacity: 0.5;
 }
 
+.NB-add-site-view-toggle-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.5);
+    transition: color 0.15s ease;
+}
+
 .NB-add-site-view-toggle:hover {
     background: #D8D8D8;
 }
 
 .NB-add-site-view-toggle:hover img {
     opacity: 0.7;
+}
+
+.NB-add-site-view-toggle:hover .NB-add-site-view-toggle-label {
+    color: rgba(0, 0, 0, 0.7);
 }
 
 .NB-add-site-view-toggle.NB-active {
@@ -23753,6 +23787,10 @@ h5.NB-classifier-section-header {
 
 .NB-add-site-view-toggle.NB-active img {
     opacity: 0.9;
+}
+
+.NB-add-site-view-toggle.NB-active .NB-add-site-view-toggle-label {
+    color: rgba(0, 0, 0, 0.8);
 }
 
 /* Tabs */

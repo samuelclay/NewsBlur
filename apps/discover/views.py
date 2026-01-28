@@ -52,6 +52,7 @@ def feed_autocomplete(request):
     query = request.GET.get("term") or request.GET.get("query")
     version = int(request.GET.get("v", 1))
     autocomplete_format = request.GET.get("format", "autocomplete")
+    include_stories = request.GET.get("include_stories", "false").lower() == "true"
 
     if not query:
         return dict(code=-1, message="Specify a search 'term'.", feeds=[], term=query)
@@ -73,7 +74,8 @@ def feed_autocomplete(request):
     feed_ids = []
     while len(query_params) and tries_left:
         tries_left -= 1
-        feed_ids = Feed.autocomplete(" ".join(query_params))
+        # Use higher limit (20) to include semantic matches alongside exact matches
+        feed_ids = Feed.autocomplete(" ".join(query_params), limit=20)
         if feed_ids:
             break
         else:
@@ -117,6 +119,16 @@ def feed_autocomplete(request):
             if feed_icon.data:
                 feed["favicon_color"] = feed_icon.color
                 feed["favicon"] = feed_icon.data
+
+    # Include stories for each feed if requested (for list view)
+    if include_stories:
+        feed_objects = {f.pk: f for f in [Feed.get_by_id(fid) for fid in feed_ids] if f}
+        for feed_data in feeds:
+            feed_obj = feed_objects.get(feed_data["id"])
+            if feed_obj:
+                feed_data["stories"] = feed_obj.get_stories(limit=5)
+            else:
+                feed_data["stories"] = []
 
     logging.user(
         request,
@@ -659,3 +671,102 @@ def google_news_feed(request):
         "language": language,
         "region": region,
     }
+
+
+@json.json_view
+def popular_channels(request):
+    """
+    Returns pre-seeded popular channels (YouTube, Newsletters, Podcasts) with stories.
+    Used by Add Site view in list mode to show recent stories for each feed.
+    Feeds must be pre-created using the bootstrap_popular_channels management command.
+    """
+    channel_type = request.GET.get("type", "all")  # youtube, newsletters, podcasts, all
+    limit = min(int(request.GET.get("limit", 20)), 50)
+
+    # URLs mirroring add_site_view.js - must match bootstrap_popular_channels.py
+    POPULAR_YOUTUBE_URLS = [
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCBcRF18a7Qf58cCRy5xuWwQ",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCXuqSBlHAE6Xw-yeJA0Tunw",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UC6nSFpj9HTCZ5t-N3Rm3-HA",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCsXVk37bltHxD1rDPwtNM8Q",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCHnyfMqiRRG1u-2MsSQLbXA",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCWX3bGDLdJ8y_E7n2ghDbTQ",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UC9-y-6csu5WGm29I7JiwpnA",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCy0tKL1T7wFoYcxCe0xjN6Q",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCVHFbqXqoYvEWM1Ddxl0QKg",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCeY0bbntWzzVIaj2z3QigXg",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCupvZG-5ko_eiXAupbDfxWw",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCYfdidRxbB8Qhf0Nx7ioOYw",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCddiUEpeqJcYeBxX1IVBKvQ",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCBJycsmduvYEL83R_U4JriQ",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCVls1GmFKf6WlTraIb_IaJg",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCX6OQ3DkcsbYNE6H8uQQuVA",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UC-lHJZR3Gqxm24_Vd_AJ5Yw",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCq-Fj5jknLsUf-MWSy4_brA",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UC2C_jShtL725hvbm1arSV9w",
+    ]
+
+    POPULAR_NEWSLETTER_URLS = [
+        "https://thehustle.co/feed/",
+        "https://www.lennysnewsletter.com/feed",
+        "https://stratechery.com/feed/",
+        "https://newsletter.pragmaticengineer.com/feed",
+        "https://www.platformer.news/feed",
+        "https://www.bloomberg.com/opinion/authors/ARbTQlRLRjE/matthew-s-levine.rss",
+        "https://towardsdatascience.com/feed",
+        "https://betterprogramming.pub/feed",
+        "https://onezero.medium.com/feed",
+        "https://css-tricks.com/feed/",
+        "https://www.smashingmagazine.com/feed/",
+        "https://www.morningbrew.com/daily/rss",
+        "https://www.theverge.com/rss/index.xml",
+        "https://feeds.arstechnica.com/arstechnica/index",
+        "https://news.ycombinator.com/rss",
+    ]
+
+    POPULAR_PODCAST_URLS = [
+        "https://feeds.simplecast.com/54nAGcIl",
+        "https://feeds.simplecast.com/xl36XBC2",
+        "https://www.thisamericanlife.org/podcast/rss.xml",
+        "https://feeds.simplecast.com/EmVW7VGp",
+        "https://feeds.npr.org/510289/podcast.xml",
+        "https://feeds.npr.org/510313/podcast.xml",
+        "https://feeds.simplecast.com/Y8lFbOT4",
+        "https://feeds.simplecast.com/JBiZ0WnY",
+        "https://lexfridman.com/feed/podcast/",
+        "https://feeds.simplecast.com/4MVDEgRM",
+        "https://feeds.megaphone.fm/vergecast",
+        "https://feeds.simplecast.com/dHoohVNH",
+        "https://feeds.simplecast.com/xs0YcAjq",
+        "https://feeds.megaphone.fm/stuffyoushouldknow",
+        "https://feeds.npr.org/510308/podcast.xml",
+        "https://feeds.simplecast.com/qm_9xx0g",
+        "https://feeds.simplecast.com/GLTi1Mcb",
+        "https://feeds.npr.org/510298/podcast.xml",
+        "https://feeds.megaphone.fm/GLT1412515089",
+        "https://feeds.feedburner.com/dancarlin/history",
+    ]
+
+    # Collect URLs based on requested type
+    urls = []
+    if channel_type in ("youtube", "all"):
+        urls.extend(POPULAR_YOUTUBE_URLS)
+    if channel_type in ("newsletters", "all"):
+        urls.extend(POPULAR_NEWSLETTER_URLS)
+    if channel_type in ("podcasts", "all"):
+        urls.extend(POPULAR_PODCAST_URLS)
+
+    # Fetch feeds that exist in database
+    feeds = Feed.objects.filter(feed_address__in=urls)[:limit]
+
+    # Build response with feed details and stories
+    channels = {}
+    for feed in feeds:
+        channels[feed.pk] = {
+            "feed": feed.canonical(include_favicon=False),
+            "stories": feed.get_stories(limit=5),
+        }
+
+    logging.user(request, "~FCPopular channels (%s): ~SB%s feeds" % (channel_type, len(channels)))
+    return {"channels": channels, "type": channel_type}
