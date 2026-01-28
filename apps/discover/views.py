@@ -70,6 +70,7 @@ def feed_autocomplete(request):
 
     query_params = query.split(" ")
     tries_left = 5
+    feed_ids = []
     while len(query_params) and tries_left:
         tries_left -= 1
         feed_ids = Feed.autocomplete(" ".join(query_params))
@@ -77,6 +78,16 @@ def feed_autocomplete(request):
             break
         else:
             query_params = query_params[:-1]
+
+    # Fallback to database search if Elasticsearch returns no results
+    if not feed_ids:
+        from django.db.models import Q
+
+        search_query = query.split()[0] if query.split() else query
+        db_feeds = Feed.objects.filter(
+            Q(feed_title__icontains=search_query) | Q(feed_address__icontains=search_query)
+        ).exclude(num_subscribers__lte=0).order_by("-num_subscribers")[:20]
+        feed_ids = [f.pk for f in db_feeds]
 
     feeds = list(set([Feed.get_by_id(feed_id) for feed_id in feed_ids]))
     feeds = [feed for feed in feeds if feed and not feed.branch_from_feed]
