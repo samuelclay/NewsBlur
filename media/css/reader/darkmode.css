@@ -3592,6 +3592,11 @@ a.mention, a.mention-group {
     color: #888;
 }
 
+.NB-dark .NB-add-site-search-spinner {
+    border-color: #444;
+    border-top-color: #6B9ED8;
+}
+
 .NB-dark .NB-add-site-view-toggle {
     background: #2A2A2A;
     border-color: #444;
@@ -3605,6 +3610,18 @@ a.mention, a.mention-group {
 .NB-dark .NB-add-site-view-toggle.NB-active {
     background: #3A3A3A;
     border-color: #5C89C9;
+}
+
+.NB-dark .NB-add-site-view-toggle-label {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-add-site-view-toggle:hover .NB-add-site-view-toggle-label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-dark .NB-add-site-view-toggle.NB-active .NB-add-site-view-toggle-label {
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .NB-dark .NB-add-site-tab {
