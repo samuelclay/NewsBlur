@@ -1,6 +1,7 @@
 import base64
 import concurrent
 import datetime
+import hashlib
 import http.client
 import random
 import re
@@ -67,6 +68,7 @@ from apps.reader.forms import FeatureForm, LoginForm, SignupForm
 from apps.reader.models import (
     Feature,
     MCustomFeedIcon,
+    MFolderAutoMarkRead,
     MFolderIcon,
     RUserStory,
     RUserUnreadStory,
@@ -115,6 +117,7 @@ from utils.story_functions import (
 )
 from utils.user_functions import ajax_login_required, extract_user_agent, get_user
 from utils.view_functions import (
+    RequestDeduplicator,
     get_argument_or_404,
     is_true,
     render_to,
@@ -543,6 +546,9 @@ def load_feeds(request):
     feed_icons = MCustomFeedIcon.get_feed_icons_for_user(user.pk)
     feed_icons_dict = {str(fi.feed_id): fi.to_json() for fi in feed_icons}
 
+    folder_auto_mark_read = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
+    folder_auto_mark_read_dict = {fs.folder_title: fs.to_json() for fs in folder_auto_mark_read}
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB feeds/socials%s"
@@ -565,6 +571,7 @@ def load_feeds(request):
         "categories": categories,
         "folder_icons": folder_icons_dict,
         "feed_icons": feed_icons_dict,
+        "folder_auto_mark_read": folder_auto_mark_read_dict,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -676,6 +683,9 @@ def load_feeds_flat(request):
     feed_icons = MCustomFeedIcon.get_feed_icons_for_user(user.pk)
     feed_icons_dict = {str(fi.feed_id): fi.to_json() for fi in feed_icons}
 
+    folder_auto_mark_read = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
+    folder_auto_mark_read_dict = {fs.folder_title: fs.to_json() for fs in folder_auto_mark_read}
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s"
@@ -710,6 +720,7 @@ def load_feeds_flat(request):
         "dashboard_rivers": dashboard_rivers,
         "folder_icons": folder_icons_dict,
         "feed_icons": feed_icons_dict,
+        "folder_auto_mark_read": folder_auto_mark_read_dict,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -889,6 +900,10 @@ def load_single_feed(request, feed_id):
         date_filter_start = None
     if date_filter_end in ("null", "None", "", None):
         date_filter_end = None
+    # Date filtering is a Premium Archive feature
+    if not user.profile.is_archive:
+        date_filter_start = None
+        date_filter_end = None
     query = request.GET.get("query", "").strip()
     include_story_content = is_true(request.GET.get("include_story_content", True))
     include_hidden = is_true(request.GET.get("include_hidden", False))
@@ -943,6 +958,18 @@ def load_single_feed(request, feed_id):
             read_filter, date_filter_start_utc, date_filter_end_start_utc, user.profile.unread_cutoff
         )
 
+        # Calculate cutoff date based on auto_mark_read_days setting (for archive users)
+        default_cutoff = user.profile.unread_cutoff
+        if usersub:
+            auto_mark_read_cutoff = usersub.get_auto_mark_read_cutoff()
+            # Use the more restrictive (newer) cutoff date
+            if auto_mark_read_cutoff:
+                cutoff_date = max(auto_mark_read_cutoff, default_cutoff)
+            else:
+                cutoff_date = default_cutoff
+        else:
+            cutoff_date = default_cutoff
+
         if read_filter == "starred":
             mstories = MStarredStory.objects(user_id=user.pk, story_feed_id=feed_id).order_by(
                 "%sstarred_date" % ("-" if order == "newest" else "")
@@ -954,6 +981,7 @@ def load_single_feed(request, feed_id):
                 read_filter=read_filter,
                 offset=offset,
                 limit=limit,
+                cutoff_date=cutoff_date,
                 date_filter_start=date_filter_start_utc,
                 date_filter_end=date_filter_end_utc,
             )
@@ -1006,12 +1034,20 @@ def load_single_feed(request, feed_id):
     unread_story_hashes = []
     if stories:
         if (read_filter == "all" or query) and usersub:
+            # Calculate cutoff date for determining unread status
+            # This handles both query and non-query cases
+            default_cutoff = user.profile.unread_cutoff
+            auto_mark_read_cutoff = usersub.get_auto_mark_read_cutoff()
+            if auto_mark_read_cutoff:
+                unread_cutoff_date = max(auto_mark_read_cutoff, default_cutoff)
+            else:
+                unread_cutoff_date = default_cutoff
             unread_story_hashes = UserSubscription.story_hashes(
                 user.pk,
                 read_filter="unread",
                 feed_ids=[usersub.feed_id],
                 usersubs=[usersub],
-                cutoff_date=user.profile.unread_cutoff,
+                cutoff_date=unread_cutoff_date,
             )
         story_hashes = [story["story_hash"] for story in stories if story["story_hash"]]
         starred_stories = MStarredStory.objects(
@@ -1276,6 +1312,10 @@ def load_starred_stories(request):
     if date_filter_start in ("null", "None", "", None):
         date_filter_start = None
     if date_filter_end in ("null", "None", "", None):
+        date_filter_end = None
+    # Date filtering is a Premium Archive feature
+    if not user.profile.is_archive:
+        date_filter_start = None
         date_filter_end = None
     tag = request.GET.get("tag")
     highlights = is_true(request.GET.get("highlights", False))
@@ -1756,6 +1796,10 @@ def load_read_stories(request):
         date_filter_start = None
     if date_filter_end in ("null", "None", "", None):
         date_filter_end = None
+    # Date filtering is a Premium Archive feature
+    if not user.profile.is_archive:
+        date_filter_start = None
+        date_filter_end = None
     query = request.GET.get("query", "").strip()
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     message = None
@@ -1894,6 +1938,10 @@ def load_river_stories__redis(request):
         date_filter_start = None
     if date_filter_end in ("null", "None", "", None):
         date_filter_end = None
+    # Date filtering is a Premium Archive feature
+    if not user.profile.is_archive:
+        date_filter_start = None
+        date_filter_end = None
 
     query = get_post.get("query", "").strip()
     include_hidden = is_true(get_post.get("include_hidden", False))
@@ -1915,6 +1963,21 @@ def load_river_stories__redis(request):
     user_search = None
     offset = (page - 1) * limit
     story_date_order = "%sstory_date" % ("" if order == "oldest" else "-")
+
+    # Android app duplicate request deduplication - only kicks in when concurrent requests detected
+    # The Android app has a bug where it fires multiple identical requests simultaneously
+    platform = extract_user_agent(request)
+    is_android = platform in ["Androd", "androd"]
+    deduper = None
+    if is_android and not story_hashes and not query:
+        feeds_hash = hashlib.md5(",".join(str(f) for f in sorted(feed_ids)).encode()).hexdigest()[:12]
+        cache_key = (
+            f"river:{user.pk}:{feeds_hash}:{page}:{order}:{read_filter}:{date_filter_start}:{date_filter_end}"
+        )
+        deduper = RequestDeduplicator(request, cache_key)
+        cached = deduper.check_for_duplicate()
+        if cached is not None:
+            return cached
 
     if infrequent:
         feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
@@ -2205,6 +2268,10 @@ def load_river_stories__redis(request):
         data["feeds"] = feeds
     if not include_hidden:
         data["hidden_stories_removed"] = hidden_stories_removed
+
+    # Cache result briefly for any waiting duplicate Android requests
+    if deduper:
+        deduper.cache_result(data)
 
     return data
 
@@ -3976,6 +4043,51 @@ def starred_counts(request):
 
 @ajax_login_required
 @json.json_view
+def rename_starred_tag(request):
+    """Rename a user's saved story tag across all their starred stories."""
+    old_tag = request.POST.get("old_tag_name", "").strip()
+    new_tag = request.POST.get("new_tag_name", "").strip()
+
+    if not old_tag:
+        return {"code": -1, "message": "Original tag name is required."}
+
+    if not new_tag:
+        return {"code": -1, "message": "New tag name is required."}
+
+    if len(new_tag) > 128:
+        return {"code": -1, "message": "Tag name must be 128 characters or less."}
+
+    logging.user(request, "~FCRenaming starred tag: ~SB%s~SN to ~SB%s" % (old_tag, new_tag))
+
+    starred_counts = MStarredStoryCounts.rename_tag(request.user.pk, old_tag, new_tag)
+
+    if starred_counts is None:
+        return {"code": -1, "message": "Failed to rename tag."}
+
+    return {"code": 1, "starred_counts": starred_counts}
+
+
+@ajax_login_required
+@json.json_view
+def delete_starred_tag(request):
+    """Remove a tag from all user's starred stories (stories remain saved)."""
+    tag_name = request.POST.get("tag_name", "").strip()
+
+    if not tag_name:
+        return {"code": -1, "message": "Tag name is required."}
+
+    logging.user(request, "~FCDeleting starred tag: ~SB%s" % tag_name)
+
+    starred_counts = MStarredStoryCounts.delete_tag(request.user.pk, tag_name)
+
+    if starred_counts is None:
+        return {"code": -1, "message": "Failed to delete tag."}
+
+    return {"code": 1, "starred_counts": starred_counts}
+
+
+@ajax_login_required
+@json.json_view
 def send_story_email(request):
     def validate_email_as_bool(email):
         try:
@@ -4256,3 +4368,163 @@ def trending_feeds(request):
     logging.user(request, "~FBFetched ~SB%s~SN trending feeds" % len(result))
 
     return {"trending_feeds": result}
+
+
+@ajax_login_required
+@json.json_view
+def save_feed_auto_mark_read(request):
+    """
+    Save the auto-mark-read setting for a feed.
+
+    POST Parameters:
+        feed_id: The feed ID to update
+        auto_mark_read_days: Number of days (1-365), 0 for never, or null/empty for inherit
+    """
+    user = request.user
+    feed_id = request.POST.get("feed_id")
+    days = request.POST.get("auto_mark_read_days")
+
+    if not feed_id:
+        return {"code": -1, "message": "Feed ID required"}
+
+    # Check if user is archive tier (required for this feature)
+    if not user.profile.is_archive:
+        return {"code": -1, "message": "This feature requires the Archive subscription"}
+
+    try:
+        feed_id = int(feed_id)
+    except (ValueError, TypeError):
+        return {"code": -1, "message": "Invalid feed ID"}
+
+    # Get the user subscription
+    try:
+        sub = UserSubscription.objects.get(user=user, feed_id=feed_id)
+    except UserSubscription.DoesNotExist:
+        return {"code": -1, "message": "Feed not found in subscriptions"}
+
+    # Parse days value
+    if days is None or days == "" or days == "null":
+        sub.auto_mark_read_days = None  # Inherit from folder/site-wide
+    else:
+        try:
+            days = int(days)
+            if days < 0 or days > 365:
+                return {"code": -1, "message": "Days must be between 0 and 365"}
+            sub.auto_mark_read_days = days
+        except (ValueError, TypeError):
+            return {"code": -1, "message": "Invalid days value"}
+
+    sub.needs_unread_recalc = True
+    sub.save()
+
+    # Calculate effective setting for response
+    effective_days, source = sub.get_effective_auto_mark_read_days()
+
+    logging.user(
+        request,
+        "~FBSaving feed auto-mark-read: ~SB%s~SN days=%s (effective: %s from %s)"
+        % (feed_id, sub.auto_mark_read_days, effective_days, source),
+    )
+
+    return {
+        "code": 1,
+        "feed_id": feed_id,
+        "auto_mark_read_days": sub.auto_mark_read_days,
+        "effective_days": effective_days,
+        "source": source,
+    }
+
+
+@ajax_login_required
+@json.json_view
+def save_folder_auto_mark_read(request):
+    """
+    Save the auto-mark-read setting for a folder.
+
+    POST Parameters:
+        folder_title: The folder title to update
+        auto_mark_read_days: Number of days (1-365), 0 for never, or null/empty for inherit
+    """
+    user = request.user
+    folder_title = request.POST.get("folder_title", "").replace("river:", "")
+    days = request.POST.get("auto_mark_read_days")
+
+    if not folder_title:
+        return {"code": -1, "message": "Folder title required"}
+
+    # Check if user is archive tier (required for this feature)
+    if not user.profile.is_archive:
+        return {"code": -1, "message": "This feature requires the Archive subscription"}
+
+    # Parse days value
+    if days is None or days == "" or days == "null":
+        # Delete the setting to inherit from parent
+        MFolderAutoMarkRead.delete_folder_setting(user.pk, folder_title)
+        effective_days = None
+        source = "inherited"
+    else:
+        try:
+            days = int(days)
+            if days < 0 or days > 365:
+                return {"code": -1, "message": "Days must be between 0 and 365"}
+            MFolderAutoMarkRead.save_folder_setting(user.pk, folder_title, days)
+            effective_days = days if days > 0 else None
+            source = f"folder:{folder_title}"
+        except (ValueError, TypeError):
+            return {"code": -1, "message": "Invalid days value"}
+
+    # Trigger recalc for all feeds in this folder
+    try:
+        usf = UserSubscriptionFolders.objects.get(user=user)
+        flat_folders = usf.flatten_folders()
+        affected_feeds = []
+
+        # Collect all feeds that might be affected (this folder and nested folders)
+        for ft, feed_ids in flat_folders.items():
+            if ft == folder_title or ft.startswith(folder_title + " - "):
+                affected_feeds.extend(feed_ids)
+
+        if affected_feeds:
+            UserSubscription.objects.filter(user=user, feed_id__in=affected_feeds).update(
+                needs_unread_recalc=True
+            )
+    except UserSubscriptionFolders.DoesNotExist:
+        pass
+
+    logging.user(
+        request,
+        "~FBSaving folder auto-mark-read: ~SB%s~SN days=%s" % (folder_title, days),
+    )
+
+    # Return all folder settings
+    folder_settings = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
+    return {
+        "code": 1,
+        "folder_title": folder_title,
+        "auto_mark_read_days": days if days != "" and days is not None else None,
+        "folder_auto_mark_read": {fs.folder_title: fs.to_json() for fs in folder_settings},
+    }
+
+
+@ajax_login_required
+@json.json_view
+def get_auto_mark_read_settings(request):
+    """
+    Get all auto-mark-read settings for the user (folders and feeds).
+
+    Returns folder settings and site-wide setting.
+    """
+    user = request.user
+
+    # Get all folder settings
+    folder_settings = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
+
+    # Get site-wide setting
+    site_wide_days = user.profile.days_of_unread if user.profile.is_archive else None
+
+    return {
+        "code": 1,
+        "folder_auto_mark_read": {fs.folder_title: fs.to_json() for fs in folder_settings},
+        "site_wide_days": site_wide_days,
+        "is_archive": user.profile.is_archive,
+    }

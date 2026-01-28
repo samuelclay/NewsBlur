@@ -954,6 +954,81 @@ color: #a85b40;
     color: #c0c0c0;
 }
 
+/* Auto-Mark Read Settings: Dark mode */
+.NB-dark .NB-exception-option-auto-mark-read .NB-exception-option-status {
+    color: #6EA74A;
+}
+
+.NB-dark .NB-exception-option-auto-mark-read .NB-auto-mark-read-upgrade-notice {
+    color: #909090;
+}
+
+.NB-dark .NB-exception-option-auto-mark-read .NB-auto-mark-read-slider-container {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-exception-option-auto-mark-read .NB-auto-mark-read-slider {
+    background: #404040;
+}
+
+.NB-dark .NB-exception-option-auto-mark-read .NB-auto-mark-read-slider::-webkit-slider-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-exception-option-auto-mark-read .NB-auto-mark-read-slider::-moz-range-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-exception-option-auto-mark-read .NB-auto-mark-read-slider-value {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-exception-option-auto-mark-read .NB-auto-mark-read-slider-value b {
+    color: #7CA4D8;
+}
+
+/* Filter popover auto-mark-read slider dark mode */
+.NB-dark .NB-filter-popover .NB-auto-mark-read-slider-container {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-filter-popover .NB-auto-mark-read-slider-value {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-filter-popover .NB-auto-mark-read-slider-value b {
+    color: #7CA4D8;
+}
+
+/* Preferences Days of Unread dark mode */
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider-container {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider {
+    background: #404040;
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider::-webkit-slider-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider::-moz-range-thumb {
+    background: #7CA4D8;
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider-value {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider-value b {
+    color: #7CA4D8;
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice {
+    color: #909090;
+}
+
 /* Site Statistics: Text color */
 .NB-dark .NB-modal-statistics .NB-statistics-stat .NB-statistics-label,
 .NB-dark .NB-statistics-count,
@@ -3758,6 +3833,11 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-add-site-platform-example {
     color: #666;
+}
+
+/* Date filter upgrade notice dark mode */
+.NB-dark .NB-date-filter-upgrade-notice {
+    color: #909090;
 }
 
 /* ============================== */

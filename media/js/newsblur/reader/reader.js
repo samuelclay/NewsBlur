@@ -3884,6 +3884,10 @@
             NEWSBLUR.feed_exception = new NEWSBLUR.ReaderFeedException(feed_id, options);
         },
 
+        open_tag_settings_modal: function (feed_id) {
+            NEWSBLUR.tag_settings = new NEWSBLUR.ReaderTagSettings(feed_id);
+        },
+
         open_feed_statistics_modal: function (feed_id) {
             feed_id = feed_id || this.active_feed;
 
@@ -7120,7 +7124,12 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
-                    self.open_feed_exception_modal(feed_id);
+                    // Check if this is a starred tag
+                    if (_.isString(feed_id) && _.string.startsWith(feed_id, 'starred:')) {
+                        self.open_tag_settings_modal(feed_id);
+                    } else {
+                        self.open_feed_exception_modal(feed_id);
+                    }
                 }
             });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-feed-notifications' }, function ($t, $p) {

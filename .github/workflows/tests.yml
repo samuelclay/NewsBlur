@@ -24,6 +24,12 @@ jobs:
         run: |
           docker pull newsblur/newsblur_python3:latest || true
           docker pull newsblur/newsblur_node:latest || true
+          # Pre-pull Elasticsearch with retries to avoid TLS timeout issues
+          for i in 1 2 3; do
+            docker pull docker.elastic.co/elasticsearch/elasticsearch:8.17.0 && break
+            echo "Retry $i for Elasticsearch image..."
+            sleep 10
+          done
 
       - name: Create certificates directory
         run: |
@@ -44,7 +50,14 @@ jobs:
           chmod -R 777 docker/volumes
 
       - name: Start services
-        run: docker compose up -d
+        run: |
+          # Retry docker compose up in case of transient network issues
+          for i in 1 2 3; do
+            docker compose up -d && break
+            echo "Retry $i for docker compose up..."
+            docker compose down -v || true
+            sleep 10
+          done
         env:
           NEWSBLUR_BASE: python3
 

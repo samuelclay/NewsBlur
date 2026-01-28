@@ -44,6 +44,8 @@ urlpatterns = [
     ),
     url(r"^unread_story_hashes", views.unread_story_hashes, name="unread-story-hashes"),
     url(r"^starred_counts", views.starred_counts, name="starred-counts"),
+    url(r"^rename_starred_tag", views.rename_starred_tag, name="rename-starred-tag"),
+    url(r"^delete_starred_tag", views.delete_starred_tag, name="delete-starred-tag"),
     url(r"^mark_all_as_read", views.mark_all_as_read, name="mark-all-as-read"),
     url(r"^mark_story_as_read", views.mark_story_as_read, name="mark-story-as-read"),
     url(r"^mark_story_hashes_as_read", views.mark_story_hashes_as_read, name="mark-story-hashes-as-read"),
@@ -95,4 +97,9 @@ urlpatterns = [
     url(r"^remove_dashboard_river", views.remove_dashboard_river, name="remove-dashboard-river"),
     url(r"^trending_feeds", views.trending_feeds, name="trending-feeds"),
     url(r"^print", views.print_story, name="print-story"),
+    url(r"^save_feed_auto_mark_read", views.save_feed_auto_mark_read, name="save-feed-auto-mark-read"),
+    url(r"^save_folder_auto_mark_read", views.save_folder_auto_mark_read, name="save-folder-auto-mark-read"),
+    url(
+        r"^get_auto_mark_read_settings", views.get_auto_mark_read_settings, name="get-auto-mark-read-settings"
+    ),
 ]
