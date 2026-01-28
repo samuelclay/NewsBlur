@@ -182,6 +182,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.view_mode = 'grid';
         this.search_query = '';
         this.search_debounced = _.debounce(_.bind(this.perform_search, this), 300);
+        this.search_version = 0;  // Track search version to cancel stale responses
 
         this.init_tab_states();
         this.render();
@@ -298,12 +299,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     make_view_toggle: function (mode, title, icon) {
+        var label = mode === 'grid' ? 'Grid' : 'List';
         return $.make('div', {
             className: 'NB-add-site-view-toggle' + (this.view_mode === mode ? ' NB-active' : ''),
             'data-mode': mode,
             title: title
         }, [
-            $.make('img', { src: icon })
+            $.make('img', { src: icon }),
+            $.make('span', { className: 'NB-add-site-view-toggle-label' }, label)
         ]);
     },
 
@@ -329,15 +332,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     // = Search Tab =
     // ==============
 
-    render_search_tab: function () {
+    render_search_tab: function (options) {
+        options = options || {};
         var $tab = this.$('.NB-add-site-search-tab');
         var state = this.search_state;
 
-        var $search_bar = this.render_tab_search_bar({
-            input_class: 'NB-add-site-search-input',
-            placeholder: 'Search for feeds or paste a URL...',
-            value: this.search_query
-        });
+        // Check if we can do a partial update (results only) to preserve input focus
+        var $existing_results = $tab.find('.NB-add-site-tab-results');
+        var can_update_results_only = options.results_only && $existing_results.length > 0;
 
         var $content;
 
@@ -367,10 +369,22 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $content = $results;
         }
 
-        $tab.html($.make('div', { className: 'NB-add-site-tab-with-search' }, [
-            $search_bar,
-            $.make('div', { className: 'NB-add-site-tab-results' }, [$content])
-        ]));
+        if (can_update_results_only) {
+            // Only update results, preserving search input focus
+            $existing_results.html($content);
+        } else {
+            // Full render needed
+            var $search_bar = this.render_tab_search_bar({
+                input_class: 'NB-add-site-search-input',
+                placeholder: 'Search for feeds or paste a URL...',
+                value: this.search_query
+            });
+
+            $tab.html($.make('div', { className: 'NB-add-site-tab-with-search' }, [
+                $search_bar,
+                $.make('div', { className: 'NB-add-site-tab-results' }, [$content])
+            ]));
+        }
     },
 
     render_tab_search_bar: function (config) {
@@ -2051,29 +2065,41 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         if (!query || query.length < 2) {
             this.search_state.results = [];
-            this.render_search_tab();
+            this.render_search_tab({ results_only: true });
             return;
         }
 
+        // Increment search version to track this request
+        this.search_version++;
+        var current_version = this.search_version;
+
         this.search_state.is_loading = true;
         this.search_state.results = [];
-        this.render_search_tab();
+        this.render_search_tab({ results_only: true });
 
         this.model.make_request('/discover/autocomplete', {
             query: query,
             format: 'full',
             v: 2
         }, function (data) {
+            // Ignore stale responses from previous searches
+            if (current_version !== self.search_version) {
+                return;
+            }
             self.search_state.is_loading = false;
             if (data && _.isArray(data)) {
                 self.search_state.results = data;
             } else if (data && data.feeds) {
                 self.search_state.results = data.feeds;
             }
-            self.render_search_tab();
+            self.render_search_tab({ results_only: true });
         }, function () {
+            // Ignore stale error responses
+            if (current_version !== self.search_version) {
+                return;
+            }
             self.search_state.is_loading = false;
-            self.render_search_tab();
+            self.render_search_tab({ results_only: true });
         }, { request_type: 'GET' });
     },
 
