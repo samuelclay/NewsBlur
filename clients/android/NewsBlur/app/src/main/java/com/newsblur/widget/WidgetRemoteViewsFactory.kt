@@ -16,6 +16,7 @@ import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
 import com.newsblur.network.StoryApi
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.CursorFilters
 import com.newsblur.util.FeedSet
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.Log
@@ -25,7 +26,6 @@ import com.newsblur.util.StoryUtils
 import com.newsblur.util.ThumbnailStyle
 import com.newsblur.util.UIUtils
 import dagger.hilt.android.EntryPointAccessors
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import java.util.concurrent.locks.ReentrantLock
@@ -45,7 +45,7 @@ class WidgetRemoteViewsFactory(
     private val appWidgetId: Int
 
     private val storyItems: MutableList<Story> = mutableListOf()
-    private val cancellationSignal = CancellationSignal()
+    private var cancellationSignal: CancellationSignal? = null
 
     private val storiesLock = ReentrantLock()
 
@@ -69,11 +69,9 @@ class WidgetRemoteViewsFactory(
 
     /**
      * The system calls onCreate() when creating your factory for the first time.
-     * This is where you set up any connections and/or cursors to your data source.
      */
     override fun onCreate() {
         Log.d(this.javaClass.name, "onCreate")
-        WidgetUtils.enableWidgetUpdate(context)
     }
 
     override fun getViewAt(position: Int): RemoteViews =
@@ -95,8 +93,14 @@ class WidgetRemoteViewsFactory(
             } else {
                 rv.setViewVisibility(R.id.story_item_thumbnail, View.GONE)
             }
-            rv.setViewBackgroundColor(R.id.story_item_favicon_borderbar_1, UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY))
-            rv.setViewBackgroundColor(R.id.story_item_favicon_borderbar_2, UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY))
+            rv.setViewBackgroundColor(
+                R.id.story_item_favicon_borderbar_1,
+                UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY),
+            )
+            rv.setViewBackgroundColor(
+                R.id.story_item_favicon_borderbar_2,
+                UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY),
+            )
 
             // set fill-intent which is used to fill in the pending intent template
             // set on the collection view in WidgetProvider
@@ -175,10 +179,17 @@ class WidgetRemoteViewsFactory(
                             Log.d(this.javaClass.name, "onDataSetChanged - got ${it.size} remote stories")
                             processStories(response.stories)
                             dbHelper.insertStories(response, stateFilter, true)
-                        } ?: Log.d(this.javaClass.name, "onDataSetChanged - null remote stories")
+                        }
+                            ?: Log.d(this.javaClass.name, "onDataSetChanged - null remote stories")
                     }
-                } catch (_: TimeoutCancellationException) {
-                    Log.d(this.javaClass.name, "onDataSetChanged - timeout")
+                } catch (e: Exception) {
+                    Log.e(this.javaClass.name, "onDataSetChanged - remote fetch failed", e)
+                    if (storyItems.isEmpty()) {
+                        val cached = loadCachedStoriesForWidget(fs)
+                        if (cached.isNotEmpty()) {
+                            processStories(cached.toTypedArray())
+                        }
+                    }
                 }
             }
         }
@@ -189,9 +200,8 @@ class WidgetRemoteViewsFactory(
      */
     override fun onDestroy() {
         Log.d(this.javaClass.name, "onDestroy")
-        cancellationSignal.cancel()
-        WidgetUtils.disableWidgetUpdate(context)
-        prefsRepo.removeWidgetData()
+        cancellationSignal?.cancel()
+        cancellationSignal = null
     }
 
     /**
@@ -209,8 +219,10 @@ class WidgetRemoteViewsFactory(
     private fun processStories(stories: Array<Story>) =
         storiesLock.withLock {
             Log.d(this.javaClass.name, "processStories")
+            val signal = CancellationSignal()
+            cancellationSignal = signal
             val feedMap = mutableMapOf<String, Feed>()
-            dbHelper.getFeedsCursor(cancellationSignal).use { cursor ->
+            dbHelper.getFeedsCursor(signal).use { cursor ->
                 while (cursor.moveToNext()) {
                     val feed = Feed.fromCursor(cursor)
                     if (feed.active) {
@@ -219,12 +231,22 @@ class WidgetRemoteViewsFactory(
                 }
             }
 
-            for (story in stories) {
-                val storyFeed = feedMap[story.feedId]
-                storyFeed?.let { bindStoryValues(story, it) }
+            val filtered =
+                if (feedMap.isEmpty()) {
+                    Log.d(this.javaClass.name, "processStories - feedMap empty, skipping active filter")
+                    stories.toList()
+                } else {
+                    stories.filter { feedMap.containsKey(it.feedId) }
+                }
+
+            for (story in filtered) {
+                val feed = feedMap[story.feedId]
+                if (feed != null) {
+                    bindStoryValues(story, feed)
+                }
             }
             storyItems.clear()
-            storyItems.addAll(stories.toList())
+            storyItems.addAll(filtered)
         }
 
     private fun bindStoryValues(
@@ -237,5 +259,30 @@ class WidgetRemoteViewsFactory(
         extern_feedTitle = feed.title
         extern_feedFade = feed.faviconFade
         extern_feedColor = feed.faviconColor
+    }
+
+    private fun loadCachedStoriesForWidget(fs: FeedSet): List<Story> {
+        val signal = CancellationSignal()
+        val filters =
+            CursorFilters(
+                stateFilter = prefsRepo.getStateFilter(),
+                readFilter = ReadFilter.ALL,
+                storyOrder = StoryOrder.NEWEST,
+            )
+
+        return try {
+            dbHelper.getActiveStoriesCursor(fs, filters, signal).use { c ->
+                val out = ArrayList<Story>(WidgetUtils.STORIES_LIMIT)
+                if (c.moveToFirst()) {
+                    do {
+                        out.add(Story.fromCursor(c))
+                    } while (out.size < WidgetUtils.STORIES_LIMIT && c.moveToNext())
+                }
+                out
+            }
+        } catch (e: Exception) {
+            Log.e(this.javaClass.name, "loadCachedStoriesForWidget failed", e)
+            emptyList()
+        }
     }
 }
