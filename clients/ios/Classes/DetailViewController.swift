@@ -197,22 +197,14 @@ class DetailViewController: BaseViewController {
     
    /// Preference values.
     enum BehaviorValue {
-        static let auto = "auto"
         static let tile = "tile"
-        static let displace = "displace"
         static let overlay = "overlay"
     }
     
     /// How the split controller behaves.
     enum Behavior {
-        /// The split controller figures out the best behavior.
-        case auto
-        
         /// The split controller arranges the views side-by-side.
         case tile
-        
-        /// The split controller pushes the detail view aside.
-        case displace
         
         /// The split controller puts the left columns over the detail view.
         case overlay
@@ -220,21 +212,26 @@ class DetailViewController: BaseViewController {
     
     /// How the split controller behaves.
     var behavior: Behavior {
-        switch behaviorString {
-        case BehaviorValue.tile:
-            return .tile
-        case BehaviorValue.displace:
-            return .displace
-        case BehaviorValue.overlay:
-            return .overlay
-        default:
-            return .auto
+        get {
+            switch behaviorString {
+                case BehaviorValue.overlay:
+                    return .overlay
+                default:
+                    return .tile
+            }
+        }
+        set {
+            if newValue == .overlay {
+                UserDefaults.standard.set(BehaviorValue.overlay, forKey: Key.behavior)
+            } else {
+                UserDefaults.standard.set(BehaviorValue.tile, forKey: Key.behavior)
+            }
         }
     }
     
     /// The split controller behavior as a raw string.
     @objc var behaviorString: String {
-        return UserDefaults.standard.string(forKey: Key.behavior) ?? BehaviorValue.auto
+        return UserDefaults.standard.string(forKey: Key.behavior) ?? BehaviorValue.tile
     }
     
     /// Position of the vertical divider between the views.
@@ -497,7 +494,7 @@ class DetailViewController: BaseViewController {
         guard let splitViewController = splitViewController as? SplitViewController else {
             return
         }
-        if splitViewController.isFeedListHidden {
+        if splitViewController.isFeedsListHidden {
             return
         }
 
@@ -506,9 +503,13 @@ class DetailViewController: BaseViewController {
 
         let storyWidth = topContainerView.bounds.width
         let minimumStoryWidth: CGFloat = 320
+        
         if storyWidth > 0 && storyWidth < minimumStoryWidth {
+            splitViewController.preferredSplitBehavior = .overlay
             splitViewController.preferredDisplayMode = .secondaryOnly
             splitViewController.show(.secondary)
+            
+            behavior = .overlay
         }
     }
     
