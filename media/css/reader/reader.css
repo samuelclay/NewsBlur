@@ -23961,6 +23961,9 @@ h5.NB-classifier-section-header {
 
 .NB-add-site-trending-content {
     min-height: 100px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* ====================
@@ -24268,8 +24271,8 @@ h5.NB-classifier-section-header {
     padding: 8px 0;
 }
 
-.NB-add-site-style-popover .NB-style-row:not(:last-child) {
-    border-bottom: 1px solid #E8E8E8;
+.NB-add-site-style-popover > .NB-style-popover-content > .NB-style-row {
+    padding-bottom: 4px;
 }
 
 .NB-add-site-style-popover .NB-style-label {
@@ -24347,6 +24350,44 @@ h5.NB-classifier-section-header {
     flex: 1.5;
 }
 
+/* Style Popover Section Groups */
+.NB-add-site-style-popover .NB-style-section {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 12px;
+}
+
+.NB-add-site-style-popover .NB-style-section .NB-style-row {
+    border-bottom: none;
+    padding: 6px 0;
+}
+
+.NB-add-site-style-popover .NB-style-section .NB-style-row:last-child {
+    padding-bottom: 0;
+}
+
+.NB-add-site-style-popover .NB-style-section .NB-style-row:first-of-type {
+    padding-top: 0;
+}
+
+.NB-add-site-style-popover .NB-style-section-header {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888;
+    margin-bottom: 6px;
+}
+
+.NB-dark-theme .NB-add-site-style-popover .NB-style-section {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark-theme .NB-add-site-style-popover .NB-style-section-header {
+    color: #777;
+}
+
 /* Tabs */
 .NB-add-site-tabs-container {
     display: flex;
@@ -24359,7 +24400,6 @@ h5.NB-classifier-section-header {
 .NB-add-site-tabs {
     display: flex;
     gap: 4px;
-    flex: 1;
     min-width: 0;
     overflow: hidden;
 }
@@ -24489,12 +24529,16 @@ h5.NB-classifier-section-header {
     flex: 1;
     overflow: hidden;
     position: relative;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .NB-add-site-tab-pane {
     display: none;
     height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 20px 0;
 }
 
@@ -24507,14 +24551,34 @@ h5.NB-classifier-section-header {
     display: grid;
     gap: 16px;
     padding-bottom: 24px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .NB-add-site-results-grid {
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
 .NB-add-site-results-list {
     grid-template-columns: 1fr;
+}
+
+/* Grid Column Overrides - auto uses the base auto-fill rule above */
+.NB-add-site-results.NB-add-site-results-grid.NB-add-site-columns-1 {
+    grid-template-columns: 1fr;
+}
+
+.NB-add-site-results.NB-add-site-results-grid.NB-add-site-columns-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.NB-add-site-results.NB-add-site-results-grid.NB-add-site-columns-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.NB-add-site-results.NB-add-site-results-grid.NB-add-site-columns-4 {
+    grid-template-columns: repeat(4, 1fr);
 }
 
 /* Feed Card */
@@ -24526,6 +24590,8 @@ h5.NB-classifier-section-header {
     transition: all 0.15s ease;
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .NB-add-site-card:hover {
