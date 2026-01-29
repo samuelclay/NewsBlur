@@ -3624,6 +3624,76 @@ a.mention, a.mention-group {
     color: rgba(255, 255, 255, 0.8);
 }
 
+/* Dark mode Style Button */
+.NB-dark .NB-add-site-style-button {
+    background: #2A2A2A;
+}
+
+.NB-dark .NB-add-site-style-button img {
+    filter: invert(1);
+    opacity: 0.6;
+}
+
+.NB-dark .NB-add-site-style-label {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-add-site-style-button:hover {
+    background: #3A3A3A;
+}
+
+.NB-dark .NB-add-site-style-button:hover img {
+    opacity: 0.8;
+}
+
+.NB-dark .NB-add-site-style-button:hover .NB-add-site-style-label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-dark .NB-add-site-style-button.NB-active {
+    background: #5C89C9;
+}
+
+.NB-dark .NB-add-site-style-button.NB-active img {
+    filter: brightness(0) invert(1);
+    opacity: 1;
+}
+
+.NB-dark .NB-add-site-style-button.NB-active .NB-add-site-style-label {
+    color: #FFF;
+}
+
+/* Dark mode Add Site Style Popover */
+.NB-dark .NB-add-site-style-popover .NB-style-row {
+    border-bottom-color: #333;
+}
+
+.NB-dark .NB-add-site-style-popover .NB-style-label {
+    color: #888;
+}
+
+.NB-dark .NB-add-site-style-popover .segmented-control {
+    background: #2A2A2A;
+}
+
+.NB-dark .NB-add-site-style-popover .segmented-control li {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-dark .NB-add-site-style-popover .segmented-control li:hover {
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-add-site-style-popover .segmented-control li.NB-active {
+    background: #3A3A3A;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-add-site-style-popover .NB-menu-manage-view-setting-contentpreview .NB-icon {
+    filter: invert(1);
+}
+
 .NB-dark .NB-add-site-tab {
     background: transparent;
     border-color: #444;
@@ -3693,6 +3763,73 @@ a.mention, a.mention-group {
     background: #333;
     border-color: #444;
     color: #DDD;
+}
+
+
+.NB-dark .NB-add-site-card-actions {
+    border-top-color: #333;
+}
+
+.NB-dark .NB-add-site-card-story {
+    border-bottom-color: #3a3a3a;
+}
+
+.NB-dark .NB-add-site-card-story-title {
+    color: #CCC;
+}
+
+.NB-dark .NB-add-site-card-story-preview {
+    color: #777;
+}
+
+.NB-dark .NB-trending-feed-card {
+    background: linear-gradient(180deg, #2a2a2a 0%, #252525 100%);
+    border-color: #3a3a3a;
+}
+
+.NB-dark .NB-trending-feed-card:hover {
+    border-color: #4a4a4a;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-trending-feed-card .NB-feed-badge {
+    background: transparent;
+}
+
+.NB-dark .NB-trending-feed-card .NB-feed-badge-title {
+    color: #e8e8e8;
+}
+
+.NB-dark .NB-trending-feed-card .NB-feed-badge-title img,
+.NB-dark .NB-trending-feed-card .NB-feed-badge-title .NB-feed-emoji,
+.NB-dark .NB-trending-feed-card .NB-feed-badge-title .NB-feed-icon-colored {
+    background: #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-trending-feed-card .NB-feed-badge-tagline {
+    color: #999;
+}
+
+.NB-dark .NB-trending-feed-card .NB-feed-badge-stats {
+    color: #888;
+    border-top-color: #3a3a3a;
+}
+
+.NB-dark .NB-trending-feed-card .NB-feed-badge-stats b {
+    color: #bbb;
+}
+
+.NB-dark .NB-trending-feed-card .NB-feed-badge-stats br + b::before {
+    color: #555;
+}
+
+.NB-dark .NB-trending-feed-card .NB-feed-badge-actions {
+    border-top-color: #3a3a3a;
+}
+
+.NB-dark .NB-trending-feed-card .NB-subscribed {
+    color: #5a5;
 }
 
 .NB-dark .NB-add-site-source-header {
