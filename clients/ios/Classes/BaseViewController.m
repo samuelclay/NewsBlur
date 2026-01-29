@@ -234,11 +234,7 @@
 }
 
 - (BOOL)isCompactWidth {
-    UIWindow *window = [NewsBlurAppDelegate sharedAppDelegate].window;
-    UITraitCollection *traits = window.windowScene.traitCollection;
-    
-    return traits.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
-    //return self.compactWidth > 0.0;
+    return self.appDelegate.detailViewController.isCompact;
 }
 
 - (BOOL)isGrid {

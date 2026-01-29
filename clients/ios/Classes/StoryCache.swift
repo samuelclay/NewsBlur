@@ -49,6 +49,10 @@ import Foundation
         return appDelegate.detailViewController.isPhone
     }
     
+    var isCompact: Bool {
+        return appDelegate.detailViewController.isCompact
+    }
+    
     var canPullToRefresh: Bool {
         return appDelegate.feedDetailViewController.canPullToRefresh
     }

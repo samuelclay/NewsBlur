@@ -678,7 +678,7 @@
 }
 
 - (CGFloat)topInsetForNavigationBarAlpha:(CGFloat)alpha {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+    if (!appDelegate.isCompactWidth && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
         return 0;
     }
 
