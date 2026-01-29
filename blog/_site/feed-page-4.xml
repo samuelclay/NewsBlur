@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-22T14:12:44-05:00</updated>
+  <updated>2026-01-27T15:45:03-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,52 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Unread is a new iOS app with NewsBlur support</title>
+    <link href="https://blog.newsblur.com/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support/" rel="alternate" type="text/html" title="Unread is a new iOS app with NewsBlur support" />
+    <published>2014-04-24T11:56:00-04:00</published>
+    <updated>2014-04-24T11:56:00-04:00</updated>
+    <id>https://blog.newsblur.com/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/04/24/unread-is-a-new-ios-app-with-newsblur-support/">
+      <![CDATA[<p>NewsBlur has a <a href="http://www.newsblur.com/api">free and open API</a> that all of the native mobile apps and website are built on. But the API is not just for official apps. Numerous third-party developers have built apps on the API and today I’m proud to announce a new native iOS app has launched with NewsBlur support.</p>
+
+<p><a href="http://jaredsinclair.com/unread/"><img src="https://s3.amazonaws.com/static.newsblur.com/blog/unread_app_logo.png" alt="" /></a></p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/unread_app_screenshot.jpeg" alt="" /></p>
+
+<p><a href="http://jaredsinclair.com/unread/">Unread</a>, by <a href="https://twitter.com/jaredsinclair">Jared Sinclair</a>, is a unique RSS reader, with a focus on simplicity and cleanliness. Sinclair built Unread because he wanted to see a different kind of reading experience, one where he could focus more on reading well written stories than consuming lots of content. Unread app has a different feel than any other news reader I’ve seen and I think many of the choices made by Sinclair work in a quiet harmony.</p>
+
+<p>In Sinclair’s own words:</p>
+
+<blockquote>
+  <p>Most RSS apps are patterned after email. Noisy parades of dots, dates, and tags trample over their screens. Their source lists look like overflowing inboxes instead of stately tables of contents. Toolbars bristling with options obscure the text. Putting it bluntly, using these apps feels like work.</p>
+</blockquote>
+
+<p>NewsBlur’s native iOS app certainly does fit this description. And if you want an incredibly well-made alternative, look no further than Unread, <a href="https://itunes.apple.com/us/app/unread-an-rss-reader/id754143884">available on the App Store</a>.</p>
+
+<style>
+.NB-unread-app-post p {
+clear: none;
+}
+.NB-unread-app-post blockquote {
+color: #606060;
+}
+</style>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    
+    <summary type="html">
+      <![CDATA[NewsBlur has a free and open API that all of the native mobile apps and website are built on. But the API is not just for official apps. Numerous third-party developers have built apps on the API and today I’m proud to announce a new native iOS app has launched...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">The new font and style manager</title>
@@ -1069,43 +1115,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[Now that NewsBlur has joined the wonderful world of Android, we’re turning our attention back to the iOS app, with a full-scale feature parity push for the new iPhone 5 and iOS 6. It’s perfect for catching up on your reading when you realize that Apple Maps has sent you...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Do the robot: the official NewsBlur Android app is here</title>
-    <link href="https://blog.newsblur.com/2012/10/18/do-the-robot-the-official-newsblur-android-app-is/" rel="alternate" type="text/html" title="Do the robot: the official NewsBlur Android app is here" />
-    <published>2012-10-18T11:47:00-04:00</published>
-    <updated>2012-10-18T11:47:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/10/18/do-the-robot-the-official-newsblur-android-app-is</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/10/18/do-the-robot-the-official-newsblur-android-app-is/">
-      <![CDATA[<p>You’ve been bugging us for two years about it, and now it’s finally here: NewsBlur’s expansion to mobile is complete, with our first-ever <a href="http://www.newsblur.com/android">official Android app</a> ready and waiting for your device. Thanks to the gifts of money and time from Y Combinator and the programming prowess of Papermill creator Ryan Bateman (otherwise known as <a href="http://twitter.com/secretsquirrel">@secretsquirrel</a>), you can now join your iOS brethren on the couch with your daily dose of RSS goodness. Level of accompanying smugness is up to you.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/v1%20-%201.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/v1%20-%203.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/v1%20-%203.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/v1%20-%204.png" alt="image" /></p>
-
-<p>The Android app has all the features of the iOS app, including:</p>
-
-<ul>
-  <li>All your sites, folders, and friends’ blurblogs</li>
-  <li>Speedy downloading of sites and general alacrity of use</li>
-  <li>The ability to share and comment on stories on your blurblog</li>
-  <li>Direct imports from Google Reader: download the app without ever having to hit the Web to set up an account</li>
-  <li>Follow new people, read their shares, and generally expand your knowledge, worldview, and personal magnetism</li>
-</ul>
-
-<p>Plus, it has that delicious Android flavor, with half the calories.</p>
-
-<p>Download the official <a href="http://www.newsblur.com/android">NewsBlur Android app</a>. Tell your friends! Tip your waitstaff. Try the veal. Floss twice a day. Call your mom, she misses you.</p>
-
-]]>
-    </content>
-    
-    
-    
-    
-    <summary type="html">
-      <![CDATA[You’ve been bugging us for two years about it, and now it’s finally here: NewsBlur’s expansion to mobile is complete, with our first-ever official Android app ready and waiting for your device. Thanks to the gifts of money and time from Y Combinator and the programming prowess of Papermill creator...]]>
     </summary>
     
   </entry>

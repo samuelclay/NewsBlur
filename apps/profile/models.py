@@ -2336,6 +2336,13 @@ def paypal_signup(sender, **kwargs):
         except PaypalIds.DoesNotExist:
             pass
 
+    # Newer PayPal recurring payments use recurring_payment_id instead of subscr_id
+    if not user and ipn_obj.recurring_payment_id:
+        try:
+            user = PaypalIds.objects.get(paypal_sub_id=ipn_obj.recurring_payment_id).user
+        except PaypalIds.DoesNotExist:
+            pass
+
     if not user:
         logging.debug(
             " ---> Paypal subscription not found during paypal_signup: %s/%s"
@@ -2362,17 +2369,37 @@ valid_ipn_received.connect(paypal_signup)
 
 def paypal_payment_history_sync(sender, **kwargs):
     ipn_obj = sender
+    user = None
     try:
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
+        pass
+
+    if not user and ipn_obj.payer_email:
         try:
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
         except User.DoesNotExist:
-            logging.debug(
-                " ---> Paypal subscription not found during flagging: %s/%s"
-                % (ipn_obj.payer_email, ipn_obj.custom)
-            )
-            return {"code": -1, "message": "User doesn't exist."}
+            pass
+
+    if not user and ipn_obj.subscr_id:
+        try:
+            user = PaypalIds.objects.get(paypal_sub_id=ipn_obj.subscr_id).user
+        except PaypalIds.DoesNotExist:
+            pass
+
+    # Newer PayPal recurring payments use recurring_payment_id instead of subscr_id
+    if not user and ipn_obj.recurring_payment_id:
+        try:
+            user = PaypalIds.objects.get(paypal_sub_id=ipn_obj.recurring_payment_id).user
+        except PaypalIds.DoesNotExist:
+            pass
+
+    if not user:
+        logging.debug(
+            " ---> Paypal subscription not found during payment sync: %s/%s"
+            % (ipn_obj.payer_email, ipn_obj.custom)
+        )
+        return {"code": -1, "message": "User doesn't exist."}
 
     logging.user(user, "~BC~SB~FBPaypal subscription payment")
     try:
@@ -2386,17 +2413,37 @@ valid_ipn_received.connect(paypal_payment_history_sync)
 
 def paypal_payment_was_flagged(sender, **kwargs):
     ipn_obj = sender
+    user = None
     try:
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
+        pass
+
+    if not user and ipn_obj.payer_email:
         try:
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
         except User.DoesNotExist:
-            logging.debug(
-                " ---> Paypal subscription not found during flagging: %s/%s"
-                % (ipn_obj.payer_email, ipn_obj.custom)
-            )
-            return {"code": -1, "message": "User doesn't exist."}
+            pass
+
+    if not user and ipn_obj.subscr_id:
+        try:
+            user = PaypalIds.objects.get(paypal_sub_id=ipn_obj.subscr_id).user
+        except PaypalIds.DoesNotExist:
+            pass
+
+    # Newer PayPal recurring payments use recurring_payment_id instead of subscr_id
+    if not user and ipn_obj.recurring_payment_id:
+        try:
+            user = PaypalIds.objects.get(paypal_sub_id=ipn_obj.recurring_payment_id).user
+        except PaypalIds.DoesNotExist:
+            pass
+
+    if not user:
+        logging.debug(
+            " ---> Paypal subscription not found during flagging: %s/%s"
+            % (ipn_obj.payer_email, ipn_obj.custom)
+        )
+        return {"code": -1, "message": "User doesn't exist."}
 
     try:
         user.profile.setup_premium_history()
@@ -2409,7 +2456,14 @@ invalid_ipn_received.connect(paypal_payment_was_flagged)
 
 
 def stripe_checkout_session_completed(sender, full_json, **kwargs):
-    newsblur_user_id = full_json["data"]["object"]["metadata"]["newsblur_user_id"]
+    metadata = full_json["data"]["object"].get("metadata", {})
+    newsblur_user_id = metadata.get("newsblur_user_id")
+
+    # If no newsblur_user_id in metadata, this is not a NewsBlur checkout (e.g., Crabigator)
+    if not newsblur_user_id:
+        logging.debug(" ---> Stripe checkout webhook for non-NewsBlur product, ignoring")
+        return
+
     stripe_id = full_json["data"]["object"]["customer"]
     profile = None
     try:
