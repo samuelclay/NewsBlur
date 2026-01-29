@@ -6,6 +6,7 @@ urlpatterns = [
     url(r"^autocomplete/?$", views.feed_autocomplete, name="feed-autocomplete"),
     url(r"^search_feed/?$", views.search_feed, name="search-feed"),
     url(r"^trending/?$", views.trending_sites, name="trending-sites"),
+    url(r"^popular_channels/?$", views.popular_channels, name="popular-channels"),
     url(r"^youtube/search/?$", views.youtube_search, name="youtube-search"),
     url(r"^reddit/search/?$", views.reddit_search, name="reddit-search"),
     url(r"^reddit/popular/?$", views.reddit_popular, name="reddit-popular"),
