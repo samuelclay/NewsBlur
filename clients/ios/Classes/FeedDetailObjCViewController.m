@@ -67,7 +67,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) CGFloat feedListRevealWidth;
 @property (nonatomic) BOOL feedListRevealActive;
 @property (nonatomic) BOOL feedListRevealBouncing;
-@property (nonatomic, strong) UIView *feedListSnapshot;
+@property (nonatomic, strong) UIView *feedListRevealContainer;
 
 @end
 
@@ -279,6 +279,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer == self.feedListSwipeGesture || gestureRecognizer == self.fullScreenPopGesture) {
         if (gestureRecognizer == self.feedListSwipeGesture) {
+            for (UITableViewCell *cell in self.storyTitlesTable.visibleCells) {
+                if (cell.isEditing) {
+                    return NO;
+                }
+            }
             UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
             CGPoint velocity = [pan velocityInView:self.view];
             if (velocity.x <= 0 || fabs(velocity.x) <= fabs(velocity.y)) {
@@ -724,38 +729,34 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
 }
 
-- (UIView *)renderedSnapshotViewForFeedList:(UIView *)view targetWidth:(CGFloat)targetWidth {
-    if (!view) {
+- (UIView *)feedListRevealContainerForSplitView:(SplitViewController *)splitViewController {
+    if (!splitViewController || !appDelegate.feedsNavigationController) {
         return nil;
     }
 
-    [view setNeedsLayout];
-    [view layoutIfNeeded];
-
-    CGSize size = view.bounds.size;
-    if (targetWidth > 0) {
-        size.width = targetWidth;
-    }
-    if (size.width <= 1.0f || size.height <= 1.0f) {
+    UIView *feedsView = appDelegate.feedsNavigationController.view;
+    if (!feedsView) {
         return nil;
     }
 
-    UIGraphicsImageRendererFormat *format = [UIGraphicsImageRendererFormat preferredFormat];
-    format.opaque = view.isOpaque;
-    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size format:format];
-    UIImage *image = [renderer imageWithActions:^(UIGraphicsImageRendererContext *context) {
-        CGContextRef cgContext = context.CGContext;
-        CGContextSaveGState(cgContext);
-        CGContextTranslateCTM(cgContext, -view.bounds.origin.x, -view.bounds.origin.y);
-        [view.layer renderInContext:cgContext];
-        CGContextRestoreGState(cgContext);
-    }];
+    CGFloat splitWidth = CGRectGetWidth(splitViewController.view.bounds);
+    UIView *candidate = feedsView;
+    UIView *bestMatch = feedsView;
 
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-    imageView.frame = CGRectMake(0, 0, size.width, size.height);
-    imageView.contentMode = UIViewContentModeScaleToFill;
-    imageView.backgroundColor = view.backgroundColor;
-    return imageView;
+    while (candidate) {
+        CGFloat width = CGRectGetWidth(candidate.bounds);
+        if (width > 1.0f && splitWidth > 1.0f && width < splitWidth - 1.0f) {
+            bestMatch = candidate;
+        }
+
+        if (candidate.superview == nil || candidate.superview == splitViewController.view) {
+            break;
+        }
+
+        candidate = candidate.superview;
+    }
+
+    return bestMatch ?: feedsView;
 }
 
 - (void)handleFeedListSwipe:(UIPanGestureRecognizer *)gestureRecognizer {
@@ -820,37 +821,31 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                 }
 
                 if (splitViewController.isFeedListHidden) {
-                    CGFloat targetWidth = revealWidth;
+                    [UIView performWithoutAnimation:^{
+                        splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
+                        [splitViewController showColumn:UISplitViewControllerColumnPrimary];
+                        [splitViewController.view layoutIfNeeded];
+                    }];
+
+                    UIView *container = [self feedListRevealContainerForSplitView:splitViewController];
+                    if (!container) {
+                        container = primaryContainer;
+                    }
+
+                    CGFloat targetWidth = CGRectGetMaxX(container.frame);
                     if (targetWidth <= 0) {
-                        targetWidth = CGRectGetWidth(primaryContainer.bounds);
+                        targetWidth = CGRectGetWidth(container.bounds);
+                    }
+                    if (targetWidth <= 0) {
+                        targetWidth = revealWidth;
                     }
                     if (targetWidth <= 0) {
                         targetWidth = 320.0;
                     }
 
-                    UIView *snapshot = [self renderedSnapshotViewForFeedList:feedsView targetWidth:targetWidth];
-                    if (!snapshot) {
-                        snapshot = [[UIView alloc] initWithFrame:CGRectZero];
-                        snapshot.backgroundColor = feedsView.backgroundColor ?: UIColorFromRGB(0xf4f4f4);
-                    }
-
-                    CGFloat snapshotWidth = CGRectGetWidth(snapshot.bounds);
-                    CGFloat snapshotHeight = CGRectGetHeight(snapshot.bounds);
-                    if (snapshotWidth <= 0) {
-                        snapshotWidth = targetWidth;
-                    }
-                    if (snapshotHeight <= 0) {
-                        snapshotHeight = CGRectGetHeight(splitViewController.view.bounds);
-                    }
-                    if (snapshotHeight <= 0) {
-                        snapshotHeight = CGRectGetHeight(self.view.bounds);
-                    }
-
-                    self.feedListRevealWidth = snapshotWidth;
-                    snapshot.frame = CGRectMake(0, 0, snapshotWidth, snapshotHeight);
-                    snapshot.transform = CGAffineTransformMakeTranslation(-snapshotWidth, 0);
-                    [splitViewController.view addSubview:snapshot];
-                    self.feedListSnapshot = snapshot;
+                    self.feedListRevealWidth = targetWidth;
+                    self.feedListRevealContainer = container;
+                    container.transform = CGAffineTransformMakeTranslation(-targetWidth, 0);
                 } else {
                     self.feedListRevealBouncing = YES;
                 }
@@ -863,7 +858,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                     CGFloat bounceTranslation = MIN(clampedTranslation, 60.0) * 0.2;
                     self.view.transform = CGAffineTransformMakeTranslation(bounceTranslation, 0);
                 } else {
-                    self.feedListSnapshot.transform = CGAffineTransformMakeTranslation(-effectiveRevealWidth + clampedTranslation, 0);
+                    UIView *container = self.feedListRevealContainer ?: primaryContainer;
+                    container.transform = CGAffineTransformMakeTranslation(-effectiveRevealWidth + clampedTranslation, 0);
                 }
             }
             break;
@@ -892,12 +888,13 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             CGFloat clampedTranslation = MAX(0.0, MIN(translation.x, effectiveRevealWidth));
             CGPoint velocity = [gestureRecognizer velocityInView:self.view];
             BOOL shouldOpen = (clampedTranslation > effectiveRevealWidth * 0.33f) || (velocity.x > 800.0f);
+            UIView *container = self.feedListRevealContainer ?: primaryContainer;
 
             [UIView animateWithDuration:0.2
                                   delay:0
                                 options:UIViewAnimationOptionCurveEaseOut
                              animations:^{
-                self.feedListSnapshot.transform = shouldOpen ? CGAffineTransformIdentity : CGAffineTransformMakeTranslation(-effectiveRevealWidth, 0);
+                container.transform = shouldOpen ? CGAffineTransformIdentity : CGAffineTransformMakeTranslation(-effectiveRevealWidth, 0);
             } completion:^(__unused BOOL finished) {
                 if (shouldOpen) {
                     [UIView performWithoutAnimation:^{
@@ -911,8 +908,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                         [splitViewController.view layoutIfNeeded];
                     }];
                 }
-                [self.feedListSnapshot removeFromSuperview];
-                self.feedListSnapshot = nil;
+                container.transform = CGAffineTransformIdentity;
+                self.feedListRevealContainer = nil;
                 self.feedListRevealActive = NO;
                 self.feedListRevealBouncing = NO;
                 self.storyTitlesTable.scrollEnabled = YES;
