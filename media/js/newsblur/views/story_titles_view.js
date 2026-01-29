@@ -39,6 +39,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var on_trending_feed = this.options.on_trending_feed;
         var in_trending_view = this.options.in_trending_view;
         var in_popover = this.options.in_popover;
+        var in_add_site_view = this.options.in_add_site_view;
         var override_layout = this.options.override_layout;
         var pane_anchor = this.options.pane_anchor;
         var stories = this.collection.map(function (story) {
@@ -55,7 +56,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 on_discover_story: on_discover_story,
                 on_trending_feed: on_trending_feed,
                 in_trending_view: in_trending_view,
-                in_popover: in_popover
+                in_popover: in_popover,
+                in_add_site_view: in_add_site_view
             }).render();
         });
         this.stories = stories;
@@ -83,6 +85,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             var on_trending_feed = this.options.on_trending_feed;
             var in_trending_view = this.options.in_trending_view;
             var in_popover = this.options.in_popover;
+            var in_add_site_view = this.options.in_add_site_view;
             var override_layout = this.options.override_layout;
             var pane_anchor = this.options.pane_anchor;
             var story_layout = this.options.override_layout ||
@@ -102,7 +105,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                     on_discover_story: on_discover_story,
                     on_trending_feed: on_trending_feed,
                     in_trending_view: in_trending_view,
-                    in_popover: in_popover
+                    in_popover: in_popover,
+                    in_add_site_view: in_add_site_view
                 }).render();
             }));
             this.stories = this.stories.concat(stories);

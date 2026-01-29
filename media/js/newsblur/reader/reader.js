@@ -2258,7 +2258,10 @@
             if (NEWSBLUR.reader.flags.search) visible_only = false;
             if (NEWSBLUR.reader.flags.feed_list_showing_starred) visible_only = false;
             var feeds;
-            if (visible_only) {
+            // Guard against active_folder not having expected methods (e.g., in Add Site view)
+            if (!this.active_folder || typeof this.active_folder.feed_ids_in_folder !== 'function') {
+                feeds = [];
+            } else if (visible_only) {
                 feeds = _.pluck(this.active_folder.feeds_with_unreads(), 'id');
                 if (!feeds.length) {
                     feeds = this.active_folder.feed_ids_in_folder();
