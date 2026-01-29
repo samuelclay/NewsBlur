@@ -83,15 +83,17 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
                 $.make('div', { className: 'NB-badge-action-open NB-modal-submit-button NB-modal-submit-green' }, 'Open')
             ])),
             (!subscribed && $.make('div', { className: actions_class }, [
-                $folder_selector,
                 (!this.options.hide_try_button && $.make('div', {
                     className: 'NB-badge-action-try NB-modal-submit-button NB-modal-submit-green'
                 }, [
                     $.make('span', 'Try')
                 ])),
-                $.make('div', {
-                    className: 'NB-badge-action-add NB-modal-submit-button NB-modal-submit-grey'
-                }, 'Add'),
+                $.make('div', { className: 'NB-badge-folder-add-group' }, [
+                    $folder_selector,
+                    $.make('div', {
+                        className: 'NB-badge-action-add NB-modal-submit-button NB-modal-submit-grey'
+                    }, 'Add')
+                ]),
                 $.make("div", { className: "NB-loading" }),
                 $.make('div', { className: 'NB-error' })
             ]))

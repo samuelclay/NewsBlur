@@ -23458,6 +23458,104 @@ h5.NB-classifier-section-header {
     border-bottom: 1px solid #f0f0ee;
 }
 
+.NB-trending-feed-badge .NB-feed-badge-inner {
+    display: flex;
+    flex-direction: column;
+}
+
+.NB-trending-feed-badge .NB-feed-badge-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.NB-trending-feed-badge .NB-feed-badge-icon {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px;
+    max-width: 40px;
+    min-height: 40px;
+    max-height: 40px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    background: #F0F0F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.NB-trending-feed-badge .NB-feed-badge-icon img,
+.NB-trending-feed-badge .NB-feed-badge-icon .NB-feed-emoji,
+.NB-trending-feed-badge .NB-feed-badge-icon .NB-feed-icon-colored {
+    width: 40px !important;
+    height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
+    border-radius: 8px;
+    object-fit: cover;
+    float: none !important;
+    margin: 0 !important;
+}
+
+.NB-trending-feed-badge .NB-feed-badge-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-trending-feed-badge .NB-feed-badge-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-trending-feed-badge .NB-feed-badge-meta {
+    font-size: 12px;
+    color: #888;
+}
+
+.NB-trending-feed-badge .NB-feed-badge-tagline {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.NB-trending-feed-badge .NB-feed-badge-tagline:empty {
+    display: none;
+}
+
+.NB-trending-feed-badge .NB-feed-badge-subscribed-actions {
+    justify-content: flex-start;
+}
+
+.NB-trending-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-stats {
+    margin-left: auto;
+    padding: 8px 12px;
+    background: #F5F5F5;
+    border: 1px solid #D0D0D0;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+}
+
+.NB-trending-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-stats:hover {
+    background: #EBEBEB;
+    border-color: #BBB;
+    color: #333;
+}
+
+.NB-trending-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-open {
+    margin-left: 8px;
+}
+
 .NB-trending-feed-badge .NB-story-titles {
     margin: 0;
     border: none;
@@ -23548,6 +23646,13 @@ h5.NB-classifier-section-header {
     float: none;
     flex: 0 0 auto;
     margin: 0;
+}
+
+.NB-feed-badge .NB-badge-folder-add-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 12px;
 }
 
 /* Trending Feed Grid (for Add Site view) */
@@ -23932,7 +24037,7 @@ h5.NB-classifier-section-header {
 .NB-add-site-tab-results {
     flex: 1;
     overflow-y: auto;
-    padding-bottom: 24px;
+    padding-bottom: 48px;
 }
 
 /* Global Search */

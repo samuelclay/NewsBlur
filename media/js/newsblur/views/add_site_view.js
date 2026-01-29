@@ -36,6 +36,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         // Categories tab events
         "click .NB-add-site-category-card": "handle_category_click",
         "click .NB-add-site-category-back": "go_back_to_categories",
+        // Infinite scroll events
+        "scroll .NB-add-site-tab-results": "handle_tab_scroll",
         // Discovery navigation events
         "click .NB-add-site-source-pill": "handle_source_pill_click",
         "click .NB-add-site-section-link": "handle_section_link_click",
@@ -206,7 +208,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             trending_loaded: false,
             trending_page: 1,
             trending_days: 7,
-            trending_has_more: true
+            trending_has_more: true,
+            trending_is_loading: false
         });
         this.youtube_state = _.extend({}, default_search_state, {
             selected_category: 'all',
@@ -498,6 +501,19 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 $search_bar,
                 $.make('div', { className: 'NB-add-site-tab-results' }, [$content])
             ]));
+
+            // Bind scroll event for infinite scroll (needs direct binding since element is dynamic)
+            this.bind_scroll_handler();
+        }
+    },
+
+    bind_scroll_handler: function () {
+        var self = this;
+        var $results = this.$('.NB-add-site-tab-results');
+        if ($results.length) {
+            $results.off('scroll.infinite').on('scroll.infinite', function (e) {
+                self.handle_tab_scroll(e);
+            });
         }
     },
 
@@ -619,28 +635,133 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }
     },
 
-    fetch_search_trending_feeds: function () {
+    fetch_search_trending_feeds: function (append) {
         var self = this;
         var state = this.search_state;
 
+        if (state.trending_is_loading) return;
+        state.trending_is_loading = true;
+
         state.trending_feeds_collection.fetch({
             data: { page: state.trending_page, days: state.trending_days },
+            remove: !append,  // Don't remove existing models when appending
             success: function () {
                 state.trending_loaded = true;
                 state.trending_has_more = state.trending_feeds_collection.has_more;
+                state.trending_is_loading = false;
                 // Re-render if still on search tab with empty query
                 if (self.active_tab === 'search' && !self.search_query) {
-                    self.render_search_tab();
+                    if (append) {
+                        self.append_trending_feeds();
+                    } else {
+                        self.render_search_tab();
+                    }
                 }
             },
             error: function () {
                 state.trending_loaded = true;
+                state.trending_is_loading = false;
                 // Re-render to show error state
                 if (self.active_tab === 'search' && !self.search_query) {
                     self.render_search_tab();
                 }
             }
         });
+    },
+
+    handle_tab_scroll: function (e) {
+        var $target = $(e.currentTarget);
+        var scrollTop = $target.scrollTop();
+        var scrollHeight = $target[0].scrollHeight;
+        var clientHeight = $target[0].clientHeight;
+
+        // Check if scrolled near the bottom (within 200px)
+        if (scrollTop + clientHeight >= scrollHeight - 200) {
+            this.load_more_trending_feeds();
+        }
+    },
+
+    load_more_trending_feeds: function () {
+        var state = this.search_state;
+
+        // Only load more if on search tab, has more pages, not loading, and no search query
+        if (this.active_tab !== 'search') return;
+        if (this.search_query) return;
+        if (!state.trending_has_more) return;
+        if (state.trending_is_loading) return;
+
+        // Increment page and fetch
+        state.trending_page += 1;
+        this.fetch_search_trending_feeds(true);
+    },
+
+    append_trending_feeds: function () {
+        var self = this;
+        var state = this.search_state;
+        var $container = this.$('.NB-add-site-trending-content');
+
+        if (!$container.length) return;
+
+        // Get the last page of feeds (they were added to the collection)
+        var page_size = 10;  // Match backend page size
+        var total_feeds = state.trending_feeds_collection.length;
+        var start_index = total_feeds - page_size;
+        if (start_index < 0) start_index = 0;
+
+        var new_feeds = state.trending_feeds_collection.slice(start_index);
+        var pane_anchor = NEWSBLUR.assets.preference('story_pane_anchor');
+
+        if (this.view_mode === 'grid') {
+            var $grid = $container.find('.NB-add-site-results-container');
+            if (!$grid.length) {
+                $grid = this.make_results_container();
+                $container.append($grid);
+            }
+            _.each(new_feeds, function (trending_feed) {
+                var feed = trending_feed.get("feed");
+                var feed_data = feed.toJSON ? feed.toJSON() : feed;
+                $grid.append(self.render_feed_card(feed_data));
+            });
+        } else {
+            var $list = $container.find('.NB-trending-feed-badges');
+            if (!$list.length) {
+                var image_preview = NEWSBLUR.assets.preference('image_preview') || 'large-right';
+                $list = $.make('div', { className: 'NB-trending-feed-badges NB-story-pane-' + pane_anchor + ' NB-image-preview-' + image_preview });
+                $container.append($list);
+            }
+            var stories_limit = this.get_stories_limit();
+            _.each(new_feeds, function (trending_feed) {
+                var $badge_content = [
+                    new NEWSBLUR.Views.FeedBadge({
+                        model: trending_feed.get("feed"),
+                        show_folders: true,
+                        in_add_site_view: self,
+                        load_feed_after_add: false
+                    })
+                ];
+
+                if (stories_limit > 0) {
+                    var $story_titles = $.make('div', { className: 'NB-story-titles' });
+                    var limited_stories = self.limit_stories(trending_feed.get("stories"));
+                    var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
+                        el: $story_titles,
+                        collection: limited_stories,
+                        $story_titles: $story_titles,
+                        override_layout: 'split',
+                        pane_anchor: pane_anchor,
+                        on_trending_feed: trending_feed,
+                        in_add_site_view: self
+                    });
+                    $badge_content.push(story_titles_view.render().el);
+                }
+
+                var $badge = $.make('div', { className: 'NB-trending-feed-badge' }, $badge_content);
+                $list.append($badge);
+            });
+        }
+
+        // Remove loading indicator if present
+        $container.find('.NB-add-site-loading').remove();
     },
 
     fetch_popular_channels: function (channel_type) {
