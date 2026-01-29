@@ -476,13 +476,39 @@ class DetailViewController: BaseViewController {
                 }
             }
         } else {
-        guard let splitViewController = appDelegate.splitViewController else {
+            guard let splitViewController = appDelegate.splitViewController else {
                 return
+            }
+            
+            if column == .primary {
+                appDelegate.updateSplitBehavior(false)
             }
             
             if (splitViewController.displayMode != .secondaryOnly && splitViewController.preferredDisplayMode != .oneBesideSecondary) || splitViewController.preferredDisplayMode != .oneOverSecondary {
                 splitViewController.show(column)
             }
+        }
+    }
+
+    @objc func collapseFeedListIfNeededForStory() {
+        guard !isPhone, !isCompact, storyTitlesOnLeft, appDelegate.activeStory != nil else {
+            return
+        }
+        guard let splitViewController = splitViewController as? SplitViewController else {
+            return
+        }
+        if splitViewController.isFeedListHidden {
+            return
+        }
+
+        splitViewController.view.layoutIfNeeded()
+        view.layoutIfNeeded()
+
+        let storyWidth = topContainerView.bounds.width
+        let minimumStoryWidth: CGFloat = 320
+        if storyWidth > 0 && storyWidth < minimumStoryWidth {
+            splitViewController.preferredDisplayMode = .secondaryOnly
+            splitViewController.show(.secondary)
         }
     }
     
@@ -528,6 +554,8 @@ class DetailViewController: BaseViewController {
         if currentFeedsWidth != feedsWidth {
             feedsWidth = currentFeedsWidth
         }
+
+        collapseFeedListIfNeededForStory()
     }
     
     private func adjustTopConstraint() {

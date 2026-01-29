@@ -61,6 +61,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic, strong) NSString *restoringFeedID;
 @property (nonatomic) NSUInteger deferredLoadStoryCount;
 @property (nonatomic, strong) NSTimer *markStoryReadTimer;
+@property (nonatomic, strong) UIView *notifierContainer;
 
 @end
 
@@ -179,13 +180,24 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.storyTitlesTable];
     
+    self.notifierContainer = [[UIView alloc] init];
+    self.notifierContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    self.notifierContainer.clipsToBounds = YES;
+    self.notifierContainer.backgroundColor = UIColor.clearColor;
+    [self.view addSubview:self.notifierContainer];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifierContainer attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view.safeAreaLayoutGuide attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifierContainer attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifierContainer attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0]];
+    [self.notifierContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.notifierContainer attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:NOTIFIER_HEIGHT]];
+
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."];
-    [self.view addSubview:self.notifier];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:NOTIFIER_HEIGHT]];
-    self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
-    [self.view addConstraint:self.notifier.topOffsetConstraint];
+    [self.notifierContainer addSubview:self.notifier];
+    [self.notifierContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.notifierContainer attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    [self.notifierContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.notifierContainer attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
+    [self.notifierContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:NOTIFIER_HEIGHT]];
+    self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.notifierContainer attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    [self.notifierContainer addConstraint:self.notifier.topOffsetConstraint];
+    [self.view bringSubviewToFront:self.notifierContainer];
     
     [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierShift action:@selector(doMarkAllRead:) discoverabilityTitle:@"Mark All as Read"];
 }
@@ -412,8 +424,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     
     if (self.standardInteractivePopGestureDelegate == nil) {
-        self.standardInteractivePopGestureDelegate = appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.delegate;
+        UINavigationController *navController = self.navigationController ?: appDelegate.feedsNavigationController;
+        self.standardInteractivePopGestureDelegate = navController.interactivePopGestureRecognizer.delegate;
     }
+    [self configureInteractivePopGesture];
     
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self setUserAvatarLayout:orientation];
@@ -522,10 +536,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-    if (appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.delegate != self.standardInteractivePopGestureDelegate) {
-        appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
-    }
+    [self configureInteractivePopGesture];
     
     if (appDelegate.inStoryDetail && self.isPhoneOrCompact) {
         appDelegate.inStoryDetail = NO;
@@ -549,6 +560,28 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [self.notifier setNeedsLayout];
     
     [self testForTryFeed];
+}
+
+- (void)configureInteractivePopGesture {
+    if (!self.isPhoneOrCompact) {
+        return;
+    }
+
+    UINavigationController *navController = self.navigationController ?: appDelegate.feedsNavigationController;
+    if (!navController || !navController.interactivePopGestureRecognizer) {
+        return;
+    }
+
+    if (self.standardInteractivePopGestureDelegate == nil) {
+        self.standardInteractivePopGestureDelegate = navController.interactivePopGestureRecognizer.delegate;
+    }
+
+    navController.interactivePopGestureRecognizer.enabled = YES;
+    navController.interactivePopGestureRecognizer.delegate = self.standardInteractivePopGestureDelegate;
+
+    if (self.storyTitlesTable.panGestureRecognizer) {
+        [self.storyTitlesTable.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
