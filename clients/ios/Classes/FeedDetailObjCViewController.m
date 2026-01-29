@@ -3349,7 +3349,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
     [self applyToolbarButtonTint];
     
-    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);
     UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
     appearance.backgroundColor = [UINavigationBar appearance].barTintColor;
     appearance.titleTextAttributes = [UINavigationBar appearance].titleTextAttributes;
@@ -3404,8 +3404,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)applyToolbarButtonTint {
-    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
-
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);
+    
     self.feedsBarButton.tintColor = toolbarButtonTint;
     self.settingsBarButton.tintColor = toolbarButtonTint;
     self.feedMarkReadButton.tintColor = toolbarButtonTint;

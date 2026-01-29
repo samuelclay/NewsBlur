@@ -909,7 +909,7 @@
 
     [self applyToolbarButtonTint];
     
-    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);
     self.navigationController.navigationBar.tintColor = toolbarButtonTint;
     self.navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x222222, 0x111111);
     self.navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
@@ -946,7 +946,7 @@
 }
 
 - (void)applyToolbarButtonTint {
-    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);
 
     fontSettingsButton.tintColor = toolbarButtonTint;
     originalStoryButton.tintColor = toolbarButtonTint;
