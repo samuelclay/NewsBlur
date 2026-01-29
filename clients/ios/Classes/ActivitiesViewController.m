@@ -84,6 +84,8 @@
     self.toolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.segmentedButton.tintColor = [UINavigationBar appearance].tintColor;
     
+    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
+    
     self.interactionsModule.interactionsTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     self.activitiesModule.activitiesTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
     
