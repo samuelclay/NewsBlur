@@ -3,12 +3,13 @@ package com.newsblur.widget
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.newsblur.R
 import com.newsblur.activity.AllStoriesItemsList
 import com.newsblur.activity.ItemsList
@@ -26,6 +27,16 @@ import javax.inject.Inject
 class WidgetProvider : AppWidgetProvider() {
     @Inject
     lateinit var prefsRepo: PrefsRepo
+
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
+        WidgetUtils.enableWidgetUpdate(context)
+    }
+
+    override fun onDisabled(context: Context) {
+        super.onDisabled(context)
+        WidgetUtils.disableWidgetUpdate(context)
+    }
 
     /**
      * Called when the BroadcastReceiver receives an Intent broadcast.
@@ -77,7 +88,7 @@ class WidgetProvider : AppWidgetProvider() {
                 Intent(context, WidgetRemoteViewsService::class.java).apply {
                     // Add the app widget ID to the intent extras.
                     putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                    data = Uri.parse(toUri(Intent.URI_INTENT_SCHEME))
+                    data = toUri(Intent.URI_INTENT_SCHEME).toUri()
                 }
 
             // Instantiate the RemoteViews object for the app widget layout.
@@ -136,9 +147,14 @@ class WidgetProvider : AppWidgetProvider() {
     }
 
     override fun onDeleted(
-        context: Context?,
-        appWidgetIds: IntArray?,
+        context: Context,
+        appWidgetIds: IntArray,
     ) {
         super.onDeleted(context, appWidgetIds)
+
+        val manager = AppWidgetManager.getInstance(context)
+        val remaining =
+            manager.getAppWidgetIds(ComponentName(context, WidgetProvider::class.java))
+        if (remaining.isEmpty()) prefsRepo.removeWidgetData()
     }
 }
