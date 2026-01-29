@@ -12,6 +12,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         "click .NB-add-site-try-btn": "try_feed",
         "click .NB-add-site-subscribe-btn": "subscribe_to_feed",
         "click .NB-add-site-open-btn": "open_subscribed_feed",
+        "click .NB-add-site-stats-btn": "open_feed_stats",
         "change .NB-add-site-folder-select": "handle_folder_change",
         // YouTube tab events
         "click .NB-add-site-youtube-tab .NB-add-site-tab-search-btn": "perform_youtube_search",
@@ -348,7 +349,12 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     sort_feeds: function (feeds) {
-        var sort_order = NEWSBLUR.assets.preference('add_site_sort_order') || 'subscribers';
+        var sort_order = NEWSBLUR.assets.preference('add_site_sort_order') || 'relevance';
+
+        // Relevance means server order (no sorting)
+        if (sort_order === 'relevance') {
+            return feeds;
+        }
 
         return _.sortBy(feeds, function(feed) {
             if (sort_order === 'subscribers') {
@@ -358,7 +364,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             } else if (sort_order === 'name') {
                 return (feed.feed_title || feed.title || '').toLowerCase();
             }
-            return -(feed.num_subscribers || 0);
+            return 0;
         });
     },
 
@@ -2122,6 +2128,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var self = this;
         stories = stories || [];
 
+        // Check if already subscribed
+        var feed_id = feed.id || feed.feed_id;
+        var subscribed = NEWSBLUR.assets.get_feed(feed_id);
+
         // Get display preferences
         var image_preview = NEWSBLUR.assets.preference('add_site_image_preview') || 'large';
         var content_preview = NEWSBLUR.assets.preference('add_site_content_preview') || 'medium';
@@ -2194,9 +2204,44 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 this.truncate_text(feed.tagline, 150));
         }
 
+        // Build actions based on subscription status
+        var $actions;
+        if (subscribed) {
+            $actions = $.make('div', { className: 'NB-add-site-card-actions NB-add-site-card-actions-subscribed' }, [
+                $.make('div', { className: 'NB-add-site-subscribed-indicator' }, 'Subscribed'),
+                $.make('div', {
+                    className: 'NB-add-site-stats-btn',
+                    'data-feed-id': feed_id
+                }, [
+                    $.make('img', {
+                        src: '/media/embed/icons/nouns/dialog-statistics.svg',
+                        className: 'NB-add-site-stats-icon'
+                    }),
+                    'Stats'
+                ]),
+                $.make('div', {
+                    className: 'NB-add-site-open-btn NB-modal-submit-button NB-modal-submit-green',
+                    'data-feed-id': feed_id
+                }, 'Open')
+            ]);
+        } else {
+            $actions = $.make('div', { className: 'NB-add-site-card-actions' }, [
+                this.make_folder_selector(feed),
+                $.make('div', {
+                    className: 'NB-add-site-try-btn NB-modal-submit-button NB-modal-submit-green',
+                    'data-feed-id': feed_id
+                }, 'Try'),
+                $.make('div', {
+                    className: 'NB-add-site-subscribe-btn NB-modal-submit-button NB-modal-submit-grey',
+                    'data-feed-id': feed_id,
+                    'data-feed-url': feed.feed_address || feed.address
+                }, 'Add')
+            ]);
+        }
+
         return $.make('div', {
-            className: 'NB-add-site-card',
-            'data-feed-id': feed.id || feed.feed_id
+            className: 'NB-add-site-card' + (subscribed ? ' NB-add-site-card-subscribed' : ''),
+            'data-feed-id': feed_id
         }, [
             $.make('div', { className: 'NB-add-site-card-header' }, [
                 $.make('img', {
@@ -2214,18 +2259,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             ]),
             $description,
             $stories_preview,
-            $.make('div', { className: 'NB-add-site-card-actions' }, [
-                this.make_folder_selector(feed),
-                $.make('div', {
-                    className: 'NB-add-site-try-btn NB-modal-submit-button NB-modal-submit-green',
-                    'data-feed-id': feed.id || feed.feed_id
-                }, 'Try'),
-                $.make('div', {
-                    className: 'NB-add-site-subscribe-btn NB-modal-submit-button NB-modal-submit-grey',
-                    'data-feed-id': feed.id || feed.feed_id,
-                    'data-feed-url': feed.feed_address || feed.address
-                }, 'Add')
-            ])
+            $actions
         ].filter(Boolean));
     },
 
@@ -2538,6 +2572,17 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         if (feed_id) {
             NEWSBLUR.reader.open_feed(feed_id);
+        }
+    },
+
+    open_feed_stats: function (e) {
+        var $btn = $(e.currentTarget);
+        var feed_id = $btn.data('feed-id');
+
+        if (feed_id) {
+            NEWSBLUR.assets.load_canonical_feed(feed_id, function () {
+                NEWSBLUR.reader.open_feed_statistics_modal(feed_id);
+            });
         }
     },
 

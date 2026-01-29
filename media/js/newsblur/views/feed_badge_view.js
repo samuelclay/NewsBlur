@@ -66,7 +66,10 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
                 Inflector.pluralize('story', this.model.get('average_stories_per_month')),
                 ' per month'
             ]),
-            (subscribed && $.make('div', { className: 'NB-subscribed' }, "Subscribed")),
+            (subscribed && $.make('div', { className: 'NB-feed-badge-subscribed-actions' }, [
+                $.make('div', { className: 'NB-subscribed-indicator' }, 'Subscribed'),
+                $.make('div', { className: 'NB-badge-action-stats NB-icon-stats' })
+            ])),
             (!subscribed && $.make('div', { className: actions_class }, [
                 $folder_selector,
                 (!this.options.hide_try_button && $.make('div', {
