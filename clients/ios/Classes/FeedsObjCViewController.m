@@ -1546,7 +1546,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         self.feedViewToolbar.tintColor = tintColor;
         self.feedViewToolbar.barTintColor = [UINavigationBar appearance].barTintColor;
     }
-    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);
     self.addBarButton.tintColor = toolbarButtonTint;
     self.settingsBarButton.tintColor = toolbarButtonTint;
 #if TARGET_OS_MACCATALYST

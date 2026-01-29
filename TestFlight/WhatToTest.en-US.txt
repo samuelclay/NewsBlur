@@ -12,6 +12,8 @@ These are the changes in NewsBlur Alpha, the development edition, awaiting futur
 - OS 26 support, including:
     - Modernized menus on Mac and iPad.
     - Simplified the layout options to show the sites beside or over the stories.
+    - When iPad window is resized smaller, the sides is automatically hidden.
+    - When iPad window is very narrow, it uses the iPhone layout.
     - Many more changes.
 - Plus some minor improvements, including:
     - Adjusted grid font sizes to better match the list layout.
