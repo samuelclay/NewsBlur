@@ -153,7 +153,7 @@ class DetailViewController: BaseViewController {
     
     /// Whether or not the views were last set up for compact size class.
     private var wasCompact = false
-    
+
     /// Preference values.
     enum StyleValue {
         static let standard = "standard"
@@ -491,25 +491,36 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func collapseFeedListIfNeededForStory() {
-        guard !isPhone, !isCompact, storyTitlesOnLeft, appDelegate.activeStory != nil else {
+        DispatchQueue.main.async {
+            self.performStoryAutoCollapseIfNeeded()
+        }
+    }
+
+    private func performStoryAutoCollapseIfNeeded() {
+        guard !isPhone, !isCompact, appDelegate.activeStory != nil else {
             return
         }
         guard let splitViewController = splitViewController as? SplitViewController else {
             return
         }
-        if splitViewController.isFeedListHidden {
+        if splitViewController.displayMode == .secondaryOnly {
+            return
+        }
+        if splitViewController.displayMode != .oneBesideSecondary {
             return
         }
 
         splitViewController.view.layoutIfNeeded()
         view.layoutIfNeeded()
 
-        let storyWidth = topContainerView.bounds.width
-        let minimumStoryWidth: CGFloat = 320
-        if storyWidth > 0 && storyWidth < minimumStoryWidth {
-            splitViewController.preferredDisplayMode = .secondaryOnly
-            splitViewController.show(.secondary)
+        if behavior == .tile {
+            return
         }
+
+        UIView.animate(withDuration: 0.2) {
+            splitViewController.preferredDisplayMode = .oneOverSecondary
+        }
+        splitViewController.show(.secondary)
     }
     
     override func viewDidLoad() {
@@ -544,6 +555,10 @@ class DetailViewController: BaseViewController {
         coordinator.animate { context in
             self.adjustTopConstraint()
         }
+
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.collapseFeedListIfNeededForStory()
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -555,7 +570,7 @@ class DetailViewController: BaseViewController {
             feedsWidth = currentFeedsWidth
         }
 
-        collapseFeedListIfNeededForStory()
+        performStoryAutoCollapseIfNeeded()
     }
     
     private func adjustTopConstraint() {
