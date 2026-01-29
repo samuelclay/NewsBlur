@@ -1182,7 +1182,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $.make('div', { className: 'NB-add-site-section-content' })
         ]);
 
-        var $grid = $.make('div', { className: 'NB-add-site-results NB-add-site-results-' + this.view_mode });
+        var $grid = this.make_results_container();
         _.each(channels, function(channel) {
             $grid.append(self.render_youtube_card(channel));
         });
@@ -1298,7 +1298,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $.make('div', { className: 'NB-add-site-section-content' })
         ]);
 
-        var $grid = $.make('div', { className: 'NB-add-site-results NB-add-site-results-' + this.view_mode });
+        var $grid = self.make_results_container();
         _.each(state.popular_subreddits, function(subreddit) {
             $grid.append(self.render_reddit_card(subreddit));
         });
@@ -1505,7 +1505,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 $.make('div', { className: 'NB-add-site-section-content' })
             ]);
 
-            var $grid = $.make('div', { className: 'NB-add-site-results NB-add-site-results-' + self.view_mode });
+            var $grid = self.make_results_container();
             _.each(newsletters, function(newsletter) {
                 $grid.append(self.render_popular_newsletter_card(newsletter));
             });
@@ -1733,7 +1733,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $.make('div', { className: 'NB-add-site-section-content' })
         ]);
 
-        var $grid = $.make('div', { className: 'NB-add-site-results NB-add-site-results-' + self.view_mode });
+        var $grid = self.make_results_container();
         _.each(podcasts, function(podcast) {
             $grid.append(self.render_podcast_card(podcast));
         });
@@ -2197,7 +2197,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }
 
         // Render feed cards in a grid
-        var $grid = $.make('div', { className: 'NB-add-site-results NB-add-site-results-' + self.view_mode });
+        var $grid = self.make_results_container();
         _.each(feeds, function(feed) {
             $grid.append(self.render_feed_card(feed));
         });
@@ -2452,9 +2452,12 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     make_results_container: function () {
-        return $.make('div', {
-            className: 'NB-add-site-results NB-add-site-results-' + this.view_mode
-        });
+        var columns = NEWSBLUR.assets.preference('add_site_grid_columns') || 'auto';
+        var class_name = 'NB-add-site-results NB-add-site-results-' + this.view_mode;
+        if (columns !== 'auto') {
+            class_name += ' NB-add-site-columns-' + columns;
+        }
+        return $.make('div', { className: class_name });
     },
 
     make_error_message: function (message) {
