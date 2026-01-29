@@ -1198,7 +1198,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             title: channel.title,
             meta: meta_parts.filter(Boolean).join(' \u2022 '),
             description: channel.description,
-            feed_url: channel.feed_url
+            feed_url: channel.feed_url,
+            feed_id: channel.feed_id || channel.id,
+            last_story_date: channel.last_story_date,
+            show_empty_freshness: true
         });
     },
 
@@ -1332,7 +1335,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             title: 'r/' + subreddit.name,
             meta: subscriber_text,
             description: subreddit.description,
-            feed_url: subreddit.feed_url
+            feed_url: subreddit.feed_url,
+            feed_id: subreddit.feed_id || subreddit.id,
+            last_story_date: subreddit.last_story_date,
+            show_empty_freshness: true
         });
     },
 
@@ -1515,61 +1521,46 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     render_popular_newsletter_card: function (newsletter) {
         var platform_label = this.NEWSLETTER_PLATFORMS[newsletter.platform] || 'Newsletter';
 
-        return $.make('div', { className: 'NB-add-site-card NB-add-site-newsletter-card' }, [
-            $.make('div', { className: 'NB-add-site-card-header' }, [
-                $.make('div', {
-                    className: 'NB-add-site-card-icon NB-add-site-platform-icon NB-platform-' + newsletter.platform
-                }, [
-                    $.make('img', { src: newsletter.icon || '/media/img/reader/email_icon.png' })
-                ]),
-                $.make('div', { className: 'NB-add-site-card-info' }, [
-                    $.make('div', { className: 'NB-add-site-card-title' }, newsletter.title),
-                    $.make('div', { className: 'NB-add-site-card-meta' }, [
-                        $.make('span', { className: 'NB-add-site-platform-badge' }, platform_label),
-                        newsletter.subscribers ? ' \u2022 ' + newsletter.subscribers + ' subscribers' : ''
-                    ])
-                ])
-            ]),
-            $.make('div', { className: 'NB-add-site-card-desc' }, newsletter.description),
-            $.make('div', { className: 'NB-add-site-card-actions' }, [
-                this.make_folder_selector(),
-                $.make('div', {
-                    className: 'NB-add-site-card-subscribe NB-add-site-subscribe-btn',
-                    'data-feed-url': newsletter.feed_url
-                }, 'Subscribe')
-            ])
-        ].filter(Boolean));
+        var meta_parts = [platform_label];
+        if (newsletter.subscribers) {
+            meta_parts.push(newsletter.subscribers + ' subscribers');
+        }
+
+        return this.make_source_card({
+            card_class: 'NB-add-site-newsletter-card',
+            icon: newsletter.icon || '/media/img/reader/email_icon.png',
+            fallback_icon: '/media/img/reader/email_icon.png',
+            title: newsletter.title,
+            meta: meta_parts.join(' \u2022 '),
+            description: newsletter.description,
+            feed_url: newsletter.feed_url,
+            feed_id: newsletter.feed_id || newsletter.id,
+            last_story_date: newsletter.last_story_date,
+            show_empty_freshness: true
+        });
     },
 
     render_newsletter_card: function (newsletter) {
         var platform_label = this.NEWSLETTER_PLATFORMS[newsletter.platform] || 'Newsletter';
         var title = newsletter.title || this.extract_domain(newsletter.original_url);
 
-        return $.make('div', { className: 'NB-add-site-card NB-add-site-newsletter-card' }, [
-            $.make('div', { className: 'NB-add-site-card-header' }, [
-                $.make('div', {
-                    className: 'NB-add-site-card-icon NB-add-site-platform-icon NB-platform-' + newsletter.platform
-                }, [
-                    $.make('img', { src: newsletter.icon || '/media/img/reader/email_icon.png' })
-                ]),
-                $.make('div', { className: 'NB-add-site-card-info' }, [
-                    $.make('div', { className: 'NB-add-site-card-title' }, title),
-                    $.make('div', { className: 'NB-add-site-card-meta' }, [
-                        $.make('span', { className: 'NB-add-site-platform-badge' }, platform_label)
-                    ])
-                ])
-            ]),
-            $.make('div', { className: 'NB-add-site-card-desc' },
-                'Subscribe to ' + title + ' via RSS'),
-            $.make('div', { className: 'NB-add-site-card-url' }, newsletter.feed_url),
-            $.make('div', { className: 'NB-add-site-card-actions' }, [
-                this.make_folder_selector(),
-                $.make('div', {
-                    className: 'NB-add-site-card-subscribe NB-add-site-subscribe-btn',
-                    'data-feed-url': newsletter.feed_url
-                }, 'Subscribe')
-            ])
-        ].filter(Boolean));
+        var meta_parts = [platform_label];
+        if (newsletter.subscribers) {
+            meta_parts.push(newsletter.subscribers + ' subscribers');
+        }
+
+        return this.make_source_card({
+            card_class: 'NB-add-site-newsletter-card',
+            icon: newsletter.icon || '/media/img/reader/email_icon.png',
+            fallback_icon: '/media/img/reader/email_icon.png',
+            title: title,
+            meta: meta_parts.join(' \u2022 '),
+            description: newsletter.description || ('Subscribe to ' + title + ' via RSS'),
+            feed_url: newsletter.feed_url,
+            feed_id: newsletter.feed_id || newsletter.id,
+            last_story_date: newsletter.last_story_date,
+            show_empty_freshness: true
+        });
     },
 
     extract_domain: function (url) {
@@ -1742,36 +1733,20 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (podcast.artist) meta_parts.push(podcast.artist);
         if (podcast.track_count) meta_parts.push(podcast.track_count + ' episodes');
 
-        var genre_element = null;
-        if (podcast.genre) {
-            genre_element = $.make('div', { className: 'NB-add-site-card-genre' }, [
-                $.make('span', { className: 'NB-add-site-genre-badge' }, podcast.genre)
-            ]);
-        }
+        var description = podcast.description || podcast.genre || '';
 
-        return $.make('div', { className: 'NB-add-site-card NB-add-site-podcast-card' }, [
-            $.make('div', { className: 'NB-add-site-card-header' }, [
-                $.make('img', {
-                    src: podcast.artwork || '/media/img/icons/lucide/podcast.svg',
-                    className: 'NB-add-site-card-icon NB-add-site-podcast-artwork',
-                    onerror: "this.src='/media/img/icons/lucide/podcast.svg'"
-                }),
-                $.make('div', { className: 'NB-add-site-card-info' }, [
-                    $.make('div', { className: 'NB-add-site-card-title' }, podcast.name),
-                    $.make('div', { className: 'NB-add-site-card-meta' },
-                        meta_parts.join(' \u2022 ')
-                    )
-                ])
-            ]),
-            genre_element,
-            $.make('div', { className: 'NB-add-site-card-actions' }, [
-                this.make_folder_selector(),
-                $.make('div', {
-                    className: 'NB-add-site-card-subscribe NB-add-site-subscribe-btn',
-                    'data-feed-url': podcast.feed_url
-                }, 'Subscribe')
-            ])
-        ].filter(Boolean));
+        return this.make_source_card({
+            card_class: 'NB-add-site-podcast-card',
+            icon: podcast.artwork || '/media/img/icons/lucide/podcast.svg',
+            fallback_icon: '/media/img/icons/lucide/podcast.svg',
+            title: podcast.name,
+            meta: meta_parts.join(' \u2022 '),
+            description: description,
+            feed_url: podcast.feed_url,
+            feed_id: podcast.feed_id || podcast.id,
+            last_story_date: podcast.last_story_date,
+            show_empty_freshness: true
+        });
     },
 
     // ===================
@@ -2416,11 +2391,53 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             icon_attrs.onerror = "this.src='" + config.fallback_icon + "'";
         }
 
+        var show_empty = config.show_empty_freshness !== undefined ? config.show_empty_freshness : true;
         var $freshness = this.make_freshness_indicator(config.last_story_date, {
-            show_empty: config.show_empty_freshness
+            show_empty: show_empty
         });
 
-        return $.make('div', { className: 'NB-add-site-card ' + config.card_class }, [
+        // Check if already subscribed
+        var feed_id = config.feed_id;
+        var subscribed = feed_id && NEWSBLUR.assets.get_feed(feed_id);
+
+        var $actions;
+        if (subscribed) {
+            $actions = $.make('div', { className: 'NB-add-site-card-actions NB-add-site-card-actions-subscribed' }, [
+                $.make('div', { className: 'NB-add-site-subscribed-indicator' }, 'Subscribed'),
+                $.make('div', {
+                    className: 'NB-add-site-stats-btn',
+                    'data-feed-id': feed_id
+                }, [
+                    $.make('img', {
+                        src: '/media/embed/icons/nouns/dialog-statistics.svg',
+                        className: 'NB-add-site-stats-icon'
+                    }),
+                    'Stats'
+                ]),
+                $.make('div', {
+                    className: 'NB-add-site-open-btn NB-modal-submit-button NB-modal-submit-green',
+                    'data-feed-id': feed_id
+                }, 'Open')
+            ]);
+        } else {
+            $actions = $.make('div', { className: 'NB-add-site-card-actions' }, [
+                $.make('div', {
+                    className: 'NB-add-site-try-btn NB-modal-submit-button NB-modal-submit-green',
+                    'data-feed-id': feed_id
+                }, 'Try'),
+                this.make_folder_selector(),
+                $.make('div', {
+                    className: 'NB-add-site-subscribe-btn NB-modal-submit-button NB-modal-submit-grey',
+                    'data-feed-id': feed_id,
+                    'data-feed-url': config.feed_url
+                }, 'Add')
+            ]);
+        }
+
+        return $.make('div', {
+            className: 'NB-add-site-card ' + config.card_class + (subscribed ? ' NB-add-site-card-subscribed' : ''),
+            'data-feed-id': feed_id
+        }, [
             $.make('div', { className: 'NB-add-site-card-header' }, [
                 $.make('img', icon_attrs),
                 $.make('div', { className: 'NB-add-site-card-info' }, [
@@ -2430,13 +2447,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 ].filter(Boolean))
             ]),
             description_el,
-            $.make('div', { className: 'NB-add-site-card-actions' }, [
-                this.make_folder_selector(),
-                $.make('div', {
-                    className: 'NB-add-site-card-subscribe NB-add-site-subscribe-btn',
-                    'data-feed-url': config.feed_url
-                }, 'Subscribe')
-            ])
+            $actions
         ].filter(Boolean));
     },
 
