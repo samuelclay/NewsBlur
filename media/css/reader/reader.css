@@ -10692,6 +10692,11 @@ h5.NB-classifier-section-header {
     background-size: 36px;
 }
 
+.NB-module-premium-archive-icon.NB-9 {
+    background: transparent url('/media/embed/icons/nouns/mark-read.svg') no-repeat 0 0;
+    background-size: 36px;
+}
+
 .NB-module-premium-reason {
     padding: 0 24px;
 }
@@ -14354,6 +14359,149 @@ h5.NB-classifier-section-header {
     padding: 4px 12px;
 }
 
+/* ============================== */
+/* = Auto-Mark Read Settings    = */
+/* ============================== */
+
+/* Header with premium badge */
+.NB-exception-option-auto-mark-read h5 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.NB-exception-option-auto-mark-read .NB-exception-option-status {
+    opacity: 0;
+    color: #4A9937;
+    font-size: 11px;
+    font-weight: bold;
+    order: 999;
+    margin-left: auto;
+}
+
+/* Upgrade notice badge */
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-upgrade-notice {
+    font-size: 11px;
+    text-decoration: none;
+    color: #707070;
+    padding: 3px 8px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-upgrade-notice:hover {
+    background-color: rgba(74, 144, 217, 0.1);
+    color: #4a90d9;
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-upgrade-notice .NB-archive-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-upgrade-notice.NB-flash {
+    animation: flash-upgrade 0.6s ease;
+    background-color: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
+}
+
+/* Segmented control - uses site-wide styles from controls.css */
+.NB-exception-option-auto-mark-read .segmented-control.NB-menu-manage-auto-mark-read {
+    margin: 0 0 8px 0;
+}
+
+.NB-exception-option-auto-mark-read .segmented-control.NB-menu-manage-auto-mark-read li {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.NB-exception-option-auto-mark-read .segmented-control.NB-menu-manage-auto-mark-read.NB-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Slider container */
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider-container {
+    margin: 4px 0 4px 0;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Slider */
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider {
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    margin: 4px 0;
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #4a90d9;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    margin-top: 0;
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #4a90d9;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Slider value text */
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider-value {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.NB-exception-option-auto-mark-read .NB-auto-mark-read-slider-value b {
+    color: #4a90d9;
+    font-weight: 600;
+}
+
 .NB-modal-statistics .NB-statistics-classifiers {
     border: 1px solid #e6e6e6;
     clear: both;
@@ -17316,45 +17464,57 @@ h5.NB-classifier-section-header {
 }
 
 .NB-premium-tier-features-archive li.NB-3 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/mark-read.svg');
+    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
+    /* cyan */
+}
+
+.NB-premium-tier-features-archive li.NB-4 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-filing-cabinet-100.png');
     filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);
     /* brown-orange */
 }
 
-.NB-premium-tier-features-archive li.NB-4 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-5 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-quadcopter-100.png');
     filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
     /* blue */
 }
 
-.NB-premium-tier-features-archive li.NB-5 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-6 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/train.svg');
     filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
     /* blue */
 }
 
-.NB-premium-tier-features-archive li.NB-6 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-7 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/direction_black.svg');
     filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);
     /* violet */
 }
 
-.NB-premium-tier-features-archive li.NB-7 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-8 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-rss-100.png');
     filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%);
     /* orange */
 }
 
-.NB-premium-tier-features-archive li.NB-8 .NB-premium-bullet-image {
-    background-image: url('/media/embed/icons/icons8/icons8-calendar-100.png');
-    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
-    /* cyan */
+.NB-premium-tier-features-archive li.NB-9 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/history.svg');
+    filter: invert(45%) sepia(90%) saturate(1500%) hue-rotate(330deg) brightness(95%) contrast(95%);
+    /* pink/magenta */
 }
 
-.NB-premium-tier-features-archive li.NB-9 .NB-premium-bullet-image {
+.NB-premium-tier-features-archive li.NB-10 .NB-premium-bullet-image {
     background-image: url('/media/img/icons/nouns/prompt.svg');
     filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);
     /* purple */
+}
+
+.NB-premium-tier-features-archive li.NB-11 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/icons8/icons8-calendar-100.png');
+    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
+    /* cyan */
 }
 
 /* Pro tier icons with individual vivid colors */
@@ -18303,27 +18463,138 @@ h5.NB-classifier-section-header {
     box-shadow: 2px 2px 0 #D0D0D0;
 }
 
-.NB-modal-preferences .NB-preference-daysofunread .NB-tangle-daysofunread-control {
-    margin-top: 4px;
-    margin-left: 32px;
-    width: 300px;
+/* Days of Unread Segmented Control */
+.NB-modal-preferences .NB-preference-daysofunread .NB-preference-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-.NB-modal-preferences .NB-preference-daysofunread .NB-preference-options label {
-    float: none;
+.NB-modal-preferences .NB-preference-daysofunread .NB-preference-daysofunread-control {
+    display: flex;
+    margin: 0;
+    width: 100%;
 }
 
-.NB-modal-preferences .NB-preference-archive-notice {
-    margin-top: 8px;
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-option {
+    padding: 6px 16px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-preference-daysofunread-control.NB-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Days of Unread Slider container */
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider-container {
+    margin: 0;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Days of Unread Slider */
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider {
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    margin: 4px 0;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #4a90d9;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    margin-top: 0;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #4a90d9;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Days of Unread Slider value text */
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider-value {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-slider-value b {
+    color: #4a90d9;
+    font-weight: 600;
+}
+
+/* Days of Unread Upgrade notice */
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice {
     font-size: 11px;
-    color: #606060;
-    font-style: italic;
+    text-decoration: none;
+    color: #707070;
+    padding: 3px 8px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    display: inline-block;
+    margin-top: 0;
 }
 
-.NB-modal-preferences .NB-preference-archive-notice .NB-premium-link {
-    color: #5090C0;
-    font-style: normal;
-    text-decoration: underline;
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice:hover {
+    background-color: rgba(74, 144, 217, 0.1);
+    color: #4a90d9;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice .NB-archive-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.NB-modal-preferences .NB-preference-daysofunread .NB-daysofunread-upgrade-notice.NB-flash {
+    animation: flash-upgrade 0.6s ease;
+    background-color: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
 }
 
 .NB-modal-preferences .NB-preference-readstorydelay .NB-tangle-readstorydelay,
@@ -20068,7 +20339,6 @@ h5.NB-classifier-section-header {
     float: right;
     margin: 12px 0 0;
     position: relative;
-    bottom: auto;
 }
 
 .NB-modal-exception.NB-modal-feed-settings .NB-modal-feed-heading {
@@ -22136,6 +22406,221 @@ h5.NB-classifier-section-header {
     height: 12px;
     display: inline-block;
     margin: 0px 0 -2px 0;
+}
+
+.NB-feedbar-auto-mark-read-icon {
+    background: transparent url("/media/embed/icons/nouns/calendar.svg") no-repeat center center;
+    background-size: 12px;
+    filter: hue-rotate(180deg) saturate(2);
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin: 0px 0 -2px 0;
+}
+
+.NB-exception-option-auto-mark-read.NB-highlighted {
+    background-color: rgba(255, 200, 0, 0.3);
+    transition: background-color 0.3s ease;
+}
+
+/* Auto Mark as Read Popover Section */
+.NB-filter-popover .NB-auto-mark-read-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.NB-filter-popover .NB-auto-mark-read-title-row .NB-popover-section-title {
+    margin: 0;
+    margin-right: auto;
+}
+
+.NB-filter-popover .NB-auto-mark-read-title-row .NB-filter-popover-auto-mark-read-icon {
+    width: 18px;
+    height: 18px;
+    background: transparent url("/media/embed/icons/nouns/calendar.svg") no-repeat center center;
+    background-size: 14px;
+    filter: hue-rotate(180deg) saturate(2);
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+}
+
+.NB-filter-popover .NB-auto-mark-read-title-row .NB-filter-popover-auto-mark-read-icon:hover {
+    opacity: 1;
+}
+
+.NB-filter-popover .segmented-control.NB-menu-manage-auto-mark-read {
+    margin-left: 0;
+}
+
+.NB-filter-popover .segmented-control.NB-menu-manage-auto-mark-read li {
+    flex-grow: 1;
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider-container {
+    margin: 4px 0 4px 0;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider {
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #ddd;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    margin: 4px 0;
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #4a90d9;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    margin-top: 0;
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #4a90d9;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider-value {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.NB-filter-popover .NB-auto-mark-read-slider-value b {
+    color: #4a90d9;
+    font-weight: 600;
+}
+
+/* Upgrade notice for non-archive users */
+.NB-filter-popover .NB-auto-mark-read-upgrade-notice {
+    font-size: 11px;
+    text-decoration: none;
+    color: #707070;
+    padding: 3px 8px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.NB-filter-popover .NB-auto-mark-read-upgrade-notice:hover {
+    background-color: rgba(74, 144, 217, 0.1);
+    color: #4a90d9;
+}
+
+.NB-filter-popover .NB-auto-mark-read-upgrade-notice .NB-archive-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.NB-filter-popover .NB-auto-mark-read-upgrade-notice.NB-flash {
+    animation: flash-upgrade 0.6s ease;
+    background-color: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
+}
+
+@keyframes flash-upgrade {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    25% {
+        transform: scale(1.05);
+    }
+
+    50% {
+        transform: scale(1);
+    }
+
+    75% {
+        transform: scale(1.03);
+    }
+}
+
+/* Date filter title row */
+.NB-filter-popover .NB-date-filter-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.NB-filter-popover .NB-date-filter-title-row .NB-popover-section-title {
+    margin: 0;
+    margin-right: auto;
+}
+
+/* Date filter upgrade notice */
+.NB-filter-popover .NB-date-filter-upgrade-notice {
+    font-size: 11px;
+    text-decoration: none;
+    color: #707070;
+    padding: 3px 8px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.NB-filter-popover .NB-date-filter-upgrade-notice:hover {
+    background-color: rgba(74, 144, 217, 0.1);
+    color: #4a90d9;
+}
+
+.NB-filter-popover .NB-date-filter-upgrade-notice .NB-archive-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.NB-filter-popover .NB-date-filter-upgrade-notice.NB-flash {
+    animation: flash-upgrade 0.6s ease;
+    background-color: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
 }
 
 /* =========== */

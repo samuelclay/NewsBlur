@@ -12,17 +12,17 @@ groups:
         data:
           - refId: A
             relativeTimeRange:
-              from: 900
+              from: 120
               to: 0
             datasourceUid: U1-fPO3Mk
             model:
-              expr: 'consul_service_state < 9'
+              expr: 'consul_service_state'
               refId: A
               intervalMs: 1000
               maxDataPoints: 43200
           - refId: B
             relativeTimeRange:
-              from: 900
+              from: 120
               to: 0
             datasourceUid: __expr__
             model:
@@ -34,7 +34,7 @@ groups:
                 mode: ""
           - refId: C
             relativeTimeRange:
-              from: 900
+              from: 120
               to: 0
             datasourceUid: __expr__
             model:
@@ -44,8 +44,8 @@ groups:
               conditions:
                 - evaluator:
                     params:
-                      - 0
-                    type: gt
+                      - 9
+                    type: lt
                   operator:
                     type: and
                   query:
@@ -55,7 +55,7 @@ groups:
                     params: []
                     type: last
                   type: query
-        noDataState: NoData
+        noDataState: OK
         execErrState: Alerting
         for: 15m
         annotations:

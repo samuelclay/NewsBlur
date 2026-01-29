@@ -44,6 +44,8 @@ urlpatterns = [
     ),
     re_path(r"^unread_story_hashes", views.unread_story_hashes, name="unread-story-hashes"),
     re_path(r"^starred_counts", views.starred_counts, name="starred-counts"),
+    re_path(r"^rename_starred_tag", views.rename_starred_tag, name="rename-starred-tag"),
+    re_path(r"^delete_starred_tag", views.delete_starred_tag, name="delete-starred-tag"),
     re_path(r"^mark_all_as_read", views.mark_all_as_read, name="mark-all-as-read"),
     re_path(r"^mark_story_as_read", views.mark_story_as_read, name="mark-story-as-read"),
     re_path(r"^mark_story_hashes_as_read", views.mark_story_hashes_as_read, name="mark-story-hashes-as-read"),
@@ -95,4 +97,11 @@ urlpatterns = [
     re_path(r"^remove_dashboard_river", views.remove_dashboard_river, name="remove-dashboard-river"),
     re_path(r"^trending_feeds", views.trending_feeds, name="trending-feeds"),
     re_path(r"^print", views.print_story, name="print-story"),
+    re_path(r"^save_feed_auto_mark_read", views.save_feed_auto_mark_read, name="save-feed-auto-mark-read"),
+    re_path(
+        r"^save_folder_auto_mark_read", views.save_folder_auto_mark_read, name="save-folder-auto-mark-read"
+    ),
+    re_path(
+        r"^get_auto_mark_read_settings", views.get_auto_mark_read_settings, name="get-auto-mark-read-settings"
+    ),
 ]
