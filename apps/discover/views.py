@@ -172,7 +172,7 @@ def discover_feeds(request, feed_id=None):
     feeds = Feed.objects.filter(pk__in=similar_feed_ids)
     discover_feeds = defaultdict(dict)
     for feed in feeds:
-        discover_feeds[feed.pk]["feed"] = feed.canonical(include_favicon=False)
+        discover_feeds[feed.pk]["feed"] = feed.canonical(include_favicon=False, full=True)
         discover_feeds[feed.pk]["stories"] = feed.get_stories(limit=5)
 
     logging.user(request, "~FCDiscovering similar feeds, page %s: ~SB%s" % (page, similar_feed_ids))
@@ -216,6 +216,7 @@ def trending_sites(request):
     """
     Returns trending feeds with their recent stories for the Trending Sites feature.
     Uses subscription velocity from RTrendingSubscription to determine trending feeds.
+    Falls back to popular feeds by subscriber count when no trending data exists.
     """
     page = int(request.GET.get("page", 1))
     days = int(request.GET.get("days", 7))
@@ -238,6 +239,18 @@ def trending_sites(request):
     # Slice for pagination
     trending_feed_ids = [int(feed_id) for feed_id, score in trending_data[offset : offset + limit]]
 
+    # Fallback: if no trending data, return popular feeds by subscriber count
+    use_fallback = False
+    if not trending_feed_ids:
+        use_fallback = True
+        popular_feeds = Feed.objects.filter(
+            num_subscribers__gte=10,
+            is_push=False,
+        ).order_by("-num_subscribers")[offset : offset + limit + 1]
+        trending_feed_ids = [f.pk for f in popular_feeds[:limit]]
+        # Create fake trending_data for score lookup
+        trending_data = [(fid, 1) for fid in trending_feed_ids]
+
     if not trending_feed_ids:
         return {"trending_feeds": {}, "has_more": False}
 
@@ -250,17 +263,23 @@ def trending_sites(request):
     for feed_id in trending_feed_ids:
         if feed_id in feeds_dict:
             feed = feeds_dict[feed_id]
-            # Find score for this feed
-            score = next((s for fid, s in trending_data if int(fid) == feed_id), 0)
+            # Find score for this feed (use subscriber count for fallback)
+            if use_fallback:
+                score = feed.num_subscribers
+            else:
+                score = next((s for fid, s in trending_data if int(fid) == feed_id), 0)
             trending_feeds[feed_id] = {
-                "feed": feed.canonical(include_favicon=False),
+                "feed": feed.canonical(include_favicon=False, full=True),
                 "stories": feed.get_stories(limit=5),
                 "trending_score": score,
             }
 
-    has_more = len(trending_data) > offset + limit
+    if use_fallback:
+        has_more = len(trending_feed_ids) > limit
+    else:
+        has_more = len(trending_data) > offset + limit
 
-    logging.user(request, "~FCTrending sites (page %s, %sd): ~SB%s feeds" % (page, days, len(trending_feeds)))
+    logging.user(request, "~FCTrending sites (page %s, %sd): ~SB%s feeds%s" % (page, days, len(trending_feeds), " (fallback)" if use_fallback else ""))
     return {"trending_feeds": trending_feeds, "has_more": has_more}
 
 
@@ -764,7 +783,7 @@ def popular_channels(request):
     channels = {}
     for feed in feeds:
         channels[feed.pk] = {
-            "feed": feed.canonical(include_favicon=False),
+            "feed": feed.canonical(include_favicon=False, full=True),
             "stories": feed.get_stories(limit=5),
         }
 

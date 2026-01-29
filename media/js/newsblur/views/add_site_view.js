@@ -5,9 +5,11 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     events: {
         "click .NB-add-site-tab": "switch_tab",
         "click .NB-add-site-view-toggle": "toggle_view_mode",
+        "click .NB-add-site-style-button": "open_style_popover",
         "input .NB-add-site-search-input": "handle_search_input",
         "keypress .NB-add-site-search-input": "handle_search_keypress",
         "click .NB-add-site-search-clear": "clear_search",
+        "click .NB-add-site-try-btn": "try_feed",
         "click .NB-add-site-subscribe-btn": "subscribe_to_feed",
         "click .NB-add-site-open-btn": "open_subscribed_feed",
         "change .NB-add-site-folder-select": "handle_folder_change",
@@ -297,9 +299,18 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         ]);
                     })
                 ),
-                $.make('div', { className: 'NB-add-site-view-toggles' }, [
-                    this.make_view_toggle('grid', 'Grid view', '/media/img/icons/nouns/layout-grid.svg'),
-                    this.make_view_toggle('list', 'List view', '/media/img/icons/nouns/layout-list.svg')
+                $.make('div', { className: 'NB-add-site-controls' }, [
+                    $.make('div', { className: 'NB-add-site-view-toggles' }, [
+                        this.make_view_toggle('grid', 'Grid view', '/media/img/icons/nouns/layout-grid.svg'),
+                        this.make_view_toggle('list', 'List view', '/media/img/icons/nouns/layout-list.svg')
+                    ]),
+                    $.make('div', {
+                        className: 'NB-add-site-style-button',
+                        title: 'Display options'
+                    }, [
+                        $.make('img', { src: '/media/img/icons/nouns/settings.svg' }),
+                        $.make('span', { className: 'NB-add-site-style-label' }, 'Style')
+                    ])
                 ])
             ])
         ]);
@@ -315,6 +326,40 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $.make('img', { src: icon }),
             $.make('span', { className: 'NB-add-site-view-toggle-label' }, label)
         ]);
+    },
+
+    get_stories_limit: function () {
+        var limit = NEWSBLUR.assets.preference('add_site_stories_count');
+        if (limit === undefined || limit === null) {
+            return 3; // Default
+        }
+        return parseInt(limit, 10);
+    },
+
+    limit_stories: function (stories_collection) {
+        var limit = this.get_stories_limit();
+        if (limit === 0) {
+            return new Backbone.Collection([]);
+        }
+        if (stories_collection && stories_collection.models) {
+            return new Backbone.Collection(stories_collection.models.slice(0, limit));
+        }
+        return stories_collection;
+    },
+
+    sort_feeds: function (feeds) {
+        var sort_order = NEWSBLUR.assets.preference('add_site_sort_order') || 'subscribers';
+
+        return _.sortBy(feeds, function(feed) {
+            if (sort_order === 'subscribers') {
+                return -(feed.num_subscribers || 0);
+            } else if (sort_order === 'stories') {
+                return -(feed.average_stories_per_month || 0);
+            } else if (sort_order === 'name') {
+                return (feed.feed_title || feed.title || '').toLowerCase();
+            }
+            return -(feed.num_subscribers || 0);
+        });
     },
 
     render_active_tab: function () {
@@ -365,12 +410,16 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 );
             }
         } else {
-            // List view with stories
-            if (this.view_mode === 'list' && state.results.length > 0 && state.results[0].stories) {
-                var pane_anchor = NEWSBLUR.assets.preference('story_pane_anchor');
-                var $list = $.make('div', { className: 'NB-trending-feed-badges NB-story-pane-' + pane_anchor });
+            // Sort results based on user preference before rendering
+            var sorted_results = this.sort_feeds(state.results);
 
-                _.each(state.results, function(feed_data) {
+            // List view with stories
+            if (this.view_mode === 'list' && sorted_results.length > 0 && sorted_results[0].stories) {
+                var pane_anchor = NEWSBLUR.assets.preference('story_pane_anchor');
+                var image_preview = NEWSBLUR.assets.preference('image_preview') || 'large-right';
+                var $list = $.make('div', { className: 'NB-trending-feed-badges NB-story-pane-' + pane_anchor + ' NB-image-preview-' + image_preview });
+
+                _.each(sorted_results, function(feed_data) {
                     // Create a TrendingFeed-like model for consistency
                     var feed_model = new NEWSBLUR.Models.TrendingFeed({
                         id: feed_data.id,
@@ -378,25 +427,32 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         stories: feed_data.stories || []
                     });
 
-                    var $story_titles = $.make('div', { className: 'NB-story-titles' });
-                    var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
-                        el: $story_titles,
-                        collection: feed_model.get("stories"),
-                        $story_titles: $story_titles,
-                        override_layout: 'split',
-                        pane_anchor: pane_anchor,
-                        on_search_feed: feed_model,
-                        in_add_site_view: this
-                    });
-                    var $badge = $.make('div', { className: 'NB-trending-feed-badge' }, [
+                    var stories_limit = this.get_stories_limit();
+                    var $badge_content = [
                         new NEWSBLUR.Views.FeedBadge({
                             model: feed_model.get("feed"),
                             show_folders: true,
                             in_add_site_view: this,
                             load_feed_after_add: false
-                        }),
-                        story_titles_view.render().el
-                    ]);
+                        })
+                    ];
+
+                    if (stories_limit > 0) {
+                        var $story_titles = $.make('div', { className: 'NB-story-titles' });
+                        var limited_stories = this.limit_stories(feed_model.get("stories"));
+                        var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
+                            el: $story_titles,
+                            collection: limited_stories,
+                            $story_titles: $story_titles,
+                            override_layout: 'split',
+                            pane_anchor: pane_anchor,
+                            on_search_feed: feed_model,
+                            in_add_site_view: this
+                        });
+                        $badge_content.push(story_titles_view.render().el);
+                    }
+
+                    var $badge = $.make('div', { className: 'NB-trending-feed-badge' }, $badge_content);
                     $list.append($badge);
                 }, this);
 
@@ -407,7 +463,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             } else {
                 // Grid view - render feed cards
                 var $results = this.make_results_container();
-                _.each(state.results, function(feed) {
+                _.each(sorted_results, function(feed) {
                     $results.append(this.render_feed_card(feed));
                 }, this);
 
@@ -510,43 +566,47 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var pane_anchor = NEWSBLUR.assets.preference('story_pane_anchor');
 
         if (this.view_mode === 'grid') {
-            // Grid view: Show feed badges only (like cards)
-            var $grid = $.make('div', { className: 'NB-trending-feed-grid' });
+            // Grid view: Use same card layout as search results (no story previews)
+            var $grid = this.make_results_container();
             state.trending_feeds_collection.each(function (trending_feed) {
-                var $badge = $.make('div', { className: 'NB-trending-feed-card' });
-                new NEWSBLUR.Views.FeedBadge({
-                    el: $badge,
-                    model: trending_feed.get("feed"),
-                    show_folders: true,
-                    in_add_site_view: self,
-                    load_feed_after_add: false
-                });
-                $grid.append($badge);
+                var feed = trending_feed.get("feed");
+                // Convert Backbone model to plain object for render_feed_card
+                var feed_data = feed.toJSON ? feed.toJSON() : feed;
+                // Don't pass stories for grid view - only show feed info
+                $grid.append(self.render_feed_card(feed_data));
             });
             return $grid;
         } else {
             // List view: Show feed badges with story titles (like TrendingSitesView)
-            var $list = $.make('div', { className: 'NB-trending-feed-badges NB-story-pane-' + pane_anchor });
+            var image_preview = NEWSBLUR.assets.preference('image_preview') || 'large-right';
+            var $list = $.make('div', { className: 'NB-trending-feed-badges NB-story-pane-' + pane_anchor + ' NB-image-preview-' + image_preview });
+            var stories_limit = this.get_stories_limit();
             state.trending_feeds_collection.each(function (trending_feed) {
-                var $story_titles = $.make('div', { className: 'NB-story-titles' });
-                var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
-                    el: $story_titles,
-                    collection: trending_feed.get("stories"),
-                    $story_titles: $story_titles,
-                    override_layout: 'split',
-                    pane_anchor: pane_anchor,
-                    on_trending_feed: trending_feed,
-                    in_add_site_view: self
-                });
-                var $badge = $.make('div', { className: 'NB-trending-feed-badge' }, [
+                var $badge_content = [
                     new NEWSBLUR.Views.FeedBadge({
                         model: trending_feed.get("feed"),
                         show_folders: true,
                         in_add_site_view: self,
                         load_feed_after_add: false
-                    }),
-                    story_titles_view.render().el
-                ]);
+                    })
+                ];
+
+                if (stories_limit > 0) {
+                    var $story_titles = $.make('div', { className: 'NB-story-titles' });
+                    var limited_stories = self.limit_stories(trending_feed.get("stories"));
+                    var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
+                        el: $story_titles,
+                        collection: limited_stories,
+                        $story_titles: $story_titles,
+                        override_layout: 'split',
+                        pane_anchor: pane_anchor,
+                        on_trending_feed: trending_feed,
+                        in_add_site_view: self
+                    });
+                    $badge_content.push(story_titles_view.render().el);
+                }
+
+                var $badge = $.make('div', { className: 'NB-trending-feed-badge' }, $badge_content);
                 $list.append($badge);
             });
             return $list;
@@ -749,22 +809,29 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             return;
         }
 
-        var $grid = $.make('div', { className: 'NB-trending-feed-grid' });
-
-        _.each(feed_ids.slice(0, 30), function(feed_id) {
+        // Collect feeds and sort them
+        var feeds = [];
+        _.each(feed_ids, function(feed_id) {
             var feed_data = feeds_data[feed_id];
             if (feed_data) {
-                var $card = $.make('div', { className: 'NB-trending-feed-card' });
-                var feed_model = new NEWSBLUR.Models.Feed(feed_data);
-                new NEWSBLUR.Views.FeedBadge({
-                    el: $card,
-                    model: feed_model,
-                    show_folders: true,
-                    in_add_site_view: self,
-                    load_feed_after_add: false
-                });
-                $grid.append($card);
+                feeds.push(feed_data);
             }
+        });
+        feeds = this.sort_feeds(feeds);
+
+        var $grid = $.make('div', { className: 'NB-trending-feed-grid' });
+
+        _.each(feeds.slice(0, 30), function(feed_data) {
+            var $card = $.make('div', { className: 'NB-trending-feed-card' });
+            var feed_model = new NEWSBLUR.Models.Feed(feed_data);
+            new NEWSBLUR.Views.FeedBadge({
+                el: $card,
+                model: feed_model,
+                show_folders: true,
+                in_add_site_view: self,
+                load_feed_after_add: false
+            });
+            $grid.append($card);
         });
 
         $results.html($grid);
@@ -916,28 +983,36 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             }
 
             var pane_anchor = NEWSBLUR.assets.preference('story_pane_anchor');
-            var $list = $.make('div', { className: 'NB-trending-feed-badges NB-story-pane-' + pane_anchor });
+            var image_preview = NEWSBLUR.assets.preference('image_preview') || 'large-right';
+            var $list = $.make('div', { className: 'NB-trending-feed-badges NB-story-pane-' + pane_anchor + ' NB-image-preview-' + image_preview });
+            var stories_limit = this.get_stories_limit();
 
             state.popular_feeds_collection.each(function (popular_feed) {
-                var $story_titles = $.make('div', { className: 'NB-story-titles' });
-                var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
-                    el: $story_titles,
-                    collection: popular_feed.get("stories"),
-                    $story_titles: $story_titles,
-                    override_layout: 'split',
-                    pane_anchor: pane_anchor,
-                    on_popular_feed: popular_feed,
-                    in_add_site_view: self
-                });
-                var $badge = $.make('div', { className: 'NB-trending-feed-badge' }, [
+                var $badge_content = [
                     new NEWSBLUR.Views.FeedBadge({
                         model: popular_feed.get("feed"),
                         show_folders: true,
                         in_add_site_view: self,
                         load_feed_after_add: false
-                    }),
-                    story_titles_view.render().el
-                ]);
+                    })
+                ];
+
+                if (stories_limit > 0) {
+                    var $story_titles = $.make('div', { className: 'NB-story-titles' });
+                    var limited_stories = self.limit_stories(popular_feed.get("stories"));
+                    var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
+                        el: $story_titles,
+                        collection: limited_stories,
+                        $story_titles: $story_titles,
+                        override_layout: 'split',
+                        pane_anchor: pane_anchor,
+                        on_popular_feed: popular_feed,
+                        in_add_site_view: self
+                    });
+                    $badge_content.push(story_titles_view.render().el);
+                }
+
+                var $badge = $.make('div', { className: 'NB-trending-feed-badge' }, $badge_content);
                 $list.append($badge);
             });
 
@@ -1228,28 +1303,36 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             }
 
             var pane_anchor = NEWSBLUR.assets.preference('story_pane_anchor');
-            var $list = $.make('div', { className: 'NB-trending-feed-badges NB-story-pane-' + pane_anchor });
+            var image_preview = NEWSBLUR.assets.preference('image_preview') || 'large-right';
+            var $list = $.make('div', { className: 'NB-trending-feed-badges NB-story-pane-' + pane_anchor + ' NB-image-preview-' + image_preview });
+            var stories_limit = this.get_stories_limit();
 
             state.popular_feeds_collection.each(function (popular_feed) {
-                var $story_titles = $.make('div', { className: 'NB-story-titles' });
-                var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
-                    el: $story_titles,
-                    collection: popular_feed.get("stories"),
-                    $story_titles: $story_titles,
-                    override_layout: 'split',
-                    pane_anchor: pane_anchor,
-                    on_popular_feed: popular_feed,
-                    in_add_site_view: self
-                });
-                var $badge = $.make('div', { className: 'NB-trending-feed-badge' }, [
+                var $badge_content = [
                     new NEWSBLUR.Views.FeedBadge({
                         model: popular_feed.get("feed"),
                         show_folders: true,
                         in_add_site_view: self,
                         load_feed_after_add: false
-                    }),
-                    story_titles_view.render().el
-                ]);
+                    })
+                ];
+
+                if (stories_limit > 0) {
+                    var $story_titles = $.make('div', { className: 'NB-story-titles' });
+                    var limited_stories = self.limit_stories(popular_feed.get("stories"));
+                    var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
+                        el: $story_titles,
+                        collection: limited_stories,
+                        $story_titles: $story_titles,
+                        override_layout: 'split',
+                        pane_anchor: pane_anchor,
+                        on_popular_feed: popular_feed,
+                        in_add_site_view: self
+                    });
+                    $badge_content.push(story_titles_view.render().el);
+                }
+
+                var $badge = $.make('div', { className: 'NB-trending-feed-badge' }, $badge_content);
                 $list.append($badge);
             });
 
@@ -1451,28 +1534,36 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             }
 
             var pane_anchor = NEWSBLUR.assets.preference('story_pane_anchor');
-            var $list = $.make('div', { className: 'NB-trending-feed-badges NB-story-pane-' + pane_anchor });
+            var image_preview = NEWSBLUR.assets.preference('image_preview') || 'large-right';
+            var $list = $.make('div', { className: 'NB-trending-feed-badges NB-story-pane-' + pane_anchor + ' NB-image-preview-' + image_preview });
+            var stories_limit = this.get_stories_limit();
 
             state.popular_feeds_collection.each(function (popular_feed) {
-                var $story_titles = $.make('div', { className: 'NB-story-titles' });
-                var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
-                    el: $story_titles,
-                    collection: popular_feed.get("stories"),
-                    $story_titles: $story_titles,
-                    override_layout: 'split',
-                    pane_anchor: pane_anchor,
-                    on_popular_feed: popular_feed,
-                    in_add_site_view: self
-                });
-                var $badge = $.make('div', { className: 'NB-trending-feed-badge' }, [
+                var $badge_content = [
                     new NEWSBLUR.Views.FeedBadge({
                         model: popular_feed.get("feed"),
                         show_folders: true,
                         in_add_site_view: self,
                         load_feed_after_add: false
-                    }),
-                    story_titles_view.render().el
-                ]);
+                    })
+                ];
+
+                if (stories_limit > 0) {
+                    var $story_titles = $.make('div', { className: 'NB-story-titles' });
+                    var limited_stories = self.limit_stories(popular_feed.get("stories"));
+                    var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
+                        el: $story_titles,
+                        collection: limited_stories,
+                        $story_titles: $story_titles,
+                        override_layout: 'split',
+                        pane_anchor: pane_anchor,
+                        on_popular_feed: popular_feed,
+                        in_add_site_view: self
+                    });
+                    $badge_content.push(story_titles_view.render().el);
+                }
+
+                var $badge = $.make('div', { className: 'NB-trending-feed-badge' }, $badge_content);
                 $list.append($badge);
             });
 
@@ -1663,7 +1754,11 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             days: state.days
         }, function (data) {
             state.is_loading = false;
-            if (data && data.trending_feeds) {
+            // Check if we have real trending feeds (handle both array and object)
+            var has_feeds = data && data.trending_feeds &&
+                (_.isArray(data.trending_feeds) ? data.trending_feeds.length > 0 : Object.keys(data.trending_feeds).length > 0);
+
+            if (has_feeds) {
                 // Convert trending_feeds object to array for easier rendering
                 var feeds_array = _.map(data.trending_feeds, function(item) {
                     return {
@@ -1678,6 +1773,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 });
                 state.feeds = state.feeds.concat(feeds_array);
                 state.has_more = data.has_more;
+            } else {
+                // No trending feeds - show empty state
+                state.has_more = false;
             }
             self.render_trending_results();
         }, function () {
@@ -1938,10 +2036,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             }
         });
 
-        // Sort by subscriber count
-        feeds = _.sortBy(feeds, function(f) {
-            return -(f.num_subscribers || 0);
-        });
+        // Sort feeds based on user preference
+        feeds = this.sort_feeds(feeds);
 
         state.feeds = feeds;
 
@@ -2023,23 +2119,80 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     // ==================
 
     render_feed_card: function (feed, stories) {
+        var self = this;
         stories = stories || [];
+
+        // Get display preferences
+        var image_preview = NEWSBLUR.assets.preference('add_site_image_preview') || 'large';
+        var content_preview = NEWSBLUR.assets.preference('add_site_content_preview') || 'medium';
 
         var $stories_preview = null;
         if (stories.length > 0) {
             $stories_preview = $.make('div', { className: 'NB-add-site-card-stories' },
                 _.map(stories.slice(0, 3), function(story) {
-                    return $.make('div', { className: 'NB-add-site-card-story' }, [
-                        $.make('div', { className: 'NB-add-site-card-story-title' },
-                            story.story_title || story.title || 'Untitled')
-                    ]);
+                    var story_elements = [];
+
+                    // Add story image if preference allows and image exists
+                    if (image_preview !== 'none') {
+                        var image_url = story.image_urls && story.image_urls.length > 0 ? story.image_urls[0] : null;
+                        if (!image_url && story.story_content) {
+                            // Try to extract first image from content
+                            var img_match = story.story_content.match(/<img[^>]+src=["']([^"']+)["']/i);
+                            if (img_match) image_url = img_match[1];
+                        }
+                        if (image_url) {
+                            var image_class = 'NB-add-site-card-story-image';
+                            if (image_preview === 'small') {
+                                image_class += ' NB-image-small';
+                            } else {
+                                image_class += ' NB-image-large';
+                            }
+                            story_elements.push($.make('img', {
+                                src: image_url,
+                                className: image_class,
+                                onerror: "this.style.display='none'"
+                            }));
+                        }
+                    }
+
+                    story_elements.push($.make('div', { className: 'NB-add-site-card-story-title' },
+                        story.story_title || story.title || 'Untitled'));
+
+                    // Add story content preview based on preference
+                    if (content_preview !== 'title' && story.story_content) {
+                        var content_text = self.strip_html(story.story_content);
+                        if (content_text) {
+                            var max_lines = content_preview === 'small' ? 1 : (content_preview === 'medium' ? 2 : 3);
+                            var max_chars = max_lines * 80; // Approximate chars per line
+                            var preview_text = self.truncate_text(content_text, max_chars);
+                            var preview_class = 'NB-add-site-card-story-preview NB-preview-lines-' + max_lines;
+                            story_elements.push($.make('div', { className: preview_class }, preview_text));
+                        }
+                    }
+
+                    return $.make('div', { className: 'NB-add-site-card-story' }, story_elements);
                 })
             );
         }
 
         var meta_parts = [];
-        if (feed.num_subscribers) meta_parts.push(feed.num_subscribers + ' subscribers');
-        if (feed.average_stories_per_month) meta_parts.push(feed.average_stories_per_month + '/mo');
+        if (feed.num_subscribers) {
+            var subscriber_count = parseInt(feed.num_subscribers, 10);
+            var subscriber_label = subscriber_count === 1 ? 'subscriber' : 'subscribers';
+            meta_parts.push(subscriber_count.toLocaleString() + ' ' + subscriber_label);
+        }
+        if (feed.average_stories_per_month) {
+            var stories_count = parseInt(feed.average_stories_per_month, 10);
+            var stories_label = stories_count === 1 ? 'story/month' : 'stories/month';
+            meta_parts.push(stories_count.toLocaleString() + ' ' + stories_label);
+        }
+
+        // Feed tagline/description always shown
+        var $description = null;
+        if (feed.tagline) {
+            $description = $.make('div', { className: 'NB-add-site-card-desc' },
+                this.truncate_text(feed.tagline, 150));
+        }
 
         return $.make('div', {
             className: 'NB-add-site-card',
@@ -2059,17 +2212,19 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     )
                 ])
             ]),
-            feed.tagline ? $.make('div', { className: 'NB-add-site-card-desc' },
-                this.truncate_text(feed.tagline, 150)
-            ) : null,
+            $description,
             $stories_preview,
             $.make('div', { className: 'NB-add-site-card-actions' }, [
                 this.make_folder_selector(feed),
                 $.make('div', {
-                    className: 'NB-add-site-card-subscribe NB-add-site-subscribe-btn',
+                    className: 'NB-add-site-try-btn NB-modal-submit-button NB-modal-submit-green',
+                    'data-feed-id': feed.id || feed.feed_id
+                }, 'Try'),
+                $.make('div', {
+                    className: 'NB-add-site-subscribe-btn NB-modal-submit-button NB-modal-submit-grey',
                     'data-feed-id': feed.id || feed.feed_id,
                     'data-feed-url': feed.feed_address || feed.address
-                }, 'Subscribe')
+                }, 'Add')
             ])
         ].filter(Boolean));
     },
@@ -2150,6 +2305,16 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     truncate_text: function (text, max_length) {
         if (!text || text.length <= max_length) return text;
         return text.substring(0, max_length) + '...';
+    },
+
+    strip_html: function (html) {
+        if (!html) return '';
+        // Remove HTML tags and decode entities
+        var tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        var text = tmp.textContent || tmp.innerText || '';
+        // Normalize whitespace
+        return text.replace(/\s+/g, ' ').trim();
     },
 
     is_url: function (str) {
@@ -2237,6 +2402,21 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.render_active_tab();
     },
 
+    open_style_popover: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (this.style_popover && this.style_popover.is_open) {
+            this.style_popover.close();
+            return;
+        }
+
+        this.style_popover = new NEWSBLUR.AddSiteStylePopover({
+            anchor: this.$('.NB-add-site-style-button'),
+            add_site_view: this
+        });
+    },
+
     handle_search_input: function (e) {
         var query = $(e.currentTarget).val().trim();
         this.search_query = query;
@@ -2288,11 +2468,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 return;
             }
             self.search_state.is_loading = false;
+            var results = [];
             if (data && _.isArray(data)) {
-                self.search_state.results = data;
+                results = data;
             } else if (data && data.feeds) {
-                self.search_state.results = data.feeds;
+                results = data.feeds;
             }
+            // Apply sort preference to search results
+            self.search_state.results = self.sort_feeds(results);
             self.render_search_tab({ results_only: true });
         }, function () {
             // Ignore stale error responses
@@ -2302,6 +2485,15 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             self.search_state.is_loading = false;
             self.render_search_tab({ results_only: true });
         }, { request_type: 'GET' });
+    },
+
+    try_feed: function (e) {
+        var $btn = $(e.currentTarget);
+        var feed_id = $btn.data('feed-id');
+
+        if (feed_id) {
+            NEWSBLUR.reader.load_feed_in_tryfeed_view(feed_id);
+        }
     },
 
     subscribe_to_feed: function (e) {
@@ -2316,7 +2508,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             return;
         }
 
-        $btn.addClass('NB-loading').text('Subscribing...');
+        $btn.addClass('NB-loading').text('Adding...');
 
         NEWSBLUR.assets.save_add_url(feed_url, folder, function (data) {
             if (data.code > 0 || data.feed) {
@@ -2326,15 +2518,15 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 NEWSBLUR.assets.load_feeds();
 
                 // Convert button to "Open Site" with feed ID stored for later
-                $btn.removeClass('NB-loading NB-add-site-subscribe-btn')
-                    .addClass('NB-add-site-open-btn')
+                $btn.removeClass('NB-loading NB-add-site-subscribe-btn NB-modal-submit-grey')
+                    .addClass('NB-add-site-open-btn NB-modal-submit-green')
                     .text('Open Site')
                     .data('feed-id', data.feed ? data.feed.id : null);
             } else {
                 $btn.removeClass('NB-loading').addClass('NB-error').text('Error');
                 console.log('Subscribe error:', data.message);
                 setTimeout(function () {
-                    $btn.removeClass('NB-error').text('Subscribe');
+                    $btn.removeClass('NB-error').text('Add');
                 }, 2000);
             }
         });
