@@ -3888,6 +3888,16 @@ a.mention, a.mention-group {
     color: #888;
 }
 
+.NB-dark .NB-freshness-active .NB-freshness-label {
+    color: #66BB6A;
+}
+.NB-dark .NB-freshness-stale .NB-freshness-label {
+    color: #FFB74D;
+}
+.NB-dark .NB-freshness-none .NB-freshness-label {
+    color: #78909C;
+}
+
 .NB-dark .NB-add-site-card-desc {
     color: #AAA;
 }

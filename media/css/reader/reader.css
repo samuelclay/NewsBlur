@@ -24652,6 +24652,43 @@ h5.NB-classifier-section-header {
     color: #888;
 }
 
+/* Freshness indicator */
+.NB-add-site-card-freshness {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+.NB-freshness-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.NB-freshness-active .NB-freshness-dot {
+    background: #4CAF50;
+}
+.NB-freshness-active .NB-freshness-label {
+    color: #4CAF50;
+}
+
+.NB-freshness-stale .NB-freshness-dot {
+    background: #F9A825;
+}
+.NB-freshness-stale .NB-freshness-label {
+    color: #B8860B;
+}
+
+.NB-freshness-none .NB-freshness-dot {
+    background: #90A4AE;
+}
+.NB-freshness-none .NB-freshness-label {
+    color: #90A4AE;
+}
+
 .NB-add-site-card-desc {
     font-size: 13px;
     color: #666;

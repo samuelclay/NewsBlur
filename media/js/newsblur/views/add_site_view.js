@@ -2331,6 +2331,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             var stories_label = stories_count === 1 ? 'story/month' : 'stories/month';
             meta_parts.push(stories_count.toLocaleString() + ' ' + stories_label);
         }
+        var $freshness = this.make_freshness_indicator(feed.last_story_date, { show_empty: true });
 
         // Feed tagline/description always shown
         var $description = null;
@@ -2389,8 +2390,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         feed.feed_title || feed.title || 'Unknown Feed'),
                     $.make('div', { className: 'NB-add-site-card-meta' },
                         meta_parts.join(' \u2022 ')
-                    )
-                ])
+                    ),
+                    $freshness
+                ].filter(Boolean))
             ]),
             $description,
             $stories_preview,
@@ -2414,13 +2416,18 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             icon_attrs.onerror = "this.src='" + config.fallback_icon + "'";
         }
 
+        var $freshness = this.make_freshness_indicator(config.last_story_date, {
+            show_empty: config.show_empty_freshness
+        });
+
         return $.make('div', { className: 'NB-add-site-card ' + config.card_class }, [
             $.make('div', { className: 'NB-add-site-card-header' }, [
                 $.make('img', icon_attrs),
                 $.make('div', { className: 'NB-add-site-card-info' }, [
                     $.make('div', { className: 'NB-add-site-card-title' }, config.title),
-                    $.make('div', { className: 'NB-add-site-card-meta' }, config.meta || '')
-                ])
+                    $.make('div', { className: 'NB-add-site-card-meta' }, config.meta || ''),
+                    $freshness
+                ].filter(Boolean))
             ]),
             description_el,
             $.make('div', { className: 'NB-add-site-card-actions' }, [
@@ -2487,6 +2494,54 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var text = tmp.textContent || tmp.innerText || '';
         // Normalize whitespace
         return text.replace(/\s+/g, ' ').trim();
+    },
+
+    make_freshness_indicator: function (last_story_date, options) {
+        options = options || {};
+        var freshness_class = 'NB-add-site-card-freshness';
+        var freshness_label;
+
+        if (!last_story_date) {
+            if (!options.show_empty) return null;
+            freshness_class += ' NB-freshness-none';
+            freshness_label = 'No stories yet';
+            return $.make('div', { className: freshness_class }, [
+                $.make('span', { className: 'NB-freshness-dot' }),
+                $.make('span', { className: 'NB-freshness-label' }, freshness_label)
+            ]);
+        }
+
+        var last_date = new Date(last_story_date);
+        if (isNaN(last_date.getTime())) return null;
+
+        var now = new Date();
+        var days_ago = Math.floor((now - last_date) / (1000 * 60 * 60 * 24));
+        var date_str = last_date.toLocaleDateString(undefined, {
+            month: 'short', day: 'numeric', year: 'numeric'
+        });
+
+        if (days_ago < 365) {
+            freshness_class += ' NB-freshness-active';
+            if (days_ago < 1) {
+                freshness_label = 'Updated today';
+            } else if (days_ago < 7) {
+                freshness_label = 'Updated ' + days_ago + (days_ago === 1 ? ' day ago' : ' days ago');
+            } else if (days_ago < 30) {
+                var weeks = Math.floor(days_ago / 7);
+                freshness_label = 'Updated ' + weeks + (weeks === 1 ? ' week ago' : ' weeks ago');
+            } else {
+                var months = Math.floor(days_ago / 30);
+                freshness_label = 'Updated ' + (months === 1 ? '1 month ago' : months + ' months ago');
+            }
+        } else {
+            freshness_class += ' NB-freshness-stale';
+            freshness_label = 'Stale \u2014 last story ' + date_str;
+        }
+
+        return $.make('div', { className: freshness_class }, [
+            $.make('span', { className: 'NB-freshness-dot' }),
+            $.make('span', { className: 'NB-freshness-label' }, freshness_label)
+        ]);
     },
 
     is_url: function (str) {
