@@ -12,11 +12,13 @@ import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.newsblur.R
+import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Feed
 import com.newsblur.fragment.DeleteFeedFragment
 import com.newsblur.fragment.FeedIntelTrainerFragment
 import com.newsblur.fragment.RenameDialogFragment
+import com.newsblur.util.CustomIconRenderer
 import com.newsblur.util.FeedExt.isAndroidNotifyFocus
 import com.newsblur.util.FeedExt.isAndroidNotifyUnread
 import com.newsblur.util.FeedSet
@@ -180,6 +182,15 @@ class FeedItemsList : ItemsList() {
     ) {
         this.feed = feed
         this.folderName = folderName
+        val customIcon = BlurDatabaseHelper.getFeedIcon(feed.feedId)
+        if (customIcon != null) {
+            val iconSize = UIUtils.dp2px(this, 24)
+            val iconBitmap = CustomIconRenderer.renderIcon(this, customIcon, iconSize)
+            if (iconBitmap != null) {
+                UIUtils.setupToolbar(this, iconBitmap, feed.title, false)
+                return
+            }
+        }
         UIUtils.setupToolbar(this, feed.faviconUrl, feed.title, iconLoader, false)
     }
 

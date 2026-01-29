@@ -191,6 +191,11 @@ public class UIUtils {
         iconView.setImageResource(imageId);
     }
 
+    public static void setupToolbar(AppCompatActivity activity, Bitmap iconBitmap, String title, boolean showHomeEnabled) {
+        ImageView iconView = setupCustomToolbar(activity, title, showHomeEnabled);
+        iconView.setImageBitmap(iconBitmap);
+    }
+
     private static ImageView setupCustomToolbar(final AppCompatActivity activity, String title, boolean showHomeEnabled) {
         MaterialToolbar toolbar = activity.findViewById(R.id.toolbar);
         if (toolbar == null) {

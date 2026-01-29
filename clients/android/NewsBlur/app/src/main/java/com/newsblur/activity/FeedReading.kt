@@ -2,6 +2,8 @@ package com.newsblur.activity
 
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
+import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.util.CustomIconRenderer
 import com.newsblur.util.UIUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,6 +22,15 @@ class FeedReading : Reading() {
             val feed = dbHelper.getFeed(fs!!.getSingleFeed())
             withContext(Dispatchers.Main) {
                 if (feed != null) {
+                    val customIcon = BlurDatabaseHelper.getFeedIcon(feed.feedId)
+                    if (customIcon != null) {
+                        val iconSize = UIUtils.dp2px(this@FeedReading, 24)
+                        val iconBitmap = CustomIconRenderer.renderIcon(this@FeedReading, customIcon, iconSize)
+                        if (iconBitmap != null) {
+                            UIUtils.setupToolbar(this@FeedReading, iconBitmap, feed.title, false)
+                            return@withContext
+                        }
+                    }
                     UIUtils.setupToolbar(this@FeedReading, feed.faviconUrl, feed.title, iconLoader, false)
                 } else {
                     finish()
