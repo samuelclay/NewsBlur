@@ -68,6 +68,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) BOOL feedListRevealActive;
 @property (nonatomic) BOOL feedListRevealBouncing;
 @property (nonatomic, strong) UIView *feedListRevealContainer;
+@property (nonatomic, strong) UIBarButtonItem *sidebarBarButton;
 
 @end
 
@@ -516,10 +517,29 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
     [self updateTheme];
     
-    NSArray *items = [NSArray arrayWithObjects:
-                      settingsBarButton,
-                      feedMarkReadButton,
-                      nil];
+    UIBarButtonItem *sidebarButton = nil;
+    if (!appDelegate.isPhone && !self.isMac) {
+        if (!self.sidebarBarButton) {
+            UIImage *sidebarImage = [UIImage systemImageNamed:@"sidebar.leading"];
+            if (!sidebarImage) {
+                sidebarImage = [UIImage systemImageNamed:@"sidebar.left"];
+            }
+            if (!sidebarImage) {
+                sidebarImage = [UIImage imageNamed:@"columns_double.png"];
+            }
+            sidebarImage = [sidebarImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            self.sidebarBarButton = [[UIBarButtonItem alloc] initWithImage:sidebarImage
+                                                                     style:UIBarButtonItemStylePlain
+                                                                    target:self
+                                                                    action:@selector(toggleFeeds:)];
+            self.sidebarBarButton.accessibilityLabel = @"Sidebar";
+        }
+        sidebarButton = self.sidebarBarButton;
+        appDelegate.detailViewController.feedDetailNavigationItem.leftItemsSupplementBackButton = YES;
+    }
+
+    NSArray *items = sidebarButton ? @[sidebarButton, settingsBarButton, feedMarkReadButton]
+                                   : @[settingsBarButton, feedMarkReadButton];
     
     if (appDelegate.isPhone) {
         appDelegate.detailViewController.feedDetailNavigationItem.rightBarButtonItems = items;
@@ -3816,6 +3836,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
 
     self.feedsBarButton.tintColor = toolbarButtonTint;
+    if (self.sidebarBarButton) {
+        self.sidebarBarButton.tintColor = toolbarButtonTint;
+    }
     self.settingsBarButton.tintColor = toolbarButtonTint;
     self.feedMarkReadButton.tintColor = toolbarButtonTint;
     UIButton *settingsButton = (UIButton *)self.settingsBarButton.customView;

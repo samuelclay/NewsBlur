@@ -61,6 +61,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 @property (nonatomic, strong) NSIndexPath *lastRowAtIndexPath;
 @property (nonatomic) NSInteger lastSection;
 @property (nonatomic, strong) NSArray<UIBarButtonItem *> *defaultFeedToolbarItems;
+@property (nonatomic, strong) UIBarButtonItem *sidebarBarButton;
 
 @end
 
@@ -378,6 +379,26 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.navigationController setNavigationBarHidden:YES animated:animated];
     [self.navigationController setToolbarHidden:YES animated:animated];
 #endif
+
+    if (!self.isPhone && !self.isMac) {
+        if (!self.sidebarBarButton) {
+            UIImage *sidebarImage = [UIImage systemImageNamed:@"sidebar.leading"];
+            if (!sidebarImage) {
+                sidebarImage = [UIImage systemImageNamed:@"sidebar.left"];
+            }
+            if (!sidebarImage) {
+                sidebarImage = [UIImage imageNamed:@"columns_double.png"];
+            }
+            sidebarImage = [sidebarImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            self.sidebarBarButton = [[UIBarButtonItem alloc] initWithImage:sidebarImage
+                                                                     style:UIBarButtonItemStylePlain
+                                                                    target:self
+                                                                    action:@selector(toggleFeeds:)];
+            self.sidebarBarButton.accessibilityLabel = @"Sidebar";
+        }
+        self.navigationItem.leftBarButtonItem = self.sidebarBarButton;
+        self.navigationItem.leftItemsSupplementBackButton = YES;
+    }
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSInteger intelligenceLevel = [userPreferences integerForKey:@"selectedIntelligence"];
@@ -1552,6 +1573,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
     self.addBarButton.tintColor = toolbarButtonTint;
     self.settingsBarButton.tintColor = toolbarButtonTint;
+    if (self.sidebarBarButton) {
+        self.sidebarBarButton.tintColor = tintColor;
+    }
 #if TARGET_OS_MACCATALYST
     if (ThemeManager.themeManager.isLikeSystem) {
         self.view.backgroundColor = UIColor.clearColor;
