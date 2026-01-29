@@ -3,11 +3,11 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
     className: "NB-add-site-style-popover",
 
     options: {
-        'width': 380,
+        'width': 460,
         'placement': 'bottom right',
         'offset': {
             top: 8,
-            left: 0
+            left: -76
         },
         'popover_class': 'NB-add-site-style-popover-container'
     },
