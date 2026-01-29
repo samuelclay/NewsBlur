@@ -67,7 +67,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private enum ChildType { SOCIAL_FEED, FEED, SAVED_BY_TAG, SAVED_SEARCH }
 
     private final static float defaultTextSize_childName = 14;
-    private final static float defaultTextSize_groupName = 13;
     private final static float defaultTextSize_count = 13;
 
     private final static float NONZERO_UNREADS_ALPHA = 0.87f;
@@ -90,6 +89,8 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
     private final Map<String,Integer> feedNeutCounts = new LinkedHashMap<>();
     /** Positive counts for active feeds, indexed by feed ID. */
     private final Map<String,Integer> feedPosCounts = new LinkedHashMap<>();
+    /** Canonical folder name to active (non-muted) feed IDs (includes descendants). */
+    private final Map<String, Set<String>> activeFeedIdsByFolder = new LinkedHashMap<>();
     /** Total neutral unreads for all feeds. */
     public int totalNeutCount = 0;
     /** Total positive unreads for all feeds. */
@@ -127,7 +128,6 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 	private final LayoutInflater inflater;
 	private StateFilter currentState;
 	private final ImageLoader iconLoader;
-	private final BlurDatabaseHelper dbHelper;
     private final PrefsRepo prefsRepo;
 
     // since we want to implement a custom expando that does group collapse/expand, we need
@@ -145,12 +145,11 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
 
     public String activeSearchQuery;
 
-	public FolderListAdapter(Context context, StateFilter currentState, ImageLoader iconLoader, BlurDatabaseHelper dbHelper, PrefsRepo prefsRepo) {
+	public FolderListAdapter(Context context, StateFilter currentState, ImageLoader iconLoader, PrefsRepo prefsRepo) {
         this.currentState = currentState;
         this.context = context;
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.iconLoader = iconLoader;
-		this.dbHelper = dbHelper;
         this.prefsRepo = prefsRepo;
 
         textSize = prefsRepo.getListTextSize();
@@ -443,11 +442,13 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
             return FeedSet.allSaved();
         } else {
             String folderName = getGroupFolderName(groupPosition);
-            FeedSet fs = dbHelper.feedSetFromFolderName(folderName);
+            Set<String> activeIds = activeFeedIdsByFolder.get(folderName);
+            if (activeIds == null) activeIds = Collections.emptySet();
+            FeedSet fs = FeedSet.folder(folderName, activeIds);
             if (currentState == StateFilter.SAVED) fs.setFilterSaved(true);
             return fs;
         }
-	}
+    }
 
     /**
      * Get the canonical (not flattened with parents) name of the folder at the given group position.
@@ -686,7 +687,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         FeedListOrder feedListOrder = prefsRepo.getFeedListOrder();
         Comparator<Feed> feedComparator = Feed.getFeedListOrderComparator(feedListOrder);
         for (List<Feed> folderChildren : activeFolderChildren) {
-            Collections.sort(folderChildren, feedComparator);
+            folderChildren.sort(feedComparator);
         }
 
         addSpecialRow(READ_STORIES_GROUP_KEY);
@@ -694,6 +695,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         if ((currentState != StateFilter.SAVED)) addSpecialRow(ALL_SHARED_STORIES_GROUP_KEY);
         addSpecialRow(SAVED_SEARCHES_GROUP_KEY);
         addSpecialRow(SAVED_STORIES_GROUP_KEY);
+        rebuildActiveFolderFeedIdCache();
         recountChildren();
     }
 
@@ -772,6 +774,41 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         return count;
     }
 
+    private void rebuildActiveFolderFeedIdCache() {
+        activeFeedIdsByFolder.clear();
+        for (String canonicalName : folders.keySet()) {
+            buildActiveFeedIdsForFolder(canonicalName, new HashSet<>());
+        }
+    }
+
+    private Set<String> buildActiveFeedIdsForFolder(String canonicalFolderName, Set<String> visiting) {
+        Set<String> cached = activeFeedIdsByFolder.get(canonicalFolderName);
+        if (cached != null) return cached;
+
+        // folder cycle guard
+        if (!visiting.add(canonicalFolderName)) return Collections.emptySet();
+
+        Folder folder = folders.get(canonicalFolderName);
+        if (folder == null) return Collections.emptySet();
+
+        Set<String> result = new HashSet<>();
+        for (String feedId : folder.feedIds) {
+            Feed feed = feeds.get(feedId);
+            if (feed != null && feed.active) {
+                result.add(feedId);
+            }
+        }
+
+        for (String childCanonicalName : folder.children) {
+            result.addAll(buildActiveFeedIdsForFolder(childCanonicalName, visiting));
+        }
+
+        visiting.remove(canonicalFolderName);
+
+        activeFeedIdsByFolder.put(canonicalFolderName, result);
+        return result;
+    }
+
     public synchronized void forceRecount() {
         recountFeeds();
         recountSocialFeeds();
@@ -782,7 +819,7 @@ public class FolderListAdapter extends BaseExpandableListAdapter {
         notifyDataSetInvalidated();
 
         synchronized (this) {
-            socialFeedsOrdered .clear();
+            socialFeedsOrdered.clear();
             socialFeedsActive.clear();
             totalSocialNeutCount = 0;
             totalSocialPosiCount = 0;
