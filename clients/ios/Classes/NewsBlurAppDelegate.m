@@ -1434,11 +1434,12 @@
 
             // Store view model for re-presentation as sheet
             __weak typeof(self) weakSelf = self;
+            __weak typeof(AskAIViewController *) weakAskAIVC = askAIVC;
             askAIVC.onQuestionAsked = ^{
                 // Store the view model before dismissing
-                weakSelf.activeAskAIViewModel = askAIVC.viewModelAsAny;
+                weakSelf.activeAskAIViewModel = weakAskAIVC.viewModelAsAny;
                 // Dismiss popover and re-present as bottom sheet
-                [askAIVC dismissViewControllerAnimated:YES completion:^{
+                [weakAskAIVC dismissViewControllerAnimated:YES completion:^{
                     [weakSelf showAskAIInlineResponse];
                 }];
             };

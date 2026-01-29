@@ -154,6 +154,11 @@ class DetailViewController: BaseViewController {
     /// Whether or not the views were last set up for compact size class.
     private var wasCompact = false
     
+    /// Whether or not this is an iPhone or a compact size class. Most of the time, they should work the same.
+    @objc var isPhoneOrCompact: Bool {
+        return isPhone || isCompact
+    }
+    
     /// Preference values.
     enum StyleValue {
         static let standard = "standard"
