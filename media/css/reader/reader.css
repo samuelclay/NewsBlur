@@ -23688,6 +23688,45 @@ h5.NB-classifier-section-header {
     margin: 0 !important;
 }
 
+/* Subscribed actions row with indicator and stats button */
+.NB-feed-badge-subscribed-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: auto;
+    padding: 10px 0 0;
+}
+
+.NB-subscribed-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #2E7D32;
+}
+
+.NB-subscribed-indicator::before {
+    content: "\2713";
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.NB-badge-action-stats {
+    width: 24px;
+    height: 24px;
+    background: transparent url('/media/embed/icons/nouns/dialog-statistics.svg') no-repeat center center;
+    background-size: 20px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.15s ease;
+}
+
+.NB-badge-action-stats:hover {
+    opacity: 1;
+}
+
+/* Legacy subscribed style (fallback) */
 .NB-trending-feed-card .NB-subscribed {
     margin-top: auto;
     padding: 10px 0 0;
@@ -23941,6 +23980,7 @@ h5.NB-classifier-section-header {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-shrink: 0;
 }
 
 /* Style Button */
@@ -24000,15 +24040,20 @@ h5.NB-classifier-section-header {
     z-index: 100;
 }
 
+.NB-add-site-style-popover-container.popover.bottom-right .arrow {
+    left: auto;
+    right: 24px;
+}
+
 .NB-add-site-style-popover .NB-style-popover-content {
-    padding: 8px 12px;
+    padding: 12px 16px;
 }
 
 .NB-add-site-style-popover .NB-style-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 6px 0;
+    gap: 16px;
+    padding: 8px 0;
 }
 
 .NB-add-site-style-popover .NB-style-row:not(:last-child) {
@@ -24019,7 +24064,7 @@ h5.NB-classifier-section-header {
     font-size: 12px;
     font-weight: 500;
     color: #666;
-    min-width: 72px;
+    width: 90px;
     flex-shrink: 0;
 }
 
@@ -24028,7 +24073,7 @@ h5.NB-classifier-section-header {
     gap: 0;
     background: #E8E8E8;
     border-radius: 6px;
-    padding: 2px;
+    padding: 3px;
     list-style: none;
     margin: 0;
     flex: 1;
@@ -24036,7 +24081,7 @@ h5.NB-classifier-section-header {
 
 .NB-add-site-style-popover .segmented-control li {
     flex: 1;
-    padding: 4px 8px;
+    padding: 6px 10px;
     text-align: center;
     font-size: 11px;
     font-weight: 500;
@@ -24083,22 +24128,25 @@ h5.NB-classifier-section-header {
 }
 
 .NB-add-site-style-popover .segmented-control.NB-menu-manage-view-setting-contentpreview li.NB-view-setting-contentpreview-title {
-    flex-grow: 2;
+    flex: 1.5;
 }
 
 /* Tabs */
 .NB-add-site-tabs {
     display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    padding-bottom: 4px;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .NB-add-site-tab {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
+    gap: 6px;
+    padding: 8px 12px;
+    height: 36px;
+    box-sizing: border-box;
     background: transparent;
     border: 1px solid #D0D0D0;
     border-radius: 8px;
@@ -24108,7 +24156,8 @@ h5.NB-classifier-section-header {
     color: #666;
     transition: all 0.15s ease;
     white-space: nowrap;
-    flex-shrink: 0;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .NB-add-site-tab:hover {
@@ -24124,9 +24173,10 @@ h5.NB-classifier-section-header {
 }
 
 .NB-add-site-tab-icon {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     opacity: 0.7;
+    flex-shrink: 0;
 }
 
 .NB-add-site-tab.NB-active .NB-add-site-tab-icon {
@@ -24136,6 +24186,8 @@ h5.NB-classifier-section-header {
 
 .NB-add-site-tab-label {
     font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Tab Content */
@@ -24356,7 +24408,62 @@ h5.NB-classifier-section-header {
     white-space: nowrap;
 }
 
-/* Open button inherits from NB-modal-submit-green via class */
+/* Subscribed Card Actions */
+.NB-add-site-card-actions-subscribed {
+    gap: 8px;
+}
+
+.NB-add-site-subscribed-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #2E7D32;
+    flex: 1;
+}
+
+.NB-add-site-subscribed-indicator::before {
+    content: "\2713";
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.NB-add-site-stats-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #F5F5F5;
+    border: 1px solid #D0D0D0;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.NB-add-site-stats-btn:hover {
+    background: #EBEBEB;
+    border-color: #BBB;
+    color: #333;
+}
+
+.NB-add-site-stats-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+}
+
+.NB-add-site-stats-btn:hover .NB-add-site-stats-icon {
+    opacity: 1;
+}
+
+/* Subscribed card subtle highlight */
+.NB-add-site-card-subscribed {
+    border-color: #C8E6C9;
+}
 
 /* Empty State */
 .NB-add-site-empty-state {
