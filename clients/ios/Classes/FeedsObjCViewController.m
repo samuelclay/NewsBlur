@@ -215,7 +215,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
     self.intelligenceControl.translatesAutoresizingMaskIntoConstraints = NO;
     [self.intelligenceControl.heightAnchor constraintEqualToConstant:36].active = YES;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (appDelegate.detailViewController.isPhoneOrCompact) {
         [self.intelligenceControl.widthAnchor constraintEqualToConstant:232].active = YES;
     } else {
         [self.intelligenceControl setContentHuggingPriority:UILayoutPriorityRequired
@@ -305,16 +305,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)configureFeedToolbarItemsForOrientation:(UIInterfaceOrientation)orientation {
-    BOOL isPad = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad);
-    BOOL isPhoneLandscape = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone &&
-                             UIInterfaceOrientationIsLandscape(orientation));
-    if (!isPad && !isPhoneLandscape) {
+    if (appDelegate.isPhone && !UIInterfaceOrientationIsLandscape(orientation)) {
         if (self.defaultFeedToolbarItems.count > 0) {
             self.feedViewToolbar.items = self.defaultFeedToolbarItems;
         }
         return;
     }
-
+    
     UIBarButtonItem *intelligenceItem = nil;
     for (UIBarButtonItem *item in self.feedViewToolbar.items) {
         if (item.customView == self.intelligenceControl) {
@@ -586,7 +583,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         orientation = self.view.window.windowScene.interfaceOrientation;
     }
     
-    if (!self.isPhone && !UIInterfaceOrientationIsLandscape(orientation)) {
+    if (!self.appDelegate.detailViewController.isPhoneOrCompact && !UIInterfaceOrientationIsLandscape(orientation)) {
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow_icn.png"] forSegmentAtIndex:1];
         [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" sized:14] forSegmentAtIndex:2];
         [self.intelligenceControl setImage:[Utilities imageNamed:@"unread_blue_icn.png" sized:14] forSegmentAtIndex:3];
@@ -1092,7 +1089,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self refreshHeaderCounts];
     [appDelegate checkForFeedNotifications];
 
-    if (!self.isPhone && finished) {
+    if (!self.appDelegate.detailViewController.isPhoneOrCompact && finished) {
         [self cacheFeedRowLocations];
     }
     
@@ -1981,7 +1978,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         appDelegate.storiesCollection.savedSearchQuery = searchQuery;
     }
     
-    if (!appDelegate.isPhone) {
+    if (!appDelegate.detailViewController.isPhoneOrCompact) {
         [appDelegate.feedDetailViewController viewWillAppear:NO];
         [appDelegate.feedDetailViewController viewDidAppear:NO];
     }
@@ -2008,8 +2005,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (CGFloat)calculateHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (appDelegate.hasNoSites) {
-        if (!self.isPhone) {
-            return kBlurblogTableViewRowHeight;            
+        if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
+            return kBlurblogTableViewRowHeight;
         } else {
             return kPhoneBlurblogTableViewRowHeight;
         }
@@ -2052,13 +2049,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     if ([folderName isEqualToString:@"river_blurblogs"] ||
         [folderName isEqualToString:@"river_global"]) { // blurblogs
-        if (!self.isPhone) {
+        if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
             height = kBlurblogTableViewRowHeight;
         } else {
             height = kPhoneBlurblogTableViewRowHeight;
         }
     } else {
-        if (!self.isPhone) {
+        if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
             height = kTableViewRowHeight;
         } else {
             height = kPhoneTableViewRowHeight;
@@ -2277,7 +2274,7 @@ heightForHeaderInSection:(NSInteger)section {
         [appDelegate loadRiverFeedDetailView:appDelegate.feedDetailViewController withFolder:folder];
     }
     
-    if (!appDelegate.isPhone) {
+    if (!appDelegate.detailViewController.isPhoneOrCompact) {
         [appDelegate.feedDetailViewController viewWillAppear:NO];
         [appDelegate.feedDetailViewController viewDidAppear:NO];
     }
@@ -2841,7 +2838,7 @@ heightForHeaderInSection:(NSInteger)section {
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
     
-    if (!self.appDelegate.isPhone) {
+    if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
         hud.xOffset = 50;
     }
     
@@ -3294,7 +3291,6 @@ heightForHeaderInSection:(NSInteger)section {
 
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation {
 #if TARGET_OS_MACCATALYST
-    int xOffset = 60;
     int yOffset = 10;
     
     [self.userInfoView removeFromSuperview];
@@ -3313,7 +3309,6 @@ heightForHeaderInSection:(NSInteger)section {
         isShort = YES;
     }
     
-    int xOffset = 50;
     int yOffset = isShort ? 0 : 12;
     
     self.userInfoView = [[UIView alloc]
@@ -3358,6 +3353,8 @@ heightForHeaderInSection:(NSInteger)section {
     avatarImageView = [[UIImageView alloc] initWithFrame:userAvatarButton.frame];
     typeof(self) __weak weakSelf = self;
     NSString *currentUserId = userId;
+    NewsBlurAppDelegate *appDelegate = self.appDelegate;
+    
     [avatarImageView setImageWithURLRequest:avatarRequest placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
         typeof(weakSelf) __strong strongSelf = weakSelf;
         // Cache the original image for future use

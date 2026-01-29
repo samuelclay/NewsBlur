@@ -840,7 +840,7 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self hideNotifier];
     
-    if (!self.isPhone) {
+    if (!self.isPhoneOrCompact) {
         [currentPage realignScroll];
     }
 }
@@ -997,7 +997,7 @@
         
         if (pageIndex >= 0) {
             [self changePage:pageIndex animated:NO];
-        } else if (!self.isPhone) {
+        } else if (!self.isPhoneOrCompact) {
             // If the story can't be found, don't show anything; uncomment this to instead show the first unread story:
 //            [self doNextUnreadStory:nil];
         } else {

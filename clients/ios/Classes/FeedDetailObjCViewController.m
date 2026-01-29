@@ -107,7 +107,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (@available(iOS 15.0, *)) {
         self.storyTitlesTable.allowsFocus = NO;
     }
-    if (!self.isPhone) {
+    if (!self.isPhoneOrCompact) {
         self.storyTitlesTable.dragDelegate = self;
         self.storyTitlesTable.dragInteractionEnabled = YES;
     }
@@ -443,7 +443,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (storiesCollection.activeFeed == nil) {
         NSString *appOpening = [userPreferences stringForKey:@"app_opening"];
         
-        if ([appOpening isEqualToString:@"feeds"] && !self.isPhone) {
+        if ([appOpening isEqualToString:@"feeds"] && !self.isPhoneOrCompact) {
             self.messageLabel.text = @"Select a feed to read";
             self.messageView.hidden = NO;
         }
@@ -460,7 +460,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                       feedMarkReadButton,
                       nil];
     
-    if (appDelegate.isPhone) {
+    if (self.isPhoneOrCompact) {
         appDelegate.detailViewController.feedDetailNavigationItem.rightBarButtonItems = items;
     } else {
         appDelegate.detailViewController.feedDetailNavigationItem.leftBarButtonItems = items;
@@ -1507,7 +1507,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
             NSString *feedOpening = [preferences stringForKey:@"feed_opening"];
             
-            if (!self.isPhone && feedOpening == nil) {
+            if (!self.isPhoneOrCompact && feedOpening == nil) {
                 feedOpening = @"story";
             }
             
@@ -2054,7 +2054,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             
             [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"tap selected row" animated:YES];
             
-            if (!appDelegate.isPhone) {
+            if (!appDelegate.detailViewController.isPhoneOrCompact) {
                 [appDelegate.storyPagesViewController viewWillAppear:NO];
                 [appDelegate.storyPagesViewController viewDidAppear:NO];
             }
@@ -2757,7 +2757,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         NSArray *titles;
         NSArray *values;
         
-        if (appDelegate.detailViewController.isPhone) {
+        if (appDelegate.detailViewController.isPhoneOrCompact) {
             titles = @[@"List", @"Grid"];
             values = @[@"titles_on_left", @"titles_in_grid"];
         } else {
@@ -2772,7 +2772,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         if (self.appDelegate.detailViewController.storyTitlesInGrid) {
             preferenceKey = @"grid_columns";
             
-            if (appDelegate.detailViewController.isPhone) {
+            if (appDelegate.detailViewController.isPhoneOrCompact) {
                 titles = @[@"Auto Cols", @"1", @"2"];
                 values = @[@"auto", @"1", @"2"];
             } else {

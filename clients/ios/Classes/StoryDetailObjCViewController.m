@@ -280,7 +280,7 @@
 }
 
 - (void)deferredEnableScrolling {
-    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhone || !self.appDelegate.detailViewController.storyTitlesInGridView;
+    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhoneOrCompact || !self.appDelegate.detailViewController.storyTitlesInGridView;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -1720,10 +1720,6 @@
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
         BOOL atTop = topPosition < 50;
-#if !TARGET_OS_MACCATALYST
-        BOOL pullingDown = topPosition < 0;
-        BOOL nearTop = topPosition < 100;
-#endif
         
         if (!hasScrolled && topPosition != 0) {
             hasScrolled = YES;
@@ -2238,7 +2234,7 @@
     
     [self.activityIndicator stopAnimating];
     
-    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhone || !self.appDelegate.detailViewController.storyTitlesInGridView;
+    self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhoneOrCompact || !self.appDelegate.detailViewController.storyTitlesInGridView;
     
     [self loadHTMLString:self.fullStoryHTML];
     self.fullStoryHTML = nil;
@@ -2254,14 +2250,16 @@
                        });
     }
     
+    CGFloat alpha = appDelegate.storyPagesViewController.navigationBarFadeAlpha;
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         self.webView.hidden = NO;
         [self.webView setNeedsDisplay];
 
         // Initialize content inset for edge-to-edge layout
-        [self updateContentInsetForNavigationBarAlpha:appDelegate.storyPagesViewController.navigationBarFadeAlpha];
+        [self updateContentInsetForNavigationBarAlpha:alpha];
 
-        if (self == self.appDelegate.storyPagesViewController.currentPage && !self.appDelegate.detailViewController.isPhone && self.appDelegate.detailViewController.storyTitlesInGridView) {
+        if (self == self.appDelegate.storyPagesViewController.currentPage && !self.appDelegate.detailViewController.isPhoneOrCompact && self.appDelegate.detailViewController.storyTitlesInGridView) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 //                [self.appDelegate.feedDetailViewController changedStoryHeight:self.webView.scrollView.contentSize.height];
                 [self.appDelegate.feedDetailViewController reload];

@@ -133,7 +133,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         // Make sure the view has loaded.
         _ = view
         
-        if appDelegate.detailViewController.isPhone {
+        if appDelegate.detailViewController.isPhoneOrCompact {
             changedLayout()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
