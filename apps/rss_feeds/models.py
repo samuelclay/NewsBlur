@@ -427,12 +427,10 @@ class Feed(models.Model):
 
     @classmethod
     def autocomplete(cls, prefix, limit=5):
-        # Fast text search first
-        results = SearchFeed.query(prefix, max_results=limit)
-
-        # Fall back to hybrid (semantic) search if no text results
-        if not results:
-            results = SearchFeed.hybrid_query(prefix, max_results=limit)
+        # Use hybrid search to combine text matching with semantic similarity
+        # This returns both exact matches (e.g., "cooking" in title) and
+        # semantically related feeds (e.g., "smitten kitchen" for "cooking")
+        results = SearchFeed.hybrid_query(prefix, max_results=limit)
 
         feed_ids = [result["_source"]["feed_id"] for result in results[:limit]]
         return feed_ids
