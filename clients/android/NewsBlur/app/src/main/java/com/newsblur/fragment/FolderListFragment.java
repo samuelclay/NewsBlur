@@ -102,7 +102,7 @@ public class FolderListFragment extends NbFragment implements OnCreateContextMen
 		super.onCreate(savedInstanceState);
 		allFoldersViewModel = new ViewModelProvider(this).get(AllFoldersViewModel.class);
         currentState = prefsRepo.getStateFilter();
-		adapter = new FolderListAdapter(getActivity(), currentState, iconLoader, dbHelper, prefsRepo);
+		adapter = new FolderListAdapter(getActivity(), currentState, iconLoader, prefsRepo);
         feedUtils.currentFolderName = null;
         // NB: it is by design that loaders are not started until we get a
         // ping from the sync service indicating that it has initialised
