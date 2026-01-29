@@ -63,6 +63,14 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
             meta_parts.push(Inflector.commas(stories_per_month) + ' ' + Inflector.pluralize('story', stories_per_month) + '/month');
         }
 
+        // Build freshness indicator if in add site view
+        var $freshness = null;
+        if (in_add_site && in_add_site.make_freshness_indicator) {
+            $freshness = in_add_site.make_freshness_indicator(
+                this.model.get('last_story_date'), { show_empty: true }
+            );
+        }
+
         this.$el.html($.make('div', { className: 'NB-feed-badge-inner' }, [
             $.make('div', { className: "NB-feed-badge-header" }, [
                 $.make('div', { className: "NB-feed-badge-icon" }, [
@@ -70,8 +78,9 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
                 ]),
                 $.make('div', { className: "NB-feed-badge-info" }, [
                     $.make('div', { className: "NB-feed-badge-title" }, this.model.get('feed_title')),
-                    $.make('div', { className: "NB-feed-badge-meta" }, meta_parts.join(' • '))
-                ])
+                    $.make('div', { className: "NB-feed-badge-meta" }, meta_parts.join(' • ')),
+                    $freshness
+                ].filter(Boolean))
             ]),
             $.make('div', { className: "NB-feed-badge-tagline" }, this.model.get('tagline')),
             (subscribed && $.make('div', { className: 'NB-feed-badge-subscribed-actions' }, [
