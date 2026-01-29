@@ -2436,6 +2436,7 @@
     [self.storyPagesViewController changePage:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue]];
     [self.storyPagesViewController animateIntoPlace:YES];
     [self showDetailViewController:self.detailViewController sender:self];
+    [self.detailViewController collapseFeedListIfNeededForStory];
 }
 
 - (void)setTitle:(NSString *)title {

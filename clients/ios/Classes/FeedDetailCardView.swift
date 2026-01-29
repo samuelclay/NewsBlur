@@ -72,6 +72,39 @@ struct CardView: View {
         .onTapGesture {
             feedDetailInteraction.tapped(story: story, in: dash)
         }
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button {
+                cache.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
+                cache.appDelegate.feedDetailViewController.reload()
+            } label: {
+                Label(story.isRead ? "Mark Unread" : "Mark Read",
+                      image: story.isRead ? "indicator-unread" : "indicator-read")
+            }
+            .tint(Color.themed([story.isRead ? 0xFFFFD2 : 0xBED49F,
+                                story.isRead ? 0xFFFFD2 : 0xBED49F,
+                                story.isRead ? 0xFFFFD2 : 0xBED49F,
+                                story.isRead ? 0xFFFFD2 : 0xBED49F]))
+            
+            Button {
+                cache.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
+                cache.appDelegate.feedDetailViewController.reload()
+            } label: {
+                Label(story.isSaved ? "Unsave" : "Save", image: "saved-stories")
+            }
+            .tint(Color.themed([story.isSaved ? 0xF69E89 : 0xA4D97B,
+                                story.isSaved ? 0xF69E89 : 0xA4D97B,
+                                story.isSaved ? 0xF69E89 : 0xA4D97B,
+                                story.isSaved ? 0xF69E89 : 0xA4D97B]))
+            
+            Button {
+                cache.appDelegate.activeStory = story.dictionary
+                cache.appDelegate.showSend(to: cache.appDelegate.feedDetailViewController,
+                                           sender: cache.appDelegate.feedDetailViewController.view)
+            } label: {
+                Label("Share", image: "email")
+            }
+            .tint(Color.themed([0xC6C6C6, 0xC6C6C6, 0x555555, 0x3A3A3A]))
+        }
         .contextMenu {
             if !cache.isDashboard {
                 Button {

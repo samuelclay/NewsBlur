@@ -177,19 +177,6 @@ struct FeedDetailGridView: View {
             .if(cache.isGrid) { view in
                 view.frame(height: cardHeight)
             }
-            .gesture(DragGesture(minimumDistance: 50.0, coordinateSpace: .local)
-                .onEnded { value in
-                    switch(value.translation.width, value.translation.height) {
-                        case (...0, -30...30):
-                            feedDetailInteraction.read(story: story)
-                        case (0..., -30...30):
-                            feedDetailInteraction.unread(story: story)
-//                        case (-100...100, ...0):  NSLog("up swipe")
-//                        case (-100...100, 0...):  NSLog("down swipe")
-                        default:  break
-                    }
-                }
-            )
     }
     
     @ViewBuilder
