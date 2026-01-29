@@ -151,7 +151,7 @@ struct FeedDetailGridView: View {
             })
         }
         .background(Color.themed([0xE0E0E0, 0xF3E2CB, 0x363636, 0x101010]))
-        .if(cache.isGridView) { view in
+        .if(cache.isGridView && !cache.isCompact) { view in
             view.lazyPop()
         }
     }

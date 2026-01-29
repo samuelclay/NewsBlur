@@ -2738,7 +2738,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
     
-    [appDelegate addSplitControlToMenuController:viewController];
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        [appDelegate addSplitControlToMenuController:viewController];
+    }
     
     if (dashboard) {
         NSString *preferenceKey = @"dashboard_layout";
