@@ -24694,6 +24694,7 @@ h5.NB-classifier-section-header {
     color: #666;
     line-height: 1.4;
     flex: 1;
+    margin-bottom: 12px;
 }
 
 .NB-add-site-card-url {
