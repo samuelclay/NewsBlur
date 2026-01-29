@@ -24047,6 +24047,7 @@ h5.NB-classifier-section-header {
 
 .NB-add-site-style-popover .NB-style-popover-content {
     padding: 12px 16px;
+    width: 426px;
 }
 
 .NB-add-site-style-popover .NB-style-row {
@@ -24076,12 +24077,13 @@ h5.NB-classifier-section-header {
     padding: 3px;
     list-style: none;
     margin: 0;
-    flex: 1;
+    width: 320px;
+    flex-shrink: 0;
 }
 
 .NB-add-site-style-popover .segmented-control li {
     flex: 1;
-    padding: 6px 10px;
+    padding: 6px 6px;
     text-align: center;
     font-size: 11px;
     font-weight: 500;
@@ -24090,6 +24092,9 @@ h5.NB-classifier-section-header {
     border-radius: 4px;
     transition: all 0.15s ease;
     white-space: nowrap;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .NB-add-site-style-popover .segmented-control li:hover {
