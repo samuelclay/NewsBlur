@@ -11,7 +11,7 @@ These are the changes in NewsBlur Alpha, the development edition, awaiting futur
 - The login / sign up screen has a nice redesign.
 - OS 26 support, including:
     - Modernized menus on Mac and iPad.
-    - Reimplemented the 2- and 3- column layouts.
+    - Simplified the layout options to show the sites beside or over the stories.
     - Many more changes.
 - Plus some minor improvements, including:
     - Adjusted grid font sizes to better match the list layout.

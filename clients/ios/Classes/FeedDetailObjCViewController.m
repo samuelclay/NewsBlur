@@ -447,6 +447,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             self.messageLabel.text = @"Select a feed to read";
             self.messageView.hidden = NO;
         }
+        
+        if (!self.isCompactWidth) {
+            [appDelegate showColumn:UISplitViewControllerColumnPrimary debugInfo:@"No feed detail content, so showing feeds list" animated:NO];
+        }
     }
 
     [self updateTheme];
@@ -2592,7 +2596,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     UIView *sourceView = feedDetailNavController.view;
     CGRect sourceRect = CGRectMake(120, 10, 20, 20);
     
-    if (appDelegate.splitViewController.isFeedListHidden) {
+    if (appDelegate.splitViewController.isFeedsListHidden) {
         sourceRect = CGRectMake(-130, 10, 20, 20);
     }
     
@@ -2851,7 +2855,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     UIView *sourceView = navController.view;
     CGRect sourceRect = CGRectMake(430, 0, 20, 20);
     
-    if (appDelegate.splitViewController.isFeedListHidden) {
+    if (appDelegate.splitViewController.isFeedsListHidden) {
         sourceRect = CGRectMake(270, 0, 20, 20);
     }
     

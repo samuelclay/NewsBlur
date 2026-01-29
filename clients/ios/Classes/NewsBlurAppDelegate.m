@@ -905,28 +905,12 @@
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *behavior = [preferences stringForKey:@"split_behavior"];
     
-    if (self.detailViewController.storyTitlesOnLeft) {
-        if ([behavior isEqualToString:@"tile"]) {
-            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-        } else if ([behavior isEqualToString:@"displace"]) {
-            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-        } else if ([behavior isEqualToString:@"overlay"]) {
-            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
-        } else {
-            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
-        }
+    if ([behavior isEqualToString:@"overlay"]) {
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
     } else {
-        if ([behavior isEqualToString:@"overlay"]) {
-            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
-        } else {
-            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-        }
+        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
     }
     
     if (refresh) {
@@ -936,12 +920,8 @@
 
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {
     NSString *preferenceKey = @"split_behavior";
-#if TARGET_OS_MACCATALYST
-    NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full window"];
-#else
-    NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full screen"];
-#endif
-    NSArray *values = @[@"auto", @"tile", @"displace", @"overlay"];
+    NSArray *titles = @[@"Sites beside", @"Sites on top"];
+    NSArray *values = @[@"tile", @"overlay"];
     
     [menuViewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         [UIView animateWithDuration:0.5 animations:^{
@@ -3553,7 +3533,7 @@
         UINavigationController *feedDetailNavController = self.feedDetailViewController.navigationController;
         barButtonItem = nil;
         sourceView = feedDetailNavController.view;
-        if (self.splitViewController.isFeedListHidden) {
+        if (self.splitViewController.isFeedsListHidden) {
             sourceRect = CGRectMake(224, 0, 20, 20);
         } else {
             sourceRect = CGRectMake(152, 0, 20, 20);
