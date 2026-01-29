@@ -24348,12 +24348,93 @@ h5.NB-classifier-section-header {
 }
 
 /* Tabs */
+.NB-add-site-tabs-container {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+}
+
 .NB-add-site-tabs {
     display: flex;
     gap: 4px;
     flex: 1;
     min-width: 0;
     overflow: hidden;
+}
+
+.NB-add-site-tab.NB-overflow-hidden {
+    display: none;
+}
+
+.NB-add-site-tabs-overflow {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.NB-add-site-tabs-overflow-button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    height: 36px;
+    box-sizing: border-box;
+    background: #F0F0F0;
+    border: 1px solid #D0D0D0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.NB-add-site-tabs-overflow-button:hover {
+    background: #E8E8E8;
+    border-color: #BBB;
+    color: #333;
+}
+
+.NB-add-site-tabs-overflow-arrow {
+    font-size: 10px;
+    margin-left: 2px;
+}
+
+.NB-add-site-tabs-overflow-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    background: #FFF;
+    border: 1px solid #D0D0D0;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 160px;
+    padding: 4px 0;
+}
+
+.NB-add-site-tabs-overflow-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+    transition: background 0.1s ease;
+}
+
+.NB-add-site-tabs-overflow-item:hover {
+    background: #F0F0F0;
+}
+
+.NB-add-site-tabs-overflow-item-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.8;
 }
 
 .NB-add-site-tab {
@@ -24372,8 +24453,7 @@ h5.NB-classifier-section-header {
     color: #666;
     transition: all 0.15s ease;
     white-space: nowrap;
-    min-width: 0;
-    flex-shrink: 1;
+    flex-shrink: 0;
 }
 
 .NB-add-site-tab:hover {
@@ -24402,8 +24482,6 @@ h5.NB-classifier-section-header {
 
 .NB-add-site-tab-label {
     font-weight: 500;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 /* Tab Content */

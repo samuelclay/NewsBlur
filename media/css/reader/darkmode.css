@@ -3824,6 +3824,32 @@ a.mention, a.mention-group {
     color: #FFF;
 }
 
+.NB-dark .NB-add-site-tabs-overflow-button {
+    background: #2A2A2A;
+    border-color: #444;
+    color: #AAA;
+}
+
+.NB-dark .NB-add-site-tabs-overflow-button:hover {
+    background: #333;
+    border-color: #555;
+    color: #DDD;
+}
+
+.NB-dark .NB-add-site-tabs-overflow-menu {
+    background: #2A2A2A;
+    border-color: #444;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-add-site-tabs-overflow-item {
+    color: #CCC;
+}
+
+.NB-dark .NB-add-site-tabs-overflow-item:hover {
+    background: #333;
+}
+
 .NB-dark .NB-add-site-tab-content {
     background: #1A1A1A;
 }

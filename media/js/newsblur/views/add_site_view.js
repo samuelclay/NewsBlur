@@ -4,6 +4,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
     events: {
         "click .NB-add-site-tab": "switch_tab",
+        "click .NB-add-site-tabs-overflow-button": "toggle_overflow_menu",
+        "click .NB-add-site-tabs-overflow-item": "select_overflow_tab",
         "click .NB-add-site-view-toggle": "toggle_view_mode",
         "click .NB-add-site-style-button": "open_style_popover",
         "input .NB-add-site-search-input": "handle_search_input",
@@ -188,9 +190,17 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.search_query = '';
         this.search_debounced = _.debounce(_.bind(this.perform_search, this), 300);
         this.search_version = 0;  // Track search version to cancel stale responses
+        this.overflow_tabs = [];  // Tabs currently in overflow menu
 
         this.init_tab_states();
         this.render();
+
+        // Set up resize handler for tab overflow
+        this.resize_handler = _.debounce(_.bind(this.update_tab_overflow, this), 100);
+        $(window).on('resize.add_site_view', this.resize_handler);
+
+        // Initial overflow calculation after DOM is ready
+        _.defer(_.bind(this.update_tab_overflow, this));
     },
 
     init_tab_states: function () {
@@ -292,17 +302,26 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         return $.make('div', { className: 'NB-add-site-header' }, [
             $.make('div', { className: 'NB-add-site-tabs-row' }, [
-                $.make('div', { className: 'NB-add-site-tabs' },
-                    _.map(this.TABS, function(tab) {
-                        return $.make('div', {
-                            className: 'NB-add-site-tab' + (self.active_tab === tab.id ? ' NB-active' : ''),
-                            'data-tab': tab.id
-                        }, [
-                            $.make('img', { src: tab.icon, className: 'NB-add-site-tab-icon' }),
-                            $.make('span', { className: 'NB-add-site-tab-label' }, tab.label)
-                        ]);
-                    })
-                ),
+                $.make('div', { className: 'NB-add-site-tabs-container' }, [
+                    $.make('div', { className: 'NB-add-site-tabs' },
+                        _.map(this.TABS, function(tab) {
+                            return $.make('div', {
+                                className: 'NB-add-site-tab' + (self.active_tab === tab.id ? ' NB-active' : ''),
+                                'data-tab': tab.id
+                            }, [
+                                $.make('img', { src: tab.icon, className: 'NB-add-site-tab-icon' }),
+                                $.make('span', { className: 'NB-add-site-tab-label' }, tab.label)
+                            ]);
+                        })
+                    ),
+                    $.make('div', { className: 'NB-add-site-tabs-overflow NB-hidden' }, [
+                        $.make('div', { className: 'NB-add-site-tabs-overflow-button' }, [
+                            $.make('span', 'More'),
+                            $.make('span', { className: 'NB-add-site-tabs-overflow-arrow' }, '\u25BC')
+                        ]),
+                        $.make('div', { className: 'NB-add-site-tabs-overflow-menu NB-hidden' })
+                    ])
+                ]),
                 $.make('div', { className: 'NB-add-site-controls' }, [
                     $.make('div', { className: 'NB-add-site-view-toggles' }, [
                         this.make_view_toggle('grid', 'Grid view', '/media/img/icons/nouns/layout-grid.svg'),
@@ -2347,11 +2366,11 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             ]);
         } else {
             $actions = $.make('div', { className: 'NB-add-site-card-actions' }, [
-                this.make_folder_selector(feed),
                 $.make('div', {
                     className: 'NB-add-site-try-btn NB-modal-submit-button NB-modal-submit-green',
                     'data-feed-id': feed_id
                 }, 'Try'),
+                this.make_folder_selector(feed),
                 $.make('div', {
                     className: 'NB-add-site-subscribe-btn NB-modal-submit-button NB-modal-submit-grey',
                     'data-feed-id': feed_id,
@@ -2529,6 +2548,121 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.$('.NB-add-site-' + tab_id + '-tab').addClass('NB-active');
 
         this.render_active_tab();
+        this.update_tab_overflow();
+    },
+
+    update_tab_overflow: function () {
+        var self = this;
+        var $container = this.$('.NB-add-site-tabs-container');
+        var $tabs_wrapper = this.$('.NB-add-site-tabs');
+        var $overflow = this.$('.NB-add-site-tabs-overflow');
+        var $overflow_menu = this.$('.NB-add-site-tabs-overflow-menu');
+        var $controls = this.$('.NB-add-site-controls');
+
+        if (!$container.length || !$tabs_wrapper.length) return;
+
+        // Get available width for tabs (container width minus controls and overflow button)
+        var controls_width = $controls.length ? $controls.outerWidth(true) : 0;
+        var overflow_button_width = 80; // Approximate width of "More" button
+        var container_width = $container.parent().width() - controls_width - 32; // 32px padding
+
+        // First, show all tabs and reset
+        this.$('.NB-add-site-tab').removeClass('NB-overflow-hidden');
+        $overflow.addClass('NB-hidden');
+        $overflow_menu.empty();
+        this.overflow_tabs = [];
+
+        // Measure each tab and determine which fit
+        var $tabs = this.$('.NB-add-site-tab');
+        var cumulative_width = 0;
+        var visible_tabs = [];
+        var hidden_tabs = [];
+
+        $tabs.each(function (index) {
+            var $tab = $(this);
+            var tab_width = $tab.outerWidth(true);
+            var tab_id = $tab.data('tab');
+            var is_active = $tab.hasClass('NB-active');
+
+            // Active tab always stays visible
+            if (is_active) {
+                visible_tabs.push({ $tab: $tab, tab_id: tab_id, width: tab_width, is_active: true });
+                cumulative_width += tab_width;
+            } else {
+                // Check if this tab fits
+                if (cumulative_width + tab_width + overflow_button_width <= container_width) {
+                    visible_tabs.push({ $tab: $tab, tab_id: tab_id, width: tab_width, is_active: false });
+                    cumulative_width += tab_width;
+                } else {
+                    hidden_tabs.push({ $tab: $tab, tab_id: tab_id, width: tab_width, is_active: false });
+                }
+            }
+        });
+
+        // If we have hidden tabs, show overflow button and populate menu
+        if (hidden_tabs.length > 0) {
+            this.overflow_tabs = hidden_tabs;
+
+            // Hide overflow tabs
+            _.each(hidden_tabs, function (tab_info) {
+                tab_info.$tab.addClass('NB-overflow-hidden');
+            });
+
+            // Populate overflow menu
+            _.each(hidden_tabs, function (tab_info) {
+                var tab_config = _.find(self.TABS, function (t) { return t.id === tab_info.tab_id; });
+                if (tab_config) {
+                    $overflow_menu.append($.make('div', {
+                        className: 'NB-add-site-tabs-overflow-item',
+                        'data-tab': tab_info.tab_id
+                    }, [
+                        $.make('img', { src: tab_config.icon, className: 'NB-add-site-tabs-overflow-item-icon' }),
+                        $.make('span', tab_config.label)
+                    ]));
+                }
+            });
+
+            $overflow.removeClass('NB-hidden');
+        }
+    },
+
+    toggle_overflow_menu: function (e) {
+        e.stopPropagation();
+        var $menu = this.$('.NB-add-site-tabs-overflow-menu');
+        $menu.toggleClass('NB-hidden');
+
+        // Close menu when clicking outside
+        if (!$menu.hasClass('NB-hidden')) {
+            var self = this;
+            $(document).one('click.overflow_menu', function () {
+                self.$('.NB-add-site-tabs-overflow-menu').addClass('NB-hidden');
+            });
+        }
+    },
+
+    select_overflow_tab: function (e) {
+        e.stopPropagation();
+        var $item = $(e.currentTarget);
+        var tab_id = $item.data('tab');
+
+        // Close menu
+        this.$('.NB-add-site-tabs-overflow-menu').addClass('NB-hidden');
+
+        // Find the tab element and trigger switch
+        var $tab = this.$('.NB-add-site-tab[data-tab="' + tab_id + '"]');
+        if ($tab.length) {
+            // Manually switch to this tab
+            this.active_tab = tab_id;
+
+            this.$('.NB-add-site-tab').removeClass('NB-active');
+            $tab.addClass('NB-active');
+
+            this.$('.NB-add-site-tab-pane').removeClass('NB-active');
+            this.$('.NB-add-site-' + tab_id + '-tab').addClass('NB-active');
+
+            this.render_active_tab();
+            this.update_tab_overflow();
+        }
     },
 
     toggle_view_mode: function (e) {
