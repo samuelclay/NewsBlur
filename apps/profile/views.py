@@ -379,6 +379,63 @@ def paypal_ipn(request):
         return paypal_webhooks(request)
 
 
+def find_paypal_user(data, custom_field="custom_id"):
+    """Find user from PayPal webhook data with fallbacks.
+
+    Tries multiple methods to find the user:
+    1. custom_id or custom field (set during subscription creation)
+    2. PaypalIds lookup by subscription ID
+    3. User lookup by subscriber email
+
+    Returns None silently for non-NewsBlur webhooks (e.g., Crabigator).
+    """
+    resource = data.get("resource", {})
+
+    # Try custom field first (custom_id or custom)
+    custom_value = resource.get(custom_field)
+    if custom_value:
+        try:
+            return User.objects.get(pk=int(custom_value))
+        except (User.DoesNotExist, ValueError):
+            pass
+
+    # Fallback 1: Look up by subscription ID in PaypalIds
+    sub_id = resource.get("id") or resource.get("billing_agreement_id")
+    if sub_id:
+        try:
+            paypal_id = PaypalIds.objects.get(paypal_sub_id=sub_id)
+            return paypal_id.user
+        except PaypalIds.DoesNotExist:
+            pass
+
+    # Fallback 2: Look up by subscriber email
+    subscriber = resource.get("subscriber", {})
+    email = subscriber.get("email_address")
+    if email:
+        try:
+            return User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            pass
+
+    # Only log error if there was a custom field (indicating an intended NewsBlur webhook)
+    # If no custom field, this is likely a non-NewsBlur webhook (e.g., Crabigator) - ignore silently
+    if custom_value:
+        logging.user(
+            None,
+            f" ~FR~SBPayPal webhook user not found - "
+            f"event_type={data.get('event_type')} "
+            f"resource_id={resource.get('id')} "
+            f"billing_agreement_id={resource.get('billing_agreement_id')} "
+            f"subscriber_email={email} "
+            f"payer_id={subscriber.get('payer_id')} "
+            f"custom_field={custom_field}={custom_value}",
+        )
+    else:
+        logging.debug(f" ---> PayPal webhook for non-NewsBlur product, ignoring: {data.get('event_type')}")
+
+    return None
+
+
 def paypal_webhooks(request):
     try:
         data = json.decode(request.body)
@@ -390,36 +447,36 @@ def paypal_webhooks(request):
 
     if data["event_type"] == "BILLING.SUBSCRIPTION.CREATED":
         # Don't start a subscription but save it in case the payment comes before the subscription activation
-        user = User.objects.get(pk=int(data["resource"]["custom_id"]))
-        user.profile.store_paypal_sub_id(data["resource"]["id"], skip_save_primary=True)
+        user = find_paypal_user(data, custom_field="custom_id")
+        if user:
+            user.profile.store_paypal_sub_id(data["resource"]["id"], skip_save_primary=True)
     elif data["event_type"] in ["BILLING.SUBSCRIPTION.ACTIVATED", "BILLING.SUBSCRIPTION.UPDATED"]:
-        user = User.objects.get(pk=int(data["resource"]["custom_id"]))
-        user.profile.store_paypal_sub_id(data["resource"]["id"])
-        # plan_id = data['resource']['plan_id']
-        # if plan_id == Profile.plan_to_paypal_plan_id('premium'):
-        #     user.profile.activate_premium()
-        # elif plan_id == Profile.plan_to_paypal_plan_id('archive'):
-        #     user.profile.activate_archive()
-        # elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
-        #     user.profile.activate_pro()
-        user.profile.cancel_premium_stripe()
-        user.profile.setup_premium_history()
-        if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":
-            user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
+        user = find_paypal_user(data, custom_field="custom_id")
+        if user:
+            user.profile.store_paypal_sub_id(data["resource"]["id"])
+            # plan_id = data['resource']['plan_id']
+            # if plan_id == Profile.plan_to_paypal_plan_id('premium'):
+            #     user.profile.activate_premium()
+            # elif plan_id == Profile.plan_to_paypal_plan_id('archive'):
+            #     user.profile.activate_archive()
+            # elif plan_id == Profile.plan_to_paypal_plan_id('pro'):
+            #     user.profile.activate_pro()
+            user.profile.cancel_premium_stripe()
+            user.profile.setup_premium_history()
+            if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":
+                user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
     elif data["event_type"] == "PAYMENT.SALE.COMPLETED":
-        user = User.objects.get(pk=int(data["resource"]["custom"]))
-        user.profile.setup_premium_history()
+        user = find_paypal_user(data, custom_field="custom")
+        if user:
+            user.profile.setup_premium_history()
     elif data["event_type"] == "PAYMENT.CAPTURE.REFUNDED":
-        user = User.objects.get(pk=int(data["resource"]["custom_id"]))
-        user.profile.setup_premium_history()
+        user = find_paypal_user(data, custom_field="custom_id")
+        if user:
+            user.profile.setup_premium_history()
     elif data["event_type"] in ["BILLING.SUBSCRIPTION.CANCELLED", "BILLING.SUBSCRIPTION.SUSPENDED"]:
-        custom_id = data["resource"].get("custom_id", None)
-        if custom_id:
-            user = User.objects.get(pk=int(custom_id))
-        else:
-            paypal_id = PaypalIds.objects.get(paypal_sub_id=data["resource"]["id"])
-            user = paypal_id.user
-        user.profile.setup_premium_history()
+        user = find_paypal_user(data, custom_field="custom_id")
+        if user:
+            user.profile.setup_premium_history()
 
     return HttpResponse("OK")
 

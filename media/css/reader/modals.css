@@ -166,11 +166,11 @@ fieldset legend {
 
 .NB-modal .NB-modal-field h5 {}
 
-.NB-modal .NB-modal-field input[type=text] {
+.NB-modal-field input[type=text] {
     width: 446px;
     font-size: 14px;
     font-size: 14px;
-    padding: 2px;
+    padding: 4px 6px;
     margin: 0px 4px 6px;
     border: 1px solid #606060;
     -moz-box-shadow: 2px 2px 0 rgba(50, 50, 50, 0.15);
@@ -519,4 +519,285 @@ fieldset legend {
 
 .NB-modal .NB-modal-section {
     padding: 12px 0;
+}
+
+/* ================ */
+/* = Tag Settings = */
+/* ================ */
+
+/* View settings rows */
+.NB-modal-tag-settings .NB-tag-setting-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 16px;
+}
+
+.NB-modal-tag-settings .NB-tag-setting-row:last-child {
+    margin-bottom: 0;
+}
+
+.NB-modal-tag-settings .NB-tag-setting-label {
+    font-size: 13px;
+    color: #606060;
+    min-width: 90px;
+    flex-shrink: 0;
+}
+
+/* Segmented controls for view/layout */
+.NB-modal-tag-settings .segmented-control {
+    flex: 1;
+    background-color: #e8e9e5;
+    border-radius: 6px;
+    padding: 3px;
+}
+
+.NB-modal-tag-settings .segmented-control li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 8px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.NB-modal-tag-settings .segmented-control li img {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+    transition: opacity 0.15s ease;
+}
+
+.NB-modal-tag-settings .segmented-control li span {
+    display: inline;
+}
+
+.NB-modal-tag-settings .segmented-control li:hover img {
+    opacity: 0.85;
+}
+
+.NB-modal-tag-settings .segmented-control li.NB-active {
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.NB-modal-tag-settings .segmented-control li.NB-active img {
+    opacity: 1;
+}
+
+/* Saved status indicator */
+.NB-modal-tag-settings .NB-exception-option-status {
+    float: right;
+    font-size: 11px;
+    font-weight: 600;
+    color: #5a7a3a;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.NB-modal-tag-settings .NB-exception-option-status.NB-visible {
+    opacity: 1;
+}
+
+/* RSS URL section */
+.NB-modal-tag-settings .NB-tag-rss-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.NB-modal-tag-settings .NB-tag-rss-input {
+    flex: 1;
+    font-size: 11px;
+    color: #707070;
+    background-color: #f5f5f5;
+    border: 1px solid #d0d0d0;
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: text;
+}
+
+.NB-modal-tag-settings .NB-tag-rss-copy {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    font-size: 12px;
+}
+
+.NB-modal-tag-settings .NB-premium-only {
+    margin-top: 10px;
+}
+
+.NB-modal-tag-settings .NB-premium-only-text {
+    font-size: 12px;
+    color: #808080;
+}
+
+/* Rename tag section */
+.NB-modal-tag-settings .NB-tag-rename-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.NB-modal-tag-settings .NB-tag-rename-input {
+    flex: 1;
+    margin: 0;
+}
+
+/* Delete tag section */
+.NB-modal-tag-settings .NB-tag-delete-info {
+    font-size: 13px;
+    color: #606060;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.NB-modal-tag-settings .NB-tag-delete-wrapper {
+    display: flex;
+    gap: 8px;
+}
+
+.NB-modal-tag-settings .NB-tag-delete-confirm {
+    display: none;
+}
+
+.NB-modal-tag-settings .NB-tag-rename-error,
+.NB-modal-tag-settings .NB-tag-delete-error {
+    margin-top: 8px;
+}
+
+/* ================================ */
+/* = Site/Folder Settings - View  = */
+/* ================================ */
+
+/* Saved status indicator */
+.NB-modal-exception .NB-exception-option-status {
+    float: right;
+    font-size: 11px;
+    font-weight: 600;
+    color: #5a7a3a;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* View settings rows */
+.NB-modal-exception .NB-view-setting-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 16px;
+}
+
+.NB-modal-exception .NB-view-setting-row:last-child {
+    margin-bottom: 0;
+}
+
+.NB-modal-exception .NB-view-setting-label {
+    font-size: 13px;
+    color: #606060;
+    min-width: 90px;
+    flex-shrink: 0;
+}
+
+/* Segmented controls for view/layout */
+.NB-modal-exception .NB-exception-option-view .segmented-control {
+    flex: 1;
+    background-color: #e8e9e5;
+    border-radius: 6px;
+    padding: 3px;
+}
+
+.NB-modal-exception .NB-exception-option-view .segmented-control li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.NB-modal-exception .NB-exception-option-view .segmented-control li img {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+    transition: opacity 0.15s ease;
+}
+
+.NB-modal-exception .NB-exception-option-view .segmented-control li span {
+    display: inline;
+}
+
+.NB-modal-exception .NB-exception-option-view .segmented-control li:hover img {
+    opacity: 0.85;
+}
+
+.NB-modal-exception .NB-exception-option-view .segmented-control li.NB-active {
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.NB-modal-exception .NB-exception-option-view .segmented-control li.NB-active img {
+    opacity: 1;
+}
+
+/* Folder RSS Feed Address section */
+.NB-modal-exception .NB-folder-rss-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.NB-modal-exception .NB-folder-rss-row:last-of-type {
+    margin-bottom: 0;
+}
+
+.NB-modal-exception .NB-folder-rss-label {
+    width: 100px;
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: #505050;
+}
+
+.NB-modal-exception .NB-folder-rss-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.NB-modal-exception .NB-folder-rss-wrapper input[type="text"].NB-folder-rss-input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    margin: 0;
+    font-size: 11px;
+    color: #707070;
+    background-color: #f5f5f5;
+    border: 1px solid #d0d0d0;
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: text;
+}
+
+.NB-modal-exception .NB-folder-rss-copy {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    font-size: 12px;
+}
+
+.NB-modal-exception .NB-premium-only {
+    margin-top: 12px;
+}
+
+.NB-modal-exception .NB-premium-only-text {
+    font-size: 12px;
+    color: #808080;
 }

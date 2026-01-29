@@ -543,6 +543,7 @@ class MUserFeedNotification(mongo.Document):
             classifier_tags=classifiers.get("tags", []),
             classifier_texts=classifiers.get("texts", []),
             classifier_feeds=classifiers.get("feeds", []),
+            classifier_urls=classifiers.get("urls", []),
         )
 
         return score

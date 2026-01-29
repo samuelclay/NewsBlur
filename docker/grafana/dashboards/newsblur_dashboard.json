@@ -391,6 +391,182 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 230,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"archive\"}",
+          "legendFormat": "Archive Users",
+          "refId": "A"
+        }
+      ],
+      "title": "Premium Archive Users",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 231,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "expr": "users{category=\"pro\"}",
+          "legendFormat": "Pro Users",
+          "refId": "A"
+        }
+      ],
+      "title": "Premium Pro Users",
+      "type": "timeseries"
+    },
+    {
       "collapsed": false,
       "datasource": {
         "type": "datasource",
@@ -400,7 +576,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 17
       },
       "id": 105,
       "panels": [],
@@ -479,7 +655,7 @@
         "h": 10,
         "w": 8,
         "x": 0,
-        "y": 10
+        "y": 18
       },
       "id": 97,
       "options": {
@@ -610,7 +786,7 @@
         "h": 10,
         "w": 8,
         "x": 8,
-        "y": 10
+        "y": 18
       },
       "id": 106,
       "options": {
@@ -738,7 +914,7 @@
         "h": 10,
         "w": 8,
         "x": 16,
-        "y": 10
+        "y": 18
       },
       "id": 103,
       "options": {
@@ -872,7 +1048,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 28
       },
       "id": 101,
       "options": {
@@ -972,7 +1148,7 @@
         "h": 5,
         "w": 8,
         "x": 0,
-        "y": 28
+        "y": 36
       },
       "id": 99,
       "options": {
@@ -1101,7 +1277,7 @@
         "h": 5,
         "w": 8,
         "x": 8,
-        "y": 28
+        "y": 36
       },
       "id": 86,
       "options": {
@@ -1239,7 +1415,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 41
       },
       "id": 90,
       "panels": [],
@@ -1341,7 +1517,7 @@
         "h": 7,
         "w": 18,
         "x": 0,
-        "y": 34
+        "y": 42
       },
       "id": 88,
       "options": {
@@ -1538,7 +1714,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 34
+        "y": 42
       },
       "id": 93,
       "options": {
@@ -1734,7 +1910,7 @@
         "h": 7,
         "w": 18,
         "x": 0,
-        "y": 41
+        "y": 49
       },
       "id": 91,
       "options": {
@@ -1931,7 +2107,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 41
+        "y": 49
       },
       "id": 92,
       "options": {
@@ -2051,7 +2227,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 56
       },
       "id": 20,
       "panels": [],
@@ -2129,7 +2305,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 49
+        "y": 57
       },
       "id": 2,
       "options": {
@@ -2229,7 +2405,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 49
+        "y": 57
       },
       "id": 6,
       "options": {
@@ -2373,7 +2549,7 @@
         "h": 26,
         "w": 24,
         "x": 0,
-        "y": 57
+        "y": 65
       },
       "id": 84,
       "options": {
@@ -2407,6 +2583,46 @@
       "type": "state-timeline"
     },
     {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                9
+              ],
+              "type": "lt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "15m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "min"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "15m",
+        "frequency": "1m",
+        "handler": 1,
+        "message": "Consul service is unhealthy for more than 15 minutes",
+        "name": "Consul Service Health alert",
+        "noDataState": "no_data",
+        "notifications": [
+          {
+            "uid": "qKkGfxqGk"
+          }
+        ]
+      },
       "datasource": {
         "type": "prometheus",
         "uid": "U1-fPO3Mk"
@@ -2471,7 +2687,7 @@
         "h": 16,
         "w": 24,
         "x": 0,
-        "y": 81
+        "y": 89
       },
       "id": 85,
       "options": {
@@ -2517,7 +2733,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 91
+        "y": 99
       },
       "id": 4,
       "panels": [],
@@ -2566,7 +2782,7 @@
         "h": 21,
         "w": 24,
         "x": 0,
-        "y": 84
+        "y": 92
       },
       "id": 10,
       "options": {
@@ -2664,7 +2880,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 105
+        "y": 113
       },
       "id": 48,
       "options": {
@@ -2710,7 +2926,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 112
+        "y": 120
       },
       "id": 42,
       "panels": [],
@@ -2787,7 +3003,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 113
+        "y": 121
       },
       "id": 33,
       "options": {
@@ -2883,7 +3099,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 113
+        "y": 121
       },
       "id": 28,
       "options": {
@@ -2996,7 +3212,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 121
+        "y": 129
       },
       "id": 30,
       "options": {
@@ -3094,7 +3310,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 121
+        "y": 129
       },
       "id": 32,
       "options": {
@@ -3190,7 +3406,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 129
+        "y": 137
       },
       "id": 12,
       "options": {
@@ -3286,7 +3502,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 129
+        "y": 137
       },
       "id": 26,
       "options": {
@@ -3328,7 +3544,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 137
+        "y": 145
       },
       "id": 50,
       "panels": [],
@@ -3404,7 +3620,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 138
+        "y": 146
       },
       "id": 52,
       "options": {
@@ -3496,7 +3712,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 138
+        "y": 146
       },
       "id": 54,
       "options": {
@@ -3588,7 +3804,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 146
+        "y": 154
       },
       "id": 60,
       "options": {
@@ -3680,7 +3896,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 146
+        "y": 154
       },
       "id": 56,
       "options": {
@@ -3722,7 +3938,320 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 154
+        "y": 162
+      },
+      "id": 220,
+      "panels": [],
+      "title": "Replication Lag",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 10,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 0,
+        "y": 163
+      },
+      "id": 221,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "expr": "max(redis_replication_lag_seconds)",
+          "legendFormat": "Redis",
+          "refId": "A"
+        }
+      ],
+      "title": "Redis Replication Lag",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 10,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 8,
+        "y": 163
+      },
+      "id": 222,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "expr": "max(postgres_replication_lag_seconds)",
+          "legendFormat": "Postgres",
+          "refId": "A"
+        }
+      ],
+      "title": "Postgres Replication Lag",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 10,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 163
+      },
+      "id": 223,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "expr": "max(mongo_replication_max_lag_seconds)",
+          "legendFormat": "Mongo",
+          "refId": "A"
+        }
+      ],
+      "title": "Mongo Replication Lag",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 169
+      },
+      "id": 224,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "expr": "redis_replication_lag_seconds",
+          "legendFormat": "Redis {{instance}} slave {{slave}}",
+          "refId": "A"
+        },
+        {
+          "expr": "postgres_replication_lag_seconds",
+          "legendFormat": "Postgres {{instance}} \u2192 {{client}}",
+          "refId": "B"
+        },
+        {
+          "expr": "mongo_replication_lag_seconds",
+          "legendFormat": "Mongo {{db}} \u2192 {{secondary}}",
+          "refId": "C"
+        }
+      ],
+      "title": "All Replication Lag Over Time",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "datasource": {
+        "type": "datasource",
+        "uid": "grafana"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 177
       },
       "id": 62,
       "panels": [],
@@ -3798,7 +4327,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 155
+        "y": 178
       },
       "id": 80,
       "options": {
@@ -3890,7 +4419,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 155
+        "y": 178
       },
       "id": 116,
       "options": {
@@ -3979,7 +4508,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 163
+        "y": 186
       },
       "id": 75,
       "options": {
@@ -4075,7 +4604,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 163
+        "y": 186
       },
       "id": 136,
       "options": {
@@ -4165,7 +4694,7 @@
         "h": 7,
         "w": 6,
         "x": 0,
-        "y": 171
+        "y": 194
       },
       "id": 114,
       "options": {
@@ -4257,7 +4786,7 @@
         "h": 7,
         "w": 6,
         "x": 6,
-        "y": 171
+        "y": 194
       },
       "id": 78,
       "options": {
@@ -4349,7 +4878,7 @@
         "h": 7,
         "w": 6,
         "x": 12,
-        "y": 171
+        "y": 194
       },
       "id": 120,
       "options": {
@@ -4438,7 +4967,7 @@
         "h": 7,
         "w": 6,
         "x": 18,
-        "y": 171
+        "y": 194
       },
       "id": 118,
       "options": {
@@ -4528,7 +5057,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 178
+        "y": 201
       },
       "id": 130,
       "options": {
@@ -4617,7 +5146,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 178
+        "y": 201
       },
       "id": 128,
       "options": {
@@ -4708,7 +5237,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 178
+        "y": 201
       },
       "id": 126,
       "options": {
@@ -4797,7 +5326,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 178
+        "y": 201
       },
       "id": 122,
       "options": {
@@ -4890,7 +5419,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 186
+        "y": 209
       },
       "id": 66,
       "options": {
@@ -5053,7 +5582,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 186
+        "y": 209
       },
       "id": 110,
       "options": {
@@ -5201,7 +5730,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 194
+        "y": 217
       },
       "id": 71,
       "options": {
@@ -5349,7 +5878,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 194
+        "y": 217
       },
       "id": 111,
       "options": {
@@ -5497,7 +6026,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 202
+        "y": 225
       },
       "id": 72,
       "options": {
@@ -5631,7 +6160,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 202
+        "y": 225
       },
       "id": 112,
       "options": {
@@ -5776,7 +6305,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 210
+        "y": 233
       },
       "id": 73,
       "options": {
@@ -5875,7 +6404,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 210
+        "y": 233
       },
       "id": 64,
       "options": {
@@ -5966,7 +6495,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 216
+        "y": 239
       },
       "id": 138,
       "options": {
@@ -6005,7 +6534,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 224
+        "y": 247
       },
       "id": 68,
       "panels": [],
@@ -6082,7 +6611,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 225
+        "y": 248
       },
       "id": 70,
       "options": {
@@ -6175,7 +6704,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 225
+        "y": 248
       },
       "id": 76,
       "options": {
@@ -6267,7 +6796,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 230
+        "y": 253
       },
       "id": 146,
       "options": {
@@ -6357,7 +6886,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 230
+        "y": 253
       },
       "id": 144,
       "options": {
@@ -6446,7 +6975,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 238
+        "y": 261
       },
       "id": 142,
       "options": {
@@ -6535,7 +7064,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 238
+        "y": 261
       },
       "id": 140,
       "options": {
@@ -6575,7 +7104,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 246
+        "y": 269
       },
       "id": 16,
       "panels": [],
@@ -6677,7 +7206,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 247
+        "y": 270
       },
       "id": 35,
       "options": {
@@ -6769,7 +7298,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 247
+        "y": 270
       },
       "id": 18,
       "options": {
@@ -6861,7 +7390,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 247
+        "y": 270
       },
       "id": 8,
       "options": {
@@ -6953,7 +7482,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 255
+        "y": 278
       },
       "id": 14,
       "options": {
@@ -7045,7 +7574,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 255
+        "y": 278
       },
       "id": 24,
       "options": {
@@ -7137,7 +7666,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 255
+        "y": 278
       },
       "id": 134,
       "options": {
@@ -7228,7 +7757,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 263
+        "y": 286
       },
       "id": 148,
       "options": {
@@ -7268,7 +7797,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 270
+        "y": 293
       },
       "id": 40,
       "panels": [],
@@ -7345,7 +7874,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 271
+        "y": 294
       },
       "id": 108,
       "options": {
@@ -7436,7 +7965,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 271
+        "y": 294
       },
       "id": 95,
       "options": {
@@ -7506,7 +8035,7 @@
         "h": 43,
         "w": 24,
         "x": 0,
-        "y": 279
+        "y": 302
       },
       "id": 37,
       "options": {
@@ -7551,7 +8080,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 323
+        "y": 346
       },
       "id": 149,
       "panels": [],
@@ -7628,7 +8157,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 324
+        "y": 347
       },
       "id": 150,
       "options": {
@@ -7692,7 +8221,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -7721,7 +8250,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 324
+        "y": 347
       },
       "id": 151,
       "options": {
@@ -7814,7 +8343,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 324
+        "y": 347
       },
       "id": 152,
       "options": {
@@ -7907,7 +8436,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 332
+        "y": 355
       },
       "id": 153,
       "options": {
@@ -7971,7 +8500,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -8000,7 +8529,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 332
+        "y": 355
       },
       "id": 154,
       "options": {
@@ -8064,7 +8593,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -8093,7 +8622,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 332
+        "y": 355
       },
       "id": 155,
       "options": {
@@ -8157,7 +8686,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -8186,7 +8715,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 340
+        "y": 363
       },
       "id": 156,
       "options": {
@@ -8250,7 +8779,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -8279,7 +8808,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 340
+        "y": 363
       },
       "id": 157,
       "options": {
@@ -8343,7 +8872,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -8372,7 +8901,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 340
+        "y": 363
       },
       "id": 158,
       "options": {
@@ -8436,7 +8965,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -8465,7 +8994,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 348
+        "y": 371
       },
       "id": 159,
       "options": {
@@ -8529,7 +9058,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -8558,7 +9087,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 348
+        "y": 371
       },
       "id": 160,
       "options": {
@@ -8592,193 +9121,604 @@
     },
     {
       "collapsed": false,
-      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 356},
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 379
+      },
       "id": 200,
       "panels": [],
       "title": "LLM Costs",
       "type": "row"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Total LLM API spend for today (resets at midnight UTC)",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "thresholds"},
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green", "value": null},
-              {"color": "yellow", "value": 1},
-              {"color": "orange", "value": 5},
-              {"color": "red", "value": 10}
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "orange",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
             ]
           },
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 357},
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 380
+      },
       "id": 201,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
+        "justifyMode": "center",
         "orientation": "auto",
-        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
-        "textMode": "auto"
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
       },
-      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",period=\"daily\"}", "legendFormat": "Daily Cost", "refId": "A"}],
-      "title": "Daily Cost (USD)",
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "Today",
+          "refId": "A"
+        }
+      ],
+      "title": "Today's Cost",
       "type": "stat"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Rolling 7-day LLM API spend",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "thresholds"},
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green", "value": null},
-              {"color": "yellow", "value": 10},
-              {"color": "orange", "value": 50},
-              {"color": "red", "value": 100}
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "orange",
+                "value": 50
+              },
+              {
+                "color": "red",
+                "value": 100
+              }
             ]
           },
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 357},
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 4,
+        "y": 380
+      },
       "id": 202,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
+        "justifyMode": "center",
         "orientation": "auto",
-        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
-        "textMode": "auto"
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
       },
-      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",period=\"weekly\"}", "legendFormat": "Weekly Cost", "refId": "A"}],
-      "title": "Weekly Cost (USD)",
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",period=\"weekly\"}",
+          "instant": true,
+          "legendFormat": "This Week",
+          "refId": "A"
+        }
+      ],
+      "title": "This Week's Cost",
       "type": "stat"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Rolling 30-day LLM API spend",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "thresholds"},
+          "color": {
+            "mode": "thresholds"
+          },
           "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green", "value": null},
-              {"color": "yellow", "value": 50},
-              {"color": "orange", "value": 200},
-              {"color": "red", "value": 500}
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "orange",
+                "value": 200
+              },
+              {
+                "color": "red",
+                "value": 500
+              }
             ]
           },
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 357},
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 8,
+        "y": 380
+      },
       "id": 203,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
-        "justifyMode": "auto",
+        "justifyMode": "center",
         "orientation": "auto",
-        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
-        "textMode": "auto"
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
       },
-      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",period=\"monthly\"}", "legendFormat": "Monthly Cost", "refId": "A"}],
-      "title": "Monthly Cost (USD)",
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",period=\"monthly\"}",
+          "instant": true,
+          "legendFormat": "This Month",
+          "refId": "A"
+        }
+      ],
+      "title": "This Month's Cost",
       "type": "stat"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Number of LLM API calls made today",
       "fieldConfig": {
         "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
           "mappings": [],
-          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 357},
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 12,
+        "y": 380
+      },
       "id": 204,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
+        "graphMode": "none",
+        "justifyMode": "center",
         "orientation": "auto",
-        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
-        "textMode": "auto"
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
       },
-      "targets": [{"expr": "llm_costs{metric=\"requests\",period=\"daily\"}", "legendFormat": "Daily Requests", "refId": "A"}],
-      "title": "Daily Requests",
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"requests\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "Requests Today",
+          "refId": "A"
+        }
+      ],
+      "title": "Today's Requests",
       "type": "stat"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Number of LLM API calls in the last 7 days",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
-          "custom": {"hideFrom": {"legend": false, "tooltip": false, "viz": false}},
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 16,
+        "y": 380
+      },
+      "id": 208,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"requests\",period=\"weekly\"}",
+          "instant": true,
+          "legendFormat": "Requests This Week",
+          "refId": "A"
+        }
+      ],
+      "title": "This Week's Requests",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Number of LLM API calls in the last 30 days",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 380
+      },
+      "id": 209,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"requests\",period=\"monthly\"}",
+          "instant": true,
+          "legendFormat": "Requests This Month",
+          "refId": "A"
+        }
+      ],
+      "title": "This Month's Requests",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Today's cost breakdown by AI provider (OpenAI, Anthropic, Google, xAI)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
           "decimals": 2,
           "mappings": [],
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 361},
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 385
+      },
       "id": 205,
       "options": {
-        "displayLabels": ["name", "value"],
-        "legend": {"displayMode": "list", "placement": "right", "showLegend": true},
-        "pieType": "pie",
-        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
-        "tooltip": {"mode": "single", "sort": "none"}
+        "displayLabels": [
+          "name",
+          "value"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
-      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",provider=~\".+\",period=\"daily\"}", "legendFormat": "{{provider}}", "refId": "A"}],
-      "title": "Daily Cost by Provider",
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",provider=~\".+\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "{{provider}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Today's Cost by Provider",
       "type": "piechart"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Today's cost breakdown by feature (Ask AI, Archive Assistant, Search Embeddings, etc.)",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
-          "custom": {"hideFrom": {"legend": false, "tooltip": false, "viz": false}},
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
           "decimals": 2,
           "mappings": [],
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 361},
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 385
+      },
       "id": 206,
       "options": {
-        "displayLabels": ["name", "value"],
-        "legend": {"displayMode": "list", "placement": "right", "showLegend": true},
-        "pieType": "pie",
-        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
-        "tooltip": {"mode": "single", "sort": "none"}
+        "displayLabels": [
+          "name",
+          "value"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
-      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",feature=~\".+\",period=\"daily\"}", "legendFormat": "{{feature}}", "refId": "A"}],
-      "title": "Daily Cost by Feature",
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",feature=~\".+\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "{{feature}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Today's Cost by Feature",
       "type": "piechart"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "U1-fPO3Mk"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Today's cost breakdown by specific model (claude-opus, gpt-5.2, gemini-3, etc.)",
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "decimals": 2,
+          "mappings": [],
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 385
+      },
+      "id": 210,
+      "options": {
+        "displayLabels": [
+          "name",
+          "value"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",model=~\".+\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "{{model}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Today's Cost by Model",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "description": "Historical cost trend by provider over time",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
@@ -8786,33 +9726,73 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {"legend": false, "tooltip": false, "viz": false},
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
+            "fillOpacity": 20,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
             "pointSize": 5,
-            "scaleDistribution": {"type": "linear"},
+            "scaleDistribution": {
+              "type": "linear"
+            },
             "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {"group": "A", "mode": "none"},
-            "thresholdsStyle": {"mode": "off"}
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
           },
-          "decimals": 4,
+          "decimals": 2,
           "mappings": [],
-          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
           "unit": "currencyUSD"
         },
         "overrides": []
       },
-      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 361},
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 385
+      },
       "id": 207,
       "options": {
-        "legend": {"calcs": ["sum", "mean"], "displayMode": "table", "placement": "bottom", "showLegend": true},
-        "tooltip": {"mode": "multi", "sort": "desc"}
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
-      "targets": [{"expr": "llm_costs{metric=\"cost_usd\",provider=~\".+\",period=\"daily\"}", "legendFormat": "{{provider}}", "refId": "A"}],
-      "title": "Cost Over Time by Provider",
+      "targets": [
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",provider=~\".+\",period=\"daily\"}",
+          "legendFormat": "{{provider}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Cost Trend by Provider",
       "type": "timeseries"
     },
     {
@@ -8821,7 +9801,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 369
+        "y": 392
       },
       "id": 161,
       "panels": [],
@@ -8999,7 +9979,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 370
+        "y": 393
       },
       "id": 162,
       "options": {
@@ -9011,7 +9991,12 @@
           "show": false
         },
         "showHeader": true,
-        "sortBy": [{"displayName": "Rank", "desc": false}]
+        "sortBy": [
+          {
+            "displayName": "Rank",
+            "desc": false
+          }
+        ]
       },
       "pluginVersion": "9.0.2",
       "targets": [
@@ -9068,6 +10053,262 @@
           "color": {
             "mode": "thresholds"
           },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Avg Read Time"
+              },
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "rank"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Rank"
+              },
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "feed_title"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Feed"
+              },
+              {
+                "id": "custom.width",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "story_title"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Story Title"
+              },
+              {
+                "id": "custom.width",
+                "value": 300
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "feed_id"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Feed ID"
+              },
+              {
+                "id": "custom.width",
+                "value": 100
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "View Feed",
+                    "url": "https://www.newsblur.com/site/${__value.text}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "story_hash"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Story Hash"
+              },
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "story_date"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Story Date"
+              },
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "reader_count"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Readers"
+              },
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "total_seconds"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Total Time"
+              },
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 403
+      },
+      "id": 208,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Rank",
+            "desc": false
+          }
+        ]
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": false,
+          "expr": "trending{metric=\"long_read\",days=\"$days\"}",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Long Reads (\u22653 Readers by Avg Time)",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "days": true,
+              "instance": true,
+              "job": true,
+              "metric": true
+            },
+            "indexByName": {
+              "rank": 0,
+              "feed_title": 1,
+              "story_title": 2,
+              "Value": 3,
+              "reader_count": 4,
+              "total_seconds": 5,
+              "story_date": 6,
+              "feed_id": 7,
+              "story_hash": 8
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "U1-fPO3Mk"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -9094,7 +10335,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 390
+        "y": 423
       },
       "id": 163,
       "options": {
@@ -9164,7 +10405,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 390
+        "y": 423
       },
       "id": 164,
       "options": {
@@ -9234,7 +10475,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 390
+        "y": 423
       },
       "id": 165,
       "options": {
@@ -9300,7 +10541,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -9325,7 +10566,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 398
+        "y": 431
       },
       "id": 166,
       "options": {
@@ -9413,7 +10654,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 398
+        "y": 431
       },
       "id": 167,
       "options": {
@@ -9480,7 +10721,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 406
+        "y": 439
       },
       "id": 168,
       "options": {
@@ -9550,7 +10791,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 406
+        "y": 439
       },
       "id": 169,
       "options": {
@@ -9590,7 +10831,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 414
+        "y": 447
       },
       "id": 171,
       "panels": [],
@@ -9724,7 +10965,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 380
+        "y": 403
       },
       "id": 172,
       "options": {
@@ -9736,7 +10977,12 @@
           "show": false
         },
         "showHeader": true,
-        "sortBy": [{"displayName": "Rank", "desc": false}]
+        "sortBy": [
+          {
+            "displayName": "Rank",
+            "desc": false
+          }
+        ]
       },
       "pluginVersion": "9.0.2",
       "targets": [
@@ -9818,7 +11064,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 415
+        "y": 448
       },
       "id": 173,
       "options": {
@@ -9888,7 +11134,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 415
+        "y": 448
       },
       "id": 174,
       "options": {
@@ -9980,7 +11226,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 415
+        "y": 448
       },
       "id": 175,
       "options": {
@@ -10021,7 +11267,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 423
+        "y": 457
       },
       "id": 176,
       "panels": [],
@@ -10098,7 +11344,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 419
+        "y": 458
       },
       "id": 177,
       "options": {
@@ -10190,7 +11436,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 419
+        "y": 458
       },
       "id": 178,
       "options": {
@@ -10267,6 +11513,11 @@
           "color": {
             "mode": "thresholds"
           },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": true
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -10276,31 +11527,205 @@
                 "value": null
               }
             ]
-          },
-          "unit": "short"
+          }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "username"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Username"
+              },
+              {
+                "id": "custom.width",
+                "value": 120
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duration"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Duration"
+              },
+              {
+                "id": "custom.width",
+                "value": 100
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 365
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "days_active"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Days"
+              },
+              {
+                "id": "custom.width",
+                "value": 60
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 365
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "tier"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Tier"
+              },
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "feeds"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Feeds"
+              },
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "stories_read"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Stories Read"
+              },
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "payments"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "$ Paid"
+              },
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "date_deleted"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Deleted"
+              },
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
+        "h": 12,
+        "w": 24,
         "x": 0,
-        "y": 427
+        "y": 466
       },
-      "id": 179,
+      "id": 211,
       "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+        "footer": {
           "fields": "",
-          "values": false
+          "reducer": [
+            "sum"
+          ],
+          "show": false
         },
-        "textMode": "auto"
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Deleted",
+            "desc": true
+          }
+        ]
       },
       "pluginVersion": "9.0.2",
       "targets": [
@@ -10309,194 +11734,50 @@
             "type": "prometheus",
             "uid": "U1-fPO3Mk"
           },
-          "exemplar": true,
-          "expr": "deleted_users{category=\"avg_feeds\"}",
+          "exemplar": false,
+          "expr": "deleted_user_entry",
+          "format": "table",
+          "instant": true,
           "interval": "",
-          "legendFormat": "Avg Feeds",
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "exemplar": true,
-          "expr": "deleted_users{category=\"avg_read_stories\"}",
-          "interval": "",
-          "legendFormat": "Avg Stories Read",
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "exemplar": true,
-          "expr": "deleted_users{category=\"avg_payments\"}",
-          "interval": "",
-          "legendFormat": "Avg Lifetime Payments ($)",
-          "refId": "C"
-        }
-      ],
-      "title": "Deleted User Averages",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "U1-fPO3Mk"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              }
-            ]
-          },
-          "unit": "currencyUSD"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 427
-      },
-      "id": 180,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "9.0.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "exemplar": true,
-          "expr": "deleted_users{category=\"total_revenue_lost\"}",
-          "interval": "",
-          "legendFormat": "Total Revenue Lost",
+          "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Total Revenue Lost from Deleted Users",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "U1-fPO3Mk"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 427
-      },
-      "id": 181,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "9.0.2",
-      "targets": [
+      "title": "Recently Deleted Users",
+      "transformations": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "exemplar": true,
-          "expr": "deleted_users{category=\"free\"}",
-          "interval": "",
-          "legendFormat": "Free Users",
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "exemplar": true,
-          "expr": "deleted_users{category=\"premium\"}",
-          "interval": "",
-          "legendFormat": "Premium Users",
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "exemplar": true,
-          "expr": "deleted_users{category=\"archive\"}",
-          "interval": "",
-          "legendFormat": "Archive Users",
-          "refId": "C"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "exemplar": true,
-          "expr": "deleted_users{category=\"pro\"}",
-          "interval": "",
-          "legendFormat": "Pro Users",
-          "refId": "D"
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "instance": true,
+              "job": true,
+              "Value": true,
+              "last_seen": true,
+              "starred": true,
+              "shared": true,
+              "payment_count": true,
+              "followers": true,
+              "following": true,
+              "email": true,
+              "date_joined": true
+            },
+            "indexByName": {
+              "username": 0,
+              "duration": 1,
+              "days_active": 2,
+              "tier": 3,
+              "feeds": 4,
+              "stories_read": 5,
+              "payments": 6,
+              "date_deleted": 7
+            },
+            "renameByName": {}
+          }
         }
       ],
-      "title": "Deleted Users by Tier",
-      "type": "stat"
+      "type": "table"
     }
   ],
   "refresh": "5s",

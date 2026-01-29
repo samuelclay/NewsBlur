@@ -1,4 +1,5 @@
 import datetime
+import time
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -35,13 +36,29 @@ def FreshenHomepage():
 
 @app.task(name="clean-analytics", time_limit=720 * 10)
 def CleanAnalytics():
-    logging.debug(
-        " ---> Cleaning analytics... %s feed fetches"
-        % (settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.count(),)
-    )
+    total_count = settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.count_documents({})
+    logging.debug(" ---> Cleaning analytics... %s feed fetches" % total_count)
+
     day_ago = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-    settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.delete_many(
-        {
-            "date": {"$lt": day_ago},
-        }
-    )
+    query = {"date": {"$lt": day_ago}}
+    batch_size = 10000
+    total_deleted = 0
+
+    while True:
+        # Find a batch of document IDs to delete
+        docs = list(
+            settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.find(query, {"_id": 1}).limit(batch_size)
+        )
+        if not docs:
+            break
+
+        ids = [doc["_id"] for doc in docs]
+        result = settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.delete_many({"_id": {"$in": ids}})
+        total_deleted += result.deleted_count
+
+        logging.debug(" ---> Deleted %s feed fetches (%s total)" % (result.deleted_count, total_deleted))
+
+        # Brief pause to let MongoDB breathe
+        time.sleep(0.5)
+
+    logging.debug(" ---> Finished cleaning analytics, deleted %s feed fetches" % total_deleted)

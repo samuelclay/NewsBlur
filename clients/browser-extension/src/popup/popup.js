@@ -491,7 +491,7 @@ function setupEventListeners() {
 }
 
 /**
- * Handle OAuth login
+ * Handle OAuth login using authorization code flow
  */
 async function handleLogin() {
     try {
@@ -499,29 +499,74 @@ async function handleLogin() {
         const authUrl = new URL(getOAuthAuthorizeUrl(currentServerUrl));
         authUrl.searchParams.set('client_id', OAUTH_CONFIG.CLIENT_ID);
         authUrl.searchParams.set('redirect_uri', redirectUri);
-        authUrl.searchParams.set('response_type', 'token');
+        authUrl.searchParams.set('response_type', 'code');
         authUrl.searchParams.set('scope', OAUTH_CONFIG.SCOPE);
+
+        console.log('NewsBlur Archive: Starting OAuth flow with URL:', authUrl.toString());
 
         const responseUrl = await extApi.identity.launchWebAuthFlow({
             url: authUrl.toString(),
             interactive: true
         });
 
-        // Extract token from response URL
-        const hashParams = new URLSearchParams(
-            new URL(responseUrl).hash.substring(1)
-        );
-        const token = hashParams.get('access_token');
+        console.log('NewsBlur Archive: OAuth response URL:', responseUrl);
 
-        if (token) {
-            await sendMessage({ action: 'setToken', token });
-            showMainSection();
-            const status = await sendMessage({ action: 'getStatus' });
-            await loadData(status);
+        // Extract authorization code from response URL (query params, not hash)
+        const urlObj = new URL(responseUrl);
+        const code = urlObj.searchParams.get('code');
+        const error = urlObj.searchParams.get('error');
+
+        if (error) {
+            const errorDesc = urlObj.searchParams.get('error_description') || error;
+            throw new Error('Authorization failed: ' + errorDesc);
         }
+
+        if (!code) {
+            throw new Error('No authorization code received');
+        }
+
+        console.log('NewsBlur Archive: Got authorization code, exchanging for token...');
+
+        // Exchange authorization code for token
+        const tokenResponse = await fetch(currentServerUrl + '/oauth/token/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                grant_type: 'authorization_code',
+                code: code,
+                redirect_uri: redirectUri,
+                client_id: OAUTH_CONFIG.CLIENT_ID
+            }).toString()
+        });
+
+        const tokenData = await tokenResponse.json();
+
+        if (!tokenResponse.ok || tokenData.error) {
+            throw new Error('Token exchange failed: ' + (tokenData.error_description || tokenData.error || 'Unknown error'));
+        }
+
+        if (!tokenData.access_token) {
+            throw new Error('No access token in response');
+        }
+
+        console.log('NewsBlur Archive: Token received successfully');
+
+        // Send token to service worker
+        await sendMessage({
+            action: 'setToken',
+            token: tokenData.access_token,
+            refreshToken: tokenData.refresh_token,
+            expiresIn: tokenData.expires_in
+        });
+
+        showMainSection();
+        const status = await sendMessage({ action: 'getStatus' });
+        await loadData(status);
     } catch (error) {
         console.error('Login error:', error);
-        alert('Login failed. Please try again.');
+        alert('Login failed: ' + error.message);
     }
 }
 

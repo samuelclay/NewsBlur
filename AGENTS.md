@@ -1,5 +1,25 @@
 # NewsBlur Development Guidelines
 
+## Ask Questions Liberally
+
+**Use the AskUserQuestion tool frequently throughout development - not just during planning.**
+
+Asking questions is encouraged and appreciated because it:
+- Helps both of us think through problems more clearly
+- Surfaces edge cases and requirements that might be missed
+- Leads to better solutions through collaborative dialogue
+- Catches misunderstandings early before code is written
+
+Ask about:
+- Clarifying requirements and desired behavior
+- UI/UX preferences and design decisions
+- Trade-offs between different approaches
+- Edge cases and error handling
+- Whether a proposed solution matches expectations
+- Anything you're uncertain about
+
+Don't assume - ask. Multiple rounds of questions are better than one large batch. Even mid-implementation, if something feels unclear or you're choosing between options, ask. The interactive back-and-forth is valuable.
+
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
 
@@ -130,6 +150,12 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 ## Browser Testing with Chrome DevTools MCP
 - Local dev: `https://localhost` (when using containers directly)
 - **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts
+
+### Dev Auto-Login (DEBUG mode only)
+- `https://localhost/reader/dev/autologin/` - Login as default dev user (configured in `DEV_AUTOLOGIN_USERNAME`)
+- `https://localhost/reader/dev/autologin/<username>/` - Login as specific user
+- Add `?next=/path` to redirect after login
+- Returns 403 Forbidden in production (DEBUG=False)
 
 ### Test Query Parameters
 - `?test=growth` - Test growth prompts (bypasses premium check and cooldowns)
