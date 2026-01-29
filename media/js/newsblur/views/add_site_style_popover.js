@@ -49,7 +49,6 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-style-row' }, [
                 $.make('div', { className: 'NB-style-label' }, 'Sort By'),
                 $.make('ul', { className: 'segmented-control NB-options-sort-order' }, [
-                    $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-relevance', role: "button" }, 'Relevance'),
                     $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-subscribers', role: "button" }, 'Subscribers'),
                     $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-stories', role: "button" }, 'Stories'),
                     $.make('li', { className: 'NB-sort-order-option NB-options-sort-order-name', role: "button" }, 'Name')
@@ -119,7 +118,7 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
         if (stories_count === undefined || stories_count === null) stories_count = 3;
         var image_preview = NEWSBLUR.assets.preference('image_preview') || 'large-right';
         var content_preview = NEWSBLUR.assets.preference('show_content_preview') || 'medium';
-        var sort_order = NEWSBLUR.assets.preference('add_site_sort_order') || 'relevance';
+        var sort_order = NEWSBLUR.assets.preference('add_site_sort_order') || 'subscribers';
         var columns = NEWSBLUR.assets.preference('add_site_grid_columns') || 'auto';
 
         // Sort By (shared)
@@ -223,9 +222,7 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
     change_sort_order: function (e) {
         var $target = $(e.currentTarget);
 
-        if ($target.hasClass("NB-options-sort-order-relevance")) {
-            this.update_sort_order('relevance');
-        } else if ($target.hasClass("NB-options-sort-order-subscribers")) {
+        if ($target.hasClass("NB-options-sort-order-subscribers")) {
             this.update_sort_order('subscribers');
         } else if ($target.hasClass("NB-options-sort-order-stories")) {
             this.update_sort_order('stories');

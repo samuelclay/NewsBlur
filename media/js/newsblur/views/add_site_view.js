@@ -371,12 +371,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     sort_feeds: function (feeds) {
-        var sort_order = NEWSBLUR.assets.preference('add_site_sort_order') || 'relevance';
-
-        // Relevance means server order (no sorting)
-        if (sort_order === 'relevance') {
-            return feeds;
-        }
+        var sort_order = NEWSBLUR.assets.preference('add_site_sort_order') || 'subscribers';
 
         return _.sortBy(feeds, function(feed) {
             if (sort_order === 'subscribers') {
