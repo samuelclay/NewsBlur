@@ -347,6 +347,7 @@ color: #a85b40;
 
 .NB-dark .popover {
     box-shadow: none;
+    background-color: #303739;
 }
 
 /* Arrow color, then clicking the options of a feed or story */
@@ -3425,6 +3426,34 @@ a.mention, a.mention-group {
     border-bottom: 1px solid #3a4245;
 }
 
+.NB-dark .NB-trending-feed-badge .NB-feed-badge-icon {
+    background: #3a4245;
+}
+
+.NB-dark .NB-trending-feed-badge .NB-feed-badge-title {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-trending-feed-badge .NB-feed-badge-meta {
+    color: #808080;
+}
+
+.NB-dark .NB-trending-feed-badge .NB-feed-badge-tagline {
+    color: #909090;
+}
+
+.NB-dark .NB-trending-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-stats {
+    background: #3a4245;
+    border-color: #4a5255;
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-trending-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-stats:hover {
+    background: #4a5255;
+    border-color: #5a6265;
+    color: #e0e0e0;
+}
+
 .NB-dark .NB-trending-time-selector {
     background-color: rgba(255, 255, 255, 0.08);
 }
@@ -3574,9 +3603,12 @@ a.mention, a.mention-group {
     border-color: #444;
 }
 
-.NB-dark .NB-add-site-search-input {
+.NB-dark .NB-add-site-search-input,
+.NB-dark .NB-add-site-search-input[type="text"] {
     background: transparent;
+    background-color: transparent;
     color: #E8E8E8;
+    border: none;
 }
 
 .NB-dark .NB-add-site-search-input::placeholder {
@@ -3692,6 +3724,86 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-add-site-style-popover .NB-menu-manage-view-setting-contentpreview .NB-icon {
     filter: invert(1);
+}
+
+/* Grid/List toggle container - dark background */
+.NB-dark .NB-add-site-view-toggles {
+    background: #2A2D30;
+}
+
+.NB-dark .NB-add-site-view-toggle {
+    background: transparent;
+}
+
+.NB-dark .NB-add-site-view-toggle:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-add-site-view-toggle.NB-active {
+    background: #404548;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-add-site-view-toggle img {
+    filter: invert(1);
+    opacity: 0.6;
+}
+
+.NB-dark .NB-add-site-view-toggle:hover img {
+    opacity: 0.8;
+}
+
+.NB-dark .NB-add-site-view-toggle.NB-active img {
+    opacity: 1;
+}
+
+.NB-dark .NB-add-site-view-toggle-label {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-dark .NB-add-site-view-toggle:hover .NB-add-site-view-toggle-label {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-dark .NB-add-site-view-toggle.NB-active .NB-add-site-view-toggle-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Search input wrapper - darker styling */
+.NB-dark .NB-add-site-search-wrapper {
+    background: #252729;
+    border-color: #404346;
+}
+
+.NB-dark .NB-add-site-search-wrapper:focus-within {
+    border-color: #5C89C9;
+    box-shadow: 0 0 0 3px rgba(92, 137, 201, 0.2);
+}
+
+.NB-dark .NB-add-site-search-input,
+.NB-dark .NB-add-site-search-input[type="text"] {
+    background: transparent;
+    background-color: transparent;
+    color: #E8E8E8;
+    border: none;
+}
+
+.NB-dark .NB-add-site-search-input::placeholder {
+    color: #707478;
+}
+
+/* Section header and title - trending feeds title */
+.NB-dark .NB-add-site-section-header {
+    border-bottom-color: #3A3D40;
+}
+
+.NB-dark .NB-add-site-section-title {
+    color: #D8DBDE;
+}
+
+.NB-dark .NB-add-site-section-icon {
+    filter: invert(1);
+    opacity: 0.7;
 }
 
 .NB-dark .NB-add-site-tab {
