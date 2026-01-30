@@ -1457,11 +1457,18 @@
 
             // Store view model for re-presentation as sheet
             __weak typeof(self) weakSelf = self;
+            __weak AskAIViewController *weakAskAIVC = askAIVC;
             askAIVC.onQuestionAsked = ^{
+                AskAIViewController *strongAskAIVC = weakAskAIVC;
+                if (!strongAskAIVC) {
+                    return;
+                }
                 // Store the view model before dismissing
-                weakSelf.activeAskAIViewModel = askAIVC.viewModelAsAny;
+                weakSelf.activeAskAIViewModel = strongAskAIVC.viewModelAsAny;
+                // Break the retain cycle once the question is asked
+                strongAskAIVC.onQuestionAsked = nil;
                 // Dismiss popover and re-present as bottom sheet
-                [askAIVC dismissViewControllerAnimated:YES completion:^{
+                [strongAskAIVC dismissViewControllerAnimated:YES completion:^{
                     [weakSelf showAskAIInlineResponse];
                 }];
             };
@@ -3556,7 +3563,7 @@
         UINavigationController *feedDetailNavController = self.feedDetailViewController.navigationController;
         barButtonItem = nil;
         sourceView = feedDetailNavController.view;
-        if (self.splitViewController.isFeedListHidden) {
+        if (self.splitViewController.isFeedsListHidden) {
             sourceRect = CGRectMake(224, 0, 20, 20);
         } else {
             sourceRect = CGRectMake(152, 0, 20, 20);
