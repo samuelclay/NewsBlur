@@ -160,6 +160,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
         now,
         max_stories=prefs.story_count or 20,
         story_sources=prefs.story_sources or "all",
+        include_read=prefs.include_read if hasattr(prefs, "include_read") else False,
     )
 
     if len(scored_stories) < 3:
@@ -186,7 +187,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
         return
 
     # apps/briefing/tasks.py: Steps 4 & 5 — Create story and briefing record
-    curated_hashes = [h for h, _ in scored_stories]
+    curated_hashes = [s["story_hash"] for s in scored_stories]
     briefing, story = create_briefing_story(feed, user, summary_html, now, curated_hashes)
 
     logging.debug(

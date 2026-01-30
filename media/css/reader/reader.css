@@ -28704,7 +28704,9 @@ button.NB-merge-group-apply.NB-button:hover {
     color: #68696B;
     letter-spacing: 0.5px;
     cursor: pointer;
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 3;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -28995,7 +28997,9 @@ span.NB-briefing-inline-favicon {
 /* reader.css: Briefing summary story — the AI-generated overview at the top */
 /* reader.css: Summary story — the AI editorial at the top of the briefing */
 .NB-briefing-summary-story {
-    position: relative;
+    position: sticky;
+    top: 33px;
+    z-index: 2;
 }
 
 .NB-briefing-summary-story .NB-story-title {
@@ -29030,9 +29034,8 @@ span.NB-briefing-inline-favicon {
     border-left: none;
 }
 
-.NB-briefing-summary-story .NB-storytitles-content-preview-text {
-    color: #606870;
-    font-style: italic;
+.NB-briefing-summary-story .NB-storytitles-content-preview {
+    display: none;
 }
 
 /* reader.css: Generate briefing button — shared styles */
@@ -29064,6 +29067,18 @@ span.NB-briefing-inline-favicon {
     margin-top: 16px;
     font-size: 14px;
     padding: 12px 24px;
+}
+
+/* reader.css: Regenerate button container at bottom of existing briefings */
+.NB-briefing-regenerate {
+    padding: 12px 14px;
+    text-align: center;
+    border-top: 1px solid #E0E0DC;
+}
+
+.NB-briefing-regenerate-btn {
+    font-size: 12px;
+    padding: 8px 16px;
 }
 
 /* reader.css: Progress indicator during generation */

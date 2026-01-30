@@ -1,8 +1,11 @@
 import datetime
+import re
 import time
+import zlib
 
 import redis
 from django.conf import settings
+from django.utils.encoding import smart_str
 
 from apps.analyzer.models import (
     MClassifierAuthor,
@@ -13,26 +16,37 @@ from apps.analyzer.models import (
 )
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
-from apps.statistics.rtrending import RTrendingStory
 from utils import log as logging
 
 
-def select_briefing_stories(user_id, period_start, period_end, max_stories=20, story_sources="all"):
+def select_briefing_stories(
+    user_id, period_start, period_end, max_stories=20, story_sources="all", include_read=False
+):
     """
-    Select the most important stories for a user's briefing.
+    Select the most important stories for a user's briefing and categorize them
+    by reader value (why the user should read them).
 
     Scoring factors (weighted):
     1. Global trending read time + reader count (40%)
-    2. Feed engagement via Feed.well_read_score() (20%)
+    2. Feed engagement via trending feed data (20%)
     3. User affinity via UserSubscription.feed_opens (20%)
     4. Story recency within the period (10%)
     5. Intelligence classifier scores (10%)
 
+    Each story is categorized (priority order):
+    - follow_up: Unread story from a feed the user recently read
+    - classifier_match: Matches user's positive intelligence classifiers
+    - trending_unread: High trending score (trending_norm > 0.5)
+    - long_read: Has significant word count (AI decides threshold)
+    - trending_global: Fallback for remaining stories
+
     Args:
         story_sources: "all" (all feeds), "focused" (trained-positive feeds only),
                        or "folder:FolderName" (specific folder's feeds)
+        include_read: If False, filter to unread stories only (with fallback)
 
-    Returns ordered list of (story_hash, score) tuples.
+    Returns list of dicts with keys:
+        story_hash, score, is_read, category, content_word_count, classifier_matches
     """
     # apps/briefing/scoring.py: Get all active subscriptions for this user
     user_subs = UserSubscription.objects.filter(user_id=user_id, active=True).select_related("feed")
@@ -53,7 +67,7 @@ def select_briefing_stories(user_id, period_start, period_end, max_stories=20, s
                 " ---> Briefing scoring: focused mode, %s feeds with positive classifiers" % len(feed_ids)
             )
     elif story_sources and story_sources.startswith("folder:"):
-        folder_name = story_sources[len("folder:"):]
+        folder_name = story_sources[len("folder:") :]
         try:
             from apps.reader.models import UserSubscriptionFolders
 
@@ -97,6 +111,14 @@ def select_briefing_stories(user_id, period_start, period_end, max_stories=20, s
         % (len(candidate_hashes), len(feed_ids), user_id)
     )
 
+    # apps/briefing/scoring.py: Batch lookup read status from Redis
+    read_stories_key = "RS:%s" % user_id
+    pipe_read = r.pipeline()
+    for h in candidate_hashes:
+        pipe_read.sismember(read_stories_key, h)
+    read_results = pipe_read.execute()
+    read_status_map = {h: bool(is_read) for h, is_read in zip(candidate_hashes, read_results)}
+
     # apps/briefing/scoring.py: Batch-fetch trending data for all candidates
     trending_time_map = _get_trending_times(candidate_hashes)
     trending_count_map = _get_trending_counts(candidate_hashes)
@@ -111,6 +133,12 @@ def select_briefing_stories(user_id, period_start, period_end, max_stories=20, s
     classifier_authors = list(MClassifierAuthor.objects(user_id=user_id))
     classifier_tags = list(MClassifierTag.objects(user_id=user_id))
     classifier_titles = list(MClassifierTitle.objects(user_id=user_id))
+
+    # apps/briefing/scoring.py: Build feed title map for classifier match descriptions
+    feed_title_map = {}
+    for sub in user_subs:
+        if sub.feed:
+            feed_title_map[sub.feed_id] = sub.feed.feed_title
 
     # apps/briefing/scoring.py: Load stories for intelligence scoring (batch)
     stories_by_hash = {}
@@ -134,8 +162,7 @@ def select_briefing_stories(user_id, period_start, period_end, max_stories=20, s
             trending_norm += 0.3 * (trending_count / max_trending_count)
         trending_score = trending_norm * 0.4
 
-        # Feed engagement score (20%): not calling well_read_score per-story (too expensive)
-        # Instead use trending feed-level data as a proxy
+        # Feed engagement score (20%)
         feed_engagement_score = 0.0
         if feed_id:
             feed_trending = _get_feed_trending_time(feed_id)
@@ -158,6 +185,7 @@ def select_briefing_stories(user_id, period_start, period_end, max_stories=20, s
 
         # Intelligence score (10%): user's trained classifiers
         intelligence_score = 0.0
+        classifier_matches = []
         if story:
             story_dict = {
                 "story_feed_id": story.story_feed_id,
@@ -172,22 +200,154 @@ def select_briefing_stories(user_id, period_start, period_end, max_stories=20, s
                 classifier_tags,
                 classifier_feeds,
             )
-            # raw_score is -1, 0, or 1. Map to 0-1 range.
             if raw_score > 0:
                 intelligence_score = 0.1
+                classifier_matches = _get_classifier_matches(
+                    story, classifier_feeds, classifier_authors, classifier_tags, classifier_titles, feed_title_map
+                )
             elif raw_score < 0:
-                intelligence_score = -0.1  # Penalize hidden stories
+                intelligence_score = -0.1
 
         total_score = trending_score + feed_engagement_score + user_affinity + recency_score + intelligence_score
-        scored.append((story_hash, total_score))
+        scored.append(
+            {
+                "story_hash": story_hash,
+                "score": total_score,
+                "is_read": read_status_map.get(story_hash, False),
+                "trending_norm": trending_norm,
+                "classifier_matches": classifier_matches,
+                "feed_id": feed_id,
+            }
+        )
 
-    # apps/briefing/scoring.py: Sort by score descending and return top stories
-    scored.sort(key=lambda x: x[1], reverse=True)
+    # apps/briefing/scoring.py: Sort by score descending
+    scored.sort(key=lambda x: x["score"], reverse=True)
 
     # Filter out stories with negative intelligence scores (user hid them)
-    scored = [(h, s) for h, s in scored if s >= 0]
+    scored = [s for s in scored if s["score"] >= 0]
 
-    return scored[:max_stories]
+    # apps/briefing/scoring.py: Filter by read status
+    unread_scored = [s for s in scored if not s["is_read"]]
+    if not include_read and len(unread_scored) >= 3:
+        scored = unread_scored
+    elif not include_read:
+        # Fallback: not enough unread stories, include read stories too
+        logging.debug(
+            " ---> Briefing scoring: only %s unread stories for user %s, including read stories"
+            % (len(unread_scored), user_id)
+        )
+
+    # apps/briefing/scoring.py: Apply feed diversity cap (max 3 stories per feed)
+    max_per_feed = 3
+    feed_counts = {}
+    diverse_scored = []
+    for s in scored:
+        fid = s["feed_id"]
+        if feed_counts.get(fid, 0) >= max_per_feed:
+            continue
+        feed_counts[fid] = feed_counts.get(fid, 0) + 1
+        diverse_scored.append(s)
+    scored = diverse_scored
+
+    # apps/briefing/scoring.py: Take top candidates and compute word counts + categories
+    top_candidates = scored[: max_stories * 2]
+
+    # apps/briefing/scoring.py: Build follow-up detection map from read stories in the period
+    read_feeds_with_dates = {}
+    for s in scored:
+        if s["is_read"]:
+            story = stories_by_hash.get(s["story_hash"])
+            if story and story.story_date:
+                read_feeds_with_dates.setdefault(s["feed_id"], []).append(story.story_date)
+
+    # apps/briefing/scoring.py: Enrich top candidates with word count and category
+    enriched = []
+    for s in top_candidates:
+        story = stories_by_hash.get(s["story_hash"])
+        word_count = _estimate_word_count(story) if story else 0
+
+        # Categorize by priority: follow_up > classifier_match > trending_unread > long_read > trending_global
+        category = "trending_global"
+
+        if not s["is_read"] and s["feed_id"] in read_feeds_with_dates:
+            read_dates = read_feeds_with_dates[s["feed_id"]]
+            if story and story.story_date and any(story.story_date > rd for rd in read_dates if rd):
+                category = "follow_up"
+
+        if category == "trending_global" and s["classifier_matches"]:
+            category = "classifier_match"
+
+        if category == "trending_global" and s["trending_norm"] > 0.5:
+            category = "trending_unread"
+
+        if category == "trending_global" and word_count >= 800:
+            category = "long_read"
+
+        enriched.append(
+            {
+                "story_hash": s["story_hash"],
+                "score": s["score"],
+                "is_read": s["is_read"],
+                "category": category,
+                "content_word_count": word_count,
+                "classifier_matches": s["classifier_matches"],
+            }
+        )
+
+    return enriched[:max_stories]
+
+
+def _get_classifier_matches(story, classifier_feeds, classifier_authors, classifier_tags, classifier_titles, feed_title_map):
+    """Identify which classifiers matched positively for a story."""
+    matches = []
+    for cf in classifier_feeds:
+        if cf.feed_id == story.story_feed_id and hasattr(cf, "score") and cf.score > 0:
+            feed_title = feed_title_map.get(cf.feed_id, "")
+            if feed_title:
+                matches.append("feed:%s" % feed_title)
+    for ca in classifier_authors:
+        if (
+            story.story_author_name
+            and hasattr(ca, "author_name")
+            and ca.author_name
+            and ca.author_name in story.story_author_name
+            and hasattr(ca, "score")
+            and ca.score > 0
+        ):
+            matches.append("author:%s" % ca.author_name)
+    for ct in classifier_tags:
+        if (
+            hasattr(ct, "tag")
+            and ct.tag
+            and ct.tag in (story.story_tags or [])
+            and hasattr(ct, "score")
+            and ct.score > 0
+        ):
+            matches.append("tag:%s" % ct.tag)
+    for cti in classifier_titles:
+        if (
+            hasattr(cti, "title")
+            and cti.title
+            and cti.title.lower() in (story.story_title or "").lower()
+            and hasattr(cti, "score")
+            and cti.score > 0
+        ):
+            matches.append("title:%s" % cti.title)
+    return matches
+
+
+def _estimate_word_count(story):
+    """Estimate word count from story content for long-read detection."""
+    content = story.story_content
+    if not content and story.story_content_z:
+        try:
+            content = smart_str(zlib.decompress(story.story_content_z))
+        except Exception:
+            return 0
+    if not content:
+        return 0
+    text = re.sub(r"<[^>]+>", " ", content)
+    return len(text.split())
 
 
 def _get_trending_times(story_hashes, days=1):

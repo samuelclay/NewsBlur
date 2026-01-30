@@ -403,6 +403,7 @@ CELERY_TASK_ROUTES = {
     "archive-index-elasticsearch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-process-batch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-cleanup-old": {"queue": "push_feeds", "binding_key": "push_feeds"},
+    "generate-user-briefing": {"queue": "work_queue", "binding_key": "work_queue"},
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {

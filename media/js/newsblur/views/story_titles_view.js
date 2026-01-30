@@ -130,6 +130,12 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-large' }, 'Generate Briefing')
             ]);
             $groups.push($empty);
+        } else {
+            // story_titles_view.js: Regenerate button at the bottom of existing briefings
+            var $regenerate = $.make('div', { className: 'NB-briefing-regenerate' }, [
+                $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-regenerate-btn' }, 'Regenerate Briefing')
+            ]);
+            $groups.push($regenerate);
         }
 
         this.$el.html($groups);
@@ -153,7 +159,14 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             $.make('div', { className: 'NB-briefing-progress-message' }, message)
         ]);
 
-        this.$el.find('.NB-briefing-empty').append($progress);
+        // story_titles_view.js: Append progress to empty state or regenerate container
+        var $target = this.$el.find('.NB-briefing-empty');
+        if (!$target.length) {
+            $target = this.$el.find('.NB-briefing-regenerate');
+        }
+        if ($target.length) {
+            $target.append($progress);
+        }
     },
 
     hide_briefing_progress: function () {
@@ -170,7 +183,14 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-small' }, 'Try Again')
         ]);
 
-        this.$el.find('.NB-briefing-empty').append($error);
+        // story_titles_view.js: Append error to empty state or regenerate container
+        var $target = this.$el.find('.NB-briefing-empty');
+        if (!$target.length) {
+            $target = this.$el.find('.NB-briefing-regenerate');
+        }
+        if ($target.length) {
+            $target.append($error);
+        }
     },
 
     add: function (options) {

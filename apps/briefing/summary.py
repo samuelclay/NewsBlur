@@ -1,4 +1,5 @@
 import datetime
+import re
 import zlib
 
 import anthropic
@@ -12,23 +13,23 @@ from utils.llm_costs import LLMCostTracker
 BRIEFING_MODEL = "claude-haiku-4-5"
 
 LENGTH_INSTRUCTIONS = {
-    "short": "Write 1-2 brief paragraphs. Keep it under 150 words.",
-    "medium": "Group stories into 2-4 thematic sections with 1-2 sentences each. Keep it under 400 words.",
+    "short": "Include only the top 1-2 sections with the most important stories. Keep it under 150 words.",
+    "medium": "Include 2-4 sections. Keep each section to 1-3 sentences per story. Under 400 words total.",
     "detailed": (
-        "Write a comprehensive editorial with 4-6 thematic sections, "
-        "each with 2-3 sentences of analysis. Up to 800 words."
+        "Include all relevant sections with 2-3 sentences of analysis per story. "
+        "Explain connections between stories where relevant. Up to 800 words."
     ),
 }
 
 STYLE_INSTRUCTIONS = {
     "editorial": "Write in a narrative editorial style with flowing prose that connects stories thematically.",
     "bullets": (
-        "Use bullet points for each story. Group by theme with <h3> section headers. "
+        "Use bullet points for each story. Group by the section headers below. "
         "Each bullet should be one sentence."
     ),
     "headlines": (
         "List each story as a headline with a single explanatory sentence beneath it. "
-        "Group by theme with <h3> section headers."
+        "Group by the section headers below."
     ),
 }
 
@@ -38,8 +39,21 @@ def _build_system_prompt(summary_length="medium", summary_style="editorial"):
     length_instruction = LENGTH_INSTRUCTIONS.get(summary_length, LENGTH_INSTRUCTIONS["medium"])
     style_instruction = STYLE_INSTRUCTIONS.get(summary_style, STYLE_INSTRUCTIONS["editorial"])
 
-    return """You are a news editor writing a daily briefing for a NewsBlur user.
-You are given a list of stories from their RSS feeds, ranked by importance.
+    return """You are a personal news editor writing a daily briefing for a NewsBlur reader.
+You are given stories from their RSS feeds, each annotated with a CATEGORY indicating why
+it was selected for them.
+
+Organize the briefing into sections based on these categories. Use ONLY these section headers
+(as <h3> tags), and only include a section if there are stories for it:
+
+1. "Stories you missed" — CATEGORY: trending_unread. Popular stories the reader hasn't read yet.
+2. "Long reads for later" — CATEGORY: long_read. Longer articles worth setting time aside for. Use the WORD_COUNT field to judge which stories qualify as long reads relative to other stories.
+3. "Based on your interests" — CATEGORY: classifier_match. Stories matching topics, authors, or feeds the reader has trained as interesting. Mention which interest matched using the MATCHES field.
+4. "Follow-ups" — CATEGORY: follow_up. New posts from feeds where the reader recently read other stories.
+5. "Trending across NewsBlur" — CATEGORY: trending_global. Widely-read stories from across the platform.
+
+Within each section, briefly explain WHY these stories matter to the reader — not just what
+they are about. Focus on what makes each story worth reading.
 
 %s
 
@@ -49,7 +63,8 @@ Reference each story by wrapping its title in an anchor tag like:
 <a class="NB-briefing-story-link" data-story-hash="HASH">Story Title</a>
 
 Output valid HTML. Use <h3> for section headers.
-Do not use markdown. Do not add any preamble. Start directly with the briefing content.
+Do not use markdown. Do not wrap in code fences. Do not add any preamble.
+Your very first character must be "<". Start directly with <div class="NB-briefing-summary">.
 Wrap everything in a <div class="NB-briefing-summary"> tag.""" % (
         length_instruction,
         style_instruction,
@@ -62,13 +77,16 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_le
 
     Args:
         user_id: The user's ID
-        scored_stories: List of (story_hash, score) tuples from scoring.py
+        scored_stories: List of dicts from scoring.py with keys:
+            story_hash, score, is_read, category, content_word_count, classifier_matches
         briefing_date: The briefing date
+        summary_length: "short", "medium", or "detailed"
+        summary_style: "editorial", "bullets", or "headlines"
 
     Returns:
         HTML string of the briefing summary, or None on failure.
     """
-    story_hashes = [h for h, _ in scored_stories]
+    story_hashes = [s["story_hash"] for s in scored_stories]
 
     # apps/briefing/summary.py: Load story details from MongoDB
     stories_by_hash = {}
@@ -83,9 +101,10 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_le
     for feed in Feed.objects.filter(pk__in=feed_ids).only("pk", "feed_title"):
         feeds_by_id[feed.pk] = feed.feed_title
 
-    # apps/briefing/summary.py: Build the prompt with story details
+    # apps/briefing/summary.py: Build the prompt with story details and category metadata
     story_lines = []
-    for story_hash, score in scored_stories:
+    for scored in scored_stories:
+        story_hash = scored["story_hash"]
         story = stories_by_hash.get(story_hash)
         if not story:
             continue
@@ -93,17 +112,26 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_le
         feed_title = feeds_by_id.get(story.story_feed_id, "Unknown Feed")
         content_excerpt = _get_content_excerpt(story, max_chars=300)
 
-        story_lines.append(
-            "- HASH: %s\n  TITLE: %s\n  FEED: %s\n  AUTHOR: %s\n  DATE: %s\n  EXCERPT: %s"
+        line = (
+            "- HASH: %s\n  TITLE: %s\n  FEED: %s\n  AUTHOR: %s\n  DATE: %s\n"
+            "  CATEGORY: %s\n  READ_STATUS: %s\n  WORD_COUNT: %s\n  EXCERPT: %s"
             % (
                 story_hash,
                 story.story_title or "Untitled",
                 feed_title,
                 story.story_author_name or "Unknown",
                 story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else "Unknown",
+                scored["category"],
+                "read" if scored["is_read"] else "unread",
+                scored.get("content_word_count", 0),
                 content_excerpt,
             )
         )
+
+        if scored.get("classifier_matches"):
+            line += "\n  MATCHES: %s" % ", ".join(scored["classifier_matches"])
+
+        story_lines.append(line)
 
     if not story_lines:
         return None
@@ -128,6 +156,13 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_le
         for block in response.content:
             if hasattr(block, "text"):
                 summary_html += block.text
+
+        # apps/briefing/summary.py: Strip markdown code fences if the model added them
+        summary_html = summary_html.strip()
+        if summary_html.startswith("```"):
+            summary_html = re.sub(r"^```\w*\n?", "", summary_html)
+            summary_html = re.sub(r"\n?```\s*$", "", summary_html)
+            summary_html = summary_html.strip()
 
         # apps/briefing/summary.py: Track cost
         if response.usage:

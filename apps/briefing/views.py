@@ -174,6 +174,10 @@ def briefing_preferences(request):
         if summary_style in ("editorial", "bullets", "headlines"):
             prefs.summary_style = summary_style
 
+        include_read = request.POST.get("include_read")
+        if include_read is not None:
+            prefs.include_read = include_read in ("true", "1", True)
+
         prefs.save()
 
     # apps/briefing/views.py: Map HH:MM back to named preset for frontend
@@ -207,6 +211,7 @@ def briefing_preferences(request):
         "summary_length": prefs.summary_length or "medium",
         "story_sources": prefs.story_sources or "all",
         "summary_style": prefs.summary_style or "editorial",
+        "include_read": prefs.include_read if hasattr(prefs, "include_read") else False,
         "folders": folders,
     }
 

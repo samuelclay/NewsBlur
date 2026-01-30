@@ -71,6 +71,7 @@ class MBriefingPreferences(mongo.Document):
     summary_length = mongo.StringField(choices=["short", "medium", "detailed"], default="medium")
     story_sources = mongo.StringField(default="all")  # "all", "focused", or "folder:FolderName"
     summary_style = mongo.StringField(choices=["editorial", "bullets", "headlines"], default="editorial")
+    include_read = mongo.BooleanField(default=False)  # False = unread only, True = include read stories
 
     meta = {
         "collection": "briefing_preferences",
