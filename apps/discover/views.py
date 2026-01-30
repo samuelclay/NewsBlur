@@ -7,6 +7,7 @@ from urllib.parse import urlparse, quote_plus
 
 import requests
 from django.conf import settings
+from django.db.models import Count
 
 from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription
@@ -802,6 +803,7 @@ def popular_feeds(request):
     """
     feed_type = request.GET.get("type", "").strip()
     category = request.GET.get("category", "").strip()
+    subcategory = request.GET.get("subcategory", "").strip()
     platform = request.GET.get("platform", "").strip()
     limit = min(int(request.GET.get("limit", 50)), 200)
     offset = int(request.GET.get("offset", 0))
@@ -819,13 +821,57 @@ def popular_feeds(request):
     if category and category != "all":
         qs = qs.filter(category=category)
 
+    if subcategory and subcategory != "all":
+        qs = qs.filter(subcategory=subcategory)
+
     if platform and platform != "all":
         qs = qs.filter(platform=platform)
 
-    # Get available categories for this type (or all types)
+    # Build grouped category structure with feed counts:
+    # [{name, feed_count, subcategories: [{name, feed_count}, ...]}, ...]
+    cat_qs = PopularFeed.objects.filter(**base_filter)
+
+    # Clear default ordering to avoid GROUP BY interference, then count feeds
+    unordered_qs = cat_qs.order_by()
+    cat_feed_counts = dict(
+        unordered_qs.values("category").annotate(count=Count("id")).values_list("category", "count")
+    )
+    subcat_feed_counts = {}
+    for row in unordered_qs.values("category", "subcategory").annotate(count=Count("id")):
+        subcat_feed_counts[(row["category"], row["subcategory"])] = row["count"]
+
+    cat_subcats = list(
+        cat_qs.values("category", "subcategory").distinct().order_by("category", "subcategory")
+    )
+    # Group subcategories under parent categories
+    grouped_categories = []
+    current_cat = None
+    current_entry = None
+    for row in cat_subcats:
+        cat_name = row["category"]
+        subcat_name = row["subcategory"]
+        if cat_name != current_cat:
+            if current_entry:
+                grouped_categories.append(current_entry)
+            current_cat = cat_name
+            current_entry = {
+                "name": cat_name,
+                "feed_count": cat_feed_counts.get(cat_name, 0),
+                "subcategories": [],
+            }
+        if subcat_name:
+            current_entry["subcategories"].append(
+                {
+                    "name": subcat_name,
+                    "feed_count": subcat_feed_counts.get((cat_name, subcat_name), 0),
+                }
+            )
+    if current_entry:
+        grouped_categories.append(current_entry)
+
+    # Flat categories list for backwards compatibility
     categories = list(
-        PopularFeed.objects.filter(**base_filter)
-        .values_list("category", flat=True)
+        cat_qs.values_list("category", flat=True)
         .distinct()
         .order_by("category")
     )
@@ -853,6 +899,7 @@ def popular_feeds(request):
             "id": pf.pk,
             "feed_type": pf.feed_type,
             "category": pf.category,
+            "subcategory": pf.subcategory,
             "title": pf.title,
             "description": pf.description,
             "feed_url": pf.feed_url,
@@ -891,11 +938,13 @@ def popular_feeds(request):
 
     logging.user(
         request,
-        "~FCPopular feeds (%s/%s): ~SB%s feeds (offset=%s)" % (feed_type, category or "all", len(results), offset),
+        "~FCPopular feeds (%s/%s/%s): ~SB%s feeds (offset=%s)"
+        % (feed_type, category or "all", subcategory or "all", len(results), offset),
     )
     return {
         "feeds": results,
         "categories": categories,
+        "grouped_categories": grouped_categories,
         "total": total,
         "has_more": has_more,
     }
