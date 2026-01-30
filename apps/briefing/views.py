@@ -90,8 +90,8 @@ def load_briefing_stories(request):
 
         briefing_data = {
             "briefing_id": str(briefing.id),
-            "briefing_date": briefing.briefing_date.isoformat() if briefing.briefing_date else None,
-            "period_start": briefing.period_start.isoformat() if briefing.period_start else None,
+            "briefing_date": (briefing.briefing_date.isoformat() + "Z") if briefing.briefing_date else None,
+            "period_start": (briefing.period_start.isoformat() + "Z") if briefing.period_start else None,
             "frequency": briefing.frequency,
             "summary_story": summary_story,
             "curated_story_hashes": curated_hashes,

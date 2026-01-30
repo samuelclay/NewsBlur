@@ -114,9 +114,28 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
         $header.toggleClass('NB-collapsed');
 
         if ($header.hasClass('NB-collapsed')) {
-            $stories.slideUp(200);
+            // briefing_group_view.js: Use CSS transition instead of jQuery animate
+            // because jQuery animate forces overflow:hidden which breaks sticky positioning
+            $stories.css({ height: $stories[0].scrollHeight + 'px', overflow: 'clip' });
+            requestAnimationFrame(function () {
+                $stories.addClass('NB-collapsing');
+                $stories.css({ height: '0px' });
+            });
+            $stories.one('transitionend', function () {
+                $stories.removeClass('NB-collapsing').hide().css({ height: '', overflow: '' });
+            });
         } else {
-            $stories.slideDown(200);
+            // briefing_group_view.js: Measure scrollHeight while hidden to avoid a flash
+            $stories.css({ visibility: 'hidden', display: '', height: 'auto', overflow: 'clip' });
+            var target_height = $stories[0].scrollHeight;
+            $stories.css({ height: '0px', visibility: '' });
+            requestAnimationFrame(function () {
+                $stories.addClass('NB-collapsing');
+                $stories.css({ height: target_height + 'px' });
+            });
+            $stories.one('transitionend', function () {
+                $stories.removeClass('NB-collapsing').css({ height: '', overflow: '' });
+            });
         }
     },
 
@@ -129,17 +148,19 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
         var yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
 
+        var date_str = date.toLocaleDateString(undefined, {
+            month: 'long', day: 'numeric', year: 'numeric'
+        });
+
         if (date.toDateString() === today.toDateString()) {
-            return 'Today';
+            return 'Today, ' + date_str;
         } else if (date.toDateString() === yesterday.toDateString()) {
-            return 'Yesterday';
+            return 'Yesterday, ' + date_str;
         }
 
-        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        var months = ['January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'];
-
-        return days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
+        return date.toLocaleDateString(undefined, {
+            weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+        });
     },
 
     destroy: function () {
