@@ -479,6 +479,45 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }];
 }
 
+- (void)updateSidebarButtonForDisplayMode:(UISplitViewControllerDisplayMode)displayMode {
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+
+    UIBarButtonItem *sidebarButton = nil;
+    BOOL shouldShowSidebarButton = (displayMode == UISplitViewControllerDisplayModeSecondaryOnly ||
+                                    displayMode == UISplitViewControllerDisplayModeOneOverSecondary);
+    if (!appDelegate.isPhone && !self.isMac && shouldShowSidebarButton) {
+        if (!self.sidebarBarButton) {
+            UIImage *sidebarImage = [UIImage systemImageNamed:@"sidebar.leading"];
+            if (!sidebarImage) {
+                sidebarImage = [UIImage systemImageNamed:@"sidebar.left"];
+            }
+            if (!sidebarImage) {
+                sidebarImage = [UIImage imageNamed:@"columns_double.png"];
+            }
+            sidebarImage = [sidebarImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            self.sidebarBarButton = [[UIBarButtonItem alloc] initWithImage:sidebarImage
+                                                                     style:UIBarButtonItemStylePlain
+                                                                    target:self
+                                                                    action:@selector(toggleFeeds:)];
+            self.sidebarBarButton.accessibilityLabel = @"Sidebar";
+        } else {
+            self.sidebarBarButton.target = self;
+            self.sidebarBarButton.action = @selector(toggleFeeds:);
+        }
+        sidebarButton = self.sidebarBarButton;
+    }
+
+    NSArray *items = sidebarButton ? @[sidebarButton, settingsBarButton, feedMarkReadButton]
+                                   : @[settingsBarButton, feedMarkReadButton];
+
+    if (appDelegate.isPhone) {
+        appDelegate.detailViewController.feedDetailNavigationItem.rightBarButtonItems = items;
+    } else {
+        appDelegate.detailViewController.feedDetailNavigationItem.leftItemsSupplementBackButton = YES;
+        appDelegate.detailViewController.feedDetailNavigationItem.leftBarButtonItems = items;
+    }
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -517,35 +556,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
     [self updateTheme];
     
-    UIBarButtonItem *sidebarButton = nil;
-    if (!appDelegate.isPhone && !self.isMac) {
-        if (!self.sidebarBarButton) {
-            UIImage *sidebarImage = [UIImage systemImageNamed:@"sidebar.leading"];
-            if (!sidebarImage) {
-                sidebarImage = [UIImage systemImageNamed:@"sidebar.left"];
-            }
-            if (!sidebarImage) {
-                sidebarImage = [UIImage imageNamed:@"columns_double.png"];
-            }
-            sidebarImage = [sidebarImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            self.sidebarBarButton = [[UIBarButtonItem alloc] initWithImage:sidebarImage
-                                                                     style:UIBarButtonItemStylePlain
-                                                                    target:self
-                                                                    action:@selector(toggleFeeds:)];
-            self.sidebarBarButton.accessibilityLabel = @"Sidebar";
-        }
-        sidebarButton = self.sidebarBarButton;
-        appDelegate.detailViewController.feedDetailNavigationItem.leftItemsSupplementBackButton = YES;
-    }
-
-    NSArray *items = sidebarButton ? @[sidebarButton, settingsBarButton, feedMarkReadButton]
-                                   : @[settingsBarButton, feedMarkReadButton];
-    
-    if (appDelegate.isPhone) {
-        appDelegate.detailViewController.feedDetailNavigationItem.rightBarButtonItems = items;
-    } else {
-        appDelegate.detailViewController.feedDetailNavigationItem.leftBarButtonItems = items;
-    }
+    [self updateSidebarButtonForDisplayMode:self.appDelegate.splitViewController.displayMode];
     
     // set center title
     if (self.isPhoneOrCompact &&

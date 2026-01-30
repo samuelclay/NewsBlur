@@ -49,6 +49,14 @@ class SplitViewController: UISplitViewController {
         ])
     }
    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        coordinator.animate(alongsideTransition: { _ in
+            NewsBlurAppDelegate.shared?.updateSplitBehavior(false)
+        })
+    }
+
     // Can do menu validation here.
 //    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
 //        print("canPerformAction: \(action) with \(sender ?? "nil")")

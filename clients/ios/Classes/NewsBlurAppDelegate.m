@@ -916,8 +916,24 @@
             self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
             self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
         } else {
-            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
+            // Auto: 3 columns (tile) in landscape, 2 columns (displace) in portrait
+            CGSize screenSize = self.splitViewController.view.bounds.size;
+            if (screenSize.width <= 0) {
+                screenSize = UIScreen.mainScreen.bounds.size;
+            }
+            BOOL isLandscape = screenSize.width > screenSize.height;
+            if (isLandscape) {
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
+                if (!self.splitViewController.isCollapsed) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+                    });
+                }
+            } else {
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
+            }
         }
     } else {
         if ([behavior isEqualToString:@"overlay"]) {

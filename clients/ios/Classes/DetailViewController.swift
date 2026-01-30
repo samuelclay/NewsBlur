@@ -517,6 +517,14 @@ class DetailViewController: BaseViewController {
             return
         }
 
+        if behavior == .auto {
+            let size = splitViewController.view.bounds.size
+            let isLandscape = size.width > size.height
+            if isLandscape {
+                return
+            }
+        }
+
         UIView.animate(withDuration: 0.2) {
             splitViewController.preferredDisplayMode = .oneOverSecondary
         }
