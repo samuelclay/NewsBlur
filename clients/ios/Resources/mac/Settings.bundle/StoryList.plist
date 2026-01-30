@@ -248,7 +248,7 @@
 			<key>Title</key>
 			<string>Site-specific mark story read</string>
 			<key>DefaultValue</key>
-			<string>YES</string>
+			<true/>
 			<key>Key</key>
 			<string>override_mark_read_filter</string>
 		</dict>

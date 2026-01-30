@@ -127,6 +127,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                           &middot;\
                           <div class="NB-feedbar-notifications-icon"></div>\
                       <% } %>\
+                      <% if (has_auto_mark_read) { %>\
+                          &middot;\
+                          <div class="NB-feedbar-auto-mark-read-icon"></div>\
+                      <% } %>\
                   </span>\
               </div>\
               <div class="NB-story-title-indicator">\
@@ -183,7 +187,23 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             organizer: this.options.organizer,
             pluralize: Inflector.pluralize,
             show_discover: NEWSBLUR.assets.preference("show_discover"),
-            has_notifications: this.model.get('notification_types') || []
+            has_notifications: this.model.get('notification_types') || [],
+            has_auto_mark_read: (function () {
+                // Feed has its own setting
+                if (this.model.get('auto_mark_read_days') !== null && this.model.get('auto_mark_read_days') !== undefined) {
+                    return true;
+                }
+                // Or feed's folder has a setting (inheritance)
+                var folders = NEWSBLUR.assets.get_feed_folders(this.model.id);
+                var feed_folder_title = folders && folders.length > 0 ? folders[0] : null;
+                if (feed_folder_title) {
+                    var folder_setting = NEWSBLUR.assets.get_folder_auto_mark_read(feed_folder_title);
+                    if (folder_setting !== null && folder_setting !== undefined) {
+                        return true;
+                    }
+                }
+                return false;
+            }).call(this)
         }));
 
         if (this.options.type == 'story') {
