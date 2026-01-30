@@ -1014,45 +1014,57 @@
 }
 
 .NB-pricing-tier-archive .NB-pricing-tier-features li.NB-3 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/mark-read.svg');
+    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
+    /* cyan */
+}
+
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-4 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/icons8/icons8-filing-cabinet-100.png');
     filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);
     /* brown-orange */
 }
 
-.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-4 .NB-pricing-bullet {
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-5 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/icons8/icons8-quadcopter-100.png');
     filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
     /* blue */
 }
 
-.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-5 .NB-pricing-bullet {
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-6 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/nouns/train.svg');
     filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
     /* blue */
 }
 
-.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-6 .NB-pricing-bullet {
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-7 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/nouns/direction_black.svg');
     filter: invert(25%) sepia(85%) saturate(2500%) hue-rotate(280deg) brightness(85%) contrast(105%);
     /* violet */
 }
 
-.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-7 .NB-pricing-bullet {
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-8 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/icons8/icons8-rss-100.png');
     filter: invert(57%) sepia(98%) saturate(1000%) hue-rotate(360deg) brightness(103%) contrast(105%);
     /* orange */
 }
 
-.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-8 .NB-pricing-bullet {
-    background-image: url('/media/embed/icons/icons8/icons8-calendar-100.png');
-    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
-    /* cyan */
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-9 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/history.svg');
+    filter: invert(45%) sepia(90%) saturate(1500%) hue-rotate(330deg) brightness(95%) contrast(95%);
+    /* pink/magenta */
 }
 
-.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-9 .NB-pricing-bullet {
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-10 .NB-pricing-bullet {
     background-image: url('/media/img/icons/nouns/prompt.svg');
     filter: invert(30%) sepia(90%) saturate(2500%) hue-rotate(260deg) brightness(90%) contrast(100%);
     /* purple */
+}
+
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-11 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/icons8/icons8-calendar-100.png');
+    filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
+    /* cyan */
 }
 
 /* Pro tier bullets with vivid colors */

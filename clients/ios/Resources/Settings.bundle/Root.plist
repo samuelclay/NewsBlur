@@ -363,8 +363,6 @@
 		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
-			<key>WantUpdate</key>
-			<true/>
 			<key>Title</key>
 			<string>When opening app</string>
 			<key>Titles</key>

@@ -800,7 +800,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     UIView *primaryContainer = feedsView.superview ?: feedsView;
     CGFloat revealWidth = self.feedListRevealWidth;
     if (revealWidth <= 0) {
-        if (splitViewController.isFeedListHidden) {
+        if (splitViewController.isFeedsListHidden) {
             revealWidth = [[NSUserDefaults standardUserDefaults] floatForKey:@"split_primary_width"];
         } else {
             revealWidth = splitViewController.primaryColumnWidth;
@@ -851,7 +851,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                     }
                 }
 
-                if (splitViewController.isFeedListHidden) {
+                if (splitViewController.isFeedsListHidden) {
                     [UIView performWithoutAnimation:^{
                         splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
                         [splitViewController showColumn:UISplitViewControllerColumnPrimary];
@@ -3038,7 +3038,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     UIView *sourceView = feedDetailNavController.view;
     CGRect sourceRect = CGRectMake(120, 10, 20, 20);
     
-    if (appDelegate.splitViewController.isFeedListHidden) {
+    if (appDelegate.splitViewController.isFeedsListHidden) {
         sourceRect = CGRectMake(-130, 10, 20, 20);
     }
     
@@ -3297,7 +3297,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     UIView *sourceView = navController.view;
     CGRect sourceRect = CGRectMake(430, 0, 20, 20);
     
-    if (appDelegate.splitViewController.isFeedListHidden) {
+    if (appDelegate.splitViewController.isFeedsListHidden) {
         sourceRect = CGRectMake(270, 0, 20, 20);
     }
     

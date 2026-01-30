@@ -150,6 +150,11 @@ class DetailViewController: BaseViewController {
     
     /// Whether or not we are using compact size class, instead of regular size class. (A local property, instead of asking the OS, so it is updated when the split delegate handles the change.)
     @objc var isCompact = false
+
+    /// Convenience for phone or compact layout.
+    @objc var isPhoneOrCompact: Bool {
+        return isPhone || isCompact
+    }
     
     /// Whether or not the views were last set up for compact size class.
     private var wasCompact = false

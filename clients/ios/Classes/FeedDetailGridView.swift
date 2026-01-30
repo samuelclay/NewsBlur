@@ -57,7 +57,7 @@ struct FeedDetailGridView: View {
             ScrollView {
                 ScrollViewReader { scroller in
                     LazyVGrid(columns: columns, spacing: cache.isGrid ? 20 : 0) {
-                        if cache.isPhone {
+                        if cache.isPhoneOrCompact {
                             Section(footer: makeLoadingView()) {
                                 ForEach(cache.before, id: \.id) { story in
                                     makeCardView(for: story, reader: reader)
@@ -79,7 +79,7 @@ struct FeedDetailGridView: View {
                                 }
                             }
                             
-                            if cache.isGridView && !cache.isPhone {
+                            if cache.isGridView && !cache.isPhoneOrCompact {
                                 EmptyView()
                                     .id(storyViewID)
                             } else if let story = cache.selected {
@@ -101,7 +101,7 @@ struct FeedDetailGridView: View {
                         
                         NSLog("🪿 Selection: '\(oldSelected?.title ?? "none")' -> '\(newSelected?.title ?? "none")'")
                         
-                        if newSelected == nil, !cache.isPhone, let oldSelected, let story = cache.story(with: oldSelected.index) {
+                        if newSelected == nil, !cache.isPhoneOrCompact, let oldSelected, let story = cache.story(with: oldSelected.index) {
                             scroller.scrollTo(story.id, anchor: .top)
                         } else if let newSelected, !cache.isGridView {
                             Task {
@@ -109,7 +109,7 @@ struct FeedDetailGridView: View {
                                     scroller.scrollTo(newSelected.id)
                                 }
                             }
-                        } else if !cache.isPhone {
+                        } else if !cache.isPhoneOrCompact {
                             if cache.isGrid {
                                 Task {
                                     withAnimation(Animation.spring().delay(0.5)) {
@@ -151,7 +151,7 @@ struct FeedDetailGridView: View {
             })
         }
         .background(Color.themed([0xE0E0E0, 0xF3E2CB, 0x363636, 0x101010]))
-        .if(cache.isGridView) { view in
+        .if(cache.isGridView && !cache.isCompact) { view in
             view.lazyPop()
         }
     }
@@ -181,7 +181,7 @@ struct FeedDetailGridView: View {
     
     @ViewBuilder
     func makeStoryView(reader: GeometryProxy) -> some View {
-        if cache.isGridView, !cache.isPhone, let story = cache.selected {
+        if cache.isGridView, !cache.isPhoneOrCompact, let story = cache.selected {
             StoryView(cache: cache, story: story, interaction: feedDetailInteraction)
                 .transformAnchorPreference(key: CardKey.self, value: .bounds) {
                     $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))

@@ -115,7 +115,7 @@ import Foundation
         guard let pref = UserDefaults.standard.string(forKey: "grid_columns"), let columns = Int(pref) else {
             if NewsBlurAppDelegate.shared.isCompactWidth {
                 return 1
-            } else if NewsBlurAppDelegate.shared.isPortrait || NewsBlurAppDelegate.shared.isPhone {
+            } else if NewsBlurAppDelegate.shared.isPortrait || NewsBlurAppDelegate.shared.detailViewController.isPhoneOrCompact {
                 return 2
             } else {
                 return 4

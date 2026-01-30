@@ -10,7 +10,7 @@ import UIKit
 
 /// Subclass of `UISplitViewController` to enable customizations.
 class SplitViewController: UISplitViewController {
-    @objc var isFeedListHidden: Bool {
+    @objc var isFeedsListHidden: Bool {
         return [.oneOverSecondary, .secondaryOnly].contains(displayMode)
     }
     
