@@ -25279,6 +25279,10 @@ h5.NB-classifier-section-header {
     flex-shrink: 0;
 }
 
+.NB-add-site-source-icon.NB-popular {
+    background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+}
+
 .NB-add-site-source-icon.NB-youtube {
     background: linear-gradient(135deg, #FF0000 0%, #CC0000 100%);
 }

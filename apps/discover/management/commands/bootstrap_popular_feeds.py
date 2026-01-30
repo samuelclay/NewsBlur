@@ -23,7 +23,7 @@ class Command(BaseCommand):
 
     FIXTURE_PATH = os.path.join(os.path.dirname(__file__), "../../fixtures/popular_feeds.json")
 
-    VALID_TYPES = ["youtube", "reddit", "newsletter", "podcast"]
+    VALID_TYPES = ["rss", "youtube", "reddit", "newsletter", "podcast"]
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -52,8 +52,23 @@ class Command(BaseCommand):
             action="store_true",
             help="Create PopularFeed records without fetching Feed objects (faster, for data-only updates)",
         )
+        parser.add_argument(
+            "--discover-rss",
+            action="store_true",
+            help="Discover well-read RSS feeds from the Feed table and output JSON candidates for taxonomy generation",
+        )
+        parser.add_argument(
+            "--discover-limit",
+            type=int,
+            default=500,
+            help="Maximum number of RSS feed candidates to discover (default: 500)",
+        )
 
     def handle(self, *args, **options):
+        if options["discover_rss"]:
+            self._discover_rss_feeds(options)
+            return
+
         dry_run = options["dry_run"]
         feed_type = options["type"]
         force_update = options["force_update"]
@@ -148,6 +163,84 @@ class Command(BaseCommand):
         # Print category summary
         if verbose or dry_run:
             self._print_summary(all_feeds)
+
+    # bootstrap_popular_feeds.py - _discover_rss_feeds
+    def _discover_rss_feeds(self, options):
+        """Query the Feed table for well-read RSS feeds and output JSON candidates."""
+        from django.db.models import Q
+
+        dry_run = options["dry_run"]
+        verbose = options["verbose"]
+        limit = options["discover_limit"]
+
+        # URL patterns to exclude (YouTube, Reddit, newsletters, podcast hosts)
+        exclude_url_patterns = [
+            "youtube.com",
+            "gdata.youtube.com",
+            "reddit.com",
+            "simplecast.com",
+            "megaphone.fm",
+            "anchor.fm",
+            "libsyn.com",
+            "podbean.com",
+            "buzzsprout.com",
+            "spreaker.com",
+            "transistor.fm",
+            "captivate.fm",
+            "podcasts.apple.com",
+        ]
+
+        feeds = Feed.objects.filter(
+            active=True,
+            fetched_once=True,
+            branch_from_feed__isnull=True,
+            active_subscribers__gte=10,
+            average_stories_per_month__gte=1,
+            has_feed_exception=False,
+        )
+
+        # Exclude newsletter-style feed addresses
+        feeds = feeds.exclude(feed_address__startswith="newsletter:")
+        feeds = feeds.exclude(feed_address__startswith="http://newsletter:")
+
+        # Exclude URL patterns
+        url_excludes = Q()
+        for pattern in exclude_url_patterns:
+            url_excludes |= Q(feed_address__icontains=pattern)
+            url_excludes |= Q(feed_link__icontains=pattern)
+        feeds = feeds.exclude(url_excludes)
+
+        # Exclude feeds already in PopularFeed table (any type)
+        existing_urls = set(PopularFeed.objects.values_list("feed_url", flat=True))
+        feeds = feeds.exclude(feed_address__in=existing_urls)
+
+        feeds = feeds.order_by("-active_subscribers")[:limit]
+
+        candidates = []
+        for feed in feeds:
+            candidates.append(
+                {
+                    "feed_url": feed.feed_address,
+                    "title": feed.feed_title or "",
+                    "subscriber_count": feed.active_subscribers or 0,
+                    "feed_link": feed.feed_link or "",
+                }
+            )
+
+        if dry_run or verbose:
+            self.stdout.write(f"\nDiscovered {len(candidates)} RSS feed candidates:")
+            for c in candidates[:20]:
+                self.stdout.write(f"  [{c['subscriber_count']}] {c['title']} - {c['feed_url']}")
+            if len(candidates) > 20:
+                self.stdout.write(f"  ... and {len(candidates) - 20} more")
+
+        # Output JSON to stdout for piping to taxonomy generator
+        if not dry_run:
+            output_path = os.path.join(os.path.dirname(self.FIXTURE_PATH), "rss_candidates.json")
+            output_path = os.path.normpath(output_path)
+            with open(output_path, "w") as f:
+                json.dump(candidates, f, indent=2)
+            self.stdout.write(self.style.SUCCESS(f"\nWrote {len(candidates)} candidates to {output_path}"))
 
     def _print_summary(self, feeds):
         """Print a summary of feeds by type and category."""

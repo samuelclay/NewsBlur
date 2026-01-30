@@ -5,6 +5,7 @@ from apps.rss_feeds.models import Feed
 
 class PopularFeed(models.Model):
     FEED_TYPE_CHOICES = [
+        ("rss", "RSS"),
         ("youtube", "YouTube"),
         ("reddit", "Reddit"),
         ("newsletter", "Newsletter"),

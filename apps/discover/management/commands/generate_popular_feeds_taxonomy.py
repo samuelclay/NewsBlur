@@ -27,12 +27,22 @@ class Command(BaseCommand):
 
     FIXTURE_PATH = os.path.join(os.path.dirname(__file__), "../../fixtures/popular_feeds.json")
 
-    VALID_TYPES = ["youtube", "reddit", "newsletter", "podcast"]
+    VALID_TYPES = ["rss", "youtube", "reddit", "newsletter", "podcast"]
 
     MODEL = "claude-haiku-4-5"
 
     # Type-specific prompt context
     TYPE_CONFIGS = {
+        "rss": {
+            "name": "RSS",
+            "feed_description": "RSS feeds from blogs and news sites",
+            "feed_instructions": (
+                "Include traditional blogs, news sites, tech publications, and independent writers. "
+                "Use real RSS/Atom feed URLs. Exclude YouTube channels, Reddit subreddits, "
+                "email newsletters, and podcasts. Focus on sites with well-known RSS feeds. "
+                "Platform should be empty string."
+            ),
+        },
         "youtube": {
             "name": "YouTube",
             "feed_description": "YouTube channels",
@@ -117,6 +127,25 @@ class Command(BaseCommand):
             self.stdout.write(f"\nGenerating taxonomy for {ftype}...")
 
             seed_feeds = [f for f in existing_feeds if f["feed_type"] == ftype]
+
+            # For RSS type, also load DB-discovered candidates as seed data
+            if ftype == "rss" and not seed_feeds:
+                candidates_path = os.path.join(os.path.dirname(self.FIXTURE_PATH), "rss_candidates.json")
+                candidates_path = os.path.normpath(candidates_path)
+                if os.path.exists(candidates_path):
+                    with open(candidates_path, "r") as f:
+                        candidates = json.load(f)
+                    seed_feeds = [
+                        {
+                            "feed_type": "rss",
+                            "category": "",
+                            "title": c["title"],
+                            "feed_url": c["feed_url"],
+                            "subscriber_count": c.get("subscriber_count", 0),
+                        }
+                        for c in candidates
+                    ]
+                    self.stdout.write(f"  Loaded {len(seed_feeds)} RSS candidates as seed data")
 
             # Phase 1: Generate taxonomy structure
             taxonomy = self._generate_taxonomy_structure(client, ftype, seed_feeds, verbose)
