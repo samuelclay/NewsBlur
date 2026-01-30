@@ -61,6 +61,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
     TABS: [
         { id: 'search', label: 'Search', icon: '/media/img/icons/nouns/search.svg', mono: true },
+        { id: 'popular', label: 'Popular', icon: '/media/img/icons/heroicons-solid/fire.svg', mono: true },
         { id: 'youtube', label: 'YouTube', icon: '/media/img/reader/youtube_play.png' },
         { id: 'reddit', label: 'Reddit', icon: '/media/img/reader/reddit.png' },
         { id: 'newsletters', label: 'Newsletters', icon: '/media/img/reader/newsletters_folder.png' },
@@ -308,6 +309,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             selected_category: 'all',
             selected_subcategory: 'all'
         });
+        this.popular_state = _.extend({}, default_popular_state, {
+            selected_category: 'all',
+            selected_subcategory: 'all'
+        });
 
         this.trending_state = {
             feeds: [],
@@ -456,6 +461,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     render_active_tab: function () {
         var tab_renderers = {
             'search': 'render_search_tab',
+            'popular': 'render_popular_tab',
             'youtube': 'render_youtube_tab',
             'reddit': 'render_reddit_tab',
             'newsletters': 'render_newsletters_tab',
@@ -816,8 +822,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     }
                 }
             } else {
-                // Infinite scroll for YouTube, Reddit, Newsletters, Podcasts tabs
+                // Infinite scroll for Popular, YouTube, Reddit, Newsletters, Podcasts tabs
                 var tab_to_type = {
+                    'popular': 'rss',
                     'youtube': 'youtube',
                     'reddit': 'reddit',
                     'newsletters': 'newsletter',
@@ -969,7 +976,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         _.each(state.curated_feeds, function (entry) {
             var feed_type = entry.feed_type;
 
-            if (feed_type === 'youtube') {
+            if (feed_type === 'rss') {
+                $grid.append(self.render_popular_card(entry));
+            } else if (feed_type === 'youtube') {
                 $grid.append(self.render_youtube_card(entry));
             } else if (feed_type === 'reddit') {
                 $grid.append(self.render_reddit_card(entry));
@@ -1032,12 +1041,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var self = this;
         options = options || {};
         var state_map = {
+            'rss': this.popular_state,
             'youtube': this.youtube_state,
             'reddit': this.reddit_state,
             'newsletter': this.newsletters_state,
             'podcast': this.podcasts_state
         };
         var render_map = {
+            'rss': 'render_popular_popular',
             'youtube': 'render_youtube_popular',
             'reddit': 'render_reddit_popular',
             'newsletter': 'render_newsletters_popular',
@@ -1126,6 +1137,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             return;
         }
         var state_map = {
+            'rss': this.popular_state,
             'youtube': this.youtube_state,
             'reddit': this.reddit_state,
             'newsletter': this.newsletters_state,
@@ -1269,11 +1281,13 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     // add_site_view.js - update_category_pills
     update_category_pills: function (feed_type) {
         var source_map = {
+            'rss': 'popular',
             'newsletter': 'newsletters',
             'podcast': 'podcasts'
         };
         var source = source_map[feed_type] || feed_type;
         var state_map = {
+            'rss': this.popular_state,
             'youtube': this.youtube_state,
             'reddit': this.reddit_state,
             'newsletter': this.newsletters_state,
@@ -1504,6 +1518,144 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     // ===============
+    // = Popular Tab =
+    // ===============
+
+    render_popular_tab: function () {
+        var state = this.popular_state;
+        var $tab = this.$('.NB-add-site-popular-tab');
+
+        var $category_pills = this.make_category_pills('popular', state);
+
+        $tab.html($.make('div', { className: 'NB-add-site-tab-with-search' }, [
+            $.make('div', { className: 'NB-add-site-source-header' }, [
+                $.make('div', { className: 'NB-add-site-source-icon NB-popular' }, [
+                    $.make('img', { src: '/media/img/icons/heroicons-solid/fire.svg', className: 'NB-mono' })
+                ]),
+                $.make('div', { className: 'NB-add-site-source-info' }, [
+                    $.make('div', { className: 'NB-add-site-source-title' }, 'Popular Sites'),
+                    $.make('div', { className: 'NB-add-site-source-desc' },
+                        'Browse popular blogs, news sites, and publications with RSS feeds.')
+                ])
+            ]),
+            $category_pills,
+            $.make('div', { className: 'NB-add-site-tab-results' }, [
+                $.make('div', { className: 'NB-add-site-source-results' })
+            ])
+        ]));
+
+        this.bind_scroll_handler();
+        this.render_popular_popular();
+    },
+
+    // add_site_view.js - render_popular_popular
+    render_popular_popular: function () {
+        var self = this;
+        var state = this.popular_state;
+        var $results = this.$('.NB-add-site-popular-tab .NB-add-site-source-results');
+
+        // List view with linked Feed objects
+        if (this.view_mode === 'list' && state.popular_feeds_collection && state.popular_feeds_collection.length > 0) {
+            var pane_anchor = NEWSBLUR.assets.preference('story_pane_anchor');
+            var image_preview = NEWSBLUR.assets.preference('image_preview') || 'large-right';
+            var $list = $.make('div', { className: 'NB-trending-feed-badges NB-story-pane-' + pane_anchor + ' NB-image-preview-' + image_preview });
+            var stories_limit = this.get_stories_limit();
+
+            state.popular_feeds_collection.each(function (popular_feed) {
+                var $badge_content = [
+                    new NEWSBLUR.Views.FeedBadge({
+                        model: popular_feed.get("feed"),
+                        show_folders: true,
+                        in_add_site_view: self,
+                        load_feed_after_add: false
+                    })
+                ];
+
+                if (stories_limit > 0) {
+                    var $story_titles = $.make('div', { className: 'NB-story-titles' });
+                    var limited_stories = self.limit_stories(popular_feed.get("stories"));
+                    var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
+                        el: $story_titles,
+                        collection: limited_stories,
+                        $story_titles: $story_titles,
+                        override_layout: 'split',
+                        pane_anchor: pane_anchor,
+                        on_popular_feed: popular_feed,
+                        in_add_site_view: self
+                    });
+                    $badge_content.push(story_titles_view.render().el);
+                }
+
+                var $badge = $.make('div', { className: 'NB-trending-feed-badge' }, $badge_content);
+                $list.append($badge);
+            });
+
+            if (state.popular_has_more) {
+                $list.append(self.make_load_more_button('rss'));
+            }
+
+            $results.html($list);
+            return;
+        }
+
+        // Fetch from API if not loaded
+        if (!state.popular_feeds_loaded) {
+            this.fetch_popular_feeds('rss');
+            $results.html(this.make_loading_indicator());
+            return;
+        }
+
+        var feeds = state.popular_feeds;
+        if (!feeds || feeds.length === 0) {
+            $results.html($.make('div', { className: 'NB-add-site-empty-state' },
+                'No popular RSS feeds found. Run the bootstrap command to populate feeds.'
+            ));
+            return;
+        }
+
+        var $section = $.make('div', { className: 'NB-add-site-section' }, [
+            $.make('div', { className: 'NB-add-site-section-header' }, [
+                $.make('div', { className: 'NB-add-site-section-title' }, 'Popular Sites')
+            ]),
+            $.make('div', { className: 'NB-add-site-section-content' })
+        ]);
+
+        var $grid = this.make_results_container();
+        _.each(feeds, function(feed) {
+            $grid.append(self.render_popular_card(feed));
+        });
+
+        $section.find('.NB-add-site-section-content').append($grid);
+
+        if (state.popular_has_more) {
+            $section.append(self.make_load_more_button('rss'));
+        }
+
+        $results.html($section);
+    },
+
+    render_popular_card: function (feed) {
+        var sub_count = feed.subscriber_count || '';
+        if (typeof sub_count === 'number') {
+            sub_count = this.format_subscriber_count(sub_count).replace(' members', ' subscribers');
+        }
+        var meta_parts = [sub_count];
+
+        return this.make_source_card({
+            card_class: 'NB-add-site-popular-card',
+            icon: feed.thumbnail_url || feed.favicon || '/media/img/icons/heroicons-solid/rss.svg',
+            fallback_icon: '/media/img/icons/heroicons-solid/rss.svg',
+            title: feed.title,
+            meta: meta_parts.filter(Boolean).join(' \u2022 '),
+            description: feed.description,
+            feed_url: feed.feed_url,
+            feed_id: feed.feed_id || feed.feed || null,
+            last_story_date: feed.last_story_date,
+            show_empty_freshness: true
+        });
+    },
+
+    // ===============
     // = YouTube Tab =
     // ===============
 
@@ -1522,7 +1674,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         $tab.html($.make('div', { className: 'NB-add-site-tab-with-search' }, [
             $.make('div', { className: 'NB-add-site-source-header' }, [
                 $.make('div', { className: 'NB-add-site-source-icon NB-youtube' }, [
-                    $.make('img', { src: '/media/img/reader/youtube.png' })
+                    $.make('img', { src: '/media/img/reader/youtube_play.png' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
                     $.make('div', { className: 'NB-add-site-source-title' }, 'YouTube Channels'),
@@ -2771,12 +2923,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     // add_site_view.js - _handle_two_level_pill_click
     _handle_two_level_pill_click: function ($pill, source, level, category, subcategory) {
         var state_map = {
+            'popular': this.popular_state,
             'youtube': this.youtube_state,
             'reddit': this.reddit_state,
             'newsletters': this.newsletters_state,
             'podcasts': this.podcasts_state
         };
         var render_map = {
+            'popular': 'render_popular_popular',
             'youtube': 'render_youtube_popular',
             'reddit': 'render_reddit_popular',
             'newsletters': 'render_newsletters_popular',
