@@ -99,6 +99,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 all_stories.push(story_data);
             });
         });
+        // story_titles_view.js: Briefing has all stories; prevent fill_out from paging.
+        this.collection.no_more_stories = true;
+
         if (all_stories.length) {
             this.collection.reset(all_stories, { added: all_stories.length, silent: true });
             // story_titles_view.js: Manually trigger the story list view to create

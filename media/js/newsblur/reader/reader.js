@@ -3341,6 +3341,8 @@
 
             // console.log(['load_page_of_feed_stories', this.flags['opening_feed'], this.counts['page']]);
             if (this.flags['opening_feed']) return;
+            // reader.js: Briefing view has all stories already; no paging needed.
+            if (this.flags['briefing_view']) return;
 
             this.flags['opening_feed'] = true;
             this.counts['page'] += 1;
@@ -5947,6 +5949,14 @@
                     var active_feed_ids = [];
                     if (this.active_folder && this.active_folder.length) {
                         active_feed_ids = this.active_folder.feed_ids_in_folder();
+                    }
+                    // reader.js: In briefing view, suppress feed count refresh for
+                    // feeds with stories we just read (same pattern as river views).
+                    // The briefing curated stories span many feeds, so treat all
+                    // collection feed_ids as active to preserve optimistic updates.
+                    if (this.flags.briefing_view && NEWSBLUR.assets.stories) {
+                        var briefing_feed_ids = NEWSBLUR.assets.stories.pluck('story_feed_id');
+                        active_feed_ids = _.union(active_feed_ids, briefing_feed_ids);
                     }
                     if (feed_id != this.active_feed &&
                         !_.contains(active_feed_ids, feed_id)) {

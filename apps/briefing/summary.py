@@ -11,22 +11,52 @@ from utils.llm_costs import LLMCostTracker
 
 BRIEFING_MODEL = "claude-haiku-4-5"
 
-SYSTEM_PROMPT = """You are a news editor writing a daily briefing for a NewsBlur user.
+LENGTH_INSTRUCTIONS = {
+    "short": "Write 1-2 brief paragraphs. Keep it under 150 words.",
+    "medium": "Group stories into 2-4 thematic sections with 1-2 sentences each. Keep it under 400 words.",
+    "detailed": (
+        "Write a comprehensive editorial with 4-6 thematic sections, "
+        "each with 2-3 sentences of analysis. Up to 800 words."
+    ),
+}
+
+STYLE_INSTRUCTIONS = {
+    "editorial": "Write in a narrative editorial style with flowing prose that connects stories thematically.",
+    "bullets": (
+        "Use bullet points for each story. Group by theme with <h3> section headers. "
+        "Each bullet should be one sentence."
+    ),
+    "headlines": (
+        "List each story as a headline with a single explanatory sentence beneath it. "
+        "Group by theme with <h3> section headers."
+    ),
+}
+
+
+def _build_system_prompt(summary_length="medium", summary_style="editorial"):
+    """Build the system prompt based on user preferences for length and style."""
+    length_instruction = LENGTH_INSTRUCTIONS.get(summary_length, LENGTH_INSTRUCTIONS["medium"])
+    style_instruction = STYLE_INSTRUCTIONS.get(summary_style, STYLE_INSTRUCTIONS["editorial"])
+
+    return """You are a news editor writing a daily briefing for a NewsBlur user.
 You are given a list of stories from their RSS feeds, ranked by importance.
-Write a concise editorial briefing that:
 
-1. Opens with a brief 1-2 sentence overview of the day's most important themes
-2. Groups stories into 2-4 thematic sections (e.g., "Technology", "World News", "Science")
-3. For each section, write 1-2 sentences summarizing the key stories
-4. Reference each story by wrapping its title in an anchor tag like:
-   <a class="NB-briefing-story-link" data-story-hash="HASH">Story Title</a>
+%s
 
-Output valid HTML. Use <h3> for section headers. Keep it under 400 words.
+%s
+
+Reference each story by wrapping its title in an anchor tag like:
+<a class="NB-briefing-story-link" data-story-hash="HASH">Story Title</a>
+
+Output valid HTML. Use <h3> for section headers.
 Do not use markdown. Do not add any preamble. Start directly with the briefing content.
-Wrap everything in a <div class="NB-briefing-summary"> tag."""
+Wrap everything in a <div class="NB-briefing-summary"> tag.""" % (
+        length_instruction,
+        style_instruction,
+    )
 
 
-def generate_briefing_summary(user_id, scored_stories, briefing_date):
+def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_length="medium", summary_style="editorial"):
     """
     Generate an AI editorial summary of the selected stories.
 
@@ -85,11 +115,12 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date):
 
     # apps/briefing/summary.py: Call Claude API (non-streaming for background task)
     try:
+        system_prompt = _build_system_prompt(summary_length, summary_style)
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
         response = client.messages.create(
             model=BRIEFING_MODEL,
             max_tokens=2048,
-            system=SYSTEM_PROMPT,
+            system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
         )
 

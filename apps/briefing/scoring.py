@@ -17,7 +17,7 @@ from apps.statistics.rtrending import RTrendingStory
 from utils import log as logging
 
 
-def select_briefing_stories(user_id, period_start, period_end, max_stories=20):
+def select_briefing_stories(user_id, period_start, period_end, max_stories=20, story_sources="all"):
     """
     Select the most important stories for a user's briefing.
 
@@ -28,6 +28,10 @@ def select_briefing_stories(user_id, period_start, period_end, max_stories=20):
     4. Story recency within the period (10%)
     5. Intelligence classifier scores (10%)
 
+    Args:
+        story_sources: "all" (all feeds), "focused" (trained-positive feeds only),
+                       or "folder:FolderName" (specific folder's feeds)
+
     Returns ordered list of (story_hash, score) tuples.
     """
     # apps/briefing/scoring.py: Get all active subscriptions for this user
@@ -37,6 +41,35 @@ def select_briefing_stories(user_id, period_start, period_end, max_stories=20):
 
     feed_ids = [sub.feed_id for sub in user_subs]
     feed_opens_map = {sub.feed_id: sub.feed_opens or 0 for sub in user_subs}
+
+    # apps/briefing/scoring.py: Filter feeds based on story_sources preference
+    if story_sources == "focused":
+        positive_feed_ids = set(
+            cf.feed_id for cf in MClassifierFeed.objects(user_id=user_id) if cf.feed_id and cf.score > 0
+        )
+        if positive_feed_ids:
+            feed_ids = [fid for fid in feed_ids if fid in positive_feed_ids]
+            logging.debug(
+                " ---> Briefing scoring: focused mode, %s feeds with positive classifiers" % len(feed_ids)
+            )
+    elif story_sources and story_sources.startswith("folder:"):
+        folder_name = story_sources[len("folder:"):]
+        try:
+            from apps.reader.models import UserSubscriptionFolders
+
+            usf = UserSubscriptionFolders.objects.get(user_id=user_id)
+            flat_folders = usf.flatten_folders()
+            folder_feed_ids = set(flat_folders.get(folder_name, []))
+            if folder_feed_ids:
+                feed_ids = [fid for fid in feed_ids if fid in folder_feed_ids]
+                logging.debug(
+                    " ---> Briefing scoring: folder '%s' mode, %s feeds" % (folder_name, len(feed_ids))
+                )
+        except UserSubscriptionFolders.DoesNotExist:
+            pass
+
+    if not feed_ids:
+        return []
 
     # apps/briefing/scoring.py: Get story hashes from the period via Redis sorted sets
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)

@@ -204,8 +204,8 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             });
         }
 
-        // feed_list_view.js: Show Daily Briefing sidebar entry for all users
-        if (NEWSBLUR.assets.folders.length) {
+        // feed_list_view.js: Show Daily Briefing sidebar entry for staff users only
+        if (NEWSBLUR.Globals.is_staff && NEWSBLUR.assets.folders.length) {
             $('.NB-feeds-header-river-briefing-container').css({
                 'display': 'block',
                 'opacity': 0
