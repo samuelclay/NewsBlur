@@ -465,6 +465,7 @@ CELERY_IMPORTS = (
     "apps.ask_ai.tasks",
     "apps.archive_extension.tasks",
     "apps.archive_assistant.tasks",
+    "apps.briefing.tasks",
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
@@ -537,6 +538,11 @@ CELERY_BEAT_SCHEDULE = {
     "email-feed-limit-notifications": {
         "task": "email-feed-limit-notifications",
         "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
+    "generate-briefings": {
+        "task": "generate-briefings",
+        "schedule": datetime.timedelta(minutes=15),
         "options": {"queue": "cron_queue"},
     },
 }

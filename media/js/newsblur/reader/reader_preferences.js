@@ -355,6 +355,84 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Folders, feeds, and story titles')
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-enabled' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-enabled-1', type: 'radio', name: 'briefing_enabled', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-enabled-1' }, [
+                                    'Enable daily briefings'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-enabled-2', type: 'radio', name: 'briefing_enabled', value: 'false' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-enabled-2' }, [
+                                    'Disable daily briefings'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Daily Briefing',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'AI-curated summary of your top stories')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-frequency' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-freq-1', type: 'radio', name: 'briefing_frequency', value: 'daily' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-freq-1' }, [
+                                    'Once a day'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-freq-2', type: 'radio', name: 'briefing_frequency', value: 'twice_daily' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-freq-2' }, [
+                                    'Twice a day'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-freq-3', type: 'radio', name: 'briefing_frequency', value: 'weekly' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-freq-3' }, [
+                                    'Weekly'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Briefing frequency',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'How often to generate briefings')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-time' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-time-1', type: 'radio', name: 'briefing_preferred_time', value: 'auto' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-time-1' }, [
+                                    'Auto-detect from reading habits'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-time-2', type: 'radio', name: 'briefing_preferred_time', value: 'morning' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-time-2' }, [
+                                    'Morning (7:00 AM)'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-time-3', type: 'radio', name: 'briefing_preferred_time', value: 'afternoon' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-time-3' }, [
+                                    'Afternoon (12:00 PM)'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-time-4', type: 'radio', name: 'briefing_preferred_time', value: 'evening' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-time-4' }, [
+                                    'Evening (6:00 PM)'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Briefing time',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'When to generate your briefing')
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-opml' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Download OPML')
@@ -1308,6 +1386,46 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         this.slide_read_story_delay_slider();
         this.slide_arrow_scroll_spacing_slider();
         this.slide_space_scroll_spacing_slider();
+
+        // reader_preferences.js: Load briefing preferences from API
+        this.load_briefing_preferences();
+    },
+
+    load_briefing_preferences: function () {
+        var $modal = this.$modal;
+        $.ajax({
+            url: '/briefing/preferences',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var enabled = data.enabled !== false;
+                var frequency = data.frequency || 'daily';
+                var preferred_time = data.preferred_time || 'auto';
+
+                $('input[name=briefing_enabled][value=' + enabled + ']', $modal).prop('checked', true);
+                $('input[name=briefing_frequency][value=' + frequency + ']', $modal).prop('checked', true);
+                $('input[name=briefing_preferred_time][value=' + preferred_time + ']', $modal).prop('checked', true);
+            }
+        });
+    },
+
+    save_briefing_preferences: function (form) {
+        // reader_preferences.js: Save briefing preferences to separate API endpoint
+        var briefing_data = {
+            enabled: form['briefing_enabled'],
+            frequency: form['briefing_frequency'],
+            preferred_time: form['briefing_preferred_time']
+        };
+        $.ajax({
+            url: '/briefing/preferences',
+            type: 'POST',
+            data: briefing_data,
+            dataType: 'json'
+        });
+        // reader_preferences.js: Remove briefing fields from regular preferences form
+        delete form['briefing_enabled'];
+        delete form['briefing_frequency'];
+        delete form['briefing_preferred_time'];
     },
 
     // ===================
@@ -1552,6 +1670,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var form = this.serialize_preferences();
         $('.NB-preference-error', this.$modal).text('');
         $('.NB-modal-submit-button', this.$modal).text('Saving...').attr('disabled', true).addClass('NB-disabled');
+
+        // reader_preferences.js: Save briefing preferences separately
+        this.save_briefing_preferences(form);
 
         this.model.save_preferences(form, function (data) {
             NEWSBLUR.reader.switch_feed_view_unread_view();

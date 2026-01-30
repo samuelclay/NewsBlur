@@ -6,6 +6,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         "click .NB-feed-story-premium-only a": function (e) {
             e.preventDefault();
             NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
+        },
+        "click .NB-briefing-generate-btn": function (e) {
+            e.preventDefault();
+            NEWSBLUR.reader.generate_daily_briefing();
         }
     },
 
@@ -27,6 +31,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ==========
 
     render: function (options) {
+        if (NEWSBLUR.reader.flags.briefing_view && NEWSBLUR.assets.briefing_data) {
+            return this.render_briefing(options);
+        }
         // console.log(['render story_titles', this.options.override_layout, this.collection.length, this.$story_titles[0]]);
         this.clear();
         this.$story_titles.scrollTop(0);
@@ -71,6 +78,96 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.scroll_to_selected_story(null, options);
 
         return this;
+    },
+
+    render_briefing: function (options) {
+        this.clear();
+        this.$story_titles.scrollTop(0);
+
+        var data = NEWSBLUR.assets.briefing_data;
+        var briefings = data.briefings || [];
+        var $groups = [];
+
+        // story_titles_view.js: Collect summary + curated stories and load them into the
+        // main stories collection so split view, selection, and story detail all work.
+        var all_stories = [];
+        _.each(briefings, function (briefing) {
+            if (briefing.summary_story) {
+                all_stories.push(briefing.summary_story);
+            }
+            _.each(briefing.curated_stories || [], function (story_data) {
+                all_stories.push(story_data);
+            });
+        });
+        if (all_stories.length) {
+            this.collection.reset(all_stories, { added: all_stories.length, silent: true });
+            // story_titles_view.js: Manually trigger the story list view to create
+            // StoryDetailView instances for split view. We use silent reset above to
+            // avoid an infinite loop (this view also listens for reset).
+            if (NEWSBLUR.app.story_list) {
+                NEWSBLUR.app.story_list.reset_flags();
+                NEWSBLUR.app.story_list.render();
+            }
+        }
+
+        _.each(briefings, function (briefing) {
+            briefing.is_preview = data.is_preview;
+            var group = new NEWSBLUR.Views.BriefingGroupView({
+                briefing: briefing,
+                collection: this.collection
+            }).render();
+            $groups.push(group.el);
+        }, this);
+
+        if (!briefings.length) {
+            var $empty = $.make('div', { className: 'NB-briefing-empty' }, [
+                $.make('div', { className: 'NB-briefing-empty-icon' }),
+                $.make('div', { className: 'NB-briefing-empty-text' },
+                    'No briefings yet.'),
+                $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-large' }, 'Generate Briefing')
+            ]);
+            $groups.push($empty);
+        }
+
+        this.$el.html($groups);
+        this.end_loading();
+
+        // story_titles_view.js: If generation is in progress, restore progress UI
+        if (NEWSBLUR.reader.flags.briefing_generating) {
+            this.show_briefing_progress("Generating...");
+        }
+
+        return this;
+    },
+
+    show_briefing_progress: function (message) {
+        this.$el.find('.NB-briefing-generate-btn').hide();
+        this.$el.find('.NB-briefing-progress').remove();
+        this.$el.find('.NB-briefing-error').remove();
+
+        var $progress = $.make('div', { className: 'NB-briefing-progress' }, [
+            $.make('div', { className: 'NB-briefing-progress-spinner' }),
+            $.make('div', { className: 'NB-briefing-progress-message' }, message)
+        ]);
+
+        this.$el.find('.NB-briefing-empty').append($progress);
+    },
+
+    hide_briefing_progress: function () {
+        this.$el.find('.NB-briefing-progress').remove();
+        this.$el.find('.NB-briefing-generate-btn').show();
+    },
+
+    show_briefing_error: function (error_message) {
+        this.$el.find('.NB-briefing-progress').remove();
+        this.$el.find('.NB-briefing-error').remove();
+
+        var $error = $.make('div', { className: 'NB-briefing-error' }, [
+            $.make('div', { className: 'NB-briefing-error-message' }, error_message),
+            $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-small' }, 'Try Again')
+        ]);
+
+        this.$el.find('.NB-briefing-empty').append($error);
     },
 
     add: function (options) {
