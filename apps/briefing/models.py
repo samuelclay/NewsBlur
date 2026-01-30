@@ -67,6 +67,10 @@ class MBriefingPreferences(mongo.Document):
     preferred_time = mongo.StringField(default=None)  # "HH:MM" in user's timezone, null = auto-detect
     enabled = mongo.BooleanField(default=True)
     briefing_feed_id = mongo.IntField(default=None)
+    story_count = mongo.IntField(default=20)
+    summary_length = mongo.StringField(choices=["short", "medium", "detailed"], default="medium")
+    story_sources = mongo.StringField(default="all")  # "all", "focused", or "folder:FolderName"
+    summary_style = mongo.StringField(choices=["editorial", "bullets", "headlines"], default="editorial")
 
     meta = {
         "collection": "briefing_preferences",

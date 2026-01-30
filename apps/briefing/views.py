@@ -1,6 +1,8 @@
 import datetime
 import zlib
 
+import redis
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils.encoding import smart_str
 
@@ -28,6 +30,27 @@ def load_briefing_stories(request):
 
     briefings = MBriefing.latest_for_user(user.pk, limit=limit)
 
+    # apps/briefing/views.py: Look up which story hashes the user has already read
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    read_stories_key = "RS:%s" % user.pk
+    all_briefing_hashes = set()
+    for briefing in briefings:
+        if briefing.summary_story_hash:
+            all_briefing_hashes.add(briefing.summary_story_hash)
+        for h in (briefing.curated_story_hashes or []):
+            all_briefing_hashes.add(h)
+
+    read_hashes = set()
+    if all_briefing_hashes:
+        pipe = r.pipeline()
+        hash_list = list(all_briefing_hashes)
+        for h in hash_list:
+            pipe.sismember(read_stories_key, h)
+        results = pipe.execute()
+        for h, is_read in zip(hash_list, results):
+            if is_read:
+                read_hashes.add(h)
+
     briefing_list = []
     for briefing in briefings:
         # apps/briefing/views.py: Load the summary story
@@ -37,6 +60,7 @@ def load_briefing_stories(request):
                 story = MStory.objects.get(story_hash=briefing.summary_story_hash)
                 summary_story = _story_to_dict(story)
                 summary_story["is_briefing_summary"] = True
+                summary_story["read_status"] = 1 if story.story_hash in read_hashes else 0
             except MStory.DoesNotExist:
                 pass
 
@@ -61,6 +85,7 @@ def load_briefing_stories(request):
                 story = stories_by_hash.get(story_hash)
                 if story:
                     story_dict = _story_to_dict(story)
+                    story_dict["read_status"] = 1 if story_hash in read_hashes else 0
                     feed = feeds_by_id.get(story.story_feed_id)
                     if feed:
                         story_dict["feed_title"] = feed.feed_title
@@ -126,6 +151,29 @@ def briefing_preferences(request):
         if enabled is not None:
             prefs.enabled = enabled in ("true", "1", True)
 
+        # apps/briefing/views.py: Validate and save expanded preferences
+        story_count = request.POST.get("story_count")
+        if story_count:
+            try:
+                story_count = int(story_count)
+                if story_count in (10, 20, 30, 50):
+                    prefs.story_count = story_count
+            except (ValueError, TypeError):
+                pass
+
+        summary_length = request.POST.get("summary_length")
+        if summary_length in ("short", "medium", "detailed"):
+            prefs.summary_length = summary_length
+
+        story_sources = request.POST.get("story_sources")
+        if story_sources:
+            if story_sources in ("all", "focused") or story_sources.startswith("folder:"):
+                prefs.story_sources = story_sources
+
+        summary_style = request.POST.get("summary_style")
+        if summary_style in ("editorial", "bullets", "headlines"):
+            prefs.summary_style = summary_style
+
         prefs.save()
 
     # apps/briefing/views.py: Map HH:MM back to named preset for frontend
@@ -139,11 +187,27 @@ def briefing_preferences(request):
     elif preferred_time_display == "18:00":
         preferred_time_display = "evening"
 
+    # apps/briefing/views.py: Get folder list for source picker
+    folders = []
+    try:
+        from apps.reader.models import UserSubscriptionFolders
+
+        usf = UserSubscriptionFolders.objects.get(user_id=user.pk)
+        flat_folders = usf.flatten_folders()
+        folders = sorted([name.strip() for name in flat_folders.keys() if name.strip()])
+    except UserSubscriptionFolders.DoesNotExist:
+        pass
+
     return {
         "frequency": prefs.frequency,
         "preferred_time": preferred_time_display,
         "enabled": prefs.enabled,
         "briefing_feed_id": prefs.briefing_feed_id,
+        "story_count": prefs.story_count or 20,
+        "summary_length": prefs.summary_length or "medium",
+        "story_sources": prefs.story_sources or "all",
+        "summary_style": prefs.summary_style or "editorial",
+        "folders": folders,
     }
 
 
@@ -189,10 +253,14 @@ def generate_briefing(request):
     POST /briefing/generate
 
     Triggers on-demand briefing generation with real-time progress via WebSocket.
+    Staff-only during initial rollout.
     """
     from apps.briefing.tasks import GenerateUserBriefing
 
     user = request.user
+    if not user.is_staff:
+        return {"code": -1, "message": "Daily Briefing is currently staff-only."}
+
     GenerateUserBriefing.delay(user.pk, on_demand=True)
 
     return {"status": "generating"}

@@ -19,8 +19,11 @@ def GenerateBriefings():
 
     now = datetime.datetime.utcnow()
 
-    # apps/briefing/tasks.py: Get all archive/pro users
-    eligible_profiles = Profile.objects.filter(Q(is_archive=True) | Q(is_pro=True)).select_related("user")
+    # apps/briefing/tasks.py: Only generate briefings for staff users
+    eligible_profiles = Profile.objects.filter(
+        Q(is_archive=True) | Q(is_pro=True),
+        user__is_staff=True,
+    ).select_related("user")
 
     dispatched = 0
     skipped = 0
@@ -149,9 +152,15 @@ def GenerateUserBriefing(user_id, on_demand=False):
     # apps/briefing/tasks.py: Step 1 — Ensure briefing feed exists
     feed = ensure_briefing_feed(user)
 
-    # apps/briefing/tasks.py: Step 2 — Select stories
+    # apps/briefing/tasks.py: Step 2 — Select stories using preferences
     publish("progress", {"step": "scoring", "message": "Selecting your top stories..."})
-    scored_stories = select_briefing_stories(user_id, period_start, now)
+    scored_stories = select_briefing_stories(
+        user_id,
+        period_start,
+        now,
+        max_stories=prefs.story_count or 20,
+        story_sources=prefs.story_sources or "all",
+    )
 
     if len(scored_stories) < 3:
         logging.debug(
@@ -161,9 +170,15 @@ def GenerateUserBriefing(user_id, on_demand=False):
         publish("error", {"error": "Not enough stories to generate a briefing (found %s, need 3)." % len(scored_stories)})
         return
 
-    # apps/briefing/tasks.py: Step 3 — Generate AI summary
+    # apps/briefing/tasks.py: Step 3 — Generate AI summary with length/style preferences
     publish("progress", {"step": "summary", "message": "Writing your briefing summary..."})
-    summary_html = generate_briefing_summary(user_id, scored_stories, now)
+    summary_html = generate_briefing_summary(
+        user_id,
+        scored_stories,
+        now,
+        summary_length=prefs.summary_length or "medium",
+        summary_style=prefs.summary_style or "editorial",
+    )
 
     if not summary_html:
         logging.error(" ---> GenerateUserBriefing: summary generation failed for user %s" % user_id)
