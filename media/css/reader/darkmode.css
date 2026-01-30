@@ -3766,8 +3766,9 @@ a.mention, a.mention-group {
     color: #7B9FD4;
 }
 
-.NB-dark .NB-briefing-summary-story .NB-storytitles-content-preview-text {
-    color: #8890A0;
+/* darkmode.css: Regenerate button container */
+.NB-dark .NB-briefing-regenerate {
+    border-top-color: #303030;
 }
 
 /* darkmode.css: Generate briefing button */

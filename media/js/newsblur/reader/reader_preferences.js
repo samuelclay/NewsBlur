@@ -544,6 +544,26 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Which feeds to include in briefings')
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-include-read' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-include-read-1', type: 'radio', name: 'briefing_include_read', value: 'false' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-include-read-1' }, [
+                                    'Only unread stories'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-include-read-2', type: 'radio', name: 'briefing_include_read', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-include-read-2' }, [
+                                    'Include read stories too'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Read/unread filter',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Whether to include stories you have already read')
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-opml' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Download OPML')
@@ -1524,6 +1544,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 $('input[name=briefing_summary_length][value=' + summary_length + ']', $modal).prop('checked', true);
                 $('input[name=briefing_summary_style][value=' + summary_style + ']', $modal).prop('checked', true);
 
+                var include_read = data.include_read ? 'true' : 'false';
+                $('input[name=briefing_include_read][value=' + include_read + ']', $modal).prop('checked', true);
+
                 // reader_preferences.js: Populate folder dropdown and set story sources
                 var $folder_select = $('#NB-preference-briefing-folder-select', $modal);
                 $folder_select.empty();
@@ -1558,6 +1581,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             story_count: form['briefing_story_count'],
             summary_length: form['briefing_summary_length'],
             summary_style: form['briefing_summary_style'],
+            include_read: form['briefing_include_read'],
             story_sources: story_sources
         };
         $.ajax({
@@ -1574,6 +1598,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         delete form['briefing_summary_length'];
         delete form['briefing_summary_style'];
         delete form['briefing_story_sources'];
+        delete form['briefing_include_read'];
     },
 
     // ===================
