@@ -68,7 +68,7 @@ def feed_autocomplete(request):
                 query = [parts.hostname]
                 query.extend([p for p in parts.path.split("/") if p])
                 query = " ".join(query)
-        except:
+        except Exception:
             logging.user(request, "~FGAdd search, could not parse url in ~FR%s" % query)
 
     query_params = query.split(" ")
