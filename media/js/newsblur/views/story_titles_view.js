@@ -149,6 +149,14 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         return this;
     },
 
+    _briefing_target: function () {
+        var $target = this.$el.find('.NB-briefing-empty');
+        if (!$target.length) {
+            $target = this.$el.find('.NB-briefing-regenerate');
+        }
+        return $target;
+    },
+
     show_briefing_progress: function (message) {
         this.$el.find('.NB-briefing-generate-btn').hide();
         this.$el.find('.NB-briefing-progress').remove();
@@ -159,11 +167,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             $.make('div', { className: 'NB-briefing-progress-message' }, message)
         ]);
 
-        // story_titles_view.js: Append progress to empty state or regenerate container
-        var $target = this.$el.find('.NB-briefing-empty');
-        if (!$target.length) {
-            $target = this.$el.find('.NB-briefing-regenerate');
-        }
+        var $target = this._briefing_target();
         if ($target.length) {
             $target.append($progress);
         }
@@ -183,11 +187,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-small' }, 'Try Again')
         ]);
 
-        // story_titles_view.js: Append error to empty state or regenerate container
-        var $target = this.$el.find('.NB-briefing-empty');
-        if (!$target.length) {
-            $target = this.$el.find('.NB-briefing-regenerate');
-        }
+        var $target = this._briefing_target();
         if ($target.length) {
             $target.append($error);
         }

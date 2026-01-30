@@ -13,13 +13,14 @@ def GenerateBriefings():
     Periodic task that runs every 15 minutes.
     Finds users who need a briefing generated and dispatches per-user tasks.
     """
+    import pytz
+
     from apps.briefing.activity import RUserActivity
     from apps.briefing.models import MBriefing, MBriefingPreferences
     from apps.profile.models import Profile
 
     now = datetime.datetime.utcnow()
 
-    # apps/briefing/tasks.py: Only generate briefings for staff users
     eligible_profiles = Profile.objects.filter(
         Q(is_archive=True) | Q(is_pro=True),
         user__is_staff=True,
@@ -31,18 +32,13 @@ def GenerateBriefings():
     for profile in eligible_profiles:
         user = profile.user
 
-        # apps/briefing/tasks.py: Check if briefing is enabled
         prefs = MBriefingPreferences.get_or_create(user.pk)
         if not prefs.enabled:
             skipped += 1
             continue
 
-        # apps/briefing/tasks.py: Determine generation time
         if prefs.preferred_time:
-            # Manual override: parse "HH:MM" and convert to UTC
             try:
-                import pytz
-
                 tz = pytz.timezone(str(profile.timezone))
                 hour, minute = map(int, prefs.preferred_time.split(":"))
                 today = datetime.datetime.now(tz).date()
@@ -50,17 +46,15 @@ def GenerateBriefings():
                 generation_time = (local_target - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(
                     tzinfo=None
                 )
-            except (ValueError, Exception):
+            except Exception:
                 generation_time = RUserActivity.get_briefing_generation_time(user.pk, profile.timezone)
         else:
             generation_time = RUserActivity.get_briefing_generation_time(user.pk, profile.timezone)
 
-        # apps/briefing/tasks.py: Only generate if we're past the generation time
         if now < generation_time:
             skipped += 1
             continue
 
-        # apps/briefing/tasks.py: Check if briefing already exists for today
         if prefs.frequency == "daily":
             period_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
             period_end = period_start + datetime.timedelta(days=1)
@@ -123,7 +117,6 @@ def GenerateUserBriefing(user_id, on_demand=False):
         logging.error(" ---> GenerateUserBriefing: user %s not found" % user_id)
         return
 
-    # apps/briefing/tasks.py: Set up progress publishing for on-demand generation
     def publish(event_type, extra=None):
         if not on_demand:
             return
@@ -141,7 +134,6 @@ def GenerateUserBriefing(user_id, on_demand=False):
     prefs = MBriefingPreferences.get_or_create(user_id)
     now = datetime.datetime.utcnow()
 
-    # apps/briefing/tasks.py: Determine the period to cover
     if prefs.frequency == "weekly":
         period_start = now - datetime.timedelta(days=7)
     elif prefs.frequency == "twice_daily":
@@ -149,10 +141,8 @@ def GenerateUserBriefing(user_id, on_demand=False):
     else:
         period_start = now - datetime.timedelta(days=1)
 
-    # apps/briefing/tasks.py: Step 1 — Ensure briefing feed exists
     feed = ensure_briefing_feed(user)
 
-    # apps/briefing/tasks.py: Step 2 — Select stories using preferences
     publish("progress", {"step": "scoring", "message": "Selecting your top stories..."})
     scored_stories = select_briefing_stories(
         user_id,
@@ -160,7 +150,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
         now,
         max_stories=prefs.story_count or 20,
         story_sources=prefs.story_sources or "all",
-        include_read=prefs.include_read if hasattr(prefs, "include_read") else False,
+        include_read=prefs.include_read,
     )
 
     if len(scored_stories) < 3:
@@ -171,7 +161,6 @@ def GenerateUserBriefing(user_id, on_demand=False):
         publish("error", {"error": "Not enough stories to generate a briefing (found %s, need 3)." % len(scored_stories)})
         return
 
-    # apps/briefing/tasks.py: Step 3 — Generate AI summary with length/style preferences
     publish("progress", {"step": "summary", "message": "Writing your briefing summary..."})
     summary_html = generate_briefing_summary(
         user_id,
@@ -186,7 +175,6 @@ def GenerateUserBriefing(user_id, on_demand=False):
         publish("error", {"error": "Summary generation failed. Please try again."})
         return
 
-    # apps/briefing/tasks.py: Steps 4 & 5 — Create story and briefing record
     curated_hashes = [s["story_hash"] for s in scored_stories]
     briefing, story = create_briefing_story(feed, user, summary_html, now, curated_hashes)
 

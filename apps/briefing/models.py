@@ -1,11 +1,8 @@
 import datetime
-import hashlib
-import time
 
 import mongoengine as mongo
 import redis
 from django.conf import settings
-from django.contrib.auth.models import User
 
 from apps.rss_feeds.models import Feed, MStory
 from utils import log as logging
@@ -91,9 +88,12 @@ class MBriefingPreferences(mongo.Document):
         try:
             return cls.objects.get(user_id=user_id)
         except cls.DoesNotExist:
-            prefs = cls(user_id=user_id)
-            prefs.save()
-            return prefs
+            try:
+                prefs = cls(user_id=user_id)
+                prefs.save()
+                return prefs
+            except mongo.NotUniqueError:
+                return cls.objects.get(user_id=user_id)
 
 
 def ensure_briefing_feed(user):
@@ -126,14 +126,10 @@ def ensure_briefing_feed(user):
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         r.publish(user.username, "reload:%s" % feed.pk)
 
-    # apps/briefing/models.py: Ensure user is subscribed (for unread counts)
-    try:
-        usersub = UserSubscription.objects.get(user=user, feed=feed)
-    except UserSubscription.DoesNotExist:
-        usersub = UserSubscription.objects.create(user=user, feed=feed)
+    if not UserSubscription.objects.filter(user=user, feed=feed).exists():
+        UserSubscription.objects.create(user=user, feed=feed)
         logging.debug(" ---> Created briefing subscription for user %s" % user.pk)
 
-    # apps/briefing/models.py: Cache the feed_id in preferences
     prefs = MBriefingPreferences.get_or_create(user.pk)
     if prefs.briefing_feed_id != feed.pk:
         prefs.briefing_feed_id = feed.pk
@@ -155,7 +151,6 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
     from apps.notifications.tasks import QueueNotifications
     from apps.reader.models import UserSubscription
 
-    # apps/briefing/models.py: Check for existing briefing today and overwrite it
     day_start = briefing_date.replace(hour=0, minute=0, second=0, microsecond=0)
     day_end = day_start + datetime.timedelta(days=1)
     existing_briefing = MBriefing.objects.filter(
@@ -165,7 +160,6 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
     ).first()
 
     if existing_briefing and existing_briefing.summary_story_hash:
-        # apps/briefing/models.py: Reuse existing story hash so the story is updated in place
         try:
             story = MStory.objects.get(story_hash=existing_briefing.summary_story_hash)
             story.story_content = summary_html
@@ -188,7 +182,6 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
         )
         story.save()
 
-    # apps/briefing/models.py: Update unread counts
     try:
         usersub = UserSubscription.objects.get(user=user, feed=feed)
         usersub.needs_unread_recalc = True
@@ -197,7 +190,6 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
         pass
 
     if existing_briefing:
-        # apps/briefing/models.py: Update existing briefing record
         existing_briefing.curated_story_hashes = curated_story_hashes
         existing_briefing.briefing_date = briefing_date
         existing_briefing.generated_at = datetime.datetime.utcnow()
@@ -217,11 +209,9 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
         )
         briefing.save()
 
-    # apps/briefing/models.py: Notify via Redis pubsub for real-time update
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(user.username, "reload:%s" % feed.pk)
 
-    # apps/briefing/models.py: Trigger push notifications if configured
     if MUserFeedNotification.feed_has_users(feed.pk) > 0:
         QueueNotifications.delay(feed.pk, 1)
 

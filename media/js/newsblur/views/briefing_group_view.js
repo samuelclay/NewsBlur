@@ -44,13 +44,8 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
         var story_layout = NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') || 'list';
 
         // briefing_group_view.js: Build the full story list with summary first
-        var stories_to_render = [];
-        if (briefing.summary_story) {
-            stories_to_render.push(briefing.summary_story);
-        }
-        _.each(briefing.curated_stories || [], function (story_data) {
-            stories_to_render.push(story_data);
-        });
+        var stories_to_render = briefing.summary_story ? [briefing.summary_story] : [];
+        stories_to_render = stories_to_render.concat(briefing.curated_stories || []);
 
         // briefing_group_view.js: Ensure feeds are in the asset model so StoryTitleView
         // can look them up via NEWSBLUR.assets.get_feed().
@@ -145,12 +140,6 @@ NEWSBLUR.Views.BriefingGroupView = Backbone.View.extend({
             'July', 'August', 'September', 'October', 'November', 'December'];
 
         return days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
-    },
-
-    format_short_date: function (date) {
-        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        return months[date.getMonth()] + ' ' + date.getDate();
     },
 
     destroy: function () {
