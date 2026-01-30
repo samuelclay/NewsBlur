@@ -12,7 +12,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         "click .NB-feedbar-mark-feed-read-expand": "expand_mark_read",
         "click .NB-feedbar-mark-feed-read-time": "mark_folder_as_read_days",
         "click .NB-story-title-indicator": "show_hidden_story_titles",
-        "click .NB-trending-time-option": "change_trending_time_window"
+        "click .NB-trending-time-option": "change_trending_time_window",
+        "click .NB-briefing-preferences-icon": "open_briefing_preferences"
     },
 
     initialize: function () {
@@ -187,6 +188,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <span class="folder_title_text"><%= folder_title %></span>\
+                    <span class="NB-briefing-preferences-icon" title="Briefing Preferences"></span>\
                 </div>\
             ', {
                 folder_title: 'Daily Briefing',
@@ -343,6 +345,10 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             anchor: this.$(".NB-feedbar-options"),
             feed_id: NEWSBLUR.reader.active_feed
         });
+    },
+
+    open_briefing_preferences: function () {
+        NEWSBLUR.reader.open_preferences_modal({ scroll_to: 'briefing' });
     },
 
     mark_folder_as_read: function (e, days_back) {

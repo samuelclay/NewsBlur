@@ -18,8 +18,17 @@ NEWSBLUR.ReaderPreferences.prototype.constructor = NEWSBLUR.ReaderPreferences;
 _.extend(NEWSBLUR.ReaderPreferences.prototype, {
 
     runner: function () {
+        var self = this;
         this.options.onOpen = _.bind(function () {
             this.resize_modal();
+            if (self.options.scroll_to === 'briefing') {
+                _.defer(function () {
+                    var $target = self.$modal.find('.NB-preference-briefing-enabled');
+                    if ($target.length) {
+                        $target[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            }
         }, this);
         this.make_modal();
         this.select_preferences();

@@ -144,8 +144,10 @@ def ensure_briefing_feed(user):
 
 def create_briefing_story(feed, user, summary_html, briefing_date, curated_story_hashes):
     """
-    Create an MStory in the briefing feed with the AI summary, and an MBriefing record
-    linking the summary to the curated stories.
+    Create or update an MStory in the briefing feed with the AI summary, and an MBriefing
+    record linking the summary to the curated stories.
+
+    If a briefing already exists for the same day, overwrites it instead of creating a duplicate.
 
     Returns (MBriefing, MStory) tuple.
     """
@@ -153,12 +155,28 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
     from apps.notifications.tasks import QueueNotifications
     from apps.reader.models import UserSubscription
 
-    guid = "daily-briefing-%s-%s" % (user.pk, briefing_date.strftime("%Y-%m-%d-%H%M"))
-    story_hash = MStory.ensure_story_hash(guid, feed.pk)
+    # apps/briefing/models.py: Check for existing briefing today and overwrite it
+    day_start = briefing_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    day_end = day_start + datetime.timedelta(days=1)
+    existing_briefing = MBriefing.objects.filter(
+        user_id=user.pk,
+        briefing_date__gte=day_start,
+        briefing_date__lte=day_end,
+    ).first()
 
-    try:
-        story = MStory.objects.get(story_hash=story_hash)
-    except MStory.DoesNotExist:
+    if existing_briefing and existing_briefing.summary_story_hash:
+        # apps/briefing/models.py: Reuse existing story hash so the story is updated in place
+        try:
+            story = MStory.objects.get(story_hash=existing_briefing.summary_story_hash)
+            story.story_content = summary_html
+            story.story_date = briefing_date
+            story.story_title = "Daily Briefing — %s" % briefing_date.strftime("%B %d, %Y")
+            story.save()
+        except MStory.DoesNotExist:
+            existing_briefing = None
+
+    if not existing_briefing or not existing_briefing.summary_story_hash:
+        guid = "daily-briefing-%s-%s" % (user.pk, briefing_date.strftime("%Y-%m-%d-%H%M"))
         story = MStory(
             story_feed_id=feed.pk,
             story_date=briefing_date,
@@ -178,17 +196,26 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
     except UserSubscription.DoesNotExist:
         pass
 
-    briefing = MBriefing(
-        user_id=user.pk,
-        briefing_feed_id=feed.pk,
-        summary_story_hash=story.story_hash,
-        curated_story_hashes=curated_story_hashes,
-        briefing_date=briefing_date,
-        period_start=briefing_date - datetime.timedelta(days=1),
-        generated_at=datetime.datetime.utcnow(),
-        status="complete",
-    )
-    briefing.save()
+    if existing_briefing:
+        # apps/briefing/models.py: Update existing briefing record
+        existing_briefing.curated_story_hashes = curated_story_hashes
+        existing_briefing.briefing_date = briefing_date
+        existing_briefing.generated_at = datetime.datetime.utcnow()
+        existing_briefing.status = "complete"
+        existing_briefing.save()
+        briefing = existing_briefing
+    else:
+        briefing = MBriefing(
+            user_id=user.pk,
+            briefing_feed_id=feed.pk,
+            summary_story_hash=story.story_hash,
+            curated_story_hashes=curated_story_hashes,
+            briefing_date=briefing_date,
+            period_start=briefing_date - datetime.timedelta(days=1),
+            generated_at=datetime.datetime.utcnow(),
+            status="complete",
+        )
+        briefing.save()
 
     # apps/briefing/models.py: Notify via Redis pubsub for real-time update
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
@@ -199,8 +226,8 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
         QueueNotifications.delay(feed.pk, 1)
 
     logging.debug(
-        " ---> Created briefing for user %s: %s curated stories"
-        % (user.pk, len(curated_story_hashes))
+        " ---> %s briefing for user %s: %s curated stories"
+        % ("Updated" if existing_briefing else "Created", user.pk, len(curated_story_hashes))
     )
 
     return briefing, story

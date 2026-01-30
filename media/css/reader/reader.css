@@ -29038,6 +29038,23 @@ span.NB-briefing-inline-favicon {
     display: none;
 }
 
+/* reader.css: Briefing preferences gear icon in the feedbar header */
+.NB-briefing-preferences-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: transparent url('/media/embed/icons/circular/menu_manage.png') no-repeat center center;
+    background-size: 16px;
+    opacity: 0.4;
+    cursor: pointer;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.NB-briefing-preferences-icon:hover {
+    opacity: 0.8;
+}
+
 /* reader.css: Generate briefing button — shared styles */
 .NB-briefing-generate-btn {
     display: inline-block;
