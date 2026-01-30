@@ -3766,6 +3766,11 @@ a.mention, a.mention-group {
     color: #7B9FD4;
 }
 
+/* darkmode.css: Briefing preferences gear icon */
+.NB-dark .NB-briefing-preferences-icon {
+    filter: invert(1);
+}
+
 /* darkmode.css: Regenerate button container */
 .NB-dark .NB-briefing-regenerate {
     border-top-color: #303030;
