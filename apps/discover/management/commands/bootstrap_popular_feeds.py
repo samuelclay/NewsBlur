@@ -96,6 +96,7 @@ class Command(BaseCommand):
                     "title": title,
                     "description": entry.get("description", ""),
                     "category": entry["category"],
+                    "subcategory": entry.get("subcategory", ""),
                     "thumbnail_url": entry.get("thumbnail_url", ""),
                     "platform": entry.get("platform", ""),
                     "subscriber_count": entry.get("subscriber_count", 0),
