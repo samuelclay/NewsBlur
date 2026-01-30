@@ -8,6 +8,7 @@ from urllib.parse import urlparse, quote_plus
 import requests
 from django.conf import settings
 
+from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MFeedIcon, MStory
 from apps.search.models import MUserSearch
@@ -789,3 +790,112 @@ def popular_channels(request):
 
     logging.user(request, "~FCPopular channels (%s): ~SB%s feeds" % (channel_type, len(channels)))
     return {"channels": channels, "type": channel_type}
+
+
+@json.json_view
+def popular_feeds(request):
+    """
+    Returns curated popular feeds from the PopularFeed model.
+    Supports filtering by type and category, with pagination.
+    Used by Add Site modal tabs (YouTube, Reddit, Newsletters, Podcasts)
+    and the Search tab empty state (type=all for a mix of all types).
+    """
+    feed_type = request.GET.get("type", "").strip()
+    category = request.GET.get("category", "").strip()
+    platform = request.GET.get("platform", "").strip()
+    limit = min(int(request.GET.get("limit", 50)), 200)
+    offset = int(request.GET.get("offset", 0))
+    include_stories = request.GET.get("include_stories", "false").lower() == "true"
+
+    if not feed_type:
+        return {"code": -1, "message": "Feed type is required", "feeds": []}
+
+    # Query PopularFeed records — type=all returns a mix of all feed types
+    base_filter = dict(is_active=True)
+    if feed_type != "all":
+        base_filter["feed_type"] = feed_type
+    qs = PopularFeed.objects.filter(**base_filter)
+
+    if category and category != "all":
+        qs = qs.filter(category=category)
+
+    if platform and platform != "all":
+        qs = qs.filter(platform=platform)
+
+    # Get available categories for this type (or all types)
+    categories = list(
+        PopularFeed.objects.filter(**base_filter)
+        .values_list("category", flat=True)
+        .distinct()
+        .order_by("category")
+    )
+
+    # For type=all, sort by subscriber_count desc to surface the best feeds first
+    if feed_type == "all":
+        qs = qs.order_by("-subscriber_count")
+
+    total = qs.count()
+    popular_feeds_list = list(qs[offset : offset + limit + 1])
+    has_more = len(popular_feeds_list) > limit
+    popular_feeds_list = popular_feeds_list[:limit]
+
+    # Batch-load linked Feed objects and their icons
+    feed_ids = [pf.feed_id for pf in popular_feeds_list if pf.feed_id]
+    feeds_by_id = {}
+    feed_icons = {}
+    if feed_ids:
+        feeds_by_id = {f.pk: f for f in Feed.objects.filter(pk__in=feed_ids)}
+        feed_icons = {icon.feed_id: icon for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids)}
+
+    results = []
+    for pf in popular_feeds_list:
+        entry = {
+            "id": pf.pk,
+            "feed_type": pf.feed_type,
+            "category": pf.category,
+            "title": pf.title,
+            "description": pf.description,
+            "feed_url": pf.feed_url,
+            "thumbnail_url": pf.thumbnail_url,
+            "platform": pf.platform,
+            "subscriber_count": pf.subscriber_count,
+        }
+
+        # Include linked Feed canonical data if available
+        if pf.feed_id and pf.feed_id in feeds_by_id:
+            feed_obj = feeds_by_id[pf.feed_id]
+            entry["feed"] = feed_obj.canonical(include_favicon=False, full=True)
+
+            # Override with PopularFeed data when Feed hasn't been fetched yet
+            if feed_obj.feed_title in ("", "[Untitled]") and pf.title:
+                entry["feed"]["feed_title"] = pf.title
+            if feed_obj.num_subscribers < 0 and pf.subscriber_count > 0:
+                entry["feed"]["num_subscribers"] = pf.subscriber_count
+
+            # Include favicon
+            if pf.feed_id in feed_icons:
+                icon = feed_icons[pf.feed_id]
+                if icon.data:
+                    entry["feed"]["favicon_color"] = icon.color
+                    entry["feed"]["favicon"] = icon.data
+
+            # Include stories if requested (for list view mode)
+            if include_stories:
+                entry["stories"] = feed_obj.get_stories(limit=5)
+        else:
+            entry["feed"] = None
+            if include_stories:
+                entry["stories"] = []
+
+        results.append(entry)
+
+    logging.user(
+        request,
+        "~FCPopular feeds (%s/%s): ~SB%s feeds (offset=%s)" % (feed_type, category or "all", len(results), offset),
+    )
+    return {
+        "feeds": results,
+        "categories": categories,
+        "total": total,
+        "has_more": has_more,
+    }

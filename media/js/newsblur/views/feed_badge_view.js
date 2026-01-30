@@ -71,6 +71,71 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
             );
         }
 
+        var $stats_btn = $.make('div', {
+            className: 'NB-badge-action-stats NB-modal-submit-button NB-modal-submit-grey'
+        }, [
+            $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'embed/icons/nouns/dialog-statistics.svg', className: 'NB-badge-stats-icon' }),
+            'Stats'
+        ]);
+
+        var $actions;
+        if (subscribed && in_add_site) {
+            // Two-row layout: Subscribed badge on top, Stats+Open below
+            $actions = $.make('div', { className: 'NB-feed-badge-subscribed-actions NB-feed-badge-actions-add-site' }, [
+                $.make('div', { className: 'NB-subscribed-badge' }, [
+                    $.make('span', { className: 'NB-subscribed-badge-check' }, '\u2713'),
+                    ' Subscribed'
+                ]),
+                $.make('div', { className: 'NB-badge-actions-row' }, [
+                    $stats_btn,
+                    $.make('div', { className: 'NB-badge-action-open NB-modal-submit-button NB-modal-submit-green' }, 'Open')
+                ])
+            ]);
+        } else if (subscribed) {
+            $actions = $.make('div', { className: 'NB-feed-badge-subscribed-actions' }, [
+                $.make('div', { className: 'NB-subscribed-indicator' }, 'Subscribed'),
+                $stats_btn,
+                $.make('div', { className: 'NB-badge-action-open NB-modal-submit-button NB-modal-submit-green' }, 'Open')
+            ]);
+        } else if (in_add_site) {
+            // Two-row layout for add site list view: Try+Stats on top, folder+Add below
+            $actions = $.make('div', { className: actions_class }, [
+                $.make('div', { className: 'NB-badge-actions-row' }, [
+                    (!this.options.hide_try_button && $.make('div', {
+                        className: 'NB-badge-action-try NB-modal-submit-button NB-modal-submit-green'
+                    }, [
+                        $.make('span', 'Try')
+                    ])),
+                    $stats_btn
+                ].filter(Boolean)),
+                $.make('div', { className: 'NB-badge-folder-add-group' }, [
+                    $folder_selector,
+                    $.make('div', {
+                        className: 'NB-badge-action-add NB-modal-submit-button NB-modal-submit-grey'
+                    }, 'Add')
+                ]),
+                $.make("div", { className: "NB-loading" }),
+                $.make('div', { className: 'NB-error' })
+            ]);
+        } else {
+            $actions = $.make('div', { className: actions_class }, [
+                (!this.options.hide_try_button && $.make('div', {
+                    className: 'NB-badge-action-try NB-modal-submit-button NB-modal-submit-green'
+                }, [
+                    $.make('span', 'Try')
+                ])),
+                $stats_btn,
+                $.make('div', { className: 'NB-badge-folder-add-group' }, [
+                    $folder_selector,
+                    $.make('div', {
+                        className: 'NB-badge-action-add NB-modal-submit-button NB-modal-submit-grey'
+                    }, 'Add')
+                ]),
+                $.make("div", { className: "NB-loading" }),
+                $.make('div', { className: 'NB-error' })
+            ]);
+        }
+
         this.$el.html($.make('div', { className: 'NB-feed-badge-inner' }, [
             $.make('div', { className: "NB-feed-badge-header" }, [
                 $.make('div', { className: "NB-feed-badge-icon" }, [
@@ -80,33 +145,12 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
                     $.make('div', { className: "NB-feed-badge-title" }, this.model.get('feed_title')),
                     $.make('div', { className: "NB-feed-badge-meta" }, meta_parts.join(' • ')),
                     $freshness
-                ].filter(Boolean))
-            ]),
+                ].filter(Boolean)),
+                (in_add_site && $actions)
+            ].filter(Boolean)),
             $.make('div', { className: "NB-feed-badge-tagline" }, this.model.get('tagline')),
-            (subscribed && $.make('div', { className: 'NB-feed-badge-subscribed-actions' }, [
-                $.make('div', { className: 'NB-subscribed-indicator' }, 'Subscribed'),
-                $.make('div', { className: 'NB-badge-action-stats' }, [
-                    $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'embed/icons/nouns/dialog-statistics.svg', className: 'NB-badge-stats-icon' }),
-                    'Stats'
-                ]),
-                $.make('div', { className: 'NB-badge-action-open NB-modal-submit-button NB-modal-submit-green' }, 'Open')
-            ])),
-            (!subscribed && $.make('div', { className: actions_class }, [
-                (!this.options.hide_try_button && $.make('div', {
-                    className: 'NB-badge-action-try NB-modal-submit-button NB-modal-submit-green'
-                }, [
-                    $.make('span', 'Try')
-                ])),
-                $.make('div', { className: 'NB-badge-folder-add-group' }, [
-                    $folder_selector,
-                    $.make('div', {
-                        className: 'NB-badge-action-add NB-modal-submit-button NB-modal-submit-grey'
-                    }, 'Add')
-                ]),
-                $.make("div", { className: "NB-loading" }),
-                $.make('div', { className: 'NB-error' })
-            ]))
-        ]));
+            (!in_add_site && $actions)
+        ].filter(Boolean)));
 
         return this;
     },

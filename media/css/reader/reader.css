@@ -23534,26 +23534,34 @@ h5.NB-classifier-section-header {
     justify-content: flex-start;
 }
 
-.NB-trending-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-stats {
-    margin-left: auto;
-    padding: 8px 12px;
-    background: #F5F5F5;
-    border: 1px solid #D0D0D0;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #666;
-    cursor: pointer;
-}
-
-.NB-trending-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-stats:hover {
-    background: #EBEBEB;
-    border-color: #BBB;
-    color: #333;
-}
-
 .NB-trending-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-open {
     margin-left: 8px;
+}
+
+/* Subscribed two-row layout in add site list view */
+.NB-feed-badge-subscribed-actions.NB-feed-badge-actions-add-site {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.NB-subscribed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #e8f5e2;
+    color: #3a7a1f;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.NB-subscribed-badge .NB-subscribed-badge-check {
+    font-size: 14px;
+    font-weight: 700;
 }
 
 .NB-trending-feed-badge .NB-story-titles {
@@ -23632,7 +23640,7 @@ h5.NB-classifier-section-header {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     clear: both;
 }
 
@@ -23651,8 +23659,34 @@ h5.NB-classifier-section-header {
 .NB-feed-badge .NB-badge-folder-add-group {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-left: 12px;
+    gap: 0;
+    margin-left: auto;
+    min-width: 0;
+    flex: 0 1 auto;
+    background: #F0F0F0;
+    border-radius: 6px;
+    padding: 3px;
+    overflow: hidden;
+}
+
+.NB-feed-badge .NB-badge-folder-add-group .NB-add-site-folder-select {
+    border: none;
+    background: transparent;
+    border-radius: 4px 0 0 4px;
+    padding: 4px 6px;
+    font-size: 11px;
+    min-width: 0;
+    max-width: 220px;
+    flex: 1 1 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.NB-feed-badge .NB-badge-folder-add-group .NB-modal-submit-button {
+    flex-shrink: 0;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
 }
 
 /* Trending Feed Grid (for Add Site view) */
@@ -23814,15 +23848,6 @@ h5.NB-classifier-section-header {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 13px;
-    color: #666;
-    cursor: pointer;
-    opacity: 0.8;
-    transition: opacity 0.15s ease;
-}
-
-.NB-badge-action-stats:hover {
-    opacity: 1;
 }
 
 .NB-badge-stats-icon {
@@ -23855,24 +23880,72 @@ h5.NB-classifier-section-header {
 }
 
 /* List view FeedBadge styling to match grid view */
-.NB-add-site-trending-content .NB-feed-badge {
+.NB-add-site-trending-content .NB-feed-badge,
+.NB-add-site-source-results .NB-feed-badge {
     padding: 18px;
 }
 
-.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-inner {
+.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-inner,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-inner {
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
-.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-header {
+.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-header,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-header {
     display: flex;
     align-items: flex-start;
     gap: 12px;
     margin-bottom: 8px;
 }
 
-.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-icon {
+.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-info,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-info {
+    flex: 1 1 auto;
+    min-width: 200px;
+}
+
+/* Actions inside header for list view - right justified, two rows */
+.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-header .NB-feed-badge-actions-add-site,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-header .NB-feed-badge-actions-add-site {
+    margin-left: auto;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 50%;
+    padding-top: 0;
+    border-top: none;
+    margin-top: 0;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-header .NB-feed-badge-subscribed-actions,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-header .NB-feed-badge-subscribed-actions {
+    margin-left: auto;
+    flex-shrink: 0;
+    padding-top: 0;
+    border-top: none;
+    margin-top: 0;
+}
+
+/* Try + Stats row inside add-site list view actions */
+.NB-feed-badge .NB-badge-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* In list view column layout, folder-add-group right-aligned */
+.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-actions-add-site .NB-badge-folder-add-group,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-actions-add-site .NB-badge-folder-add-group {
+    margin-left: 0;
+    max-width: 260px;
+}
+
+.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-icon,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-icon {
     width: 40px !important;
     height: 40px !important;
     min-width: 40px;
@@ -23890,7 +23963,10 @@ h5.NB-classifier-section-header {
 
 .NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-icon img,
 .NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-icon .NB-feed-emoji,
-.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-icon .NB-feed-icon-colored {
+.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-icon .NB-feed-icon-colored,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-icon img,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-icon .NB-feed-emoji,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-icon .NB-feed-icon-colored {
     width: 40px !important;
     height: 40px !important;
     max-width: 40px !important;
@@ -23901,12 +23977,8 @@ h5.NB-classifier-section-header {
     margin: 0 !important;
 }
 
-.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-title {
+.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-title,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-title {
     font-size: 14px;
     font-weight: 600;
     color: #303030;
@@ -23916,12 +23988,14 @@ h5.NB-classifier-section-header {
     text-overflow: ellipsis;
 }
 
-.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-meta {
+.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-meta,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-meta {
     font-size: 12px;
     color: #808080;
 }
 
-.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-tagline {
+.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-tagline,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-tagline {
     font-size: 13px;
     color: #606060;
     line-height: 1.4;
@@ -23929,28 +24003,8 @@ h5.NB-classifier-section-header {
 }
 
 /* List view subscribed actions - right align Stats and Open */
-.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-subscribed-actions {
-    justify-content: flex-start;
-}
-
-.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-stats {
-    margin-left: auto;
-    padding: 8px 12px;
-    background: #F5F5F5;
-    border: 1px solid #D0D0D0;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #666;
-}
-
-.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-stats:hover {
-    background: #EBEBEB;
-    border-color: #BBB;
-    color: #333;
-}
-
-.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-open {
+.NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-open,
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-open {
     margin-left: 8px;
 }
 
@@ -24026,9 +24080,16 @@ h5.NB-classifier-section-header {
 
 /* Tab Search Bar - inline search in tabs */
 .NB-add-site-tab-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     padding: 0 0 16px;
     border-bottom: 1px solid #E8E8E8;
     margin-bottom: 16px;
+}
+
+.NB-add-site-tab-search-bar > .NB-add-site-tab-search-btn {
+    flex-shrink: 0;
 }
 
 .NB-add-site-tab-with-search {
@@ -24516,8 +24577,11 @@ h5.NB-classifier-section-header {
 }
 
 .NB-add-site-tab.NB-active .NB-add-site-tab-icon {
-    filter: brightness(0) invert(1);
     opacity: 1;
+}
+
+.NB-add-site-tab.NB-active .NB-add-site-tab-icon.NB-mono {
+    filter: brightness(0) invert(1);
 }
 
 .NB-add-site-tab-label {
@@ -24562,6 +24626,58 @@ h5.NB-classifier-section-header {
 
 .NB-add-site-results-list {
     grid-template-columns: 1fr;
+}
+
+/* List view: use CSS Grid to place actions next to header */
+.NB-add-site-results-list .NB-add-site-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+}
+
+.NB-add-site-results-list .NB-add-site-card-header {
+    grid-column: 1;
+    grid-row: 1;
+    align-items: flex-start;
+}
+
+.NB-add-site-results-list .NB-add-site-card-actions {
+    grid-column: 2;
+    grid-row: 1;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    align-self: start;
+    margin-left: 12px;
+}
+
+.NB-add-site-results-list .NB-add-site-card-desc {
+    grid-column: 1 / -1;
+    grid-row: 2;
+}
+
+.NB-add-site-results-list .NB-add-site-card-stories {
+    grid-column: 1 / -1;
+}
+
+.NB-add-site-results-list .NB-add-site-card-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.NB-add-site-results-list .NB-add-site-card-actions .NB-add-site-card-add-group {
+    margin-left: 0;
+    max-width: 260px;
+}
+
+.NB-add-site-results-list .NB-add-site-card-actions-subscribed {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
 }
 
 /* Grid Column Overrides - auto uses the base auto-fill rule above */
@@ -24782,10 +24898,14 @@ h5.NB-classifier-section-header {
 }
 
 /* Card Actions */
+.NB-add-site-card-actions-row {
+    display: contents;
+}
+
 .NB-add-site-card-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 6px;
     margin-top: auto;
     padding-top: 12px;
     border-top: 1px solid #F0F0F0;
@@ -24807,6 +24927,40 @@ h5.NB-classifier-section-header {
 .NB-add-site-card-actions .NB-modal-submit-button {
     flex-shrink: 0;
     white-space: nowrap;
+}
+
+/* Group folder selector + Add button together */
+.NB-add-site-card-add-group {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-left: auto;
+    min-width: 0;
+    flex: 0 1 auto;
+    background: #F0F0F0;
+    border-radius: 6px;
+    padding: 3px;
+    overflow: hidden;
+}
+
+.NB-add-site-card-add-group .NB-add-site-folder-select {
+    border: none;
+    background: transparent;
+    border-radius: 4px 0 0 4px;
+    padding: 4px 6px;
+    font-size: 11px;
+    min-width: 0;
+    max-width: 220px;
+    flex: 1 1 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.NB-add-site-card-add-group .NB-modal-submit-button {
+    flex-shrink: 0;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
 }
 
 /* Subscribed Card Actions */
@@ -24833,28 +24987,13 @@ h5.NB-classifier-section-header {
 .NB-add-site-stats-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    background: #F5F5F5;
-    border: 1px solid #D0D0D0;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.NB-add-site-stats-btn:hover {
-    background: #EBEBEB;
-    border-color: #BBB;
-    color: #333;
+    gap: 4px;
 }
 
 .NB-add-site-stats-icon {
-    width: 16px;
-    height: 16px;
-    opacity: 0.7;
+    width: 14px;
+    height: 14px;
+    opacity: 0.6;
 }
 
 .NB-add-site-stats-btn:hover .NB-add-site-stats-icon {
@@ -25496,6 +25635,28 @@ h5.NB-classifier-section-header {
     height: 20px;
 }
 
+/* Newsletter Filter Groups */
+.NB-add-site-newsletter-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.NB-add-site-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.NB-add-site-filter-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #999;
+}
+
 /* Category Pills */
 .NB-add-site-category-pills {
     display: flex;
@@ -25637,6 +25798,7 @@ h5.NB-classifier-section-header {
     display: flex;
     flex-direction: column;
     gap: 32px;
+    margin-top: 4px;
 }
 
 /* Section Tips - smaller padding */
