@@ -49,6 +49,7 @@
                 $river_blurblogs_header: $('.NB-feeds-header-river-blurblogs'),
                 $river_global_header: $('.NB-feeds-header-river-global'),
                 $river_trending_header: $('.NB-feeds-header-river-trending'),
+                $river_briefing_header: $('.NB-feeds-header-river-briefing'),
                 $archive_header: $('.NB-feeds-header-archive'),
                 $starred_header: $('.NB-feeds-header-starred'),
                 $searches_header: $('.NB-feeds-header-searches'),
@@ -1390,6 +1391,7 @@
                 'river_view': false,
                 'social_view': false,
                 'starred_view': false,
+                'briefing_view': false,
                 'select_story_in_feed': null,
                 'global_blurblogs': false,
                 'reloading_feeds': false,
@@ -1440,6 +1442,7 @@
             this.$s.$river_blurblogs_header.removeClass('NB-selected');
             this.$s.$river_global_header.removeClass('NB-selected');
             this.$s.$river_trending_header.removeClass('NB-selected');
+            this.$s.$river_briefing_header.removeClass('NB-selected');
             this.$s.$archive_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
             this.$s.$layout.removeClass('NB-view-river');
@@ -1935,6 +1938,8 @@
 
             if (feed_id == 'river:') {
                 this.open_river_stories(options.$feed, feed_model, options);
+            } else if (feed_id == 'river:daily-briefing') {
+                this.open_daily_briefing(options);
             } else if (feed_id == 'river:infrequent') {
                 options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
                 this.open_river_stories(options.$feed, feed_model, options);
@@ -2087,6 +2092,115 @@
             }
             // this.show_story_titles_above_intelligence_level({'animate': false});
             this.flags['story_titles_loaded'] = true;
+        },
+
+        // =========================
+        // = Daily Briefing Feed =
+        // =========================
+
+        open_daily_briefing: function (options) {
+            options = options || {};
+            var self = this;
+
+            this.reset_feed(options);
+            this.hide_splash_page();
+
+            this.active_feed = 'river:daily-briefing';
+            this.$s.$river_briefing_header.addClass('NB-selected');
+
+            this.iframe_scroll = null;
+            this.flags['opening_feed'] = true;
+            this.$s.$layout.addClass('NB-view-river');
+            this.flags.river_view = true;
+            this.flags.briefing_view = true;
+
+            $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
+            var explicit_view_setting = this.model.view_setting(this.active_feed, 'view');
+            if (!explicit_view_setting || explicit_view_setting == 'page') {
+                explicit_view_setting = 'feed';
+            }
+            this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
+            this.switch_taskbar_view(this.story_view);
+            this.switch_story_layout();
+            this.setup_mousemove_on_views();
+            this.make_feed_title_in_stories();
+
+            if (!options.silent) {
+                var url = "/briefing";
+                if (window.location.pathname != url) {
+                    NEWSBLUR.log(["Navigating to url", url]);
+                    NEWSBLUR.router.navigate(url);
+                }
+            }
+
+            this.model.fetch_briefing_stories(
+                _.bind(this.post_open_daily_briefing, this),
+                NEWSBLUR.app.taskbar_info.show_stories_error
+            );
+        },
+
+        post_open_daily_briefing: function (data) {
+            if (!this.flags['briefing_view']) return;
+
+            this.flags['opening_feed'] = false;
+
+            // reader.js: Store briefing data for the story titles view to render
+            NEWSBLUR.assets.briefing_data = data;
+
+            // reader.js: Re-render story titles now that briefing data is available
+            if (NEWSBLUR.app.story_titles) {
+                NEWSBLUR.app.story_titles.render();
+            }
+
+            this.flags['story_titles_loaded'] = true;
+        },
+
+        generate_daily_briefing: function () {
+            this.flags.briefing_generating = true;
+            if (NEWSBLUR.app.story_titles) {
+                NEWSBLUR.app.story_titles.show_briefing_progress("Starting briefing generation...");
+            }
+            this.model.generate_briefing();
+
+            // reader.js: Timeout safety net — if no socket event arrives within 90s,
+            // show an error so the UI doesn't spin forever (e.g. Celery crash).
+            clearTimeout(this.flags.briefing_generate_timeout);
+            this.flags.briefing_generate_timeout = _.delay(_.bind(function () {
+                if (!this.flags.briefing_generating) return;
+                this.handle_briefing_error({ error: "Briefing generation timed out. Please try again." });
+            }, this), 90 * 1000);
+        },
+
+        handle_briefing_start: function () {
+            this.flags.briefing_generating = true;
+            if (NEWSBLUR.app.story_titles) {
+                NEWSBLUR.app.story_titles.show_briefing_progress("Starting briefing generation...");
+            }
+        },
+
+        handle_briefing_progress: function (data) {
+            if (NEWSBLUR.app.story_titles) {
+                NEWSBLUR.app.story_titles.show_briefing_progress(data.message || "Generating...");
+            }
+        },
+
+        handle_briefing_complete: function () {
+            clearTimeout(this.flags.briefing_generate_timeout);
+            this.flags.briefing_generating = false;
+            if (this.flags.briefing_view) {
+                this.model.fetch_briefing_stories(
+                    _.bind(this.post_open_daily_briefing, this),
+                    NEWSBLUR.app.taskbar_info.show_stories_error
+                );
+            }
+        },
+
+        handle_briefing_error: function (data) {
+            clearTimeout(this.flags.briefing_generate_timeout);
+            this.flags.briefing_generating = false;
+            if (NEWSBLUR.app.story_titles) {
+                NEWSBLUR.app.story_titles.show_briefing_error(data.error || "Generation failed.");
+            }
         },
 
         // =====================
@@ -3300,6 +3414,8 @@
                 feed_title = "All Shared Stories";
             } else if (feed_id == 'river:infrequent') {
                 feed_title = "Infrequent Site Stories";
+            } else if (feed_id == 'river:daily-briefing') {
+                feed_title = "Daily Briefing";
             } else if (feed_id == 'river:trending') {
                 feed_title = "Trending Sites";
             } else if (_.string.startsWith(feed_id, 'river:')) {
@@ -5756,6 +5872,19 @@
 
                 this.socket.removeAllListeners('archive:categories');
                 this.socket.on('archive:categories', _.bind(this.handle_archive_categories, this));
+
+                // Briefing generation progress event listeners
+                this.socket.removeAllListeners('briefing:start');
+                this.socket.on('briefing:start', _.bind(this.handle_briefing_start, this));
+
+                this.socket.removeAllListeners('briefing:progress');
+                this.socket.on('briefing:progress', _.bind(this.handle_briefing_progress, this));
+
+                this.socket.removeAllListeners('briefing:complete');
+                this.socket.on('briefing:complete', _.bind(this.handle_briefing_complete, this));
+
+                this.socket.removeAllListeners('briefing:error');
+                this.socket.on('briefing:error', _.bind(this.handle_briefing_error, this));
 
                 this.socket.on('disconnect', _.bind(function (reason) {
                     NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);

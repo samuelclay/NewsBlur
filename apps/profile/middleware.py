@@ -48,6 +48,14 @@ class LastSeenMiddleware(object):
             request.user.profile.last_seen_ip = ip[-15:]
             request.user.profile.save()
 
+            # apps/profile/middleware.py: Record activity for daily briefing scheduling
+            try:
+                from apps.briefing.activity import RUserActivity
+
+                RUserActivity.record_activity(request.user.pk, request.user.profile.timezone)
+            except Exception:
+                pass
+
         return response
 
     def __call__(self, request):

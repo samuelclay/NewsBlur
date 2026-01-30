@@ -6643,6 +6643,15 @@ body {
     display: none;
 }
 
+/* reader.css: Daily Briefing sidebar entry — hidden by default like other river headers */
+.NB-feeds-header-river-briefing-container {
+    display: none;
+}
+
+.NB-feeds-header-river-briefing-container.NB-block {
+    display: block;
+}
+
 .NB-staff-badge {
     position: absolute;
     right: 8px;
@@ -28672,4 +28681,429 @@ button.NB-merge-group-apply.NB-button:hover {
     background: #1E1E1E;
     color: #E0E0E0;
     box-shadow: 0 0 0 2px rgba(92, 137, 201, 0.4);
+}
+
+/* =============================== */
+/* = Daily Briefing - Group View = */
+/* =============================== */
+
+/* reader.css: Briefing group container */
+.NB-briefing-group {
+    border-bottom: 1px solid #E0E0DC;
+}
+
+.NB-briefing-group:last-child {
+    border-bottom: none;
+}
+
+/* reader.css: Briefing group header — styled like folder_title */
+.NB-briefing-group-header {
+    padding: 8px 10px 8px 12px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #68696B;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #EAECE5;
+    border-bottom: 1px solid #D8DBD2;
+    user-select: none;
+}
+
+.NB-briefing-group-header:hover {
+    background-color: #E1E6D7;
+}
+
+/* reader.css: Briefing collapse icon — reuses folder collapse pattern */
+.NB-briefing-group-collapse-icon {
+    width: 16px;
+    height: 16px;
+    background: transparent url('/media/embed/icons/circular/folder_collapse.png') no-repeat center center;
+    background-size: 16px;
+    opacity: 0.5;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.NB-briefing-group-header:hover .NB-briefing-group-collapse-icon {
+    opacity: 0.8;
+}
+
+.NB-briefing-group-header.NB-collapsed .NB-briefing-group-collapse-icon {
+    background-image: url('/media/embed/icons/circular/folder_expand.png');
+    background-size: 16px;
+}
+
+/* reader.css: Briefing date label */
+.NB-briefing-group-date {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* reader.css: Briefing story count badge */
+.NB-briefing-group-count {
+    font-size: 10px;
+    font-weight: normal;
+    color: #8A8B8D;
+    white-space: nowrap;
+}
+
+/* reader.css: Briefing summary toggle button (unused, kept for reference) */
+.NB-briefing-summary-toggle {
+    display: none;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 1px 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.NB-briefing-summary-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.NB-briefing-summary-toggle.NB-active {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.7);
+}
+
+/* reader.css: Briefing AI summary panel */
+.NB-briefing-group-summary {
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #404040;
+    background-color: #F5F6F2;
+    border-bottom: 1px solid #E0E0DC;
+}
+
+.NB-briefing-group-summary.NB-hidden {
+    display: none;
+}
+
+.NB-briefing-group-summary p {
+    margin: 0 0 8px;
+}
+
+.NB-briefing-group-summary p:last-child {
+    margin-bottom: 0;
+}
+
+.NB-briefing-group-summary h3 {
+    font-size: 13px;
+    font-weight: bold;
+    margin: 0 0 6px;
+    color: #303030;
+}
+
+.NB-briefing-group-summary ul {
+    margin: 4px 0;
+    padding-left: 18px;
+    list-style: disc;
+}
+
+.NB-briefing-group-summary li {
+    margin-bottom: 4px;
+}
+
+/* reader.css: Links in AI summary that reference stories */
+.NB-briefing-story-link {
+    color: #405BA8;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.NB-briefing-story-link:hover {
+    border-bottom-color: #405BA8;
+}
+
+/* reader.css: Favicons inline within briefing story links */
+.NB-briefing-inline-favicon {
+    display: inline-block;
+    max-width: 16px;
+    max-height: 16px;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 2px;
+    margin-top: -1px;
+    background-size: 16px 16px;
+    -webkit-mask-size: 16px 16px;
+    mask-size: 16px 16px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+img.NB-briefing-inline-favicon {
+    max-width: 16px;
+    max-height: 16px;
+}
+
+span.NB-briefing-inline-favicon {
+    font-size: 14px;
+    line-height: 16px;
+}
+
+/* reader.css: Briefing curated stories container */
+.NB-briefing-group-stories {
+    padding: 0;
+}
+
+/* reader.css: Individual story items in the briefing */
+.NB-briefing-story-item {
+    padding: 8px 12px;
+    border-bottom: 1px solid #EBEBEB;
+    cursor: default;
+}
+
+.NB-briefing-story-item:last-child {
+    border-bottom: none;
+}
+
+.NB-briefing-story-item:hover {
+    background-color: #F5F6F2;
+}
+
+/* reader.css: Story highlight animation when selected from summary link */
+.NB-briefing-story-highlighted {
+    background-color: #FFF8DC;
+    transition: background-color 0.3s ease;
+}
+
+/* reader.css: Feed info row in briefing story item */
+.NB-briefing-story-feed {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 3px;
+}
+
+.NB-briefing-story-favicon {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.NB-briefing-story-feed-title {
+    font-size: 10px;
+    color: #8A8B8D;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* reader.css: Story title link in briefing */
+.NB-briefing-story-title {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #303030;
+    text-decoration: none;
+    line-height: 1.3;
+    margin-bottom: 2px;
+}
+
+.NB-briefing-story-title:hover {
+    color: #405BA8;
+}
+
+/* reader.css: Story meta (author + date) */
+.NB-briefing-story-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: #8A8B8D;
+}
+
+.NB-briefing-story-author {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-briefing-story-date {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* reader.css: Empty state for briefing */
+.NB-briefing-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: #8A8B8D;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.NB-briefing-empty-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 12px;
+    opacity: 0.3;
+}
+
+.NB-briefing-empty-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #606060;
+    margin-bottom: 6px;
+}
+
+/* reader.css: Upsell banner for free users */
+.NB-briefing-upsell {
+    padding: 12px 14px;
+    background-color: #F0EDE4;
+    border-top: 1px solid #E0DDD4;
+    text-align: center;
+}
+
+.NB-briefing-upsell-text {
+    font-size: 12px;
+    color: #606060;
+    line-height: 1.4;
+}
+
+.NB-briefing-upsell-link {
+    color: #405BA8;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.NB-briefing-upsell-link:hover {
+    text-decoration: underline;
+}
+
+/* reader.css: Briefing summary story — the AI-generated overview at the top */
+/* reader.css: Summary story — the AI editorial at the top of the briefing */
+.NB-briefing-summary-story {
+    position: relative;
+}
+
+.NB-briefing-summary-story .NB-story-title {
+    background: linear-gradient(160deg, #EEF2FA 0%, #F4F0EE 50%, #EEF2FA 100%);
+    border-left: 3px solid #5C89C4;
+    padding-left: 9px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.NB-briefing-summary-story .NB-story-title:hover {
+    background: linear-gradient(160deg, #E4EAF4 0%, #EDE8E6 50%, #E4EAF4 100%);
+}
+
+.NB-briefing-summary-story .NB-story-title.NB-selected {
+    background: linear-gradient(160deg, #D8E2F0 0%, #E6E0DE 50%, #D8E2F0 100%);
+}
+
+.NB-briefing-summary-story .NB-storytitles-title {
+    font-weight: 700;
+    color: #303840;
+}
+
+.NB-briefing-summary-story .NB-story-feed .feed_title {
+    font-weight: 600;
+    color: #5C89C4;
+    text-transform: uppercase;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+}
+
+.NB-briefing-summary-story .NB-storytitles-sentiment {
+    border-left: none;
+}
+
+.NB-briefing-summary-story .NB-storytitles-content-preview-text {
+    color: #606870;
+    font-style: italic;
+}
+
+/* reader.css: Generate briefing button — shared styles */
+.NB-briefing-generate-btn {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #5C89C4;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.15s ease;
+    user-select: none;
+}
+
+.NB-briefing-generate-btn:hover {
+    background-color: #4A73A8;
+}
+
+.NB-briefing-generate-btn:active {
+    background-color: #3D6090;
+}
+
+/* reader.css: Large generate button for empty state */
+.NB-briefing-generate-btn-large {
+    margin-top: 16px;
+    font-size: 14px;
+    padding: 12px 24px;
+}
+
+/* reader.css: Progress indicator during generation */
+.NB-briefing-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #E0E0DC;
+    background-color: #F5F6F2;
+}
+
+.NB-briefing-progress-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #CCC;
+    border-top-color: #5C89C4;
+    border-radius: 50%;
+    animation: nb-briefing-spin 0.8s linear infinite;
+}
+
+@keyframes nb-briefing-spin {
+    to { transform: rotate(360deg); }
+}
+
+.NB-briefing-progress-message {
+    font-size: 12px;
+    color: #606060;
+}
+
+/* reader.css: Error state during generation */
+.NB-briefing-error {
+    padding: 12px 14px;
+    border-bottom: 1px solid #E0E0DC;
+    text-align: center;
+}
+
+.NB-briefing-error-message {
+    font-size: 12px;
+    color: #A04040;
+    margin-bottom: 8px;
 }

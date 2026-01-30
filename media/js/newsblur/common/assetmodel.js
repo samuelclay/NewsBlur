@@ -878,6 +878,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     },
 
+    fetch_briefing_stories: function (callback, error_callback) {
+        this.make_request('/briefing/stories', {}, callback, error_callback, {
+            'ajax_group': 'feed',
+            'request_type': 'GET'
+        });
+    },
+
+    generate_briefing: function (callback, error_callback) {
+        this.make_request('/briefing/generate', {}, callback, error_callback, {
+            'request_type': 'POST'
+        });
+    },
+
     complete_river: function (feed_id, feeds, page, callback) {
         this.make_request('/reader/complete_river', {
             feeds: feeds,
