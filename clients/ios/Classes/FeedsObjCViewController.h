@@ -156,6 +156,9 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 - (void)resizeFontSize;
 - (void)settingDidChange:(NSNotification*)notification;
 
+- (void)updateSidebarButton;
+- (void)updateSidebarButtonForDisplayMode:(UISplitViewControllerDisplayMode)displayMode;
+
 - (void)showRefreshNotifier;
 - (void)showCountingNotifier;
 - (void)showSyncingNotifier;

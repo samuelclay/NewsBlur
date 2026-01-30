@@ -86,6 +86,7 @@
 - (void)doneDashboardChooseSite:(NSString *)riverId;
 - (void)resetFeedDetail;
 - (void)reloadStories;
+- (void)updateSidebarButtonForDisplayMode:(UISplitViewControllerDisplayMode)displayMode;
 - (void)fetchNextPage:(void(^)(void))callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)(void))callback;
 - (void)loadOfflineStories;

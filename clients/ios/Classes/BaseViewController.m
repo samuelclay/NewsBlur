@@ -591,16 +591,69 @@
 - (IBAction)toggleFeeds:(id)sender {
     UISplitViewController *splitViewController = self.appDelegate.splitViewController;
     
+    NSLog(@"toggleSidebar: displayMode: %@; preferredDisplayMode: %@; splitBehavior: %@", @(splitViewController.displayMode), @(splitViewController.preferredDisplayMode), @(splitViewController.splitBehavior));  // log
+
+    // Determine if we should use tile-mode toggling based on user preference + orientation
+    NSString *behavior = [[NSUserDefaults standardUserDefaults] stringForKey:@"split_behavior"];
+    CGSize size = splitViewController.view.bounds.size;
+    if (size.width <= 0) {
+        size = UIScreen.mainScreen.bounds.size;
+    }
+    BOOL isLandscape = size.width > size.height;
+    BOOL isAuto = (!behavior || [behavior isEqualToString:@"auto"]);
+
+    BOOL shouldTile = [behavior isEqualToString:@"tile"];
+    if (isAuto) {
+        shouldTile = isLandscape;
+    }
+
+    BOOL shouldOverlay = [behavior isEqualToString:@"overlay"];
+    if (isAuto) {
+        shouldOverlay = !isLandscape;
+    }
+
+    BOOL forceOverlayInLandscape = isLandscape && (splitViewController.displayMode != UISplitViewControllerDisplayModeTwoBesideSecondary);
+    if (forceOverlayInLandscape) {
+        shouldOverlay = YES;
+        shouldTile = NO;
+    }
+
+    // Tile: toggle feeds sidebar beside detail with no overlay
+    if (shouldTile) {
+        BOOL isFeedListVisible = (splitViewController.displayMode == UISplitViewControllerDisplayModeOneBesideSecondary ||
+                                  splitViewController.displayMode == UISplitViewControllerDisplayModeTwoBesideSecondary);
+        NSLog(@"toggleSidebar tile: splitBehavior=%@, displayMode=%@, feedListVisible=%@", @(splitViewController.splitBehavior), @(splitViewController.displayMode), isFeedListVisible ? @"YES" : @"NO");
+        [UIView animateWithDuration:0.3 animations:^{
+            if (isFeedListVisible) {
+                // Feed list visible. Hide it.
+                splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeSecondaryOnly;
+            } else {
+                // Feed list hidden. Show it tiled beside detail.
+                splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+                splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
+            }
+        }];
+        return;
+    }
+
+    if (shouldOverlay) {
+        [UIView animateWithDuration:0.2 animations:^{
+            splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+            splitViewController.preferredDisplayMode = (splitViewController.displayMode != UISplitViewControllerDisplayModeOneOverSecondary
+                                                        ? UISplitViewControllerDisplayModeOneOverSecondary
+                                                        : UISplitViewControllerDisplayModeOneBesideSecondary);
+        }];
+        return;
+    }
+
     [UIView animateWithDuration:0.2 animations:^{
-        NSLog(@"toggleSidebar: displayMode: %@; preferredDisplayMode: %@; UISplitViewControllerDisplayModeSecondaryOnly: %@; UISplitViewControllerDisplayModeOneBesideSecondary: %@; ", @(splitViewController.displayMode), @(splitViewController.preferredDisplayMode), @(UISplitViewControllerDisplayModeSecondaryOnly), @(UISplitViewControllerDisplayModeOneBesideSecondary));  // log
-        
         if (splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorOverlay) {
             splitViewController.preferredDisplayMode = (splitViewController.displayMode != UISplitViewControllerDisplayModeOneOverSecondary ? UISplitViewControllerDisplayModeOneOverSecondary : UISplitViewControllerDisplayModeOneBesideSecondary);
         } else if (splitViewController.splitBehavior == UISplitViewControllerSplitBehaviorDisplace) {
             if (splitViewController.preferredDisplayMode == UISplitViewControllerDisplayModeOneOverSecondary &&
                 splitViewController.displayMode == UISplitViewControllerDisplayModeSecondaryOnly) {
                 splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-                
+
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                     splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
                 });
@@ -611,7 +664,7 @@
             if (splitViewController.preferredDisplayMode == UISplitViewControllerDisplayModeOneBesideSecondary &&
                 splitViewController.displayMode == UISplitViewControllerDisplayModeSecondaryOnly) {
                 splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
-                
+
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                     splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
                 });

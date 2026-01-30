@@ -380,25 +380,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     [self.navigationController setToolbarHidden:YES animated:animated];
 #endif
 
-    if (!self.isPhone && !self.isMac) {
-        if (!self.sidebarBarButton) {
-            UIImage *sidebarImage = [UIImage systemImageNamed:@"sidebar.leading"];
-            if (!sidebarImage) {
-                sidebarImage = [UIImage systemImageNamed:@"sidebar.left"];
-            }
-            if (!sidebarImage) {
-                sidebarImage = [UIImage imageNamed:@"columns_double.png"];
-            }
-            sidebarImage = [sidebarImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            self.sidebarBarButton = [[UIBarButtonItem alloc] initWithImage:sidebarImage
-                                                                     style:UIBarButtonItemStylePlain
-                                                                    target:self
-                                                                    action:@selector(toggleFeeds:)];
-            self.sidebarBarButton.accessibilityLabel = @"Sidebar";
-        }
-        self.navigationItem.leftBarButtonItem = self.sidebarBarButton;
-        self.navigationItem.leftItemsSupplementBackButton = YES;
-    }
+    [self updateSidebarButton];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSInteger intelligenceLevel = [userPreferences integerForKey:@"selectedIntelligence"];
@@ -546,6 +528,38 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             [self.feedTitlesTable endUpdates];
             break;
         }
+    }
+}
+
+- (void)updateSidebarButton {
+    [self updateSidebarButtonForDisplayMode:self.appDelegate.splitViewController.displayMode];
+}
+
+- (void)updateSidebarButtonForDisplayMode:(UISplitViewControllerDisplayMode)displayMode {
+    if (!self.isPhone && !self.isMac) {
+        // In 3-column mode, feed detail toolbar has its own sidebar button
+        if (displayMode == UISplitViewControllerDisplayModeTwoBesideSecondary) {
+            self.navigationItem.rightBarButtonItem = nil;
+            return;
+        }
+
+        if (!self.sidebarBarButton) {
+            UIImage *sidebarImage = [UIImage systemImageNamed:@"sidebar.leading"];
+            if (!sidebarImage) {
+                sidebarImage = [UIImage systemImageNamed:@"sidebar.left"];
+            }
+            if (!sidebarImage) {
+                sidebarImage = [UIImage imageNamed:@"columns_double.png"];
+            }
+            sidebarImage = [sidebarImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+            UIButton *button = [UIButton systemButtonWithImage:sidebarImage target:self action:@selector(toggleFeeds:)];
+            button.frame = CGRectMake(0, 0, 44, 44);
+            button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+            self.sidebarBarButton = [[UIBarButtonItem alloc] initWithCustomView:button];
+            self.sidebarBarButton.accessibilityLabel = @"Sidebar";
+        }
+        self.navigationItem.rightBarButtonItem = self.sidebarBarButton;
     }
 }
 
@@ -902,7 +916,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     //                     initWithCustomView:self.activityButton];
     // activitiesButton.width = 32;
     // self.navigationItem.rightBarButtonItem = activitiesButton;
-    self.navigationItem.rightBarButtonItem = nil;
+    [self updateSidebarButton];
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
@@ -1574,7 +1588,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.addBarButton.tintColor = toolbarButtonTint;
     self.settingsBarButton.tintColor = toolbarButtonTint;
     if (self.sidebarBarButton) {
-        self.sidebarBarButton.tintColor = tintColor;
+        self.sidebarBarButton.customView.tintColor = tintColor;
     }
 #if TARGET_OS_MACCATALYST
     if (ThemeManager.themeManager.isLikeSystem) {
