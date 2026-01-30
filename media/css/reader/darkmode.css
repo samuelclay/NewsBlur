@@ -3918,6 +3918,16 @@ a.mention, a.mention-group {
     border-top-color: #333;
 }
 
+.NB-dark .NB-add-site-card-add-group,
+.NB-dark .NB-badge-folder-add-group {
+    background: #333;
+}
+
+.NB-dark .NB-add-site-card-add-group .NB-add-site-folder-select,
+.NB-dark .NB-badge-folder-add-group .NB-add-site-folder-select {
+    color: #DDD;
+}
+
 .NB-dark .NB-add-site-card-story {
     border-bottom-color: #3a3a3a;
 }
@@ -3978,6 +3988,11 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-trending-feed-card .NB-subscribed {
     color: #5a5;
+}
+
+.NB-dark .NB-subscribed-badge {
+    background: #2a4a1e;
+    color: #8fc87a;
 }
 
 .NB-dark .NB-add-site-source-header {
@@ -4124,17 +4139,9 @@ a.mention, a.mention-group {
     color: #DDD;
 }
 
-/* Platform Hints Dark Mode */
-.NB-dark .NB-add-site-platform-hints {
-    background: #222;
-}
-
-.NB-dark .NB-add-site-platform-label {
-    color: #AAA;
-}
-
-.NB-dark .NB-add-site-platform-example {
-    color: #666;
+/* Newsletter Filter Labels Dark Mode */
+.NB-dark .NB-add-site-filter-label {
+    color: #777;
 }
 
 /* Date filter upgrade notice dark mode */
