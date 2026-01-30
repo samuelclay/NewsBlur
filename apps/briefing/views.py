@@ -3,14 +3,12 @@ import zlib
 
 import redis
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.utils.encoding import smart_str
 
 from apps.briefing.activity import RUserActivity
-from apps.briefing.models import MBriefing, MBriefingPreferences, ensure_briefing_feed
+from apps.briefing.models import MBriefing, MBriefingPreferences
 from apps.rss_feeds.models import Feed, MStory
 from utils import json_functions as json
-from utils import log as logging
 from utils.user_functions import ajax_login_required
 
 
@@ -24,13 +22,14 @@ def load_briefing_stories(request):
     Premium archive/pro users get full briefings; others get a preview.
     """
     user = request.user
+    if not user.is_staff:
+        return {"code": -1, "message": "Daily Briefing is currently staff-only."}
     profile = user.profile
     is_premium_archive = profile.is_archive or profile.is_pro
     limit = int(request.GET.get("limit", 10))
 
     briefings = MBriefing.latest_for_user(user.pk, limit=limit)
 
-    # apps/briefing/views.py: Look up which story hashes the user has already read
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
     read_stories_key = "RS:%s" % user.pk
     all_briefing_hashes = set()
@@ -53,7 +52,6 @@ def load_briefing_stories(request):
 
     briefing_list = []
     for briefing in briefings:
-        # apps/briefing/views.py: Load the summary story
         summary_story = None
         if briefing.summary_story_hash:
             try:
@@ -64,7 +62,6 @@ def load_briefing_stories(request):
             except MStory.DoesNotExist:
                 pass
 
-        # apps/briefing/views.py: Load curated stories
         curated_hashes = briefing.curated_story_hashes or []
         if not is_premium_archive:
             curated_hashes = curated_hashes[:3]
@@ -74,13 +71,11 @@ def load_briefing_stories(request):
             stories_db = MStory.objects(story_hash__in=curated_hashes)
             stories_by_hash = {s.story_hash: s for s in stories_db}
 
-            # apps/briefing/views.py: Load feed info for curated stories
             feed_ids = set(s.story_feed_id for s in stories_db)
             feeds_by_id = {}
             for feed in Feed.objects.filter(pk__in=feed_ids).only("pk", "feed_title", "favicon_color"):
                 feeds_by_id[feed.pk] = feed
 
-            # apps/briefing/views.py: Maintain scored order
             for story_hash in curated_hashes:
                 story = stories_by_hash.get(story_hash)
                 if story:
@@ -104,7 +99,6 @@ def load_briefing_stories(request):
         }
         briefing_list.append(briefing_data)
 
-    # apps/briefing/views.py: Get the briefing feed_id for the sidebar
     prefs = MBriefingPreferences.get_or_create(user.pk)
 
     return {
@@ -122,6 +116,8 @@ def briefing_preferences(request):
     POST /briefing/preferences — Update preferences.
     """
     user = request.user
+    if not user.is_staff:
+        return {"code": -1, "message": "Daily Briefing is currently staff-only."}
     prefs = MBriefingPreferences.get_or_create(user.pk)
 
     if request.method == "POST":
@@ -133,11 +129,9 @@ def briefing_preferences(request):
         if preferred_time == "auto":
             prefs.preferred_time = None
         elif preferred_time in ("morning", "afternoon", "evening"):
-            # apps/briefing/views.py: Map named presets to HH:MM
             time_map = {"morning": "07:00", "afternoon": "12:00", "evening": "18:00"}
             prefs.preferred_time = time_map[preferred_time]
         elif preferred_time:
-            # apps/briefing/views.py: Validate HH:MM format
             try:
                 parts = preferred_time.split(":")
                 hour = int(parts[0])
@@ -151,7 +145,6 @@ def briefing_preferences(request):
         if enabled is not None:
             prefs.enabled = enabled in ("true", "1", True)
 
-        # apps/briefing/views.py: Validate and save expanded preferences
         story_count = request.POST.get("story_count")
         if story_count:
             try:
@@ -180,18 +173,9 @@ def briefing_preferences(request):
 
         prefs.save()
 
-    # apps/briefing/views.py: Map HH:MM back to named preset for frontend
-    preferred_time_display = prefs.preferred_time
-    if not preferred_time_display:
-        preferred_time_display = "auto"
-    elif preferred_time_display == "07:00":
-        preferred_time_display = "morning"
-    elif preferred_time_display == "12:00":
-        preferred_time_display = "afternoon"
-    elif preferred_time_display == "18:00":
-        preferred_time_display = "evening"
+    TIME_DISPLAY_MAP = {"07:00": "morning", "12:00": "afternoon", "18:00": "evening"}
+    preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "auto"
 
-    # apps/briefing/views.py: Get folder list for source picker
     folders = []
     try:
         from apps.reader.models import UserSubscriptionFolders
@@ -211,7 +195,7 @@ def briefing_preferences(request):
         "summary_length": prefs.summary_length or "medium",
         "story_sources": prefs.story_sources or "all",
         "summary_style": prefs.summary_style or "editorial",
-        "include_read": prefs.include_read if hasattr(prefs, "include_read") else False,
+        "include_read": prefs.include_read,
         "folders": folders,
     }
 
@@ -223,6 +207,8 @@ def briefing_status(request):
     GET /briefing/status — Return briefing generation status and activity data.
     """
     user = request.user
+    if not user.is_staff:
+        return {"code": -1, "message": "Daily Briefing is currently staff-only."}
     prefs = MBriefingPreferences.get_or_create(user.pk)
 
     typical_hour = RUserActivity.get_typical_reading_hour(user.pk)
@@ -260,6 +246,9 @@ def generate_briefing(request):
     Triggers on-demand briefing generation with real-time progress via WebSocket.
     Staff-only during initial rollout.
     """
+    if request.method != "POST":
+        return {"code": -1, "message": "POST required"}
+
     from apps.briefing.tasks import GenerateUserBriefing
 
     user = request.user

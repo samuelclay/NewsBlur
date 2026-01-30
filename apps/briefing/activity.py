@@ -4,8 +4,6 @@ import pytz
 import redis
 from django.conf import settings
 
-from utils import log as logging
-
 
 class RUserActivity:
     """
@@ -24,6 +22,13 @@ class RUserActivity:
     DEFAULT_HOUR = 7  # 7:00 AM default if insufficient data
 
     @classmethod
+    def _parse_timezone(cls, timezone_str):
+        try:
+            return pytz.timezone(str(timezone_str))
+        except (pytz.UnknownTimeZoneError, AttributeError):
+            return pytz.timezone("America/New_York")
+
+    @classmethod
     def record_activity(cls, user_id, timezone_str):
         """
         Record that user was active now. Convert UTC to user's local hour.
@@ -33,17 +38,13 @@ class RUserActivity:
         """
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
 
-        try:
-            tz = pytz.timezone(str(timezone_str))
-        except (pytz.UnknownTimeZoneError, AttributeError):
-            tz = pytz.timezone("America/New_York")
+        tz = cls._parse_timezone(timezone_str)
 
         local_now = datetime.datetime.now(tz)
         local_hour = local_now.hour
 
         key = "%s:%s" % (cls.REDIS_KEY_PREFIX, user_id)
         r.hincrby(key, "hour_%s" % local_hour, 1)
-        # apps/briefing/activity.py: No TTL — activity data accumulates indefinitely
 
     @classmethod
     def get_activity_histogram(cls, user_id):
@@ -93,21 +94,16 @@ class RUserActivity:
 
         Falls back to DEFAULT_HOUR (7:00 AM) if insufficient activity data.
         """
-        try:
-            tz = pytz.timezone(str(timezone_str))
-        except (pytz.UnknownTimeZoneError, AttributeError):
-            tz = pytz.timezone("America/New_York")
+        tz = cls._parse_timezone(timezone_str)
 
         typical_hour = cls.get_typical_reading_hour(user_id)
         if typical_hour is None:
             typical_hour = cls.DEFAULT_HOUR
 
-        # apps/briefing/activity.py: Target generation time is 30 min before typical reading
         today = datetime.datetime.now(tz).date()
         local_target = tz.localize(datetime.datetime.combine(today, datetime.time(typical_hour, 0)))
         generation_time = local_target - datetime.timedelta(minutes=30)
 
-        # apps/briefing/activity.py: Convert to UTC
         utc_time = generation_time.astimezone(pytz.utc).replace(tzinfo=None)
 
         return utc_time

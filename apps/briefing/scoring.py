@@ -15,7 +15,7 @@ from apps.analyzer.models import (
     compute_story_score,
 )
 from apps.reader.models import UserSubscription
-from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.models import MStory
 from utils import log as logging
 
 
@@ -48,7 +48,6 @@ def select_briefing_stories(
     Returns list of dicts with keys:
         story_hash, score, is_read, category, content_word_count, classifier_matches
     """
-    # apps/briefing/scoring.py: Get all active subscriptions for this user
     user_subs = UserSubscription.objects.filter(user_id=user_id, active=True).select_related("feed")
     if not user_subs:
         return []
@@ -56,7 +55,6 @@ def select_briefing_stories(
     feed_ids = [sub.feed_id for sub in user_subs]
     feed_opens_map = {sub.feed_id: sub.feed_opens or 0 for sub in user_subs}
 
-    # apps/briefing/scoring.py: Filter feeds based on story_sources preference
     if story_sources == "focused":
         positive_feed_ids = set(
             cf.feed_id for cf in MClassifierFeed.objects(user_id=user_id) if cf.feed_id and cf.score > 0
@@ -85,7 +83,6 @@ def select_briefing_stories(
     if not feed_ids:
         return []
 
-    # apps/briefing/scoring.py: Get story hashes from the period via Redis sorted sets
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
     period_start_ts = time.mktime(period_start.timetuple())
     period_end_ts = time.mktime(period_end.timetuple())
@@ -111,7 +108,6 @@ def select_briefing_stories(
         % (len(candidate_hashes), len(feed_ids), user_id)
     )
 
-    # apps/briefing/scoring.py: Batch lookup read status from Redis
     read_stories_key = "RS:%s" % user_id
     pipe_read = r.pipeline()
     for h in candidate_hashes:
@@ -119,35 +115,32 @@ def select_briefing_stories(
     read_results = pipe_read.execute()
     read_status_map = {h: bool(is_read) for h, is_read in zip(candidate_hashes, read_results)}
 
-    # apps/briefing/scoring.py: Batch-fetch trending data for all candidates
-    trending_time_map = _get_trending_times(candidate_hashes)
-    trending_count_map = _get_trending_counts(candidate_hashes)
+    trending_time_map = _get_trending_scores(candidate_hashes, "sRTi")
+    trending_count_map = _get_trending_scores(candidate_hashes, "sRTc")
 
-    # apps/briefing/scoring.py: Compute max values for normalization
+    unique_feed_ids = list(set(feed_ids))
+    feed_trending_map = _get_feed_trending_times(unique_feed_ids)
+
     max_trending_time = max(trending_time_map.values()) if trending_time_map else 1
     max_trending_count = max(trending_count_map.values()) if trending_count_map else 1
     max_feed_opens = max(feed_opens_map.values()) if feed_opens_map else 1
 
-    # apps/briefing/scoring.py: Load intelligence classifiers for the user
     classifier_feeds = list(MClassifierFeed.objects(user_id=user_id))
     classifier_authors = list(MClassifierAuthor.objects(user_id=user_id))
     classifier_tags = list(MClassifierTag.objects(user_id=user_id))
     classifier_titles = list(MClassifierTitle.objects(user_id=user_id))
 
-    # apps/briefing/scoring.py: Build feed title map for classifier match descriptions
     feed_title_map = {}
     for sub in user_subs:
         if sub.feed:
             feed_title_map[sub.feed_id] = sub.feed.feed_title
 
-    # apps/briefing/scoring.py: Load stories for intelligence scoring (batch)
     stories_by_hash = {}
     for batch_start in range(0, len(candidate_hashes), 100):
         batch = candidate_hashes[batch_start : batch_start + 100]
         for story in MStory.objects(story_hash__in=batch):
             stories_by_hash[story.story_hash] = story
 
-    # apps/briefing/scoring.py: Score each candidate
     scored = []
     for story_hash in candidate_hashes:
         feed_id = feed_id_for_hash.get(story_hash, 0)
@@ -165,7 +158,7 @@ def select_briefing_stories(
         # Feed engagement score (20%)
         feed_engagement_score = 0.0
         if feed_id:
-            feed_trending = _get_feed_trending_time(feed_id)
+            feed_trending = feed_trending_map.get(feed_id, 0)
             if feed_trending > 0 and max_trending_time > 0:
                 feed_engagement_score = min(feed_trending / max_trending_time, 1.0) * 0.2
 
@@ -220,13 +213,11 @@ def select_briefing_stories(
             }
         )
 
-    # apps/briefing/scoring.py: Sort by score descending
     scored.sort(key=lambda x: x["score"], reverse=True)
 
     # Filter out stories with negative intelligence scores (user hid them)
     scored = [s for s in scored if s["score"] >= 0]
 
-    # apps/briefing/scoring.py: Filter by read status
     unread_scored = [s for s in scored if not s["is_read"]]
     if not include_read and len(unread_scored) >= 3:
         scored = unread_scored
@@ -237,7 +228,6 @@ def select_briefing_stories(
             % (len(unread_scored), user_id)
         )
 
-    # apps/briefing/scoring.py: Apply feed diversity cap (max 3 stories per feed)
     max_per_feed = 3
     feed_counts = {}
     diverse_scored = []
@@ -249,10 +239,8 @@ def select_briefing_stories(
         diverse_scored.append(s)
     scored = diverse_scored
 
-    # apps/briefing/scoring.py: Take top candidates and compute word counts + categories
     top_candidates = scored[: max_stories * 2]
 
-    # apps/briefing/scoring.py: Build follow-up detection map from read stories in the period
     read_feeds_with_dates = {}
     for s in scored:
         if s["is_read"]:
@@ -260,7 +248,6 @@ def select_briefing_stories(
             if story and story.story_date:
                 read_feeds_with_dates.setdefault(s["feed_id"], []).append(story.story_date)
 
-    # apps/briefing/scoring.py: Enrich top candidates with word count and category
     enriched = []
     for s in top_candidates:
         story = stories_by_hash.get(s["story_hash"])
@@ -301,37 +288,18 @@ def _get_classifier_matches(story, classifier_feeds, classifier_authors, classif
     """Identify which classifiers matched positively for a story."""
     matches = []
     for cf in classifier_feeds:
-        if cf.feed_id == story.story_feed_id and hasattr(cf, "score") and cf.score > 0:
+        if cf.feed_id == story.story_feed_id and cf.score > 0:
             feed_title = feed_title_map.get(cf.feed_id, "")
             if feed_title:
                 matches.append("feed:%s" % feed_title)
     for ca in classifier_authors:
-        if (
-            story.story_author_name
-            and hasattr(ca, "author_name")
-            and ca.author_name
-            and ca.author_name in story.story_author_name
-            and hasattr(ca, "score")
-            and ca.score > 0
-        ):
+        if ca.author_name and ca.score > 0 and story.story_author_name and ca.author_name in story.story_author_name:
             matches.append("author:%s" % ca.author_name)
     for ct in classifier_tags:
-        if (
-            hasattr(ct, "tag")
-            and ct.tag
-            and ct.tag in (story.story_tags or [])
-            and hasattr(ct, "score")
-            and ct.score > 0
-        ):
+        if ct.tag and ct.score > 0 and ct.tag in (story.story_tags or []):
             matches.append("tag:%s" % ct.tag)
     for cti in classifier_titles:
-        if (
-            hasattr(cti, "title")
-            and cti.title
-            and cti.title.lower() in (story.story_title or "").lower()
-            and hasattr(cti, "score")
-            and cti.score > 0
-        ):
+        if cti.title and cti.score > 0 and cti.title.lower() in (story.story_title or "").lower():
             matches.append("title:%s" % cti.title)
     return matches
 
@@ -350,19 +318,19 @@ def _estimate_word_count(story):
     return len(text.split())
 
 
-def _get_trending_times(story_hashes, days=1):
-    """Get trending read times for a batch of story hashes."""
+def _get_trending_scores(keys, key_prefix):
+    """Batch-fetch trending scores from a Redis sorted set by key prefix."""
     r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
     today = datetime.date.today().strftime("%Y-%m-%d")
-    key = "sRTi:%s" % today
+    key = "%s:%s" % (key_prefix, today)
 
     pipe = r.pipeline()
-    for h in story_hashes:
+    for h in keys:
         pipe.zscore(key, h)
     values = pipe.execute()
 
     result = {}
-    for h, val in zip(story_hashes, values):
+    for h, val in zip(keys, values):
         if val:
             try:
                 result[h] = int(val)
@@ -371,30 +339,22 @@ def _get_trending_times(story_hashes, days=1):
     return result
 
 
-def _get_trending_counts(story_hashes, days=1):
-    """Get trending reader counts for a batch of story hashes."""
+def _get_feed_trending_times(feed_ids):
+    """Batch-fetch trending read times for a list of feed IDs."""
     r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
     today = datetime.date.today().strftime("%Y-%m-%d")
-    key = "sRTc:%s" % today
+    key = "fRT:%s" % today
 
     pipe = r.pipeline()
-    for h in story_hashes:
-        pipe.zscore(key, h)
+    for fid in feed_ids:
+        pipe.zscore(key, str(fid))
     values = pipe.execute()
 
     result = {}
-    for h, val in zip(story_hashes, values):
+    for fid, val in zip(feed_ids, values):
         if val:
             try:
-                result[h] = int(val)
+                result[fid] = int(val)
             except (ValueError, TypeError):
                 pass
     return result
-
-
-def _get_feed_trending_time(feed_id, days=1):
-    """Get total trending read time for a feed."""
-    r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
-    today = datetime.date.today().strftime("%Y-%m-%d")
-    val = r.zscore("fRT:%s" % today, str(feed_id))
-    return int(val) if val else 0

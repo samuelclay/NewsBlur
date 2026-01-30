@@ -1,4 +1,3 @@
-import datetime
 import re
 import zlib
 
@@ -88,12 +87,10 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_le
     """
     story_hashes = [s["story_hash"] for s in scored_stories]
 
-    # apps/briefing/summary.py: Load story details from MongoDB
     stories_by_hash = {}
     for story in MStory.objects(story_hash__in=story_hashes):
         stories_by_hash[story.story_hash] = story
 
-    # apps/briefing/summary.py: Load feed titles for context
     feed_ids = set()
     for story in stories_by_hash.values():
         feed_ids.add(story.story_feed_id)
@@ -101,7 +98,6 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_le
     for feed in Feed.objects.filter(pk__in=feed_ids).only("pk", "feed_title"):
         feeds_by_id[feed.pk] = feed.feed_title
 
-    # apps/briefing/summary.py: Build the prompt with story details and category metadata
     story_lines = []
     for scored in scored_stories:
         story_hash = scored["story_hash"]
@@ -141,7 +137,6 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_le
         "\n\n".join(story_lines),
     )
 
-    # apps/briefing/summary.py: Call Claude API (non-streaming for background task)
     try:
         system_prompt = _build_system_prompt(summary_length, summary_style)
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
@@ -152,19 +147,14 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_le
             messages=[{"role": "user", "content": user_prompt}],
         )
 
-        summary_html = ""
-        for block in response.content:
-            if hasattr(block, "text"):
-                summary_html += block.text
+        summary_html = "".join(block.text for block in response.content if hasattr(block, "text"))
 
-        # apps/briefing/summary.py: Strip markdown code fences if the model added them
         summary_html = summary_html.strip()
         if summary_html.startswith("```"):
             summary_html = re.sub(r"^```\w*\n?", "", summary_html)
             summary_html = re.sub(r"\n?```\s*$", "", summary_html)
             summary_html = summary_html.strip()
 
-        # apps/briefing/summary.py: Track cost
         if response.usage:
             LLMCostTracker.record_usage(
                 provider="anthropic",
@@ -193,8 +183,6 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_le
 
 def _get_content_excerpt(story, max_chars=300):
     """Extract a plain text excerpt from a story's content."""
-    import re
-
     content = story.story_content
     if not content and story.story_content_z:
         try:
@@ -205,7 +193,6 @@ def _get_content_excerpt(story, max_chars=300):
     if not content:
         return ""
 
-    # apps/briefing/summary.py: Strip HTML tags for the excerpt
     text = re.sub(r"<[^>]+>", " ", content)
     text = re.sub(r"\s+", " ", text).strip()
 
