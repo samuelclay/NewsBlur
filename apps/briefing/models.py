@@ -147,9 +147,16 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
 
     Returns (MBriefing, MStory) tuple.
     """
+    import pytz
+
     from apps.notifications.models import MUserFeedNotification
     from apps.notifications.tasks import QueueNotifications
     from apps.reader.models import UserSubscription
+
+    # models.py: Convert UTC briefing_date to user's local timezone for the title
+    user_tz = pytz.timezone(str(user.profile.timezone))
+    local_date = pytz.utc.localize(briefing_date).astimezone(user_tz)
+    title = "Daily Briefing — %s" % local_date.strftime("%B %-d, %Y")
 
     day_start = briefing_date.replace(hour=0, minute=0, second=0, microsecond=0)
     day_end = day_start + datetime.timedelta(days=1)
@@ -164,7 +171,7 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
             story = MStory.objects.get(story_hash=existing_briefing.summary_story_hash)
             story.story_content = summary_html
             story.story_date = briefing_date
-            story.story_title = "Daily Briefing — %s" % briefing_date.strftime("%B %d, %Y")
+            story.story_title = title
             story.save()
         except MStory.DoesNotExist:
             existing_briefing = None
@@ -174,7 +181,7 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
         story = MStory(
             story_feed_id=feed.pk,
             story_date=briefing_date,
-            story_title="Daily Briefing — %s" % briefing_date.strftime("%B %d, %Y"),
+            story_title=title,
             story_content=summary_html,
             story_author_name="NewsBlur",
             story_permalink="https://newsblur.com/briefing/%s/%s" % (user.pk, briefing_date.strftime("%Y-%m-%d")),

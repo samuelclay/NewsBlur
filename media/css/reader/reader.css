@@ -28865,6 +28865,11 @@ span.NB-briefing-inline-favicon {
     padding: 0;
 }
 
+/* reader.css: CSS transition for collapse/expand — avoids jQuery's overflow:hidden */
+.NB-briefing-group-stories.NB-collapsing {
+    transition: height 200ms ease;
+}
+
 /* reader.css: Individual story items in the briefing */
 .NB-briefing-story-item {
     padding: 8px 12px;
