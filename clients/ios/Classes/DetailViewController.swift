@@ -150,15 +150,15 @@ class DetailViewController: BaseViewController {
     
     /// Whether or not we are using compact size class, instead of regular size class. (A local property, instead of asking the OS, so it is updated when the split delegate handles the change.)
     @objc var isCompact = false
-    
-    /// Whether or not the views were last set up for compact size class.
-    private var wasCompact = false
-    
-    /// Whether or not this is an iPhone or a compact size class. Most of the time, they should work the same.
+
+    /// Convenience for phone or compact layout.
     @objc var isPhoneOrCompact: Bool {
         return isPhone || isCompact
     }
     
+    /// Whether or not the views were last set up for compact size class.
+    private var wasCompact = false
+
     /// Preference values.
     enum StyleValue {
         static let standard = "standard"
@@ -202,14 +202,22 @@ class DetailViewController: BaseViewController {
     
    /// Preference values.
     enum BehaviorValue {
+        static let auto = "auto"
         static let tile = "tile"
+        static let displace = "displace"
         static let overlay = "overlay"
     }
     
     /// How the split controller behaves.
     enum Behavior {
+        /// The split controller figures out the best behavior.
+        case auto
+        
         /// The split controller arranges the views side-by-side.
         case tile
+        
+        /// The split controller pushes the detail view aside.
+        case displace
         
         /// The split controller puts the left columns over the detail view.
         case overlay
@@ -217,26 +225,21 @@ class DetailViewController: BaseViewController {
     
     /// How the split controller behaves.
     var behavior: Behavior {
-        get {
-            switch behaviorString {
-                case BehaviorValue.overlay:
-                    return .overlay
-                default:
-                    return .tile
-            }
-        }
-        set {
-            if newValue == .overlay {
-                UserDefaults.standard.set(BehaviorValue.overlay, forKey: Key.behavior)
-            } else {
-                UserDefaults.standard.set(BehaviorValue.tile, forKey: Key.behavior)
-            }
+        switch behaviorString {
+        case BehaviorValue.tile:
+            return .tile
+        case BehaviorValue.displace:
+            return .displace
+        case BehaviorValue.overlay:
+            return .overlay
+        default:
+            return .auto
         }
     }
     
     /// The split controller behavior as a raw string.
     @objc var behaviorString: String {
-        return UserDefaults.standard.string(forKey: Key.behavior) ?? BehaviorValue.tile
+        return UserDefaults.standard.string(forKey: Key.behavior) ?? BehaviorValue.auto
     }
     
     /// Position of the vertical divider between the views.
@@ -336,7 +339,7 @@ class DetailViewController: BaseViewController {
     
     /// The navigation item to use for the feed detail view controller.
     @objc var feedDetailNavigationItem: UINavigationItem {
-        if isPhoneOrCompact {
+        if isPhone {
             return feedDetailViewController?.navigationItem ?? navigationItem
         } else {
             return navigationItem
@@ -345,7 +348,7 @@ class DetailViewController: BaseViewController {
     
     /// The navigation item to use for the story pages view controller.
     @objc var storiesNavigationItem: UINavigationItem {
-        if isPhoneOrCompact {
+        if isPhone {
             return storyPagesViewController?.navigationItem ?? navigationItem
         } else {
             return navigationItem
@@ -425,7 +428,7 @@ class DetailViewController: BaseViewController {
     
     /// Moves the story pages controller to a Grid layout cell content (automatically removing it from the previous parent).
     func prepareStoriesForGridView() {
-        guard !isPhoneOrCompact, let storyPagesViewController else {
+        guard !isPhone, let storyPagesViewController else {
             return
         }
         
@@ -493,29 +496,44 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func collapseFeedListIfNeededForStory() {
-        guard !isPhone, !isCompact, storyTitlesOnLeft, appDelegate.activeStory != nil else {
+        DispatchQueue.main.async {
+            self.performStoryAutoCollapseIfNeeded()
+        }
+    }
+
+    private func performStoryAutoCollapseIfNeeded() {
+        guard !isPhone, !isCompact, appDelegate.activeStory != nil else {
             return
         }
         guard let splitViewController = splitViewController as? SplitViewController else {
             return
         }
-        if splitViewController.isFeedsListHidden {
+        if splitViewController.displayMode == .secondaryOnly {
+            return
+        }
+        if splitViewController.displayMode != .oneBesideSecondary {
             return
         }
 
         splitViewController.view.layoutIfNeeded()
         view.layoutIfNeeded()
 
-        let storyWidth = topContainerView.bounds.width
-        let minimumStoryWidth: CGFloat = 320
-        
-        if storyWidth > 0 && storyWidth < minimumStoryWidth {
-            splitViewController.preferredSplitBehavior = .overlay
-            splitViewController.preferredDisplayMode = .secondaryOnly
-            splitViewController.show(.secondary)
-            
-            behavior = .overlay
+        if behavior == .tile {
+            return
         }
+
+        if behavior == .auto {
+            let size = splitViewController.view.bounds.size
+            let isLandscape = size.width > size.height
+            if isLandscape {
+                return
+            }
+        }
+
+        UIView.animate(withDuration: 0.2) {
+            splitViewController.preferredDisplayMode = .oneOverSecondary
+        }
+        splitViewController.show(.secondary)
     }
     
     override func viewDidLoad() {
@@ -550,6 +568,10 @@ class DetailViewController: BaseViewController {
         coordinator.animate { context in
             self.adjustTopConstraint()
         }
+
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.collapseFeedListIfNeededForStory()
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -561,7 +583,7 @@ class DetailViewController: BaseViewController {
             feedsWidth = currentFeedsWidth
         }
 
-        collapseFeedListIfNeededForStory()
+        performStoryAutoCollapseIfNeeded()
     }
     
     private func adjustTopConstraint() {
@@ -569,7 +591,7 @@ class DetailViewController: BaseViewController {
             return
         }
         
-        if !isPhoneOrCompact {
+        if !isPhone {
             if scene.traitCollection.horizontalSizeClass == .compact {
                 topContainerTopConstraint.constant = -50
             } else {
@@ -692,7 +714,7 @@ private extension DetailViewController {
                 add(viewController: feedDetailViewController, to: leftContainerView, compactPush: isFeedShown)
             }
             
-            if wasGridView && !isPhoneOrCompact {
+            if wasGridView && !isPhone {
                 DispatchQueue.main.async {
                     self.appDelegate.loadStoryDetailView()
                 }

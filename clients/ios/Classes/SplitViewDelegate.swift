@@ -43,8 +43,13 @@ class SplitViewDelegate: NSObject, UISplitViewControllerDelegate {
                 NSLog("split will change to one beside secondary")
             case .oneOverSecondary:
                 NSLog("split will change to one over secondary")
+            case .twoBesideSecondary:
+                NSLog("split will change to two beside secondary")
             default:
                 NSLog("split will change to an unexpected mode")
         }
+
+        NewsBlurAppDelegate.shared?.feedsViewController.updateSidebarButton(for: displayMode)
+        NewsBlurAppDelegate.shared?.feedDetailViewController.updateSidebarButton(for: displayMode)
     }
 }

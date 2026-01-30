@@ -905,12 +905,44 @@
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     NSString *behavior = [preferences stringForKey:@"split_behavior"];
     
-    if ([behavior isEqualToString:@"overlay"]) {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
-        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
+    if (self.detailViewController.storyTitlesOnLeft) {
+        if ([behavior isEqualToString:@"tile"]) {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
+        } else if ([behavior isEqualToString:@"displace"]) {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
+        } else if ([behavior isEqualToString:@"overlay"]) {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
+        } else {
+            // Auto: 3 columns (tile) in landscape, 2 columns (displace) in portrait
+            CGSize screenSize = self.splitViewController.view.bounds.size;
+            if (screenSize.width <= 0) {
+                screenSize = UIScreen.mainScreen.bounds.size;
+            }
+            BOOL isLandscape = screenSize.width > screenSize.height;
+            if (isLandscape) {
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
+                if (!self.splitViewController.isCollapsed) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+                    });
+                }
+            } else {
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
+            }
+        }
     } else {
-        self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
-        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
+        if ([behavior isEqualToString:@"overlay"]) {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
+        } else {
+            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
+        }
     }
     
     if (refresh) {
@@ -920,8 +952,12 @@
 
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {
     NSString *preferenceKey = @"split_behavior";
-    NSArray *titles = @[@"Sites beside", @"Sites on top"];
-    NSArray *values = @[@"tile", @"overlay"];
+#if TARGET_OS_MACCATALYST
+    NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full window"];
+#else
+    NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full screen"];
+#endif
+    NSArray *values = @[@"auto", @"tile", @"displace", @"overlay"];
     
     [menuViewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         [UIView animateWithDuration:0.5 animations:^{
@@ -1188,16 +1224,16 @@
 - (void)prepareViewControllers {
     self.appDelegate = self;
     self.splitViewController = (SplitViewController *)self.window.rootViewController;
-
+    
     NSArray <UIViewController *> *splitChildren = self.splitViewController.viewControllers;
     
     if (splitChildren.count < 2) {
         NSLog(@"Missing split view controllers: %@", splitChildren);  // log
         return;
     }
-
+    
     self.splitViewController.showsSecondaryOnlyButton = YES;
-
+    
     self.feedsNavigationController = (UINavigationController *)splitChildren[0];
     self.feedsViewController = self.feedsNavigationController.viewControllers.firstObject;
     self.detailNavigationController = (UINavigationController *)splitChildren[1];
@@ -1218,29 +1254,15 @@
     self.firstTimeUserAddSitesViewController = [FirstTimeUserAddSitesViewController new];
     self.firstTimeUserAddFriendsViewController = [FirstTimeUserAddFriendsViewController new];
     self.firstTimeUserAddNewsBlurViewController = [FirstTimeUserAddNewsBlurViewController new];
-
+    
     [self updateSplitBehavior:NO];
-
+    
     [window makeKeyAndVisible];
-
+    
     [[ThemeManager themeManager] prepareForWindow:self.window];
-
+    
     [feedsViewController view];
-
-    // Check if user is logged in before loading feeds
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    self.activeUsername = [userPreferences stringForKey:@"active_username"];
-
-    if (!self.activeUsername) {
-        // User is not logged in, show login screen immediately without loading feeds
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.loginViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-            [self.feedsNavigationController presentViewController:self.loginViewController animated:NO completion:nil];
-        });
-    } else {
-        // User is logged in, proceed with loading feeds
-        [feedsViewController loadOfflineFeeds:NO];
-    }
+    [feedsViewController loadOfflineFeeds:NO];
     
     [self.detailViewController view];
     
@@ -1248,7 +1270,8 @@
 }
 
 - (FeedDetailViewController *)feedDetailViewController {
-    return self.detailViewController.feedDetailViewController;}
+    return self.detailViewController.feedDetailViewController;
+}
 
 - (StoryPagesViewController *)storyPagesViewController {
     return self.detailViewController.storyPagesViewController;
@@ -1434,12 +1457,18 @@
 
             // Store view model for re-presentation as sheet
             __weak typeof(self) weakSelf = self;
-            __weak typeof(AskAIViewController *) weakAskAIVC = askAIVC;
+            __weak AskAIViewController *weakAskAIVC = askAIVC;
             askAIVC.onQuestionAsked = ^{
+                AskAIViewController *strongAskAIVC = weakAskAIVC;
+                if (!strongAskAIVC) {
+                    return;
+                }
                 // Store the view model before dismissing
-                weakSelf.activeAskAIViewModel = weakAskAIVC.viewModelAsAny;
+                weakSelf.activeAskAIViewModel = strongAskAIVC.viewModelAsAny;
+                // Break the retain cycle once the question is asked
+                strongAskAIVC.onQuestionAsked = nil;
                 // Dismiss popover and re-present as bottom sheet
-                [weakAskAIVC dismissViewControllerAnimated:YES completion:^{
+                [strongAskAIVC dismissViewControllerAnimated:YES completion:^{
                     [weakSelf showAskAIInlineResponse];
                 }];
             };
