@@ -8,10 +8,10 @@
 
 import Foundation
 
-// The Feed, Story, and StoryCache classes could be quite useful going forward; Rather than calling getStory() to get the dictionary, could have a variation that returns a Story instance. Could fetch from the cache if available, or make and cache one from the dictionary. Would need to remove it from the cache when changing anything about a story. Could perhaps make the cache part of StoriesCollection.
+// The Folder, Feed, Story, and StoryCache classes could be quite useful going forward; Rather than calling getStory() to get the dictionary, could have a variation that returns a Story instance. Could fetch from the cache if available, or make and cache one from the dictionary. Would need to remove it from the cache when changing anything about a story. Could perhaps make the cache part of StoriesCollection.
 
 /// A story, wrapping the dictionary representation.
-class Story: Identifiable {
+@MainActor class Story: Identifiable {
     let id = UUID()
     let index: Int
     
@@ -20,7 +20,8 @@ class Story: Identifiable {
     var feed: Feed?
     
     var title = ""
-    var content = ""
+    var shortContent = ""
+    var longContent = ""
     var dateString = ""
     var timestamp = 0
     var isRead = false
@@ -47,6 +48,18 @@ class Story: Identifiable {
         
         return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
     }
+
+    var titleRegexes: [Feed.Training] {
+        guard let classifiers = feed?.classifiers(for: "title_regex") else {
+            return []
+        }
+        
+        let keys = classifiers.keys.compactMap { $0 as? String }
+        let matches = keys.filter { regexMatches($0, in: title) }
+        let sorted = matches.sorted()
+        
+        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+    }
     
     var authors: [Feed.Training] {
         guard let classifiers = feed?.classifiers(for: "authors") else {
@@ -62,6 +75,56 @@ class Story: Identifiable {
         }
         
         return tags.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+    }
+
+    var texts: [Feed.Training] {
+        guard let classifiers = feed?.classifiers(for: "texts") else {
+            return []
+        }
+        
+        let content = contentHTML.lowercased()
+        let keys = classifiers.keys.compactMap { $0 as? String }
+        let matches = keys.filter { content.contains($0.lowercased()) }
+        let sorted = matches.sorted()
+        
+        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+    }
+
+    var textRegexes: [Feed.Training] {
+        guard let classifiers = feed?.classifiers(for: "text_regex") else {
+            return []
+        }
+        
+        let keys = classifiers.keys.compactMap { $0 as? String }
+        let matches = keys.filter { regexMatches($0, in: contentHTML) }
+        let sorted = matches.sorted()
+        
+        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+    }
+
+    var urls: [Feed.Training] {
+        guard let classifiers = feed?.classifiers(for: "urls") else {
+            return []
+        }
+        
+        let permalinkLower = permalink.lowercased()
+        let keys = classifiers.keys.compactMap { $0 as? String }
+        let matches = keys.filter { permalinkLower.contains($0.lowercased()) }
+        let sorted = matches.sorted()
+        
+        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+    }
+
+    var urlRegexes: [Feed.Training] {
+        guard let classifiers = feed?.classifiers(for: "url_regex") else {
+            return []
+        }
+        
+        let keys = classifiers.keys.compactMap { $0 as? String }
+        let matches = keys.filter { regexMatches($0, in: permalink) }
+        let sorted = matches.sorted()
+        
+        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
     }
     
     var isSelected: Bool {
@@ -80,6 +143,13 @@ class Story: Identifiable {
         self.index = index
         
         load()
+    }
+    
+    init(index: Int, dictionary: AnyDictionary) {
+        self.index = index
+        self.dictionary = dictionary
+        
+        loadFromDictionary()
     }
     
     private func string(for key: String) -> String {
@@ -104,6 +174,14 @@ class Story: Identifiable {
         
         dictionary = story
         
+        loadFromDictionary()
+    }
+    
+    private func loadFromDictionary() {
+        guard let appDelegate = NewsBlurAppDelegate.shared, let storiesCollection = appDelegate.storiesCollection else {
+            return
+        }
+        
         if let dictID = dictionary["story_feed_id"], let id = appDelegate.feedIdWithoutSearchQuery("\(dictID)") {
             if let cachedFeed = StoryCache.feeds[id] {
                 feed = cachedFeed
@@ -113,8 +191,23 @@ class Story: Identifiable {
             }
         }
         
+        let tempContent: String = string(for: "story_content")
+        let components = tempContent.components(separatedBy: .newlines)
+        let filteredContent = components.filter { !$0.isEmpty }.joined(separator: "[:*CR*:]")
+        
         title = (string(for: "story_title") as NSString).decodingHTMLEntities()
-        content = String(string(for: "story_content").convertHTML().decodingXMLEntities().decodingHTMLEntities().replacingOccurrences(of: "\n", with: " ").prefix(500))
+        longContent = String(filteredContent
+            .convertHTML()
+            .decodingXMLEntities()
+            .decodingHTMLEntities()
+            .replacingOccurrences(of: "[:*CR*:]", with: "\n")
+            .prefix(1500))
+        shortContent = String(tempContent
+            .convertHTML()
+            .decodingXMLEntities()
+            .decodingHTMLEntities()
+            .replacingOccurrences(of: "\n", with: " ")
+            .prefix(500))
         author = string(for: "story_authors").replacingOccurrences(of: "\"", with: "")
         timestamp = int(for:"story_timestamp")
         dateString = Utilities.formatShortDate(fromTimestamp: timestamp) ?? ""
@@ -129,15 +222,33 @@ class Story: Identifiable {
         isRead = !storiesCollection .isStoryUnread(dictionary)
         isReadAvailable = storiesCollection.activeFolder != "saved_stories"
     }
+
+    private var contentHTML: String {
+        return string(for: "story_content")
+    }
+
+    private var permalink: String {
+        return string(for: "story_permalink")
+    }
+
+    private func regexMatches(_ pattern: String, in text: String) -> Bool {
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
+            let range = NSRange(text.startIndex..<text.endIndex, in: text)
+            return regex.firstMatch(in: text, options: [], range: range) != nil
+        } catch {
+            return false
+        }
+    }
 }
 
 extension Story: Equatable {
-    static func == (lhs: Story, rhs: Story) -> Bool {
+    nonisolated static func == (lhs: Story, rhs: Story) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
-extension Story: CustomDebugStringConvertible {
+extension Story: @preconcurrency CustomDebugStringConvertible {
     var debugDescription: String {
         return "Story #\(index) \"\(title)\" in \(feed?.name ?? "<none>")"
     }

@@ -8,13 +8,13 @@
 
 import Foundation
 
-// The Feed, Story, and StoryCache classes could be quite useful going forward; Rather than calling getStory() to get the dictionary, could have a variation that returns a Story instance. Could fetch from the cache if available, or make and cache one from the dictionary. Would need to remove it from the cache when changing anything about a story. Could perhaps make the cache part of StoriesCollection.
+// The Folder, Feed, Story, and StoryCache classes could be quite useful going forward; Rather than calling getStory() to get the dictionary, could have a variation that returns a Story instance. Could fetch from the cache if available, or make and cache one from the dictionary. Would need to remove it from the cache when changing anything about a story. Could perhaps make the cache part of StoriesCollection.
 
 /// A dictionary with the most broad key and value types, common in ObjC code.
 typealias AnyDictionary = [AnyHashable : Any]
 
 /// A feed, wrapping the dictionary representation.
-class Feed: Identifiable {
+@MainActor class Feed: Identifiable {
     let id: String
     var name = "<deleted>"
     var subscribers = 0
@@ -78,14 +78,11 @@ class Feed: Identifiable {
     }
     
     lazy var titles: [Training] = {
-        guard let appDelegate = NewsBlurAppDelegate.shared,
-              let classifierTitles = self.classifiers(for: "titles") else {
-            return []
-        }
-        
-        let userTitles = classifierTitles.map { Training(name: $0.key as! String, count: 0, score: Score(rawValue: $0.value as? Int ?? 0) ?? .none) }
-        
-        return userTitles.sorted()
+        return trainings(for: "titles")
+    }()
+
+    lazy var titleRegex: [Training] = {
+        return trainings(for: "title_regex")
     }()
     
     lazy var authors: [Training] = {
@@ -126,6 +123,22 @@ class Feed: Identifiable {
         let otherTags: [Training] = activeTags.map { Training(name: $0[0] as! String, count: $0[1] as! Int, score: Score(rawValue: classifierTags[$0[0] as! String] as? Int ?? 0) ?? .none) }
         
         return userTags.sorted() + otherTags
+    }()
+
+    lazy var texts: [Training] = {
+        return trainings(for: "texts")
+    }()
+
+    lazy var textRegex: [Training] = {
+        return trainings(for: "text_regex")
+    }()
+
+    lazy var urls: [Training] = {
+        return trainings(for: "urls")
+    }()
+
+    lazy var urlRegex: [Training] = {
+        return trainings(for: "url_regex")
     }()
     
     init(id: String) {
@@ -171,6 +184,20 @@ class Feed: Identifiable {
         
         isRiverOrSocial = storiesCollection.isRiverOrSocial
     }
+
+    private func trainings(for key: String) -> [Training] {
+        guard let classifiers = self.classifiers(for: key) else {
+            return []
+        }
+        
+        let userItems = classifiers.map {
+            Training(name: $0.key as! String,
+                     count: 0,
+                     score: Score(rawValue: $0.value as? Int ?? 0) ?? .none)
+        }
+        
+        return userItems.sorted()
+    }
     
     func color(for key: String, from feed: AnyDictionary, default defaultHex: String) -> UIColor {
         let hex = feed[key] as? String ?? defaultHex
@@ -184,12 +211,12 @@ class Feed: Identifiable {
 }
 
 extension Feed: Equatable {
-    static func == (lhs: Feed, rhs: Feed) -> Bool {
+    nonisolated static func == (lhs: Feed, rhs: Feed) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
-extension Feed: CustomDebugStringConvertible {
+extension Feed: @preconcurrency CustomDebugStringConvertible {
     var debugDescription: String {
         return "Feed \"\(name)\" (\(id))"
     }

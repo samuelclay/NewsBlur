@@ -8,7 +8,7 @@
 
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 #import "ABTableViewCell.h"
 #import "UIView+TKCategory.h"
 #import "UIImageView+AFNetworking.h"
@@ -101,41 +101,10 @@ static UIFont *indicatorFont = nil;
 }
 
 - (void)setupGestures {
-    NSString *unreadIcon;
-    if (storyScore == -1) {
-        unreadIcon = @"indicator-hidden";
-    } else if (storyScore == 1) {
-        unreadIcon = @"indicator-focus";
-    } else {
-        unreadIcon = @"indicator-unread";
-    }
-    
-    UIColor *shareColor = self.isSaved ?
-                            UIColorFromRGB(0xF69E89) :
-                            UIColorFromRGB(0xA4D97B);
-    UIColor *readColor = self.isRead ?
-                            UIColorFromRGB(0xBED49F) :
-                            UIColorFromRGB(0xFFFFD2);
-    
-    if (!self.isReadAvailable) {
-        unreadIcon = nil;
-        readColor = nil;
-    }
-    
     appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    [self setDelegate:(FeedDetailViewController <MCSwipeTableViewCellDelegate> *)appDelegate.feedDetailViewController];
-    
-    [self setFirstStateIconName:@"saved-stories"
-                     firstColor:shareColor
-            secondStateIconName:nil
-                    secondColor:nil
-                  thirdIconName:unreadIcon
-                     thirdColor:readColor
-                 fourthIconName:nil
-                    fourthColor:nil];
-
-    self.mode = MCSwipeTableViewCellModeSwitch;
-    self.shouldAnimatesIcons = NO;
+    self.shouldDrag = NO;
+    self.mode = MCSwipeTableViewCellModeNone;
+    self.delegate = nil;
 }
 
 

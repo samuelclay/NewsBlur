@@ -129,6 +129,30 @@
 			<string>feed_opening</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Dashboard</string>
+			<key>Titles</key>
+			<array>
+				<string>Hidden</string>
+				<string>Single column</string>
+				<string>Two columns</string>
+				<string>Two rows</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>vertical</string>
+			<key>Values</key>
+			<array>
+				<string>none</string>
+				<string>single</string>
+				<string>vertical</string>
+				<string>horizontal</string>
+			</array>
+			<key>Key</key>
+			<string>dashboard_layout</string>
+		</dict>
+		<dict>
 			<key>FooterText</key>
 			<string>You can change this setting in the Infrequent Site Stories view.</string>
 			<key>Type</key>
@@ -178,23 +202,55 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Mark stories read on scroll</string>
+			<string>Mark stories read</string>
+			<key>Titles</key>
+			<array>
+				<string>On scroll or selection</string>
+				<string>Only on selection</string>
+				<string>After 1 second</string>
+				<string>After 2 seconds</string>
+				<string>After 3 seconds</string>
+				<string>After 4 seconds</string>
+				<string>After 5 seconds</string>
+				<string>After 10 seconds</string>
+				<string>After 15 seconds</string>
+				<string>After 30 seconds</string>
+				<string>After 45 seconds</string>
+				<string>After 60 seconds</string>
+				<string>Manually</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>scroll</string>
+				<string>selection</string>
+				<string>after1</string>
+				<string>after2</string>
+				<string>after3</string>
+				<string>after4</string>
+				<string>after5</string>
+				<string>after10</string>
+				<string>after15</string>
+				<string>after30</string>
+				<string>after45</string>
+				<string>after60</string>
+				<string>manually</string>
+			</array>
 			<key>DefaultValue</key>
-			<true/>
+			<string>scroll</string>
 			<key>Key</key>
-			<string>default_scroll_read_filter</string>
+			<string>default_mark_read_filter</string>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Show override mark read on scroll</string>
+			<string>Site-specific mark story read</string>
 			<key>DefaultValue</key>
 			<true/>
 			<key>Key</key>
-			<string>override_scroll_read_filter</string>
+			<string>override_mark_read_filter</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -230,6 +286,8 @@
 				<string>Titles on left</string>
 				<string>Titles on top</string>
 				<string>Titles on bottom</string>
+				<string>Titles in list</string>
+				<string>Titles in magazine</string>
 				<string>Titles in grid</string>
 			</array>
 			<key>DefaultValue</key>
@@ -239,6 +297,8 @@
 				<string>titles_on_left</string>
 				<string>titles_on_top</string>
 				<string>titles_on_bottom</string>
+				<string>titles_in_list</string>
+				<string>titles_in_magazine</string>
 				<string>titles_in_grid</string>
 			</array>
 			<key>Key</key>

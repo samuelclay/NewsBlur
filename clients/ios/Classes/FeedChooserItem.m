@@ -19,14 +19,15 @@
 
 @implementation FeedChooserItem
 
-+ (instancetype)makeFolderWithTitle:(NSString *)title {
-    return [self makeItemWithInfo:@{@"id" : [[NewsBlurAppDelegate sharedAppDelegate] extractFolderName:title], @"feed_title" : title}];
++ (instancetype)makeFolderWithIdentifier:(NSString *)identifier title:(NSString *)title {
+    return [self makeItemWithInfo:@{@"id" : identifier, @"feed_title" : title} search:nil];
 }
 
-+ (instancetype)makeItemWithInfo:(NSDictionary *)info {
++ (instancetype)makeItemWithInfo:(NSDictionary *)info search:(NSString *)search {
     FeedChooserItem *item = [self new];
     
     item.info = info;
+    item.search = search;
     
     return item;
 }
@@ -35,10 +36,18 @@
     id identifier = self.info[@"id"];
     
     if ([identifier isEqual:@" "]) {
-        return @"everything";
-    } else {
-        return identifier;
+        identifier = @"everything";
     }
+    
+    if (self.info[@"tag"] != nil) {
+        identifier = [NSString stringWithFormat:@"saved:%@", identifier];
+    }
+    
+    if (self.search != nil) {
+        identifier = [NSString stringWithFormat:@"%@?%@", identifier, self.search];
+    }
+    
+    return identifier;
 }
 
 - (NSString *)identifierString {
@@ -48,7 +57,11 @@
 - (NSString *)title {
     NSString *title = self.info[@"feed_title"];
     
-    if ([title isEqualToString:@" "] || [title isEqualToString:@"everything"] || [title isEqualToString:@"infrequent"]) {
+    if (self.search != nil) {
+        return [NSString stringWithFormat:@"\"%@\" in %@", self.search, title];
+    }
+    
+    if ([title isEqualToString:@" "] || [title isEqualToString:@"dashboard"] || [title isEqualToString:@"everything"] || [title isEqualToString:@"infrequent"]) {
         return @"";
     } else {
         return title;
@@ -58,21 +71,36 @@
 - (UIImage *)icon {
     if (!_icon) {
         if (!self.identifier) {
-            self.icon = [UIImage imageNamed:@"folder-open"];
+            // Check for custom folder icon
+            NSString *folderName = self.info[@"feed_title"];
+            NSDictionary *customIcon = self.appDelegate.dictFolderIcons[folderName];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                self.icon = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(20, 20)];
+            }
+            if (!self.icon) {
+                self.icon = [UIImage imageNamed:@"folder-open"];
+            }
         } else {
-            self.icon = [self.appDelegate getFavicon:[self.identifier description] isSocial:NO isSaved:NO];
+            NSString *identifier = self.identifierString;
+            BOOL isSocial = [self.appDelegate isSocialFeed:identifier];
+            BOOL isSaved = [self.appDelegate isSavedFeed:identifier];
+            self.icon = [self.appDelegate getFavicon:identifier isSocial:isSocial isSaved:isSaved];
         }
     }
-    
+
     return _icon;
 }
 
-- (void)addItemWithInfo:(NSDictionary *)info {
+- (void)addItem:(FeedChooserItem *)item {
     if (!self.contents) {
         self.contents = [NSMutableArray array];
     }
     
-    [self.contents addObject:[FeedChooserItem makeItemWithInfo:info]];
+    [self.contents addObject:item];
+}
+
+- (void)addItemWithInfo:(NSDictionary *)info search:(NSString *)search {
+    [self addItem:[FeedChooserItem makeItemWithInfo:info search:search]];
 }
 
 + (NSString *)keyForSort:(FeedChooserSort)sort {
@@ -100,6 +128,10 @@
 }
 
 - (NSString *)detailForSort:(FeedChooserSort)sort {
+    if (self.info[@"active"] == nil) {
+        return @"";
+    }
+    
     switch (sort) {
         case FeedChooserSortSubscribers:
             return [NSString localizedStringWithFormat:NSLocalizedString(@"%@ subscribers", @"number of subscribers"), self.info[@"num_subscribers"]];

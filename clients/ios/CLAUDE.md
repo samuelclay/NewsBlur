@@ -29,6 +29,11 @@ xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -
 ### Language Mix
 The app uses **Objective-C** as the primary language with **Swift** for newer components. Swift-ObjC bridging is done through `Other Sources/BridgingHeader.h`.
 
+**IMPORTANT: All new files must be written in Swift, not Objective-C.** When creating new classes:
+- Use Swift with `@objc` and `@objcMembers` annotations if the class needs to be called from ObjC code
+- Swift classes are automatically available to ObjC via the generated `NewsBlur-Swift.h` header
+- Only modify existing ObjC files; never create new `.h`/`.m` files
+
 ### Key Classes
 
 - **NewsBlurAppDelegate** (`Classes/NewsBlurAppDelegate.h/m`): Central singleton managing app state, navigation, feeds data, offline storage, and network operations. Access via `NewsBlurAppDelegate.shared`.
@@ -36,6 +41,22 @@ The app uses **Objective-C** as the primary language with **Swift** for newer co
 - **StoriesCollection** (`Classes/StoriesCollection.h/m`): Manages the current collection of stories being displayed (feed, folder, river view). Handles story state (read/unread/saved) and navigation.
 
 - **ThemeManager** (`Classes/ThemeManager.h/m`): Handles app theming (Light/Sepia/Medium/Dark). Uses macros like `UIColorFromRGB()` and `UIColorFromLightDarkRGB()`.
+
+### Theme Colors
+
+The app supports 4 themes: Light, Warm (Sepia), Medium (Gray), and Dark (Black). Use `UIColorFromLightSepiaMediumDarkRGB()` macro to specify colors for all themes.
+
+| Purpose | Light | Warm/Sepia | Medium | Dark |
+|---------|-------|------------|--------|------|
+| Navigation bar | `0xE3E6E0` | `0xF3E2CB` | `0x333333` | `0x222222` |
+| View background (gray) | `0xd7dadf` | `0xE8DED0` | `0x333333` | `0x111111` |
+| Content background (white) | `0xFFFFFF` | `0xFAF5ED` | `0x333333` | `0x111111` |
+| Section header background | `0xf4f4f4` | `0xF3E2CB` | `0x333333` | `0x222222` |
+| Section header text | `0x8F918B` | `0x8B7B6B` | `0x8F918B` | `0x8F918B` |
+| Grid/card background | `0xECEEEA` | `0xF3E2CB` | `0x333333` | `0x222222` |
+| Separator | `0xE9E8E4` | `0xD4C8B8` | `0x333333` | `0x222222` |
+
+**Important:** When adding colors to modals/popovers, always use `UIColorFromLightSepiaMediumDarkRGB()` instead of `UIColorFromRGB()` to ensure correct colors in Warm theme. The generic `UIColorFromRGB()` applies a matrix transformation that can produce unintended yellow tints for gray colors.
 
 ### View Controller Hierarchy
 

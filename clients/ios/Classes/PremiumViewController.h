@@ -16,6 +16,7 @@
 
 @property (nonatomic) IBOutlet UITableView *premiumTable;  // Legacy, hidden - now using SwiftUI
 @property (nonatomic) BOOL scrollToArchive;
+@property (nonatomic) BOOL scrollToPro;
 
 - (IBAction)closeDialog:(id)sender;
 - (IBAction)restorePurchase:(id)sender;
@@ -23,5 +24,6 @@
 - (void)loadedProducts;
 - (void)finishedTransaction;
 - (void)configureForArchive:(BOOL)scrollToArchive;
+- (void)configureForArchive:(BOOL)scrollToArchive scrollToPro:(BOOL)scrollToPro;
 
 @end

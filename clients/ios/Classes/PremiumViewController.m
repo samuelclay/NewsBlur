@@ -23,10 +23,13 @@
 
     self.swiftUIController = [[PremiumViewHostingController alloc] init];
     self.swiftUIController.scrollToArchive = self.scrollToArchive;
+    self.swiftUIController.scrollToPro = self.scrollToPro;
 
     [self addChildViewController:self.swiftUIController];
     self.swiftUIController.view.frame = self.view.bounds;
     self.swiftUIController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.swiftUIController.view.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor = [UIColor clearColor];
     [self.view addSubview:self.swiftUIController.view];
     [self.swiftUIController didMoveToParentViewController:self];
 
@@ -47,7 +50,12 @@
 }
 
 - (void)configureForArchive:(BOOL)scrollToArchive {
+    [self configureForArchive:scrollToArchive scrollToPro:NO];
+}
+
+- (void)configureForArchive:(BOOL)scrollToArchive scrollToPro:(BOOL)scrollToPro {
     self.scrollToArchive = scrollToArchive;
+    self.scrollToPro = scrollToPro;
 
     // Remove existing SwiftUI controller if present
     if (self.swiftUIController) {
@@ -57,13 +65,16 @@
         self.swiftUIController = nil;
     }
 
-    // Create new SwiftUI controller with updated scrollToArchive
+    // Create new SwiftUI controller with updated scroll options
     self.swiftUIController = [[PremiumViewHostingController alloc] init];
     self.swiftUIController.scrollToArchive = scrollToArchive;
+    self.swiftUIController.scrollToPro = scrollToPro;
 
     [self addChildViewController:self.swiftUIController];
     self.swiftUIController.view.frame = self.view.bounds;
     self.swiftUIController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.swiftUIController.view.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor = [UIColor clearColor];
     [self.view addSubview:self.swiftUIController.view];
     [self.swiftUIController didMoveToParentViewController:self];
 }

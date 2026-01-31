@@ -288,3 +288,39 @@ del {
 .NB-text-view-premium-only .NB-feed-story-premium-only-divider {
     filter: invert(100%);
 }
+
+/* URL Match Display */
+.NB-story-url {
+    background-color: rgba(255, 255, 255, .08);
+    color: #b0b0b0;
+}
+
+.NB-story-url.NB-score-1 {
+    background-color: rgba(45, 95, 42, 0.5);
+    color: #cfe8c6;
+}
+
+.NB-story-url.NB-score-1 .NB-story-url-matched {
+    color: #7ad36b;
+}
+
+.NB-story-url.NB-score--1 {
+    background-color: rgba(107, 44, 44, 0.5);
+    color: #e0b0b0;
+}
+
+.NB-story-url.NB-score--1 .NB-story-url-matched {
+    color: #e07070;
+}
+
+#NB-story .NB-classifier-highlight-positive {
+    background-color: #2d5f2a;
+    color: #f3f3f3;
+    padding: 2px 5px;
+}
+
+#NB-story .NB-classifier-highlight-negative {
+    background-color: #6b2c2c;
+    color: #f3f3f3;
+    padding: 2px 5px;
+}

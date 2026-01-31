@@ -31,6 +31,14 @@ $('a.NB-show-profile').live('click', function () {
     return false;
 });
 
+$('.NB-read-button a').live('click', function () {
+    var offset = $(this).offset();
+    console.log(offset);
+    var url = $(this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
+    window.location = url;
+    return false;
+});
+
 $('.NB-train-button a').live('click', function () {
     var offset = $(this).offset();
     console.log(offset);
@@ -223,6 +231,50 @@ function attachFastClick() {
 function notifyLoaded() {
     var url = "http://ios.newsblur.com/notify-loaded";
     window.location = url;
+}
+
+function applyClassifierHighlights(classifiers) {
+    try {
+        if (!classifiers) return;
+        if (typeof Mark === 'undefined') return;
+        var container = document.getElementById('NB-story');
+        if (!container) return;
+        
+        var instance = new Mark(container);
+        instance.unmark({
+            done: function () {
+                var texts = classifiers.texts || {};
+                var textRegex = classifiers.text_regex || {};
+                
+                Object.keys(texts).forEach(function (classifierText) {
+                    var score = texts[classifierText];
+                    var className = score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+                    instance.mark(classifierText, {
+                        className: className,
+                        separateWordSearch: false,
+                        acrossElements: true,
+                        caseSensitive: false
+                    });
+                });
+                
+                Object.keys(textRegex).forEach(function (pattern) {
+                    try {
+                        var score = textRegex[pattern];
+                        var className = score > 0 ? "NB-classifier-highlight-positive" : "NB-classifier-highlight-negative";
+                        var regex = new RegExp(pattern, 'gi');
+                        instance.markRegExp(regex, {
+                            className: className,
+                            acrossElements: true
+                        });
+                    } catch (e) {
+                        // Invalid regex pattern, skip
+                    }
+                });
+            }
+        });
+    } catch (e) {
+        // ignore highlight errors
+    }
 }
 
 loadImages();

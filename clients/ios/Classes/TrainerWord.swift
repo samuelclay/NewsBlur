@@ -14,10 +14,10 @@ struct TrainerWord: View {
     var body: some View {
         HStack {
             Text(word)
-                .colored(Color(white: ThemeManager.shared.isSystemDark ? 0.8 : 0.1))
+                .colored(Color(white: ThemeManager.shared.isDarkTheme ? 0.8 : 0.1))
                 .padding([.top, .bottom], 1)
             .padding([.leading, .trailing], 1)
-            .background(Color(white: ThemeManager.shared.isSystemDark ? 0.35 : 0.95))
+            .background(Color(white: ThemeManager.shared.isDarkTheme ? 0.35 : 0.95))
             .clipShape(RoundedRectangle(cornerRadius: 5))
         }
     }
