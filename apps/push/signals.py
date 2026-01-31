@@ -2,6 +2,7 @@
 
 from django.dispatch import Signal
 
-pre_subscribe = Signal(providing_args=["created"])
+# Note: providing_args was removed in Django 4.0
+pre_subscribe = Signal()
 verified = Signal()
-updated = Signal(providing_args=["update"])
+updated = Signal()

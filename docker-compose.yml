@@ -131,8 +131,7 @@ services:
     restart: unless-stopped
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms384m -Xmx384m -XX:UseSVE=0"
-      - "CLI_JAVA_OPTS=-XX:UseSVE=0"
+      - "ES_JAVA_OPTS=-Xms384m -Xmx384m"
       - cluster.routing.allocation.disk.threshold_enabled=false
       - xpack.security.enabled=false
       - bootstrap.memory_lock=false
@@ -158,7 +157,7 @@ services:
     restart: unless-stopped
     ports:
       - 29019:29019
-    command: mongod --port 29019 --nojournal --wiredTigerEngineConfigString="checkpoint=(wait=0),file_manager=(close_idle_time=0),verbose=(recovery_progress)"
+    command: mongod --port 29019
     volumes:
       - ./docker/volumes/db_mongo:/data/db:delegated
 
@@ -166,7 +165,7 @@ services:
     container_name: newsblur_celery
     image: newsblur/newsblur_python3
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
-    command: "celery worker -A newsblur_web -B --loglevel=INFO"
+    command: "celery -A newsblur_web worker -B --loglevel=INFO"
     restart: unless-stopped
     volumes:
       - ${PWD}:/srv/newsblur

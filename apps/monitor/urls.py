@@ -1,5 +1,4 @@
-from django.conf.urls import url
-from django.urls import path
+from django.urls import re_path
 
 from apps.monitor.views import (
     AppServers,
@@ -27,26 +26,26 @@ from apps.monitor.views import (
 )
 
 urlpatterns = [
-    url(r"^app-servers?$", AppServers.as_view(), name="app_servers"),
-    url(r"^app-times?$", AppTimes.as_view(), name="app_times"),
-    url(r"^ask-ai?$", AskAI.as_view(), name="ask_ai"),
-    url(r"^classifiers?$", Classifiers.as_view(), name="classifiers"),
-    url(r"^db-times?$", DbTimes.as_view(), name="db_times"),
-    url(r"^deleted-users?$", DeletedUsers.as_view(), name="deleted_users"),
-    url(r"^errors?$", Errors.as_view(), name="errors"),
-    url(r"^feed-counts?$", FeedCounts.as_view(), name="feed_counts"),
-    url(r"^feed-sizes?$", FeedSizes.as_view(), name="feed_sizes"),
-    url(r"^feeds?$", Feeds.as_view(), name="feeds"),
-    url(r"^llm-costs?$", LLMCosts.as_view(), name="llm_costs"),
-    url(r"^load-times?$", LoadTimes.as_view(), name="load_times"),
-    url(r"^stories?$", Stories.as_view(), name="stories"),
-    url(r"^task-codes?$", TasksCodes.as_view(), name="task_codes"),
-    url(r"^task-pipeline?$", TasksPipeline.as_view(), name="task_pipeline"),
-    url(r"^task-servers?$", TasksServers.as_view(), name="task_servers"),
-    url(r"^task-times?$", TasksTimes.as_view(), name="task_times"),
-    url(r"^updates?$", Updates.as_view(), name="updates"),
-    url(r"^users?$", Users.as_view(), name="users"),
-    url(r"^user-searches?$", UserSearches.as_view(), name="user_searches"),
-    url(r"^trending-feeds?$", TrendingFeeds.as_view(), name="trending_feeds"),
-    url(r"^trending-subscriptions?$", TrendingSubscriptions.as_view(), name="trending_subscriptions"),
+    re_path(r"^app-servers?$", AppServers.as_view(), name="app_servers"),
+    re_path(r"^app-times?$", AppTimes.as_view(), name="app_times"),
+    re_path(r"^ask-ai?$", AskAI.as_view(), name="ask_ai"),
+    re_path(r"^classifiers?$", Classifiers.as_view(), name="classifiers"),
+    re_path(r"^db-times?$", DbTimes.as_view(), name="db_times"),
+    re_path(r"^deleted-users?$", DeletedUsers.as_view(), name="deleted_users"),
+    re_path(r"^errors?$", Errors.as_view(), name="errors"),
+    re_path(r"^feed-counts?$", FeedCounts.as_view(), name="feed_counts"),
+    re_path(r"^feed-sizes?$", FeedSizes.as_view(), name="feed_sizes"),
+    re_path(r"^feeds?$", Feeds.as_view(), name="feeds"),
+    re_path(r"^llm-costs?$", LLMCosts.as_view(), name="llm_costs"),
+    re_path(r"^load-times?$", LoadTimes.as_view(), name="load_times"),
+    re_path(r"^stories?$", Stories.as_view(), name="stories"),
+    re_path(r"^task-codes?$", TasksCodes.as_view(), name="task_codes"),
+    re_path(r"^task-pipeline?$", TasksPipeline.as_view(), name="task_pipeline"),
+    re_path(r"^task-servers?$", TasksServers.as_view(), name="task_servers"),
+    re_path(r"^task-times?$", TasksTimes.as_view(), name="task_times"),
+    re_path(r"^updates?$", Updates.as_view(), name="updates"),
+    re_path(r"^users?$", Users.as_view(), name="users"),
+    re_path(r"^user-searches?$", UserSearches.as_view(), name="user_searches"),
+    re_path(r"^trending-feeds?$", TrendingFeeds.as_view(), name="trending_feeds"),
+    re_path(r"^trending-subscriptions?$", TrendingSubscriptions.as_view(), name="trending_subscriptions"),
 ]

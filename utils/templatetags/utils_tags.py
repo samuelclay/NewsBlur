@@ -292,7 +292,9 @@ def commify(n):
 
 @register.simple_tag
 def settings_value(name):
-    return getattr(settings, name, "")
+    value = getattr(settings, name, "")
+    # Template tags must return strings - convert non-string values
+    return str(value) if value is not None else ""
 
 
 @register.filter

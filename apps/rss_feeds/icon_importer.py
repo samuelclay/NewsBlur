@@ -381,7 +381,7 @@ class IconImporter(object):
 
         # Reshape array of values to merge color bands. [[R], [G], [B], [A]] => [R, G, B, A]
         if len(shape) > 2:
-            ar = ar.reshape(np.product(shape[:2]), shape[2])
+            ar = ar.reshape(np.prod(shape[:2]), shape[2])
 
         # Get NUM_CLUSTERS worth of centroids.
         ar = ar.astype(float)

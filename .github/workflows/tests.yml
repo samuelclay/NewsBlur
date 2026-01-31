@@ -46,16 +46,15 @@ jobs:
           mkdir -p docker/volumes/db_mongo
           mkdir -p docker/volumes/db_postgres
           mkdir -p docker/volumes/db_redis
-          mkdir -p docker/volumes/db_elasticsearch
           chmod -R 777 docker/volumes
 
       - name: Start services
         run: |
           # Retry docker compose up in case of transient network issues
           for i in 1 2 3; do
-            docker compose up -d && break
+            docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d && break
             echo "Retry $i for docker compose up..."
-            docker compose down -v || true
+            docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v || true
             sleep 10
           done
         env:
@@ -76,6 +75,8 @@ jobs:
           timeout 60 bash -c 'until docker exec newsblur_db_mongo mongo --port 29019 --eval "db.adminCommand({ping: 1})" --quiet; do sleep 2; done'
           echo "Waiting for Redis..."
           timeout 60 bash -c 'until docker exec newsblur_db_redis redis-cli -p 6579 ping; do sleep 2; done'
+          echo "Waiting for Elasticsearch..."
+          timeout 120 bash -c 'until curl -s http://localhost:9200/_cluster/health | grep -q "status"; do sleep 2; done'
           echo "All services ready"
 
       - name: Run migrations
@@ -85,13 +86,13 @@ jobs:
         run: docker exec newsblur_web python3 manage.py loaddata config/fixtures/bootstrap.json
 
       - name: Run tests
-        run: docker compose exec -T newsblur_web python3 manage.py test apps --noinput -v 1 --failfast
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T newsblur_web python3 manage.py test apps --noinput -v 1 --failfast --keepdb
         timeout-minutes: 5
 
       - name: Show logs on failure
         if: failure()
-        run: docker compose logs
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs
 
       - name: Cleanup
         if: always()
-        run: docker compose down -v
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v

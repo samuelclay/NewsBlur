@@ -2288,7 +2288,7 @@ class UserSubscriptionFolders(models.Model):
                         feeds_to_delete.remove(folder)
                 elif isinstance(folder, dict):
                     for f_k, f_v in list(folder.items()):
-                        if f_k == folder_to_delete and (in_folder in folder_name or in_folder is None):
+                        if f_k == folder_to_delete and (in_folder is None or in_folder in folder_name):
                             logging.user(
                                 self.user,
                                 "~FBDeleting folder '~SB%s~SN' in '%s': %s" % (f_k, folder_name, folder),
