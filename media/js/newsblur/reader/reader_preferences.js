@@ -18,8 +18,17 @@ NEWSBLUR.ReaderPreferences.prototype.constructor = NEWSBLUR.ReaderPreferences;
 _.extend(NEWSBLUR.ReaderPreferences.prototype, {
 
     runner: function () {
+        var self = this;
         this.options.onOpen = _.bind(function () {
             this.resize_modal();
+            if (self.options.scroll_to === 'briefing') {
+                _.defer(function () {
+                    var $target = self.$modal.find('.NB-preference-briefing-enabled');
+                    if ($target.length) {
+                        $target[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            }
         }, this);
         this.make_modal();
         this.select_preferences();
@@ -353,6 +362,215 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Right-clicking',
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Folders, feeds, and story titles')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-enabled' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-enabled-1', type: 'radio', name: 'briefing_enabled', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-enabled-1' }, [
+                                    'Enable daily briefings'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-enabled-2', type: 'radio', name: 'briefing_enabled', value: 'false' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-enabled-2' }, [
+                                    'Disable daily briefings'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Daily Briefing',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'AI-curated summary of your top stories')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-frequency' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-freq-1', type: 'radio', name: 'briefing_frequency', value: 'daily' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-freq-1' }, [
+                                    'Once a day'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-freq-2', type: 'radio', name: 'briefing_frequency', value: 'twice_daily' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-freq-2' }, [
+                                    'Twice a day'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-freq-3', type: 'radio', name: 'briefing_frequency', value: 'weekly' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-freq-3' }, [
+                                    'Weekly'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Briefing frequency',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'How often to generate briefings')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-time' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-time-1', type: 'radio', name: 'briefing_preferred_time', value: 'auto' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-time-1' }, [
+                                    'Auto-detect from reading habits'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-time-2', type: 'radio', name: 'briefing_preferred_time', value: 'morning' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-time-2' }, [
+                                    'Morning (7:00 AM)'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-time-3', type: 'radio', name: 'briefing_preferred_time', value: 'afternoon' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-time-3' }, [
+                                    'Afternoon (12:00 PM)'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-time-4', type: 'radio', name: 'briefing_preferred_time', value: 'evening' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-time-4' }, [
+                                    'Evening (6:00 PM)'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Briefing time',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'When to generate your briefing')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-story-count' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-story-count-1', type: 'radio', name: 'briefing_story_count', value: '10' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-story-count-1' }, [
+                                    '10 stories'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-story-count-2', type: 'radio', name: 'briefing_story_count', value: '20' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-story-count-2' }, [
+                                    '20 stories'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-story-count-3', type: 'radio', name: 'briefing_story_count', value: '30' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-story-count-3' }, [
+                                    '30 stories'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-story-count-4', type: 'radio', name: 'briefing_story_count', value: '50' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-story-count-4' }, [
+                                    '50 stories'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Number of stories',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'How many stories to include')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-summary-length' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-summary-length-1', type: 'radio', name: 'briefing_summary_length', value: 'short' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-summary-length-1' }, [
+                                    'Short (1-2 paragraphs)'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-summary-length-2', type: 'radio', name: 'briefing_summary_length', value: 'medium' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-summary-length-2' }, [
+                                    'Medium (3-4 sections)'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-summary-length-3', type: 'radio', name: 'briefing_summary_length', value: 'detailed' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-summary-length-3' }, [
+                                    'Detailed (full editorial)'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Summary length',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'How long the briefing summary should be')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-summary-style' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-summary-style-1', type: 'radio', name: 'briefing_summary_style', value: 'editorial' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-summary-style-1' }, [
+                                    'Editorial narrative'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-summary-style-2', type: 'radio', name: 'briefing_summary_style', value: 'bullets' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-summary-style-2' }, [
+                                    'Bullet points'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-summary-style-3', type: 'radio', name: 'briefing_summary_style', value: 'headlines' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-summary-style-3' }, [
+                                    'Headlines only'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Summary style',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Format of the briefing summary')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-story-sources' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-story-sources-1', type: 'radio', name: 'briefing_story_sources', value: 'all' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-story-sources-1' }, [
+                                    'All feeds'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-story-sources-2', type: 'radio', name: 'briefing_story_sources', value: 'focused' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-story-sources-2' }, [
+                                    'Trained-positive feeds only'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-story-sources-3', type: 'radio', name: 'briefing_story_sources', value: 'folder' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-story-sources-3' }, [
+                                    'Specific folder: ',
+                                    $.make('select', { id: 'NB-preference-briefing-folder-select', className: 'NB-briefing-folder-select' })
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Story sources',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Which feeds to include in briefings')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-include-read' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-include-read-1', type: 'radio', name: 'briefing_include_read', value: 'false' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-include-read-1' }, [
+                                    'Only unread stories'
+                                ])
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-briefing-include-read-2', type: 'radio', name: 'briefing_include_read', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-include-read-2' }, [
+                                    'Include read stories too'
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Read/unread filter',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'Whether to include stories you have already read')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-opml' }, [
@@ -1308,6 +1526,88 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         this.slide_read_story_delay_slider();
         this.slide_arrow_scroll_spacing_slider();
         this.slide_space_scroll_spacing_slider();
+
+        // reader_preferences.js: Load briefing preferences from API
+        this.load_briefing_preferences();
+    },
+
+    load_briefing_preferences: function () {
+        var $modal = this.$modal;
+        $.ajax({
+            url: '/briefing/preferences',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var enabled = data.enabled !== false;
+                var frequency = data.frequency || 'daily';
+                var preferred_time = data.preferred_time || 'auto';
+                var story_count = data.story_count || 20;
+                var summary_length = data.summary_length || 'medium';
+                var summary_style = data.summary_style || 'editorial';
+                var story_sources = data.story_sources || 'all';
+
+                $('input[name=briefing_enabled][value=' + enabled + ']', $modal).prop('checked', true);
+                $('input[name=briefing_frequency][value=' + frequency + ']', $modal).prop('checked', true);
+                $('input[name=briefing_preferred_time][value=' + preferred_time + ']', $modal).prop('checked', true);
+                $('input[name=briefing_story_count][value=' + story_count + ']', $modal).prop('checked', true);
+                $('input[name=briefing_summary_length][value=' + summary_length + ']', $modal).prop('checked', true);
+                $('input[name=briefing_summary_style][value=' + summary_style + ']', $modal).prop('checked', true);
+
+                var include_read = data.include_read ? 'true' : 'false';
+                $('input[name=briefing_include_read][value=' + include_read + ']', $modal).prop('checked', true);
+
+                // reader_preferences.js: Populate folder dropdown and set story sources
+                var $folder_select = $('#NB-preference-briefing-folder-select', $modal);
+                $folder_select.empty();
+                if (data.folders && data.folders.length) {
+                    _.each(data.folders, function (folder_name) {
+                        $folder_select.append($.make('option', { value: folder_name }, folder_name));
+                    });
+                }
+
+                if (story_sources.indexOf('folder:') === 0) {
+                    var folder_name = story_sources.substring(7);
+                    $('input[name=briefing_story_sources][value=folder]', $modal).prop('checked', true);
+                    $folder_select.val(folder_name);
+                } else {
+                    $('input[name=briefing_story_sources][value=' + story_sources + ']', $modal).prop('checked', true);
+                }
+            }
+        });
+    },
+
+    save_briefing_preferences: function (form) {
+        // reader_preferences.js: Save briefing preferences to separate API endpoint
+        var story_sources = form['briefing_story_sources'];
+        if (story_sources === 'folder') {
+            var folder_name = $('#NB-preference-briefing-folder-select', this.$modal).val();
+            story_sources = 'folder:' + folder_name;
+        }
+        var briefing_data = {
+            enabled: form['briefing_enabled'],
+            frequency: form['briefing_frequency'],
+            preferred_time: form['briefing_preferred_time'],
+            story_count: form['briefing_story_count'],
+            summary_length: form['briefing_summary_length'],
+            summary_style: form['briefing_summary_style'],
+            include_read: form['briefing_include_read'],
+            story_sources: story_sources
+        };
+        $.ajax({
+            url: '/briefing/preferences',
+            type: 'POST',
+            data: briefing_data,
+            dataType: 'json'
+        });
+        // reader_preferences.js: Remove briefing fields from regular preferences form
+        delete form['briefing_enabled'];
+        delete form['briefing_frequency'];
+        delete form['briefing_preferred_time'];
+        delete form['briefing_story_count'];
+        delete form['briefing_summary_length'];
+        delete form['briefing_summary_style'];
+        delete form['briefing_story_sources'];
+        delete form['briefing_include_read'];
     },
 
     // ===================
@@ -1552,6 +1852,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var form = this.serialize_preferences();
         $('.NB-preference-error', this.$modal).text('');
         $('.NB-modal-submit-button', this.$modal).text('Saving...').attr('disabled', true).addClass('NB-disabled');
+
+        // reader_preferences.js: Save briefing preferences separately
+        this.save_briefing_preferences(form);
 
         this.model.save_preferences(form, function (data) {
             NEWSBLUR.reader.switch_feed_view_unread_view();

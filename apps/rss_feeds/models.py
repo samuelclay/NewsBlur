@@ -224,6 +224,10 @@ class Feed(models.Model):
             "http://newsletter:"
         )
 
+    @property
+    def is_daily_briefing(self):
+        return self.feed_address.startswith("daily-briefing:")
+
     def canonical(self, full=False, include_favicon=True):
         feed = {
             "id": self.pk,

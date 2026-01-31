@@ -254,6 +254,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
         if (!story.get('read_status')) {
             story.set('read_status', 1);
+            // assetmodel.js: Keep briefing_data in sync so re-renders preserve read status
+            this.stories.sync_briefing_read_status(story.get('story_hash'), 1);
 
             if (NEWSBLUR.Globals.is_authenticated) {
                 if (!('hashes' in this.queued_read_stories)) { this.queued_read_stories['hashes'] = []; }
@@ -876,6 +878,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'request_type': 'GET'
         });
 
+    },
+
+    fetch_briefing_stories: function (callback, error_callback) {
+        this.make_request('/briefing/stories', {}, callback, error_callback, {
+            'ajax_group': 'feed',
+            'request_type': 'GET'
+        });
+    },
+
+    generate_briefing: function (callback, error_callback) {
+        this.make_request('/briefing/generate', {}, callback, error_callback, {
+            'request_type': 'POST'
+        });
     },
 
     complete_river: function (feed_id, feeds, page, callback) {

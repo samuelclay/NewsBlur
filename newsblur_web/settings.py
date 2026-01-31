@@ -403,6 +403,7 @@ CELERY_TASK_ROUTES = {
     "archive-index-elasticsearch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-process-batch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-cleanup-old": {"queue": "push_feeds", "binding_key": "push_feeds"},
+    "generate-user-briefing": {"queue": "work_queue", "binding_key": "work_queue"},
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {
@@ -465,6 +466,7 @@ CELERY_IMPORTS = (
     "apps.ask_ai.tasks",
     "apps.archive_extension.tasks",
     "apps.archive_assistant.tasks",
+    "apps.briefing.tasks",
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
@@ -537,6 +539,11 @@ CELERY_BEAT_SCHEDULE = {
     "email-feed-limit-notifications": {
         "task": "email-feed-limit-notifications",
         "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
+    "generate-briefings": {
+        "task": "generate-briefings",
+        "schedule": datetime.timedelta(minutes=15),
         "options": {"queue": "cron_queue"},
     },
 }
