@@ -528,13 +528,6 @@ class Profile(models.Model):
         EmailNewPremium.delay(user_id=self.user.pk)
 
         subs = UserSubscription.objects.filter(user=self.user)
-        if subs.count() > 5000:
-            logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
-            mail_admins(
-                f"WARNING! {self.user.username} has {subs.count()} subscriptions",
-                f"{self.user.username} has {subs.count()} subscriptions and just upgraded to premium. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}",
-            )
-            return False
 
         was_premium = self.is_premium
         self.is_premium = True
@@ -544,14 +537,20 @@ class Profile(models.Model):
         self.user.is_active = True
         self.user.save()
 
-        # Only auto-enable every feed if a free user is moving to premium
+        # Only auto-enable feeds if a free user is moving to premium, capped at tier limit
         if not was_premium:
+            max_feeds = self.max_feed_limit
+            activated = 0
             for sub in subs:
                 if sub.active:
+                    activated += 1
                     continue
+                if max_feeds and activated >= max_feeds:
+                    break
                 sub.active = True
                 try:
                     sub.save()
+                    activated += 1
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
 
@@ -586,13 +585,6 @@ class Profile(models.Model):
         UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
 
         subs = UserSubscription.objects.filter(user=self.user)
-        if subs.count() > 2000:
-            logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
-            mail_admins(
-                f"WARNING! {self.user.username} has {subs.count()} subscriptions",
-                f"{self.user.username} has {subs.count()} subscriptions and just upgraded to archive. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}",
-            )
-            return False
 
         was_premium = self.is_premium
         was_archive = self.is_archive
@@ -603,14 +595,20 @@ class Profile(models.Model):
         self.user.is_active = True
         self.user.save()
 
-        # Only auto-enable every feed if a free user is moving to premium
+        # Only auto-enable feeds if a free user is moving to premium, capped at tier limit
         if not was_premium:
+            max_feeds = self.max_feed_limit
+            activated = 0
             for sub in subs:
                 if sub.active:
+                    activated += 1
                     continue
+                if max_feeds and activated >= max_feeds:
+                    break
                 sub.active = True
                 try:
                     sub.save()
+                    activated += 1
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
 
@@ -658,13 +656,15 @@ class Profile(models.Model):
         EmailNewPremiumPro.delay(user_id=self.user.pk)
 
         subs = UserSubscription.objects.filter(user=self.user)
-        if subs.count() > 1000:
-            logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
-            mail_admins(
-                f"WARNING! {self.user.username} has {subs.count()} subscriptions",
-                f"{self.user.username} has {subs.count()} subscriptions and just upgraded to pro. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}",
-            )
-            return False
+        active_subs = subs.filter(active=True).count()
+        mail_admins(
+            f"New Pro upgrade: {self.user.username} ({subs.count()} subscriptions, {active_subs} active)",
+            f"{self.user.username} upgraded to pro.\n"
+            f"Subscriptions: {subs.count()} total, {active_subs} active\n"
+            f"PayPal: {self.user.profile.paypal_sub_id}\n"
+            f"Stripe: {self.user.profile.stripe_id}\n"
+            f"Email: {self.user.email}",
+        )
 
         was_premium = self.is_premium
         was_archive = self.is_archive
@@ -676,14 +676,20 @@ class Profile(models.Model):
         self.user.is_active = True
         self.user.save()
 
-        # Only auto-enable every feed if a free user is moving to premium
+        # Only auto-enable feeds if a free user is moving to premium, capped at tier limit
         if not was_premium:
+            max_feeds = self.max_feed_limit
+            activated = 0
             for sub in subs:
                 if sub.active:
+                    activated += 1
                     continue
+                if max_feeds and activated >= max_feeds:
+                    break
                 sub.active = True
                 try:
                     sub.save()
+                    activated += 1
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
 
