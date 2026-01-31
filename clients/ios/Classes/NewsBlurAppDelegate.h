@@ -266,6 +266,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSDictionary *dictSocialServices;
 @property (nonatomic) BOOL isPremium;
 @property (nonatomic) BOOL isPremiumArchive;
+@property (nonatomic) BOOL isPremiumPro;
 @property (nonatomic) NSInteger premiumExpire;
 @property (nonatomic, strong) NSMutableDictionary *dictUnreadCounts;
 @property (nonatomic, strong) NSMutableDictionary *dictTextFeeds;
@@ -328,9 +329,12 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showDashboardSites:(NSString *)selectedRiverId;
 - (void)showPremiumDialog;
 - (void)showPremiumDialogForArchive;
+- (void)showPremiumDialogForPro;
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
+- (void)applySheetPresentationTheme:(UISheetPresentationController *)sheet;
+- (void)applyCustomGrabberToNavigationController:(UINavigationController *)navController;
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
 - (void)popToRootWithCompletion:(void (^)(void))completion;
@@ -492,6 +496,11 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score;
+- (void)toggleTitleRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score;
+- (void)toggleTextClassifier:(NSString *)text feedId:(NSString *)feedId score:(NSInteger)score;
+- (void)toggleTextRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score;
+- (void)toggleUrlClassifier:(NSString *)url feedId:(NSString *)feedId score:(NSInteger)score;
+- (void)toggleUrlRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
 
 - (NSInteger)databaseSchemaVersion:(FMDatabase *)db;
@@ -533,4 +542,3 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)addCounts:(UnreadCounts *)counts;
 
 @end
-

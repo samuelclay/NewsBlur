@@ -78,14 +78,11 @@ typealias AnyDictionary = [AnyHashable : Any]
     }
     
     lazy var titles: [Training] = {
-        guard let appDelegate = NewsBlurAppDelegate.shared,
-              let classifierTitles = self.classifiers(for: "titles") else {
-            return []
-        }
-        
-        let userTitles = classifierTitles.map { Training(name: $0.key as! String, count: 0, score: Score(rawValue: $0.value as? Int ?? 0) ?? .none) }
-        
-        return userTitles.sorted()
+        return trainings(for: "titles")
+    }()
+
+    lazy var titleRegex: [Training] = {
+        return trainings(for: "title_regex")
     }()
     
     lazy var authors: [Training] = {
@@ -126,6 +123,22 @@ typealias AnyDictionary = [AnyHashable : Any]
         let otherTags: [Training] = activeTags.map { Training(name: $0[0] as! String, count: $0[1] as! Int, score: Score(rawValue: classifierTags[$0[0] as! String] as? Int ?? 0) ?? .none) }
         
         return userTags.sorted() + otherTags
+    }()
+
+    lazy var texts: [Training] = {
+        return trainings(for: "texts")
+    }()
+
+    lazy var textRegex: [Training] = {
+        return trainings(for: "text_regex")
+    }()
+
+    lazy var urls: [Training] = {
+        return trainings(for: "urls")
+    }()
+
+    lazy var urlRegex: [Training] = {
+        return trainings(for: "url_regex")
     }()
     
     init(id: String) {
@@ -170,6 +183,20 @@ typealias AnyDictionary = [AnyHashable : Any]
         colorBarRight = color(for: "favicon_color", from: dictionary, default: "505050")
         
         isRiverOrSocial = storiesCollection.isRiverOrSocial
+    }
+
+    private func trainings(for key: String) -> [Training] {
+        guard let classifiers = self.classifiers(for: key) else {
+            return []
+        }
+        
+        let userItems = classifiers.map {
+            Training(name: $0.key as! String,
+                     count: 0,
+                     score: Score(rawValue: $0.value as? Int ?? 0) ?? .none)
+        }
+        
+        return userItems.sorted()
     }
     
     func color(for key: String, from feed: AnyDictionary, default defaultHex: String) -> UIColor {

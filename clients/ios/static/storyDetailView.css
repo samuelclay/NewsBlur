@@ -304,6 +304,12 @@ body.NB-iphone {
     line-height: 110%;
 }
 
+#story_pane {
+    padding-bottom: 64px;
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+    padding-bottom: calc(64px + constant(safe-area-inset-bottom));
+}
+
 /** {*/
 /*    box-sizing: border-box;*/
 /*}*/
@@ -385,6 +391,59 @@ body.NB-iphone {
     white-space: nowrap;
 }
 
+/* URL Match Display */
+.NB-story-url-match {
+    margin: 5px 0 6px;
+    padding-left: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.NB-story-url {
+    display: inline-block;
+    font-weight: normal;
+    font-size: 11px;
+    font-style: italic;
+    font-family: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    border-radius: 4px;
+    padding: 2px 6px;
+    line-height: 14px;
+    background-color: rgba(0, 0, 0, .05);
+    color: #808080;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-story-url .NB-story-url-label {
+    font-style: normal;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.NB-story-url.NB-score-1 {
+    background-color: rgba(163, 202, 135, 0.3);
+    color: #557a40;
+}
+
+.NB-story-url.NB-score-1 .NB-story-url-matched {
+    color: #34912E;
+    font-weight: bold;
+    font-style: normal;
+}
+
+.NB-story-url.NB-score--1 {
+    background-color: rgba(213, 133, 134, 0.3);
+    color: #8a5556;
+}
+
+.NB-story-url.NB-score--1 .NB-story-url-matched {
+    color: #A90103;
+    font-weight: bold;
+    font-style: normal;
+}
+
 .NB-middot {
     display: inline-block;
     color: #A0A0A0;
@@ -457,6 +516,16 @@ body.NB-iphone {
     opacity: .25;
     border-radius: 4px;
     display: none;
+}
+
+#NB-story .NB-classifier-highlight-positive {
+    background-color: #d6f0d5;
+    padding: 2px 5px;
+}
+
+#NB-story .NB-classifier-highlight-negative {
+    background-color: #FFCCCC;
+    padding: 2px 5px;
 }
 .NB-story-tag.pressed .NB-highlight,
 .NB-user-tag.pressed .NB-highlight,
@@ -1416,5 +1485,3 @@ a.NB-show-profile {
     left: 0;
     background-size: 25px 50px;
 }
-
-

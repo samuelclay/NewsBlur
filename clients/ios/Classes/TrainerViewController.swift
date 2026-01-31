@@ -33,16 +33,18 @@ import SwiftUI
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        view.backgroundColor = .clear
+
         addChild(hostingController)
         view.addSubview(hostingController.view)
+        hostingController.view.backgroundColor = .clear
         hostingController.didMove(toParent: self)
         
         NSLayoutConstraint.activate([
             hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
             hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
 //        changedLayout()

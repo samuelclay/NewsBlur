@@ -122,6 +122,39 @@ static const CGFloat kFolderTitleHeight = 36.0;
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+
+    if (@available(iOS 15.0, *)) {
+        [self.appDelegate applyCustomGrabberToNavigationController:self.navigationController];
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self updateNavigationBarAppearance];
+}
+
+- (void)updateNavigationBarAppearance {
+    UINavigationBar *navBar = self.navigationController.navigationBar;
+    navBar.translucent = NO;
+    [[ThemeManager themeManager] updateNavigationController:self.navigationController];
+
+    if (@available(iOS 13.0, *)) {
+        UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] init];
+        [appearance configureWithOpaqueBackground];
+        UIColor *backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
+        appearance.backgroundColor = backgroundColor;
+        appearance.shadowColor = [UIColor clearColor];
+        appearance.titleTextAttributes = [UINavigationBar appearance].titleTextAttributes ?: @{};
+
+        navBar.standardAppearance = appearance;
+        navBar.scrollEdgeAppearance = appearance;
+        navBar.compactAppearance = appearance;
+        navBar.compactScrollEdgeAppearance = appearance;
+    }
+}
+
 - (void)performGetInactiveFeeds {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];

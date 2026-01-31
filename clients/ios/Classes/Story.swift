@@ -48,6 +48,18 @@ import Foundation
         
         return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
     }
+
+    var titleRegexes: [Feed.Training] {
+        guard let classifiers = feed?.classifiers(for: "title_regex") else {
+            return []
+        }
+        
+        let keys = classifiers.keys.compactMap { $0 as? String }
+        let matches = keys.filter { regexMatches($0, in: title) }
+        let sorted = matches.sorted()
+        
+        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+    }
     
     var authors: [Feed.Training] {
         guard let classifiers = feed?.classifiers(for: "authors") else {
@@ -63,6 +75,56 @@ import Foundation
         }
         
         return tags.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+    }
+
+    var texts: [Feed.Training] {
+        guard let classifiers = feed?.classifiers(for: "texts") else {
+            return []
+        }
+        
+        let content = contentHTML.lowercased()
+        let keys = classifiers.keys.compactMap { $0 as? String }
+        let matches = keys.filter { content.contains($0.lowercased()) }
+        let sorted = matches.sorted()
+        
+        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+    }
+
+    var textRegexes: [Feed.Training] {
+        guard let classifiers = feed?.classifiers(for: "text_regex") else {
+            return []
+        }
+        
+        let keys = classifiers.keys.compactMap { $0 as? String }
+        let matches = keys.filter { regexMatches($0, in: contentHTML) }
+        let sorted = matches.sorted()
+        
+        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+    }
+
+    var urls: [Feed.Training] {
+        guard let classifiers = feed?.classifiers(for: "urls") else {
+            return []
+        }
+        
+        let permalinkLower = permalink.lowercased()
+        let keys = classifiers.keys.compactMap { $0 as? String }
+        let matches = keys.filter { permalinkLower.contains($0.lowercased()) }
+        let sorted = matches.sorted()
+        
+        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
+    }
+
+    var urlRegexes: [Feed.Training] {
+        guard let classifiers = feed?.classifiers(for: "url_regex") else {
+            return []
+        }
+        
+        let keys = classifiers.keys.compactMap { $0 as? String }
+        let matches = keys.filter { regexMatches($0, in: permalink) }
+        let sorted = matches.sorted()
+        
+        return sorted.map { Feed.Training(name: $0, count: 0, score: Feed.Score(rawValue: classifiers[$0] as? Int ?? 0) ?? .none) }
     }
     
     var isSelected: Bool {
@@ -159,6 +221,24 @@ import Foundation
         
         isRead = !storiesCollection .isStoryUnread(dictionary)
         isReadAvailable = storiesCollection.activeFolder != "saved_stories"
+    }
+
+    private var contentHTML: String {
+        return string(for: "story_content")
+    }
+
+    private var permalink: String {
+        return string(for: "story_permalink")
+    }
+
+    private func regexMatches(_ pattern: String, in text: String) -> Bool {
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
+            let range = NSRange(text.startIndex..<text.endIndex, in: text)
+            return regex.firstMatch(in: text, options: [], range: range) != nil
+        } catch {
+            return false
+        }
     }
 }
 

@@ -929,6 +929,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     appDelegate.isPremium = [[appDelegate.dictUserProfile objectForKey:@"is_premium"] integerValue] == 1;
     appDelegate.isPremiumArchive = [[appDelegate.dictUserProfile objectForKey:@"is_archive"] integerValue] == 1;
+    appDelegate.isPremiumPro = [[appDelegate.dictUserProfile objectForKey:@"is_pro"] integerValue] == 1;
     id premiumExpire = [appDelegate.dictUserProfile objectForKey:@"premium_expire"];
     if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]] && premiumExpire != 0) {
         appDelegate.premiumExpire = [premiumExpire integerValue];
@@ -1285,9 +1286,25 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 //    [self.appDelegate.addSiteNavigationController popToRootViewControllerAnimated:NO];
 //    [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
     [self.appDelegate showFeedsListAnimated:NO];
-    
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
-    
+
+    UINavigationController *addSiteNavController = self.appDelegate.addSiteNavigationController;
+    addSiteNavController.navigationBarHidden = YES;
+
+    if (@available(iOS 15.0, *)) {
+        addSiteNavController.modalPresentationStyle = UIModalPresentationPageSheet;
+        UISheetPresentationController *sheet = addSiteNavController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        [self.appDelegate applySheetPresentationTheme:sheet];
+        sheet.preferredCornerRadius = 12.0;
+
+        [self.appDelegate.splitViewController presentViewController:addSiteNavController animated:YES completion:nil];
+    } else {
+        [self.appDelegate showPopoverWithViewController:addSiteNavController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
+    }
+
     [self.appDelegate.addSiteViewController reload];
 }
 
@@ -1420,11 +1437,31 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         return;
     }
 
-    CGSize size = CGSizeMake(self.view.frame.size.width - 36,
-                             self.view.frame.size.height - 60);
+    if (@available(iOS 15.0, *)) {
+        UIViewController *activitiesViewController = self.appDelegate.activitiesViewController;
+        activitiesViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+        UISheetPresentationController *sheet = activitiesViewController.sheetPresentationController;
+        sheet.detents = @[
+            UISheetPresentationControllerDetent.mediumDetent,
+            UISheetPresentationControllerDetent.largeDetent
+        ];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        if (@available(iOS 16.0, *)) {
+            sheet.selectedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        }
+        [self.appDelegate applySheetPresentationTheme:sheet];
+        sheet.preferredCornerRadius = 12.0;
 
-    // Use settings button as the popover anchor since activities button was removed from nav bar
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.settingsBarButton];
+        [self.appDelegate.splitViewController presentViewController:activitiesViewController animated:YES completion:nil];
+    } else {
+        CGSize size = CGSizeMake(self.view.frame.size.width - 36,
+                                 self.view.frame.size.height - 60);
+
+        // Use settings button as the popover anchor since activities button was removed from nav bar
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.settingsBarButton];
+    }
 
     [appDelegate.activitiesViewController refreshInteractions];
     [appDelegate.activitiesViewController refreshActivity];
@@ -1769,7 +1806,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (void)preferencesDidDismiss {
-    [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
+    UIViewController *presenter = self.appDelegate.feedsNavigationController.presentedViewController;
+    if (presenter) {
+        [self.appDelegate.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
+    }
     [self resizeFontSize];
     [self resetupGestures];
 }

@@ -58,6 +58,7 @@
 #import "MenuViewController.h"
 #import "PINCache.h"
 #import "NewsBlur-Swift.h"
+#import <objc/message.h>
 #import <float.h>
 #import <UserNotifications/UserNotifications.h>
 #import <Intents/Intents.h>
@@ -75,6 +76,124 @@
 @end
 
 @implementation NewsBlurAppDelegate
+
+static UIColor *SheetGrabberTintColor(void) {
+    return UIColorFromLightSepiaMediumDarkRGB(0xC7C7CC, 0xC5B9A8, 0x2C2C2E, 0x1C1C1E);
+}
+
+static NSInteger const kCustomGrabberTag = 875432;
+static CGFloat const kCustomGrabberWidth = 36.0;
+static CGFloat const kCustomGrabberHeight = 5.0;
+static CGFloat const kCustomGrabberTopInset = 6.0;
+
+static BOOL IsSystemGrabberCandidate(UIView *view) {
+    if (view.tag == kCustomGrabberTag) {
+        return NO;
+    }
+
+    CGFloat height = CGRectGetHeight(view.bounds);
+    CGFloat width = CGRectGetWidth(view.bounds);
+    if (height <= 6.0 && width >= 20.0 && width <= 140.0) {
+        CGFloat y = CGRectGetMinY(view.frame);
+        if (y >= 0.0 && y <= 16.0) {
+            return YES;
+        }
+    }
+
+    return NO;
+}
+
+static void HideSystemGrabberInView(UIView *view) {
+    for (UIView *subview in view.subviews) {
+        NSString *className = NSStringFromClass(subview.class);
+        if ([className rangeOfString:@"Grabber" options:NSCaseInsensitiveSearch].location != NSNotFound) {
+            subview.hidden = YES;
+            subview.alpha = 0.0;
+        } else if (IsSystemGrabberCandidate(subview)) {
+            subview.hidden = YES;
+            subview.alpha = 0.0;
+        }
+        HideSystemGrabberInView(subview);
+    }
+}
+
+static void ApplySheetGrabberTint(UISheetPresentationController *sheet) {
+    if (!sheet) {
+        return;
+    }
+
+    SEL selector = NSSelectorFromString(@"setPreferredGrabberTintColor:");
+    if (![sheet respondsToSelector:selector]) {
+        return;
+    }
+
+    UIColor *color = SheetGrabberTintColor();
+    ((void (*)(id, SEL, UIColor *))objc_msgSend)(sheet, selector, color);
+}
+
+static void ApplySheetPresentationTheme(UISheetPresentationController *sheet) {
+    if (!sheet) {
+        return;
+    }
+
+    UIViewController *presentedController = sheet.presentedViewController;
+    if (!presentedController) {
+        return;
+    }
+
+    ThemeManager *themeManager = [ThemeManager themeManager];
+    presentedController.overrideUserInterfaceStyle = themeManager.isDarkTheme ? UIUserInterfaceStyleDark : UIUserInterfaceStyleLight;
+    ApplySheetGrabberTint(sheet);
+}
+
+- (void)applySheetPresentationTheme:(UISheetPresentationController *)sheet {
+    ApplySheetPresentationTheme(sheet);
+}
+
+- (void)applyCustomGrabberToNavigationController:(UINavigationController *)navController {
+    if (!navController) {
+        return;
+    }
+
+    UIView *container = navController.presentationController.containerView;
+    if (!container) {
+        container = navController.view;
+    }
+    if (!container) {
+        return;
+    }
+
+    [container layoutIfNeeded];
+    HideSystemGrabberInView(container);
+
+    UIView *oldGrabber = [navController.view viewWithTag:kCustomGrabberTag];
+    if (oldGrabber && oldGrabber.superview != container) {
+        [oldGrabber removeFromSuperview];
+    }
+
+    UIView *grabber = [container viewWithTag:kCustomGrabberTag];
+    if (!grabber) {
+        grabber = [[UIView alloc] init];
+        grabber.translatesAutoresizingMaskIntoConstraints = NO;
+        grabber.layer.cornerRadius = kCustomGrabberHeight / 2.0;
+        grabber.layer.masksToBounds = YES;
+        grabber.userInteractionEnabled = NO;
+        grabber.tag = kCustomGrabberTag;
+        [container addSubview:grabber];
+
+        [NSLayoutConstraint activateConstraints:@[
+            [grabber.topAnchor constraintEqualToAnchor:container.topAnchor constant:kCustomGrabberTopInset],
+            [grabber.centerXAnchor constraintEqualToAnchor:container.centerXAnchor],
+            [grabber.widthAnchor constraintEqualToConstant:kCustomGrabberWidth],
+            [grabber.heightAnchor constraintEqualToConstant:kCustomGrabberHeight]
+        ]];
+    }
+
+    UIColor *color = SheetGrabberTintColor();
+    CGFloat alpha = [ThemeManager themeManager].isDarkTheme ? 0.55 : 0.85;
+    grabber.backgroundColor = [color colorWithAlphaComponent:alpha];
+    [container bringSubviewToFront:grabber];
+}
 
 #define CURRENT_DB_VERSION 37
 
@@ -165,6 +284,7 @@
 @synthesize dictTextFeeds;
 @synthesize isPremium;
 @synthesize isPremiumArchive;
+@synthesize isPremiumPro;
 @synthesize premiumExpire;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
@@ -224,6 +344,7 @@
     cachedUserAvatars.memoryCache.costLimit = 10 * 1024 * 1024; // 10 MB
     isPremium = NO;
     isPremiumArchive = NO;
+    isPremiumPro = NO;
     premiumExpire = 0;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
@@ -810,6 +931,7 @@
         navController.modalPresentationStyle = UIModalPresentationPageSheet;
         if (navController.sheetPresentationController) {
             navController.sheetPresentationController.prefersGrabberVisible = YES;
+            [self applySheetPresentationTheme:navController.sheetPresentationController];
         }
         [self.feedsNavigationController presentViewController:navController animated:YES completion:nil];
     }
@@ -878,25 +1000,40 @@
 }
 
 - (void)showPremiumDialog {
-    [self showPremiumDialogScrollToArchive:NO];
+    [self showPremiumDialogScrollToArchive:NO scrollToPro:NO];
 }
 
 - (void)showPremiumDialogForArchive {
-    [self showPremiumDialogScrollToArchive:YES];
+    [self showPremiumDialogScrollToArchive:YES scrollToPro:NO];
 }
 
-- (void)showPremiumDialogScrollToArchive:(BOOL)scrollToArchive {
+- (void)showPremiumDialogForPro {
+    [self showPremiumDialogScrollToArchive:NO scrollToPro:YES];
+}
+
+- (void)showPremiumDialogScrollToArchive:(BOOL)scrollToArchive scrollToPro:(BOOL)scrollToPro {
     if (self.premiumNavigationController == nil) {
         self.premiumNavigationController = [[UINavigationController alloc]
                                             initWithRootViewController:self.premiumViewController];
     }
     self.premiumNavigationController.navigationBar.translucent = NO;
+    self.premiumNavigationController.navigationBarHidden = YES;
 
-    // Configure the premium view to scroll to archive section if requested
-    [self.premiumViewController configureForArchive:scrollToArchive];
+    // Configure the premium view to scroll to the requested tier
+    [self.premiumViewController configureForArchive:scrollToArchive scrollToPro:scrollToPro];
 
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    if (@available(iOS 15.0, *)) {
+        premiumNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        UISheetPresentationController *sheet = premiumNavigationController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        [self applySheetPresentationTheme:sheet];
+        sheet.preferredCornerRadius = 12.0;
+    } else {
+        premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    }
     [self.splitViewController presentViewController:premiumNavigationController animated:YES completion:nil];
     [self.premiumViewController.view setNeedsLayout];
 }
@@ -979,10 +1116,13 @@
 
     if (@available(iOS 15.0, *)) {
         PreferencesViewHostingController *swiftUIPrefs = [[PreferencesViewHostingController alloc] init];
-
-        if (!self.isPhone) {
-            swiftUIPrefs.modalPresentationStyle = UIModalPresentationFormSheet;
-        }
+        swiftUIPrefs.modalPresentationStyle = UIModalPresentationPageSheet;
+        UISheetPresentationController *sheet = swiftUIPrefs.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        [self applySheetPresentationTheme:sheet];
+        sheet.preferredCornerRadius = 12.0;
 
         [feedsNavigationController presentViewController:swiftUIPrefs animated:YES completion:^{
             [swiftUIPrefs configureDelegate:(id<PreferencesViewDelegate>)self.feedsViewController];
@@ -1003,7 +1143,28 @@
     self.modalNavigationController = nav;
     self.modalNavigationController.navigationBar.translucent = NO;
     
-    [self.splitViewController presentViewController:modalNavigationController animated:YES completion:nil];
+    if (@available(iOS 15.0, *)) {
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        UISheetPresentationController *sheet = self.modalNavigationController.sheetPresentationController;
+        BOOL usesLargeDetent = (operation == FeedChooserOperationOrganizeSites ||
+                                operation == FeedChooserOperationWidgetSites ||
+                                operation == FeedChooserOperationMuteSites);
+        if (usesLargeDetent) {
+            sheet.detents = @[UISheetPresentationControllerDetent.largeDetent];
+            sheet.largestUndimmedDetentIdentifier = nil;
+        } else {
+            sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent];
+            sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        }
+        sheet.prefersGrabberVisible = NO;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        [self applySheetPresentationTheme:sheet];
+        sheet.preferredCornerRadius = 12.0;
+    }
+    
+    [self.splitViewController presentViewController:modalNavigationController animated:YES completion:^{
+        [self applyCustomGrabberToNavigationController:self.modalNavigationController];
+    }];
 }
 
 - (void)showMuteSites {
@@ -1026,15 +1187,28 @@
     [self hidePopover];
     
     FriendsListViewController *friendsBVC = [[FriendsListViewController alloc] init];
-    UINavigationController *friendsNav = [[UINavigationController alloc] initWithRootViewController:friendsListViewController];
-    
     self.friendsListViewController = friendsBVC;
+    UINavigationController *friendsNav = [[UINavigationController alloc] initWithRootViewController:friendsBVC];
+    
     self.modalNavigationController = friendsNav;
     self.modalNavigationController.navigationBar.translucent = NO;
+    self.modalNavigationController.navigationBarHidden = YES;
     
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self.splitViewController presentViewController:modalNavigationController animated:YES completion:nil];
+    if (@available(iOS 15.0, *)) {
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        UISheetPresentationController *sheet = self.modalNavigationController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        [self applySheetPresentationTheme:sheet];
+        sheet.preferredCornerRadius = 12.0;
+        [self.splitViewController presentViewController:modalNavigationController animated:YES completion:nil];
+    } else {
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [self.splitViewController presentViewController:modalNavigationController animated:YES completion:nil];
+    }
     
     [self.friendsListViewController loadSuggestedFriendsList];
 }
@@ -1182,6 +1356,16 @@
                                             initWithRootViewController:self.shareViewController];
         self.shareNavigationController = shareNav;
         self.shareNavigationController.navigationBar.translucent = NO;
+    }
+    if (@available(iOS 15.0, *)) {
+        self.shareNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        UISheetPresentationController *sheet = self.shareNavigationController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        [self applySheetPresentationTheme:sheet];
+        sheet.preferredCornerRadius = 12.0;
     }
     [self.feedsNavigationController presentViewController:self.shareNavigationController animated:YES completion:^{
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
@@ -1363,16 +1547,32 @@
     trainerViewController.isFeedLoaded = feedLoaded;
     [trainerViewController reload];
     
-    if (!self.isPhone) {
-        //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-        //        [navController presentViewController:trainerViewController animated:YES completion:nil];
+    if (self.trainNavigationController == nil) {
+        self.trainNavigationController = [[UINavigationController alloc]
+                                          initWithRootViewController:self.trainerViewController];
+    }
+    self.trainNavigationController.navigationBar.translucent = NO;
+    self.trainNavigationController.navigationBarHidden = YES;
+
+    if (@available(iOS 15.0, *)) {
+        self.trainNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        UISheetPresentationController *sheet = self.trainNavigationController.sheetPresentationController;
+        sheet.detents = @[
+            UISheetPresentationControllerDetent.mediumDetent,
+            UISheetPresentationControllerDetent.largeDetent
+        ];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        if (@available(iOS 16.0, *)) {
+            sheet.selectedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        }
+        [self applySheetPresentationTheme:sheet];
+        sheet.preferredCornerRadius = 12.0;
+        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
+    } else if (!self.isPhone) {
         [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
-        if (self.trainNavigationController == nil) {
-            self.trainNavigationController = [[UINavigationController alloc]
-                                              initWithRootViewController:self.trainerViewController];
-        }
-        self.trainNavigationController.navigationBar.translucent = NO;
         [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
     }
 }
@@ -1383,14 +1583,32 @@
     trainerViewController.isFeedLoaded = YES;
     [trainerViewController reload];
     
-    if (!self.isPhone) {
+    if (self.trainNavigationController == nil) {
+        self.trainNavigationController = [[UINavigationController alloc]
+                                          initWithRootViewController:self.trainerViewController];
+    }
+    self.trainNavigationController.navigationBar.translucent = NO;
+    self.trainNavigationController.navigationBarHidden = YES;
+
+    if (@available(iOS 15.0, *)) {
+        self.trainNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        UISheetPresentationController *sheet = self.trainNavigationController.sheetPresentationController;
+        sheet.detents = @[
+            UISheetPresentationControllerDetent.mediumDetent,
+            UISheetPresentationControllerDetent.largeDetent
+        ];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        if (@available(iOS 16.0, *)) {
+            sheet.selectedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        }
+        [self applySheetPresentationTheme:sheet];
+        sheet.preferredCornerRadius = 12.0;
+        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
+    } else if (!self.isPhone) {
         [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
-        if (self.trainNavigationController == nil) {
-            self.trainNavigationController = [[UINavigationController alloc]
-                                              initWithRootViewController:self.trainerViewController];
-        }
-        self.trainNavigationController.navigationBar.translucent = NO;
         [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
     }
 }
@@ -1413,6 +1631,7 @@
         sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
         // Allow interaction with story content behind the sheet when at medium height
         sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        [self applySheetPresentationTheme:sheet];
         // Set fixed corner radius to prevent iOS 26 liquid glass scaling effect on touch
         sheet.preferredCornerRadius = 12.0;
 
@@ -1512,6 +1731,7 @@
         sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
         // Allow interaction with story content behind the sheet
         sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        [self applySheetPresentationTheme:sheet];
         sheet.preferredCornerRadius = 12.0;
 
         [self.splitViewController presentViewController:navController animated:YES completion:nil];
@@ -1553,14 +1773,25 @@
     UINavigationController *navController = self.feedsNavigationController;
     self.notificationsViewController.feedId = feedId;
     
-    if (!self.isPhone) {
+    if (self.notificationsNavigationController == nil) {
+        self.notificationsNavigationController = [[UINavigationController alloc]
+                                                  initWithRootViewController:self.notificationsViewController];
+    }
+    self.notificationsNavigationController.navigationBar.translucent = NO;
+    self.notificationsNavigationController.navigationBarHidden = YES;
+
+    if (@available(iOS 15.0, *)) {
+        self.notificationsNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        UISheetPresentationController *sheet = self.notificationsNavigationController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        [self applySheetPresentationTheme:sheet];
+        sheet.preferredCornerRadius = 12.0;
+        [navController presentViewController:self.notificationsNavigationController animated:YES completion:nil];
+    } else if (!self.isPhone) {
         [self showPopoverWithViewController:self.notificationsViewController contentSize:CGSizeMake(420, 382) sender:sender];
     } else {
-        if (self.notificationsNavigationController == nil) {
-            self.notificationsNavigationController = [[UINavigationController alloc]
-                                                      initWithRootViewController:self.notificationsViewController];
-        }
-        self.notificationsNavigationController.navigationBar.translucent = NO;
         [navController presentViewController:self.notificationsNavigationController animated:YES completion:nil];
     }
 }
@@ -2162,6 +2393,9 @@
     [self GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         self.dictUserProfile = [responseObject objectForKey:@"user_profile"];
         self.dictSocialServices = [responseObject objectForKey:@"services"];
+        self.isPremium = [[self.dictUserProfile objectForKey:@"is_premium"] integerValue] == 1;
+        self.isPremiumArchive = [[self.dictUserProfile objectForKey:@"is_archive"] integerValue] == 1;
+        self.isPremiumPro = [[self.dictUserProfile objectForKey:@"is_pro"] integerValue] == 1;
         callback();
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Failed user profile");
@@ -2353,16 +2587,44 @@
         NSMutableDictionary *intelligence = [NSMutableDictionary
                                              dictionaryWithObjects:[NSArray arrayWithObjects:
                                                                     [zero copy], [zero copy],
-                                                                    [zero copy], [zero copy], nil]
+                                                                    [zero copy], [zero copy],
+                                                                    [zero copy], [zero copy],
+                                                                    [zero copy], [zero copy],
+                                                                    [zero copy], nil]
                                              forKeys:[NSArray arrayWithObjects:
-                                                      @"author", @"feed", @"tags", @"title", nil]];
+                                                      @"author", @"feed", @"tags", @"title",
+                                                      @"title_regex", @"text", @"text_regex",
+                                                      @"url", @"url_regex", nil]];
         NSDictionary *classifiers = [storiesCollection.activeClassifiers objectForKey:feedIdStr];
         
+        NSString *storyTitle = @"";
+        if ([[story objectForKey:@"story_title"] class] != [NSNull class] &&
+            [[story objectForKey:@"story_title"] isKindOfClass:[NSString class]]) {
+            storyTitle = [story objectForKey:@"story_title"];
+        }
+        NSString *storyTitleLower = [storyTitle lowercaseString];
+        
+        NSString *storyContent = @"";
+        if ([[story objectForKey:@"story_content"] class] != [NSNull class] &&
+            [[story objectForKey:@"story_content"] isKindOfClass:[NSString class]]) {
+            storyContent = [story objectForKey:@"story_content"];
+        }
+        NSString *storyContentLower = [storyContent lowercaseString];
+        
+        NSString *storyPermalink = @"";
+        if ([[story objectForKey:@"story_permalink"] class] != [NSNull class] &&
+            [[story objectForKey:@"story_permalink"] isKindOfClass:[NSString class]]) {
+            storyPermalink = [story objectForKey:@"story_permalink"];
+        }
+        NSString *storyPermalinkLower = [storyPermalink lowercaseString];
+        
         for (NSString *title in [classifiers objectForKey:@"titles"]) {
-            if ([[intelligence objectForKey:@"title"] intValue] <= 0 &&
-                [[story objectForKey:@"story_title"] containsString:title]) {
-                int score = [[[classifiers objectForKey:@"titles"] objectForKey:title] intValue];
-                [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"title"];
+            if ([[intelligence objectForKey:@"title"] intValue] <= 0) {
+                NSString *titleLower = [title lowercaseString];
+                if ([storyTitleLower containsString:titleLower]) {
+                    int score = [[[classifiers objectForKey:@"titles"] objectForKey:title] intValue];
+                    [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"title"];
+                }
             }
         }
         
@@ -2389,6 +2651,76 @@
                 [storyFeedId isEqualToString:feed]) {
                 int score = [[[classifiers objectForKey:@"feeds"] objectForKey:feed] intValue];
                 [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"feed"];
+            }
+        }
+
+        for (NSString *text in [classifiers objectForKey:@"texts"]) {
+            if ([[intelligence objectForKey:@"text"] intValue] <= 0) {
+                NSString *textLower = [text lowercaseString];
+                if ([storyContentLower containsString:textLower]) {
+                    int score = [[[classifiers objectForKey:@"texts"] objectForKey:text] intValue];
+                    [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"text"];
+                }
+            }
+        }
+
+        // Title regex classifiers (PRO only)
+        if (self.isPremiumPro && [classifiers objectForKey:@"title_regex"]) {
+            for (NSString *pattern in [classifiers objectForKey:@"title_regex"]) {
+                if ([[intelligence objectForKey:@"title_regex"] intValue] <= 0) {
+                    NSError *error = nil;
+                    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                                             error:&error];
+                    if (!error && [regex firstMatchInString:storyTitle options:0 range:NSMakeRange(0, storyTitle.length)]) {
+                        int score = [[[classifiers objectForKey:@"title_regex"] objectForKey:pattern] intValue];
+                        [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"title_regex"];
+                    }
+                }
+            }
+        }
+
+        // Text regex classifiers (PRO only)
+        NSDictionary *textRegexClassifiers = [classifiers objectForKey:@"text_regex"];
+        if (self.isPremiumPro && textRegexClassifiers) {
+            for (NSString *pattern in textRegexClassifiers) {
+                if ([[intelligence objectForKey:@"text_regex"] intValue] <= 0) {
+                    NSError *error = nil;
+                    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                                             error:&error];
+                    if (!error && [regex firstMatchInString:storyContent options:0 range:NSMakeRange(0, storyContent.length)]) {
+                        int score = [[textRegexClassifiers objectForKey:pattern] intValue];
+                        [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"text_regex"];
+                    }
+                }
+            }
+        }
+
+        // URL exact phrase classifiers
+        for (NSString *url in [classifiers objectForKey:@"urls"]) {
+            if ([[intelligence objectForKey:@"url"] intValue] <= 0) {
+                NSString *urlLower = [url lowercaseString];
+                if ([storyPermalinkLower containsString:urlLower]) {
+                    int score = [[[classifiers objectForKey:@"urls"] objectForKey:url] intValue];
+                    [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"url"];
+                }
+            }
+        }
+
+        // URL regex classifiers (PRO only)
+        if (self.isPremiumPro && [classifiers objectForKey:@"url_regex"]) {
+            for (NSString *pattern in [classifiers objectForKey:@"url_regex"]) {
+                if ([[intelligence objectForKey:@"url_regex"] intValue] <= 0) {
+                    NSError *error = nil;
+                    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                                             error:&error];
+                    if (!error && [regex firstMatchInString:storyPermalink options:0 range:NSMakeRange(0, storyPermalink.length)]) {
+                        int score = [[[classifiers objectForKey:@"url_regex"] objectForKey:pattern] intValue];
+                        [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"url_regex"];
+                    }
+                }
             }
         }
         
@@ -2626,7 +2958,9 @@
 }
 
 - (void)navigationController:(UINavigationController *)_navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if ([viewController isKindOfClass:[SFSafariViewController class]] || [viewController isKindOfClass:[FontSettingsViewController class]]) {
+    if ([viewController isKindOfClass:[SFSafariViewController class]] ||
+        [viewController isKindOfClass:[FontSettingsViewController class]] ||
+        [viewController isKindOfClass:[AddSiteViewController class]]) {
         [_navigationController setNavigationBarHidden:YES animated:YES];
     } else {
         [_navigationController setNavigationBarHidden:NO animated:YES];
@@ -3632,11 +3966,16 @@
 + (int)computeStoryScore:(NSDictionary *)intelligence {
     int score = 0;
     int title = [[intelligence objectForKey:@"title"] intValue];
+    int title_regex = [[intelligence objectForKey:@"title_regex"] intValue];
     int author = [[intelligence objectForKey:@"author"] intValue];
     int tags = [[intelligence objectForKey:@"tags"] intValue];
+    int text = [[intelligence objectForKey:@"text"] intValue];
+    int text_regex = [[intelligence objectForKey:@"text_regex"] intValue];
+    int url = [[intelligence objectForKey:@"url"] intValue];
+    int url_regex = [[intelligence objectForKey:@"url_regex"] intValue];
 
-    int score_max = MAX(title, MAX(author, tags));
-    int score_min = MIN(title, MIN(author, tags));
+    int score_max = MAX(title, MAX(title_regex, MAX(author, MAX(tags, MAX(text, MAX(text_regex, MAX(url, url_regex)))))));
+    int score_min = MIN(title, MIN(title_regex, MIN(author, MIN(tags, MIN(text, MIN(text_regex, MIN(url, url_regex)))))));
 
     if (score_max > 0)      score = score_max;
     else if (score_min < 0) score = score_min;
@@ -4160,6 +4499,59 @@
     }
 }
 
+- (void)toggleClassifierValue:(NSString *)value
+                        feedId:(NSString *)feedId
+                 classifierKey:(NSString *)classifierKey
+                       likeKey:(NSString *)likeKey
+                    dislikeKey:(NSString *)dislikeKey
+                     removeKey:(NSString *)removeKey
+                         score:(NSInteger)score {
+    NSInteger classifierScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
+                                    objectForKey:classifierKey]
+                                   objectForKey:value] intValue];
+    
+    if (score) {
+        classifierScore = score;
+    } else {
+        if (classifierScore > 0) {
+            classifierScore = -1;
+        } else if (classifierScore < 0) {
+            classifierScore = 0;
+        } else {
+            classifierScore = 1;
+        }
+    }
+    
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
+    NSMutableDictionary *classifierValues = [[feedClassifiers objectForKey:classifierKey] mutableCopy];
+    if (!classifierValues) classifierValues = [NSMutableDictionary dictionary];
+    [classifierValues setObject:[NSNumber numberWithInteger:classifierScore] forKey:value];
+    [feedClassifiers setObject:classifierValues forKey:classifierKey];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.storyPagesViewController refreshHeaders];
+    [self.trainerViewController reload];
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
+                           self.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:value
+               forKey:classifierScore >= 1 ? likeKey :
+     classifierScore <= -1 ? dislikeKey :
+     removeKey];
+    [params setObject:feedId forKey:@"feed_id"];
+    
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
+    }];
+    
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController reload];
+}
+
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId {
     int authorScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                          objectForKey:@"authors"]
@@ -4294,6 +4686,56 @@
     [self recalculateIntelligenceScores:feedId];
 //    [self.feedDetailViewController.feedCollectionView reloadData];
     [self.feedDetailViewController reload];
+}
+
+- (void)toggleTitleRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score {
+    [self toggleClassifierValue:pattern
+                          feedId:feedId
+                   classifierKey:@"title_regex"
+                         likeKey:@"like_title_regex"
+                      dislikeKey:@"dislike_title_regex"
+                       removeKey:@"remove_like_title_regex"
+                           score:score];
+}
+
+- (void)toggleTextClassifier:(NSString *)text feedId:(NSString *)feedId score:(NSInteger)score {
+    [self toggleClassifierValue:text
+                          feedId:feedId
+                   classifierKey:@"texts"
+                         likeKey:@"like_text"
+                      dislikeKey:@"dislike_text"
+                       removeKey:@"remove_like_text"
+                           score:score];
+}
+
+- (void)toggleTextRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score {
+    [self toggleClassifierValue:pattern
+                          feedId:feedId
+                   classifierKey:@"text_regex"
+                         likeKey:@"like_text_regex"
+                      dislikeKey:@"dislike_text_regex"
+                       removeKey:@"remove_like_text_regex"
+                           score:score];
+}
+
+- (void)toggleUrlClassifier:(NSString *)url feedId:(NSString *)feedId score:(NSInteger)score {
+    [self toggleClassifierValue:url
+                          feedId:feedId
+                   classifierKey:@"urls"
+                         likeKey:@"like_url"
+                      dislikeKey:@"dislike_url"
+                       removeKey:@"remove_like_url"
+                           score:score];
+}
+
+- (void)toggleUrlRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score {
+    [self toggleClassifierValue:pattern
+                          feedId:feedId
+                   classifierKey:@"url_regex"
+                         likeKey:@"like_url_regex"
+                      dislikeKey:@"dislike_url_regex"
+                       removeKey:@"remove_like_url_regex"
+                           score:score];
 }
 
 - (void)toggleFeedClassifier:(NSString *)feedId {

@@ -593,6 +593,9 @@
     NSString *zeptoPath = [bundle pathForResource:@"zepto" ofType:@"js"];
     NSString *zeptoJS = zeptoPath ? [NSString stringWithContentsOfFile:zeptoPath encoding:NSUTF8StringEncoding error:nil] : @"";
 
+    NSString *markPath = [bundle pathForResource:@"mark" ofType:@"js"];
+    NSString *markJS = markPath ? [NSString stringWithContentsOfFile:markPath encoding:NSUTF8StringEncoding error:nil] : @"";
+
     NSString *fitvidPath = [bundle pathForResource:@"fitvid" ofType:@"js"];
     NSString *fitvidJS = fitvidPath ? [NSString stringWithContentsOfFile:fitvidPath encoding:NSUTF8StringEncoding error:nil] : @"";
 
@@ -611,8 +614,9 @@
                     "<script>%@</script>"
                     "<script>%@</script>"
                     "<script>%@</script>"
+                    "<script>%@</script>"
                     "<script>%@</script>",
-                    zeptoJS, fitvidJS, storyDetailJS, fastTouchJS];
+                    zeptoJS, markJS, fitvidJS, storyDetailJS, fastTouchJS];
     
     sharingHtmlString = [self getSideOptions];
 
@@ -1113,6 +1117,24 @@
     
     NSString *storyTitle = [self.activeStory objectForKey:@"story_title"];
     NSString *storyPermalink = [self.activeStory objectForKey:@"story_permalink"];
+    NSString *storyUrlMatch = @"";
+    NSDictionary *urlMatch = [self urlMatchForPermalink:storyPermalink feedId:feedId];
+    if (urlMatch && [[urlMatch objectForKey:@"score"] intValue] != 0) {
+        int score = [[urlMatch objectForKey:@"score"] intValue];
+        NSString *scoreClass = score > 0 ? @"NB-score-1" : score < 0 ? @"NB-score--1" : @"";
+        NSString *before = [urlMatch objectForKey:@"before"] ?: @"";
+        NSString *matched = [urlMatch objectForKey:@"matched"] ?: @"";
+        NSString *after = [urlMatch objectForKey:@"after"] ?: @"";
+        storyUrlMatch = [NSString stringWithFormat:@"<div class=\"NB-story-url-match\">"
+                         "<span class=\"NB-story-url %@\">"
+                         "<span class=\"NB-story-url-label\">URL: </span>"
+                         "<span class=\"NB-story-url-before\">%@</span>"
+                         "<span class=\"NB-story-url-matched\">%@</span>"
+                         "<span class=\"NB-story-url-after\">%@</span>"
+                         "</span>"
+                         "</div>",
+                         scoreClass, before, matched, after];
+    }
     NSMutableDictionary *titleClassifiers = [[appDelegate.storiesCollection.activeClassifiers
                                               objectForKey:feedId]
                                              objectForKey:@"titles"];
@@ -1145,6 +1167,7 @@
                              "%@"
                              "%@"
                              "%@"
+                             "%@"
                              "</div></div>",
                              storyUnread,
                              storyPermalink,
@@ -1153,9 +1176,96 @@
                              storyDate,
                              storyAuthor,
                              storyTags,
+                             storyUrlMatch,
                              storyStarred,
                              storyUserTags];
     return storyHeader;
+}
+
+- (NSDictionary *)urlMatchForPermalink:(NSString *)permalink feedId:(NSString *)feedId {
+    if (!permalink || [permalink isKindOfClass:[NSNull class]]) {
+        return nil;
+    }
+    if (!appDelegate.isPremiumArchive && !appDelegate.isPremiumPro) {
+        return nil;
+    }
+    NSDictionary *classifiers = [appDelegate.storiesCollection.activeClassifiers objectForKey:feedId];
+    if (!classifiers) return nil;
+    
+    NSDictionary *urlClassifiers = [classifiers objectForKey:@"urls"];
+    NSString *permalinkLower = [permalink lowercaseString];
+    
+    for (NSString *classifierUrl in urlClassifiers) {
+        NSString *classifierLower = [classifierUrl lowercaseString];
+        NSRange range = [permalinkLower rangeOfString:classifierLower];
+        if (range.location != NSNotFound) {
+            int score = [[urlClassifiers objectForKey:classifierUrl] intValue];
+            return [self formatUrlMatchForPermalink:permalink range:range score:score];
+        }
+    }
+    
+    // Check regex URL matches (PRO only)
+    if (appDelegate.isPremiumPro) {
+        NSDictionary *urlRegexClassifiers = [classifiers objectForKey:@"url_regex"];
+        for (NSString *pattern in urlRegexClassifiers) {
+            NSError *error = nil;
+            NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                                   options:NSRegularExpressionCaseInsensitive
+                                                                                     error:&error];
+            if (error) continue;
+            
+            NSTextCheckingResult *match = [regex firstMatchInString:permalink options:0 range:NSMakeRange(0, permalink.length)];
+            if (match) {
+                NSRange range = [match range];
+                int score = [[urlRegexClassifiers objectForKey:pattern] intValue];
+                return [self formatUrlMatchForPermalink:permalink range:range score:score];
+            }
+        }
+    }
+    
+    return nil;
+}
+
+- (NSDictionary *)formatUrlMatchForPermalink:(NSString *)permalink range:(NSRange)range score:(NSInteger)score {
+    if (range.location == NSNotFound || range.length == 0) {
+        return nil;
+    }
+    
+    NSInteger maxDisplayLength = 80;
+    NSString *matched = [permalink substringWithRange:range];
+    NSString *before = [permalink substringToIndex:range.location];
+    NSString *after = [permalink substringFromIndex:(range.location + range.length)];
+    
+    NSInteger availableForContext = maxDisplayLength - matched.length;
+    NSInteger beforeMax = (NSInteger)floor(availableForContext / 2.0);
+    NSInteger afterMax = availableForContext - beforeMax;
+    
+    if (beforeMax < 0) beforeMax = 0;
+    if (afterMax < 0) afterMax = 0;
+    
+    if (before.length > beforeMax && beforeMax > 0) {
+        NSInteger startIndex = before.length - beforeMax + 1;
+        if (startIndex < 0) startIndex = 0;
+        before = [NSString stringWithFormat:@"…%@",
+                  [before substringFromIndex:startIndex]];
+    } else if (beforeMax == 0) {
+        before = @"";
+    }
+    
+    if (after.length > afterMax && afterMax > 0) {
+        NSInteger endIndex = afterMax - 1;
+        if (endIndex < 0) endIndex = 0;
+        after = [[after substringToIndex:endIndex] stringByAppendingString:@"…"];
+    } else if (afterMax == 0) {
+        after = @"";
+    }
+    
+    return @{
+        @"score": @(score),
+        @"before": before ?: @"",
+        @"matched": matched ?: @"",
+        @"after": after ?: @""
+    };
 }
 
 - (NSString *)getSideOptions {
@@ -2271,6 +2381,7 @@
 - (void)webViewNotifyLoaded {
     [self changeWebViewWidth];
     [self scrollToLastPosition:YES];
+    [self applyClassifierHighlights];
 }
 
 - (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
@@ -2878,7 +2989,38 @@
     
     [self.webView evaluateJavaScript:jsString completionHandler:^(id result, NSError *error) {
         [self.webView evaluateJavaScript:@"if (typeof attachFastClick === 'function') { attachFastClick(); }" completionHandler:nil];
+        [self applyClassifierHighlights];
     }];
+}
+
+- (void)applyClassifierHighlights {
+    if (!self.hasStory) return;
+    
+    NSString *feedId = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"story_feed_id"]];
+    NSDictionary *classifiers = [appDelegate.storiesCollection.activeClassifiers objectForKey:feedId];
+    if (!classifiers) return;
+    
+    NSDictionary *texts = [classifiers objectForKey:@"texts"];
+    NSDictionary *textRegex = [classifiers objectForKey:@"text_regex"];
+    
+    NSMutableDictionary *highlightClassifiers = [NSMutableDictionary dictionary];
+    if (texts) {
+        [highlightClassifiers setObject:texts forKey:@"texts"];
+    }
+    if (textRegex) {
+        [highlightClassifiers setObject:textRegex forKey:@"text_regex"];
+    }
+    
+    NSError *error = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:highlightClassifiers options:0 error:&error];
+    if (error || !jsonData) return;
+    
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    if (!jsonString) return;
+    
+    NSString *jsString = [NSString stringWithFormat:@"if (typeof applyClassifierHighlights === 'function') { applyClassifierHighlights(%@); }",
+                          jsonString];
+    [self.webView evaluateJavaScript:jsString completionHandler:nil];
 }
 
 - (void)refreshSideOptions {
