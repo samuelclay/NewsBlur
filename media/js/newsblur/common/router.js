@@ -1,7 +1,7 @@
 NEWSBLUR.Router = Backbone.Router.extend({
 
     routes: {
-        "add/?": "add_site",
+        "add": "add_site",
         "try/?": "try_site",
         "site/:site_id/:slug": "site",
         "site/:site_id/": "site",
@@ -22,8 +22,16 @@ NEWSBLUR.Router = Backbone.Router.extend({
     },
 
     add_site: function () {
-        NEWSBLUR.log(["add", window.location, $.getQueryString('url')]);
-        NEWSBLUR.reader.open_add_feed_modal({ url: $.getQueryString('url') });
+        var url = $.getQueryString('url');
+        if (url) {
+            // If ?url= parameter is present, open the quick add modal
+            NEWSBLUR.log(["add modal", window.location, url]);
+            NEWSBLUR.reader.open_add_feed_modal({ url: url });
+        } else {
+            // Otherwise open the full Add + Discover page
+            NEWSBLUR.log(["add site", window.location]);
+            NEWSBLUR.reader.open_add_site({ router: true });
+        }
     },
 
     try_site: function () {

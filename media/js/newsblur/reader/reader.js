@@ -50,6 +50,7 @@
                 $river_global_header: $('.NB-feeds-header-river-global'),
                 $river_trending_header: $('.NB-feeds-header-river-trending'),
                 $archive_header: $('.NB-feeds-header-archive'),
+                $add_site_header: $('.NB-feeds-header-add-site'),
                 $starred_header: $('.NB-feeds-header-starred'),
                 $searches_header: $('.NB-feeds-header-searches'),
                 $read_header: $('.NB-feeds-header-read'),
@@ -1442,6 +1443,7 @@
             this.$s.$river_trending_header.removeClass('NB-selected');
             this.$s.$archive_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
+            this.$s.$add_site_header.removeClass('NB-selected');
             this.$s.$layout.removeClass('NB-view-river');
             this.$s.$layout.removeClass('NB-archive-active');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
@@ -1488,6 +1490,26 @@
                 this.archive_view = null;
             }
             this.flags['archive_view'] = false;
+
+            if (this.add_site_view) {
+                // Restore story titles pane and taskbars instantly that were hidden for add site view
+                var story_anchor = this.model.preference('story_pane_anchor');
+                if (this.layout.contentLayout) {
+                    this.layout.contentLayout.open(story_anchor, true);  // true = instant, no animation
+                }
+                if (this.layout.rightLayout) {
+                    this.layout.rightLayout.open('north', true);
+                    this.layout.rightLayout.open('south', true);
+                    this.layout.rightLayout.resizeAll();
+                }
+                if (this.layout.contentLayout) {
+                    this.layout.contentLayout.resizeAll();
+                }
+                this.add_site_view.close();
+                this.add_site_view = null;
+                this.$s.$layout.removeClass('NB-add-site-active');
+            }
+            this.flags['add_site_view'] = false;
 
             this.active_folder = null;
             this.active_feed = null;
@@ -2236,7 +2258,10 @@
             if (NEWSBLUR.reader.flags.search) visible_only = false;
             if (NEWSBLUR.reader.flags.feed_list_showing_starred) visible_only = false;
             var feeds;
-            if (visible_only) {
+            // Guard against active_folder not having expected methods (e.g., in Add Site view)
+            if (!this.active_folder || typeof this.active_folder.feed_ids_in_folder !== 'function') {
+                feeds = [];
+            } else if (visible_only) {
                 feeds = _.pluck(this.active_folder.feeds_with_unreads(), 'id');
                 if (!feeds.length) {
                     feeds = this.active_folder.feed_ids_in_folder();
@@ -2499,6 +2524,67 @@
             this.make_feed_title_in_stories();
 
             // Hide story titles pane and taskbars to give archive view full width
+            // Must be after make_feed_title_in_stories which may affect layout
+            var story_anchor = this.model.preference('story_pane_anchor');
+            if (this.layout.contentLayout) {
+                this.layout.contentLayout.hide(story_anchor, true);
+            }
+            if (this.layout.rightLayout) {
+                this.layout.rightLayout.hide('north', true);
+                this.layout.rightLayout.hide('south', true);
+                this.layout.rightLayout.resizeAll();
+            }
+        },
+
+        // ==================
+        // = Add Site View  =
+        // ==================
+
+        open_add_site: function (options) {
+            options = options || {};
+
+            // Already in add site view, no need to reset
+            if (this.flags['add_site_view'] && this.add_site_view) {
+                return;
+            }
+
+            this.reset_feed(options);
+            this.hide_splash_page();
+
+            this.active_feed = 'add-site';
+            this.active_folder = new Backbone.Model({
+                id: 'add-site',
+                folder_title: "Add + Discover Sites",
+                fake: true,
+                show_options: false
+            });
+
+            this.flags['add_site_view'] = true;
+            this.flags['river_view'] = true;  // Needed for fake folder header rendering
+
+            this.$s.$add_site_header.addClass('NB-selected');
+            this.$s.$layout.addClass('NB-view-river');
+            this.$s.$layout.addClass('NB-add-site-active');
+
+            // Create and append add site view to content pane
+            this.add_site_view = new NEWSBLUR.Views.AddSiteView({
+                initial_tab: options.tab
+            });
+            this.$s.$content_pane.append(this.add_site_view.$el);
+
+            // Update URL
+            NEWSBLUR.router.navigate('/add');
+
+            try {
+                this.make_feed_title_in_stories();
+            } catch (e) {
+                // Ignore errors for fake folders like add-site
+            }
+
+            // Ensure intelligence slider shows correct selection
+            this.load_intelligence_slider();
+
+            // Hide story titles pane and taskbars instantly to give add site view full width
             // Must be after make_feed_title_in_stories which may affect layout
             var story_anchor = this.model.preference('story_pane_anchor');
             if (this.layout.contentLayout) {
@@ -4014,7 +4100,8 @@
         close_story_titles_pane: function (update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
             if (update_layout) {
-                NEWSBLUR.reader.layout.contentLayout.hide(story_anchor, this.flags['archive_view']);
+                var no_animation = this.flags['archive_view'] || this.flags['add_site_view'];
+                NEWSBLUR.reader.layout.contentLayout.hide(story_anchor, no_animation);
             }
             this.resize_window();
             this.flags['story_titles_closed'] = true;
@@ -4023,7 +4110,8 @@
         open_story_titles_pane: function (update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
             if (update_layout) {
-                NEWSBLUR.reader.layout.contentLayout.open(story_anchor, this.flags['archive_view']);
+                var no_animation = this.flags['archive_view'] || this.flags['add_site_view'];
+                NEWSBLUR.reader.layout.contentLayout.open(story_anchor, no_animation);
             }
             this.resize_window();
             this.flags['story_titles_closed'] = false;

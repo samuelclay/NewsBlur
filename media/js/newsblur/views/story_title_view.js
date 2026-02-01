@@ -46,6 +46,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')),
             options: this.options,
             show_content_preview: this.show_content_preview(template_name),
+            content_preview_class: this.get_content_preview_class(),
             show_image_preview: this.show_image_preview(),
             show_inline_author: story_layout == "list",
             pane_anchor: this.options.pane_anchor || (this.options.override_layout ? "west" : NEWSBLUR.assets.preference('story_pane_anchor'))
@@ -88,7 +89,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     <span class="NB-storytitles-author"><%= story.story_authors() %></span>\
                 <% } %>\
                 <% if (show_content_preview) { %>\
-                    <div class="NB-storytitles-content-preview"><%= show_content_preview %></div>\
+                    <div class="NB-storytitles-content-preview <%= content_preview_class %>"><%= show_content_preview %></div>\
                 <% } %>\
                 <div class="NB-story-title-split-bottom">\
                     <span class="story_date NB-hidden-fade"><%= story.formatted_short_date() %></span>\
@@ -135,7 +136,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 <% if (story.story_authors()) { %><span class="NB-middot">&middot;</span><% } %>\
                 <span class="NB-storytitles-author"><%= story.story_authors() %></span>\
                 <% if (show_content_preview) { %>\
-                    <div class="NB-storytitles-content-preview"><%= show_content_preview %></div>\
+                    <div class="NB-storytitles-content-preview <%= content_preview_class %>"><%= show_content_preview %></div>\
                 <% } %>\
             </a>\
             <div class="NB-story-title-list-bottom">\
@@ -177,7 +178,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     <div class="NB-story-manage-icon" role="button"></div>\
                     <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
                     <% if (show_content_preview) { %>\
-                        <div class="NB-storytitles-content-preview"><%= show_content_preview %></div>\
+                        <div class="NB-storytitles-content-preview <%= content_preview_class %>"><%= show_content_preview %></div>\
                     <% } %>\
                 </a>\
             </div>\
@@ -220,7 +221,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     <div class="NB-story-manage-icon" role="button"></div>\
                     <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
                     <% if (show_content_preview) { %>\
-                        <div class="NB-storytitles-content-preview"><%= show_content_preview %></div>\
+                        <div class="NB-storytitles-content-preview <%= content_preview_class %>"><%= show_content_preview %></div>\
                     <% } %>\
                 </a>\
             </div>\
@@ -317,7 +318,17 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
 
     show_content_preview: function (template_name) {
         var preference = NEWSBLUR.assets.preference('show_content_preview');
-        if (!preference) return preference;
+        if (!preference || preference === 'title') return false;
+
+        // For add site view, return full content - CSS will handle line clamping
+        if (this.options.in_add_site_view) {
+            var full_content = this.model.content_preview('story_content', 2000) || " ";
+            var pruned_title = this.model.content_preview('story_title');
+            if (pruned_title.substr(0, 30) == full_content.substr(0, 30)) return false;
+            if (full_content.length < 30) return false;
+            return full_content;
+        }
+
         var max_length = preference == 'small' ? 300 : preference == 'medium' ? 600 : 1000;
 
         if (_.contains(['grid_template', 'magazine_template'], template_name)) {
@@ -334,10 +345,21 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         return pruned_description;
     },
 
+    get_content_preview_class: function () {
+        if (!this.options.in_add_site_view) return '';
+        var preference = NEWSBLUR.assets.preference('show_content_preview') || 'medium';
+        return 'NB-content-preview-' + preference;
+    },
+
     show_image_preview: function () {
         var show_image_preview = NEWSBLUR.assets.preference('image_preview');
         if (!show_image_preview || show_image_preview == "none") {
             return false;
+        }
+
+        // Always show image preview in add site view if preference is set
+        if (this.options.in_add_site_view) {
+            return !!this.model.image_url();
         }
 
         var story_layout = this.options.override_layout ||
@@ -648,6 +670,25 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                     'select_story_in_feed': this.model.get('story_hash'),
                     'story_title': this.model.get('story_title')
                 });
+            }
+            return;
+        } else if (this.options.on_popular_feed) {
+            var feed = this.options.on_popular_feed.get("feed");
+            var is_subscribed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
+            if (is_subscribed) {
+                NEWSBLUR.reader.open_feed(this.model.get('story_feed_id'), {
+                    'story_id': this.model.get('story_hash'),
+                    'story_title': this.model.get('story_title')
+                });
+            } else {
+                NEWSBLUR.reader.load_feed_in_tryfeed_view(this.model.get('story_feed_id'), {
+                    'feed': feed,
+                    'select_story_in_feed': this.model.get('story_hash'),
+                    'story_title': this.model.get('story_title')
+                });
+            }
+            if (this.options.in_add_site_view) {
+                $.modal.close();
             }
             return;
         }

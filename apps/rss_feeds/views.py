@@ -1,10 +1,9 @@
 import base64
 import datetime
 import time
-from collections import defaultdict
-from urllib.parse import urlparse
 
 import redis
+import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -23,8 +22,6 @@ from apps.reader.models import UserSubscription
 
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, MFeedIcon, MFetchHistory, MStory, merge_feeds
-from apps.search.models import MUserSearch
-from apps.statistics.rtrending_subscriptions import RTrendingSubscription
 from utils import feedfinder_forman as feedfinder
 from utils import json_functions as json
 from utils import log as logging
@@ -33,34 +30,6 @@ from utils.ratelimit import ratelimit
 from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import get_argument_or_404, is_true, required_params
 from vendor.timezones.utilities import localtime_for_timezone
-
-IGNORE_AUTOCOMPLETE = [
-    "facebook.com/feeds/notifications.php",
-    "inbox",
-    "secret",
-    "password",
-    "latitude",
-]
-
-
-@ajax_login_required
-@json.json_view
-def search_feed(request):
-    address = request.GET.get("address")
-    offset = int(request.GET.get("offset", 0))
-    if not address:
-        return dict(code=-1, message="Please provide a URL/address.")
-
-    logging.user(request.user, "~FBFinding feed (search_feed): %s" % address)
-    ip = request.META.get("HTTP_X_FORWARDED_FOR", None) or request.META["REMOTE_ADDR"]
-    logging.user(request.user, "~FBIP: %s" % ip)
-    aggressive = request.user.is_authenticated
-    feed = Feed.get_feed_from_url(address, create=False, aggressive=aggressive, offset=offset)
-    if feed:
-        return feed.canonical()
-    else:
-        return dict(code=-1, message="No feed found matching that XML or website address.")
-
 
 @json.json_view
 def load_single_feed(request, feed_id):
@@ -97,88 +66,6 @@ def load_feed_favicon(request, feed_id):
 
     icon_data = base64.b64decode(feed_icon.data)
     return HttpResponse(icon_data, content_type="image/png")
-
-
-@json.json_view
-def feed_autocomplete(request):
-    query = request.GET.get("term") or request.GET.get("query")
-    version = int(request.GET.get("v", 1))
-    autocomplete_format = request.GET.get("format", "autocomplete")
-
-    # user = get_user(request)
-    # if True or not user.profile.is_premium:
-    #     return dict(code=-1, message="Overloaded, no autocomplete results.", feeds=[], term=query)
-
-    if not query:
-        return dict(code=-1, message="Specify a search 'term'.", feeds=[], term=query)
-
-    if "." in query:
-        try:
-            parts = urlparse(query)
-            if not parts.hostname and not query.startswith("http"):
-                parts = urlparse("http://%s" % query)
-            if parts.hostname:
-                query = [parts.hostname]
-                query.extend([p for p in parts.path.split("/") if p])
-                query = " ".join(query)
-        except:
-            logging.user(request, "~FGAdd search, could not parse url in ~FR%s" % query)
-
-    query_params = query.split(" ")
-    tries_left = 5
-    while len(query_params) and tries_left:
-        tries_left -= 1
-        feed_ids = Feed.autocomplete(" ".join(query_params))
-        if feed_ids:
-            break
-        else:
-            query_params = query_params[:-1]
-
-    feeds = list(set([Feed.get_by_id(feed_id) for feed_id in feed_ids]))
-    feeds = [feed for feed in feeds if feed and not feed.branch_from_feed]
-    feeds = [feed for feed in feeds if all([x not in feed.feed_address for x in IGNORE_AUTOCOMPLETE])]
-
-    if autocomplete_format == "autocomplete":
-        feeds = [
-            {
-                "id": feed.pk,
-                "value": feed.feed_address,
-                "label": feed.feed_title,
-                "tagline": feed.data and feed.data.feed_tagline,
-                "num_subscribers": feed.num_subscribers,
-            }
-            for feed in feeds
-        ]
-    else:
-        feeds = [feed.canonical(full=True) for feed in feeds]
-    feeds = sorted(feeds, key=lambda f: -1 * f["num_subscribers"])
-
-    feed_ids = [f["id"] for f in feeds]
-    feed_icons = dict((icon.feed_id, icon) for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids))
-
-    for feed in feeds:
-        if feed["id"] in feed_icons:
-            feed_icon = feed_icons[feed["id"]]
-            if feed_icon.data:
-                feed["favicon_color"] = feed_icon.color
-                feed["favicon"] = feed_icon.data
-
-    logging.user(
-        request,
-        "~FGAdd Search: ~SB%s ~SN(%s matches)"
-        % (
-            query,
-            len(feeds),
-        ),
-    )
-
-    if version > 1:
-        return {
-            "feeds": feeds,
-            "term": query,
-        }
-    else:
-        return feeds
 
 
 @ratelimit(minutes=1, requests=30)
@@ -649,117 +536,3 @@ def story_changes(request):
         return {"code": -1, "message": "Story not found.", "original_page": None, "failed": True}
 
     return {"story": Feed.format_story(story, show_changes=show_changes)}
-
-
-@ajax_login_required
-@json.json_view
-def discover_feeds(request, feed_id=None):
-    page = int(request.GET.get("page") or request.POST.get("page") or 1)
-    limit = 5
-    offset = (page - 1) * limit
-
-    if request.method == "GET" and feed_id:
-        similar_feed_ids = list(
-            Feed.get_by_id(feed_id)
-            .count_similar_feeds(force=True, offset=offset, limit=limit)
-            .values_list("pk", flat=True)
-        )
-    elif request.method == "POST":
-        feed_ids = request.POST.getlist("feed_ids")
-        similar_feeds = Feed.find_similar_feeds(feed_ids=feed_ids, offset=offset, limit=limit)
-        similar_feed_ids = [result["_source"]["feed_id"] for result in similar_feeds]
-    else:
-        return {"code": -1, "message": "Missing feed_ids.", "discover_feeds": None, "failed": True}
-
-    feeds = Feed.objects.filter(pk__in=similar_feed_ids)
-    discover_feeds = defaultdict(dict)
-    for feed in feeds:
-        discover_feeds[feed.pk]["feed"] = feed.canonical(include_favicon=False)
-        discover_feeds[feed.pk]["stories"] = feed.get_stories(limit=5)
-
-    logging.user(request, "~FCDiscovering similar feeds, page %s: ~SB%s" % (page, similar_feed_ids))
-    return {"discover_feeds": discover_feeds}
-
-
-@ajax_login_required
-@json.json_view
-def discover_stories(request, story_hash):
-    page = int(request.GET.get("page") or request.POST.get("page") or 1)
-    feed_ids = request.GET.getlist("feed_ids") or request.POST.getlist("feed_ids")
-    limit = 5
-    offset = (page - 1) * limit
-    story, _ = MStory.find_story(story_hash=story_hash)
-    if not story:
-        return {"code": -1, "message": "Story not found.", "discover_stories": None, "failed": True}
-
-    user_search = MUserSearch.get_user(request.user.pk)
-    user_search.touch_discover_date()
-
-    similar_stories = story.fetch_similar_stories(feed_ids=feed_ids, offset=offset, limit=limit)
-    similar_story_hashes = [result["_id"] for result in similar_stories]
-    stories = MStory.objects.filter(story_hash__in=similar_story_hashes)
-    stories = Feed.format_stories(stories)
-
-    # Find unsubscribed feeds
-    subscribed_feed_ids = UserSubscription.objects.filter(
-        user=request.user, feed_id__in=set(story["story_feed_id"] for story in stories)
-    ).values_list("feed_id", flat=True)
-    feeds = Feed.objects.filter(
-        pk__in=set(story["story_feed_id"] for story in stories) - set(subscribed_feed_ids)
-    )
-    feeds = {feed.pk: feed.canonical(include_favicon=False) for feed in feeds}
-
-    return {"discover_stories": stories, "feeds": feeds}
-
-
-@json.json_view
-def trending_sites(request):
-    """
-    Returns trending feeds with their recent stories for the Trending Sites feature.
-    Uses subscription velocity from RTrendingSubscription to determine trending feeds.
-    """
-    page = int(request.GET.get("page", 1))
-    days = int(request.GET.get("days", 7))
-    limit = 10
-    offset = (page - 1) * limit
-
-    # Validate days parameter
-    if days not in [1, 7, 30]:
-        days = 7
-
-    # Get trending feed IDs from subscription velocity
-    # In DEBUG mode, use min_subscribers=1 to show results with limited data
-    min_subs = 1 if settings.DEBUG else RTrendingSubscription.MIN_SUBSCRIBERS_THRESHOLD
-    trending_data = RTrendingSubscription.get_trending_feeds(
-        days=days,
-        limit=limit + offset + 10,  # Get extra to account for filtering
-        min_subscribers=min_subs,
-    )
-
-    # Slice for pagination
-    trending_feed_ids = [int(feed_id) for feed_id, score in trending_data[offset : offset + limit]]
-
-    if not trending_feed_ids:
-        return {"trending_feeds": {}, "has_more": False}
-
-    # Build response with feed details and stories
-    feeds = Feed.objects.filter(pk__in=trending_feed_ids)
-    feeds_dict = {feed.pk: feed for feed in feeds}
-
-    # Build ordered response preserving trending order
-    trending_feeds = {}
-    for feed_id in trending_feed_ids:
-        if feed_id in feeds_dict:
-            feed = feeds_dict[feed_id]
-            # Find score for this feed
-            score = next((s for fid, s in trending_data if int(fid) == feed_id), 0)
-            trending_feeds[feed_id] = {
-                "feed": feed.canonical(include_favicon=False),
-                "stories": feed.get_stories(limit=5),
-                "trending_score": score,
-            }
-
-    has_more = len(trending_data) > offset + limit
-
-    logging.user(request, "~FCTrending sites (page %s, %sd): ~SB%s feeds" % (page, days, len(trending_feeds)))
-    return {"trending_feeds": trending_feeds, "has_more": has_more}
