@@ -728,6 +728,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.feedListSwipeGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFeedListSwipe:)];
     self.feedListSwipeGesture.delegate = self;
     self.feedListSwipeGesture.maximumNumberOfTouches = 1;
+#if TARGET_OS_MACCATALYST
+    // On Mac, trackpad two-finger swipes generate scroll events, not direct touch events.
+    // Allow the pan gesture to respond to trackpad scroll gestures.
+    self.feedListSwipeGesture.allowedScrollTypesMask = UIScrollTypeMaskAll;
+#endif
     [self.view addGestureRecognizer:self.feedListSwipeGesture];
 }
 
@@ -919,6 +924,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             CGFloat clampedTranslation = MAX(0.0, MIN(translation.x, effectiveRevealWidth));
             CGPoint velocity = [gestureRecognizer velocityInView:self.view];
             BOOL shouldOpen = (clampedTranslation > effectiveRevealWidth * 0.33f) || (velocity.x > 800.0f);
+
             UIView *container = self.feedListRevealContainer ?: primaryContainer;
 
             [UIView animateWithDuration:0.2

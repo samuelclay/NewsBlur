@@ -524,10 +524,17 @@ class DetailViewController: BaseViewController {
 
         if behavior == .auto {
             let size = splitViewController.view.bounds.size
+            #if targetEnvironment(macCatalyst)
+            // On Mac, only skip auto-collapse if window is wide enough for tiled layout
+            if size.width >= 900 {
+                return
+            }
+            #else
             let isLandscape = size.width > size.height
             if isLandscape {
                 return
             }
+            #endif
         }
 
         UIView.animate(withDuration: 0.2) {
