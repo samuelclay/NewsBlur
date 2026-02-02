@@ -1287,7 +1287,8 @@ class UserSubscription(models.Model):
         else:
             self.mark_read_date = date_delta
 
-        if self.is_trained:
+        has_scoped = self.user.profile.has_scoped_classifiers
+        if self.is_trained or has_scoped:
             if not stories:
                 stories = cache.get("S:v3:%s" % self.feed_id)
 
@@ -1322,14 +1323,39 @@ class UserSubscription(models.Model):
             # if not silent:
             #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
 
+            # Include global/folder-scoped classifiers (feed_id=0) when user has scoped classifiers
+            feed_ids = [self.feed_id, 0] if has_scoped else [self.feed_id]
+
             classifier_feeds = list(
                 MClassifierFeed.objects(user_id=self.user_id, feed_id=self.feed_id, social_user_id=0)
             )
-            classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id=self.feed_id))
-            classifier_titles = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
-            classifier_tags = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
-            classifier_texts = list(MClassifierText.objects(user_id=self.user_id, feed_id=self.feed_id))
-            classifier_urls = list(MClassifierUrl.objects(user_id=self.user_id, feed_id=self.feed_id))
+            classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id__in=feed_ids))
+            classifier_titles = list(MClassifierTitle.objects(user_id=self.user_id, feed_id__in=feed_ids))
+            classifier_tags = list(MClassifierTag.objects(user_id=self.user_id, feed_id__in=feed_ids))
+            classifier_texts = list(MClassifierText.objects(user_id=self.user_id, feed_id__in=feed_ids))
+            classifier_urls = list(MClassifierUrl.objects(user_id=self.user_id, feed_id__in=feed_ids))
+
+            # Filter folder-scoped classifiers to only include those for folders containing this feed
+            if has_scoped:
+                folder_feed_map = None
+
+                def _in_folder(classifier):
+                    nonlocal folder_feed_map
+                    if getattr(classifier, "scope", "feed") != "folder":
+                        return True
+                    if folder_feed_map is None:
+                        try:
+                            usf = UserSubscriptionFolders.objects.get(user_id=self.user_id)
+                            folder_feed_map = usf.flatten_folders()
+                        except UserSubscriptionFolders.DoesNotExist:
+                            folder_feed_map = {}
+                    return self.feed_id in folder_feed_map.get(classifier.folder_name, [])
+
+                classifier_authors = [c for c in classifier_authors if _in_folder(c)]
+                classifier_titles = [c for c in classifier_titles if _in_folder(c)]
+                classifier_tags = [c for c in classifier_tags if _in_folder(c)]
+                classifier_texts = [c for c in classifier_texts if _in_folder(c)]
+                classifier_urls = [c for c in classifier_urls if _in_folder(c)]
 
             if (
                 not len(classifier_feeds)
@@ -1339,8 +1365,9 @@ class UserSubscription(models.Model):
                 and not len(classifier_texts)
                 and not len(classifier_urls)
             ):
-                logging.user(self.user, "~FB~BMTurning off is_trained, no classifiers")
-                self.is_trained = False
+                if self.is_trained:
+                    logging.user(self.user, "~FB~BMTurning off is_trained, no classifiers")
+                    self.is_trained = False
 
             # if not silent:
             #     logging.info(' ---> [%s]    Classifiers: %s (%s)' % (self.user, datetime.datetime.now() - now, classifier_feeds.count() + classifier_authors.count() + classifier_tags.count() + classifier_titles.count()))
