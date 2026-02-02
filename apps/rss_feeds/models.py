@@ -247,6 +247,7 @@ class Feed(models.Model):
             "subs": self.num_subscribers,
             "is_push": self.is_push,
             "is_newsletter": self.is_newsletter,
+            "is_daily_briefing": self.is_daily_briefing,
             "fetched_once": self.fetched_once,
             "search_indexed": self.search_indexed,
             "discover_indexed": self.discover_indexed,
@@ -423,9 +424,9 @@ class Feed(models.Model):
             stories_per_month = int(stories_per_month)
         except ValueError:
             stories_per_month = 30
-        feeds = Feed.objects.filter(pk__in=feed_ids, average_stories_per_month__lte=stories_per_month).only(
-            "pk"
-        )
+        feeds = Feed.objects.filter(
+            pk__in=feed_ids, average_stories_per_month__lte=stories_per_month
+        ).exclude(feed_address__startswith="daily-briefing:").only("pk")
 
         return [f.pk for f in feeds]
 

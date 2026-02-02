@@ -20,7 +20,8 @@ from utils import log as logging
 
 
 def select_briefing_stories(
-    user_id, period_start, period_end, max_stories=20, story_sources="all", include_read=False
+    user_id, period_start, period_end, max_stories=20, story_sources="all",
+    read_filter="unread", include_read=False
 ):
     """
     Select the most important stories for a user's briefing and categorize them
@@ -41,8 +42,8 @@ def select_briefing_stories(
     - trending_global: Fallback for remaining stories
 
     Args:
-        story_sources: "all" (all feeds), "focused" (trained-positive feeds only),
-                       or "folder:FolderName" (specific folder's feeds)
+        story_sources: "all" (all feeds) or "folder:FolderName" (specific folder's feeds)
+        read_filter: "unread" (all unread) or "focus" (trained-positive feeds only)
         include_read: If False, filter to unread stories only (with fallback)
 
     Returns list of dicts with keys:
@@ -55,16 +56,17 @@ def select_briefing_stories(
     feed_ids = [sub.feed_id for sub in user_subs]
     feed_opens_map = {sub.feed_id: sub.feed_opens or 0 for sub in user_subs}
 
-    if story_sources == "focused":
+    if read_filter == "focus":
         positive_feed_ids = set(
             cf.feed_id for cf in MClassifierFeed.objects(user_id=user_id) if cf.feed_id and cf.score > 0
         )
         if positive_feed_ids:
             feed_ids = [fid for fid in feed_ids if fid in positive_feed_ids]
             logging.debug(
-                " ---> Briefing scoring: focused mode, %s feeds with positive classifiers" % len(feed_ids)
+                " ---> Briefing scoring: focus mode, %s feeds with positive classifiers" % len(feed_ids)
             )
-    elif story_sources and story_sources.startswith("folder:"):
+
+    if story_sources and story_sources.startswith("folder:"):
         folder_name = story_sources[len("folder:") :]
         try:
             from apps.reader.models import UserSubscriptionFolders

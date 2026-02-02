@@ -160,8 +160,12 @@ def briefing_preferences(request):
 
         story_sources = request.POST.get("story_sources")
         if story_sources:
-            if story_sources in ("all", "focused") or story_sources.startswith("folder:"):
+            if story_sources in ("all",) or story_sources.startswith("folder:"):
                 prefs.story_sources = story_sources
+
+        read_filter = request.POST.get("read_filter")
+        if read_filter in ("unread", "focus"):
+            prefs.read_filter = read_filter
 
         summary_style = request.POST.get("summary_style")
         if summary_style in ("editorial", "bullets", "headlines"):
@@ -171,10 +175,20 @@ def briefing_preferences(request):
         if include_read is not None:
             prefs.include_read = include_read in ("true", "1", True)
 
+        preferred_day = request.POST.get("preferred_day")
+        if preferred_day in ("sun", "mon", "tue", "wed", "thu", "fri", "sat"):
+            prefs.preferred_day = preferred_day
+
+        prefs.save()
+
+    # Migrate old "focused" story_sources to the new read_filter field
+    if prefs.story_sources == "focused":
+        prefs.story_sources = "all"
+        prefs.read_filter = "focus"
         prefs.save()
 
     TIME_DISPLAY_MAP = {"07:00": "morning", "12:00": "afternoon", "18:00": "evening"}
-    preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "auto"
+    preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
 
     folders = []
     try:
@@ -189,11 +203,13 @@ def briefing_preferences(request):
     return {
         "frequency": prefs.frequency,
         "preferred_time": preferred_time_display,
+        "preferred_day": prefs.preferred_day or "sun",
         "enabled": prefs.enabled,
         "briefing_feed_id": prefs.briefing_feed_id,
         "story_count": prefs.story_count or 20,
         "summary_length": prefs.summary_length or "medium",
         "story_sources": prefs.story_sources or "all",
+        "read_filter": prefs.read_filter or "unread",
         "summary_style": prefs.summary_style or "editorial",
         "include_read": prefs.include_read,
         "folders": folders,

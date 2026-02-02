@@ -150,6 +150,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
         now,
         max_stories=prefs.story_count or 20,
         story_sources=prefs.story_sources or "all",
+        read_filter=prefs.read_filter or "unread",
         include_read=prefs.include_read,
     )
 
