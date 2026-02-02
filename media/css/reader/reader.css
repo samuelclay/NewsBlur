@@ -9597,6 +9597,240 @@ form.opml_import_form input {
     text-decoration: underline;
 }
 
+/* Type badge: scope toggle icons + type label inside classifier pill */
+.NB-classifier-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 5px 2px 2px;
+    border-radius: 3px;
+    margin-right: 4px;
+    vertical-align: middle;
+    background: rgba(128, 128, 128, 0.15);
+    color: #777;
+    line-height: 1;
+}
+
+/* Feed-type classifier badge (Site) — no scope controls */
+.NB-classifier-type-badge.NB-classifier-type-feed {
+    cursor: default;
+    padding-left: 3px;
+}
+
+/* Scope toggle group: three icons side by side */
+.NB-classifier-scope-toggles {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+}
+
+/* Individual scope toggle icon */
+.NB-scope-toggle {
+    display: inline-flex;
+    width: 11px;
+    height: 11px;
+    cursor: pointer;
+    opacity: 0.25;
+    transition: opacity 0.15s, transform 0.15s, color 0.15s;
+    color: inherit;
+    flex-shrink: 0;
+    border-radius: 2px;
+    padding: 1px;
+    position: relative;
+}
+
+.NB-scope-toggle svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.NB-scope-toggle:hover {
+    opacity: 0.7;
+}
+
+/* Instant tooltip for scope toggles (appended to body) */
+.NB-scope-tooltip {
+    position: fixed;
+    z-index: 100000;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 4px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    line-height: 1.3;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Active scope toggle — fully visible with scope color */
+.NB-scope-toggle.NB-active {
+    opacity: 1;
+}
+
+.NB-scope-toggle-feed.NB-active {
+    color: #777;
+}
+
+.NB-scope-toggle-folder.NB-active {
+    color: #3B82F6;
+}
+
+.NB-scope-toggle-global.NB-active {
+    color: #8B5CF6;
+}
+
+.NB-classifier-type-label {
+    line-height: 1;
+}
+
+/* Liked classifier — badge adapts to green background */
+.NB-classifier-like .NB-classifier-type-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-classifier-like .NB-scope-toggle {
+    opacity: 0.3;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-classifier-like .NB-scope-toggle:hover {
+    opacity: 0.6;
+}
+
+.NB-classifier-like .NB-scope-toggle.NB-active {
+    opacity: 1;
+}
+
+.NB-classifier-like .NB-scope-toggle-feed.NB-active {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-classifier-like .NB-scope-toggle-folder.NB-active {
+    color: #93c5fd;
+}
+
+.NB-classifier-like .NB-scope-toggle-global.NB-active {
+    color: #c4b5fd;
+}
+
+/* Disliked classifier — badge adapts to red background */
+.NB-classifier-dislike .NB-classifier-type-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-classifier-dislike .NB-scope-toggle {
+    opacity: 0.3;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-classifier-dislike .NB-scope-toggle:hover {
+    opacity: 0.6;
+}
+
+.NB-classifier-dislike .NB-scope-toggle.NB-active {
+    opacity: 1;
+}
+
+.NB-classifier-dislike .NB-scope-toggle-feed.NB-active {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-classifier-dislike .NB-scope-toggle-folder.NB-active {
+    color: #93c5fd;
+}
+
+.NB-classifier-dislike .NB-scope-toggle-global.NB-active {
+    color: #c4b5fd;
+}
+
+/* Scope popover */
+.NB-classifier-scope-popover {
+    position: absolute;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 4px 0;
+    min-width: 180px;
+    font-size: 12px;
+}
+
+.NB-scope-option {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    cursor: pointer;
+    color: #333;
+    gap: 8px;
+}
+
+.NB-scope-option:hover {
+    background: #f5f5f5;
+}
+
+.NB-scope-option.NB-active {
+    background: #EEF2FF;
+    color: #4338CA;
+    font-weight: 600;
+}
+
+.NB-scope-option .NB-scope-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.NB-scope-option .NB-scope-icon svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+.NB-scope-option .NB-scope-label {
+    flex: 1;
+}
+
+.NB-scope-option .NB-scope-lock {
+    color: #999;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.NB-scope-option .NB-scope-lock svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+}
+
+.NB-scope-upgrade-nudge {
+    padding: 6px 12px;
+    border-top: 1px solid #eee;
+    font-size: 11px;
+    color: #666;
+}
+
+.NB-scope-upgrade-nudge a {
+    color: #8B5CF6;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.NB-scope-upgrade-nudge a:hover {
+    text-decoration: underline;
+}
+
 /* ================================== */
 /* = Compact Classifier Dialog      = */
 /* ================================== */
@@ -9994,20 +10228,23 @@ h5.NB-classifier-section-header {
 
 /* Archive notice - always visible for non-archive users */
 .NB-classifier-archive-notice,
-.NB-classifier-pro-notice {
+.NB-classifier-pro-notice,
+.NB-classifier-scope-notice {
     color: #807060;
     white-space: nowrap;
 }
 
 .NB-classifier-archive-notice a,
-.NB-classifier-pro-notice a {
+.NB-classifier-pro-notice a,
+.NB-classifier-scope-notice a {
     color: #d97706;
     font-weight: 600;
     text-decoration: none;
 }
 
 .NB-classifier-archive-notice a:hover,
-.NB-classifier-pro-notice a:hover {
+.NB-classifier-pro-notice a:hover,
+.NB-classifier-scope-notice a:hover {
     text-decoration: underline;
 }
 
@@ -10018,6 +10255,52 @@ h5.NB-classifier-section-header {
 
 .NB-classifier-pro-notice.NB-visible {
     display: block;
+}
+
+/* Scope notice - hidden by default, animated in when non-Pro clicks scope */
+.NB-classifier-scope-notice {
+    display: none;
+    opacity: 0;
+    transform: translateX(10px);
+}
+
+.NB-classifier-scope-notice.NB-visible {
+    display: block;
+    animation: scope-notice-in 0.3s ease-out forwards;
+}
+
+@keyframes scope-notice-in {
+    0% { opacity: 0; transform: translateX(10px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Shake animation on type badge when scope change is denied */
+.NB-classifier-type-badge.NB-shake {
+    animation: badge-shake 0.4s ease-in-out;
+}
+
+@keyframes badge-shake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-3px); }
+    30% { transform: translateX(3px); }
+    45% { transform: translateX(-2px); }
+    60% { transform: translateX(2px); }
+    75% { transform: translateX(-1px); }
+    90% { transform: translateX(1px); }
+}
+
+/* Flash toggle amber when denied */
+.NB-scope-toggle.NB-scope-toggle-denied {
+    opacity: 1 !important;
+    color: #d97706 !important;
+    transition: color 0.8s ease-out;
+}
+
+/* Denied tooltip styled amber */
+.NB-scope-tooltip.NB-scope-tooltip-denied {
+    background: #d97706;
+    color: #fff;
+    font-weight: 600;
 }
 
 /* =================== */
