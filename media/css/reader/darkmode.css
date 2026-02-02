@@ -2793,6 +2793,57 @@ a.mention, a.mention-group {
     color: #9B88FE;
 }
 
+/* Type badge dark mode */
+.NB-dark .NB-classifier-type-badge {
+    background: rgba(255, 255, 255, 0.08);
+    color: #999;
+}
+
+.NB-dark .NB-scope-toggle-feed.NB-active {
+    color: #aaa;
+}
+
+.NB-dark .NB-scope-toggle-folder.NB-active {
+    color: #60A5FA;
+}
+
+.NB-dark .NB-scope-toggle-global.NB-active {
+    color: #A78BFA;
+}
+
+.NB-dark .NB-scope-tooltip {
+    background: rgba(255, 255, 255, 0.9);
+    color: #222;
+}
+
+.NB-dark .NB-classifier-scope-popover {
+    background: #2d2d2d;
+    border-color: #444;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-scope-option {
+    color: #ccc;
+}
+
+.NB-dark .NB-scope-option:hover {
+    background: #383838;
+}
+
+.NB-dark .NB-scope-option.NB-active {
+    background: #2d2a4a;
+    color: #A78BFA;
+}
+
+.NB-dark .NB-scope-upgrade-nudge {
+    border-top-color: #444;
+    color: #888;
+}
+
+.NB-dark .NB-scope-upgrade-nudge a {
+    color: #A78BFA;
+}
+
 /* ================================== */
 /* = Compact Classifier Dialog      = */
 /* ================================== */
@@ -2971,6 +3022,15 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-classifier-pro-notice a {
+    color: #f59e0b;
+}
+
+/* Scope notice - dark mode */
+.NB-dark .NB-classifier-scope-notice {
+    color: #a89070;
+}
+
+.NB-dark .NB-classifier-scope-notice a {
     color: #f59e0b;
 }
 

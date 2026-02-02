@@ -81,6 +81,7 @@ class Profile(models.Model):
     is_premium_trial = models.BooleanField(default=None, blank=True, null=True)
     is_grandfathered = models.BooleanField(default=False, blank=True, null=True)
     grandfather_expires = models.DateTimeField(blank=True, null=True)
+    has_scoped_classifiers = models.BooleanField(default=False, blank=True, null=True)
 
     def __str__(self):
         return "%s <%s>%s%s%s" % (
