@@ -118,9 +118,9 @@ class Profile(models.Model):
             if settings.DEBUG:
                 price = "P-2EG40290653242115MHZROQQ"
         elif plan == "pro":
-            price = "price_0KK5cvwdsmP8XBla2tFdDhpy"
+            price = "P-1AE0908250058421JM565SVY"
             if settings.DEBUG:
-                price = "price_0KK5twwdsmP8XBlasifbX56Z"
+                price = "P-1AE0908250058421JM565SVY"
         return price
 
     @property
@@ -520,6 +520,20 @@ class Profile(models.Model):
     def activate_premium(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremium
 
+        logging.user(
+            self.user,
+            "~FMTier change: activate_premium (was: premium=%s, archive=%s, pro=%s)"
+            % (self.is_premium, self.is_archive, self.is_pro),
+        )
+
+        if self.is_archive or self.is_pro:
+            logging.user(
+                self.user,
+                "~FRSkipping activate_premium() - user already at %s tier"
+                % ("pro" if self.is_pro else "archive"),
+            )
+            return True
+
         # Clear trial status when converting to paid premium
         if self.is_premium_trial:
             self.is_premium_trial = False
@@ -528,13 +542,6 @@ class Profile(models.Model):
         EmailNewPremium.delay(user_id=self.user.pk)
 
         subs = UserSubscription.objects.filter(user=self.user)
-        if subs.count() > 5000:
-            logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
-            mail_admins(
-                f"WARNING! {self.user.username} has {subs.count()} subscriptions",
-                f"{self.user.username} has {subs.count()} subscriptions and just upgraded to premium. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}",
-            )
-            return False
 
         was_premium = self.is_premium
         self.is_premium = True
@@ -544,14 +551,20 @@ class Profile(models.Model):
         self.user.is_active = True
         self.user.save()
 
-        # Only auto-enable every feed if a free user is moving to premium
+        # Only auto-enable feeds if a free user is moving to premium, capped at tier limit
         if not was_premium:
+            max_feeds = self.max_feed_limit
+            activated = 0
             for sub in subs:
                 if sub.active:
+                    activated += 1
                     continue
+                if max_feeds and activated >= max_feeds:
+                    break
                 sub.active = True
                 try:
                     sub.save()
+                    activated += 1
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
 
@@ -583,16 +596,14 @@ class Profile(models.Model):
         return True
 
     def activate_archive(self, never_expire=False):
+        logging.user(
+            self.user,
+            "~FMTier change: activate_archive (was: premium=%s, archive=%s, pro=%s)"
+            % (self.is_premium, self.is_archive, self.is_pro),
+        )
         UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
 
         subs = UserSubscription.objects.filter(user=self.user)
-        if subs.count() > 2000:
-            logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
-            mail_admins(
-                f"WARNING! {self.user.username} has {subs.count()} subscriptions",
-                f"{self.user.username} has {subs.count()} subscriptions and just upgraded to archive. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}",
-            )
-            return False
 
         was_premium = self.is_premium
         was_archive = self.is_archive
@@ -603,14 +614,20 @@ class Profile(models.Model):
         self.user.is_active = True
         self.user.save()
 
-        # Only auto-enable every feed if a free user is moving to premium
+        # Only auto-enable feeds if a free user is moving to premium, capped at tier limit
         if not was_premium:
+            max_feeds = self.max_feed_limit
+            activated = 0
             for sub in subs:
                 if sub.active:
+                    activated += 1
                     continue
+                if max_feeds and activated >= max_feeds:
+                    break
                 sub.active = True
                 try:
                     sub.save()
+                    activated += 1
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
 
@@ -655,16 +672,23 @@ class Profile(models.Model):
     def activate_pro(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremiumPro
 
+        logging.user(
+            self.user,
+            "~FMTier change: activate_pro (was: premium=%s, archive=%s, pro=%s)"
+            % (self.is_premium, self.is_archive, self.is_pro),
+        )
         EmailNewPremiumPro.delay(user_id=self.user.pk)
 
         subs = UserSubscription.objects.filter(user=self.user)
-        if subs.count() > 1000:
-            logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
-            mail_admins(
-                f"WARNING! {self.user.username} has {subs.count()} subscriptions",
-                f"{self.user.username} has {subs.count()} subscriptions and just upgraded to pro. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}",
-            )
-            return False
+        active_subs = subs.filter(active=True).count()
+        mail_admins(
+            f"New Pro upgrade: {self.user.username} ({subs.count()} subscriptions, {active_subs} active)",
+            f"{self.user.username} upgraded to pro.\n"
+            f"Subscriptions: {subs.count()} total, {active_subs} active\n"
+            f"PayPal: {self.user.profile.paypal_sub_id}\n"
+            f"Stripe: {self.user.profile.stripe_id}\n"
+            f"Email: {self.user.email}",
+        )
 
         was_premium = self.is_premium
         was_archive = self.is_archive
@@ -676,14 +700,20 @@ class Profile(models.Model):
         self.user.is_active = True
         self.user.save()
 
-        # Only auto-enable every feed if a free user is moving to premium
+        # Only auto-enable feeds if a free user is moving to premium, capped at tier limit
         if not was_premium:
+            max_feeds = self.max_feed_limit
+            activated = 0
             for sub in subs:
                 if sub.active:
+                    activated += 1
                     continue
+                if max_feeds and activated >= max_feeds:
+                    break
                 sub.active = True
                 try:
                     sub.save()
+                    activated += 1
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
 
@@ -716,6 +746,11 @@ class Profile(models.Model):
         return True
 
     def deactivate_premium(self):
+        logging.user(
+            self.user,
+            "~FMTier change: deactivate_premium (was: premium=%s, archive=%s, pro=%s)"
+            % (self.is_premium, self.is_archive, self.is_pro),
+        )
         self.is_premium = False
         self.is_pro = False
         self.is_archive = False
@@ -889,12 +924,13 @@ class Profile(models.Model):
                     paypal_subscription = None
 
                 if paypal_subscription:
-                    if paypal_subscription["status"] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE"]:
+                    if paypal_subscription["status"] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE", "SUSPENDED"]:
                         active_plan = paypal_subscription.get("plan_id", None)
                         if not active_plan:
                             active_plan = paypal_subscription["plan"]["name"]
                         active_provider = "paypal"
-                        premium_renewal = True
+                        if paypal_subscription["status"] != "SUSPENDED":
+                            premium_renewal = True
 
                     start_date = datetime.datetime(2009, 1, 1).strftime("%Y-%m-%dT%H:%M:%S.000Z")
                     end_date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000Z")
@@ -2357,7 +2393,7 @@ def paypal_signup(sender, **kwargs):
             user.save()
     except:
         pass
-    user.profile.activate_premium()
+    user.profile.setup_premium_history()
     user.profile.cancel_premium_stripe()
     # user.profile.cancel_premium_paypal(second_most_recent_only=True)
 

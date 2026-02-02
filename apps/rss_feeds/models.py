@@ -2856,10 +2856,10 @@ class Feed(models.Model):
         if self.pro_subscribers and self.pro_subscribers >= 1:
             before_pro = total
             if self.stories_last_month == 0:
-                total = min(total, 60)
+                total = min(total, 60 * 3)
                 if before_pro != total:
                     adjustments.append(
-                        "Pro boost (no stories): %s min -> %s min (60 min max for %s pro subs)"
+                        "Pro boost (no stories): %s min -> %s min (180 min max for %s pro subs)"
                         % (before_pro, total, self.pro_subscribers)
                     )
             else:
