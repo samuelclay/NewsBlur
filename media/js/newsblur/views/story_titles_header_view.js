@@ -176,24 +176,22 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         } else if (NEWSBLUR.reader.flags['briefing_view']) {
             // story_titles_header_view.js: Briefing view header with icon and title
             $view = $(_.template('\
-                <div class="NB-folder NB-no-hover">\
+                <div class="NB-folder NB-no-hover NB-briefing-folder">\
+                    <div class="NB-folder-icon">\
+                        <img class="feed_favicon" src="<%= MEDIA_URL %>img/icons/nouns/briefing.svg">\
+                    </div>\
+                    <div class="NB-feedlist-manage-icon" role="button"></div>\
+                    <span class="folder_title_text"><%= folder_title %></span>\
+                    <span class="NB-briefing-preferences-icon" title="Briefing Preferences">\
+                        <div class="NB-icon"></div>\
+                        Briefing Settings\
+                    </span>\
                     <div class="NB-feedbar-options-container">\
                         <span class="NB-feedbar-options">\
                             <div class="NB-icon"></div>\
                             <%= NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, "order") %>\
                         </span>\
                     </div>\
-                    <div class="NB-briefing-preferences-container">\
-                        <span class="NB-feedbar-options NB-briefing-preferences-icon" title="Briefing Preferences">\
-                            <div class="NB-icon"></div>\
-                            Briefing Settings\
-                        </span>\
-                    </div>\
-                    <div class="NB-folder-icon">\
-                        <img class="feed_favicon" src="<%= MEDIA_URL %>img/icons/nouns/briefing.svg">\
-                    </div>\
-                    <div class="NB-feedlist-manage-icon" role="button"></div>\
-                    <span class="folder_title_text"><%= folder_title %></span>\
                 </div>\
             ', {
                 folder_title: 'Daily Briefing',

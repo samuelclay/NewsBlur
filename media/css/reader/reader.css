@@ -29044,22 +29044,77 @@ span.NB-briefing-inline-favicon {
     display: none;
 }
 
-/* reader.css: Briefing preferences button container — floated right like feedbar-options */
-.NB-feedbar .NB-briefing-preferences-container {
+/* reader.css: Briefing feedbar — flexbox layout so preferences button sits next to title */
+.NB-feedbar .NB-briefing-folder {
+    display: flex;
+    align-items: center;
+    padding-left: 35px;
+    position: relative;
+}
+
+.NB-feedbar .NB-briefing-folder .folder_title_text {
+    display: inline;
+    overflow: visible;
+    -webkit-line-clamp: unset;
+    margin-left: 0;
+    flex-shrink: 0;
+}
+
+.NB-feedbar .NB-briefing-folder .NB-folder-icon {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.NB-feedbar .NB-briefing-folder .NB-feedbar-options-container {
+    margin-left: auto;
+    float: none;
+}
+
+.NB-feedbar .NB-briefing-folder .NB-feedbar-options {
+    float: none;
+    margin: 0;
+    display: inline-block;
+}
+
+/* reader.css: Briefing settings pill button — matches NB-feedbar-options style */
+.NB-feedbar .NB-briefing-preferences-icon {
+    cursor: pointer;
+    color: rgba(0, 0, 0, .5);
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: 16px;
+    text-transform: uppercase;
+    font-size: 10px;
+    padding: 1px 4px 1px 8px;
+    line-height: 14px;
+    margin-left: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.NB-feedbar .NB-briefing-preferences-icon:hover {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.NB-feedbar .NB-briefing-preferences-icon .NB-icon {
     float: right;
+    width: 16px;
+    height: 12px;
+    background: transparent url('/media/embed/icons/nouns/down.svg') no-repeat 3px 2px;
+    background-size: 9px;
+    margin: 0 0 0 4px;
+}
+
+/* reader.css: Briefing popover arrow position — centered under the button */
+.NB-briefing-popover-container.popover.bottom-left .arrow {
+    left: 60px;
 }
 
 /* reader.css: Briefing preferences popover */
 .NB-briefing-popover .NB-popover-section {
     display: flex;
-    gap: 16px;
+    gap: 24px;
     align-items: flex-start;
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, .08);
-}
-
-.NB-briefing-popover .NB-popover-section:last-child {
-    border-bottom: none;
+    padding: 14px 20px;
 }
 
 .NB-briefing-popover .NB-popover-section-label {
@@ -29070,22 +29125,30 @@ span.NB-briefing-inline-favicon {
 .NB-briefing-popover .NB-popover-section-controls {
     flex: 1;
     min-width: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, .08);
+    padding-bottom: 14px;
+}
+
+.NB-briefing-popover .NB-popover-section:last-child .NB-popover-section-controls {
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
 .NB-briefing-popover .NB-popover-section-title {
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #A0A0A0;
-    margin-bottom: 1px;
+    letter-spacing: 1px;
+    color: #909090;
+    margin-bottom: 3px;
+    line-height: 16px;
 }
 
 .NB-briefing-popover .NB-popover-section-description {
-    font-size: 11.5px;
-    color: #808080;
+    font-size: 11px;
+    color: #a0a0a0;
     margin-bottom: 0;
-    line-height: 14px;
+    line-height: 15px;
 }
 
 .NB-briefing-popover .NB-briefing-style-description {
@@ -29100,7 +29163,7 @@ span.NB-briefing-inline-favicon {
 }
 
 .NB-briefing-popover .segmented-control {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 .NB-briefing-popover .segmented-control:last-child {
@@ -29145,7 +29208,7 @@ span.NB-briefing-inline-favicon {
 }
 
 /* reader.css: Dark mode overrides for briefing popover */
-.NB-dark .NB-briefing-popover .NB-popover-section {
+.NB-dark .NB-briefing-popover .NB-popover-section-controls {
     border-bottom-color: rgba(255, 255, 255, .08);
 }
 

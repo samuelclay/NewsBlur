@@ -3766,9 +3766,15 @@ a.mention, a.mention-group {
     color: #7B9FD4;
 }
 
-/* darkmode.css: Briefing preferences gear icon */
-.NB-dark .NB-briefing-preferences-icon {
-    filter: invert(1);
+/* darkmode.css: Briefing preferences pill — match feedbar-options dark style */
+.NB-dark .NB-feedbar .NB-briefing-preferences-icon {
+    color: #c0c0c0;
+    border: 1px solid rgba(0, 0, 0, .3);
+    background-color: #303739;
+}
+
+.NB-dark .NB-feedbar .NB-briefing-preferences-icon:hover {
+    background-color: #606466;
 }
 
 /* darkmode.css: Regenerate button container */

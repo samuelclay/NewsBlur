@@ -5,10 +5,10 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
     options: {
         'width': 520,
         'anchor': '.NB-briefing-preferences-icon',
-        'placement': 'bottom right',
+        'placement': 'bottom -left',
         'offset': {
-            top: 18,
-            left: -110
+            top: 4,
+            left: 0
         },
         'overlay_top': true,
         'popover_class': 'NB-briefing-popover-container'
@@ -21,7 +21,6 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
 
     initialize: function (options) {
         this.options = _.extend({}, this.options, options);
-        this.options.offset.left = -1 * $(this.options.anchor).width() - 31;
         this.prefs = {};
         this.folders = [];
         NEWSBLUR.ReaderPopover.prototype.initialize.call(this, this.options);
