@@ -96,7 +96,7 @@ services:
     container_name: newsblur_celery_{{ workspace_name }}
     image: newsblur/newsblur_python3
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
-    command: "celery worker -A newsblur_web -B --loglevel=INFO"
+    command: "celery worker -A newsblur_web -B -Q work_queue,new_feeds,push_feeds,cron_queue,beat_feeds_task,search_indexer,discover_indexer,ask_ai --loglevel=INFO"
     restart: "no"
     volumes:
       - ${PWD}:/srv/newsblur
