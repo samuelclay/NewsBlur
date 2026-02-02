@@ -161,6 +161,11 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
         if (!feeds || !feeds.length) {
             feeds = active_folder.feed_ids_in_folder();
         }
+        // Exclude briefing feeds from river views
+        feeds = _.reject(feeds, function (feed_id) {
+            var feed = NEWSBLUR.assets.get_feed(feed_id);
+            return feed && feed.get('is_daily_briefing');
+        });
         // console.log(['River feeds', river_id, feeds.length, feeds]);
         return feeds;
     },

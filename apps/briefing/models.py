@@ -62,11 +62,13 @@ class MBriefingPreferences(mongo.Document):
     user_id = mongo.IntField(unique=True)
     frequency = mongo.StringField(choices=["daily", "twice_daily", "weekly"], default="daily")
     preferred_time = mongo.StringField(default=None)  # "HH:MM" in user's timezone, null = auto-detect
+    preferred_day = mongo.StringField(default=None)  # Day of week for weekly frequency (sun, mon, tue, etc.)
     enabled = mongo.BooleanField(default=True)
     briefing_feed_id = mongo.IntField(default=None)
     story_count = mongo.IntField(default=20)
     summary_length = mongo.StringField(choices=["short", "medium", "detailed"], default="medium")
-    story_sources = mongo.StringField(default="all")  # "all", "focused", or "folder:FolderName"
+    story_sources = mongo.StringField(default="all")  # "all" or "folder:FolderName"
+    read_filter = mongo.StringField(choices=["unread", "focus"], default="unread")  # unread or focus stories
     summary_style = mongo.StringField(choices=["editorial", "bullets", "headlines"], default="editorial")
     include_read = mongo.BooleanField(default=False)  # False = unread only, True = include read stories
 

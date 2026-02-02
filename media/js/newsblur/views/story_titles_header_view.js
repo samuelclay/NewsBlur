@@ -183,12 +183,17 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                             <%= NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, "order") %>\
                         </span>\
                     </div>\
+                    <div class="NB-briefing-preferences-container">\
+                        <span class="NB-feedbar-options NB-briefing-preferences-icon" title="Briefing Preferences">\
+                            <div class="NB-icon"></div>\
+                            Briefing Settings\
+                        </span>\
+                    </div>\
                     <div class="NB-folder-icon">\
                         <img class="feed_favicon" src="<%= MEDIA_URL %>img/icons/nouns/briefing.svg">\
                     </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <span class="folder_title_text"><%= folder_title %></span>\
-                    <span class="NB-briefing-preferences-icon" title="Briefing Preferences"></span>\
                 </div>\
             ', {
                 folder_title: 'Daily Briefing',
@@ -336,6 +341,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     },
 
     open_options_popover: function (e) {
+        if ($(e.currentTarget).hasClass('NB-briefing-preferences-icon')) return;
+
         if (!(this.showing_fake_folder ||
             NEWSBLUR.reader.active_feed == "read" ||
             NEWSBLUR.reader.flags['starred_view'] ||
@@ -348,7 +355,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     },
 
     open_briefing_preferences: function () {
-        NEWSBLUR.reader.open_preferences_modal({ scroll_to: 'briefing' });
+        NEWSBLUR.BriefingPreferencesPopover.create({
+            anchor: this.$(".NB-briefing-preferences-icon")
+        });
     },
 
     mark_folder_as_read: function (e, days_back) {
