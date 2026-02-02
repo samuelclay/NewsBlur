@@ -1287,7 +1287,7 @@ class UserSubscription(models.Model):
         else:
             self.mark_read_date = date_delta
 
-        has_scoped = self.user.profile.has_scoped_classifiers
+        has_scoped = self.user.profile.is_archive and self.user.profile.has_scoped_classifiers
         if self.is_trained or has_scoped:
             if not stories:
                 stories = cache.get("S:v3:%s" % self.feed_id)
@@ -1324,6 +1324,7 @@ class UserSubscription(models.Model):
             #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
 
             # Include global/folder-scoped classifiers (feed_id=0) when user has scoped classifiers
+            folder_feed_map = None
             feed_ids = [self.feed_id, 0] if has_scoped else [self.feed_id]
 
             classifier_feeds = list(
@@ -1382,19 +1383,32 @@ class UserSubscription(models.Model):
             for story in unread_stories:
                 scores.update(
                     {
-                        "author": apply_classifier_authors(classifier_authors, story),
-                        "tags": apply_classifier_tags(classifier_tags, story),
-                        "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
+                        "author": apply_classifier_authors(
+                            classifier_authors, story, folder_feed_ids=folder_feed_map
+                        ),
+                        "tags": apply_classifier_tags(
+                            classifier_tags, story, folder_feed_ids=folder_feed_map
+                        ),
+                        "title": apply_classifier_titles(
+                            classifier_titles, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_map
+                        ),
                         "title_regex": apply_classifier_title_regex(
-                            classifier_titles, story, user_is_pro=user_is_pro
+                            classifier_titles, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_map
                         ),
-                        "text": apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro),
+                        "text": apply_classifier_texts(
+                            classifier_texts, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_map
+                        ),
                         "text_regex": apply_classifier_text_regex(
-                            classifier_texts, story, user_is_pro=user_is_pro
+                            classifier_texts, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_map
                         ),
-                        "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user_is_premium),
+                        "url": apply_classifier_urls(
+                            classifier_urls,
+                            story,
+                            user_is_premium=user_is_premium,
+                            folder_feed_ids=folder_feed_map,
+                        ),
                         "url_regex": apply_classifier_url_regex(
-                            classifier_urls, story, user_is_pro=user_is_pro
+                            classifier_urls, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_map
                         ),
                     }
                 )

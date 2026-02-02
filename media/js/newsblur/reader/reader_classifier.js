@@ -1539,11 +1539,18 @@ var classifier_prototype = {
         if (new_scope === 'folder') {
             if (this.feed_id && NEWSBLUR.assets.folders) {
                 var feed_id = parseInt(this.feed_id, 10);
-                NEWSBLUR.assets.folders.each(function (folder) {
-                    if (!folder_name && folder.feed_ids && _.contains(folder.feed_ids, feed_id)) {
-                        folder_name = folder.get('folder_title') || '';
-                    }
-                });
+                var find_in_collection = function (collection) {
+                    collection.each(function (item) {
+                        if (folder_name) return;
+                        if (item.is_folder()) {
+                            var feed_ids = item.feed_ids_in_folder();
+                            if (_.contains(feed_ids, feed_id)) {
+                                folder_name = item.get('folder_title') || '';
+                            }
+                        }
+                    });
+                };
+                find_in_collection(NEWSBLUR.assets.folders);
             }
         }
 
