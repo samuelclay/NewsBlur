@@ -609,6 +609,17 @@ class Profile(models.Model):
         was_premium = self.is_premium
         was_archive = self.is_archive
         was_pro = self.is_pro
+
+        if not was_archive:
+            active_subs = subs.filter(active=True).count()
+            mail_admins(
+                f"New Archive upgrade: {self.user.username} ({subs.count()} subscriptions, {active_subs} active)",
+                f"{self.user.username} upgraded to archive.\n"
+                f"Subscriptions: {subs.count()} total, {active_subs} active\n"
+                f"PayPal: {self.user.profile.paypal_sub_id}\n"
+                f"Stripe: {self.user.profile.stripe_id}\n"
+                f"Email: {self.user.email}",
+            )
         self.is_premium = True
         self.is_archive = True
         self.save()
@@ -678,22 +689,23 @@ class Profile(models.Model):
             "~FMTier change: activate_pro (was: premium=%s, archive=%s, pro=%s)"
             % (self.is_premium, self.is_archive, self.is_pro),
         )
-        EmailNewPremiumPro.delay(user_id=self.user.pk)
-
         subs = UserSubscription.objects.filter(user=self.user)
-        active_subs = subs.filter(active=True).count()
-        mail_admins(
-            f"New Pro upgrade: {self.user.username} ({subs.count()} subscriptions, {active_subs} active)",
-            f"{self.user.username} upgraded to pro.\n"
-            f"Subscriptions: {subs.count()} total, {active_subs} active\n"
-            f"PayPal: {self.user.profile.paypal_sub_id}\n"
-            f"Stripe: {self.user.profile.stripe_id}\n"
-            f"Email: {self.user.email}",
-        )
 
         was_premium = self.is_premium
         was_archive = self.is_archive
         was_pro = self.is_pro
+
+        if not was_pro:
+            EmailNewPremiumPro.delay(user_id=self.user.pk)
+            active_subs = subs.filter(active=True).count()
+            mail_admins(
+                f"New Pro upgrade: {self.user.username} ({subs.count()} subscriptions, {active_subs} active)",
+                f"{self.user.username} upgraded to pro.\n"
+                f"Subscriptions: {subs.count()} total, {active_subs} active\n"
+                f"PayPal: {self.user.profile.paypal_sub_id}\n"
+                f"Stripe: {self.user.profile.stripe_id}\n"
+                f"Email: {self.user.email}",
+            )
         self.is_premium = True
         self.is_archive = True
         self.is_pro = True
