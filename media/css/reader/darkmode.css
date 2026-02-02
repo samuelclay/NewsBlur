@@ -3301,9 +3301,9 @@ a.mention, a.mention-group {
     color: #6b7280;
 }
 
-/* Invert icons for dark mode */
+/* Invert icons for dark mode - brightness(0) normalizes all icons to black first */
 .NB-dark .NB-premium-tier-features .NB-premium-bullet-image {
-    filter: invert(0.85) brightness(1.2) !important;
+    filter: brightness(0) invert(0.85) brightness(1.2) !important;
 }
 
 /* Actions section */
@@ -3650,9 +3650,61 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-manage-types-control li.NB-active .NB-type-count,
-.NB-dark .NB-manage-sentiment-control li.NB-active .NB-type-count {
+.NB-dark .NB-manage-sentiment-control li.NB-active .NB-type-count,
+.NB-dark .NB-manage-scope-control li.NB-active .NB-type-count {
     background: rgba(255, 255, 255, 0.2);
     color: #F0F0F0;
+}
+
+/* Scope filter icons in dark mode */
+.NB-dark .NB-manage-scope-icon-feed {
+    color: #aaa;
+}
+
+.NB-dark .NB-manage-scope-icon-folder {
+    color: #60A5FA;
+}
+
+.NB-dark .NB-manage-scope-icon-global {
+    color: #A78BFA;
+}
+
+.NB-dark .NB-manage-scope-control li.NB-active .NB-manage-scope-icon-feed {
+    color: #ccc;
+}
+
+.NB-dark .NB-manage-scope-control li.NB-active .NB-manage-scope-icon-folder {
+    color: #93C5FD;
+}
+
+.NB-dark .NB-manage-scope-control li.NB-active .NB-manage-scope-icon-global {
+    color: #C4B5FD;
+}
+
+/* Pro banner in dark mode */
+.NB-dark .NB-manage-scope-pro-banner {
+    background: linear-gradient(135deg, #451A03 0%, #78350F 100%);
+    border-color: #D97706;
+    color: #FDE68A;
+}
+
+.NB-dark .NB-manage-scope-pro-banner a {
+    color: #F59E0B;
+}
+
+.NB-dark .NB-manage-scope-pro-banner a:hover {
+    color: #FBBF24;
+}
+
+/* Scoped section title in dark mode */
+.NB-dark .NB-manage-scoped-title {
+    background: linear-gradient(135deg, #2E1065, #1E1B4B) !important;
+    color: #C4B5FD !important;
+}
+
+.NB-dark .NB-manage-scoped-count {
+    background: rgba(167, 139, 250, 0.2);
+    color: #C4B5FD;
 }
 
 /* Feed chooser dropdown in dark mode */

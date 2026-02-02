@@ -53,9 +53,9 @@ def save_classifier(request):
     if scope not in ("feed", "folder", "global"):
         scope = "feed"
 
-    # Pro gating for folder/global scope
-    if scope != "feed" and not request.user.profile.is_pro:
-        return dict(code=-1, message="Premium Pro required for folder and global classifiers")
+    # Archive gating for folder/global scope
+    if scope != "feed" and not request.user.profile.is_archive:
+        return dict(code=-1, message="Premium Archive required for folder and global classifiers")
 
     logging.user(
         request,

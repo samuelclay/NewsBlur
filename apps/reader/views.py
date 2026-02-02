@@ -1006,7 +1006,7 @@ def load_single_feed(request, feed_id):
 
     # Get intelligence classifier for user
 
-    has_scoped = user.profile.is_pro and user.profile.has_scoped_classifiers
+    has_scoped = user.profile.is_archive and user.profile.has_scoped_classifiers
     if usersub and usersub.is_trained:
         classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
         classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
@@ -1685,7 +1685,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     found_feed_ids = list(set([story["story_feed_id"] for story in stories]))
     trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
     found_trained_feed_ids = list(set(trained_feed_ids) & set(found_feed_ids))
-    has_scoped = user.profile.is_pro and user.profile.has_scoped_classifiers
+    has_scoped = user.profile.is_archive and user.profile.has_scoped_classifiers
     if found_trained_feed_ids or has_scoped:
         if found_trained_feed_ids:
             classifier_feeds = list(
@@ -2185,7 +2185,7 @@ def load_river_stories__redis(request):
         starred_stories = {}
 
     # Intelligence classifiers for all feeds involved
-    has_scoped = user.profile.is_pro and user.profile.has_scoped_classifiers
+    has_scoped = user.profile.is_archive and user.profile.has_scoped_classifiers
     if found_trained_feed_ids or has_scoped:
         if found_trained_feed_ids:
             classifier_feeds = list(

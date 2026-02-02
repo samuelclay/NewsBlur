@@ -7959,7 +7959,7 @@ form.opml_import_form input {
     padding: 18px;
     display: flex;
     flex-direction: column;
-    min-width: 700px;
+    min-width: 760px;
 }
 
 /* Loading indicator positioned top right */
@@ -8410,30 +8410,150 @@ form.opml_import_form input {
     align-items: center;
 }
 
+/* Row 1: Feed dropdown + search (full width) */
 .NB-manage-filter-row-1 {
     margin-bottom: 10px;
+}
+
+.NB-manage-filter-row-1 .NB-manage-filter-feed {
+    flex: 0 0 auto;
 }
 
 .NB-manage-filter-row-1 .NB-manage-filter-search {
     flex: 1;
 }
 
-.NB-manage-filter-row-1 .NB-manage-filter-sentiment {
+/* Row 2: Sentiment (left) + Scope (right) */
+.NB-manage-filter-row-2 {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 8px;
+}
+
+.NB-manage-filter-row-2 .NB-manage-filter-sentiment {
     flex: 0 0 auto;
 }
 
-.NB-manage-filter-row-2 {
+.NB-manage-filter-row-2 .NB-manage-filter-scope {
+    flex: 0 0 auto;
+}
+
+/* Row 3: Type control (full width) */
+.NB-manage-filter-row-3 {
     display: flex;
 }
 
-.NB-manage-filter-row-2 .NB-manage-types-control {
+.NB-manage-filter-row-3 .NB-manage-types-control {
     width: 100%;
     display: flex;
 }
 
-.NB-manage-filter-row-2 .NB-manage-types-control li {
+.NB-manage-filter-row-3 .NB-manage-types-control li {
     flex: 1;
     justify-content: center;
+}
+
+/* Scope filter icons in manage tab */
+.NB-manage-scope-icon {
+    width: 12px;
+    height: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 2px;
+}
+
+.NB-manage-scope-icon svg {
+    width: 12px;
+    height: 12px;
+}
+
+.NB-manage-scope-icon-feed {
+    color: #777;
+}
+
+.NB-manage-scope-icon-folder {
+    color: #3B82F6;
+}
+
+.NB-manage-scope-icon-global {
+    color: #8B5CF6;
+}
+
+.NB-manage-scope-control li.NB-active .NB-manage-scope-icon-feed {
+    color: #555;
+}
+
+.NB-manage-scope-control li.NB-active .NB-manage-scope-icon-folder {
+    color: #2563EB;
+}
+
+.NB-manage-scope-control li.NB-active .NB-manage-scope-icon-global {
+    color: #7C3AED;
+}
+
+/* Pro banner for scope filter */
+.NB-manage-scope-pro-banner {
+    display: none;
+    width: 100%;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    border: 1px solid #F59E0B;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #92400E;
+    text-align: center;
+    animation: scope-banner-in 0.3s ease-out;
+}
+
+.NB-manage-scope-pro-banner.NB-visible {
+    display: block;
+}
+
+.NB-manage-scope-pro-banner a {
+    color: #D97706;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.NB-manage-scope-pro-banner a:hover {
+    color: #B45309;
+}
+
+@keyframes scope-banner-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scoped section title */
+.NB-manage-scoped-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #EDE9FE, #E0E7FF) !important;
+    color: #4C1D95 !important;
+}
+
+.NB-manage-scoped-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(124, 58, 237, 0.15);
+    border-radius: 9px;
+    color: #6D28D9;
 }
 
 /* Type filter count badges */
@@ -17798,6 +17918,18 @@ h5.NB-classifier-section-header {
     background-image: url('/media/embed/icons/icons8/icons8-calendar-100.png');
     filter: invert(55%) sepia(80%) saturate(2000%) hue-rotate(170deg) brightness(95%) contrast(95%);
     /* cyan */
+}
+
+.NB-premium-tier-features-archive li.NB-12 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/folder-open.svg');
+    filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);
+    /* brown-orange */
+}
+
+.NB-premium-tier-features-archive li.NB-13 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/world.svg');
+    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);
+    /* red */
 }
 
 /* Pro tier icons with individual vivid colors */
