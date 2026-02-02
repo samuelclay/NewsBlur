@@ -1436,6 +1436,8 @@ var classifier_prototype = {
         // Store original state for change tracking (like, dislike, or neutral)
         var original_state = score > 0 ? 'like' : (score < 0 ? 'dislike' : 'neutral');
         $('.NB-classifier', $classifier).data('original-state', original_state);
+        $('.NB-classifier', $classifier).data('original-scope', scope || 'feed');
+        $('.NB-classifier', $classifier).data('original-folder-name', scope_folder_name || '');
 
         if (score > 0) {
             $('.NB-classifier', $classifier).addClass('NB-classifier-like');
@@ -1559,9 +1561,18 @@ var classifier_prototype = {
             $toggle.css('transform', '');
         }, 150);
 
-        // Mark as changed and save immediately
-        $cl.addClass('NB-classifier-changed');
-        this.save_scope_change($cl);
+        // Compare scope + like/dislike to original state to determine if changed
+        var original_scope = $cl.data('original-scope') || 'feed';
+        var current_state = $cl.hasClass('NB-classifier-like') ? 'like' :
+            ($cl.hasClass('NB-classifier-dislike') ? 'dislike' : 'neutral');
+        var original_state = $cl.data('original-state') || 'neutral';
+
+        if (new_scope !== original_scope || current_state !== original_state) {
+            $cl.addClass('NB-classifier-changed');
+        } else {
+            $cl.removeClass('NB-classifier-changed');
+        }
+        this.update_save_button();
     },
 
     save_scope_change: function ($classifier) {
@@ -1629,19 +1640,14 @@ var classifier_prototype = {
             current_state = 'dislike';
         }
 
-        // Compare to original state - only mark as changed if different
+        // Compare to original state (sentiment + scope) - only mark as changed if different
         var original_state = $classifier.data('original-state') || 'neutral';
-        if (current_state === original_state) {
+        var current_scope = $classifier.data('scope') || 'feed';
+        var original_scope = $classifier.data('original-scope') || 'feed';
+        if (current_state === original_state && current_scope === original_scope) {
             $classifier.removeClass('NB-classifier-changed');
         } else {
             $classifier.addClass('NB-classifier-changed');
-        }
-
-        // Non-feed-scope classifiers are skipped by serialize_classifier(),
-        // so save them immediately when their like/dislike state changes.
-        var el_scope = $classifier.data('scope');
-        if (el_scope && el_scope !== 'feed') {
-            this.save_scope_change($classifier);
         }
 
         if (this.options['training']) {
@@ -1710,12 +1716,25 @@ var classifier_prototype = {
             $text_validation.empty();
 
             if (text.length) {
-                $text_placeholder.text(text);
-                $text_placeholder.css('font-style', 'normal');
-                $text_checkboxes.val(text);
-                // Auto thumbs-up if not already rated
-                if (!$text_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
-                    self.change_classifier($text_classifier, 'like');
+                // Check if this text already exists as a classifier
+                var existing_texts = self.user_classifiers.texts || {};
+                var text_lower = text.toLowerCase();
+                var text_already_exists = _.any(_.keys(existing_texts), function (k) {
+                    return k.toLowerCase() === text_lower;
+                });
+
+                if (text_already_exists) {
+                    // Hide the placeholder classifier — the existing one is already shown
+                    $text_classifier.hide();
+                } else {
+                    $text_classifier.show();
+                    $text_placeholder.text(text);
+                    $text_placeholder.css('font-style', 'normal');
+                    $text_checkboxes.val(text);
+                    // Auto thumbs-up if not already rated
+                    if (!$text_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                        self.change_classifier($text_classifier, 'like');
+                    }
                 }
 
                 // Validate based on mode
@@ -1754,6 +1773,7 @@ var classifier_prototype = {
                     }
                 }
             } else {
+                $text_classifier.show();
                 $text_placeholder.text('Enter text above');
                 $text_placeholder.css('font-style', 'italic');
             }
@@ -2434,7 +2454,10 @@ var classifier_prototype = {
         }
 
         if (this.options['training']) {
-            this.cache[this.feed_id] = this.$modal.clone();
+            // Invalidate the DOM cache so the modal is rebuilt fresh next time.
+            // jQuery .clone() doesn't copy .data() attributes (scope, original-scope),
+            // so cached modals would show stale scope state.
+            delete this.cache[this.feed_id];
         }
         $save.text('Saving...');
         $save.addClass('NB-disabled');
@@ -2442,13 +2465,67 @@ var classifier_prototype = {
         this.update_opinions();
         NEWSBLUR.assets.recalculate_story_scores(feed_id);
         NEWSBLUR.assets.stories.trigger('render:intelligence');
+
+        // Collect changed non-feed-scope classifiers to save separately.
+        // Also handle scope changes: if a classifier moved from one scope to
+        // another (e.g. global→folder), we must remove the old-scope classifier
+        // before creating the new-scope one.
+        var scoped_saves = [];
+        $active_tab.find('.NB-classifier.NB-classifier-changed').each(function () {
+            var $cl = $(this);
+            var el_scope = $cl.data('scope') || 'feed';
+            var original_scope = $cl.data('original-scope') || 'feed';
+            var value = $cl.find('.NB-classifier-input-like').val();
+            var input_name = $cl.find('.NB-classifier-input-like').attr('name');
+            var is_like = $cl.hasClass('NB-classifier-like');
+            var is_dislike = $cl.hasClass('NB-classifier-dislike');
+
+            // If scope changed from a non-feed scope, remove the old classifier
+            if (original_scope !== el_scope && original_scope !== 'feed') {
+                var remove_data = {
+                    'feed_id': self.feed_id,
+                    'scope': original_scope,
+                    'folder_name': $cl.data('original-folder-name') || ''
+                };
+                remove_data['remove_' + input_name] = value;
+                scoped_saves.push(remove_data);
+            }
+
+            // If the new scope is non-feed, save the classifier at the new scope
+            if (el_scope !== 'feed') {
+                var scoped_data = {
+                    'feed_id': self.feed_id,
+                    'scope': el_scope,
+                    'folder_name': $cl.data('folder-name') || ''
+                };
+
+                if (is_like) {
+                    scoped_data[input_name] = value;
+                } else if (is_dislike) {
+                    scoped_data[input_name.replace('like_', 'dislike_')] = value;
+                } else {
+                    scoped_data['remove_' + input_name] = value;
+                }
+                scoped_saves.push(scoped_data);
+            }
+        });
+
         this.model.save_classifier(data, function () {
+            // Save non-feed-scope classifiers with their individual scope
+            _.each(scoped_saves, function (scoped_data) {
+                self.model.save_classifier(scoped_data);
+            });
+
             // Clear changed markers only for the tab that was saved
             $active_tab.find('.NB-classifier-changed').removeClass('NB-classifier-changed');
             self.update_save_button();
 
             if (!keep_modal_open) {
-                NEWSBLUR.reader.feed_unread_count(feed_id);
+                if (scoped_saves.length) {
+                    NEWSBLUR.reader.force_feeds_refresh();
+                } else {
+                    NEWSBLUR.reader.feed_unread_count(feed_id);
+                }
                 $.modal.close();
             }
         });
@@ -2526,6 +2603,46 @@ var classifier_prototype = {
                 } else if (name == 'feed' && self.model.classifiers[feed_id].feeds[feed_id] == score) {
                     delete self.model.classifiers[feed_id].feeds[feed_id];
                 }
+            }
+        });
+
+        // Sync scope metadata for classifiers whose scope changed.
+        // The *_scope keys in model.classifiers are read by make_classifier()
+        // to determine scope icons when reopening the modal.
+        $active_tab.find('.NB-classifier').each(function () {
+            var $cl = $(this);
+            var current_scope = $cl.data('scope') || 'feed';
+            var original_scope = $cl.data('original-scope') || 'feed';
+            if (current_scope === original_scope) return;
+
+            var value = $cl.find('.NB-classifier-input-like').val();
+            var input_name = $cl.find('.NB-classifier-input-like').attr('name') || '';
+            var type_name = input_name.replace(/^(dis)?like_/, '').replace(/_regex$/, '');
+
+            // Map input type to scope key (e.g. 'text' → 'texts_scope', 'author' → 'authors_scope')
+            var scope_key_map = {
+                'tag': 'tags_scope', 'title': 'titles_scope', 'text': 'texts_scope',
+                'url': 'urls_scope', 'author': 'authors_scope',
+                'title_regex': 'title_regex_scope', 'text_regex': 'text_regex_scope',
+                'url_regex': 'url_regex_scope'
+            };
+            var scope_key = scope_key_map[type_name];
+            if (!scope_key) return;
+
+            if (current_scope === 'feed') {
+                // Moved back to feed scope — remove scope metadata entry
+                if (self.model.classifiers[feed_id][scope_key]) {
+                    delete self.model.classifiers[feed_id][scope_key][value];
+                }
+            } else {
+                // Moved to folder/global scope — update scope metadata
+                if (!self.model.classifiers[feed_id][scope_key]) {
+                    self.model.classifiers[feed_id][scope_key] = {};
+                }
+                self.model.classifiers[feed_id][scope_key][value] = {
+                    scope: current_scope,
+                    folder_name: $cl.data('folder-name') || ''
+                };
             }
         });
     },
