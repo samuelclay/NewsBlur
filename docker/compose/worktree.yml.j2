@@ -73,7 +73,7 @@ services:
   haproxy:
     container_name: newsblur_haproxy_{{ workspace_name }}
     image: haproxy:latest
-    restart: "no"
+    restart: on-failure
     depends_on:
       nginx:
         condition: service_healthy
