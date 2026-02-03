@@ -149,7 +149,8 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 
 ## Browser Testing with Puppeteer Skill
 - Scripts are in `.claude/skills/chrome-devtools/scripts/` — always `cd` there before running
-- Local dev: `https://localhost` (self-signed certs are accepted by default)
+- Local dev: `https://localhost` (main repo) or `https://localhost:<port>` (worktrees)
+- **IMPORTANT**: Worktrees use unique ports. Run `./worktree-dev.sh` to find your worktree's port before using any localhost URLs.
 - **Screenshots**: Save to `/tmp/newsblur-screenshot.png`, then use Read tool to view
 
 ### Puppeteer Scripts

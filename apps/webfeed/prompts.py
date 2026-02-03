@@ -38,13 +38,26 @@ HTML (truncated to ~100KB):
 {html}"""
 
 
-def get_analysis_messages(url, html):
+WEBFEED_ANALYSIS_HINT = """
+
+IMPORTANT USER HINT: The user is looking for content like "{story_hint}". When this hint is provided, RELAX the usual rules:
+- DO look inside navigation sections, link lists, topic cards, and category grids -- not just editorial articles
+- DO consider repeating link cards, topic tiles with images, category sections, and any grouped content that matches the hint
+- Your FIRST variant should be the pattern most likely to contain content related to "{story_hint}"
+- Look everywhere on the page for repeating items that match, including <nav> elements, sidebars, and footer sections"""
+
+
+def get_analysis_messages(url, html, story_hint=None):
     # Truncate HTML to ~100KB for LLM context window
     max_html_length = 100000
     if len(html) > max_html_length:
         html = html[:max_html_length] + "\n<!-- HTML truncated -->"
 
+    user_content = WEBFEED_ANALYSIS_USER.format(url=url, html=html)
+    if story_hint:
+        user_content += WEBFEED_ANALYSIS_HINT.format(story_hint=story_hint)
+
     return [
         {"role": "system", "content": WEBFEED_ANALYSIS_SYSTEM},
-        {"role": "user", "content": WEBFEED_ANALYSIS_USER.format(url=url, html=html)},
+        {"role": "user", "content": user_content},
     ]

@@ -1484,11 +1484,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
 
-    analyze_webfeed: function (url, request_id, callback) {
-        this.make_request('/webfeed/analyze', {
+    analyze_webfeed: function (url, request_id, callback, story_hint) {
+        var params = {
             'url': url,
             'request_id': request_id
-        }, callback, function (data) {
+        };
+        if (story_hint) {
+            params['story_hint'] = story_hint;
+        }
+        this.make_request('/webfeed/analyze', params, callback, function (data) {
             callback({ 'code': -1, 'message': data.message || 'Failed to analyze page.' });
         });
     },
