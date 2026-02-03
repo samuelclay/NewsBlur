@@ -1484,6 +1484,34 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
 
+    analyze_webfeed: function (url, request_id, callback) {
+        this.make_request('/webfeed/analyze', {
+            'url': url,
+            'request_id': request_id
+        }, callback, function (data) {
+            callback({ 'code': -1, 'message': data.message || 'Failed to analyze page.' });
+        });
+    },
+
+    subscribe_webfeed: function (url, variant_index, folder, options, callback) {
+        this.make_request('/webfeed/subscribe', _.extend({
+            'url': url,
+            'variant_index': variant_index,
+            'folder': folder
+        }, options), callback, function (data) {
+            callback({ 'code': -1, 'message': data.message || 'Failed to subscribe to web feed.' });
+        });
+    },
+
+    reanalyze_webfeed: function (feed_id, request_id, callback) {
+        this.make_request('/webfeed/reanalyze', {
+            'feed_id': feed_id,
+            'request_id': request_id
+        }, callback, function (data) {
+            callback({ 'code': -1, 'message': data.message || 'Failed to re-analyze web feed.' });
+        });
+    },
+
     save_add_url: function (url, folder, callback, options) {
         options = _.extend({ 'auto_active': true }, options);
         this.make_request('/reader/add_url/', {

@@ -5835,6 +5835,19 @@
                 this.socket.removeAllListeners('archive_assistant:truncated');
                 this.socket.on('archive_assistant:truncated', _.bind(this.handle_archive_assistant_truncated, this));
 
+                // Web Feed streaming event listeners
+                this.socket.removeAllListeners('webfeed:start');
+                this.socket.on('webfeed:start', _.bind(this.handle_webfeed_start, this));
+
+                this.socket.removeAllListeners('webfeed:variants');
+                this.socket.on('webfeed:variants', _.bind(this.handle_webfeed_variants, this));
+
+                this.socket.removeAllListeners('webfeed:complete');
+                this.socket.on('webfeed:complete', _.bind(this.handle_webfeed_complete, this));
+
+                this.socket.removeAllListeners('webfeed:error');
+                this.socket.on('webfeed:error', _.bind(this.handle_webfeed_error, this));
+
                 // Archive Extension real-time event listeners
                 this.socket.removeAllListeners('archive:new');
                 this.socket.on('archive:new', _.bind(this.handle_archive_new, this));
@@ -5963,6 +5976,35 @@
                         NEWSBLUR.assets.load_feeds();
                     }
                 }
+            }
+        },
+
+        // ======================
+        // = Web Feed Streaming =
+        // ======================
+
+        handle_webfeed_start: function (data) {
+            NEWSBLUR.log(['webfeed:start', data]);
+        },
+
+        handle_webfeed_variants: function (data) {
+            NEWSBLUR.log(['webfeed:variants', data]);
+            if (this.add_site_view) {
+                this.add_site_view.handle_webfeed_variants(data);
+            }
+        },
+
+        handle_webfeed_complete: function (data) {
+            NEWSBLUR.log(['webfeed:complete', data]);
+            if (this.add_site_view) {
+                this.add_site_view.handle_webfeed_complete(data);
+            }
+        },
+
+        handle_webfeed_error: function (data) {
+            NEWSBLUR.log(['webfeed:error', data]);
+            if (this.add_site_view) {
+                this.add_site_view.handle_webfeed_error(data);
             }
         },
 
