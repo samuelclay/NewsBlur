@@ -661,7 +661,7 @@ class Profile(models.Model):
             "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..."
             % len(scheduled_feeds),
         )
-        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds, allow_skip_resync=True))
 
         UserSubscription.queue_new_feeds(self.user)
 
