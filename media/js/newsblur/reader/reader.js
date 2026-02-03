@@ -5848,6 +5848,9 @@
                 this.socket.removeAllListeners('webfeed:error');
                 this.socket.on('webfeed:error', _.bind(this.handle_webfeed_error, this));
 
+                this.socket.removeAllListeners('webfeed:subscribe_update');
+                this.socket.on('webfeed:subscribe_update', _.bind(this.handle_webfeed_subscribe_update, this));
+
                 // Archive Extension real-time event listeners
                 this.socket.removeAllListeners('archive:new');
                 this.socket.on('archive:new', _.bind(this.handle_archive_new, this));
@@ -6005,6 +6008,13 @@
             NEWSBLUR.log(['webfeed:error', data]);
             if (this.add_site_view) {
                 this.add_site_view.handle_webfeed_error(data);
+            }
+        },
+
+        handle_webfeed_subscribe_update: function (data) {
+            NEWSBLUR.log(['webfeed:subscribe_update', data]);
+            if (this.add_site_view) {
+                this.add_site_view.handle_webfeed_subscribe_update(data);
             }
         },
 

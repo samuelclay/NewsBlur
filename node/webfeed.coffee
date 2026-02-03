@@ -50,6 +50,17 @@ handle_webfeed_message = (socket, channel, message) =>
                 error: data.error or 'Unknown error'
             }
 
+        when 'subscribe_update'
+            feed_id = data.feed_id or ''
+            stage = data.stage or ''
+            log.debug "webfeed:subscribe_update feed:#{feed_id} stage:#{stage}"
+            socket.emit 'webfeed:subscribe_update', {
+                feed_id: feed_id,
+                stage: stage,
+                feed: data.feed or null,
+                error: data.error or null
+            }
+
         else
             log.debug "Unknown webfeed message type: #{message_type}"
 

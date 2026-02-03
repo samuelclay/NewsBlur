@@ -55,6 +55,17 @@
           error: data.error || 'Unknown error'
         });
         break;
+      case 'subscribe_update':
+        var feed_id = data.feed_id || '';
+        var stage = data.stage || '';
+        log.debug(`webfeed:subscribe_update feed:${feed_id} stage:${stage}`);
+        socket.emit('webfeed:subscribe_update', {
+          feed_id: feed_id,
+          stage: stage,
+          feed: data.feed || null,
+          error: data.error || null
+        });
+        break;
       default:
         log.debug(`Unknown webfeed message type: ${message_type}`);
     }

@@ -42,7 +42,7 @@ def analyze(request):
             "url": url,
             "request_id": request_id,
         },
-        queue="archive_queue",  # TODO: change back to "work_queue" before launch
+        queue="work_queue",
     )
 
     return {
@@ -145,15 +145,17 @@ def subscribe(request):
 
     logging.user(request.user, f"~BB~FWWeb Feed: Subscribed to ~SB{url}~SN (feed {feed.pk})")
 
-    # Update cached subscriber counts so update_webfeed() sees the new subscription
-    feed.count_subscribers()
-
-    # Trigger initial fetch if user has archive subscription
+    # Trigger background fetch for archive subscribers
     from apps.profile.models import Profile
 
     profile = Profile.objects.get(user=request.user)
     if profile.is_archive:
-        feed.update()
+        from apps.webfeed.tasks import FetchWebFeed
+
+        FetchWebFeed.apply_async(
+            kwargs=dict(feed_id=feed.pk, user_id=request.user.pk),
+            queue="discover_indexer",
+        )
 
     return {
         "code": 1,
@@ -195,7 +197,7 @@ def reanalyze(request):
             "url": url,
             "request_id": request_id,
         },
-        queue="archive_queue",  # TODO: change back to "work_queue" before launch
+        queue="work_queue",
     )
 
     return {
