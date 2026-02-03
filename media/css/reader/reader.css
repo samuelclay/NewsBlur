@@ -25811,6 +25811,81 @@ h5.NB-classifier-section-header {
     box-shadow: 0 2px 12px rgba(74, 144, 217, 0.15);
     background: #F0F6FC;
 }
+/* -- Hint card (first card, not selectable) -- */
+.NB-add-site-webfeed-hint-card {
+    border-style: dashed;
+    border-color: #C8B8A8;
+    background: #FBF7F3;
+    cursor: default;
+}
+.NB-add-site-webfeed-hint-card:hover {
+    border-color: #B0A090;
+    box-shadow: none;
+}
+.NB-add-site-webfeed-hint-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.NB-add-site-webfeed-hint-title {
+    font-weight: 600;
+    font-size: 13px;
+    color: #555;
+}
+.NB-add-site-webfeed-hint-desc {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+}
+.NB-add-site-webfeed-hint-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.NB-add-site-webfeed-hint-input {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid #D0D0D0;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+}
+.NB-add-site-webfeed-hint-input:focus {
+    border-color: #B0A090;
+    box-shadow: 0 0 0 2px rgba(200, 184, 168, 0.25);
+}
+.NB-add-site-webfeed-hint-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: #8B7355;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+.NB-add-site-webfeed-hint-btn:hover {
+    background: #6B5B45;
+}
+.NB-add-site-webfeed-hint-btn.NB-disabled {
+    opacity: 0.7;
+    cursor: default;
+}
+.NB-add-site-webfeed-hint-spinner {
+    width: 14px;
+    height: 14px;
+}
+/* Dim variant cards during refinement */
+.NB-add-site-webfeed-variant-cards.NB-refining .NB-add-site-webfeed-variant-card:not(.NB-add-site-webfeed-hint-card) {
+    opacity: 0.4;
+    pointer-events: none;
+}
 .NB-add-site-webfeed-variant-card-header {
     display: flex;
     align-items: flex-start;
@@ -26968,6 +27043,34 @@ h5.NB-classifier-section-header {
 }
 .NB-dark .NB-add-site-webfeed-section-subtitle {
     color: #777;
+}
+.NB-dark .NB-add-site-webfeed-hint-card {
+    border-color: #5A4A3A;
+    background: #2A2520;
+}
+.NB-dark .NB-add-site-webfeed-hint-card:hover {
+    border-color: #6A5A4A;
+}
+.NB-dark .NB-add-site-webfeed-hint-title {
+    color: #C0B0A0;
+}
+.NB-dark .NB-add-site-webfeed-hint-desc {
+    color: #888;
+}
+.NB-dark .NB-add-site-webfeed-hint-input {
+    background: #1A1A1A;
+    border-color: #555;
+    color: #DDD;
+}
+.NB-dark .NB-add-site-webfeed-hint-input:focus {
+    border-color: #6A5A4A;
+    box-shadow: 0 0 0 2px rgba(90, 74, 58, 0.3);
+}
+.NB-dark .NB-add-site-webfeed-hint-btn {
+    background: #6A5A4A;
+}
+.NB-dark .NB-add-site-webfeed-hint-btn:hover {
+    background: #7A6A5A;
 }
 .NB-dark .NB-add-site-webfeed-variant-card {
     border-color: #444;

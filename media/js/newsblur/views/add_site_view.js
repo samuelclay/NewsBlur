@@ -48,7 +48,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         // Web Feed tab events
         "click .NB-add-site-web-feed-tab .NB-add-site-tab-search-btn": "perform_webfeed_analyze",
         "keypress .NB-add-site-web-feed-search": "handle_webfeed_search_keypress",
-        "click .NB-add-site-webfeed-variant-card": "select_webfeed_variant",
+        "click .NB-add-site-webfeed-variant-card:not(.NB-add-site-webfeed-hint-card)": "select_webfeed_variant",
+        "click .NB-add-site-webfeed-hint-btn": "perform_webfeed_refine",
+        "keypress .NB-add-site-webfeed-hint-input": "handle_webfeed_hint_keypress",
         "click .NB-add-site-webfeed-subscribe-btn": "subscribe_webfeed",
         "input .NB-add-site-webfeed-staleness-slider": "update_webfeed_staleness",
         "change .NB-add-site-webfeed-unread-radio": "toggle_webfeed_unread",
@@ -260,6 +262,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.webfeed_state = {
             url: '',
             is_analyzing: false,
+            is_refining: false,
+            story_hint: '',
             variants: null,
             selected_variant: null,
             staleness_days: 30,
@@ -2105,7 +2109,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 $.make('div', { className: 'NB-add-site-webfeed-error-icon' }, '\u26a0'),
                 $.make('div', { className: 'NB-add-site-webfeed-error-text' }, state.error)
             ]));
-        } else if (state.is_analyzing) {
+        } else if (state.is_analyzing && !state.variants) {
             $content_area.html($.make('div', { className: 'NB-add-site-webfeed-analyzing' }, [
                 $.make('div', { className: 'NB-add-site-webfeed-analyzing-spinner NB-spinner' }),
                 $.make('div', { className: 'NB-add-site-webfeed-analyzing-text' },
@@ -2164,6 +2168,34 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var selected_variant = state.selected_variant !== null ? variants[state.selected_variant] : null;
         var page_title = state.page_title || base_url.split('//').pop().split('/')[0];
 
+        // -- Hint card (first item, not selectable) --
+        var $hint_card = $.make('div', {
+            className: 'NB-add-site-webfeed-variant-card NB-add-site-webfeed-hint-card NB-animate-in'
+        }, [
+            $.make('div', { className: 'NB-add-site-webfeed-hint-header' }, [
+                $.make('div', { className: 'NB-add-site-webfeed-hint-info' }, [
+                    $.make('div', { className: 'NB-add-site-webfeed-hint-title' },
+                        'Not seeing the right stories?'),
+                    $.make('div', { className: 'NB-add-site-webfeed-hint-desc' },
+                        'Describe a story you\'re looking for and we\'ll re-analyze the page to find it.')
+                ])
+            ]),
+            $.make('div', { className: 'NB-add-site-webfeed-hint-form' }, [
+                $.make('input', {
+                    type: 'text',
+                    className: 'NB-add-site-webfeed-hint-input',
+                    placeholder: 'e.g. "Energy Transition"',
+                    value: state.story_hint || ''
+                }),
+                $.make('div', {
+                    className: 'NB-add-site-webfeed-hint-btn' + (state.is_refining ? ' NB-disabled' : '')
+                }, state.is_refining ? [
+                    $.make('div', { className: 'NB-add-site-webfeed-hint-spinner NB-spinner' }),
+                    'Re-analyzing\u2026'
+                ] : 'Re-analyze')
+            ])
+        ]);
+
         // -- Variants section --
         var $variants_section = $.make('div', { className: 'NB-add-site-webfeed-variants-section' }, [
             $.make('div', { className: 'NB-add-site-webfeed-section-header' }, [
@@ -2172,8 +2204,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 $.make('div', { className: 'NB-add-site-webfeed-section-subtitle' },
                     'Found ' + variants.length + ' patterns. Select the one that best matches the stories you want.')
             ]),
-            $.make('div', { className: 'NB-add-site-webfeed-variant-cards' },
-                _.map(variants, function (variant, index) {
+            $.make('div', { className: 'NB-add-site-webfeed-variant-cards' + (state.is_refining ? ' NB-refining' : '') },
+                [$hint_card].concat(_.map(variants, function (variant, index) {
                     var is_selected = state.selected_variant === index;
                     var story_count = (variant.preview_stories || []).length;
                     var $preview_stories = $.make('div', { className: 'NB-add-site-webfeed-preview-stories' },
@@ -2224,7 +2256,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         ]),
                         $preview_stories
                     ]);
-                })
+                }))
             )
         ]);
 
@@ -2405,16 +2437,60 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }
     },
 
+    handle_webfeed_hint_keypress: function (e) {
+        if (e.which === 13) {
+            this.perform_webfeed_refine();
+        }
+    },
+
+    perform_webfeed_refine: function () {
+        if (this.webfeed_state.is_refining || this.webfeed_state.is_analyzing) return;
+
+        var hint = this.$('.NB-add-site-webfeed-hint-input').val().trim();
+        if (!hint) return;
+
+        var url = this.webfeed_state.url;
+        var request_id = 'wf_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+
+        this.webfeed_state.story_hint = hint;
+        this.webfeed_state.is_refining = true;
+        this.webfeed_state.selected_variant = null;
+        this.webfeed_state.request_id = request_id;
+        this.webfeed_state._variants_animated = true;
+
+        this.render_webfeed_tab();
+
+        if (this._webfeed_timeout) clearTimeout(this._webfeed_timeout);
+        this._webfeed_timeout = setTimeout(_.bind(function () {
+            if (this.webfeed_state.is_refining && this.webfeed_state.request_id === request_id) {
+                this.webfeed_state.is_refining = false;
+                this.webfeed_state.error = 'Re-analysis timed out. Please try again.';
+                this.render_webfeed_tab();
+            }
+        }, this), 60000);
+
+        NEWSBLUR.assets.analyze_webfeed(url, request_id, _.bind(function (data) {
+            if (data.code < 0) {
+                if (this._webfeed_timeout) clearTimeout(this._webfeed_timeout);
+                this.webfeed_state.is_refining = false;
+                this.webfeed_state.error = data.message;
+                this.render_webfeed_tab();
+            }
+        }, this), hint);
+    },
+
     handle_webfeed_variants: function (data) {
         if (data.request_id !== this.webfeed_state.request_id) return;
         if (this._webfeed_timeout) clearTimeout(this._webfeed_timeout);
 
         this.webfeed_state.is_analyzing = false;
+        this.webfeed_state.is_refining = false;
         this.webfeed_state.variants = data.variants;
         this.webfeed_state.html_hash = data.html_hash || '';
         this.webfeed_state.page_title = data.page_title || '';
         this.webfeed_state.favicon_url = data.favicon_url || '';
         this.webfeed_state.error = null;
+        this.webfeed_state._variants_animated = false;
         this.render_webfeed_tab();
     },
 
@@ -2422,8 +2498,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (data.request_id !== this.webfeed_state.request_id) return;
         if (this._webfeed_timeout) clearTimeout(this._webfeed_timeout);
 
-        if (this.webfeed_state.is_analyzing) {
+        if (this.webfeed_state.is_analyzing || this.webfeed_state.is_refining) {
             this.webfeed_state.is_analyzing = false;
+            this.webfeed_state.is_refining = false;
             if (!this.webfeed_state.variants) {
                 this.webfeed_state.error = 'No story patterns found on this page.';
             }
@@ -2436,6 +2513,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (this._webfeed_timeout) clearTimeout(this._webfeed_timeout);
 
         this.webfeed_state.is_analyzing = false;
+        this.webfeed_state.is_refining = false;
         this.webfeed_state.error = data.error || 'An error occurred during analysis.';
         this.render_webfeed_tab();
     },

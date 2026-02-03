@@ -24,6 +24,7 @@ def analyze(request):
     """Kick off a Celery task to analyze a web page for story patterns."""
     url = request.POST.get("url", "").strip()
     request_id = request.POST.get("request_id")
+    story_hint = request.POST.get("story_hint", "").strip()[:200]
 
     if not URL_RE.match(url):
         return {"code": -1, "message": "Please enter a valid URL starting with http:// or https://"}
@@ -34,13 +35,17 @@ def analyze(request):
     else:
         request_id = str(uuid.uuid4())
 
-    logging.user(request.user, f"~BB~FWWeb Feed: Analyzing ~SB{url}~SN")
+    logging.user(
+        request.user,
+        f"~BB~FWWeb Feed: Analyzing ~SB{url}~SN" + (f" (hint: {story_hint})" if story_hint else ""),
+    )
 
     AnalyzeWebFeedPage.apply_async(
         kwargs={
             "user_id": request.user.pk,
             "url": url,
             "request_id": request_id,
+            "story_hint": story_hint or None,
         },
         queue="work_queue",
     )
@@ -142,6 +147,15 @@ def subscribe(request):
         user_sub_folders = add_object_to_folder(feed.pk, folder, user_sub_folders)
         usf.folders = json_util.encode(user_sub_folders)
         usf.save()
+
+    # Import favicon for the new feed
+    from apps.rss_feeds.icon_importer import IconImporter
+
+    try:
+        icon_importer = IconImporter(feed)
+        icon_importer.save()
+    except Exception as e:
+        logging.user(request.user, f"~BB~FWWeb Feed: ~FR~SBFavicon import failed~SN~FW - {e}")
 
     logging.user(request.user, f"~BB~FWWeb Feed: Subscribed to ~SB{url}~SN (feed {feed.pk})")
 

@@ -239,7 +239,7 @@ class Feed(models.Model):
             "updated_seconds_ago": seconds_timesince(self.last_update),
             "fs_size_bytes": self.fs_size_bytes,
             "archive_count": self.archive_count,
-            "last_story_date": self.last_story_date,
+            "last_story_date": self.last_story_date.isoformat() if self.last_story_date else None,
             "last_story_seconds_ago": seconds_timesince(self.last_story_date),
             "stories_last_month": self.stories_last_month,
             "average_stories_per_month": self.average_stories_per_month,

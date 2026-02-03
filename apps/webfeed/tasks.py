@@ -38,36 +38,48 @@ NAV_INDICATORS = [
 ]
 
 
-def strip_navigation_elements(html_text):
+def strip_navigation_elements(html_text, gentle=False):
     """Remove navigation, header, footer, and other non-content elements
-    to help the LLM focus on main content patterns."""
+    to help the LLM focus on main content patterns.
+
+    When gentle=True (used when a story_hint is provided), keep nav/footer
+    elements so the LLM can find content in sections that would normally
+    be stripped. Only remove truly non-content tags like script/style/svg.
+    """
     try:
         doc = lxml_html.fromstring(html_text)
     except Exception:
         return html_text
 
-    # Tags to remove entirely
-    remove_tags = ["nav", "footer", "script", "style", "noscript", "svg", "iframe"]
-    for tag_name in remove_tags:
+    # Always remove these non-content tags
+    always_remove = ["script", "style", "noscript", "svg", "iframe"]
+    for tag_name in always_remove:
         for el in doc.xpath(f"//{tag_name}"):
             if el.getparent() is not None:
                 el.getparent().remove(el)
 
-    # Remove site-level <header> elements (direct children of body or top-level wrappers)
-    for el in doc.xpath("//header"):
-        if el.getparent() is not None and el.getparent().tag in ("body", "div", "html"):
-            el.getparent().remove(el)
-
-    # Remove elements whose class or id contains navigation indicators
-    for el in doc.xpath("//*[@class or @id]"):
-        classes = (el.get("class") or "").lower()
-        el_id = (el.get("id") or "").lower()
-        combined = classes + " " + el_id
-        if any(indicator in combined for indicator in NAV_INDICATORS):
-            # Protect main content containers from removal
-            if el.tag not in ("main", "article", "section"):
+    if not gentle:
+        # Aggressive stripping: remove nav, footer, and header elements
+        for tag_name in ["nav", "footer"]:
+            for el in doc.xpath(f"//{tag_name}"):
                 if el.getparent() is not None:
                     el.getparent().remove(el)
+
+        # Remove site-level <header> elements (direct children of body or top-level wrappers)
+        for el in doc.xpath("//header"):
+            if el.getparent() is not None and el.getparent().tag in ("body", "div", "html"):
+                el.getparent().remove(el)
+
+        # Remove elements whose class or id contains navigation indicators
+        for el in doc.xpath("//*[@class or @id]"):
+            classes = (el.get("class") or "").lower()
+            el_id = (el.get("id") or "").lower()
+            combined = classes + " " + el_id
+            if any(indicator in combined for indicator in NAV_INDICATORS):
+                # Protect main content containers from removal
+                if el.tag not in ("main", "article", "section"):
+                    if el.getparent() is not None:
+                        el.getparent().remove(el)
 
     try:
         from lxml import etree
@@ -236,7 +248,7 @@ def FetchWebFeed(feed_id, user_id):
 
 
 @app.task(name="analyze-webfeed-page", time_limit=120, soft_time_limit=110)
-def AnalyzeWebFeedPage(user_id, url, request_id=None):
+def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
     """Fetch a web page, analyze it with an LLM to find story patterns, and stream results via Redis PubSub."""
 
     start_time = time.time()
@@ -285,7 +297,9 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None):
         )
 
         # Pre-process HTML to strip navigation elements for LLM analysis
-        cleaned_html = strip_navigation_elements(page_html)
+        # When a story_hint is provided, use gentle stripping to preserve nav/footer
+        # content that might contain the sections the user is looking for
+        cleaned_html = strip_navigation_elements(page_html, gentle=bool(story_hint))
         logging.user(
             user,
             f"~BB~FWWeb Feed: Cleaned HTML from ~SB{len(page_html)}~SN to ~SB{len(cleaned_html)}~SN bytes",
@@ -294,7 +308,7 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None):
         # Step 2: Call Claude for XPath analysis
         from apps.ask_ai.providers import LLM_EXCEPTIONS, get_provider
 
-        messages = get_analysis_messages(url, cleaned_html)
+        messages = get_analysis_messages(url, cleaned_html, story_hint=story_hint)
         provider, model_id = get_provider("opus")
 
         if not provider.is_configured():
