@@ -33,10 +33,47 @@ STYLE_INSTRUCTIONS = {
 }
 
 
-def _build_system_prompt(summary_length="medium", summary_style="editorial"):
-    """Build the system prompt based on user preferences for length and style."""
+SECTION_PROMPTS = {
+    "trending_unread": '"Stories you missed" — CATEGORY: trending_unread. Popular stories the reader hasn\'t read yet.',
+    "long_read": '"Long reads for later" — CATEGORY: long_read. Longer articles worth setting time aside for. Use the WORD_COUNT field to judge which stories qualify as long reads relative to other stories.',
+    "classifier_match": '"Based on your interests" — CATEGORY: classifier_match. Stories matching topics, authors, or feeds the reader has trained as interesting. Mention which interest matched using the MATCHES field.',
+    "follow_up": '"Follow-ups" — CATEGORY: follow_up. New posts from feeds where the reader recently read other stories.',
+    "trending_global": '"Trending across NewsBlur" — CATEGORY: trending_global. Widely-read stories from across the platform.',
+    "duplicates": '"Common stories" — CATEGORY: duplicates. Stories covered by multiple feeds. For each story, show the shared headline then list each source\'s unique angle or perspective as sub-items.',
+    "quick_catchup": '"Quick catch-up" — This is a special section. Select the 3-5 most important stories from the entire briefing and write a 1-2 sentence TL;DR for each. This section should appear first.',
+    "emerging_topics": '"Emerging topics" — Look across all the stories for topics that appear multiple times or are getting increasing coverage. Group these stories under the topic and explain why it\'s trending.',
+    "contrarian_views": '"Contrarian views" — Look for stories where different feeds have notably different perspectives on the same topic. Highlight the disagreement and present each side.',
+}
+
+
+def _build_system_prompt(summary_length="medium", summary_style="editorial", sections=None, custom_section_prompts=None):
+    """Build the system prompt based on user preferences for length, style, and sections."""
+    from apps.briefing.models import DEFAULT_SECTIONS
+
     length_instruction = LENGTH_INSTRUCTIONS.get(summary_length, LENGTH_INSTRUCTIONS["medium"])
     style_instruction = STYLE_INSTRUCTIONS.get(summary_style, STYLE_INSTRUCTIONS["editorial"])
+
+    active_sections = sections if sections else DEFAULT_SECTIONS
+    section_lines = []
+    num = 1
+    for key, prompt in SECTION_PROMPTS.items():
+        if active_sections.get(key, False):
+            section_lines.append("%d. %s" % (num, prompt))
+            num += 1
+
+    # summary.py: Add custom sections (up to 5) with user-defined prompts
+    prompts = custom_section_prompts or []
+    for i, prompt in enumerate(prompts):
+        custom_key = "custom_%d" % (i + 1)
+        if active_sections.get(custom_key, False) and prompt:
+            section_lines.append(
+                '%d. Custom section — The reader has requested a custom section with this prompt: "%s". '
+                "Generate an appropriate section header for this content. Use your best judgment "
+                "to select relevant stories from the provided list." % (num, prompt)
+            )
+            num += 1
+
+    sections_text = "\n".join(section_lines) if section_lines else "Include all stories in a single section."
 
     return """You are a personal news editor writing a daily briefing for a NewsBlur reader.
 You are given stories from their RSS feeds, each annotated with a CATEGORY indicating why
@@ -45,11 +82,7 @@ it was selected for them.
 Organize the briefing into sections based on these categories. Use ONLY these section headers
 (as <h3> tags), and only include a section if there are stories for it:
 
-1. "Stories you missed" — CATEGORY: trending_unread. Popular stories the reader hasn't read yet.
-2. "Long reads for later" — CATEGORY: long_read. Longer articles worth setting time aside for. Use the WORD_COUNT field to judge which stories qualify as long reads relative to other stories.
-3. "Based on your interests" — CATEGORY: classifier_match. Stories matching topics, authors, or feeds the reader has trained as interesting. Mention which interest matched using the MATCHES field.
-4. "Follow-ups" — CATEGORY: follow_up. New posts from feeds where the reader recently read other stories.
-5. "Trending across NewsBlur" — CATEGORY: trending_global. Widely-read stories from across the platform.
+%s
 
 Within each section, briefly explain WHY these stories matter to the reader — not just what
 they are about. Focus on what makes each story worth reading.
@@ -65,12 +98,13 @@ Output valid HTML. Use <h3> for section headers.
 Do not use markdown. Do not wrap in code fences. Do not add any preamble.
 Your very first character must be "<". Start directly with <div class="NB-briefing-summary">.
 Wrap everything in a <div class="NB-briefing-summary"> tag.""" % (
+        sections_text,
         length_instruction,
         style_instruction,
     )
 
 
-def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_length="medium", summary_style="editorial"):
+def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_length="medium", summary_style="editorial", sections=None, custom_section_prompts=None):
     """
     Generate an AI editorial summary of the selected stories.
 
@@ -138,7 +172,7 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_le
     )
 
     try:
-        system_prompt = _build_system_prompt(summary_length, summary_style)
+        system_prompt = _build_system_prompt(summary_length, summary_style, sections, custom_section_prompts)
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
         response = client.messages.create(
             model=BRIEFING_MODEL,
