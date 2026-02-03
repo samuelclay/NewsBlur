@@ -3729,6 +3729,28 @@ a.mention, a.mention-group {
     color: #909090;
 }
 
+/* darkmode.css: Briefing onboarding */
+.NB-dark .NB-briefing-onboarding-view {
+    background-color: #191b1c;
+    background: linear-gradient(180deg, #1e2022 0%, #191b1c 100%);
+}
+
+.NB-dark .NB-briefing-onboarding-icon {
+    filter: invert(0.8);
+}
+
+.NB-dark .NB-briefing-onboarding-title {
+    color: #D0D0D0;
+}
+
+.NB-dark .NB-briefing-onboarding-subtitle {
+    color: #808080;
+}
+
+.NB-dark .NB-briefing-onboarding-settings {
+    border-color: #303030;
+}
+
 /* darkmode.css: Upsell banner */
 .NB-dark .NB-briefing-upsell {
     background-color: #2A2820;

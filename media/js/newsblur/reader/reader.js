@@ -1477,6 +1477,11 @@
             }
             this.flags['trending_view'] = false;
 
+            if (this.briefing_onboarding_view) {
+                this.briefing_onboarding_view.close();
+                this.briefing_onboarding_view = null;
+            }
+
             if (this.archive_view) {
                 // Restore story titles pane and taskbars that were hidden for archive view
                 var story_anchor = this.model.preference('story_pane_anchor');
@@ -2147,9 +2152,21 @@
             // reader.js: Store briefing data for the story titles view to render
             NEWSBLUR.assets.briefing_data = data;
 
-            // reader.js: Re-render story titles now that briefing data is available
-            if (NEWSBLUR.app.story_titles) {
-                NEWSBLUR.app.story_titles.render();
+            var briefings = data.briefings || [];
+            if (!data.enabled && !briefings.length) {
+                // reader.js: Show full-pane onboarding for users who haven't opted in
+                if (this.briefing_onboarding_view) {
+                    this.briefing_onboarding_view.close();
+                }
+                this.briefing_onboarding_view = new NEWSBLUR.Views.BriefingOnboardingView({
+                    preferences: data.preferences
+                });
+                this.$s.$content_pane.append(this.briefing_onboarding_view.$el);
+            } else {
+                // reader.js: Re-render story titles for normal briefing view
+                if (NEWSBLUR.app.story_titles) {
+                    NEWSBLUR.app.story_titles.render();
+                }
             }
 
             this.flags['story_titles_loaded'] = true;
@@ -2157,7 +2174,10 @@
 
         generate_daily_briefing: function () {
             this.flags.briefing_generating = true;
-            if (NEWSBLUR.app.story_titles) {
+
+            if (this.briefing_onboarding_view) {
+                this.briefing_onboarding_view.show_progress("Starting briefing generation...");
+            } else if (NEWSBLUR.app.story_titles) {
                 NEWSBLUR.app.story_titles.show_briefing_progress("Starting briefing generation...");
             }
             this.model.generate_briefing();
@@ -2173,20 +2193,29 @@
 
         handle_briefing_start: function () {
             this.flags.briefing_generating = true;
-            if (NEWSBLUR.app.story_titles) {
+            if (this.briefing_onboarding_view) {
+                this.briefing_onboarding_view.show_progress("Starting briefing generation...");
+            } else if (NEWSBLUR.app.story_titles) {
                 NEWSBLUR.app.story_titles.show_briefing_progress("Starting briefing generation...");
             }
         },
 
         handle_briefing_progress: function (data) {
-            if (NEWSBLUR.app.story_titles) {
-                NEWSBLUR.app.story_titles.show_briefing_progress(data.message || "Generating...");
+            var message = data.message || "Generating...";
+            if (this.briefing_onboarding_view) {
+                this.briefing_onboarding_view.show_progress(message);
+            } else if (NEWSBLUR.app.story_titles) {
+                NEWSBLUR.app.story_titles.show_briefing_progress(message);
             }
         },
 
         handle_briefing_complete: function () {
             clearTimeout(this.flags.briefing_generate_timeout);
             this.flags.briefing_generating = false;
+            if (this.briefing_onboarding_view) {
+                this.briefing_onboarding_view.close();
+                this.briefing_onboarding_view = null;
+            }
             if (this.flags.briefing_view) {
                 this.model.fetch_briefing_stories(
                     _.bind(this.post_open_daily_briefing, this),
@@ -2198,8 +2227,11 @@
         handle_briefing_error: function (data) {
             clearTimeout(this.flags.briefing_generate_timeout);
             this.flags.briefing_generating = false;
-            if (NEWSBLUR.app.story_titles) {
-                NEWSBLUR.app.story_titles.show_briefing_error(data.error || "Generation failed.");
+            var error_message = data.error || "Generation failed.";
+            if (this.briefing_onboarding_view) {
+                this.briefing_onboarding_view.show_error(error_message);
+            } else if (NEWSBLUR.app.story_titles) {
+                NEWSBLUR.app.story_titles.show_briefing_error(error_message);
             }
         },
 

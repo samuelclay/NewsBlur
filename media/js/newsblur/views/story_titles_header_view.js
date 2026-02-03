@@ -175,6 +175,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             this.search_view = this.view.search_view;
         } else if (NEWSBLUR.reader.flags['briefing_view']) {
             // story_titles_header_view.js: Briefing view header with icon and title
+            // story_titles_header_view.js: Hide settings button during onboarding
+            var show_settings = !NEWSBLUR.reader.briefing_onboarding_view;
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover NB-briefing-folder">\
                     <div class="NB-folder-icon">\
@@ -182,10 +184,12 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     </div>\
                     <div class="NB-feedlist-manage-icon" role="button"></div>\
                     <span class="folder_title_text"><%= folder_title %></span>\
+                    <% if (show_settings) { %>\
                     <span class="NB-briefing-preferences-icon" title="Briefing Preferences">\
                         <div class="NB-icon"></div>\
                         Briefing Settings\
                     </span>\
+                    <% } %>\
                     <div class="NB-feedbar-options-container">\
                         <span class="NB-feedbar-options">\
                             <div class="NB-icon"></div>\
@@ -195,7 +199,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 </div>\
             ', {
                 folder_title: 'Daily Briefing',
-                MEDIA_URL: NEWSBLUR.Globals.MEDIA_URL
+                MEDIA_URL: NEWSBLUR.Globals.MEDIA_URL,
+                show_settings: show_settings
             }));
         } else {
             this.view = new NEWSBLUR.Views.FeedTitleView({
