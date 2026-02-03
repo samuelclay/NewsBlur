@@ -422,6 +422,9 @@ class DetailViewController: BaseViewController {
         
         view.backgroundColor = navigationController?.navigationBar.barTintColor
         navigationController?.navigationBar.barStyle = manager.isDarkTheme ? .black : .default
+
+        (verticalDividerView as? DividerView)?.updateTheme()
+        (horizontalDividerView as? DividerView)?.updateTheme()
         
         tidyNavigationController()
     }

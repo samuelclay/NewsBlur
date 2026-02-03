@@ -17,6 +17,10 @@ class DividerView: UIView, UIPointerInteractionDelegate {
 #if targetEnvironment(macCatalyst)
     private var cursorPushed = false
 #endif
+
+    private var dividerLineColor: UIColor {
+        return ThemeManager.color(fromRGB: [0xE9E8E4, 0xD4C8B8, 0x333333, 0x222222])
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -35,6 +39,7 @@ class DividerView: UIView, UIPointerInteractionDelegate {
     
     private func commonInit() {
         isUserInteractionEnabled = true
+        updateTheme()
         
 #if targetEnvironment(macCatalyst)
         // Use AppKit cursors on Mac for the exact system feel.
@@ -63,8 +68,21 @@ class DividerView: UIView, UIPointerInteractionDelegate {
             path.addLine(to: CGPoint(x: bounds.maxX, y: y))
         }
         
-        UIColor.systemGray.setStroke()
+        dividerLineColor.setStroke()
         path.stroke()
+    }
+
+    @objc func updateTheme() {
+        let lineColor = dividerLineColor
+        for view in subviews {
+            view.backgroundColor = lineColor
+        }
+        setNeedsDisplay()
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateTheme()
     }
     
     // MARK: - iPadOS pointer

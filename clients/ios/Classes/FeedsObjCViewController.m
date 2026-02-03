@@ -343,6 +343,27 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     leftSpacing.width = 8.0;
     rightSpacing.width = 8.0;
 
+#if TARGET_OS_MACCATALYST
+    UIBarButtonItem *leadingInset = [[UIBarButtonItem alloc]
+                                     initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                     target:nil
+                                     action:nil];
+    leadingInset.width = 16.0;
+    UIBarButtonItem *trailingInset = [[UIBarButtonItem alloc]
+                                      initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                      target:nil
+                                      action:nil];
+    trailingInset.width = 16.0;
+    self.feedViewToolbar.items = @[
+        leadingInset,
+        self.addBarButton,
+        leadingFlexibleSpace,
+        intelligenceItem,
+        trailingFlexibleSpace,
+        self.settingsBarButton,
+        trailingInset
+    ];
+#else
     self.feedViewToolbar.items = @[
         leadingFlexibleSpace,
         self.addBarButton,
@@ -352,6 +373,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         self.settingsBarButton,
         trailingFlexibleSpace
     ];
+#endif
 }
 
 - (void)viewWillAppear:(BOOL)animated {
