@@ -4218,6 +4218,8 @@ class MStarredStoryCounts(mongo.Document):
             story_count = cls.objects.get(**params)
         except cls.MultipleObjectsReturned:
             story_count = cls.objects(**params).first()
+        except cls.DoesNotExist:
+            return
         if story_count and story_count.count <= 0:
             story_count.delete()
 

@@ -54,6 +54,10 @@ def apple_developer_merchantid(request):
     return render(request, "static/apple_developer_merchantid.xhtml")
 
 
+def assetlinks(request):
+    return render(request, "static/assetlinks.json", content_type="application/json")
+
+
 def feedback(request):
     return render(request, "static/feedback.xhtml")
 
