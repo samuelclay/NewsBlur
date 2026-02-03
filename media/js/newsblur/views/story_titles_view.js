@@ -64,7 +64,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         });
         this.$el.html($stories);
         // console.log(['Rendered story titles', this.$el, $stories]);
-        this.end_loading();
+        if (this.collection.no_more_stories) {
+            this.end_loading();
+        }
         this.fill_out();
         this.override_grid();
 
@@ -115,7 +117,11 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 $extras.addClass('NB-hidden');
             }
         }
-        this.end_loading();
+        // Only remove the loading bar if we're done. During the fill_out loop
+        // (e.g. Focus mode hiding all stories), keep it visible to prevent flicker.
+        if (this.collection.no_more_stories) {
+            this.end_loading();
+        }
         this.fill_out();
     },
 
