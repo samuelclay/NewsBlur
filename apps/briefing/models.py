@@ -63,7 +63,7 @@ class MBriefingPreferences(mongo.Document):
     frequency = mongo.StringField(choices=["daily", "twice_daily", "weekly"], default="daily")
     preferred_time = mongo.StringField(default=None)  # "HH:MM" in user's timezone, null = auto-detect
     preferred_day = mongo.StringField(default=None)  # Day of week for weekly frequency (sun, mon, tue, etc.)
-    enabled = mongo.BooleanField(default=True)
+    enabled = mongo.BooleanField(default=False)
     briefing_feed_id = mongo.IntField(default=None)
     story_count = mongo.IntField(default=20)
     summary_length = mongo.StringField(choices=["short", "medium", "detailed"], default="medium")

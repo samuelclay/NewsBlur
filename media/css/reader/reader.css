@@ -28976,6 +28976,67 @@ span.NB-briefing-inline-favicon {
     margin-bottom: 6px;
 }
 
+/* reader.css: Briefing onboarding — full-pane setup screen for first-time users */
+.NB-briefing-onboarding-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #F4F4F2;
+    background: linear-gradient(180deg, #FAFAFA 0%, #F4F4F2 100%);
+}
+
+.NB-briefing-onboarding {
+    padding: 0;
+    max-width: 560px;
+    margin: 24px auto;
+}
+
+.NB-briefing-onboarding-header {
+    text-align: center;
+    padding: 32px 20px 20px;
+}
+
+.NB-briefing-onboarding-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 12px;
+    background: url('/media/img/icons/nouns/briefing.svg') no-repeat center;
+    background-size: 48px;
+    opacity: 0.6;
+}
+
+.NB-briefing-onboarding-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #303030;
+    margin-bottom: 6px;
+}
+
+.NB-briefing-onboarding-subtitle {
+    font-size: 13px;
+    color: #808080;
+    line-height: 1.4;
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+/* reader.css: Onboarding settings reuse popover styles via .NB-briefing-popover class */
+.NB-briefing-onboarding-settings {
+    border-top: 1px solid #E0E0DC;
+    border-bottom: 1px solid #E0E0DC;
+    margin: 0;
+}
+
+.NB-briefing-onboarding-footer {
+    padding: 20px;
+    text-align: center;
+}
+
 /* reader.css: Upsell banner for free users */
 .NB-briefing-upsell {
     padding: 12px 14px;
@@ -29215,6 +29276,24 @@ span.NB-briefing-inline-favicon {
 .NB-dark .NB-briefing-popover .NB-briefing-style-description {
     color: #6A8BA8;
     border-top-color: rgba(255, 255, 255, .04);
+}
+
+/* reader.css: Dark mode overrides for briefing onboarding */
+.NB-dark .NB-briefing-onboarding-view {
+    background-color: #191b1c;
+    background: linear-gradient(180deg, #1e2022 0%, #191b1c 100%);
+}
+
+.NB-dark .NB-briefing-onboarding-title {
+    color: #D0D0D0;
+}
+
+.NB-dark .NB-briefing-onboarding-subtitle {
+    color: #808080;
+}
+
+.NB-dark .NB-briefing-onboarding-settings {
+    border-color: rgba(255, 255, 255, .08);
 }
 
 /* reader.css: Generate briefing button — shared styles */

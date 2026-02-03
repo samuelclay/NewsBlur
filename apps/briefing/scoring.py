@@ -295,8 +295,8 @@ def _get_classifier_matches(story, classifier_feeds, classifier_authors, classif
             if feed_title:
                 matches.append("feed:%s" % feed_title)
     for ca in classifier_authors:
-        if ca.author_name and ca.score > 0 and story.story_author_name and ca.author_name in story.story_author_name:
-            matches.append("author:%s" % ca.author_name)
+        if ca.author and ca.score > 0 and story.story_author_name and ca.author in story.story_author_name:
+            matches.append("author:%s" % ca.author)
     for ct in classifier_tags:
         if ct.tag and ct.score > 0 and ct.tag in (story.story_tags or []):
             matches.append("tag:%s" % ct.tag)

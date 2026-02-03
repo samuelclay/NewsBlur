@@ -52,6 +52,12 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         $folder_chooser.addClass('NB-modal-feed-chooser');
 
         this.$el.html($.make('div', [
+            this.make_section('Auto-generate', 'Automatically generate briefings on schedule', [
+                this.make_control('enabled', [
+                    ['true', 'On'],
+                    ['false', 'Off']
+                ])
+            ]),
             this.make_section('How often', 'Schedule when your briefing is generated', [
                 this.make_control('frequency', [
                     ['twice_daily', '2x daily'],
@@ -190,6 +196,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var prefs = this.prefs;
         var preferred_time = prefs.preferred_time || 'morning';
 
+        this.set_active('enabled', String(prefs.enabled));
         this.set_active('frequency', prefs.frequency || 'daily');
         this.set_active('preferred_time', preferred_time);
         // briefing_preferences_popover.js: For 2x daily, map preferred_time to the combo control

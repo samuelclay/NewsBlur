@@ -101,11 +101,31 @@ def load_briefing_stories(request):
 
     prefs = MBriefingPreferences.get_or_create(user.pk)
 
-    return {
+    result = {
         "briefings": briefing_list,
         "is_preview": not is_premium_archive,
         "briefing_feed_id": prefs.briefing_feed_id,
+        "enabled": prefs.enabled,
     }
+
+    # views.py: Include full preferences when not enabled so the onboarding view
+    # can render settings immediately without a separate AJAX call.
+    if not prefs.enabled and not briefing_list:
+        TIME_DISPLAY_MAP = {"07:00": "morning", "12:00": "afternoon", "18:00": "evening"}
+        preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
+        result["preferences"] = {
+            "frequency": prefs.frequency,
+            "preferred_time": preferred_time_display,
+            "preferred_day": prefs.preferred_day or "sun",
+            "story_count": prefs.story_count or 20,
+            "summary_length": prefs.summary_length or "medium",
+            "story_sources": prefs.story_sources or "all",
+            "read_filter": prefs.read_filter or "unread",
+            "summary_style": prefs.summary_style or "editorial",
+            "include_read": prefs.include_read,
+        }
+
+    return result
 
 
 @ajax_login_required
@@ -270,6 +290,12 @@ def generate_briefing(request):
     user = request.user
     if not user.is_staff:
         return {"code": -1, "message": "Daily Briefing is currently staff-only."}
+
+    # views.py: Generating a briefing implicitly opts the user in to auto-generation
+    prefs = MBriefingPreferences.get_or_create(user.pk)
+    if not prefs.enabled:
+        prefs.enabled = True
+        prefs.save()
 
     GenerateUserBriefing.delay(user.pk, on_demand=True)
 
