@@ -1,4 +1,6 @@
 import redis
+from unittest.mock import patch, MagicMock
+
 from django.conf import settings
 from django.core import management
 from django.test import TestCase, TransactionTestCase
@@ -6,6 +8,7 @@ from django.test.client import Client
 from django.urls import reverse
 
 from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.tasks import SchedulePremiumSetup
 from utils import json_functions as json
 
 
@@ -420,3 +423,66 @@ class Test_Feed(TransactionTestCase):
 
     def test_all_feeds(self):
         pass
+
+
+class Test_PremiumSetupResyncPassthrough(TestCase):
+    """Tests for allow_skip_resync pass-through in SchedulePremiumSetup and Feed methods."""
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address="http://example.com/resync.xml",
+            feed_link="http://example.com/resync",
+            feed_title="Resync Test Feed",
+        )
+
+    @patch("apps.rss_feeds.models.Feed.setup_feed_for_premium_subscribers")
+    def test_setup_feeds_passes_allow_skip_resync_true(self, mock_setup):
+        """setup_feeds_for_premium_subscribers should pass allow_skip_resync to each feed."""
+        Feed.setup_feeds_for_premium_subscribers([self.feed.pk], allow_skip_resync=True)
+
+        mock_setup.assert_called_once_with(allow_skip_resync=True)
+
+    @patch("apps.rss_feeds.models.Feed.setup_feed_for_premium_subscribers")
+    def test_setup_feeds_defaults_allow_skip_resync_false(self, mock_setup):
+        """setup_feeds_for_premium_subscribers should default allow_skip_resync to False."""
+        Feed.setup_feeds_for_premium_subscribers([self.feed.pk])
+
+        mock_setup.assert_called_once_with(allow_skip_resync=False)
+
+    @patch("apps.rss_feeds.models.Feed.setup_feeds_for_premium_subscribers")
+    def test_task_passes_allow_skip_resync_true(self, mock_setup_feeds):
+        """SchedulePremiumSetup task should pass allow_skip_resync to setup_feeds_for_premium_subscribers."""
+        SchedulePremiumSetup(feed_ids=[self.feed.pk], allow_skip_resync=True)
+
+        mock_setup_feeds.assert_called_once_with([self.feed.pk], allow_skip_resync=True)
+
+    @patch("apps.rss_feeds.models.Feed.setup_feeds_for_premium_subscribers")
+    def test_task_defaults_allow_skip_resync_false(self, mock_setup_feeds):
+        """SchedulePremiumSetup task should default allow_skip_resync to False."""
+        SchedulePremiumSetup(feed_ids=[self.feed.pk])
+
+        mock_setup_feeds.assert_called_once_with([self.feed.pk], allow_skip_resync=False)
+
+    @patch("apps.rss_feeds.models.MStory.sync_feed_redis")
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    @patch("apps.rss_feeds.models.Feed.count_similar_feeds")
+    @patch("apps.rss_feeds.models.Feed.set_next_scheduled_update")
+    def test_setup_feed_for_premium_passes_allow_skip_resync_to_sync_redis(
+        self, mock_scheduled, mock_similar, mock_count, mock_sync
+    ):
+        """setup_feed_for_premium_subscribers should pass allow_skip_resync to sync_redis."""
+        self.feed.setup_feed_for_premium_subscribers(allow_skip_resync=True)
+
+        mock_sync.assert_called_once_with(self.feed.pk, allow_skip_resync=True)
+
+    @patch("apps.rss_feeds.models.MStory.sync_feed_redis")
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    @patch("apps.rss_feeds.models.Feed.count_similar_feeds")
+    @patch("apps.rss_feeds.models.Feed.set_next_scheduled_update")
+    def test_setup_feed_for_premium_defaults_resync_false(
+        self, mock_scheduled, mock_similar, mock_count, mock_sync
+    ):
+        """setup_feed_for_premium_subscribers should default allow_skip_resync=False."""
+        self.feed.setup_feed_for_premium_subscribers()
+
+        mock_sync.assert_called_once_with(self.feed.pk, allow_skip_resync=False)
