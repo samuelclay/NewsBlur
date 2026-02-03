@@ -56,6 +56,27 @@ class MBriefing(mongo.Document):
         ).count() > 0
 
 
+BRIEFING_SECTION_DEFINITIONS = [
+    {"key": "trending_unread", "name": "Stories you missed", "subtitle": "Popular stories you haven't read yet", "default": True},
+    {"key": "long_read", "name": "Long reads for later", "subtitle": "Longer articles worth setting time aside for", "default": True},
+    {"key": "classifier_match", "name": "Based on your interests", "subtitle": "Stories matching your trained topics and authors", "default": True},
+    {"key": "follow_up", "name": "Follow-ups", "subtitle": "New posts from feeds you recently read", "default": True},
+    {"key": "trending_global", "name": "Trending across NewsBlur", "subtitle": "Widely-read stories from across the platform", "default": True},
+    {"key": "duplicates", "name": "Common stories", "subtitle": "Stories covered by multiple feeds", "default": False},
+    {"key": "quick_catchup", "name": "Quick catch-up", "subtitle": "TL;DR of the most important stories", "default": False},
+    {"key": "emerging_topics", "name": "Emerging topics", "subtitle": "Topics getting increasing coverage", "default": False},
+    {"key": "contrarian_views", "name": "Contrarian views", "subtitle": "Different perspectives on the same topic", "default": False},
+]
+
+VALID_SECTION_KEYS = {s["key"] for s in BRIEFING_SECTION_DEFINITIONS}
+# models.py: Custom sections use keys custom_1 through custom_5
+VALID_SECTION_KEYS.update({"custom_%d" % i for i in range(1, 6)})
+
+DEFAULT_SECTIONS = {s["key"]: s["default"] for s in BRIEFING_SECTION_DEFINITIONS}
+
+MAX_CUSTOM_SECTIONS = 5
+
+
 class MBriefingPreferences(mongo.Document):
     """Per-user briefing configuration stored in MongoDB."""
 
@@ -71,6 +92,8 @@ class MBriefingPreferences(mongo.Document):
     read_filter = mongo.StringField(choices=["unread", "focus"], default="unread")  # unread or focus stories
     summary_style = mongo.StringField(choices=["editorial", "bullets", "headlines"], default="editorial")
     include_read = mongo.BooleanField(default=False)  # False = unread only, True = include read stories
+    sections = mongo.DictField(default=None)  # {"trending_unread": True, "custom_1": True, ...} or None for defaults
+    custom_section_prompts = mongo.ListField(mongo.StringField(), default=None)  # Up to 5 custom prompts
 
     meta = {
         "collection": "briefing_preferences",

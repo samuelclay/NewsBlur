@@ -1,3 +1,17 @@
+NEWSBLUR.BRIEFING_SECTION_DEFINITIONS = [
+    {key: "trending_unread", name: "Stories you missed", subtitle: "Popular stories you haven't read yet"},
+    {key: "long_read", name: "Long reads for later", subtitle: "Longer articles worth setting time aside for"},
+    {key: "classifier_match", name: "Based on your interests", subtitle: "Stories matching your trained topics and authors"},
+    {key: "follow_up", name: "Follow-ups", subtitle: "New posts from feeds you recently read"},
+    {key: "trending_global", name: "Trending across NewsBlur", subtitle: "Widely-read stories from across the platform"},
+    {key: "duplicates", name: "Common stories", subtitle: "Stories covered by multiple feeds"},
+    {key: "quick_catchup", name: "Quick catch-up", subtitle: "TL;DR of the most important stories"},
+    {key: "emerging_topics", name: "Emerging topics", subtitle: "Topics getting increasing coverage"},
+    {key: "contrarian_views", name: "Contrarian views", subtitle: "Different perspectives on the same topic"}
+];
+
+NEWSBLUR.MAX_CUSTOM_SECTIONS = 5;
+
 NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
 
     className: "NB-briefing-popover",
@@ -16,7 +30,14 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
 
     events: {
         "click .NB-briefing-setting-option": "change_setting",
-        "change .NB-modal-feed-chooser": "change_folder"
+        "change .NB-modal-feed-chooser": "change_folder",
+        "click .NB-briefing-section-item": "toggle_section",
+        "click .NB-briefing-section-hint-icon": "stop_propagation",
+        "blur .NB-briefing-custom-prompt-input": "save_custom_prompt",
+        "mouseenter .NB-briefing-section-hint-icon": "show_hint_popover",
+        "mouseleave .NB-briefing-section-hint-icon": "hide_hint_popover",
+        "click .NB-briefing-add-custom-section": "add_custom_section",
+        "click .NB-briefing-remove-custom-section": "remove_custom_section"
     },
 
     initialize: function (options) {
@@ -24,6 +45,17 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         this.prefs = {};
         this.folders = [];
         NEWSBLUR.ReaderPopover.prototype.initialize.call(this, this.options);
+
+        // briefing_preferences_popover.js: Hide hint popover when mouse leaves the popover itself
+        $(document).on('mouseleave.briefing-hint', '.NB-briefing-section-hint-popover', function () {
+            var $popover = $(this);
+            setTimeout(function () {
+                if (!$popover.is(':hover')) {
+                    $popover.removeClass('NB-visible');
+                }
+            }, 100);
+        });
+
         this.load_preferences();
     },
 
@@ -106,6 +138,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                 ]),
                 $.make('div', { className: 'NB-briefing-style-description' })
             ]),
+            this.make_sections_ui(),
             this.make_section('Source feeds', 'Choose which feeds are used to build your briefing', [
                 $.make('div', { className: 'NB-briefing-folder-chooser-container' }, [
                     $folder_chooser
@@ -221,6 +254,103 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         $control.find('[data-value="' + value + '"]').addClass('NB-active');
     },
 
+    make_sections_ui: function () {
+        var sections = this.prefs.sections || {};
+        var items = _.map(NEWSBLUR.BRIEFING_SECTION_DEFINITIONS, _.bind(function (def) {
+            return this.make_section_item(def, sections[def.key]);
+        }, this));
+
+        // briefing_preferences_popover.js: Add existing custom sections
+        var custom_prompts = this.prefs.custom_section_prompts || [];
+        for (var i = 0; i < custom_prompts.length; i++) {
+            var custom_key = 'custom_' + (i + 1);
+            items.push(this.make_custom_section_item(i + 1, custom_prompts[i], sections[custom_key]));
+        }
+
+        // briefing_preferences_popover.js: "Add custom section" button (up to MAX_CUSTOM_SECTIONS)
+        if (custom_prompts.length < NEWSBLUR.MAX_CUSTOM_SECTIONS) {
+            items.push($.make('div', { className: 'NB-briefing-add-custom-section', role: 'button' }, [
+                $.make('span', { className: 'NB-briefing-add-custom-icon' }, '+'),
+                'Add custom section'
+            ]));
+        }
+
+        return this.make_section('Sections', 'Choose which sections appear in your briefing', [
+            $.make('div', { className: 'NB-briefing-sections' }, items)
+        ]);
+    },
+
+    make_section_item: function (def, is_enabled) {
+        return $.make('div', {
+            className: 'NB-briefing-section-item' + (is_enabled ? ' NB-active' : ''),
+            'data-section': def.key
+        }, [
+            $.make('div', { className: 'NB-briefing-section-checkbox' }),
+            $.make('div', { className: 'NB-briefing-section-label' }, [
+                $.make('div', { className: 'NB-briefing-section-name' }, def.name),
+                $.make('div', { className: 'NB-briefing-section-subtitle' }, def.subtitle)
+            ])
+        ]);
+    },
+
+    make_custom_section_item: function (index, prompt, is_enabled) {
+        var custom_key = 'custom_' + index;
+        var $item = $.make('div', {
+            className: 'NB-briefing-section-item NB-briefing-section-custom' + (is_enabled ? ' NB-active' : ''),
+            'data-section': custom_key,
+            'data-custom-index': index
+        }, [
+            $.make('div', { className: 'NB-briefing-section-checkbox' }),
+            $.make('div', { className: 'NB-briefing-section-label' }, [
+                $.make('div', { className: 'NB-briefing-section-name' }, [
+                    'Custom section ' + index,
+                    $.make('span', {
+                        className: 'NB-briefing-remove-custom-section',
+                        'data-custom-index': index,
+                        title: 'Remove'
+                    }, '\u00D7')
+                ]),
+                $.make('div', { className: 'NB-briefing-section-subtitle' }, 'AI-generated section from your prompt')
+            ])
+        ]);
+
+        var $custom_input = $.make('div', {
+            className: 'NB-briefing-section-custom-input'
+        }, [
+            $.make('input', {
+                type: 'text',
+                className: 'NB-briefing-custom-prompt-input',
+                'data-custom-index': index,
+                placeholder: 'e.g. Summarize AI/ML news',
+                value: prompt || ''
+            }),
+            $.make('span', { className: 'NB-briefing-section-hint-icon' }, '\u24D8')
+        ]);
+        $item.append($custom_input);
+
+        // briefing_preferences_popover.js: Hint popover stored inside the item
+        $item.append(this.make_hint_popover());
+
+        return $item;
+    },
+
+    make_hint_popover: function () {
+        return $.make('div', { className: 'NB-briefing-section-hint-popover' }, [
+            $.make('div', { className: 'NB-briefing-section-hint-content' }, [
+                $.make('div', { className: 'NB-briefing-section-hint-title' }, 'Custom Section Prompt'),
+                $.make('div', { className: 'NB-briefing-section-hint-text' },
+                    'Write a prompt describing what you want this section to cover. The AI will select relevant stories and generate an appropriate section header.'),
+                $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, 'Examples'),
+                $.make('ul', { className: 'NB-briefing-section-hint-examples' }, [
+                    $.make('li', 'Summarize AI and machine learning news'),
+                    $.make('li', 'Focus on climate and environment stories'),
+                    $.make('li', 'What\'s happening in tech policy and regulation'),
+                    $.make('li', 'Stories about open source projects')
+                ])
+            ])
+        ]);
+    },
+
     update_story_count_labels: function () {
         // briefing_preferences_popover.js: Show "X stories" for active option, just "X" for others
         this.$('.NB-briefing-control-story_count .NB-briefing-setting-option').each(function () {
@@ -288,6 +418,146 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             story_sources = 'all';
         }
         this.save_preference({ story_sources: story_sources });
+    },
+
+    stop_propagation: function (e) {
+        e.stopPropagation();
+    },
+
+    toggle_section: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $target = $(e.target);
+        // briefing_preferences_popover.js: Don't toggle when clicking input, remove button, or hint icon
+        if ($target.is('input') || $target.closest('.NB-briefing-remove-custom-section').length) return;
+
+        var $item = $(e.currentTarget);
+        $item.toggleClass('NB-active');
+        this.save_sections();
+    },
+
+    add_custom_section: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var custom_prompts = this.prefs.custom_section_prompts || [];
+        if (custom_prompts.length >= NEWSBLUR.MAX_CUSTOM_SECTIONS) return;
+
+        custom_prompts.push('');
+        this.prefs.custom_section_prompts = custom_prompts;
+
+        var new_index = custom_prompts.length;
+        var custom_key = 'custom_' + new_index;
+
+        // briefing_preferences_popover.js: Enable the new custom section by default
+        if (!this.prefs.sections) this.prefs.sections = {};
+        this.prefs.sections[custom_key] = true;
+
+        // Re-render sections UI
+        var $sections_container = this.$('.NB-briefing-sections');
+        var $add_btn = $sections_container.find('.NB-briefing-add-custom-section');
+        var $new_item = this.make_custom_section_item(new_index, '', true);
+        $add_btn.before($new_item);
+
+        if (custom_prompts.length >= NEWSBLUR.MAX_CUSTOM_SECTIONS) {
+            $add_btn.remove();
+        }
+
+        this.save_sections();
+        this.save_custom_prompts();
+
+        // Focus the new input
+        $new_item.find('.NB-briefing-custom-prompt-input').focus();
+    },
+
+    remove_custom_section: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var index = $(e.currentTarget).data('custom-index');
+        var custom_prompts = this.prefs.custom_section_prompts || [];
+
+        // briefing_preferences_popover.js: Remove the custom section and re-index
+        custom_prompts.splice(index - 1, 1);
+        this.prefs.custom_section_prompts = custom_prompts;
+
+        // Re-index sections keys — clear all custom keys, re-render will set new ones
+        if (this.prefs.sections) {
+            for (var i = 1; i <= NEWSBLUR.MAX_CUSTOM_SECTIONS; i++) {
+                delete this.prefs.sections['custom_' + i];
+            }
+            // Re-enable remaining custom sections
+            for (var j = 0; j < custom_prompts.length; j++) {
+                this.prefs.sections['custom_' + (j + 1)] = true;
+            }
+        }
+
+        // Re-render the entire sections UI
+        this.render();
+        this.highlight_active_options();
+
+        // Save to backend
+        this.save_sections();
+        this.save_custom_prompts();
+    },
+
+    save_sections: function () {
+        var sections = {};
+        this.$('.NB-briefing-section-item').each(function () {
+            sections[$(this).data('section')] = $(this).hasClass('NB-active');
+        });
+        this.prefs.sections = sections;
+        this.save_preference({ sections: JSON.stringify(sections) });
+    },
+
+    save_custom_prompts: function () {
+        var prompts = [];
+        this.$('.NB-briefing-custom-prompt-input').each(function () {
+            prompts.push($(this).val());
+        });
+        this.prefs.custom_section_prompts = prompts;
+        this.save_preference({ custom_section_prompts: JSON.stringify(prompts) });
+    },
+
+    save_custom_prompt: function (e) {
+        this.save_custom_prompts();
+    },
+
+    show_hint_popover: function (e) {
+        var $icon = $(e.currentTarget);
+        // briefing_preferences_popover.js: Use cached popover if available (survives portal to body)
+        var $popover = $icon.data('popover');
+        if (!$popover) {
+            var $item = $icon.closest('.NB-briefing-section-item');
+            $popover = $item.find('.NB-briefing-section-hint-popover');
+        }
+        if (!$popover || !$popover.length) return;
+
+        // briefing_preferences_popover.js: Portal to body for proper overflow handling
+        var icon_rect = $icon[0].getBoundingClientRect();
+        $popover.appendTo('body');
+        $popover.css({
+            position: 'fixed',
+            top: icon_rect.bottom + 8,
+            right: window.innerWidth - icon_rect.right,
+            left: 'auto',
+            bottom: 'auto'
+        });
+        $popover.addClass('NB-visible');
+        $icon.data('popover', $popover);
+    },
+
+    hide_hint_popover: function (e) {
+        var $icon = $(e.currentTarget);
+        var $popover = $icon.data('popover');
+        if (!$popover) return;
+
+        setTimeout(function () {
+            if (!$popover.is(':hover') && !$icon.is(':hover')) {
+                $popover.removeClass('NB-visible');
+            }
+        }, 100);
     },
 
     save_preference: function (data) {

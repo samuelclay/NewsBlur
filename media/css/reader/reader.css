@@ -29263,6 +29263,218 @@ span.NB-briefing-inline-favicon {
     margin: 0;
 }
 
+/* reader.css: Briefing sections — tappable checkbox rows */
+.NB-briefing-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.NB-briefing-section-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+    flex-wrap: wrap;
+}
+
+.NB-briefing-section-item:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.NB-briefing-section-checkbox {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #b0b0b0;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    transition: all 0.15s;
+}
+
+.NB-briefing-section-item.NB-active .NB-briefing-section-checkbox {
+    background: #5C89C4;
+    border-color: #5C89C4;
+}
+
+.NB-briefing-section-item.NB-active .NB-briefing-section-checkbox::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0px;
+    width: 4px;
+    height: 8px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.NB-briefing-section-label {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-briefing-section-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    line-height: 16px;
+}
+
+.NB-briefing-section-subtitle {
+    font-size: 10.5px;
+    color: #909090;
+    line-height: 14px;
+    margin-top: 1px;
+}
+
+/* reader.css: Custom section prompt input */
+.NB-briefing-section-custom-input {
+    width: 100%;
+    margin-top: 4px;
+    padding-left: 24px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.NB-briefing-section-custom-input input {
+    flex: 1;
+    font-size: 11px;
+    padding: 4px 8px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    outline: none;
+    background: #fff;
+    color: #333;
+}
+
+.NB-briefing-section-custom-input input:focus {
+    border-color: #5C89C4;
+    box-shadow: 0 0 0 2px rgba(92, 137, 196, 0.15);
+}
+
+.NB-briefing-section-hint-icon {
+    font-size: 14px;
+    opacity: 0.5;
+    cursor: help;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.NB-briefing-section-hint-icon:hover {
+    opacity: 1;
+}
+
+/* reader.css: Add custom section button */
+.NB-briefing-add-custom-section {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #5C89C4;
+    transition: background 0.15s;
+}
+
+.NB-briefing-add-custom-section:hover {
+    background: rgba(92, 137, 196, 0.08);
+}
+
+.NB-briefing-add-custom-icon {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1;
+}
+
+/* reader.css: Remove custom section button */
+.NB-briefing-remove-custom-section {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 6px;
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+    color: #999;
+    cursor: pointer;
+    line-height: 1;
+    vertical-align: middle;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.06);
+    transition: all 0.15s;
+}
+
+.NB-briefing-remove-custom-section:hover {
+    color: #fff;
+    background: #D08080;
+}
+
+/* reader.css: Custom section items always show input */
+.NB-briefing-section-custom .NB-briefing-section-custom-input {
+    display: flex;
+}
+
+/* reader.css: Hint popover for custom section — follows regex popover pattern */
+.NB-briefing-section-hint-popover {
+    display: none;
+    position: absolute;
+    z-index: 10000;
+    background: linear-gradient(135deg, #f8f9fc 0%, #eef1f7 100%);
+    border: 1px solid #d0d4e0;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 11px;
+    line-height: 1.5;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    width: 300px;
+}
+
+.NB-briefing-section-hint-popover.NB-visible {
+    display: block;
+}
+
+.NB-briefing-section-hint-title {
+    font-weight: 600;
+    font-size: 11px;
+    color: #5C89C4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.NB-briefing-section-hint-text {
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.NB-briefing-section-hint-examples-title {
+    font-weight: 600;
+    font-size: 10px;
+    color: #5C89C4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(92, 137, 196, 0.2);
+}
+
+.NB-briefing-section-hint-examples {
+    margin: 0;
+    padding-left: 16px;
+    color: #666;
+}
+
+.NB-briefing-section-hint-examples li {
+    margin-bottom: 2px;
+}
+
 /* reader.css: Dark mode overrides for briefing popover */
 .NB-dark .NB-briefing-popover .NB-briefing-style-description {
     color: #6A8BA8;
@@ -29285,6 +29497,75 @@ span.NB-briefing-inline-favicon {
 
 .NB-dark .NB-briefing-onboarding-settings {
     border-color: rgba(255, 255, 255, .08);
+}
+
+/* reader.css: Dark mode overrides for briefing sections */
+.NB-dark .NB-briefing-add-custom-section {
+    color: #7BA3D0;
+}
+
+.NB-dark .NB-briefing-add-custom-section:hover {
+    background: rgba(92, 137, 196, 0.12);
+}
+
+.NB-dark .NB-briefing-remove-custom-section {
+    color: #888;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-briefing-remove-custom-section:hover {
+    color: #fff;
+    background: #D08080;
+}
+
+.NB-dark .NB-briefing-section-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-briefing-section-checkbox {
+    border-color: #555;
+}
+
+.NB-dark .NB-briefing-section-name {
+    color: #ccc;
+}
+
+.NB-dark .NB-briefing-section-subtitle {
+    color: #777;
+}
+
+.NB-dark .NB-briefing-section-custom-input input {
+    background: #2a2a2e;
+    border-color: #444;
+    color: #ccc;
+}
+
+.NB-dark .NB-briefing-section-custom-input input:focus {
+    border-color: #5C89C4;
+    box-shadow: 0 0 0 2px rgba(92, 137, 196, 0.25);
+}
+
+.NB-dark .NB-briefing-section-hint-popover {
+    background: linear-gradient(135deg, #2a2a3a 0%, #252535 100%);
+    border-color: #4a4a6a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-briefing-section-hint-title {
+    color: #7BA3D0;
+}
+
+.NB-dark .NB-briefing-section-hint-text {
+    color: #aaa;
+}
+
+.NB-dark .NB-briefing-section-hint-examples-title {
+    color: #7BA3D0;
+    border-top-color: rgba(92, 137, 196, 0.3);
+}
+
+.NB-dark .NB-briefing-section-hint-examples {
+    color: #888;
 }
 
 /* reader.css: Generate briefing button — shared styles */

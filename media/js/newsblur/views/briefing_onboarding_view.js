@@ -5,7 +5,14 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
     events: {
         "click .NB-briefing-setting-option": "change_setting",
         "change .NB-modal-feed-chooser": "change_folder",
-        "click .NB-briefing-onboarding-generate": "generate"
+        "click .NB-briefing-onboarding-generate": "generate",
+        "click .NB-briefing-section-item": "toggle_section",
+        "click .NB-briefing-section-hint-icon": "stop_propagation",
+        "blur .NB-briefing-custom-prompt-input": "update_custom_prompt",
+        "mouseenter .NB-briefing-section-hint-icon": "show_hint_popover",
+        "mouseleave .NB-briefing-section-hint-icon": "hide_hint_popover",
+        "click .NB-briefing-add-custom-section": "add_custom_section",
+        "click .NB-briefing-remove-custom-section": "remove_custom_section"
     },
 
     initialize: function (options) {
@@ -122,6 +129,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                 ]),
                 $.make('div', { className: 'NB-briefing-style-description' })
             ]),
+            this.make_sections_ui(prefs),
             this.make_section('Source feeds', 'Choose which feeds are used to build your briefing', [
                 $.make('div', { className: 'NB-briefing-folder-chooser-container' }, [
                     $folder_chooser
@@ -198,6 +206,94 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             ]);
         });
         return $.make('ul', { className: 'segmented-control NB-briefing-control-' + setting_name }, items);
+    },
+
+    make_sections_ui: function (prefs) {
+        var sections = prefs.sections || {};
+        var items = _.map(NEWSBLUR.BRIEFING_SECTION_DEFINITIONS, _.bind(function (def) {
+            return this.make_section_item(def, sections[def.key]);
+        }, this));
+
+        var custom_prompts = prefs.custom_section_prompts || [];
+        for (var i = 0; i < custom_prompts.length; i++) {
+            var custom_key = 'custom_' + (i + 1);
+            items.push(this.make_custom_section_item(i + 1, custom_prompts[i], sections[custom_key]));
+        }
+
+        if (custom_prompts.length < NEWSBLUR.MAX_CUSTOM_SECTIONS) {
+            items.push($.make('div', { className: 'NB-briefing-add-custom-section', role: 'button' }, [
+                $.make('span', { className: 'NB-briefing-add-custom-icon' }, '+'),
+                'Add custom section'
+            ]));
+        }
+
+        return this.make_section('Sections', 'Choose which sections appear in your briefing', [
+            $.make('div', { className: 'NB-briefing-sections' }, items)
+        ]);
+    },
+
+    make_section_item: function (def, is_enabled) {
+        return $.make('div', {
+            className: 'NB-briefing-section-item' + (is_enabled ? ' NB-active' : ''),
+            'data-section': def.key
+        }, [
+            $.make('div', { className: 'NB-briefing-section-checkbox' }),
+            $.make('div', { className: 'NB-briefing-section-label' }, [
+                $.make('div', { className: 'NB-briefing-section-name' }, def.name),
+                $.make('div', { className: 'NB-briefing-section-subtitle' }, def.subtitle)
+            ])
+        ]);
+    },
+
+    make_custom_section_item: function (index, prompt, is_enabled) {
+        var custom_key = 'custom_' + index;
+        var $item = $.make('div', {
+            className: 'NB-briefing-section-item NB-briefing-section-custom' + (is_enabled ? ' NB-active' : ''),
+            'data-section': custom_key,
+            'data-custom-index': index
+        }, [
+            $.make('div', { className: 'NB-briefing-section-checkbox' }),
+            $.make('div', { className: 'NB-briefing-section-label' }, [
+                $.make('div', { className: 'NB-briefing-section-name' }, [
+                    'Custom section ' + index,
+                    $.make('span', {
+                        className: 'NB-briefing-remove-custom-section',
+                        'data-custom-index': index,
+                        title: 'Remove'
+                    }, '\u00D7')
+                ]),
+                $.make('div', { className: 'NB-briefing-section-subtitle' }, 'AI-generated section from your prompt')
+            ])
+        ]);
+
+        var $custom_input = $.make('div', { className: 'NB-briefing-section-custom-input' }, [
+            $.make('input', {
+                type: 'text',
+                className: 'NB-briefing-custom-prompt-input',
+                'data-custom-index': index,
+                placeholder: 'e.g. Summarize AI/ML news',
+                value: prompt || ''
+            }),
+            $.make('span', { className: 'NB-briefing-section-hint-icon' }, '\u24D8')
+        ]);
+        $item.append($custom_input);
+
+        $item.append($.make('div', { className: 'NB-briefing-section-hint-popover' }, [
+            $.make('div', { className: 'NB-briefing-section-hint-content' }, [
+                $.make('div', { className: 'NB-briefing-section-hint-title' }, 'Custom Section Prompt'),
+                $.make('div', { className: 'NB-briefing-section-hint-text' },
+                    'Write a prompt describing what you want this section to cover. The AI will select relevant stories and generate an appropriate section header.'),
+                $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, 'Examples'),
+                $.make('ul', { className: 'NB-briefing-section-hint-examples' }, [
+                    $.make('li', 'Summarize AI and machine learning news'),
+                    $.make('li', 'Focus on climate and environment stories'),
+                    $.make('li', 'What\'s happening in tech policy and regulation'),
+                    $.make('li', 'Stories about open source projects')
+                ])
+            ])
+        ]));
+
+        return $item;
     },
 
     set_active: function ($container, setting_name, value) {
@@ -337,6 +433,118 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             story_sources = 'all';
         }
         this.pending['story_sources'] = story_sources;
+    },
+
+    stop_propagation: function (e) {
+        e.stopPropagation();
+    },
+
+    toggle_section: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $target = $(e.target);
+        if ($target.is('input') || $target.closest('.NB-briefing-remove-custom-section').length) return;
+
+        var $item = $(e.currentTarget);
+        $item.toggleClass('NB-active');
+
+        // briefing_onboarding_view.js: Accumulate sections in pending
+        var sections = {};
+        this.$('.NB-briefing-section-item').each(function () {
+            sections[$(this).data('section')] = $(this).hasClass('NB-active');
+        });
+        this.pending['sections'] = JSON.stringify(sections);
+    },
+
+    add_custom_section: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!this._custom_prompts) this._custom_prompts = [];
+        if (this._custom_prompts.length >= NEWSBLUR.MAX_CUSTOM_SECTIONS) return;
+
+        this._custom_prompts.push('');
+        var new_index = this._custom_prompts.length;
+        var custom_key = 'custom_' + new_index;
+
+        var $sections_container = this.$('.NB-briefing-sections');
+        var $add_btn = $sections_container.find('.NB-briefing-add-custom-section');
+        var $new_item = this.make_custom_section_item(new_index, '', true);
+        $add_btn.before($new_item);
+
+        if (this._custom_prompts.length >= NEWSBLUR.MAX_CUSTOM_SECTIONS) {
+            $add_btn.remove();
+        }
+
+        // Update pending
+        var sections = {};
+        this.$('.NB-briefing-section-item').each(function () {
+            sections[$(this).data('section')] = $(this).hasClass('NB-active');
+        });
+        sections[custom_key] = true;
+        this.pending['sections'] = JSON.stringify(sections);
+
+        $new_item.find('.NB-briefing-custom-prompt-input').focus();
+    },
+
+    remove_custom_section: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var index = $(e.currentTarget).data('custom-index');
+        if (this._custom_prompts) {
+            this._custom_prompts.splice(index - 1, 1);
+        }
+
+        // Re-render by re-populating settings
+        if (this.prefs) {
+            this.prefs.custom_section_prompts = this._custom_prompts || [];
+            this.populate_settings(this.prefs);
+        }
+    },
+
+    update_custom_prompt: function () {
+        var prompts = [];
+        this.$('.NB-briefing-custom-prompt-input').each(function () {
+            prompts.push($(this).val());
+        });
+        this._custom_prompts = prompts;
+        this.pending['custom_section_prompts'] = JSON.stringify(prompts);
+    },
+
+    show_hint_popover: function (e) {
+        var $icon = $(e.currentTarget);
+        var $popover = $icon.data('popover');
+        if (!$popover) {
+            var $item = $icon.closest('.NB-briefing-section-item');
+            $popover = $item.find('.NB-briefing-section-hint-popover');
+        }
+        if (!$popover || !$popover.length) return;
+
+        var icon_rect = $icon[0].getBoundingClientRect();
+        $popover.appendTo('body');
+        $popover.css({
+            position: 'fixed',
+            top: icon_rect.bottom + 8,
+            right: window.innerWidth - icon_rect.right,
+            left: 'auto',
+            bottom: 'auto'
+        });
+        $popover.addClass('NB-visible');
+        $icon.data('popover', $popover);
+    },
+
+    hide_hint_popover: function (e) {
+        var $icon = $(e.currentTarget);
+        var $popover = $icon.data('popover');
+        if (!$popover) return;
+
+        setTimeout(function () {
+            if (!$popover.is(':hover') && !$icon.is(':hover')) {
+                $popover.removeClass('NB-visible');
+            }
+        }, 100);
     },
 
     generate: function (e) {

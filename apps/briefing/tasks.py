@@ -169,6 +169,8 @@ def GenerateUserBriefing(user_id, on_demand=False):
         now,
         summary_length=prefs.summary_length or "medium",
         summary_style=prefs.summary_style or "editorial",
+        sections=prefs.sections,
+        custom_section_prompts=prefs.custom_section_prompts,
     )
 
     if not summary_html:

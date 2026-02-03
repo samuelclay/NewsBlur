@@ -6,7 +6,7 @@ from django.conf import settings
 from django.utils.encoding import smart_str
 
 from apps.briefing.activity import RUserActivity
-from apps.briefing.models import MBriefing, MBriefingPreferences
+from apps.briefing.models import DEFAULT_SECTIONS, MBriefing, MBriefingPreferences, VALID_SECTION_KEYS
 from apps.rss_feeds.models import Feed, MStory
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
@@ -123,6 +123,8 @@ def load_briefing_stories(request):
             "read_filter": prefs.read_filter or "unread",
             "summary_style": prefs.summary_style or "editorial",
             "include_read": prefs.include_read,
+            "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
+            "custom_section_prompts": prefs.custom_section_prompts or [],
         }
 
     return result
@@ -199,6 +201,31 @@ def briefing_preferences(request):
         if preferred_day in ("sun", "mon", "tue", "wed", "thu", "fri", "sat"):
             prefs.preferred_day = preferred_day
 
+        import json as stdlib_json
+
+        sections_raw = request.POST.get("sections")
+        if sections_raw:
+            try:
+                sections_dict = stdlib_json.loads(sections_raw)
+                if isinstance(sections_dict, dict):
+                    validated = {}
+                    for key, val in sections_dict.items():
+                        if key in VALID_SECTION_KEYS:
+                            validated[key] = bool(val)
+                    prefs.sections = validated
+            except (ValueError, TypeError):
+                pass
+
+        custom_section_prompts_raw = request.POST.get("custom_section_prompts")
+        if custom_section_prompts_raw:
+            try:
+                prompts = stdlib_json.loads(custom_section_prompts_raw)
+                if isinstance(prompts, list):
+                    validated_prompts = [p.strip()[:500] for p in prompts if isinstance(p, str) and p.strip()]
+                    prefs.custom_section_prompts = validated_prompts[:5] or None
+            except (ValueError, TypeError):
+                pass
+
         prefs.save()
 
     # Migrate old "focused" story_sources to the new read_filter field
@@ -232,6 +259,8 @@ def briefing_preferences(request):
         "read_filter": prefs.read_filter or "unread",
         "summary_style": prefs.summary_style or "editorial",
         "include_read": prefs.include_read,
+        "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
+        "custom_section_prompts": prefs.custom_section_prompts or [],
         "folders": folders,
     }
 

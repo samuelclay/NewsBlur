@@ -250,15 +250,20 @@ def select_briefing_stories(
             if story and story.story_date:
                 read_feeds_with_dates.setdefault(s["feed_id"], []).append(story.story_date)
 
+    # scoring.py: Detect duplicate stories across feeds by normalized title
+    duplicate_hashes = _find_duplicate_stories(top_candidates, stories_by_hash)
+
     enriched = []
     for s in top_candidates:
         story = stories_by_hash.get(s["story_hash"])
         word_count = _estimate_word_count(story) if story else 0
 
-        # Categorize by priority: follow_up > classifier_match > trending_unread > long_read > trending_global
+        # Categorize by priority: duplicates > follow_up > classifier_match > trending_unread > long_read > trending_global
         category = "trending_global"
 
-        if not s["is_read"] and s["feed_id"] in read_feeds_with_dates:
+        if s["story_hash"] in duplicate_hashes:
+            category = "duplicates"
+        elif not s["is_read"] and s["feed_id"] in read_feeds_with_dates:
             read_dates = read_feeds_with_dates[s["feed_id"]]
             if story and story.story_date and any(story.story_date > rd for rd in read_dates if rd):
                 category = "follow_up"
@@ -284,6 +289,45 @@ def select_briefing_stories(
         )
 
     return enriched[:max_stories]
+
+
+def _normalize_title(title):
+    """Normalize a story title for duplicate detection."""
+    if not title:
+        return ""
+    title = title.lower().strip()
+    title = re.sub(r"[^\w\s]", "", title)
+    title = re.sub(r"\s+", " ", title)
+    return title
+
+
+def _find_duplicate_stories(candidates, stories_by_hash):
+    """
+    Find stories that appear in multiple feeds by comparing normalized titles.
+    Returns a set of story_hashes that are duplicates.
+    """
+    title_groups = {}
+    for s in candidates:
+        story = stories_by_hash.get(s["story_hash"])
+        if not story or not story.story_title:
+            continue
+        norm_title = _normalize_title(story.story_title)
+        if not norm_title or len(norm_title) < 10:
+            continue
+        title_groups.setdefault(norm_title, []).append(s["story_hash"])
+
+    duplicate_hashes = set()
+    for norm_title, hashes in title_groups.items():
+        feed_ids = set()
+        for h in hashes:
+            story = stories_by_hash.get(h)
+            if story:
+                feed_ids.add(story.story_feed_id)
+        if len(feed_ids) >= 2:
+            for h in hashes:
+                duplicate_hashes.add(h)
+
+    return duplicate_hashes
 
 
 def _get_classifier_matches(story, classifier_feeds, classifier_authors, classifier_tags, classifier_titles, feed_title_map):

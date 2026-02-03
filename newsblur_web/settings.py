@@ -403,8 +403,7 @@ CELERY_TASK_ROUTES = {
     "archive-index-elasticsearch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-process-batch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-cleanup-old": {"queue": "push_feeds", "binding_key": "push_feeds"},
-    # TODO: Restore work_queue routing before merging to main
-    "generate-user-briefing": {"queue": "briefing", "binding_key": "briefing"},
+    "generate-user-briefing": {"queue": "work_queue", "binding_key": "work_queue"},
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {
@@ -451,12 +450,6 @@ CELERY_TASK_QUEUES = {
         "exchange": "ask_ai",
         "exchange_type": "direct",
         "binding_key": "ask_ai",
-    },
-    # TODO: Remove briefing queue before merging to main (use work_queue in production)
-    "briefing": {
-        "exchange": "briefing",
-        "exchange_type": "direct",
-        "binding_key": "briefing",
     },
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"

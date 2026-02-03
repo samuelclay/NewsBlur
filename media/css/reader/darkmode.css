@@ -3840,3 +3840,72 @@ a.mention, a.mention-group {
 .NB-dark .NB-briefing-error-message {
     color: #D08080;
 }
+
+/* darkmode.css: Briefing sections dark mode */
+.NB-dark .NB-briefing-add-custom-section {
+    color: #7BA3D0;
+}
+
+.NB-dark .NB-briefing-add-custom-section:hover {
+    background: rgba(92, 137, 196, 0.12);
+}
+
+.NB-dark .NB-briefing-remove-custom-section {
+    color: #888;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-briefing-remove-custom-section:hover {
+    color: #fff;
+    background: #D08080;
+}
+
+.NB-dark .NB-briefing-section-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-briefing-section-checkbox {
+    border-color: #555;
+}
+
+.NB-dark .NB-briefing-section-name {
+    color: #ccc;
+}
+
+.NB-dark .NB-briefing-section-subtitle {
+    color: #777;
+}
+
+.NB-dark .NB-briefing-section-custom-input input {
+    background: #2a2a2e;
+    border-color: #444;
+    color: #ccc;
+}
+
+.NB-dark .NB-briefing-section-custom-input input:focus {
+    border-color: #5C89C4;
+    box-shadow: 0 0 0 2px rgba(92, 137, 196, 0.25);
+}
+
+.NB-dark .NB-briefing-section-hint-popover {
+    background: linear-gradient(135deg, #2a2a3a 0%, #252535 100%);
+    border-color: #4a4a6a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-briefing-section-hint-title {
+    color: #7BA3D0;
+}
+
+.NB-dark .NB-briefing-section-hint-text {
+    color: #aaa;
+}
+
+.NB-dark .NB-briefing-section-hint-examples-title {
+    color: #7BA3D0;
+    border-top-color: rgba(92, 137, 196, 0.3);
+}
+
+.NB-dark .NB-briefing-section-hint-examples {
+    color: #888;
+}
