@@ -759,12 +759,12 @@ class Feed(models.Model):
             self.save(update_fields=["last_story_date"])
 
     @classmethod
-    def setup_feeds_for_premium_subscribers(cls, feed_ids):
+    def setup_feeds_for_premium_subscribers(cls, feed_ids, allow_skip_resync=False):
         logging.info(f" ---> ~SN~FMScheduling immediate premium setup of ~SB{len(feed_ids)}~SN feeds...")
 
         feeds = Feed.objects.filter(pk__in=feed_ids)
         for feed in feeds:
-            feed.setup_feed_for_premium_subscribers()
+            feed.setup_feed_for_premium_subscribers(allow_skip_resync=allow_skip_resync)
 
     def setup_feed_for_premium_subscribers(self, allow_skip_resync=False):
         self.count_subscribers()
