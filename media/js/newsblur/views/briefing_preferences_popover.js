@@ -123,6 +123,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
 
         this.update_schedule_controls();
         this.update_style_description();
+        this.update_story_count_labels();
 
         return this;
     },
@@ -211,12 +212,23 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
 
         this.update_schedule_controls();
         this.update_style_description();
+        this.update_story_count_labels();
     },
 
     set_active: function (setting_name, value) {
         var $control = this.$('.NB-briefing-control-' + setting_name);
         $control.find('.NB-briefing-setting-option').removeClass('NB-active');
         $control.find('[data-value="' + value + '"]').addClass('NB-active');
+    },
+
+    update_story_count_labels: function () {
+        // briefing_preferences_popover.js: Show "X stories" for active option, just "X" for others
+        this.$('.NB-briefing-control-story_count .NB-briefing-setting-option').each(function () {
+            var $opt = $(this);
+            var value = $opt.data('value');
+            var is_active = $opt.hasClass('NB-active');
+            $opt.text(value + (is_active ? ' stories' : ''));
+        });
     },
 
     update_style_description: function () {
@@ -249,6 +261,10 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
 
         if (setting_name === 'frequency') {
             this.update_schedule_controls();
+        }
+
+        if (setting_name === 'story_count') {
+            this.update_story_count_labels();
         }
 
         // briefing_preferences_popover.js: Map twice_daily_time to preferred_time for storage

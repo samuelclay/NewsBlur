@@ -5670,7 +5670,7 @@
                 return feed.unread_counts();
             } else if (this.flags['river_view'] && !this.flags['social_view']) {
                 var collection;
-                if (!this.active_folder.folder_view) {
+                if (!this.active_folder || !this.active_folder.folder_view) {
                     // River blurblog gets a special collection
                     collection = NEWSBLUR.assets.folders;
                 } else {

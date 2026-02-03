@@ -153,6 +153,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         this.update_schedule_controls($settings);
         this.update_style_description($settings);
         this.update_generate_button_text($settings);
+        this.update_story_count_labels($settings);
     },
 
     // ===========================
@@ -224,6 +225,15 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             $twice_control.hide();
             $day_control.show();
         }
+    },
+
+    update_story_count_labels: function ($settings) {
+        $settings.find('.NB-briefing-control-story_count .NB-briefing-setting-option').each(function () {
+            var $opt = $(this);
+            var value = $opt.data('value');
+            var is_active = $opt.hasClass('NB-active');
+            $opt.text(value + (is_active ? ' stories' : ''));
+        });
     },
 
     update_generate_button_text: function ($settings) {
@@ -303,6 +313,10 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         if (setting_name === 'frequency') {
             this.update_schedule_controls($settings);
             this.update_generate_button_text($settings);
+        }
+
+        if (setting_name === 'story_count') {
+            this.update_story_count_labels($settings);
         }
 
         // briefing_onboarding_view.js: Map twice_daily_time to preferred_time for storage
