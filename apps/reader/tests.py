@@ -208,7 +208,9 @@ class Test_DeleteStarredTag(TestCase):
     def setUp(self):
         self.client = Client()
         # Create test user
-        self.user = User.objects.create_user(username="testuser2", password="testpass", email="test2@test.com")
+        self.user = User.objects.create_user(
+            username="testuser2", password="testpass", email="test2@test.com"
+        )
         self.client.login(username="testuser2", password="testpass")
 
         # Clear any existing starred stories for this user
