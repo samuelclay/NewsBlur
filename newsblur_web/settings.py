@@ -453,6 +453,20 @@ CELERY_TASK_QUEUES = {
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"
 
+# Worktree queue isolation: prefix all queue names so worktree celery workers
+# only process tasks from their own worktree, not from main or other worktrees.
+NEWSBLUR_WORKTREE = os.environ.get("NEWSBLUR_WORKTREE", "")
+if NEWSBLUR_WORKTREE:
+    CELERY_TASK_QUEUES = {
+        f"{NEWSBLUR_WORKTREE}_{name}": {
+            "exchange": f"{NEWSBLUR_WORKTREE}_{name}",
+            "exchange_type": config["exchange_type"],
+            "binding_key": f"{NEWSBLUR_WORKTREE}_{name}",
+        }
+        for name, config in CELERY_TASK_QUEUES.items()
+    }
+    CELERY_TASK_DEFAULT_QUEUE = f"{NEWSBLUR_WORKTREE}_{CELERY_TASK_DEFAULT_QUEUE}"
+
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERY_IMPORTS = (
     "apps.rss_feeds.tasks",
