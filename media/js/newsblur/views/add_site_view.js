@@ -2111,8 +2111,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 $.make('div', { className: 'NB-add-site-webfeed-analyzing-text' },
                     'Analyzing page to find story patterns...')
             ]));
-        } else if (state.subscribed_feed) {
-            $content_area.html(this.render_webfeed_subscribed(state.subscribed_feed));
+        } else if (state.subscribe_stage) {
+            $content_area.html(this.render_webfeed_subscribed(state));
         } else if (state.variants) {
             $content_area.html(this.render_webfeed_variants());
             if (!state._variants_animated) {
@@ -2311,13 +2311,46 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         return $.make('div', { className: 'NB-add-site-webfeed-results' }, [$variants_section, $options]);
     },
 
-    render_webfeed_subscribed: function (feed) {
+    render_webfeed_subscribed: function (state) {
+        var stage = state.subscribe_stage;
+        var feed = state.subscribed_feed;
+        var feed_title = (feed && feed.feed_title) || state.page_title || 'Web Feed';
+
+        var stage_labels = {
+            'subscribed': 'Subscribed! Fetching stories...',
+            'fetching': 'Fetching page...',
+            'processing': 'Processing stories...',
+            'complete': 'Done!',
+            'error': 'Fetch error: ' + (state.subscribe_error || 'Unknown error')
+        };
+        var status_text = stage_labels[stage] || 'Subscribing...';
+        var is_done = (stage === 'complete');
+        var is_error = (stage === 'error');
+        var is_loading = !is_done && !is_error;
+
+        var $status_items = [];
+        if (is_loading) {
+            $status_items.push(
+                $.make('div', { className: 'NB-add-site-webfeed-subscribe-progress' }, [
+                    $.make('div', { className: 'NB-add-site-webfeed-analyzing-spinner NB-spinner' }),
+                    $.make('div', { className: 'NB-add-site-webfeed-subscribe-status' }, status_text)
+                ])
+            );
+        } else if (is_error) {
+            $status_items.push(
+                $.make('div', { className: 'NB-add-site-webfeed-subscribe-status NB-error' }, status_text)
+            );
+        }
+
         return $.make('div', { className: 'NB-add-site-webfeed-subscribed' }, [
-            $.make('div', { className: 'NB-add-site-webfeed-subscribed-icon' }, '\u2713'),
+            $.make('div', { className: 'NB-add-site-webfeed-subscribed-icon' }, is_done ? '\u2713' : (is_error ? '\u26a0' : '\u2713')),
             $.make('div', { className: 'NB-add-site-webfeed-subscribed-text' }, [
-                $.make('div', { className: 'NB-add-site-webfeed-subscribed-title' }, 'Subscribed!'),
+                $.make('div', { className: 'NB-add-site-webfeed-subscribed-title' },
+                    is_done ? 'Subscribed!' : (is_error ? 'Subscribed with errors' : 'Subscribed!')),
                 $.make('div', { className: 'NB-add-site-webfeed-subscribed-desc' },
-                    'Feed "' + (feed.feed_title || 'Web Feed') + '" has been created.')
+                    is_done ? 'Feed "' + feed_title + '" is ready.' :
+                    'Feed "' + feed_title + '" has been created.'),
+                $.make('div', { className: 'NB-add-site-webfeed-subscribe-stages' }, $status_items)
             ])
         ]);
     },
@@ -2455,11 +2488,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             if (data.code > 0) {
                 var feed_id = data.feed ? data.feed.id : null;
                 this.webfeed_state.subscribed_feed = data.feed;
-                NEWSBLUR.assets.load_feeds(function () {
-                    if (feed_id) {
-                        NEWSBLUR.reader.open_feed(feed_id);
-                    }
-                });
+                this.webfeed_state.subscribe_feed_id = feed_id;
+                this.webfeed_state.subscribe_stage = 'subscribed';
+                this.render_webfeed_tab();
+                NEWSBLUR.assets.load_feeds();
             } else {
                 var page_title = state.page_title || 'Web Feed';
                 $btn.text('Subscribe to ' + page_title).removeClass('NB-disabled');
@@ -2467,6 +2499,27 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 this.render_webfeed_tab();
             }
         }, this));
+    },
+
+    handle_webfeed_subscribe_update: function (data) {
+        var state = this.webfeed_state;
+        if (!state.subscribe_feed_id || data.feed_id != state.subscribe_feed_id) return;
+
+        state.subscribe_stage = data.stage;
+        if (data.stage === 'complete') {
+            if (data.feed) {
+                state.subscribed_feed = data.feed;
+            }
+            NEWSBLUR.assets.load_feeds(_.bind(function () {
+                if (state.subscribe_feed_id) {
+                    NEWSBLUR.reader.open_feed(state.subscribe_feed_id);
+                }
+            }, this));
+        } else if (data.stage === 'error') {
+            state.subscribe_stage = 'error';
+            state.subscribe_error = data.error;
+        }
+        this.render_webfeed_tab();
     },
 
     // ================

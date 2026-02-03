@@ -26070,6 +26070,20 @@ h5.NB-classifier-section-header {
     color: #155724;
     margin-top: 4px;
 }
+.NB-add-site-webfeed-subscribe-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+.NB-add-site-webfeed-subscribe-status {
+    font-size: 12px;
+    color: #6c757d;
+}
+.NB-add-site-webfeed-subscribe-status.NB-error {
+    color: #dc3545;
+    margin-top: 8px;
+}
 
 @keyframes spin {
     to { transform: rotate(360deg); }

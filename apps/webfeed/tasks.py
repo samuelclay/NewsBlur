@@ -195,6 +195,46 @@ def extract_preview_stories(html_text, variant, url):
     return stories
 
 
+@app.task(name="fetch-webfeed", time_limit=60, soft_time_limit=55)
+def FetchWebFeed(feed_id, user_id):
+    """Fetch stories for a web feed in the background, publishing progress via Redis PubSub."""
+    from apps.rss_feeds.models import Feed
+
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    user = User.objects.get(pk=user_id)
+    username = user.username
+    feed = Feed.get_by_id(feed_id)
+    if not feed:
+        return {"code": -1, "message": "Feed not found"}
+
+    def publish(stage, extra=None):
+        payload = {"type": "subscribe_update", "feed_id": feed_id, "stage": stage}
+        if extra:
+            payload.update(extra)
+        try:
+            r.publish(username, f"webfeed:{json.dumps(payload, ensure_ascii=False)}")
+        except redis.RedisError:
+            pass
+
+    try:
+        publish("fetching")
+        feed.count_subscribers()
+
+        publish("processing")
+        feed.update()
+
+        feed = Feed.get_by_id(feed_id)
+        publish("complete", {"feed": feed.canonical() if feed else None})
+
+        logging.user(user, f"~BB~FWWeb Feed: Background fetch complete for ~SB{feed}~SN")
+        return {"code": 1, "message": "Fetch complete"}
+
+    except Exception as e:
+        publish("error", {"error": str(e)})
+        logging.user(user, f"~BB~FWWeb Feed: ~FR~SBBackground fetch error~SN~FW - {e}")
+        return {"code": -1, "message": str(e)}
+
+
 @app.task(name="analyze-webfeed-page", time_limit=120, soft_time_limit=110)
 def AnalyzeWebFeedPage(user_id, url, request_id=None):
     """Fetch a web page, analyze it with an LLM to find story patterns, and stream results via Redis PubSub."""
@@ -244,10 +284,17 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None):
             f"~BB~FWWeb Feed: Fetched ~SB{len(page_html)}~SN bytes, analyzing with Claude",
         )
 
+        # Pre-process HTML to strip navigation elements for LLM analysis
+        cleaned_html = strip_navigation_elements(page_html)
+        logging.user(
+            user,
+            f"~BB~FWWeb Feed: Cleaned HTML from ~SB{len(page_html)}~SN to ~SB{len(cleaned_html)}~SN bytes",
+        )
+
         # Step 2: Call Claude for XPath analysis
         from apps.ask_ai.providers import LLM_EXCEPTIONS, get_provider
 
-        messages = get_analysis_messages(url, page_html)
+        messages = get_analysis_messages(url, cleaned_html)
         provider, model_id = get_provider("opus")
 
         if not provider.is_configured():
