@@ -23177,7 +23177,7 @@ h5.NB-classifier-section-header {
     color: #505050;
     padding: 3px 0;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 6px;
 }
 
@@ -23185,6 +23185,7 @@ h5.NB-classifier-section-header {
     color: #5a9e5a;
     font-weight: bold;
     font-size: 11px;
+    margin-top: 1px;
 }
 
 /* Dark mode support */
@@ -29175,7 +29176,8 @@ span.NB-briefing-inline-favicon {
     display: flex;
     gap: 24px;
     align-items: flex-start;
-    padding: 14px 20px;
+    padding: 14px 0;
+    margin: 0 20px;
 }
 
 .NB-briefing-popover .NB-popover-section-label {
@@ -29186,13 +29188,6 @@ span.NB-briefing-inline-favicon {
 .NB-briefing-popover .NB-popover-section-controls {
     flex: 1;
     min-width: 0;
-    border-bottom: 1px solid rgba(0, 0, 0, .08);
-    padding-bottom: 14px;
-}
-
-.NB-briefing-popover .NB-popover-section:last-child .NB-popover-section-controls {
-    border-bottom: none;
-    padding-bottom: 0;
 }
 
 .NB-briefing-popover .NB-popover-section-title {
@@ -29269,10 +29264,6 @@ span.NB-briefing-inline-favicon {
 }
 
 /* reader.css: Dark mode overrides for briefing popover */
-.NB-dark .NB-briefing-popover .NB-popover-section-controls {
-    border-bottom-color: rgba(255, 255, 255, .08);
-}
-
 .NB-dark .NB-briefing-popover .NB-briefing-style-description {
     color: #6A8BA8;
     border-top-color: rgba(255, 255, 255, .04);
