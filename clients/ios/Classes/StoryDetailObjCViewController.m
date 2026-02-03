@@ -2343,8 +2343,15 @@
 - (void)updateStoryTheme {
     self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
 
-    NSString *jsString = [NSString stringWithFormat:@"var theme = document.getElementById('NB-theme-style'); if (theme) { theme.href = 'storyDetailView%@.css'; }",
-                [ThemeManager themeManager].themeCSSSuffix];
+    NSBundle *bundle = [NSBundle mainBundle];
+    NSString *themeSuffix = [ThemeManager themeManager].themeCSSSuffix;
+    NSString *themeCSSPath = [bundle pathForResource:[NSString stringWithFormat:@"storyDetailView%@", themeSuffix] ofType:@"css"];
+    NSString *themeCSS = themeCSSPath ? [NSString stringWithContentsOfFile:themeCSSPath encoding:NSUTF8StringEncoding error:nil] : @"";
+    themeCSS = [self embedResourcesInCSS:themeCSS bundle:bundle];
+    NSString *escapedThemeCSS = [self javaScriptStringFromString:themeCSS];
+
+    NSString *jsString = [NSString stringWithFormat:@"var theme = document.getElementById('NB-theme-style'); if (theme) { theme.textContent = %@; }",
+                escapedThemeCSS];
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
 
     self.webView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
@@ -2354,6 +2361,24 @@
     } else {
         self.webView.scrollView.indicatorStyle = UIScrollViewIndicatorStyleBlack;
     }
+}
+
+- (NSString *)javaScriptStringFromString:(NSString *)string {
+    if (!string) {
+        return @"\"\"";
+    }
+
+    NSData *data = [NSJSONSerialization dataWithJSONObject:@[string] options:0 error:nil];
+    if (!data) {
+        return @"\"\"";
+    }
+
+    NSString *json = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    if (json.length < 2) {
+        return @"\"\"";
+    }
+
+    return [json substringWithRange:NSMakeRange(1, json.length - 2)];
 }
 
 - (BOOL)canHideNavigationBar {
