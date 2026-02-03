@@ -224,6 +224,10 @@ class Feed(models.Model):
             "http://newsletter:"
         )
 
+    @property
+    def is_webfeed(self):
+        return self.feed_address.startswith("webfeed:")
+
     def canonical(self, full=False, include_favicon=True):
         feed = {
             "id": self.pk,
@@ -243,6 +247,7 @@ class Feed(models.Model):
             "subs": self.num_subscribers,
             "is_push": self.is_push,
             "is_newsletter": self.is_newsletter,
+            "is_webfeed": self.is_webfeed,
             "fetched_once": self.fetched_once,
             "search_indexed": self.search_indexed,
             "discover_indexed": self.discover_indexed,
@@ -364,7 +369,7 @@ class Feed(models.Model):
         min_subscribers = 1
         if settings.DEBUG:
             min_subscribers = 0
-        if self.num_subscribers > min_subscribers and not self.branch_from_feed and not self.is_newsletter:
+        if self.num_subscribers > min_subscribers and not self.branch_from_feed and not self.is_newsletter and not self.is_webfeed:
             SearchFeed.index(
                 feed_id=self.pk,
                 title=self.feed_title,
@@ -517,6 +522,13 @@ class Feed(models.Model):
                 return cls.objects.get(feed_address=url)
             except cls.MultipleObjectsReturned:
                 return cls.objects.filter(feed_address=url)[0]
+        if url and url.startswith("webfeed:"):
+            try:
+                return cls.objects.get(feed_address=url)
+            except cls.MultipleObjectsReturned:
+                return cls.objects.filter(feed_address=url)[0]
+            except cls.DoesNotExist:
+                return None
         if url and re.match("(https?://)?twitter.com/\w+/?", url):
             without_rss = True
         if url and re.match(r"(https?://)?(www\.)?facebook.com/\w+/?$", url):
@@ -1477,6 +1489,8 @@ class Feed(models.Model):
 
         if self.is_newsletter:
             feed = self.update_newsletter_icon()
+        elif self.is_webfeed:
+            feed = self.update_webfeed()
         else:
             disp = feed_fetcher.Dispatcher(options, 1)
             disp.add_jobs([[self.pk]])
@@ -1506,6 +1520,28 @@ class Feed(models.Model):
 
         icon_importer = IconImporter(self)
         icon_importer.save()
+
+        return self
+
+    def update_webfeed(self):
+        from utils.webfeed_fetcher import WebFeedFetcher
+
+        # Only fetch if at least one archive subscriber exists
+        if self.archive_subscribers <= 0:
+            logging.debug(
+                "   ---> [%-30s] ~FYWeb Feed: Skipping fetch, no archive subscribers"
+                % (self.log_title[:30],)
+            )
+            return self
+
+        fetcher = WebFeedFetcher(self)
+        fpf = fetcher.fetch()
+
+        if fpf:
+            from utils.feed_fetcher import ProcessFeed
+
+            processor = ProcessFeed(self.pk, fpf, {"verbose": False, "updates_off": False, "force": True})
+            processor.process()
 
         return self
 

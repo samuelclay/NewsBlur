@@ -45,6 +45,13 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         // Categories tab events
         "click .NB-add-site-category-card": "handle_category_click",
         "click .NB-add-site-category-back": "go_back_to_categories",
+        // Web Feed tab events
+        "click .NB-add-site-web-feed-tab .NB-add-site-tab-search-btn": "perform_webfeed_analyze",
+        "keypress .NB-add-site-web-feed-search": "handle_webfeed_search_keypress",
+        "click .NB-add-site-webfeed-variant-card": "select_webfeed_variant",
+        "click .NB-add-site-webfeed-subscribe-btn": "subscribe_webfeed",
+        "input .NB-add-site-webfeed-staleness-slider": "update_webfeed_staleness",
+        "change .NB-add-site-webfeed-unread-radio": "toggle_webfeed_unread",
         // Note: scroll events don't bubble, so infinite scroll is bound directly
         // in bind_scroll_handler() rather than via Backbone delegated events.
         // Discovery navigation events
@@ -61,6 +68,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
     TABS: [
         { id: 'search', label: 'Search', icon: '/media/img/icons/nouns/search.svg', mono: true },
+        { id: 'web-feed', label: 'Web Feed', icon: '/media/img/icons/nouns/web-feed.svg', mono: true },
         { id: 'popular', label: 'Popular', icon: '/media/img/icons/heroicons-solid/fire.svg', mono: true },
         { id: 'youtube', label: 'YouTube', icon: '/media/img/reader/youtube_play.png' },
         { id: 'reddit', label: 'Reddit', icon: '/media/img/reader/reddit.png' },
@@ -249,6 +257,18 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             selected_category: 'all',
             selected_subcategory: 'all'
         });
+        this.webfeed_state = {
+            url: '',
+            is_analyzing: false,
+            variants: null,
+            selected_variant: null,
+            staleness_days: 30,
+            mark_unread_on_change: false,
+            error: null,
+            request_id: null,
+            html_hash: '',
+            subscribed_feed: null
+        };
 
         this.trending_state = {
             feeds: [],
@@ -403,6 +423,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             'newsletters': 'render_newsletters_tab',
             'podcasts': 'render_podcasts_tab',
             'google-news': 'render_google_news_tab',
+            'web-feed': 'render_webfeed_tab',
             'trending': 'render_trending_tab',
             'categories': 'render_categories_tab'
         };
@@ -2055,6 +2076,397 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (state.language) {
             $tab.find('.NB-add-site-google-news-language').val(state.language);
         }
+    },
+
+    // =================
+    // = Web Feed Tab =
+    // =================
+
+    render_webfeed_tab: function () {
+        var state = this.webfeed_state;
+        var $tab = this.$('.NB-add-site-web-feed-tab');
+
+        var $search_bar = this.render_tab_search_bar({
+            input_class: 'NB-add-site-tab-search-input NB-add-site-web-feed-search',
+            placeholder: 'Paste any website URL...',
+            value: state.url || '',
+            is_loading: state.is_analyzing
+        });
+
+        if (state.is_analyzing) {
+            $search_bar.find('.NB-add-site-search-btn').addClass('NB-disabled');
+            $search_bar.find('.NB-add-site-web-feed-search').prop('disabled', true);
+        }
+
+        var $content_area = $.make('div', { className: 'NB-add-site-webfeed-content' });
+
+        if (state.error) {
+            $content_area.html($.make('div', { className: 'NB-add-site-webfeed-error' }, [
+                $.make('div', { className: 'NB-add-site-webfeed-error-icon' }, '\u26a0'),
+                $.make('div', { className: 'NB-add-site-webfeed-error-text' }, state.error)
+            ]));
+        } else if (state.is_analyzing) {
+            $content_area.html($.make('div', { className: 'NB-add-site-webfeed-analyzing' }, [
+                $.make('div', { className: 'NB-add-site-webfeed-analyzing-spinner NB-spinner' }),
+                $.make('div', { className: 'NB-add-site-webfeed-analyzing-text' },
+                    'Analyzing page to find story patterns...')
+            ]));
+        } else if (state.subscribed_feed) {
+            $content_area.html(this.render_webfeed_subscribed(state.subscribed_feed));
+        } else if (state.variants) {
+            $content_area.html(this.render_webfeed_variants());
+            if (!state._variants_animated) {
+                state._variants_animated = true;
+                var $cards = $content_area.find('.NB-add-site-webfeed-variant-card');
+                var delay_per_card = Math.min(800, 4000 / Math.max($cards.length, 1));
+                $cards.each(function (i) {
+                    var $card = $(this);
+                    setTimeout(function () { $card.addClass('NB-animate-in'); }, i * delay_per_card + 50);
+                });
+                var $subscribe = $content_area.find('.NB-add-site-webfeed-subscribe-section');
+                if ($subscribe.length) {
+                    setTimeout(function () { $subscribe.addClass('NB-animate-in'); }, $cards.length * delay_per_card + 50);
+                }
+            } else {
+                $content_area.find('.NB-add-site-webfeed-variant-card, .NB-add-site-webfeed-subscribe-section').addClass('NB-animate-in');
+            }
+        } else {
+            $content_area.html($.make('div', { className: 'NB-add-site-webfeed-empty' }, [
+                $.make('div', { className: 'NB-add-site-webfeed-empty-icon' }, [
+                    $.make('img', { src: '/media/img/icons/nouns/web-feed.svg', className: 'NB-add-site-source-icon-img' })
+                ]),
+                $.make('div', { className: 'NB-add-site-webfeed-empty-text' },
+                    'Paste a URL above and we\'ll use AI to find stories on the page, even if there\'s no RSS feed.')
+            ]));
+        }
+
+        $tab.html($.make('div', { className: 'NB-add-site-tab-with-search' }, [
+            $.make('div', { className: 'NB-add-site-source-header' }, [
+                $.make('div', { className: 'NB-add-site-source-icon NB-webfeed' }, [
+                    $.make('img', { src: '/media/img/icons/nouns/web-feed.svg' })
+                ]),
+                $.make('div', { className: 'NB-add-site-source-info' }, [
+                    $.make('div', { className: 'NB-add-site-source-title' }, 'Web Feed'),
+                    $.make('div', { className: 'NB-add-site-source-desc' },
+                        'Create a feed for any website, even without RSS.')
+                ])
+            ]),
+            $search_bar,
+            $content_area
+        ]));
+    },
+
+    render_webfeed_variants: function () {
+        var self = this;
+        var state = this.webfeed_state;
+        var variants = state.variants || [];
+        var base_url = state.url || '';
+        var selected_variant = state.selected_variant !== null ? variants[state.selected_variant] : null;
+        var page_title = state.page_title || base_url.split('//').pop().split('/')[0];
+
+        // -- Variants section --
+        var $variants_section = $.make('div', { className: 'NB-add-site-webfeed-variants-section' }, [
+            $.make('div', { className: 'NB-add-site-webfeed-section-header' }, [
+                $.make('div', { className: 'NB-add-site-webfeed-section-title' },
+                    'Choose a story pattern'),
+                $.make('div', { className: 'NB-add-site-webfeed-section-subtitle' },
+                    'Found ' + variants.length + ' patterns. Select the one that best matches the stories you want.')
+            ]),
+            $.make('div', { className: 'NB-add-site-webfeed-variant-cards' },
+                _.map(variants, function (variant, index) {
+                    var is_selected = state.selected_variant === index;
+                    var story_count = (variant.preview_stories || []).length;
+                    var $preview_stories = $.make('div', { className: 'NB-add-site-webfeed-preview-stories' },
+                        _.map(variant.preview_stories || [], function (story) {
+                            var $story_elements = [];
+                            var img_src = story.image;
+                            if (img_src && !img_src.match(/^https?:\/\//)) {
+                                try {
+                                    img_src = new URL(img_src, base_url).href;
+                                } catch (e) {
+                                    img_src = null;
+                                }
+                            }
+                            if (img_src) {
+                                $story_elements.push($.make('img', {
+                                    className: 'NB-add-site-webfeed-preview-story-image',
+                                    src: img_src,
+                                    loading: 'lazy'
+                                }));
+                            }
+                            var $text = $.make('div', { className: 'NB-add-site-webfeed-preview-story-text' }, [
+                                $.make('div', { className: 'NB-add-site-webfeed-preview-story-title' },
+                                    story.title || '(no title)'),
+                                story.content ? $.make('div', {
+                                    className: 'NB-add-site-webfeed-preview-story-content'
+                                }, story.content.substring(0, 100) + (story.content.length > 100 ? '...' : '')) : null
+                            ]);
+                            $story_elements.push($text);
+                            return $.make('div', {
+                                className: 'NB-add-site-webfeed-preview-story' + (img_src ? ' NB-has-image' : '')
+                            }, $story_elements);
+                        })
+                    );
+
+                    return $.make('div', {
+                        className: 'NB-add-site-webfeed-variant-card' + (is_selected ? ' NB-active' : ''),
+                        'data-variant-index': index
+                    }, [
+                        $.make('div', { className: 'NB-add-site-webfeed-variant-card-header' }, [
+                            $.make('div', { className: 'NB-add-site-webfeed-variant-radio' + (is_selected ? ' NB-selected' : '') }),
+                            $.make('div', { className: 'NB-add-site-webfeed-variant-card-info' }, [
+                                $.make('div', { className: 'NB-add-site-webfeed-variant-label' },
+                                    variant.label || 'Variant ' + (index + 1)),
+                                $.make('div', { className: 'NB-add-site-webfeed-variant-desc' }, variant.description || '')
+                            ]),
+                            $.make('div', { className: 'NB-add-site-webfeed-variant-count' },
+                                story_count + (story_count === 1 ? ' story' : ' stories'))
+                        ]),
+                        $preview_stories
+                    ]);
+                })
+            )
+        ]);
+
+        // -- Subscribe section (only shown when variant selected) --
+        var favicon_src = state.favicon_url || '';
+        if (favicon_src && !favicon_src.match(/^https?:\/\//)) {
+            try { favicon_src = new URL(favicon_src, base_url).href; } catch (e) { favicon_src = ''; }
+        }
+
+        var $feed_badge = $.make('div', { className: 'NB-add-site-webfeed-feed-badge' }, [
+            $.make('div', { className: 'NB-add-site-webfeed-feed-badge-icon' }, [
+                favicon_src
+                    ? $.make('img', { src: favicon_src, className: 'NB-add-site-webfeed-feed-badge-favicon' })
+                    : $.make('img', { src: '/media/img/icons/nouns/web-feed.svg', className: 'NB-add-site-webfeed-feed-badge-favicon NB-default-icon' })
+            ]),
+            $.make('div', { className: 'NB-add-site-webfeed-feed-badge-info' }, [
+                $.make('div', { className: 'NB-add-site-webfeed-feed-badge-title' }, page_title),
+                $.make('div', { className: 'NB-add-site-webfeed-feed-badge-url' }, base_url),
+                selected_variant
+                    ? $.make('div', { className: 'NB-add-site-webfeed-feed-badge-pattern' },
+                        'Pattern: ' + (selected_variant.label || ''))
+                    : null
+            ])
+        ]);
+
+        var $options = $.make('div', {
+            className: 'NB-add-site-webfeed-subscribe-section' + (state.selected_variant !== null ? '' : ' NB-hidden')
+        }, [
+            $.make('div', { className: 'NB-add-site-webfeed-section-header' }, [
+                $.make('div', { className: 'NB-add-site-webfeed-section-title' }, 'Subscribe')
+            ]),
+            $feed_badge,
+            $.make('div', { className: 'NB-add-site-webfeed-options' }, [
+                $.make('div', { className: 'NB-add-site-webfeed-option' }, [
+                    $.make('label', { className: 'NB-add-site-webfeed-option-label' },
+                        'Alert after ' + state.staleness_days + ' days without new stories'),
+                    $.make('input', {
+                        type: 'range',
+                        className: 'NB-add-site-webfeed-staleness-slider',
+                        min: '1',
+                        max: '365',
+                        value: String(state.staleness_days)
+                    })
+                ]),
+                $.make('div', { className: 'NB-add-site-webfeed-option' }, [
+                    $.make('label', { className: 'NB-add-site-webfeed-option-label' }, 'When story content changes'),
+                    $.make('div', { className: 'NB-add-site-webfeed-radio-group' }, [
+                        $.make('label', {
+                            className: 'NB-add-site-webfeed-radio-option' + (!state.mark_unread_on_change ? ' NB-selected' : '')
+                        }, [
+                            $.make('input', {
+                                type: 'radio',
+                                name: 'webfeed_unread_behavior',
+                                className: 'NB-add-site-webfeed-unread-radio',
+                                value: 'keep',
+                                checked: !state.mark_unread_on_change
+                            }),
+                            $.make('span', { className: 'NB-add-site-webfeed-radio-label' }, 'Keep read status')
+                        ]),
+                        $.make('label', {
+                            className: 'NB-add-site-webfeed-radio-option' + (state.mark_unread_on_change ? ' NB-selected' : '')
+                        }, [
+                            $.make('input', {
+                                type: 'radio',
+                                name: 'webfeed_unread_behavior',
+                                className: 'NB-add-site-webfeed-unread-radio',
+                                value: 'unread',
+                                checked: state.mark_unread_on_change
+                            }),
+                            $.make('span', { className: 'NB-add-site-webfeed-radio-label' }, 'Mark as unread')
+                        ])
+                    ])
+                ]),
+                $.make('div', { className: 'NB-add-site-webfeed-option' }, [
+                    $.make('label', { className: 'NB-add-site-webfeed-option-label' }, 'Add to folder'),
+                    self.make_folder_selector()
+                ])
+            ]),
+            $.make('div', {
+                className: 'NB-add-site-webfeed-subscribe-btn NB-modal-submit-button NB-modal-submit-green'
+            }, 'Subscribe to ' + page_title)
+        ]);
+
+        return $.make('div', { className: 'NB-add-site-webfeed-results' }, [$variants_section, $options]);
+    },
+
+    render_webfeed_subscribed: function (feed) {
+        return $.make('div', { className: 'NB-add-site-webfeed-subscribed' }, [
+            $.make('div', { className: 'NB-add-site-webfeed-subscribed-icon' }, '\u2713'),
+            $.make('div', { className: 'NB-add-site-webfeed-subscribed-text' }, [
+                $.make('div', { className: 'NB-add-site-webfeed-subscribed-title' }, 'Subscribed!'),
+                $.make('div', { className: 'NB-add-site-webfeed-subscribed-desc' },
+                    'Feed "' + (feed.feed_title || 'Web Feed') + '" has been created.')
+            ])
+        ]);
+    },
+
+    perform_webfeed_analyze: function () {
+        if (this.webfeed_state.is_analyzing) return;
+
+        var $input = this.$('.NB-add-site-web-feed-search');
+        var url = ($input.val() || '').trim();
+
+        if (!url) return;
+        if (!url.match(/^https?:\/\//)) {
+            url = 'https://' + url;
+            $input.val(url);
+        }
+
+        var request_id = 'wf_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+
+        this.webfeed_state.url = url;
+        this.webfeed_state.is_analyzing = true;
+        this.webfeed_state.variants = null;
+        this.webfeed_state.selected_variant = null;
+        this.webfeed_state.error = null;
+        this.webfeed_state.request_id = request_id;
+        this.webfeed_state.subscribed_feed = null;
+        this.webfeed_state._variants_animated = false;
+
+        this.render_webfeed_tab();
+
+        if (this._webfeed_timeout) clearTimeout(this._webfeed_timeout);
+        this._webfeed_timeout = setTimeout(_.bind(function () {
+            if (this.webfeed_state.is_analyzing && this.webfeed_state.request_id === request_id) {
+                this.webfeed_state.is_analyzing = false;
+                this.webfeed_state.error = 'Analysis timed out. Please try again.';
+                this.render_webfeed_tab();
+            }
+        }, this), 60000);
+
+        NEWSBLUR.assets.analyze_webfeed(url, request_id, _.bind(function (data) {
+            if (data.code < 0) {
+                if (this._webfeed_timeout) clearTimeout(this._webfeed_timeout);
+                this.webfeed_state.is_analyzing = false;
+                this.webfeed_state.error = data.message;
+                this.render_webfeed_tab();
+            }
+        }, this));
+    },
+
+    handle_webfeed_search_keypress: function (e) {
+        if (e.which === 13) {
+            this.perform_webfeed_analyze();
+        }
+    },
+
+    handle_webfeed_variants: function (data) {
+        if (data.request_id !== this.webfeed_state.request_id) return;
+        if (this._webfeed_timeout) clearTimeout(this._webfeed_timeout);
+
+        this.webfeed_state.is_analyzing = false;
+        this.webfeed_state.variants = data.variants;
+        this.webfeed_state.html_hash = data.html_hash || '';
+        this.webfeed_state.page_title = data.page_title || '';
+        this.webfeed_state.favicon_url = data.favicon_url || '';
+        this.webfeed_state.error = null;
+        this.render_webfeed_tab();
+    },
+
+    handle_webfeed_complete: function (data) {
+        if (data.request_id !== this.webfeed_state.request_id) return;
+        if (this._webfeed_timeout) clearTimeout(this._webfeed_timeout);
+
+        if (this.webfeed_state.is_analyzing) {
+            this.webfeed_state.is_analyzing = false;
+            if (!this.webfeed_state.variants) {
+                this.webfeed_state.error = 'No story patterns found on this page.';
+            }
+            this.render_webfeed_tab();
+        }
+    },
+
+    handle_webfeed_error: function (data) {
+        if (data.request_id !== this.webfeed_state.request_id) return;
+        if (this._webfeed_timeout) clearTimeout(this._webfeed_timeout);
+
+        this.webfeed_state.is_analyzing = false;
+        this.webfeed_state.error = data.error || 'An error occurred during analysis.';
+        this.render_webfeed_tab();
+    },
+
+    select_webfeed_variant: function (e) {
+        var $card = $(e.currentTarget);
+        var index = parseInt($card.data('variant-index'), 10);
+
+        this.webfeed_state.selected_variant = index;
+        this.render_webfeed_tab();
+    },
+
+    update_webfeed_staleness: function (e) {
+        var value = parseInt($(e.target).val(), 10);
+        this.webfeed_state.staleness_days = value;
+        $(e.target).closest('.NB-add-site-webfeed-option').find('.NB-add-site-webfeed-option-label').text(
+            'Alert after ' + value + ' days without new stories'
+        );
+    },
+
+    toggle_webfeed_unread: function (e) {
+        this.webfeed_state.mark_unread_on_change = $(e.target).val() === 'unread';
+        this.$('.NB-add-site-webfeed-radio-option').removeClass('NB-selected');
+        $(e.target).closest('.NB-add-site-webfeed-radio-option').addClass('NB-selected');
+    },
+
+    subscribe_webfeed: function () {
+        var state = this.webfeed_state;
+        if (state.selected_variant === null || !state.variants) return;
+
+        var variant = state.variants[state.selected_variant];
+        var folder = this.$('.NB-add-site-webfeed-subscribe-section .NB-add-site-folder-select').val() || '';
+
+        var $btn = this.$('.NB-add-site-webfeed-subscribe-btn');
+        $btn.text('Subscribing...').addClass('NB-disabled');
+
+        NEWSBLUR.assets.subscribe_webfeed(state.url, state.selected_variant, folder, {
+            'story_container_xpath': variant.story_container,
+            'title_xpath': variant.title,
+            'link_xpath': variant.link,
+            'content_xpath': variant.content || '',
+            'image_xpath': variant.image || '',
+            'author_xpath': variant.author || '',
+            'date_xpath': variant.date || '',
+            'html_hash': state.html_hash,
+            'feed_title': state.page_title || '',
+            'staleness_days': state.staleness_days,
+            'mark_unread_on_change': state.mark_unread_on_change ? 'true' : 'false'
+        }, _.bind(function (data) {
+            if (data.code > 0) {
+                var feed_id = data.feed ? data.feed.id : null;
+                this.webfeed_state.subscribed_feed = data.feed;
+                NEWSBLUR.assets.load_feeds(function () {
+                    if (feed_id) {
+                        NEWSBLUR.reader.open_feed(feed_id);
+                    }
+                });
+            } else {
+                var page_title = state.page_title || 'Web Feed';
+                $btn.text('Subscribe to ' + page_title).removeClass('NB-disabled');
+                this.webfeed_state.error = data.message;
+                this.render_webfeed_tab();
+            }
+        }, this));
     },
 
     // ================
