@@ -108,7 +108,11 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             this.show_no_more_stories();
         }
 
-        this.end_loading();
+        // Only remove the loading bar if we're done. During fill_out
+        // (e.g. Focus mode hiding all stories), keep it visible to prevent flicker.
+        if (this.collection.no_more_stories) {
+            this.end_loading();
+        }
     },
 
     clear: function () {
