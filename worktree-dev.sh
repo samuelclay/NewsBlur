@@ -72,6 +72,10 @@ fi
 if [ ! -f "config/certificates/localhost.pem" ]; then
     NEEDS_SETUP=true
 fi
+# Regenerate if template is newer than the generated compose file
+if [ -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" ] && [ "docker/compose/worktree.yml.j2" -nt ".worktree/docker-compose.${WORKSPACE_NAME}.yml" ]; then
+    NEEDS_SETUP=true
+fi
 
 # Run setup if needed
 if [ "$NEEDS_SETUP" = true ]; then
