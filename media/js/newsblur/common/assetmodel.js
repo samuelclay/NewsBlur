@@ -51,6 +51,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.favicons = {};
         this.stories = new NEWSBLUR.Collections.Stories();
         this.starred_feeds = new NEWSBLUR.Collections.StarredFeeds();
+        this.briefing_section_feeds = new NEWSBLUR.Collections.BriefingSectionFeeds();
         this.searches_feeds = new NEWSBLUR.Collections.SearchesFeeds();
         this.queued_read_stories = {};
         this.queued_realtime_stories = {};

@@ -108,7 +108,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
 
     from apps.briefing.models import MBriefingPreferences, create_briefing_story, ensure_briefing_feed
     from apps.briefing.scoring import select_briefing_stories
-    from apps.briefing.summary import generate_briefing_summary
+    from apps.briefing.summary import extract_section_story_hashes, extract_section_summaries, generate_briefing_summary
     from django.conf import settings
 
     try:
@@ -179,7 +179,23 @@ def GenerateUserBriefing(user_id, on_demand=False):
         return
 
     curated_hashes = [s["story_hash"] for s in scored_stories]
-    briefing, story = create_briefing_story(feed, user, summary_html, now, curated_hashes, on_demand=on_demand)
+    curated_sections = {}
+    for s in scored_stories:
+        curated_sections.setdefault(s.get("category", "trending_global"), []).append(s["story_hash"])
+    section_summaries = extract_section_summaries(summary_html)
+    # tasks.py: Merge story hashes referenced in the AI summary into curated_sections.
+    # The AI may organize stories into sections (like "Quick catch-up") that don't
+    # correspond to scoring categories, referencing stories via data-story-hash links.
+    summary_hashes = extract_section_story_hashes(section_summaries)
+    curated_hash_set = set(curated_hashes)
+    for key, hashes in summary_hashes.items():
+        if key not in curated_sections:
+            curated_sections[key] = [h for h in hashes if h in curated_hash_set]
+    briefing, story = create_briefing_story(
+        feed, user, summary_html, now, curated_hashes,
+        on_demand=on_demand, curated_sections=curated_sections,
+        section_summaries=section_summaries,
+    )
 
     logging.debug(
         " ---> GenerateUserBriefing: completed for user %s — %s stories, hash %s"

@@ -6652,9 +6652,46 @@ body {
     display: block;
 }
 
+/* reader.css: Briefing sections folder — expandable sub-items under Daily Briefing */
+.NB-briefing-sections-folder {
+    display: none;
+}
+
+.NB-briefing-section-feeds {
+    background-color: #dfdcd5;
+}
+
+.NB-briefing-section-feeds .feed {
+    background-color: #dfdcd5;
+}
+
+.NB-briefing-section-feeds .unread_count_positive {
+    background-color: #5C89C4;
+}
+
+.NB-briefing-section-feed .feed_favicon {
+    background-image: url('/media/img/icons/nouns/briefing.svg');
+    background-size: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.NB-briefing-section-feed .feed_favicon img {
+    display: none;
+}
+
+/* reader.css: Dark mode for briefing section feeds */
+.NB-dark .NB-briefing-section-feeds {
+    background-color: #292b2e;
+}
+
+.NB-dark .NB-briefing-section-feeds .feed {
+    background-color: #292b2e;
+}
+
 .NB-staff-badge {
     position: absolute;
-    right: 8px;
+    right: 28px;
     top: 50%;
     transform: translateY(-50%);
     color: #8B7355;
@@ -6662,6 +6699,7 @@ body {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.3px;
+    pointer-events: none;
 }
 
 /* ============================ */

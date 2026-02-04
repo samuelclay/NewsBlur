@@ -1392,6 +1392,7 @@
                 'social_view': false,
                 'starred_view': false,
                 'briefing_view': false,
+                'briefing_section': null,
                 'select_story_in_feed': null,
                 'global_blurblogs': false,
                 'reloading_feeds': false,
@@ -1467,6 +1468,7 @@
             this.model.feeds.deselect();
             this.model.stories.deselect();
             this.model.starred_feeds.deselect();
+            this.model.briefing_section_feeds.deselect();
             this.model.searches_feeds.deselect();
             this.model.folders.deselect();
             this.model.social_feeds.deselect();
@@ -2106,18 +2108,53 @@
         open_daily_briefing: function (options) {
             options = options || {};
             var self = this;
+            var switching_section = this.flags.briefing_view &&
+                NEWSBLUR.assets.briefing_data &&
+                this.active_feed == 'river:daily-briefing';
 
-            this.reset_feed(options);
-            this.hide_splash_page();
+            if (!switching_section) {
+                this.reset_feed(options);
+                this.hide_splash_page();
+            }
 
             this.active_feed = 'river:daily-briefing';
-            this.$s.$river_briefing_header.addClass('NB-selected');
 
             this.iframe_scroll = null;
-            this.flags['opening_feed'] = true;
             this.$s.$layout.addClass('NB-view-river');
             this.flags.river_view = true;
             this.flags.briefing_view = true;
+            this.flags.briefing_section = options.section || null;
+
+            // reader.js: Highlight the section model or the parent header, not both
+            NEWSBLUR.assets.briefing_section_feeds.deselect();
+            if (options.section) {
+                this.$s.$river_briefing_header.removeClass('NB-selected');
+                var section_model = NEWSBLUR.assets.briefing_section_feeds.get('briefing:' + options.section);
+                if (section_model) {
+                    section_model.set('selected', true);
+                }
+            } else {
+                this.$s.$river_briefing_header.addClass('NB-selected');
+            }
+
+            if (!options.silent) {
+                var url = options.section ? "/briefing/" + options.section : "/briefing";
+                if (window.location.pathname != url) {
+                    NEWSBLUR.log(["Navigating to url", url]);
+                    NEWSBLUR.router.navigate(url);
+                }
+            }
+
+            // reader.js: If already viewing briefing, just re-render with cached data
+            // instead of re-fetching from the server.
+            if (switching_section) {
+                if (NEWSBLUR.app.story_titles) {
+                    NEWSBLUR.app.story_titles.render();
+                }
+                return;
+            }
+
+            this.flags['opening_feed'] = true;
 
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
             var explicit_view_setting = this.model.view_setting(this.active_feed, 'view');
@@ -2129,14 +2166,6 @@
             this.switch_story_layout();
             this.setup_mousemove_on_views();
             this.make_feed_title_in_stories();
-
-            if (!options.silent) {
-                var url = "/briefing";
-                if (window.location.pathname != url) {
-                    NEWSBLUR.log(["Navigating to url", url]);
-                    NEWSBLUR.router.navigate(url);
-                }
-            }
 
             this.model.fetch_briefing_stories(
                 _.bind(this.post_open_daily_briefing, this),
@@ -2152,7 +2181,54 @@
             // reader.js: Store briefing data for the story titles view to render
             NEWSBLUR.assets.briefing_data = data;
 
+            // reader.js: Build aggregate section counts from all briefings' curated_sections
+            // and include sections that only exist in section_summaries (meta sections
+            // like quick_catchup that reference stories from other sections).
+            var section_definitions = data.section_definitions || {};
+            var aggregate_sections = {};
             var briefings = data.briefings || [];
+            _.each(briefings, function (briefing) {
+                var sections = briefing.curated_sections || {};
+                _.each(sections, function (hashes, key) {
+                    if (!aggregate_sections[key]) {
+                        aggregate_sections[key] = 0;
+                    }
+                    aggregate_sections[key] += (hashes || []).length;
+                });
+                // reader.js: Include sections from section_summaries that have no curated stories
+                var summaries = briefing.section_summaries || {};
+                _.each(summaries, function (html, key) {
+                    if (!(key in aggregate_sections)) {
+                        aggregate_sections[key] = 0;
+                    }
+                });
+            });
+
+            // reader.js: Populate briefing_section_feeds collection for the sidebar
+            var section_models = [];
+            _.each(aggregate_sections, function (count, key) {
+                section_models.push({
+                    section_key: key,
+                    section_name: section_definitions[key] || key,
+                    count: count
+                });
+            });
+            NEWSBLUR.assets.briefing_section_feeds.reset(section_models, { parse: true });
+
+            if (NEWSBLUR.app.feed_list) {
+                NEWSBLUR.app.feed_list.make_briefing_sections();
+            }
+
+            // reader.js: Re-select section model if filtering
+            if (this.flags.briefing_section) {
+                var section_model = NEWSBLUR.assets.briefing_section_feeds.get(
+                    'briefing:' + this.flags.briefing_section
+                );
+                if (section_model) {
+                    section_model.set('selected', true);
+                }
+            }
+
             if (!data.enabled && !briefings.length) {
                 // reader.js: Show full-pane onboarding for users who haven't opted in
                 if (this.briefing_onboarding_view) {

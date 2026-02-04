@@ -1,4 +1,5 @@
 import datetime
+import re
 import zlib
 
 import redis
@@ -6,7 +7,7 @@ from django.conf import settings
 from django.utils.encoding import smart_str
 
 from apps.briefing.activity import RUserActivity
-from apps.briefing.models import DEFAULT_SECTIONS, MBriefing, MBriefingPreferences, VALID_SECTION_KEYS
+from apps.briefing.models import BRIEFING_SECTION_DEFINITIONS, DEFAULT_SECTIONS, MBriefing, MBriefingPreferences, VALID_SECTION_KEYS
 from apps.rss_feeds.models import Feed, MStory
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
@@ -96,16 +97,30 @@ def load_briefing_stories(request):
             "summary_story": summary_story,
             "curated_story_hashes": curated_hashes,
             "curated_stories": curated_stories,
+            "curated_sections": briefing.curated_sections or {},
+            "section_summaries": briefing.section_summaries or {},
         }
         briefing_list.append(briefing_data)
 
     prefs = MBriefingPreferences.get_or_create(user.pk)
+
+    section_definitions = {s["key"]: s["name"] for s in BRIEFING_SECTION_DEFINITIONS}
+
+    # views.py: Add display names for AI-generated sections not in BRIEFING_SECTION_DEFINITIONS
+    # (e.g. custom sections like "claude_code"). Extract the name from the <h3> tag text.
+    for briefing in briefings:
+        for key, html in (briefing.section_summaries or {}).items():
+            if key not in section_definitions and html:
+                match = re.search(r"<h3[^>]*>([^<]+)</h3>", html)
+                if match:
+                    section_definitions[key] = match.group(1).strip()
 
     result = {
         "briefings": briefing_list,
         "is_preview": not is_premium_archive,
         "briefing_feed_id": prefs.briefing_feed_id,
         "enabled": prefs.enabled,
+        "section_definitions": section_definitions,
     }
 
     # views.py: Include full preferences when not enabled so the onboarding view
