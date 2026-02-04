@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 import time
 import uuid
 from urllib.parse import urljoin
@@ -17,6 +18,27 @@ from utils.llm_costs import LLMCostTracker
 from .prompts import get_analysis_messages
 
 USER_AGENT = "NewsBlur Web Feed Analyzer (https://newsblur.com)"
+
+# Regex to extract URL from CSS background-image: url(...)
+_CSS_BG_IMAGE_RE = re.compile(
+    r"""background-image\s*:\s*url\(\s*(['"]?)(.*?)\1\s*\)""",
+    re.IGNORECASE,
+)
+
+
+def extract_image_url(raw_value):
+    """Extract an image URL from a raw XPath result.
+
+    If the value looks like a CSS style string containing background-image: url(...),
+    extract and return just the URL. Otherwise return the value as-is.
+    """
+    if not raw_value:
+        return None
+    value = raw_value.strip()
+    if "background-image" not in value.lower():
+        return value
+    match = _CSS_BG_IMAGE_RE.search(value)
+    return match.group(2).strip() if match else None
 
 # Class/id substrings that indicate non-content elements
 NAV_INDICATORS = [
@@ -189,6 +211,7 @@ def extract_preview_stories(html_text, variant, url):
             try:
                 images = container.xpath(variant["image"])
                 img_src = images[0].strip() if images else None
+                img_src = extract_image_url(img_src)
                 if img_src and not img_src.startswith("http"):
                     img_src = urljoin(url, img_src)
                 story["image"] = img_src

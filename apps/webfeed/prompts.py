@@ -11,6 +11,7 @@ Rules:
 - title, link, content, image, author, date are relative XPaths within the container
 - For link extraction, prefer <a> tags with href attributes
 - For image extraction, prefer <img> tags with src attributes (use @src to get the URL)
+- If images use CSS background-image styles instead of <img> tags, extract the style attribute (use @style) -- the backend will parse the URL from the CSS
 - Return 3-5 different extraction variants, ordered by confidence (best first)
 - Each variant should capture a different logical grouping of content on the page
 - The BEST variant is the one that captures the site's primary editorial/article content, not navigation or menu items"""
@@ -24,7 +25,7 @@ Each variant object must have:
 - "title": relative XPath for the title text (e.g. ".//h2/a/text()")
 - "link": relative XPath for the permalink href (e.g. ".//h2/a/@href")
 - "content": relative XPath for content/summary text (e.g. ".//p[@class='excerpt']/text()"), or null if not available
-- "image": relative XPath for image src (e.g. ".//img/@src"), or null if not available
+- "image": relative XPath for image src (e.g. ".//img/@src" or ".//div[contains(@style,'background-image')]/@style"), or null if not available
 - "author": relative XPath for author text, or null if not available
 - "date": relative XPath for date text, or null if not available
 

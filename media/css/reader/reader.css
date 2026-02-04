@@ -24603,6 +24603,7 @@ h5.NB-classifier-section-header {
     height: 100%;
     overflow: hidden;
     padding: 20px 0;
+    box-sizing: border-box;
 }
 
 .NB-add-site-tab-pane.NB-active {
@@ -25888,7 +25889,7 @@ h5.NB-classifier-section-header {
 }
 .NB-add-site-webfeed-variant-card-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
     margin-bottom: 8px;
 }
@@ -25898,7 +25899,6 @@ h5.NB-classifier-section-header {
     border-radius: 50%;
     border: 2px solid #CCC;
     flex-shrink: 0;
-    margin-top: 1px;
     transition: border-color 0.15s, background 0.15s;
     position: relative;
 }
