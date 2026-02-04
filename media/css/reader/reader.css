@@ -29304,7 +29304,7 @@ span.NB-briefing-inline-favicon {
 .NB-briefing-popover .segmented-control .NB-unread-icon,
 .NB-briefing-popover .segmented-control .NB-focus-icon {
     width: 8px;
-    height: 12px;
+    height: 8px;
     display: inline-block;
     margin: 0 4px 0 0;
     vertical-align: middle;
@@ -29465,8 +29465,8 @@ span.NB-briefing-inline-favicon {
 .NB-briefing-section-item.NB-active .NB-briefing-section-checkbox::after {
     content: '';
     position: absolute;
-    left: 3px;
-    top: 0px;
+    left: 4px;
+    top: 1px;
     width: 4px;
     height: 8px;
     border: solid #fff;
@@ -29559,25 +29559,17 @@ span.NB-briefing-inline-favicon {
 
 /* reader.css: Remove custom section button */
 .NB-briefing-remove-custom-section {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     margin-left: 6px;
-    width: 16px;
-    height: 16px;
-    font-size: 12px;
-    color: #999;
+    width: 10px;
+    height: 10px;
     cursor: pointer;
-    line-height: 1;
     vertical-align: middle;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.06);
+    opacity: 0.3;
     transition: all 0.15s;
 }
 
 .NB-briefing-remove-custom-section:hover {
-    color: #fff;
-    background: #D08080;
+    opacity: 0.8;
 }
 
 /* reader.css: Custom section items always show input */
@@ -29673,13 +29665,7 @@ span.NB-briefing-inline-favicon {
 }
 
 .NB-dark .NB-briefing-remove-custom-section {
-    color: #888;
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.NB-dark .NB-briefing-remove-custom-section:hover {
-    color: #fff;
-    background: #D08080;
+    filter: invert(1);
 }
 
 .NB-dark .NB-briefing-section-item:hover {

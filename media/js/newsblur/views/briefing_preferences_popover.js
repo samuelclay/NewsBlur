@@ -334,11 +334,12 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-briefing-section-label' }, [
                 $.make('div', { className: 'NB-briefing-section-name' }, [
                     'Custom section ' + index,
-                    $.make('span', {
+                    $.make('img', {
                         className: 'NB-briefing-remove-custom-section',
                         'data-custom-index': index,
-                        title: 'Remove'
-                    }, '\u00D7')
+                        title: 'Remove',
+                        src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/close.svg'
+                    })
                 ]),
                 $.make('div', { className: 'NB-briefing-section-subtitle' }, 'Custom section from your prompt')
             ])
@@ -597,6 +598,19 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         }
         $popover.addClass('NB-visible');
         $icon.data('popover', $popover);
+
+        // briefing_preferences_popover.js: Bind mouseleave on the portaled popover so it hides when mouse leaves
+        if (!$popover.data('mouseleave-bound')) {
+            $popover.on('mouseleave', function () {
+                var $p = $(this);
+                setTimeout(function () {
+                    if (!$p.is(':hover') && !$icon.is(':hover')) {
+                        $p.removeClass('NB-visible');
+                    }
+                }, 100);
+            });
+            $popover.data('mouseleave-bound', true);
+        }
     },
 
     hide_hint_popover: function (e) {
