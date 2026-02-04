@@ -10035,9 +10035,51 @@ form.opml_import_form input {
 }
 
 /* Feed items container */
-.NB-classifier-feed-items {
+.NB-classifier-feed-items,
+.NB-classifier-folder-items,
+.NB-classifier-global-items {
     clear: both;
     overflow: hidden;
+}
+
+/* Folder items separator */
+.NB-classifier-this-story+.NB-classifier-folder-items,
+.NB-classifier-feed-items+.NB-classifier-folder-items {
+    padding-top: 4px;
+    border-top: 1px dashed #ddd;
+    margin-top: 4px;
+}
+
+.NB-classifier-this-story+.NB-classifier-folder-items::before,
+.NB-classifier-feed-items+.NB-classifier-folder-items::before {
+    content: 'More from this folder';
+    display: block;
+    font-size: 9px;
+    color: #3B82F6;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 12px;
+}
+
+/* Global items separator */
+.NB-classifier-this-story+.NB-classifier-global-items,
+.NB-classifier-feed-items+.NB-classifier-global-items,
+.NB-classifier-folder-items+.NB-classifier-global-items {
+    padding-top: 4px;
+    border-top: 1px dashed #ddd;
+    margin-top: 4px;
+}
+
+.NB-classifier-this-story+.NB-classifier-global-items::before,
+.NB-classifier-feed-items+.NB-classifier-global-items::before,
+.NB-classifier-folder-items+.NB-classifier-global-items::before {
+    content: 'More from global filters';
+    display: block;
+    font-size: 9px;
+    color: #8B5CF6;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 12px;
 }
 
 /* Premium notice */
