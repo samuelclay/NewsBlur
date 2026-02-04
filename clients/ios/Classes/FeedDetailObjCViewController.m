@@ -3862,7 +3862,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     if (@available(iOS 13.0, *)) {
         self.storyTitlesTable.overrideUserInterfaceStyle = ThemeManager.shared.isDarkTheme ? UIUserInterfaceStyleDark : UIUserInterfaceStyleLight;
     }
-    
+
     [self reload];
 }
 
