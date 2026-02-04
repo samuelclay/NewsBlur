@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-02-03T19:39:31-05:00</updated>
+  <updated>2026-02-03T19:57:01-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -28,9 +28,9 @@ A new sound of an old instrument.
     <updated>2026-02-02T00:00:00-05:00</updated>
     <id>https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training</id>
     <content type="html" xml:base="https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training/">
-      <![CDATA[<p>The Intelligence Trainer has always worked on a per-feed basis. You train a title, author, or tag on one feed and it only applies to that feed. If you wanted to hide stories about a topic across all your feeds, you had to train it on each feed individually. For a handful of feeds that’s fine. For a hundred, it’s tedious. For five hundred, forget it.</p>
+      <![CDATA[<p>Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s tedious. With five hundred, it’s a non-starter.</p>
 
-<p>If you’re a <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscriber, you can now set any classifier to apply globally across all your feeds, or scoped to a specific folder. Train “sponsored” as a dislike once, and it hides sponsored stories everywhere. Train “kubernetes” as a like on your Tech folder, and it highlights kubernetes stories across every feed in that folder without touching your other subscriptions.</p>
+<p>If you’re a <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscriber, you can now set any classifier to apply globally across all your feeds, or scoped to a specific folder. Train “sponsored” as a dislike once, and it hides sponsored stories everywhere. Train “kubernetes” as a like in your Tech folder, and it highlights kubernetes stories across every feed in that folder without touching the rest of your subscriptions.</p>
 
 <h3 id="three-scope-levels">Three scope levels</h3>
 
@@ -41,15 +41,15 @@ A new sound of an old instrument.
 
 <ul>
   <li><strong>Per Site</strong> (feed icon) — The default. The classifier only applies to the feed you’re training. This is how classifiers have always worked.</li>
-  <li><strong>Per Folder</strong> (folder icon) — The classifier applies to every feed in the same folder. If you move the feed to a different folder later, the classifier stays associated with the original folder.</li>
+  <li><strong>Per Folder</strong> (folder icon) — The classifier applies to every feed in the same folder. If you later move the feed to a different folder, the classifier stays tied to the original folder.</li>
   <li><strong>Global</strong> (globe icon) — The classifier applies to every feed you subscribe to.</li>
 </ul>
 
-<p>Click any scope icon to switch. The active scope is highlighted, and a tooltip tells you what each level means. Your choice is saved along with the classifier.</p>
+<p>Click any scope icon to switch. The active scope is highlighted, and a tooltip explains each level. Your choice is saved with the classifier.</p>
 
 <h3 id="real-world-examples">Real-world examples</h3>
 
-<p><strong>Hide a topic everywhere.</strong> Subscribe to dozens of news feeds but never want to read about a specific recurring topic? Open the trainer on any feed, type the topic as a text or title classifier, thumbs-down it, and click the globe icon. Done — it’s hidden across all your feeds.</p>
+<p><strong>Hide a topic everywhere.</strong> Subscribe to lots of news feeds but never want to read about a recurring topic? Open the trainer on any feed, add the topic as a text or title classifier, thumbs-down it, and click the globe icon. Done — it’s hidden across all your feeds.</p>
 
 <p><strong>Focus on a topic within a folder.</strong> Have a “Tech” folder with 40 feeds? Train “machine learning” as a like with the folder scope, and every feed in that folder will surface machine learning stories in your Focus view. Your cooking and sports feeds stay untouched.</p>
 
@@ -105,7 +105,7 @@ A new sound of an old instrument.
     
     
     <summary type="html">
-      <![CDATA[The Intelligence Trainer has always worked on a per-feed basis. You train a title, author, or tag on one feed and it only applies to that feed. If you wanted to hide stories about a topic across all your feeds, you had to train it on each feed individually. For...]]>
+      <![CDATA[Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s...]]>
     </summary>
     
   </entry>
