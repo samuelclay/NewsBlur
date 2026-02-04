@@ -484,6 +484,15 @@ NSString * const ThemeStyleDark = @"dark";
     // Set window background color for status bar area (match toolbar colors)
     self.appDelegate.window.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
 
+    // Override the system interface style so UIKit-managed views (split view column
+    // backgrounds, navigation controller views, etc.) match the app's theme even when
+    // the system appearance differs.
+    if (self.isDarkTheme) {
+        self.appDelegate.window.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    } else {
+        self.appDelegate.window.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    }
+
     UIViewController *topViewController = self.appDelegate.window.rootViewController;
     while (topViewController.presentedViewController) {
         topViewController = topViewController.presentedViewController;
