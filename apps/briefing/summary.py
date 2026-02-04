@@ -106,7 +106,7 @@ Wrap everything in a <div class="NB-briefing-summary"> tag.""" % (
 
 def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_length="medium", summary_style="editorial", sections=None, custom_section_prompts=None):
     """
-    Generate an AI editorial summary of the selected stories.
+    Generate an editorial summary of the selected stories.
 
     Args:
         user_id: The user's ID

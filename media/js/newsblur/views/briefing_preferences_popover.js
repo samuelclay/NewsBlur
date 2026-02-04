@@ -310,7 +310,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                         title: 'Remove'
                     }, '\u00D7')
                 ]),
-                $.make('div', { className: 'NB-briefing-section-subtitle' }, 'AI-generated section from your prompt')
+                $.make('div', { className: 'NB-briefing-section-subtitle' }, 'Custom section from your prompt')
             ])
         ]);
 
@@ -339,7 +339,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-briefing-section-hint-content' }, [
                 $.make('div', { className: 'NB-briefing-section-hint-title' }, 'Custom Section Prompt'),
                 $.make('div', { className: 'NB-briefing-section-hint-text' },
-                    'Write a prompt describing what you want this section to cover. The AI will select relevant stories and generate an appropriate section header.'),
+                    'Write a prompt describing what you want this section to cover. Relevant stories will be selected and an appropriate section header generated.'),
                 $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, 'Examples'),
                 $.make('ul', { className: 'NB-briefing-section-hint-examples' }, [
                     $.make('li', 'Summarize AI and machine learning news'),
@@ -482,20 +482,42 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         custom_prompts.splice(index - 1, 1);
         this.prefs.custom_section_prompts = custom_prompts;
 
-        // Re-index sections keys — clear all custom keys, re-render will set new ones
+        // Re-index sections keys
         if (this.prefs.sections) {
             for (var i = 1; i <= NEWSBLUR.MAX_CUSTOM_SECTIONS; i++) {
                 delete this.prefs.sections['custom_' + i];
             }
-            // Re-enable remaining custom sections
             for (var j = 0; j < custom_prompts.length; j++) {
                 this.prefs.sections['custom_' + (j + 1)] = true;
             }
         }
 
-        // Re-render the entire sections UI
-        this.render();
-        this.highlight_active_options();
+        // briefing_preferences_popover.js: Remove the DOM element directly instead of re-rendering
+        var $item = $(e.currentTarget).closest('.NB-briefing-section-item');
+        $item.find('.NB-briefing-section-hint-icon').each(function () {
+            var $pop = $(this).data('popover');
+            if ($pop) $pop.remove();
+        });
+        $item.remove();
+
+        // Re-index remaining custom section items
+        var $sections_container = this.$('.NB-briefing-sections');
+        $sections_container.find('.NB-briefing-section-custom').each(function (idx) {
+            var new_index = idx + 1;
+            var $el = $(this);
+            $el.attr('data-section', 'custom_' + new_index);
+            $el.find('.NB-briefing-section-name').contents().first().replaceWith('Custom section ' + new_index);
+            $el.find('.NB-briefing-remove-custom-section').attr('data-custom-index', new_index);
+            $el.find('.NB-briefing-custom-prompt-input').attr('data-custom-index', new_index);
+        });
+
+        // Re-show add button if under max
+        if (custom_prompts.length < NEWSBLUR.MAX_CUSTOM_SECTIONS && !$sections_container.find('.NB-briefing-add-custom-section').length) {
+            $sections_container.append($.make('div', { className: 'NB-briefing-add-custom-section' }, [
+                $.make('span', { className: 'NB-briefing-add-custom-icon' }, '+'),
+                'Add custom section'
+            ]));
+        }
 
         // Save to backend
         this.save_sections();
@@ -537,13 +559,25 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         // briefing_preferences_popover.js: Portal to body for proper overflow handling
         var icon_rect = $icon[0].getBoundingClientRect();
         $popover.appendTo('body');
+
+        // briefing_preferences_popover.js: Measure popover height, flip above icon if no room below
+        $popover.css({ position: 'fixed', visibility: 'hidden', display: 'block', top: 0, left: 0, right: 'auto', bottom: 'auto' });
+        var popover_height = $popover.outerHeight();
+        var space_below = window.innerHeight - icon_rect.bottom - 8;
+        var space_above = icon_rect.top - 8;
+        var place_above = space_below < popover_height && space_above > space_below;
+
         $popover.css({
-            position: 'fixed',
-            top: icon_rect.bottom + 8,
+            visibility: '',
+            display: '',
             right: window.innerWidth - icon_rect.right,
-            left: 'auto',
-            bottom: 'auto'
+            left: 'auto'
         });
+        if (place_above) {
+            $popover.css({ top: 'auto', bottom: (window.innerHeight - icon_rect.top + 8) + 'px' });
+        } else {
+            $popover.css({ top: (icon_rect.bottom + 8) + 'px', bottom: 'auto' });
+        }
         $popover.addClass('NB-visible');
         $icon.data('popover', $popover);
     },

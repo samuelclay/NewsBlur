@@ -42,7 +42,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                 $.make('div', { className: 'NB-briefing-onboarding-icon' }),
                 $.make('div', { className: 'NB-briefing-onboarding-title' }, 'Daily Briefing'),
                 $.make('div', { className: 'NB-briefing-onboarding-subtitle' },
-                    'Get an AI-generated summary of your top stories, delivered on your schedule.')
+                    'Get a summary of your top stories, delivered on your schedule.')
             ]),
             $.make('div', { className: 'NB-briefing-onboarding-settings NB-briefing-popover' }),
             $.make('div', { className: 'NB-briefing-onboarding-footer' }, [
@@ -262,7 +262,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                         title: 'Remove'
                     }, '\u00D7')
                 ]),
-                $.make('div', { className: 'NB-briefing-section-subtitle' }, 'AI-generated section from your prompt')
+                $.make('div', { className: 'NB-briefing-section-subtitle' }, 'Custom section from your prompt')
             ])
         ]);
 
@@ -282,7 +282,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             $.make('div', { className: 'NB-briefing-section-hint-content' }, [
                 $.make('div', { className: 'NB-briefing-section-hint-title' }, 'Custom Section Prompt'),
                 $.make('div', { className: 'NB-briefing-section-hint-text' },
-                    'Write a prompt describing what you want this section to cover. The AI will select relevant stories and generate an appropriate section header.'),
+                    'Write a prompt describing what you want this section to cover. Relevant stories will be selected and an appropriate section header generated.'),
                 $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, 'Examples'),
                 $.make('ul', { className: 'NB-briefing-section-hint-examples' }, [
                     $.make('li', 'Summarize AI and machine learning news'),
@@ -524,13 +524,25 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
 
         var icon_rect = $icon[0].getBoundingClientRect();
         $popover.appendTo('body');
+
+        // briefing_onboarding_view.js: Measure popover height, flip above icon if no room below
+        $popover.css({ position: 'fixed', visibility: 'hidden', display: 'block', top: 0, left: 0, right: 'auto', bottom: 'auto' });
+        var popover_height = $popover.outerHeight();
+        var space_below = window.innerHeight - icon_rect.bottom - 8;
+        var space_above = icon_rect.top - 8;
+        var place_above = space_below < popover_height && space_above > space_below;
+
         $popover.css({
-            position: 'fixed',
-            top: icon_rect.bottom + 8,
+            visibility: '',
+            display: '',
             right: window.innerWidth - icon_rect.right,
-            left: 'auto',
-            bottom: 'auto'
+            left: 'auto'
         });
+        if (place_above) {
+            $popover.css({ top: 'auto', bottom: (window.innerHeight - icon_rect.top + 8) + 'px' });
+        } else {
+            $popover.css({ top: (icon_rect.bottom + 8) + 'px', bottom: 'auto' });
+        }
         $popover.addClass('NB-visible');
         $icon.data('popover', $popover);
     },
