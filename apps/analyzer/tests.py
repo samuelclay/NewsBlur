@@ -706,7 +706,7 @@ class Test_Classifiers(TransactionTestCase):
         }
 
         classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
-        score = apply_classifier_url_regex(classifiers, story, user_is_pro=True)
+        score = apply_classifier_url_regex(classifiers, story)
 
         self.assertEqual(score, 1)
 
@@ -728,30 +728,7 @@ class Test_Classifiers(TransactionTestCase):
         }
 
         classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
-        score = apply_classifier_url_regex(classifiers, story, user_is_pro=True)
-
-        self.assertEqual(score, 0)
-
-    def test_apply_classifier_url_regex_requires_pro(self):
-        """Test that regex URL classifiers require PRO tier"""
-        MClassifierUrl.objects.create(
-            user_id=self.user.pk,
-            feed_id=self.feed.pk,
-            social_user_id=0,
-            url=r"/article-\d+",
-            score=1,
-            is_regex=True,
-            creation_date=datetime.datetime.now(),
-        )
-
-        story = {
-            "story_feed_id": self.feed.pk,
-            "story_permalink": "https://example.com/news/article-12345",
-        }
-
-        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
-        # Without PRO, should return 0
-        score = apply_classifier_url_regex(classifiers, story, user_is_pro=False)
+        score = apply_classifier_url_regex(classifiers, story)
 
         self.assertEqual(score, 0)
 
@@ -773,7 +750,7 @@ class Test_Classifiers(TransactionTestCase):
         }
 
         classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
-        score = apply_classifier_url_regex(classifiers, story, user_is_pro=True)
+        score = apply_classifier_url_regex(classifiers, story)
 
         self.assertEqual(score, -1)
 

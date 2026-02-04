@@ -377,23 +377,25 @@ def compute_story_score(
         "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
         "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
         "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
-        "title": apply_classifier_titles(
-            classifier_titles, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
+        "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
+        "title_regex": (
+            apply_classifier_title_regex(classifier_titles, story, folder_feed_ids=folder_feed_ids)
+            if user_is_pro
+            else 0
         ),
-        "title_regex": apply_classifier_title_regex(
-            classifier_titles, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
-        ),
-        "text": apply_classifier_texts(
-            classifier_texts, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
-        ),
-        "text_regex": apply_classifier_text_regex(
-            classifier_texts, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
+        "text": apply_classifier_texts(classifier_texts, story, folder_feed_ids=folder_feed_ids),
+        "text_regex": (
+            apply_classifier_text_regex(classifier_texts, story, folder_feed_ids=folder_feed_ids)
+            if user_is_pro
+            else 0
         ),
         "url": apply_classifier_urls(
             classifier_urls, story, user_is_premium=user_is_premium, folder_feed_ids=folder_feed_ids
         ),
-        "url_regex": apply_classifier_url_regex(
-            classifier_urls, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
+        "url_regex": (
+            apply_classifier_url_regex(classifier_urls, story, folder_feed_ids=folder_feed_ids)
+            if user_is_pro
+            else 0
         ),
     }
 
@@ -439,14 +441,13 @@ def compute_story_score(
     return score
 
 
-def apply_classifier_titles(classifiers, story, user_is_pro=False, folder_feed_ids=None):
+def apply_classifier_titles(classifiers, story, folder_feed_ids=None):
     """
     Apply title classifiers to a story (non-regex only).
 
     Args:
         classifiers: List of MClassifierTitle objects
         story: Story dict with 'story_feed_id' and 'story_title'
-        user_is_pro: Unused, kept for API compatibility
         folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
 
     Returns:
@@ -476,14 +477,13 @@ def apply_classifier_titles(classifiers, story, user_is_pro=False, folder_feed_i
     return score
 
 
-def apply_classifier_texts(classifiers, story, user_is_pro=False, folder_feed_ids=None):
+def apply_classifier_texts(classifiers, story, folder_feed_ids=None):
     """
     Apply text classifiers to a story (non-regex only).
 
     Args:
         classifiers: List of MClassifierText objects
         story: Story dict with 'story_feed_id' and 'story_content'
-        user_is_pro: Unused, kept for API compatibility
         folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
 
     Returns:
@@ -513,22 +513,18 @@ def apply_classifier_texts(classifiers, story, user_is_pro=False, folder_feed_id
     return score
 
 
-def apply_classifier_title_regex(classifiers, story, user_is_pro=False, folder_feed_ids=None):
+def apply_classifier_title_regex(classifiers, story, folder_feed_ids=None):
     """
     Apply title regex classifiers to a story. Matches title only.
 
     Args:
         classifiers: List of MClassifierTitle objects with is_regex=True
         story: Story dict with 'story_feed_id' and 'story_title'
-        user_is_pro: Whether the user has PRO subscription (required for regex filters)
         folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
 
     Returns:
         Score (1 for like, -1 for dislike, 0 for neutral)
     """
-    if not user_is_pro:
-        return 0
-
     score = 0
     story_title = story.get("story_title", "")
     if not story_title:
@@ -549,22 +545,18 @@ def apply_classifier_title_regex(classifiers, story, user_is_pro=False, folder_f
     return score
 
 
-def apply_classifier_text_regex(classifiers, story, user_is_pro=False, folder_feed_ids=None):
+def apply_classifier_text_regex(classifiers, story, folder_feed_ids=None):
     """
     Apply text regex classifiers to a story. Matches content only.
 
     Args:
         classifiers: List of MClassifierText objects with is_regex=True
         story: Story dict with 'story_feed_id' and 'story_content'
-        user_is_pro: Whether the user has PRO subscription (required for regex filters)
         folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
 
     Returns:
         Score (1 for like, -1 for dislike, 0 for neutral)
     """
-    if not user_is_pro:
-        return 0
-
     score = 0
     story_content = story.get("story_content", "")
     if not story_content:
@@ -583,14 +575,6 @@ def apply_classifier_text_regex(classifiers, story, user_is_pro=False, folder_fe
                 return score
 
     return score
-
-
-def apply_classifier_regex(classifiers, story, user_is_pro=False):
-    """
-    Apply text regex classifiers to a story (backward compatibility wrapper).
-    Use apply_classifier_text_regex for new code.
-    """
-    return apply_classifier_text_regex(classifiers, story, user_is_pro)
 
 
 def apply_classifier_urls(classifiers, story, user_is_premium=False, folder_feed_ids=None):
@@ -633,22 +617,18 @@ def apply_classifier_urls(classifiers, story, user_is_premium=False, folder_feed
     return score
 
 
-def apply_classifier_url_regex(classifiers, story, user_is_pro=False, folder_feed_ids=None):
+def apply_classifier_url_regex(classifiers, story, folder_feed_ids=None):
     """
     Apply URL regex classifiers to a story. Matches permalink URL only.
 
     Args:
         classifiers: List of MClassifierUrl objects with is_regex=True
         story: Story dict with 'story_feed_id' and 'story_permalink'
-        user_is_pro: Whether the user has PRO subscription (required for regex filters)
         folder_feed_ids: Dict mapping folder_name -> set of feed_ids for folder-scoped classifiers
 
     Returns:
         Score (1 for like, -1 for dislike, 0 for neutral)
     """
-    if not user_is_pro:
-        return 0
-
     score = 0
     story_url = story.get("story_permalink", "")
     if not story_url:

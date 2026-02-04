@@ -1110,24 +1110,20 @@ def load_single_feed(request, feed_id):
             "feed": apply_classifier_feeds(classifier_feeds, feed),
             "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
-            "title": apply_classifier_titles(
-                classifier_titles, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
-            ),
-            "title_regex": apply_classifier_title_regex(
-                classifier_titles, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
+            "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
+            "title_regex": (
+                apply_classifier_title_regex(classifier_titles, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
             ),
             "text": (
-                apply_classifier_texts(
-                    classifier_texts, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
-                )
+                apply_classifier_texts(classifier_texts, story, folder_feed_ids=folder_feed_ids)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
             "text_regex": (
-                apply_classifier_text_regex(
-                    classifier_texts, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
-                )
-                if user.profile.premium_available_text_classifiers
+                apply_classifier_text_regex(classifier_texts, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro and user.profile.premium_available_text_classifiers
                 else 0
             ),
             "url": apply_classifier_urls(
@@ -1136,8 +1132,10 @@ def load_single_feed(request, feed_id):
                 user_is_premium=user.profile.is_premium,
                 folder_feed_ids=folder_feed_ids,
             ),
-            "url_regex": apply_classifier_url_regex(
-                classifier_urls, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
+            "url_regex": (
+                apply_classifier_url_regex(classifier_urls, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
             ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
@@ -1754,24 +1752,20 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
                 classifier_authors, story, folder_feed_ids=folder_feed_ids
             ),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
-            "title": apply_classifier_titles(
-                classifier_titles, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
-            ),
-            "title_regex": apply_classifier_title_regex(
-                classifier_titles, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
+            "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
+            "title_regex": (
+                apply_classifier_title_regex(classifier_titles, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
             ),
             "text": (
-                apply_classifier_texts(
-                    classifier_texts, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
-                )
+                apply_classifier_texts(classifier_texts, story, folder_feed_ids=folder_feed_ids)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
             "text_regex": (
-                apply_classifier_text_regex(
-                    classifier_texts, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
-                )
-                if user.profile.premium_available_text_classifiers
+                apply_classifier_text_regex(classifier_texts, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro and user.profile.premium_available_text_classifiers
                 else 0
             ),
             "url": apply_classifier_urls(
@@ -1780,8 +1774,10 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
                 user_is_premium=user.profile.is_premium,
                 folder_feed_ids=folder_feed_ids,
             ),
-            "url_regex": apply_classifier_url_regex(
-                classifier_urls, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
+            "url_regex": (
+                apply_classifier_url_regex(classifier_urls, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
             ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
@@ -2287,24 +2283,20 @@ def load_river_stories__redis(request):
                 classifier_authors, story, folder_feed_ids=folder_feed_ids
             ),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
-            "title": apply_classifier_titles(
-                classifier_titles, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
-            ),
-            "title_regex": apply_classifier_title_regex(
-                classifier_titles, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
+            "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
+            "title_regex": (
+                apply_classifier_title_regex(classifier_titles, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
             ),
             "text": (
-                apply_classifier_texts(
-                    classifier_texts, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
-                )
+                apply_classifier_texts(classifier_texts, story, folder_feed_ids=folder_feed_ids)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
             "text_regex": (
-                apply_classifier_text_regex(
-                    classifier_texts, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
-                )
-                if user.profile.premium_available_text_classifiers
+                apply_classifier_text_regex(classifier_texts, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro and user.profile.premium_available_text_classifiers
                 else 0
             ),
             "url": apply_classifier_urls(
@@ -2313,8 +2305,10 @@ def load_river_stories__redis(request):
                 user_is_premium=user.profile.is_premium,
                 folder_feed_ids=folder_feed_ids,
             ),
-            "url_regex": apply_classifier_url_regex(
-                classifier_urls, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_ids
+            "url_regex": (
+                apply_classifier_url_regex(classifier_urls, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
             ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
