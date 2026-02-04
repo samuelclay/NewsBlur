@@ -55,6 +55,14 @@
           error: data.error || 'Unknown error'
         });
         break;
+      case 'progress':
+        log.debug(`webfeed:progress ${url}: ${data.message}`);
+        socket.emit('webfeed:progress', {
+          url: url,
+          request_id: request_id,
+          message: data.message || ''
+        });
+        break;
       case 'subscribe_update':
         var feed_id = data.feed_id || '';
         var stage = data.stage || '';
