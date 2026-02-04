@@ -140,9 +140,38 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 4. Commit the fix
 5. Resolve the issue with `sentry-cli issues resolve -i <issue_id>`
 
-## Browser Testing with Chrome DevTools MCP
-- Local dev: `https://localhost` (when using containers directly)
-- **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts
+## Browser Testing with Puppeteer Skill
+- Scripts are in `.claude/skills/chrome-devtools/scripts/` — always `cd` there before running
+- Local dev: `https://localhost` (self-signed certs are accepted by default)
+- **Screenshots**: Save to `/tmp/newsblur-screenshot.png`, then use Read tool to view
+
+### Puppeteer Scripts
+All scripts output JSON. Chain commands with `--close false` to reuse the browser session.
+```bash
+cd .claude/skills/chrome-devtools/scripts
+
+# Navigate and auto-login
+node navigate.js --url "https://localhost/reader/dev/autologin/" --close false
+
+# Take a screenshot
+node screenshot.js --url "https://localhost/reader/dev/autologin/" --output /tmp/newsblur-screenshot.png
+
+# Execute JavaScript (use --url to navigate first, or omit to use current page with --close false)
+node evaluate.js --url "https://localhost/reader/dev/autologin/" --script "NEWSBLUR.assets.feeds.length"
+
+# Wait for async data before evaluating
+node evaluate.js --url "https://localhost/reader/dev/autologin/" --script "new Promise(resolve => { const check = () => { if (NEWSBLUR.assets.feeds.length > 0) resolve(NEWSBLUR.assets.feeds.length); else setTimeout(check, 500); }; check(); })"
+
+# Fill form fields and click
+node fill.js --url "https://example.com" --selector "#email" --value "user@example.com" --close false
+node click.js --selector "button[type=submit]"
+
+# Get page snapshot (interactive elements with selectors)
+node snapshot.js --url "https://localhost"
+```
+
+### Chrome DevTools MCP (disabled by default)
+For interactive browser testing where you need to see and control a real Chrome window, enable the chrome-devtools MCP in Claude Code settings. It connects to your actual browser via DevTools Protocol.
 
 ### Dev Auto-Login (DEBUG mode only)
 - `https://localhost/reader/dev/autologin/` - Login as default dev user (configured in `DEV_AUTOLOGIN_USERNAME`)
@@ -155,12 +184,12 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 - `?test=growth1` - Test feed_added growth prompt
 - `?test=growth2` - Test stories_read growth prompt
 
-### Theme Switching
+### Theme Switching (via evaluate.js)
 - `NEWSBLUR.reader.switch_theme('dark')` - Switch to dark mode
 - `NEWSBLUR.reader.switch_theme('light')` - Switch to light mode
 - `NEWSBLUR.reader.switch_theme('auto')` - Switch to auto/system theme
 
-### Opening Modals
+### Opening Modals (via evaluate.js)
 - `NEWSBLUR.reader.open_premium_upgrade_modal()` - Premium upgrade dialog
 - `NEWSBLUR.reader.open_feedchooser_modal()` - Feed chooser (mute sites)
 - `NEWSBLUR.reader.open_account_modal()` - Account settings
@@ -180,15 +209,18 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 - `NEWSBLUR.reader.open_social_profile_modal(user_id)` - Social profile
 - `$.modal.close()` - Close any open modal
 
-### Feed & Story Operations
+### Feed & Story Operations (via evaluate.js)
 - `NEWSBLUR.reader.open_river_stories()` - Open All Site Stories
 - `NEWSBLUR.reader.open_feed(feed_id)` - Open a specific feed
 - `NEWSBLUR.assets.feeds.find(f => f.get('nt') > 0)` - Get feed with unread stories
 - `NEWSBLUR.assets.feeds` - Backbone.js collection of all feeds
-- Click `.NB-feed-story` - Select first story
-- Click `.NB-feed-story-train` - Open story intelligence trainer
-- Click `.NB-feedbar-options` - Open feed options popover
-- Click `.folder .folder_title` - Open folder
+
+### Element Interactions (via click.js/snapshot.js)
+- Use `node snapshot.js --url <url>` to discover CSS selectors
+- `.NB-feed-story` - Select first story
+- `.NB-feed-story-train` - Open story intelligence trainer
+- `.NB-feedbar-options` - Open feed options popover
+- `.folder .folder_title` - Open folder
 
 ### User State (via Django shell)
 To test different subscription states, modify user profile in Django shell:

@@ -1,0 +1,4 @@
+---
+swap_size: "4G"
+swap_path: /swapfile
+swap_swappiness: 10

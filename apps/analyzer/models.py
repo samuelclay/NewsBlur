@@ -157,6 +157,7 @@ class MClassifierTitle(mongo.Document):
             "is_regex",
         ],
         "allow_inheritance": False,
+        "strict": False,
     }
 
     def __str__(self):
@@ -191,6 +192,7 @@ class MClassifierUrl(mongo.Document):
             "is_regex",
         ],
         "allow_inheritance": False,
+        "strict": False,
     }
 
     def __str__(self):
@@ -225,6 +227,7 @@ class MClassifierText(mongo.Document):
             "is_regex",
         ],
         "allow_inheritance": False,
+        "strict": False,
     }
 
     def __str__(self):
@@ -252,6 +255,7 @@ class MClassifierAuthor(mongo.Document):
         "collection": "classifier_author",
         "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
         "allow_inheritance": False,
+        "strict": False,
     }
 
     def __str__(self):
@@ -271,6 +275,7 @@ class MClassifierTag(mongo.Document):
         "collection": "classifier_tag",
         "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
         "allow_inheritance": False,
+        "strict": False,
     }
 
     def __str__(self):
@@ -289,6 +294,7 @@ class MClassifierFeed(mongo.Document):
         "collection": "classifier_feed",
         "indexes": [("user_id", "feed_id"), "feed_id", ("user_id", "social_user_id"), "social_user_id"],
         "allow_inheritance": False,
+        "strict": False,
     }
 
     def __str__(self):

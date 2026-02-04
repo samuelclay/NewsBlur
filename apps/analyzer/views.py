@@ -123,35 +123,28 @@ def save_classifier(request):
                         classifier = None
                     except ClassifierCls.MultipleObjectsReturned:
                         classifiers_found = ClassifierCls.objects.filter(**classifier_dict)
-                        for classifier in classifiers_found:
-                            # Update the score of the first classifier, delete the others, but don't delete more than 1
+                        if score == 0:
+                            for classifier in classifiers_found:
+                                classifier.delete()
+                        else:
                             first_classifier = classifiers_found[0]
                             first_classifier.score = score
                             first_classifier.save()
-                            for classifier in classifiers_found[1:]:
-                                classifier.delete()
-                                break
-                            logging.info(
-                                f"Updated classifier {first_classifier.id} and deleted one duplicate."
-                            )
-                            continue
+                            for dup in classifiers_found[1:]:
+                                dup.delete()
+                        continue
                     if not classifier:
-                        try:
-                            classifier_dict.update(dict(score=score))
-                            classifier = ClassifierCls.objects.create(**classifier_dict)
-                        except NotUniqueError:
-                            continue
-                    if score == 0:
+                        if score != 0:
+                            try:
+                                classifier_dict.update(dict(score=score))
+                                classifier = ClassifierCls.objects.create(**classifier_dict)
+                            except NotUniqueError:
+                                continue
+                    elif score == 0:
                         classifier.delete()
                     elif classifier.score != score:
-                        if score == 0:
-                            if (classifier.score == 1 and opinion.startswith("remove_like")) or (
-                                classifier.score == -1 and opinion.startswith("remove_dislike")
-                            ):
-                                classifier.delete()
-                        else:
-                            classifier.score = score
-                            classifier.save()
+                        classifier.score = score
+                        classifier.save()
 
     _save_classifier(MClassifierAuthor, "author")
     _save_classifier(MClassifierTag, "tag")
@@ -334,11 +327,15 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
                         classifier = None
                     except ClassifierCls.MultipleObjectsReturned:
                         classifiers = ClassifierCls.objects.filter(**classifier_dict)
-                        first_classifier = classifiers[0]
-                        first_classifier.score = score
-                        first_classifier.save()
-                        for dup in classifiers[1:]:
-                            dup.delete()
+                        if score == 0:
+                            for classifier in classifiers:
+                                classifier.delete()
+                        else:
+                            first_classifier = classifiers[0]
+                            first_classifier.score = score
+                            first_classifier.save()
+                            for dup in classifiers[1:]:
+                                dup.delete()
                         continue
 
                     if not classifier:
