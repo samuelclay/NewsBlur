@@ -4,9 +4,9 @@ title: "Global and folder-scoped intelligence training: Train once, apply everyw
 tags: ["web"]
 ---
 
-The Intelligence Trainer has always worked on a per-feed basis. You train a title, author, or tag on one feed and it only applies to that feed. If you wanted to hide stories about a topic across all your feeds, you had to train it on each feed individually. For a handful of feeds that's fine. For a hundred, it's tedious. For five hundred, forget it.
+Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s tedious. With five hundred, it’s a non-starter.
 
-If you're a <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscriber, you can now set any classifier to apply globally across all your feeds, or scoped to a specific folder. Train "sponsored" as a dislike once, and it hides sponsored stories everywhere. Train "kubernetes" as a like on your Tech folder, and it highlights kubernetes stories across every feed in that folder without touching your other subscriptions.
+If you're a <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscriber, you can now set any classifier to apply globally across all your feeds, or scoped to a specific folder. Train "sponsored" as a dislike once, and it hides sponsored stories everywhere. Train "kubernetes" as a like in your Tech folder, and it highlights kubernetes stories across every feed in that folder without touching the rest of your subscriptions.
 
 ### Three scope levels
 
@@ -16,14 +16,14 @@ Every classifier pill in the Intelligence Trainer now shows three small scope ic
 <img src="/assets/scope-toggle-icons.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
 
 - **Per Site** (feed icon) — The default. The classifier only applies to the feed you're training. This is how classifiers have always worked.
-- **Per Folder** (folder icon) — The classifier applies to every feed in the same folder. If you move the feed to a different folder later, the classifier stays associated with the original folder.
+- **Per Folder** (folder icon) — The classifier applies to every feed in the same folder. If you later move the feed to a different folder, the classifier stays tied to the original folder.
 - **Global** (globe icon) — The classifier applies to every feed you subscribe to.
 
-Click any scope icon to switch. The active scope is highlighted, and a tooltip tells you what each level means. Your choice is saved along with the classifier.
+Click any scope icon to switch. The active scope is highlighted, and a tooltip explains each level. Your choice is saved with the classifier.
 
 ### Real-world examples
 
-**Hide a topic everywhere.** Subscribe to dozens of news feeds but never want to read about a specific recurring topic? Open the trainer on any feed, type the topic as a text or title classifier, thumbs-down it, and click the globe icon. Done — it's hidden across all your feeds.
+**Hide a topic everywhere.** Subscribe to lots of news feeds but never want to read about a recurring topic? Open the trainer on any feed, add the topic as a text or title classifier, thumbs-down it, and click the globe icon. Done — it's hidden across all your feeds.
 
 **Focus on a topic within a folder.** Have a "Tech" folder with 40 feeds? Train "machine learning" as a like with the folder scope, and every feed in that folder will surface machine learning stories in your Focus view. Your cooking and sports feeds stay untouched.
 
