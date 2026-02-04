@@ -2495,8 +2495,8 @@ var classifier_prototype = {
             var is_like = $cl.hasClass('NB-classifier-like');
             var is_dislike = $cl.hasClass('NB-classifier-dislike');
 
-            // If scope changed from a non-feed scope, remove the old classifier
-            if (original_scope !== el_scope && original_scope !== 'feed') {
+            // If scope changed, remove the old classifier at its previous scope
+            if (original_scope !== el_scope) {
                 var remove_data = {
                     'feed_id': self.feed_id,
                     'scope': original_scope,
@@ -3422,7 +3422,8 @@ var classifier_prototype = {
             'data-type': type,
             'data-value': value,
             'data-score': score,
-            'data-scope': effective_scope
+            'data-scope': effective_scope,
+            'data-folder-name': folder_name || ''
         }, [
             $.make('div', { className: 'NB-classifier NB-classifier-' + type + (score > 0 ? ' NB-classifier-like' : ' NB-classifier-dislike') }, [
                 $.make('input', { type: 'checkbox', className: 'NB-classifier-input-like', name: 'like_' + type, value: value }),
@@ -3458,6 +3459,8 @@ var classifier_prototype = {
         var type = $item.data('type');
         var value = $item.data('value');
         var orig_score = $item.data('score');
+        var scope = $item.data('scope') || 'feed';
+        var folder_name = $item.data('folder-name') || '';
         var key = feed_id + ':' + type + ':' + value;
 
         this.change_classifier($classifier, opinion);
@@ -3481,7 +3484,9 @@ var classifier_prototype = {
                 type: type,
                 value: value,
                 orig_score: orig_score,
-                current_score: current_score
+                current_score: current_score,
+                scope: scope,
+                folder_name: folder_name
             };
         } else {
             // Reverted to original - remove from dirty
@@ -3532,14 +3537,50 @@ var classifier_prototype = {
 
         $save.addClass('NB-disabled').text('Saving...');
 
-        // Build classifiers object for all dirty feeds
+        // Separate scoped classifiers (feed_id=0, non-feed scope) from feed-level ones
         var classifiers_by_feed = {};
+        var scoped_saves = [];
+
         _.each(feeds_to_save, function (feed_id) {
-            classifiers_by_feed[feed_id] = self.serialize_manage_classifiers_for_feed(feed_id);
+            var changes = self.manage_dirty_feeds[feed_id] || {};
+            var feed_changes = {};
+            _.each(changes, function (change, key) {
+                if (change.scope && change.scope !== 'feed') {
+                    // Scoped classifier — build individual save data
+                    var name;
+                    if (change.current_score === 1) {
+                        name = 'like_' + change.type;
+                    } else if (change.current_score === -1) {
+                        name = 'dislike_' + change.type;
+                    } else if (change.orig_score > 0) {
+                        name = 'remove_like_' + change.type;
+                    } else {
+                        name = 'remove_dislike_' + change.type;
+                    }
+                    var save_data = {
+                        'feed_id': 0,
+                        'scope': change.scope,
+                        'folder_name': change.folder_name || ''
+                    };
+                    save_data[name] = change.value;
+                    scoped_saves.push(save_data);
+                } else {
+                    feed_changes[key] = change;
+                }
+            });
+
+            if (Object.keys(feed_changes).length > 0) {
+                // Temporarily replace with only feed-level changes for serialization
+                self.manage_dirty_feeds[feed_id] = feed_changes;
+                classifiers_by_feed[feed_id] = self.serialize_manage_classifiers_for_feed(feed_id);
+            }
         });
 
-        // Single bulk request
-        this.model.save_all_classifiers(classifiers_by_feed, function () {
+        var pending = (Object.keys(classifiers_by_feed).length > 0 ? 1 : 0) + scoped_saves.length;
+        var on_complete = function () {
+            pending--;
+            if (pending > 0) return;
+
             // Update original scores to current scores for saved items
             _.each(self.manage_dirty_feeds, function (changes, feed_id) {
                 _.each(changes, function (change) {
@@ -3562,9 +3603,21 @@ var classifier_prototype = {
 
             // Refresh feeds without re-opening any specific feed
             NEWSBLUR.reader.force_feeds_refresh();
-        }, function () {
+        };
+
+        var on_error = function () {
             $save.removeClass('NB-disabled');
             self.update_manage_save_button();
+        };
+
+        // Save feed-level classifiers via bulk endpoint
+        if (Object.keys(classifiers_by_feed).length > 0) {
+            this.model.save_all_classifiers(classifiers_by_feed, on_complete, on_error);
+        }
+
+        // Save scoped classifiers individually with scope metadata
+        _.each(scoped_saves, function (save_data) {
+            self.model.save_classifier(save_data, on_complete);
         });
     },
 
