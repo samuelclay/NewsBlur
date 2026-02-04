@@ -892,7 +892,7 @@ def load_scoped_classifiers(user_id):
         MClassifierTag: "tags",
     }
     for Cls in SCOPED_CLASSIFIER_CLASSES:
-        classifiers = list(Cls.objects(user_id=user_id, scope__ne="feed"))
+        classifiers = list(Cls.objects(user_id=user_id, scope__in=["folder", "global"]))
         result[key_map[Cls]] = classifiers
     return result
 

@@ -37,18 +37,20 @@ def save_classifier(request):
     feed_id = post["feed_id"]
     feed = None
     social_user_id = None
+
+    # Scope controls: 'feed' (default), 'folder', or 'global'
+    scope = post.get("scope", "feed")
+
     if feed_id.startswith("social:"):
         social_user_id = int(feed_id.replace("social:", ""))
         feed_id = None
     else:
         feed_id = int(feed_id)
-        feed = get_object_or_404(Feed, pk=feed_id)
+        if feed_id:
+            feed = get_object_or_404(Feed, pk=feed_id)
     code = 0
     message = "OK"
     payload = {}
-
-    # Scope controls: 'feed' (default), 'folder', or 'global'
-    scope = post.get("scope", "feed")
     scope_folder_name = post.get("folder_name", "")
     if scope not in ("feed", "folder", "global"):
         scope = "feed"
