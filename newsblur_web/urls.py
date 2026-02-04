@@ -73,6 +73,11 @@ urlpatterns = [
         static_views.apple_developer_merchantid,
         name="apple-developer-merchantid",
     ),
+    url(
+        r"^\.well-known/assetlinks\.json$",
+        static_views.assetlinks,
+        name="assetlinks",
+    ),
     url(r"^ios/download/?", static_views.ios_download, name="ios-download"),
     url(r"^ios/NewsBlur.plist", static_views.ios_plist, name="ios-download-plist"),
     url(r"^ios/NewsBlur.ipa", static_views.ios_ipa, name="ios-download-ipa"),
