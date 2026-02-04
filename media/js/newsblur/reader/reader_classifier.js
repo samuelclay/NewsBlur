@@ -662,18 +662,13 @@ var classifier_prototype = {
         var matching_text_regex = this.make_user_text_regex(story_content);
         var non_matching_texts = this.make_user_texts_non_matching(story_content);
         var non_matching_text_regex = this.make_user_text_regex_non_matching(story_content);
-        var has_non_matching = non_matching_texts.length > 0 || non_matching_text_regex.length > 0;
+        var $scoped_groups = this.make_scoped_groups(non_matching_texts.concat(non_matching_text_regex));
 
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
             this.make_classifier('<span class="NB-classifier-text-placeholder">Enter text above</span>', '', 'text'),
             $.make('span', matching_texts),
             $.make('span', matching_text_regex)
         ]);
-        var $non_matching = has_non_matching ?
-            $.make('div', { className: 'NB-classifier-feed-items' }, [
-                $.make('span', non_matching_texts),
-                $.make('span', non_matching_text_regex)
-            ]) : '';
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-text-section', 'data-section': 'text' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
@@ -707,10 +702,9 @@ var classifier_prototype = {
                 ]),
                 $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-text-validation' }),
                 this.make_regex_popover(),
-                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
-                    $this_story,
-                    $non_matching
-                ])
+                $.make('div', { className: 'NB-classifier-content-classifiers' },
+                    [$this_story].concat($scoped_groups)
+                )
             ])
         ]);
     },
@@ -721,18 +715,13 @@ var classifier_prototype = {
         var matching_title_regex = this.make_user_title_regex_matching(story_title);
         var non_matching_titles = this.make_user_titles_non_matching(story_title);
         var non_matching_title_regex = this.make_user_title_regex_non_matching(story_title);
-        var has_non_matching = non_matching_titles.length > 0 || non_matching_title_regex.length > 0;
+        var $scoped_groups = this.make_scoped_groups(non_matching_titles.concat(non_matching_title_regex));
 
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
             this.make_classifier('<span class="NB-classifier-title-placeholder">Select title phrase</span>', '', 'title'),
             $.make('span', matching_titles),
             $.make('span', matching_title_regex)
         ]);
-        var $non_matching = has_non_matching ?
-            $.make('div', { className: 'NB-classifier-feed-items' }, [
-                $.make('span', non_matching_titles),
-                $.make('span', non_matching_title_regex)
-            ]) : '';
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-title-section', 'data-section': 'title' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
@@ -762,10 +751,9 @@ var classifier_prototype = {
                 ]),
                 $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-title-validation' }),
                 this.make_regex_popover(),
-                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
-                    $this_story,
-                    $non_matching
-                ])
+                $.make('div', { className: 'NB-classifier-content-classifiers' },
+                    [$this_story].concat($scoped_groups)
+                )
             ])
         ]);
     },
@@ -784,7 +772,7 @@ var classifier_prototype = {
         var matching_url_regex = this.make_user_url_regex_matching(story_url);
         var non_matching_urls = this.make_user_urls_non_matching(story_url);
         var non_matching_url_regex = this.make_user_url_regex_non_matching(story_url);
-        var has_non_matching = non_matching_urls.length > 0 || non_matching_url_regex.length > 0;
+        var $scoped_groups = this.make_scoped_groups(non_matching_urls.concat(non_matching_url_regex));
 
         // Always create the "this story" div with the placeholder, plus any matching URLs
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
@@ -792,11 +780,6 @@ var classifier_prototype = {
             $.make('span', matching_urls),
             $.make('span', matching_url_regex)
         ]);
-        var $non_matching = has_non_matching ?
-            $.make('div', { className: 'NB-classifier-feed-items' }, [
-                $.make('span', non_matching_urls),
-                $.make('span', non_matching_url_regex)
-            ]) : '';
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-url-section', 'data-section': 'url' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
@@ -826,10 +809,9 @@ var classifier_prototype = {
                 ]),
                 $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-url-validation' }),
                 this.make_regex_popover(),
-                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
-                    $this_story,
-                    $non_matching
-                ])
+                $.make('div', { className: 'NB-classifier-content-classifiers' },
+                    [$this_story].concat($scoped_groups)
+                )
             ])
         ]);
     },
@@ -900,8 +882,8 @@ var classifier_prototype = {
 
         var $story_authors = has_story_author ?
             $.make('div', { className: 'NB-classifier-this-story' }, this.make_authors([story_author])) : '';
-        var $feed_authors = has_other_authors ?
-            $.make('div', { className: 'NB-classifier-feed-items' }, this.make_authors(other_authors)) : '';
+        var $scoped_groups = has_other_authors ?
+            this.make_scoped_groups(this.make_authors(other_authors)) : [];
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
@@ -913,10 +895,9 @@ var classifier_prototype = {
                     ]))
                 ])
             ]),
-            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $story_authors,
-                $feed_authors
-            ])
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
+                [$story_authors].concat($scoped_groups)
+            )
         ]);
     },
 
@@ -945,8 +926,8 @@ var classifier_prototype = {
 
         var $story_tags = has_story_tags ?
             $.make('div', { className: 'NB-classifier-this-story' }, this.make_tags(story_tags)) : '';
-        var $feed_tags = has_other_tags ?
-            $.make('div', { className: 'NB-classifier-feed-items' }, this.make_tags(other_tags)) : '';
+        var $scoped_groups = has_other_tags ?
+            this.make_scoped_groups(this.make_tags(other_tags)) : [];
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
@@ -958,25 +939,22 @@ var classifier_prototype = {
                     ]))
                 ])
             ]),
-            $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' }, [
-                $story_tags,
-                $feed_tags
-            ])
+            $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
+                [$story_tags].concat($scoped_groups)
+            )
         ]);
     },
 
     make_combined_publisher_section: function (feed) {
         var has_other_publishers = this.feed_publishers && this.feed_publishers.length > 0;
-
-        var $other_publishers = has_other_publishers ?
-            $.make('div', { className: 'NB-classifier-feed-items' }, this.make_publishers(this.feed_publishers)) : '';
+        var $scoped_groups = has_other_publishers ?
+            this.make_scoped_groups(this.make_publishers(this.feed_publishers)) : [];
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
             $.make('h5', 'Publisher'),
-            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                this.make_publisher(feed),
-                $other_publishers
-            ])
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
+                [this.make_publisher(feed)].concat($scoped_groups)
+            )
         ]);
     },
 
@@ -1330,6 +1308,36 @@ var classifier_prototype = {
         var $publisher = this.make_classifier(_.string.truncate(publisher.get('feed_title'), 50),
             publisher.id, 'feed', publisher.get('story_count'), publisher);
         return $publisher;
+    },
+
+    group_classifiers_by_scope: function (classifiers) {
+        var groups = { feed: [], folder: [], global: [] };
+        _.each(classifiers, function ($el) {
+            var scope = $('.NB-classifier', $el).data('scope') || 'feed';
+            if (groups[scope]) {
+                groups[scope].push($el);
+            } else {
+                groups.feed.push($el);
+            }
+        });
+        return groups;
+    },
+
+    make_scoped_groups: function (classifiers) {
+        var groups = this.group_classifiers_by_scope(classifiers);
+        var $sections = [];
+
+        if (groups.feed.length > 0) {
+            $sections.push($.make('div', { className: 'NB-classifier-feed-items' }, groups.feed));
+        }
+        if (groups.folder.length > 0) {
+            $sections.push($.make('div', { className: 'NB-classifier-folder-items' }, groups.folder));
+        }
+        if (groups.global.length > 0) {
+            $sections.push($.make('div', { className: 'NB-classifier-global-items' }, groups.global));
+        }
+
+        return $sections;
     },
 
     make_classifier: function (classifier_title, classifier_value, classifier_type, classifier_count, classifier, is_regex) {
