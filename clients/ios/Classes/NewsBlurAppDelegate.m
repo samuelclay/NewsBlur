@@ -267,6 +267,9 @@
     }
     
     [self registerBackgroundTask];
+#if TARGET_OS_MACCATALYST
+    [CatalystModalDismissal install];
+#endif
 
     return YES;
 }
@@ -1427,9 +1430,9 @@
         sheet.preferredCornerRadius = 12.0;
 
         [navController presentViewController:askAINavController animated:YES completion:^{
-            // Add tap gesture to container view to dismiss on tap outside sheet
+            // Add tap gesture to container view to dismiss on tap outside sheet (iOS only)
             UIView *containerView = askAINavController.presentationController.containerView;
-            if (containerView) {
+            if (containerView && !self.isMac) {
                 UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
                     initWithTarget:self
                     action:@selector(dismissAskAIOnTap:)];
@@ -1533,6 +1536,9 @@
 
 - (void)dismissAskAIOnTap:(UITapGestureRecognizer *)gesture {
     UIViewController *presentedVC = self.feedsNavigationController.presentedViewController;
+    if (!presentedVC) {
+        presentedVC = self.splitViewController.presentedViewController;
+    }
     if (presentedVC) {
         [presentedVC dismissViewControllerAnimated:YES completion:nil];
     }
