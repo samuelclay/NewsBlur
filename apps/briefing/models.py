@@ -12,7 +12,7 @@ class MBriefing(mongo.Document):
     """
     A single generated briefing for a user.
 
-    Each briefing corresponds to one AI-generated summary story plus
+    Each briefing corresponds to one summary story plus
     a set of curated story hashes from the user's feeds.
     """
 
@@ -163,12 +163,14 @@ def ensure_briefing_feed(user):
     return feed
 
 
-def create_briefing_story(feed, user, summary_html, briefing_date, curated_story_hashes):
+def create_briefing_story(feed, user, summary_html, briefing_date, curated_story_hashes, on_demand=False):
     """
-    Create or update an MStory in the briefing feed with the AI summary, and an MBriefing
+    Create or update an MStory in the briefing feed with the summary, and an MBriefing
     record linking the summary to the curated stories.
 
-    If a briefing already exists for the same day, overwrites it instead of creating a duplicate.
+    Deduplication:
+    - on_demand (regenerate): overwrites the most recent briefing for this user today.
+    - scheduled: only overwrites a briefing in the same time-of-day window (morning/afternoon/evening).
 
     Returns (MBriefing, MStory) tuple.
     """
@@ -181,15 +183,46 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
     # models.py: Convert UTC briefing_date to user's local timezone for the title
     user_tz = pytz.timezone(str(user.profile.timezone))
     local_date = pytz.utc.localize(briefing_date).astimezone(user_tz)
-    title = "Daily Briefing — %s" % local_date.strftime("%B %-d, %Y")
+    # models.py: Include time-of-day in briefing title based on user's local time
+    local_hour = local_date.hour
+    if local_hour < 12:
+        time_of_day = "Morning"
+    elif local_hour < 17:
+        time_of_day = "Afternoon"
+    else:
+        time_of_day = "Evening"
+    title = "%s Daily Briefing — %s" % (time_of_day, local_date.strftime("%B %-d, %Y"))
 
-    day_start = briefing_date.replace(hour=0, minute=0, second=0, microsecond=0)
-    day_end = day_start + datetime.timedelta(days=1)
-    existing_briefing = MBriefing.objects.filter(
-        user_id=user.pk,
-        briefing_date__gte=day_start,
-        briefing_date__lte=day_end,
-    ).first()
+    # models.py: Compute local-time day boundaries in UTC for DB queries
+    local_day_start = local_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    local_day_end = local_day_start + datetime.timedelta(days=1)
+    day_start_utc = local_day_start.astimezone(pytz.utc).replace(tzinfo=None)
+    day_end_utc = local_day_end.astimezone(pytz.utc).replace(tzinfo=None)
+    if on_demand:
+        # models.py: Regenerate overwrites the most recent briefing today
+        existing_briefing = MBriefing.objects.filter(
+            user_id=user.pk,
+            briefing_date__gte=day_start_utc,
+            briefing_date__lte=day_end_utc,
+        ).order_by("-briefing_date").first()
+    else:
+        # models.py: Scheduled generation only overwrites same time-of-day window
+        if local_hour < 12:
+            local_window_start = local_day_start
+            local_window_end = local_date.replace(hour=12, minute=0, second=0, microsecond=0)
+        elif local_hour < 17:
+            local_window_start = local_date.replace(hour=12, minute=0, second=0, microsecond=0)
+            local_window_end = local_date.replace(hour=17, minute=0, second=0, microsecond=0)
+        else:
+            local_window_start = local_date.replace(hour=17, minute=0, second=0, microsecond=0)
+            local_window_end = local_day_end
+        window_start_utc = local_window_start.astimezone(pytz.utc).replace(tzinfo=None)
+        window_end_utc = local_window_end.astimezone(pytz.utc).replace(tzinfo=None)
+        existing_briefing = MBriefing.objects.filter(
+            user_id=user.pk,
+            briefing_date__gte=window_start_utc,
+            briefing_date__lte=window_end_utc,
+        ).first()
 
     if existing_briefing and existing_briefing.summary_story_hash:
         try:

@@ -18,7 +18,7 @@ def load_briefing_stories(request):
     """
     GET /briefing/stories
 
-    Returns briefing data grouped by period with AI summaries and curated stories.
+    Returns briefing data grouped by period with summaries and curated stories.
     Premium archive/pro users get full briefings; others get a preview.
     """
     user = request.user

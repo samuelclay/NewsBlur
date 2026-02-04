@@ -38,7 +38,7 @@ def select_briefing_stories(
     - follow_up: Unread story from a feed the user recently read
     - classifier_match: Matches user's positive intelligence classifiers
     - trending_unread: High trending score (trending_norm > 0.5)
-    - long_read: Has significant word count (AI decides threshold)
+    - long_read: Has significant word count
     - trending_global: Fallback for remaining stories
 
     Args:

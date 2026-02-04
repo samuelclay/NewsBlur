@@ -95,7 +95,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
 
     1. Ensure briefing feed exists
     2. Select stories via scoring algorithm
-    3. Generate AI summary
+    3. Generate summary
     4. Create MStory for summary in the briefing feed
     5. Create MBriefing record linking summary + curated stories
 
@@ -179,7 +179,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
         return
 
     curated_hashes = [s["story_hash"] for s in scored_stories]
-    briefing, story = create_briefing_story(feed, user, summary_html, now, curated_hashes)
+    briefing, story = create_briefing_story(feed, user, summary_html, now, curated_hashes, on_demand=on_demand)
 
     logging.debug(
         " ---> GenerateUserBriefing: completed for user %s — %s stories, hash %s"

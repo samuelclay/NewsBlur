@@ -29319,6 +29319,8 @@ span.NB-briefing-inline-favicon {
 }
 
 .NB-briefing-section-name {
+    display: flex;
+    align-items: center;
     font-size: 12px;
     font-weight: 500;
     color: #333;
@@ -29391,6 +29393,7 @@ span.NB-briefing-inline-favicon {
     font-size: 16px;
     font-weight: 300;
     line-height: 1;
+    margin-top: -2px;
 }
 
 /* reader.css: Remove custom section button */
