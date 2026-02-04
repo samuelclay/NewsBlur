@@ -1373,6 +1373,110 @@ class Profile(models.Model):
 
         return True
 
+    def retry_stripe_invoice(self):
+        """Retry payment on any open (unpaid) Stripe invoices for this customer.
+
+        Returns dict with 'paid' (bool), 'amount' (dollars), and 'invoice_id',
+        or None if no open invoices found.
+        """
+        if not self.stripe_id:
+            logging.user(self.user, "~FRNo Stripe ID, cannot retry invoice")
+            return None
+
+        stripe.api_key = settings.STRIPE_SECRET
+        stripe_customer = self.stripe_customer()
+        if not stripe_customer:
+            return None
+
+        invoices = stripe.Invoice.list(customer=stripe_customer.id, status="open", limit=5)
+        if not invoices.data:
+            logging.user(self.user, "~FBNo open Stripe invoices to retry")
+            return None
+
+        invoice = invoices.data[0]
+        try:
+            result = stripe.Invoice.pay(invoice.id)
+            paid = result.status == "paid"
+            amount = result.amount_paid / 100.0
+            logging.user(
+                self.user,
+                "~FG~BBRetried Stripe invoice ~SB%s~SN: %s ($%.2f)"
+                % (invoice.id, "paid" if paid else "failed", amount),
+            )
+            if paid:
+                self.setup_premium_history()
+            return {"paid": paid, "amount": amount, "invoice_id": invoice.id}
+        except stripe.error.CardError as e:
+            logging.user(self.user, "~FRStripe invoice retry failed: ~SB%s" % e.user_message)
+            return {"paid": False, "amount": 0, "invoice_id": invoice.id, "error": e.user_message}
+
+    def reactivate_stripe_subscription(self, plan="premium"):
+        """Reactivate a cancelled Stripe subscription by creating a new one.
+
+        Anchors billing to the current premium_expire date so the user isn't
+        double-charged. Sets up the default payment method and syncs premium history.
+
+        Returns the new subscription ID, or None on failure.
+        """
+        if not self.stripe_id:
+            logging.user(self.user, "~FRNo Stripe ID, cannot reactivate subscription")
+            return None
+
+        stripe.api_key = settings.STRIPE_SECRET
+        stripe_customer = self.stripe_customer()
+        if not stripe_customer:
+            return None
+
+        # Check if there's already an active subscription
+        existing_subs = stripe.Subscription.list(customer=stripe_customer.id, status="active")
+        if existing_subs.data:
+            logging.user(
+                self.user,
+                "~FBStripe subscription already active: ~SB%s" % existing_subs.data[0].id,
+            )
+            return existing_subs.data[0].id
+
+        # Ensure default payment method is set
+        payment_methods = stripe.PaymentMethod.list(customer=stripe_customer.id, type="card")
+        if not payment_methods.data:
+            logging.user(self.user, "~FRNo payment methods on file, cannot reactivate subscription")
+            return None
+
+        stripe.Customer.modify(
+            stripe_customer.id,
+            invoice_settings={"default_payment_method": payment_methods.data[0].id},
+        )
+
+        # Anchor billing to premium_expire so user isn't charged again immediately
+        anchor = None
+        if self.premium_expire and self.premium_expire > datetime.datetime.now():
+            anchor = int(self.premium_expire.timestamp())
+
+        try:
+            sub_params = {
+                "customer": stripe_customer.id,
+                "items": [{"price": Profile.plan_to_stripe_price(plan)}],
+                "proration_behavior": "none",
+            }
+            if anchor:
+                sub_params["billing_cycle_anchor"] = anchor
+
+            subscription = stripe.Subscription.create(**sub_params)
+            logging.user(
+                self.user,
+                "~FG~BBReactivated Stripe subscription ~SB%s~SN (plan: %s, next billing: %s)"
+                % (subscription.id, plan, self.premium_expire),
+            )
+
+            self.premium_renewal = True
+            self.active_provider = "stripe"
+            self.save()
+
+            return subscription.id
+        except stripe.error.StripeError as e:
+            logging.user(self.user, "~FRFailed to reactivate Stripe subscription: ~SB%s" % str(e))
+            return None
+
     def retrieve_stripe_ids(self):
         if not self.stripe_id:
             return
