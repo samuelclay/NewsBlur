@@ -85,7 +85,11 @@ jobs:
         run: docker exec newsblur_web python3 manage.py loaddata config/fixtures/bootstrap.json
 
       - name: Run tests
-        run: docker compose exec -T newsblur_web python3 manage.py test apps --noinput -v 1 --failfast
+        run: |
+          # Use --keepdb to skip CREATE/DROP DATABASE. This avoids the teardown error where
+          # Django fails to DROP the test DB because lingering connections (from Sentry SDK
+          # name resolution failures) keep it open. The CI container is ephemeral anyway.
+          docker compose exec -T newsblur_web python3 manage.py test apps --noinput -v 1 --failfast --keepdb
         timeout-minutes: 5
 
       - name: Show logs on failure
