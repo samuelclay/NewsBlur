@@ -148,7 +148,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
         user_id,
         period_start,
         now,
-        max_stories=prefs.story_count or 20,
+        max_stories=prefs.story_count or 5,
         story_sources=prefs.story_sources or "all",
         read_filter=prefs.read_filter or "unread",
         include_read=prefs.include_read,
@@ -168,7 +168,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
         scored_stories,
         now,
         summary_length=prefs.summary_length or "medium",
-        summary_style=prefs.summary_style or "editorial",
+        summary_style=prefs.summary_style or "bullets",
         sections=prefs.sections,
         custom_section_prompts=prefs.custom_section_prompts,
     )

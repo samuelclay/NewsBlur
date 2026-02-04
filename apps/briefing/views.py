@@ -132,11 +132,11 @@ def load_briefing_stories(request):
             "frequency": prefs.frequency,
             "preferred_time": preferred_time_display,
             "preferred_day": prefs.preferred_day or "sun",
-            "story_count": prefs.story_count or 20,
+            "story_count": prefs.story_count or 5,
             "summary_length": prefs.summary_length or "medium",
             "story_sources": prefs.story_sources or "all",
             "read_filter": prefs.read_filter or "unread",
-            "summary_style": prefs.summary_style or "editorial",
+            "summary_style": prefs.summary_style or "bullets",
             "include_read": prefs.include_read,
             "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
             "custom_section_prompts": prefs.custom_section_prompts or [],
@@ -186,7 +186,7 @@ def briefing_preferences(request):
         if story_count:
             try:
                 story_count = int(story_count)
-                if story_count in (10, 20, 30, 50):
+                if story_count in (5, 10, 15, 20):
                     prefs.story_count = story_count
             except (ValueError, TypeError):
                 pass
@@ -268,11 +268,11 @@ def briefing_preferences(request):
         "preferred_day": prefs.preferred_day or "sun",
         "enabled": prefs.enabled,
         "briefing_feed_id": prefs.briefing_feed_id,
-        "story_count": prefs.story_count or 20,
+        "story_count": prefs.story_count or 5,
         "summary_length": prefs.summary_length or "medium",
         "story_sources": prefs.story_sources or "all",
         "read_filter": prefs.read_filter or "unread",
-        "summary_style": prefs.summary_style or "editorial",
+        "summary_style": prefs.summary_style or "bullets",
         "include_read": prefs.include_read,
         "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
         "custom_section_prompts": prefs.custom_section_prompts or [],

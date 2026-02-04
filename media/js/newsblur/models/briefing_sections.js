@@ -22,16 +22,8 @@ NEWSBLUR.Collections.BriefingSectionFeeds = Backbone.Collection.extend({
         });
         return models;
     },
-    comparator: function (a, b) {
-        // briefing_sections.js: Sort by count descending, then alphabetical
-        if (a.get('count') > b.get('count')) return -1;
-        if (a.get('count') < b.get('count')) return 1;
-        var title_a = (a.get('feed_title') || '').toLowerCase();
-        var title_b = (b.get('feed_title') || '').toLowerCase();
-        if (title_a > title_b) return 1;
-        if (title_a < title_b) return -1;
-        return 0;
-    },
+    // briefing_sections.js: No comparator — preserve insertion order to match
+    // the section order from the AI-generated summary HTML.
     selected: function () {
         return this.detect(function (feed) { return feed.get('selected'); });
     },

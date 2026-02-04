@@ -2204,14 +2204,33 @@
                 });
             });
 
-            // reader.js: Populate briefing_section_feeds collection for the sidebar
+            // reader.js: Populate briefing_section_feeds collection for the sidebar.
+            // Use section_summaries key order from the latest briefing so the sidebar
+            // matches the order sections appear in the summary.
             var section_models = [];
-            _.each(aggregate_sections, function (count, key) {
-                section_models.push({
-                    section_key: key,
-                    section_name: section_definitions[key] || key,
-                    count: count
+            var added_keys = {};
+            var latest_briefing = briefings[0];
+            if (latest_briefing && latest_briefing.section_summaries) {
+                _.each(_.keys(latest_briefing.section_summaries), function (key) {
+                    if (key in aggregate_sections) {
+                        section_models.push({
+                            section_key: key,
+                            section_name: section_definitions[key] || key,
+                            count: aggregate_sections[key]
+                        });
+                        added_keys[key] = true;
+                    }
                 });
+            }
+            // reader.js: Add any remaining sections not in section_summaries
+            _.each(aggregate_sections, function (count, key) {
+                if (!added_keys[key]) {
+                    section_models.push({
+                        section_key: key,
+                        section_name: section_definitions[key] || key,
+                        count: count
+                    });
+                }
             });
             NEWSBLUR.assets.briefing_section_feeds.reset(section_models, { parse: true });
 
