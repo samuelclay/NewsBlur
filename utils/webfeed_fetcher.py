@@ -9,6 +9,7 @@ from lxml import html as lxml_html
 
 from apps.rss_feeds.models import Feed
 from apps.webfeed.models import MWebFeedConfig
+from apps.webfeed.tasks import extract_image_url
 from utils import log as logging
 
 USER_AGENT = "NewsBlur Web Feed Fetcher (https://newsblur.com)"
@@ -183,6 +184,7 @@ class WebFeedFetcher:
                 try:
                     images = container.xpath(self.config.image_xpath)
                     img_src = images[0].strip() if images else ""
+                    img_src = extract_image_url(img_src) or ""
                     if img_src and not img_src.startswith("http"):
                         img_src = urljoin(self.url, img_src)
                     story["image"] = img_src

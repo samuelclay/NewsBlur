@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 from django.test import TestCase
 
 from apps.webfeed.models import MWebFeedConfig
-from apps.webfeed.tasks import extract_preview_stories
+from apps.webfeed.tasks import extract_image_url, extract_preview_stories
 from utils.webfeed_fetcher import WebFeedFetcher
 
 
@@ -66,6 +66,61 @@ class Test_ExtractPreviewStories(TestCase):
         }
         stories = extract_preview_stories("", variant, "https://example.com")
         self.assertEqual(len(stories), 0)
+
+
+    def test_extract_stories_css_background_image(self):
+        html = """
+        <html><body>
+        <div class="card">
+            <div class="thumb" style="background-image: url(/images/photo1.webp); background-size: cover;"></div>
+            <h2><a href="/article-1">First Article</a></h2>
+        </div>
+        <div class="card">
+            <div class="thumb" style="background-image: url('/images/photo2.webp');"></div>
+            <h2><a href="/article-2">Second Article</a></h2>
+        </div>
+        </body></html>
+        """
+        variant = {
+            "story_container": "//div[@class='card']",
+            "title": ".//h2/a/text()",
+            "link": ".//h2/a/@href",
+            "image": ".//div[@class='thumb']/@style",
+        }
+        stories = extract_preview_stories(html, variant, "https://example.com")
+        self.assertEqual(len(stories), 2)
+        self.assertEqual(stories[0]["image"], "https://example.com/images/photo1.webp")
+        self.assertEqual(stories[1]["image"], "https://example.com/images/photo2.webp")
+
+
+class Test_ExtractImageUrl(TestCase):
+    def test_plain_url_passthrough(self):
+        self.assertEqual(extract_image_url("/images/photo.jpg"), "/images/photo.jpg")
+
+    def test_absolute_url_passthrough(self):
+        self.assertEqual(extract_image_url("https://example.com/photo.jpg"), "https://example.com/photo.jpg")
+
+    def test_css_background_image_unquoted(self):
+        result = extract_image_url("background-image: url(/images/photo.jpg); background-size: cover;")
+        self.assertEqual(result, "/images/photo.jpg")
+
+    def test_css_background_image_single_quoted(self):
+        result = extract_image_url("background-image: url('/images/photo.jpg')")
+        self.assertEqual(result, "/images/photo.jpg")
+
+    def test_css_background_image_double_quoted(self):
+        result = extract_image_url('background-image: url("/images/photo.jpg")')
+        self.assertEqual(result, "/images/photo.jpg")
+
+    def test_none_input(self):
+        self.assertIsNone(extract_image_url(None))
+
+    def test_empty_string(self):
+        self.assertIsNone(extract_image_url(""))
+
+    def test_data_uri(self):
+        result = extract_image_url("background-image: url(data:image/png;base64,ABC123)")
+        self.assertEqual(result, "data:image/png;base64,ABC123")
 
 
 class Test_GuidGeneration(TestCase):

@@ -2140,7 +2140,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('img', { src: '/media/img/icons/nouns/web-feed.svg', className: 'NB-add-site-source-icon-img' })
                 ]),
                 $.make('div', { className: 'NB-add-site-webfeed-empty-text' },
-                    'Paste a URL above and we\'ll use AI to find stories on the page, even if there\'s no RSS feed.')
+                    'Paste a URL above to find stories on any page, even without RSS.')
             ]));
         }
 
@@ -2184,7 +2184,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 $.make('input', {
                     type: 'text',
                     className: 'NB-add-site-webfeed-hint-input',
-                    placeholder: 'e.g. "Energy Transition"',
+                    placeholder: 'Type a story title you see on the page',
                     value: state.story_hint || ''
                 }),
                 $.make('div', {
@@ -2212,6 +2212,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         _.map(variant.preview_stories || [], function (story) {
                             var $story_elements = [];
                             var img_src = story.image;
+                            if (img_src && img_src.indexOf('background-image') !== -1) {
+                                var bg_match = img_src.match(/background-image\s*:\s*url\(\s*['"]?(.*?)['"]?\s*\)/i);
+                                img_src = bg_match ? bg_match[1] : null;
+                            }
                             if (img_src && !img_src.match(/^https?:\/\//)) {
                                 try {
                                     img_src = new URL(img_src, base_url).href;
@@ -2521,9 +2525,22 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     select_webfeed_variant: function (e) {
         var $card = $(e.currentTarget);
         var index = parseInt($card.data('variant-index'), 10);
+        var state = this.webfeed_state;
+        var variant = (state.variants || [])[index];
 
-        this.webfeed_state.selected_variant = index;
-        this.render_webfeed_tab();
+        state.selected_variant = index;
+
+        // Update card active states in place
+        this.$('.NB-add-site-webfeed-variant-card').removeClass('NB-active');
+        $card.addClass('NB-active');
+        this.$('.NB-add-site-webfeed-variant-radio').removeClass('NB-selected');
+        $card.find('.NB-add-site-webfeed-variant-radio').addClass('NB-selected');
+
+        // Show subscribe section and update pattern label
+        var $subscribe = this.$('.NB-add-site-webfeed-subscribe-section');
+        $subscribe.removeClass('NB-hidden');
+        this.$('.NB-add-site-webfeed-feed-badge-pattern').text(
+            'Pattern: ' + (variant ? variant.label || '' : ''));
     },
 
     update_webfeed_staleness: function (e) {
