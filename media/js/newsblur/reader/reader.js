@@ -5839,6 +5839,9 @@
                 this.socket.removeAllListeners('webfeed:start');
                 this.socket.on('webfeed:start', _.bind(this.handle_webfeed_start, this));
 
+                this.socket.removeAllListeners('webfeed:progress');
+                this.socket.on('webfeed:progress', _.bind(this.handle_webfeed_progress, this));
+
                 this.socket.removeAllListeners('webfeed:variants');
                 this.socket.on('webfeed:variants', _.bind(this.handle_webfeed_variants, this));
 
@@ -5988,6 +5991,16 @@
 
         handle_webfeed_start: function (data) {
             NEWSBLUR.log(['webfeed:start', data]);
+            if (this.add_site_view) {
+                this.add_site_view.handle_webfeed_start(data);
+            }
+        },
+
+        handle_webfeed_progress: function (data) {
+            NEWSBLUR.log(['webfeed:progress', data]);
+            if (this.add_site_view) {
+                this.add_site_view.handle_webfeed_progress(data);
+            }
         },
 
         handle_webfeed_variants: function (data) {

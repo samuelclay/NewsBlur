@@ -2113,7 +2113,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $content_area.html($.make('div', { className: 'NB-add-site-webfeed-analyzing' }, [
                 $.make('div', { className: 'NB-add-site-webfeed-analyzing-spinner NB-spinner' }),
                 $.make('div', { className: 'NB-add-site-webfeed-analyzing-text' },
-                    'Analyzing page to find story patterns...')
+                    state.analyze_stage || 'Analyzing page to find story patterns...')
             ]));
         } else if (state.subscribe_stage) {
             $content_area.html(this.render_webfeed_subscribed(state));
@@ -2413,6 +2413,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.webfeed_state.request_id = request_id;
         this.webfeed_state.subscribed_feed = null;
         this.webfeed_state._variants_animated = false;
+        this.webfeed_state.analyze_stage = null;
 
         this.render_webfeed_tab();
 
@@ -2481,6 +2482,25 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 this.render_webfeed_tab();
             }
         }, this), hint);
+    },
+
+    handle_webfeed_start: function (data) {
+        if (data.request_id !== this.webfeed_state.request_id) return;
+        this.webfeed_state.analyze_stage = 'Starting analysis...';
+        this.update_webfeed_progress();
+    },
+
+    handle_webfeed_progress: function (data) {
+        if (data.request_id !== this.webfeed_state.request_id) return;
+        this.webfeed_state.analyze_stage = data.message;
+        this.update_webfeed_progress();
+    },
+
+    update_webfeed_progress: function () {
+        var $text = this.$('.NB-add-site-webfeed-analyzing-text');
+        if ($text.length && this.webfeed_state.analyze_stage) {
+            $text.text(this.webfeed_state.analyze_stage);
+        }
     },
 
     handle_webfeed_variants: function (data) {

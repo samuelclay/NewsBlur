@@ -25912,8 +25912,8 @@ h5.NB-classifier-section-header {
 .NB-add-site-webfeed-variant-radio.NB-selected::after {
     content: '';
     position: absolute;
-    top: 3px;
-    left: 3px;
+    top: 5px;
+    left: 5px;
     width: 8px;
     height: 8px;
     border-radius: 50%;

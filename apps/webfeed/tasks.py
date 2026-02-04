@@ -301,6 +301,7 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
 
         publish_event = publish
         publish_event("start")
+        publish_event("progress", {"message": "Fetching page..."})
 
         logging.user(user, f"~BB~FWWeb Feed: Fetching page ~SB{url}~SN")
 
@@ -319,6 +320,8 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
             f"~BB~FWWeb Feed: Fetched ~SB{len(page_html)}~SN bytes, analyzing with Claude",
         )
 
+        publish_event("progress", {"message": "Preparing page..."})
+
         # Pre-process HTML to strip navigation elements for LLM analysis
         # When a story_hint is provided, use gentle stripping to preserve nav/footer
         # content that might contain the sections the user is looking for
@@ -327,6 +330,8 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
             user,
             f"~BB~FWWeb Feed: Cleaned HTML from ~SB{len(page_html)}~SN to ~SB{len(cleaned_html)}~SN bytes",
         )
+
+        publish_event("progress", {"message": "Finding story patterns..."})
 
         # Step 2: Call Claude for XPath analysis
         from apps.ask_ai.providers import LLM_EXCEPTIONS, get_provider
@@ -410,6 +415,8 @@ def AnalyzeWebFeedPage(user_id, url, request_id=None, story_hint=None):
                     break
         except Exception:
             pass
+
+        publish_event("progress", {"message": "Extracting previews..."})
 
         # Step 4: Extract preview stories for each variant
         for i, variant in enumerate(variants):
