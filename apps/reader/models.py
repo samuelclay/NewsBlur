@@ -1406,16 +1406,24 @@ class UserSubscription(models.Model):
                             classifier_tags, story, folder_feed_ids=folder_feed_map
                         ),
                         "title": apply_classifier_titles(
-                            classifier_titles, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_map
+                            classifier_titles, story, folder_feed_ids=folder_feed_map
                         ),
-                        "title_regex": apply_classifier_title_regex(
-                            classifier_titles, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_map
+                        "title_regex": (
+                            apply_classifier_title_regex(
+                                classifier_titles, story, folder_feed_ids=folder_feed_map
+                            )
+                            if user_is_pro
+                            else 0
                         ),
                         "text": apply_classifier_texts(
-                            classifier_texts, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_map
+                            classifier_texts, story, folder_feed_ids=folder_feed_map
                         ),
-                        "text_regex": apply_classifier_text_regex(
-                            classifier_texts, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_map
+                        "text_regex": (
+                            apply_classifier_text_regex(
+                                classifier_texts, story, folder_feed_ids=folder_feed_map
+                            )
+                            if user_is_pro
+                            else 0
                         ),
                         "url": apply_classifier_urls(
                             classifier_urls,
@@ -1423,8 +1431,12 @@ class UserSubscription(models.Model):
                             user_is_premium=user_is_premium,
                             folder_feed_ids=folder_feed_map,
                         ),
-                        "url_regex": apply_classifier_url_regex(
-                            classifier_urls, story, user_is_pro=user_is_pro, folder_feed_ids=folder_feed_map
+                        "url_regex": (
+                            apply_classifier_url_regex(
+                                classifier_urls, story, folder_feed_ids=folder_feed_map
+                            )
+                            if user_is_pro
+                            else 0
                         ),
                     }
                 )
