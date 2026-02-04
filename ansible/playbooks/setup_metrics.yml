@@ -9,6 +9,7 @@
 
   roles:
     - { role: "base", tags: "base" }
+    - { role: "swap", tags: "swap" }
     - { role: "ufw", tags: "ufw" }
     - { role: "docker", tags: "docker" }
     - { role: "repo", tags: ["repo", "pull"] }
