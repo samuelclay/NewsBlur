@@ -14,6 +14,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "folder/saved": "starred",
         "folder/saved/:tag": "starred",
         "briefing": "briefing",
+        "briefing/:section": "briefing_section",
         "folder/:folder_name": "folder",
         "folder/:folder_name/": "folder",
         "social/:user_id/:slug": "social",
@@ -89,6 +90,10 @@ NEWSBLUR.Router = Backbone.Router.extend({
             router: true
         };
         NEWSBLUR.reader.open_daily_briefing(options);
+    },
+
+    briefing_section: function (section) {
+        NEWSBLUR.reader.open_daily_briefing({ router: true, section: section });
     },
 
     starred: function (tag) {

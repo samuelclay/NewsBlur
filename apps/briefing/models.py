@@ -20,6 +20,8 @@ class MBriefing(mongo.Document):
     briefing_feed_id = mongo.IntField()
     summary_story_hash = mongo.StringField()
     curated_story_hashes = mongo.ListField(mongo.StringField())
+    curated_sections = mongo.DictField(default=None)
+    section_summaries = mongo.DictField(default=None)
     briefing_date = mongo.DateTimeField()
     period_start = mongo.DateTimeField()
     generated_at = mongo.DateTimeField()
@@ -163,7 +165,7 @@ def ensure_briefing_feed(user):
     return feed
 
 
-def create_briefing_story(feed, user, summary_html, briefing_date, curated_story_hashes, on_demand=False):
+def create_briefing_story(feed, user, summary_html, briefing_date, curated_story_hashes, on_demand=False, curated_sections=None, section_summaries=None):
     """
     Create or update an MStory in the briefing feed with the summary, and an MBriefing
     record linking the summary to the curated stories.
@@ -256,6 +258,8 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
 
     if existing_briefing:
         existing_briefing.curated_story_hashes = curated_story_hashes
+        existing_briefing.curated_sections = curated_sections
+        existing_briefing.section_summaries = section_summaries
         existing_briefing.briefing_date = briefing_date
         existing_briefing.generated_at = datetime.datetime.utcnow()
         existing_briefing.status = "complete"
@@ -267,6 +271,8 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
             briefing_feed_id=feed.pk,
             summary_story_hash=story.story_hash,
             curated_story_hashes=curated_story_hashes,
+            curated_sections=curated_sections,
+            section_summaries=section_summaries,
             briefing_date=briefing_date,
             period_start=briefing_date - datetime.timedelta(days=1),
             generated_at=datetime.datetime.utcnow(),

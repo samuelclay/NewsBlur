@@ -90,14 +90,34 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
         // story_titles_view.js: Collect summary + curated stories and load them into the
         // main stories collection so split view, selection, and story detail all work.
+        // When a section filter is active, only include stories in that section.
+        var active_section = NEWSBLUR.reader.flags.briefing_section;
         var all_stories = [];
         _.each(briefings, function (briefing) {
-            if (briefing.summary_story) {
-                all_stories.push(briefing.summary_story);
+            if (active_section) {
+                var section_hashes = (briefing.curated_sections || {})[active_section] || [];
+                var section_hash_set = {};
+                _.each(section_hashes, function (h) { section_hash_set[h] = true; });
+                // story_titles_view.js: Include section summary as first story if available
+                var section_html = (briefing.section_summaries || {})[active_section];
+                if (section_html && briefing.summary_story) {
+                    all_stories.push(_.extend({}, briefing.summary_story, {
+                        story_content: section_html
+                    }));
+                }
+                _.each(briefing.curated_stories || [], function (story_data) {
+                    if (section_hash_set[story_data.story_hash]) {
+                        all_stories.push(story_data);
+                    }
+                });
+            } else {
+                if (briefing.summary_story) {
+                    all_stories.push(briefing.summary_story);
+                }
+                _.each(briefing.curated_stories || [], function (story_data) {
+                    all_stories.push(story_data);
+                });
             }
-            _.each(briefing.curated_stories || [], function (story_data) {
-                all_stories.push(story_data);
-            });
         });
         // story_titles_view.js: Briefing has all stories; prevent fill_out from paging.
         this.collection.no_more_stories = true;
@@ -115,8 +135,31 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
         _.each(briefings, function (briefing) {
             briefing.is_preview = data.is_preview;
+            // story_titles_view.js: When filtering by section, pass a modified briefing
+            // with only the matching curated stories to the group view.
+            var display_briefing = briefing;
+            if (active_section) {
+                var section_hashes = (briefing.curated_sections || {})[active_section] || [];
+                var section_hash_set = {};
+                _.each(section_hashes, function (h) { section_hash_set[h] = true; });
+                // story_titles_view.js: Show section-specific summary if available
+                var section_html = (briefing.section_summaries || {})[active_section];
+                var section_summary = null;
+                if (section_html && briefing.summary_story) {
+                    section_summary = _.extend({}, briefing.summary_story, {
+                        story_content: section_html
+                    });
+                }
+                display_briefing = _.extend({}, briefing, {
+                    summary_story: section_summary,
+                    curated_stories: _.filter(briefing.curated_stories || [], function (s) {
+                        return section_hash_set[s.story_hash];
+                    })
+                });
+                if (!display_briefing.curated_stories.length && !section_summary) return;
+            }
             var group = new NEWSBLUR.Views.BriefingGroupView({
-                briefing: briefing,
+                briefing: display_briefing,
                 collection: this.collection
             }).render();
             $groups.push(group.el);

@@ -25,6 +25,7 @@ urlpatterns = [
     url(r"^trending/?", reader_views.index),
     url(r"^archive/?$", reader_views.index),
     url(r"^briefing/?$", reader_views.index),
+    url(r"^briefing/(?!stories|preferences|status|generate)", reader_views.index),
     url(r"^social/\d+/.*?", reader_views.index),
     url(r"^user/.*?", reader_views.index),
     url(r"^null/.*?", reader_views.index),

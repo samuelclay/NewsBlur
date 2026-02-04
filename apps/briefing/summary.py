@@ -80,7 +80,8 @@ You are given stories from their RSS feeds, each annotated with a CATEGORY indic
 it was selected for them.
 
 Organize the briefing into sections based on these categories. Use ONLY these section headers
-(as <h3> tags), and only include a section if there are stories for it:
+(as <h3 data-section="CATEGORY_KEY"> tags, where CATEGORY_KEY is the category value like
+"trending_unread" or "classifier_match"), and only include a section if there are stories for it:
 
 %s
 
@@ -94,7 +95,7 @@ they are about. Focus on what makes each story worth reading.
 Reference each story by wrapping its title in an anchor tag like:
 <a class="NB-briefing-story-link" data-story-hash="HASH">Story Title</a>
 
-Output valid HTML. Use <h3> for section headers.
+Output valid HTML. Use <h3 data-section="CATEGORY_KEY"> for section headers.
 Do not use markdown. Do not wrap in code fences. Do not add any preamble.
 Your very first character must be "<". Start directly with <div class="NB-briefing-summary">.
 Wrap everything in a <div class="NB-briefing-summary"> tag.""" % (
@@ -213,6 +214,56 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_le
     except (anthropic.APIConnectionError, anthropic.APIStatusError) as e:
         logging.error(" ---> Briefing summary failed for user %s: %s" % (user_id, str(e)))
         return None
+
+
+def extract_section_summaries(summary_html):
+    """
+    Parse the briefing summary HTML into per-section blocks.
+
+    Splits on <h3 data-section="KEY"> tags and returns a dict mapping
+    section_key to the HTML for that section (including its h3 header).
+    Each section is wrapped in <div class="NB-briefing-summary">.
+    """
+    if not summary_html:
+        return {}
+
+    # summary.py: Split on h3 tags with data-section attributes
+    pattern = r'(<h3\s+data-section="([^"]+)"[^>]*>)'
+    parts = re.split(pattern, summary_html)
+
+    sections = {}
+    # parts[0] is content before first h3 (the opening div wrapper, etc.)
+    # Then groups of 3: (full h3 tag, section_key, content until next h3)
+    i = 1
+    while i < len(parts) - 2:
+        h3_tag = parts[i]
+        section_key = parts[i + 1]
+        # Content runs until the next h3 or end
+        content = parts[i + 2] if i + 2 < len(parts) else ""
+
+        # summary.py: Strip trailing </div> that closes the outer wrapper
+        content = re.sub(r'\s*</div>\s*$', '', content)
+
+        section_html = '<div class="NB-briefing-summary">%s%s</div>' % (h3_tag, content)
+        sections[section_key] = section_html
+        i += 3
+
+    return sections
+
+
+def extract_section_story_hashes(section_summaries):
+    """
+    Extract story hashes referenced in each section's summary HTML.
+
+    Parses <a data-story-hash="HASH"> links from the HTML and returns a dict
+    mapping section_key to list of story hashes mentioned in that section.
+    """
+    result = {}
+    for key, html in (section_summaries or {}).items():
+        hashes = re.findall(r'data-story-hash="([^"]+)"', html)
+        if hashes:
+            result[key] = hashes
+    return result
 
 
 def _get_content_excerpt(story, max_chars=300):
