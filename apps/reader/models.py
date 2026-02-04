@@ -124,11 +124,11 @@ class UserSubscription(models.Model):
             usersubs = usersubs.filter(Q(unread_count_neutral__gt=0) | Q(unread_count_positive__gt=0))
         if not feed_ids:
             usersubs = usersubs.filter(user=user_id, active=True).only(
-                "feed", "mark_read_date", "is_trained", "needs_unread_recalc"
+                "user", "feed", "mark_read_date", "is_trained", "needs_unread_recalc", "auto_mark_read_days"
             )
         else:
             usersubs = usersubs.filter(user=user_id, active=True, feed__in=feed_ids).only(
-                "feed", "mark_read_date", "is_trained", "needs_unread_recalc"
+                "user", "feed", "mark_read_date", "is_trained", "needs_unread_recalc", "auto_mark_read_days"
             )
 
         return usersubs
@@ -835,18 +835,20 @@ class UserSubscription(models.Model):
             "~FCFetching archive stories from ~SB%s feeds~SN in %s chunks..." % (total, len(feed_id_chunks)),
         )
 
+        stagger_delay = 10  # seconds between each feed's archive fetch start
         search_chunks = [
             FetchArchiveFeedsChunk.s(feed_ids=feed_id_chunk, user_id=user_id)
             .set(queue="search_indexer")
             .set(
+                countdown=i * stagger_delay,
                 time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
                 soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
             )
-            for feed_id_chunk in feed_id_chunks
+            for i, feed_id_chunk in enumerate(feed_id_chunks)
         ]
         callback = FinishFetchArchiveFeeds.s(
             user_id=user_id, start_time=start_time, starting_story_count=starting_story_count
-        ).set(queue="search_indexer")
+        ).set(queue="search_indexer", time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH)
         celery.chord(search_chunks)(callback)
 
     @classmethod
@@ -899,6 +901,20 @@ class UserSubscription(models.Model):
             % (total, round(duration, 2)),
         )
         r.publish(user.username, "fetch_archive:done")
+
+        # Sync Redis story hashes now that archive fetch is done, staggered to avoid Redis spike.
+        # This is needed because sync_redis was skipped during SchedulePremiumSetup to avoid
+        # concurrent Redis storms with the archive fetch.
+        logging.user(user, "~FC~SBSyncing Redis story hashes for ~SB%s feeds~SN after archive fetch..." % total)
+        for i, sub in enumerate(subscriptions):
+            try:
+                feed = Feed.get_by_id(sub.feed.pk)
+                if feed:
+                    feed.sync_redis()
+                    if i < total - 1:
+                        time.sleep(0.5)
+            except Feed.DoesNotExist:
+                continue
 
         return ending_story_count, min(pre_archive_count, starting_story_count)
 

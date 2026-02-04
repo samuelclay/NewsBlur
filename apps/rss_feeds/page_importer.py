@@ -119,14 +119,26 @@ class PageImporter(object):
                         )
                         self.save_no_page(reason="Page fetch failed")
                         return
-                    data = response.text
-                    if response.encoding and response.encoding.lower() != "utf-8":
-                        logging.debug(f" -> ~FBEncoding is {response.encoding}, re-encoding...")
-                        try:
-                            data = data.encode("utf-8").decode("utf-8")
-                        except (LookupError, UnicodeEncodeError):
-                            logging.debug(f" -> ~FRRe-encoding failed!")
-                            pass
+                    encoding = response.encoding
+                    content = response.content
+
+                    # When servers don't specify charset in Content-Type header, requests
+                    # defaults to ISO-8859-1 per RFC 2616, but most modern sites use UTF-8.
+                    # Check if the HTML declares UTF-8 charset and use that instead.
+                    if encoding and encoding.lower() in ("iso-8859-1", "latin-1", "latin1"):
+                        content_start = content[:1024].lower()
+                        if (
+                            content.startswith(b"\xef\xbb\xbf")  # UTF-8 BOM
+                            or b'charset="utf-8"' in content_start
+                            or b"charset='utf-8'" in content_start
+                            or b"charset=utf-8" in content_start
+                        ):
+                            encoding = "utf-8"
+
+                    try:
+                        data = content.decode(encoding or "utf-8")
+                    except (UnicodeDecodeError, LookupError):
+                        data = content.decode("utf-8", errors="replace")
             else:
                 try:
                     data = open(feed_link, "r").read()
@@ -238,19 +250,26 @@ class PageImporter(object):
                     % (self.feed.log_title[:30], e)
                 )
                 return
-        # try:
-        data = response.text
-        # except (LookupError, TypeError):
-        #     data = response.content
-        # import pdb; pdb.set_trace()
+        encoding = response.encoding
+        content = response.content
 
-        if response.encoding and response.encoding.lower() != "utf-8":
-            logging.debug(f" -> ~FBEncoding is {response.encoding}, re-encoding...")
-            try:
-                data = data.encode("utf-8").decode("utf-8")
-            except (LookupError, UnicodeEncodeError):
-                logging.debug(f" -> ~FRRe-encoding failed!")
-                pass
+        # When servers don't specify charset in Content-Type header, requests
+        # defaults to ISO-8859-1 per RFC 2616, but most modern sites use UTF-8.
+        # Check if the HTML declares UTF-8 charset and use that instead.
+        if encoding and encoding.lower() in ("iso-8859-1", "latin-1", "latin1"):
+            content_start = content[:1024].lower()
+            if (
+                content.startswith(b"\xef\xbb\xbf")  # UTF-8 BOM
+                or b'charset="utf-8"' in content_start
+                or b"charset='utf-8'" in content_start
+                or b"charset=utf-8" in content_start
+            ):
+                encoding = "utf-8"
+
+        try:
+            data = content.decode(encoding or "utf-8")
+        except (UnicodeDecodeError, LookupError):
+            data = content.decode("utf-8", errors="replace")
 
         if data:
             data = data.replace("\xc2\xa0", " ")  # Non-breaking space, is mangled when encoding is not utf-8
