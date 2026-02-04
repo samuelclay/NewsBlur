@@ -3851,13 +3851,7 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-briefing-remove-custom-section {
-    color: #888;
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.NB-dark .NB-briefing-remove-custom-section:hover {
-    color: #fff;
-    background: #D08080;
+    filter: invert(1);
 }
 
 .NB-dark .NB-briefing-section-item:hover {
