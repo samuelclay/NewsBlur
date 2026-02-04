@@ -1,0 +1,42 @@
+---
+- name: Check if swap file exists
+  become: yes
+  stat:
+    path: "{{ swap_path }}"
+  register: swap_file
+
+- name: Create swap file
+  become: yes
+  command: fallocate -l {{ swap_size }} {{ swap_path }}
+  when: not swap_file.stat.exists
+
+- name: Set swap file permissions
+  become: yes
+  file:
+    path: "{{ swap_path }}"
+    mode: '0600'
+
+- name: Format swap file
+  become: yes
+  command: mkswap {{ swap_path }}
+  when: not swap_file.stat.exists
+
+- name: Enable swap file
+  become: yes
+  command: swapon {{ swap_path }}
+  when: not swap_file.stat.exists
+
+- name: Add swap to fstab
+  become: yes
+  lineinfile:
+    path: /etc/fstab
+    line: "{{ swap_path }} none swap sw 0 0"
+    state: present
+
+- name: Set swappiness
+  become: yes
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: "{{ swap_swappiness }}"
+    state: present
+    reload: yes
