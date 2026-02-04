@@ -30,6 +30,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
 
     events: {
         "click .NB-briefing-setting-option": "change_setting",
+        "click .NB-briefing-style-option": "change_setting",
         "change .NB-modal-feed-chooser": "change_folder",
         "click .NB-briefing-section-item": "toggle_section",
         "click .NB-briefing-section-hint-icon": "stop_propagation",
@@ -119,26 +120,15 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             ]),
             this.make_section('Briefing length', 'Number of stories to include in each briefing', [
                 this.make_control('story_count', [
+                    ['5', '5'],
                     ['10', '10'],
-                    ['20', '20'],
-                    ['30', '30'],
-                    ['50', '50']
-                ]),
-                this.make_control('summary_length', [
-                    ['short', 'Short'],
-                    ['medium', 'Medium'],
-                    ['detailed', 'Long']
+                    ['15', '15'],
+                    ['20', '20']
                 ])
             ]),
             this.make_section('Writing style', null, [
-                this.make_control('summary_style', [
-                    ['editorial', 'Editorial'],
-                    ['bullets', 'Bullets'],
-                    ['headlines', 'Headlines']
-                ]),
-                $.make('div', { className: 'NB-briefing-style-description' })
+                this.make_style_chooser()
             ]),
-            this.make_sections_ui(),
             this.make_section('Source feeds', 'Choose which feeds are used to build your briefing', [
                 $.make('div', { className: 'NB-briefing-folder-chooser-container' }, [
                     $folder_chooser
@@ -151,11 +141,11 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                     ['false', 'Unread only'],
                     ['true', 'Include read']
                 ])
-            ])
+            ]),
+            this.make_sections_ui()
         ]));
 
         this.update_schedule_controls();
-        this.update_style_description();
         this.update_story_count_labels();
 
         return this;
@@ -237,20 +227,19 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var twice_value = (preferred_time === 'evening') ? 'evening' : 'morning';
         this.set_active('twice_daily_time', twice_value);
         this.set_active('preferred_day', prefs.preferred_day || 'sun');
-        this.set_active('story_count', String(prefs.story_count || 20));
-        this.set_active('summary_length', prefs.summary_length || 'medium');
-        this.set_active('summary_style', prefs.summary_style || 'editorial');
+        this.set_active('story_count', String(prefs.story_count || 5));
+        this.set_active('summary_style', prefs.summary_style || 'bullets');
         this.set_active('read_filter', prefs.read_filter || 'unread');
         this.set_active('include_read', String(prefs.include_read));
 
         this.update_schedule_controls();
-        this.update_style_description();
         this.update_story_count_labels();
     },
 
     set_active: function (setting_name, value) {
         var $control = this.$('.NB-briefing-control-' + setting_name);
         $control.find('.NB-briefing-setting-option').removeClass('NB-active');
+        $control.find('.NB-briefing-style-option').removeClass('NB-active');
         $control.find('[data-value="' + value + '"]').addClass('NB-active');
     },
 
@@ -281,16 +270,57 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     make_section_item: function (def, is_enabled) {
+        var icon_url = $.favicon('briefing:' + def.key);
         return $.make('div', {
             className: 'NB-briefing-section-item' + (is_enabled ? ' NB-active' : ''),
             'data-section': def.key
         }, [
             $.make('div', { className: 'NB-briefing-section-checkbox' }),
+            $.make('img', { className: 'NB-briefing-section-item-icon', src: icon_url }),
             $.make('div', { className: 'NB-briefing-section-label' }, [
                 $.make('div', { className: 'NB-briefing-section-name' }, def.name),
                 $.make('div', { className: 'NB-briefing-section-subtitle' }, def.subtitle)
             ])
         ]);
+    },
+
+    make_style_chooser: function () {
+        var STYLE_OPTIONS = [
+            {
+                value: 'bullets',
+                name: 'Bullets',
+                subtitle: 'Concise bullet points highlighting key takeaways from each story',
+                icon: 'layout-magazine.svg'
+            },
+            {
+                value: 'editorial',
+                name: 'Editorial',
+                subtitle: 'Flowing narrative that connects stories into a readable digest',
+                icon: 'paragraph.svg'
+            },
+            {
+                value: 'headlines',
+                name: 'Headlines',
+                subtitle: 'Just the headlines with minimal commentary',
+                icon: 'content-preview-m.svg'
+            }
+        ];
+        var items = _.map(STYLE_OPTIONS, function (opt) {
+            var icon_url = NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/' + opt.icon;
+            return $.make('div', {
+                className: 'NB-briefing-style-option',
+                'data-setting': 'summary_style',
+                'data-value': opt.value
+            }, [
+                $.make('div', { className: 'NB-briefing-style-radio' }),
+                $.make('img', { className: 'NB-briefing-style-option-icon', src: icon_url }),
+                $.make('div', { className: 'NB-briefing-style-option-label' }, [
+                    $.make('div', { className: 'NB-briefing-style-option-name' }, opt.name),
+                    $.make('div', { className: 'NB-briefing-style-option-subtitle' }, opt.subtitle)
+                ])
+            ]);
+        });
+        return $.make('div', { className: 'NB-briefing-style-chooser NB-briefing-control-summary_style' }, items);
     },
 
     make_custom_section_item: function (index, prompt, is_enabled) {
@@ -361,15 +391,6 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         });
     },
 
-    update_style_description: function () {
-        var descriptions = {
-            'editorial': 'Flowing narrative that connects stories into a readable digest',
-            'bullets': 'Concise bullet points highlighting key takeaways from each story',
-            'headlines': 'Just the headlines with minimal commentary'
-        };
-        var active_style = this.$('.NB-briefing-control-summary_style .NB-active').data('value') || 'editorial';
-        this.$('.NB-briefing-style-description').text(descriptions[active_style] || '');
-    },
 
     // ==========
     // = Events =
@@ -384,10 +405,6 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var value = $target.data('value');
 
         this.set_active(setting_name, String(value));
-
-        if (setting_name === 'summary_style') {
-            this.update_style_description();
-        }
 
         if (setting_name === 'frequency') {
             this.update_schedule_controls();

@@ -6665,19 +6665,23 @@ body {
     background-color: #dfdcd5;
 }
 
+/* reader.css: Briefing section count — muted outline pill, not an unread indicator */
 .NB-briefing-section-feeds .unread_count_positive {
-    background-color: #5C89C4;
+    background-color: transparent;
+    color: #808080;
+    border: 1.5px solid #a0a0a0;
+    font-weight: 600;
+    text-shadow: none;
+    font-size: 10px;
+    padding: 1px 4px;
+    line-height: 13px;
+    min-width: 14px;
+    text-align: center;
 }
 
-.NB-briefing-section-feed .feed_favicon {
-    background-image: url('/media/img/icons/nouns/briefing.svg');
-    background-size: 16px;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
+/* reader.css: Per-section icons — tint to muted slate-blue via $.favicon() */
 .NB-briefing-section-feed .feed_favicon img {
-    display: none;
+    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
 }
 
 /* reader.css: Dark mode for briefing section feeds */
@@ -6687,6 +6691,12 @@ body {
 
 .NB-dark .NB-briefing-section-feeds .feed {
     background-color: #292b2e;
+}
+
+/* reader.css: Dark mode briefing section count outline pill */
+.NB-dark .NB-briefing-section-feeds .unread_count_positive {
+    color: #888;
+    border-color: #555;
 }
 
 .NB-staff-badge {
@@ -28900,6 +28910,28 @@ span.NB-briefing-inline-favicon {
     line-height: 16px;
 }
 
+/* reader.css: Section icons in briefing summary h3 headers (span with background-image) */
+.NB-briefing-section-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.1em;
+    margin-right: 0.3em;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
+}
+
+/* reader.css: Section icons in briefing settings/onboarding */
+.NB-briefing-section-item-icon {
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
+}
+
 /* reader.css: Briefing curated stories container */
 .NB-briefing-group-stories {
     padding: 0;
@@ -29299,6 +29331,97 @@ span.NB-briefing-inline-favicon {
     width: 100%;
     font-size: 12px;
     margin: 0;
+}
+
+/* reader.css: Writing style — radio-button rows with icons */
+.NB-briefing-style-chooser {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.NB-briefing-style-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.NB-briefing-style-option:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.NB-briefing-style-radio {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #b0b0b0;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    transition: all 0.15s;
+}
+
+.NB-briefing-style-option.NB-active .NB-briefing-style-radio {
+    border-color: #5C89C4;
+}
+
+.NB-briefing-style-option.NB-active .NB-briefing-style-radio::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #5C89C4;
+}
+
+.NB-briefing-style-option-icon {
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
+}
+
+.NB-briefing-style-option-label {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-briefing-style-option-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    line-height: 16px;
+}
+
+.NB-briefing-style-option-subtitle {
+    font-size: 10.5px;
+    color: #909090;
+    line-height: 14px;
+    margin-top: 1px;
+}
+
+/* reader.css: Dark mode for writing style radio rows */
+.NB-dark .NB-briefing-style-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-briefing-style-radio {
+    border-color: #555;
+}
+
+.NB-dark .NB-briefing-style-option-name {
+    color: #ccc;
+}
+
+.NB-dark .NB-briefing-style-option-subtitle {
+    color: #777;
 }
 
 /* reader.css: Briefing sections — tappable checkbox rows */

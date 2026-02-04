@@ -46,12 +46,12 @@ SECTION_PROMPTS = {
 }
 
 
-def _build_system_prompt(summary_length="medium", summary_style="editorial", sections=None, custom_section_prompts=None):
+def _build_system_prompt(summary_length="medium", summary_style="bullets", sections=None, custom_section_prompts=None):
     """Build the system prompt based on user preferences for length, style, and sections."""
     from apps.briefing.models import DEFAULT_SECTIONS
 
     length_instruction = LENGTH_INSTRUCTIONS.get(summary_length, LENGTH_INSTRUCTIONS["medium"])
-    style_instruction = STYLE_INSTRUCTIONS.get(summary_style, STYLE_INSTRUCTIONS["editorial"])
+    style_instruction = STYLE_INSTRUCTIONS.get(summary_style, STYLE_INSTRUCTIONS["bullets"])
 
     active_sections = sections if sections else DEFAULT_SECTIONS
     section_lines = []
@@ -105,7 +105,7 @@ Wrap everything in a <div class="NB-briefing-summary"> tag.""" % (
     )
 
 
-def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_length="medium", summary_style="editorial", sections=None, custom_section_prompts=None):
+def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_length="medium", summary_style="bullets", sections=None, custom_section_prompts=None):
     """
     Generate an editorial summary of the selected stories.
 

@@ -167,6 +167,21 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 $link.prepend($icon);
             }
         });
+
+        // story_detail_view.js: Inject section icons into briefing summary h3 headers
+        this.$('h3[data-section]').each(function () {
+            var $h3 = $(this);
+            if ($h3.find('.NB-briefing-section-icon').length) return;
+            var section_key = $h3.data('section');
+            if (!section_key) return;
+
+            var icon_url = $.favicon('briefing:' + section_key);
+            if (icon_url) {
+                var $icon = $('<span>').addClass('NB-briefing-section-icon')
+                    .css('background-image', 'url(' + icon_url + ')');
+                $h3.prepend($icon);
+            }
+        });
     },
 
     attach_custom_handler: function () {
@@ -195,6 +210,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             var $largest;
             // console.log(["Images loaded", this.model.get('story_title').substr(0, 30), this.$("img")]);
             this.$("img").each(function () {
+                // story_detail_view.js: Skip briefing inline favicons from image sizing
+                if ($(this).hasClass('NB-briefing-inline-favicon')) return;
                 // console.log(["Largest?", this.width, this.naturalWidth, this.height, this.naturalHeight, largest, pane_width, this.src]);
                 if (this.width > 60 && this.width > largest) {
                     largest = this.width;
