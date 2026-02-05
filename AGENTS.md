@@ -2,7 +2,10 @@
 
 ## Ask Questions Liberally
 
-**Use the AskUserQuestion tool frequently throughout development - not just during planning.**
+**Codex: Use the `request_user_input` tool frequently throughout development - not just during planning.**
+**Claude: Continue using the AskUserQuestion tool frequently throughout development - not just during planning.**
+
+Actively interview the user at any point (especially during planning). Prefer multiple rounds of short questions.
 
 Asking questions is encouraged and appreciated because it:
 - Helps both of us think through problems more clearly
