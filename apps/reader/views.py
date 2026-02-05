@@ -1488,6 +1488,19 @@ def load_starred_stories(request):
         ]
     )
 
+    # Look up actual read status for starred stories from Redis
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    read_stories_key = "RS:%s" % user.pk
+    story_hash_list = [s["story_hash"] for s in stories]
+    if story_hash_list:
+        pipeline = r.pipeline()
+        for sh in story_hash_list:
+            pipeline.sismember(read_stories_key, sh)
+        read_results = pipeline.execute()
+        read_story_hashes = {sh for sh, is_read in zip(story_hash_list, read_results) if is_read}
+    else:
+        read_story_hashes = set()
+
     nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
         story_date = localtime_for_timezone(story["story_date"], user.profile.timezone)
@@ -1496,7 +1509,7 @@ def load_starred_stories(request):
         starred_date = localtime_for_timezone(story["starred_date"], user.profile.timezone)
         story["starred_date"] = format_story_link_date__long(starred_date, nowtz)
         story["starred_timestamp"] = int(starred_date.timestamp())
-        story["read_status"] = 1
+        story["read_status"] = 1 if story["story_hash"] in read_story_hashes else 0
         story["starred"] = True
         story["intelligence"] = {
             "feed": 1,
@@ -2250,9 +2263,23 @@ def load_river_stories__redis(request):
 
     user_is_pro = user.profile.is_pro
 
+    # Look up actual read status for starred stories from Redis
+    if read_filter == "starred":
+        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        read_stories_key = "RS:%s" % user.pk
+        story_hash_list = [s["story_hash"] for s in stories]
+        if story_hash_list:
+            pipeline = r2.pipeline()
+            for sh in story_hash_list:
+                pipeline.sismember(read_stories_key, sh)
+            read_results = pipeline.execute()
+            starred_read_hashes = {sh for sh, is_read in zip(story_hash_list, read_results) if is_read}
+        else:
+            starred_read_hashes = set()
+
     for story in stories:
         if read_filter == "starred":
-            story["read_status"] = 1
+            story["read_status"] = 1 if story["story_hash"] in starred_read_hashes else 0
         else:
             story["read_status"] = 0
         if read_filter == "all" or query:
