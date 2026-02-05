@@ -1705,6 +1705,11 @@
             }
 
             NEWSBLUR.app.taskbar_info.hide_stories_progress_bar();
+            var feed = this.model.get_feed(this.active_feed);
+            if (feed && feed.get('not_yet_fetched')) {
+                NEWSBLUR.app.story_titles.show_fetching_indicator();
+                this.poll_for_fetch_completion(this.active_feed);
+            }
             if (NEWSBLUR.Globals.is_anonymous) {
                 this.show_tryout_signup_button();
             } else if (this.flags['showing_feed_in_tryfeed_view']) {
@@ -5911,6 +5916,7 @@
                 NEWSBLUR.log(['Real-time feed update', feed_id, message]);
                 var feed = this.model.get_feed(feed_id);
                 if (feed && !feed.get('fetched_once')) {
+                    NEWSBLUR.app.story_titles.hide_fetching_indicator();
                     this.force_feed_refresh(feed_id);
                 } else {
                     this.feed_unread_count(feed_id, {
@@ -6321,6 +6327,31 @@
             //     console.log(["Forcing socket disconnection...", this.socket]);
             //     this.socket.disconnect();
             // }
+        },
+
+        poll_for_fetch_completion: function (feed_id) {
+            clearInterval(this.flags['fetch_poll_interval']);
+            var self = this;
+            var attempts = 0;
+            this.flags['fetch_poll_interval'] = setInterval(function () {
+                attempts += 1;
+                if (self.active_feed != feed_id || attempts > 30) {
+                    clearInterval(self.flags['fetch_poll_interval']);
+                    return;
+                }
+                $.ajax({
+                    url: '/reader/feed/' + feed_id,
+                    data: { page: 1, include_hidden: true },
+                    type: 'GET',
+                    success: function (data) {
+                        if (data && data.fetched_once) {
+                            clearInterval(self.flags['fetch_poll_interval']);
+                            NEWSBLUR.app.story_titles.hide_fetching_indicator();
+                            self.force_feed_refresh(feed_id);
+                        }
+                    }
+                });
+            }, 2000);
         },
 
         force_feed_refresh: function (feed_id, new_feed_id) {

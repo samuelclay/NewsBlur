@@ -96,7 +96,7 @@ class Command(BaseCommand):
         for entry in all_feeds:
             feed_url = entry["feed_url"]
             entry_type = entry["feed_type"]
-            title = entry["title"]
+            title = entry["title"][:255]
 
             if dry_run:
                 if verbose:
@@ -110,8 +110,8 @@ class Command(BaseCommand):
                 defaults={
                     "title": title,
                     "description": entry.get("description", ""),
-                    "category": entry["category"],
-                    "subcategory": entry.get("subcategory", ""),
+                    "category": entry["category"][:50],
+                    "subcategory": entry.get("subcategory", "")[:50],
                     "thumbnail_url": entry.get("thumbnail_url", ""),
                     "platform": entry.get("platform", ""),
                     "subscriber_count": entry.get("subscriber_count", 0),
@@ -167,6 +167,7 @@ class Command(BaseCommand):
     # bootstrap_popular_feeds.py - _discover_rss_feeds
     def _discover_rss_feeds(self, options):
         """Query the Feed table for well-read RSS feeds and output JSON candidates."""
+        from django.conf import settings
         from django.db.models import Q
 
         dry_run = options["dry_run"]
@@ -190,11 +191,12 @@ class Command(BaseCommand):
             "podcasts.apple.com",
         ]
 
+        min_subscribers = 2 if settings.DOCKERBUILD else 10
         feeds = Feed.objects.filter(
             active=True,
             fetched_once=True,
             branch_from_feed__isnull=True,
-            active_subscribers__gte=10,
+            active_subscribers__gte=min_subscribers,
             average_stories_per_month__gte=1,
             has_feed_exception=False,
         )

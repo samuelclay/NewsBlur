@@ -875,9 +875,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     state.available_categories = data.categories;
                 }
                 if (data.grouped_categories && data.grouped_categories.length > 0) {
+                    var had_categories = state.grouped_categories && state.grouped_categories.length > 0;
                     state.grouped_categories = data.grouped_categories;
-                    // Race condition fix: update pills in-place when API data arrives
-                    self.update_category_pills(feed_type);
+                    // Only rebuild pills on first load when categories arrive;
+                    // subsequent fetches (category/subcategory filter changes) keep
+                    // existing pills to avoid re-render flash.
+                    if (!had_categories) {
+                        self.update_category_pills(feed_type);
+                    }
                 }
 
                 // Build collection for list view
@@ -1366,6 +1371,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     render_popular_card: function (feed) {
+        var linked = feed.feed || {};
         var sub_count = feed.subscriber_count || '';
         if (typeof sub_count === 'number') {
             sub_count = this.format_subscriber_count(sub_count).replace(' members', ' subscribers');
@@ -1374,14 +1380,15 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         return this.make_source_card({
             card_class: 'NB-add-site-popular-card',
-            icon: feed.thumbnail_url || feed.favicon || '/media/img/icons/heroicons-solid/rss.svg',
+            icon: feed.thumbnail_url || linked.favicon_url || linked.favicon || '/media/img/icons/heroicons-solid/rss.svg',
             fallback_icon: '/media/img/icons/heroicons-solid/rss.svg',
             title: feed.title,
             meta: meta_parts.filter(Boolean).join(' \u2022 '),
             description: feed.description,
             feed_url: feed.feed_url,
-            feed_id: feed.feed_id || feed.feed || null,
-            last_story_date: feed.last_story_date,
+            feed_id: feed.feed_id || linked.id || null,
+            popular_feed_id: feed.id,
+            last_story_date: linked.last_story_date || feed.last_story_date,
             show_empty_freshness: true
         });
     },
@@ -2832,6 +2839,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     get_category_icon: function(title) {
         // Map category titles to SVG icons - add_site_view.js
         var icon_map = {
+            // Original categories
             'technology': '/media/img/icons/heroicons-solid/computer-desktop.svg',
             'news': '/media/img/icons/heroicons-solid/newspaper.svg',
             'science': '/media/img/icons/heroicons-solid/beaker.svg',
@@ -2852,7 +2860,70 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             'ai': '/media/img/icons/heroicons-solid/cpu-chip.svg',
             'aiml': '/media/img/icons/heroicons-solid/cpu-chip.svg',
             'startups': '/media/img/icons/heroicons-solid/rocket-launch.svg',
-            'security': '/media/img/icons/heroicons-solid/shield-check.svg'
+            'security': '/media/img/icons/heroicons-solid/shield-check.svg',
+            // Popular feeds categories
+            'animemanga': '/media/img/icons/heroicons-solid/sparkles.svg',
+            'architecture': '/media/img/icons/heroicons-solid/building-office.svg',
+            'artsculture': '/media/img/icons/lucide/palette.svg',
+            'automotive': '/media/img/icons/phosphor-fill/car-fill.svg',
+            'booksreading': '/media/img/icons/heroicons-solid/book-open.svg',
+            'careerjobmarket': '/media/img/icons/heroicons-solid/identification.svg',
+            'comedyhumor': '/media/img/icons/heroicons-solid/face-smile.svg',
+            'cryptocurrencyweb': '/media/img/icons/phosphor-fill/coins-fill.svg',
+            'datascienceanalytics': '/media/img/icons/heroicons-solid/chart-bar-square.svg',
+            'diycrafts': '/media/img/icons/heroicons-solid/scissors.svg',
+            'economics': '/media/img/icons/heroicons-solid/banknotes.svg',
+            'education': '/media/img/icons/heroicons-solid/academic-cap.svg',
+            'entrepreneurshipstartups': '/media/img/icons/heroicons-solid/rocket-launch.svg',
+            'environmentsustainability': '/media/img/icons/heroicons-solid/globe-americas.svg',
+            'fashionbeauty': '/media/img/icons/phosphor-fill/sparkle-fill.svg',
+            'foodcooking': '/media/img/icons/phosphor-fill/cooking-pot-fill.svg',
+            'healthfitness': '/media/img/icons/heroicons-solid/heart.svg',
+            'history': '/media/img/icons/heroicons-solid/clock.svg',
+            'hobbiescollections': '/media/img/icons/heroicons-solid/squares-plus.svg',
+            'homegarden': '/media/img/icons/heroicons-solid/home.svg',
+            'internetculturesocialmedia': '/media/img/icons/heroicons-solid/at-symbol.svg',
+            'lawlegal': '/media/img/icons/phosphor-fill/scales-fill.svg',
+            'lifestyle': '/media/img/icons/heroicons-solid/sun.svg',
+            'militarydefense': '/media/img/icons/phosphor-fill/shield-star-fill.svg',
+            'newspolitics': '/media/img/icons/heroicons-solid/newspaper.svg',
+            'parenting': '/media/img/icons/phosphor-fill/baby-fill.svg',
+            'petsanimals': '/media/img/icons/phosphor-fill/paw-print-fill.svg',
+            'philosophy': '/media/img/icons/heroicons-solid/light-bulb.svg',
+            'productivityorganization': '/media/img/icons/heroicons-solid/clipboard-document-check.svg',
+            'psychologymentalhealth': '/media/img/icons/lucide/brain.svg',
+            'realestate': '/media/img/icons/heroicons-solid/home-modern.svg',
+            'relationshipsdating': '/media/img/icons/heroicons-solid/chat-bubble-left-right.svg',
+            'religionspirituality': '/media/img/icons/phosphor-fill/cross-fill.svg',
+            'spaceastronomy': '/media/img/icons/lucide/telescope.svg',
+            'sportsrecreation': '/media/img/icons/phosphor-fill/bicycle-fill.svg',
+            'weatherclimate': '/media/img/icons/phosphor-fill/cloud-sun-fill.svg',
+            'wellnessselfcare': '/media/img/icons/phosphor-fill/flower-lotus-fill.svg',
+            // Cross-type categories (youtube, reddit, newsletter, podcast)
+            'aimachinelearning': '/media/img/icons/heroicons-solid/cpu-chip.svg',
+            'artdesign': '/media/img/icons/lucide/palette.svg',
+            'automobiles': '/media/img/icons/phosphor-fill/car-fill.svg',
+            'businessentrepreneurship': '/media/img/icons/heroicons-solid/briefcase.svg',
+            'comedy': '/media/img/icons/heroicons-solid/face-smile.svg',
+            'cookingfood': '/media/img/icons/phosphor-fill/cooking-pot-fill.svg',
+            'culture': '/media/img/icons/phosphor-fill/mask-happy-fill.svg',
+            'culturesociety': '/media/img/icons/phosphor-fill/mask-happy-fill.svg',
+            'diyhobbies': '/media/img/icons/heroicons-solid/wrench-screwdriver.svg',
+            'diyhowto': '/media/img/icons/heroicons-solid/wrench-screwdriver.svg',
+            'educationlearning': '/media/img/icons/heroicons-solid/academic-cap.svg',
+            'entertainmentcomedy': '/media/img/icons/heroicons-solid/face-smile.svg',
+            'fictionstorytelling': '/media/img/icons/phosphor-fill/book-open-fill.svg',
+            'filmtelevision': '/media/img/icons/heroicons-solid/film.svg',
+            'financebusiness': '/media/img/icons/heroicons-solid/chart-bar.svg',
+            'fitnesshealth': '/media/img/icons/heroicons-solid/heart.svg',
+            'healthwellness': '/media/img/icons/heroicons-solid/heart.svg',
+            'lifestyleculture': '/media/img/icons/heroicons-solid/sparkles.svg',
+            'mediaentertainment': '/media/img/icons/heroicons-solid/film.svg',
+            'newscurrentevents': '/media/img/icons/heroicons-solid/newspaper.svg',
+            'politicsnews': '/media/img/icons/heroicons-solid/building-library.svg',
+            'traveladventure': '/media/img/icons/heroicons-solid/globe-alt.svg',
+            'travellifestyle': '/media/img/icons/heroicons-solid/globe-alt.svg',
+            'truecrime': '/media/img/icons/phosphor-fill/detective-fill.svg'
         };
 
         var key = title.toLowerCase().replace(/[^a-z]/g, '');
@@ -3076,6 +3147,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
             if (source === 'youtube') this.youtube_state.results = [];
             this[render_method]();
+            this._scroll_popular_to_top();
 
         } else if (level === 'subcategory') {
             // Subcategory pill clicked: highlight it, refetch with subcategory filter
@@ -3090,6 +3162,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
             if (source === 'youtube') this.youtube_state.results = [];
             this[render_method]();
+            this._scroll_popular_to_top();
+        }
+    },
+
+    _scroll_popular_to_top: function () {
+        var $scrollable = this.$('.NB-add-site-tab-results');
+        if ($scrollable.length) {
+            $scrollable.scrollTop(0);
         }
     },
 
@@ -3369,10 +3449,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }
 
         // Single DOM structure for both grid and list - CSS handles layout
-        return $.make('div', {
+        var card_attrs = {
             className: 'NB-add-site-card ' + config.card_class + (subscribed ? ' NB-add-site-card-subscribed' : ''),
             'data-feed-id': feed_id
-        }, [
+        };
+        if (config.popular_feed_id) {
+            card_attrs['data-popular-feed-id'] = config.popular_feed_id;
+        }
+        return $.make('div', card_attrs, [
             $.make('div', { className: 'NB-add-site-card-header' }, [
                 $.make('img', icon_attrs),
                 $.make('div', { className: 'NB-add-site-card-info' }, [
@@ -3837,7 +3921,39 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         if (feed_id) {
             NEWSBLUR.reader.load_feed_in_tryfeed_view(feed_id);
+        } else {
+            this.link_popular_feed($btn, function (linked_feed_id) {
+                NEWSBLUR.reader.load_feed_in_tryfeed_view(linked_feed_id);
+            });
         }
+    },
+
+    link_popular_feed: function ($btn, callback) {
+        var $card = $btn.closest('.NB-add-site-card');
+        var popular_feed_id = $card.data('popular-feed-id');
+        if (!popular_feed_id) return;
+
+        $btn.text('Loading...');
+        this.model.make_request('/discover/link_popular_feed', { id: popular_feed_id }, function (data) {
+            if (data.code > 0 && data.feed_id) {
+                $btn.text($btn.hasClass('NB-add-site-try-btn') ? 'Try' : 'Stats');
+                $card.find('[data-feed-id]').each(function () {
+                    $(this).data('feed-id', data.feed_id).attr('data-feed-id', data.feed_id);
+                });
+                $card.data('feed-id', data.feed_id).attr('data-feed-id', data.feed_id);
+                if (callback) callback(data.feed_id);
+            } else {
+                $btn.text('Error');
+                setTimeout(function () {
+                    $btn.text($btn.hasClass('NB-add-site-try-btn') ? 'Try' : 'Stats');
+                }, 2000);
+            }
+        }, function () {
+            $btn.text('Error');
+            setTimeout(function () {
+                $btn.text($btn.hasClass('NB-add-site-try-btn') ? 'Try' : 'Stats');
+            }, 2000);
+        }, { request_type: 'GET' });
     },
 
     subscribe_to_feed: function (e) {
@@ -3892,6 +4008,12 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (feed_id) {
             NEWSBLUR.assets.load_canonical_feed(feed_id, function () {
                 NEWSBLUR.reader.open_feed_statistics_modal(feed_id);
+            });
+        } else {
+            this.link_popular_feed($btn, function (linked_feed_id) {
+                NEWSBLUR.assets.load_canonical_feed(linked_feed_id, function () {
+                    NEWSBLUR.reader.open_feed_statistics_modal(linked_feed_id);
+                });
             });
         }
     },

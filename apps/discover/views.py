@@ -897,6 +897,7 @@ def popular_feeds(request):
     for pf in popular_feeds_list:
         entry = {
             "id": pf.pk,
+            "feed_id": pf.feed_id,
             "feed_type": pf.feed_type,
             "category": pf.category,
             "subcategory": pf.subcategory,
@@ -948,3 +949,38 @@ def popular_feeds(request):
         "total": total,
         "has_more": has_more,
     }
+
+
+@json.json_view
+def link_popular_feed(request):
+    """
+    Creates a Feed record for a PopularFeed that hasn't been linked yet.
+    Uses direct Feed.objects.create instead of get_feed_from_url to avoid
+    slow HTTP feed discovery. Returns the feed_id for use by Try/Stats buttons.
+    """
+    popular_feed_id = request.GET.get("id") or request.POST.get("id")
+    if not popular_feed_id:
+        return {"code": -1, "message": "Missing popular feed id"}
+
+    try:
+        pf = PopularFeed.objects.get(pk=popular_feed_id, is_active=True)
+    except PopularFeed.DoesNotExist:
+        return {"code": -1, "message": "Popular feed not found"}
+
+    if pf.feed_id:
+        return {"code": 1, "feed_id": pf.feed_id}
+
+    # Check if a Feed with this address already exists
+    existing = Feed.objects.filter(feed_address=pf.feed_url, branch_from_feed__isnull=True).first()
+    if existing:
+        pf.feed_id = existing.pk
+        pf.save(update_fields=["feed"])
+        return {"code": 1, "feed_id": existing.pk}
+
+    # Create a bare Feed record directly — no feed discovery, no HTTP requests
+    feed = Feed.objects.create(feed_address=pf.feed_url, feed_title=pf.title or "")
+    pf.feed_id = feed.pk
+    pf.save(update_fields=["feed"])
+
+    logging.user(request, "~FCLinked popular feed ~SB%s~SN to feed ~SB%s" % (pf.title, feed.pk))
+    return {"code": 1, "feed_id": feed.pk}

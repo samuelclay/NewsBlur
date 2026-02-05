@@ -3112,6 +3112,31 @@ img.feed_favicon {
     }
 }
 
+.NB-feed-fetching-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    gap: 16px;
+    color: #808080;
+    font-size: 13px;
+}
+
+.NB-feed-fetching-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid #E0E0E0;
+    border-top-color: #5C89C9;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.NB-feed-fetching-text {
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
 .NB-module-river .NB-end-line {
     border-top: none;
     border-bottom: none;

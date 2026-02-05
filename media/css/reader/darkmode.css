@@ -1517,6 +1517,15 @@ border-bottom-color: #303739;
     animation: dark-end-line-animation 1.7s ease infinite;
 }
 
+.NB-dark .NB-feed-fetching-indicator {
+    color: #808080;
+}
+
+.NB-dark .NB-feed-fetching-spinner {
+    border-color: #404040;
+    border-top-color: #5C89C9;
+}
+
 @keyframes dark-end-line-animation {
     0% {
         background-color: #242529

@@ -213,13 +213,15 @@ class Command(BaseCommand):
 
         prompt = f"""Generate a category taxonomy for popular {config['feed_description']}.
 
-Create 10-15 top-level categories (broad topics) with 3-6 subcategories each.
+Create 35-40 top-level categories (broad topics) with 8-10 subcategories each.
 Categories should cover the most popular and distinct topic areas for {config['name']}.
 
-Examples of good categories: Technology, Science, Gaming, Education, Entertainment, News, Sports, Music, Comedy, Business, Health, Food, Travel, DIY, etc.
+You MUST include all of these existing categories: Technology, Science, Gaming, Education, Entertainment, News & Politics, Sports, Music, Comedy & Humor, Business, Food & Cooking, Travel, DIY & Crafts, Photography, Automotive, Finance, Parenting, Design, Environment & Sustainability, Health & Fitness, Lifestyle, Pets & Animals, Arts & Culture, Home & Garden, Sports & Recreation.
+
+Then add 12+ NEW categories beyond those. Examples of new categories to add: History, Psychology & Mental Health, Books & Reading, Anime & Manga, Architecture, Law & Legal, Real Estate, Space & Astronomy, Philosophy, Religion & Spirituality, Fashion & Beauty, Military & Defense, Weather & Climate, Economics, Cryptocurrency & Web3, Data Science & Analytics, etc.
 
 Subcategories should be specific niches within each category.
-Example: Technology -> Reviews, Programming, AI, Gadgets, Cybersecurity
+Example: Technology -> Reviews, Programming, AI, Gadgets, Cybersecurity, Open Source, Cloud, Mobile
 {seed_cats}"""
 
         tool_definition = {
@@ -299,7 +301,7 @@ Example: Technology -> Reviews, Programming, AI, Gadgets, Cybersecurity
 
 Subcategories: {subcats_str}
 
-For each subcategory, provide 4-8 popular, real {config['feed_description']}.
+For each subcategory, provide 10-15 popular, real {config['feed_description']}.
 {config['feed_instructions']}
 
 Each feed needs: title, description (under 80 chars), feed_url, subscriber_count (integer), platform (string).
@@ -345,7 +347,7 @@ Only include feeds you are confident actually exist."""
         try:
             response = client.messages.create(
                 model=self.MODEL,
-                max_tokens=8192,
+                max_tokens=16384,
                 tools=[tool_definition],
                 tool_choice={"type": "tool", "name": "save_category_feeds"},
                 messages=[{"role": "user", "content": prompt}],
