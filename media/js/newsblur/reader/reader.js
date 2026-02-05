@@ -2548,8 +2548,11 @@
         open_add_site: function (options) {
             options = options || {};
 
-            // Already in add site view, no need to reset
+            // Already in add site view — handle back/forward navigation between sub-states
             if (this.flags['add_site_view'] && this.add_site_view) {
+                if (options.router) {
+                    this.add_site_view.navigate_to_state(options.tab, options.category, options.subcategory);
+                }
                 return;
             }
 
@@ -2573,12 +2576,16 @@
 
             // Create and append add site view to content pane
             this.add_site_view = new NEWSBLUR.Views.AddSiteView({
-                initial_tab: options.tab
+                initial_tab: options.tab,
+                initial_category: options.category,
+                initial_subcategory: options.subcategory
             });
             this.$s.$content_pane.append(this.add_site_view.$el);
 
-            // Update URL
-            NEWSBLUR.router.navigate('/add');
+            // Update URL (skip if navigated here via URL/back button — URL is already correct)
+            if (!options.router) {
+                NEWSBLUR.router.navigate('/add');
+            }
 
             try {
                 this.make_feed_title_in_stories();

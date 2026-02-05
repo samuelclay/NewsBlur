@@ -2,6 +2,7 @@
 Discovery and search endpoints for finding and adding feeds.
 Includes trending sites, YouTube/Reddit/Podcast search, newsletter conversion, etc.
 """
+import re
 from collections import defaultdict
 from urllib.parse import urlparse, quote_plus
 
@@ -819,10 +820,38 @@ def popular_feeds(request):
     qs = PopularFeed.objects.filter(**base_filter)
 
     if category and category != "all":
-        qs = qs.filter(category=category)
+        # Try exact match first, then fall back to normalized match
+        # (strips non-alphanumeric chars for URL slug compatibility, e.g. "food cooking" matches "food & cooking")
+        exact = qs.filter(category=category)
+        if exact.exists():
+            qs = exact
+        else:
+            normalized = re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", category)).strip().lower()
+            matching_cats = [
+                cat_name
+                for cat_name in qs.values_list("category", flat=True).distinct()
+                if re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", cat_name)).strip().lower() == normalized
+            ]
+            if matching_cats:
+                qs = qs.filter(category=matching_cats[0])
+            else:
+                qs = qs.filter(category=category)
 
     if subcategory and subcategory != "all":
-        qs = qs.filter(subcategory=subcategory)
+        exact_sub = qs.filter(subcategory=subcategory)
+        if exact_sub.exists():
+            qs = exact_sub
+        else:
+            normalized_sub = re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", subcategory)).strip().lower()
+            matching_subs = [
+                sub_name
+                for sub_name in qs.values_list("subcategory", flat=True).distinct()
+                if re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", sub_name)).strip().lower() == normalized_sub
+            ]
+            if matching_subs:
+                qs = qs.filter(subcategory=matching_subs[0])
+            else:
+                qs = qs.filter(subcategory=subcategory)
 
     if platform and platform != "all":
         qs = qs.filter(platform=platform)
