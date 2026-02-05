@@ -151,10 +151,7 @@ stylesheets:
     - css/reader/darkmode.css
     - css/jquery-ui/jquery-ui.theme.css
     - css/jquery-ui/jquery-ui.structure.css
-    - css/jquery.tipsy.css
-    - css/vendor/bootstrap-progressbar.css
     - css/vendor/jquery.tagit.css
-    - css/vendor/highlight.css
   # mobile:
   #     - css/mobile/jquery.mobile-1.0b1.css
   #     - css/mobile/mobile.css
@@ -164,5 +161,4 @@ stylesheets:
     - css/bookmarklet/bookmarklet.css
   blurblog:
     - css/controls/jquery.tipsy.css
-    - css/vendor/bootstrap-*.css
     - css/circular/css/social_page.css
