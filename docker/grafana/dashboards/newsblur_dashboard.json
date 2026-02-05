@@ -7203,10 +7203,10 @@
         ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
+        "h": 7,
+        "w": 4,
         "x": 0,
-        "y": 270
+        "y": 278
       },
       "id": 35,
       "options": {
@@ -7295,10 +7295,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 270
+        "h": 7,
+        "w": 4,
+        "x": 4,
+        "y": 278
       },
       "id": 18,
       "options": {
@@ -7412,7 +7412,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "classifiers{scope=\"feed\"} or classifiers{classifier=\"feeds\"}",
+          "expr": "classifiers{scope=\"feed\"} or classifiers{scope=\"\"}",
           "interval": "",
           "legendFormat": "{{classifier}}",
           "queryType": "randomWalk",
@@ -7663,9 +7663,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 0,
+        "h": 7,
+        "w": 4,
+        "x": 8,
         "y": 278
       },
       "id": 14,
@@ -7755,9 +7755,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
+        "h": 7,
+        "w": 4,
+        "x": 12,
         "y": 278
       },
       "id": 24,
@@ -7847,8 +7847,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
+        "h": 7,
+        "w": 4,
         "x": 16,
         "y": 278
       },
@@ -7939,9 +7939,9 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 8,
-        "x": 0,
-        "y": 286
+        "w": 4,
+        "x": 20,
+        "y": 278
       },
       "id": 148,
       "options": {
