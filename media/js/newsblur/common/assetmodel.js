@@ -34,10 +34,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.defaults = {
             classifiers: {
                 titles: {},
+                title_regex: {},
                 texts: {},
+                text_regex: {},
                 tags: {},
                 authors: {},
-                feeds: {}
+                feeds: {},
+                urls: {},
+                url_regex: {}
             }
         };
         this.feeds = new NEWSBLUR.Collections.Feeds();
@@ -63,6 +67,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.starred_count = 0;
         this.folder_icons = {};
         this.feed_icons = {};
+        this.folder_auto_mark_read = {};
         this.flags = {
             'favicons_fetching': false,
             'has_chosen_feeds': false
@@ -119,9 +124,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 request_type = 'POST';
             }
         }
-        this.ajax[options['ajax_group']].add(_.extend({
+
+        var ajax_options = {
             url: url,
-            data: data,
             type: request_type,
             cache: false,
             cacheResponse: false,
@@ -177,7 +182,17 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     callback({ 'message': message, status_code: e.status }, data);
                 }
             }
-        }, options));
+        };
+
+        // Handle JSON body requests
+        if (options.request_body_type === 'json') {
+            ajax_options.data = JSON.stringify(data);
+            ajax_options.contentType = 'application/json';
+        } else {
+            ajax_options.data = data;
+        }
+
+        this.ajax[options['ajax_group']].add(_.extend(ajax_options, options));
 
     },
 
@@ -383,6 +398,27 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/starred_counts', {}, pre_callback, pre_callback, { request_type: 'GET' });
     },
 
+    rename_starred_tag: function (old_tag_name, new_tag_name, callback, error_callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/rename_starred_tag', {
+                'old_tag_name': old_tag_name,
+                'new_tag_name': new_tag_name
+            }, callback, error_callback);
+        } else {
+            if ($.isFunction(callback)) callback({ code: -1, message: 'Not authenticated' });
+        }
+    },
+
+    delete_starred_tag: function (tag_name, callback, error_callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/reader/delete_starred_tag', {
+                'tag_name': tag_name
+            }, callback, error_callback);
+        } else {
+            if ($.isFunction(callback)) callback({ code: -1, message: 'Not authenticated' });
+        }
+    },
+
     mark_feed_as_read: function (feed_id, cutoff_timestamp, direction, options, callback) {
         var self = this;
         var feed_ids = _.isArray(feed_id)
@@ -566,6 +602,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.dashboard_rivers.reset(subscriptions.dashboard_rivers);
             self.folder_icons = subscriptions.folder_icons || {};
             self.feed_icons = subscriptions.feed_icons || {};
+            self.folder_auto_mark_read = subscriptions.folder_auto_mark_read || {};
 
             if (selected && self.feeds.get(selected)) {
                 self.feeds.get(selected).set('selected', true);
@@ -1024,6 +1061,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/feeds_trainer', params, callback, null, { 'ajax_group': 'feed', 'request_type': 'GET' });
     },
 
+    get_all_classifiers: function (callback, error_callback) {
+        this.make_request('/reader/all_classifiers', {}, callback, error_callback, { 'ajax_group': 'feed', 'request_type': 'GET' });
+    },
+
     get_social_trainer: function (feed_id, callback) {
         var self = this;
         var params = {};
@@ -1342,6 +1383,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     save_classifier: function (data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/classifier/save', data, callback);
+        } else {
+            if ($.isFunction(callback)) callback();
+        }
+    },
+
+    save_all_classifiers: function (classifiers_by_feed, callback, error_callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/classifier/save_all', {
+                classifiers: classifiers_by_feed
+            }, callback, error_callback, {
+                request_type: 'POST',
+                request_body_type: 'json'
+            });
         } else {
             if ($.isFunction(callback)) callback();
         }
@@ -2032,6 +2086,92 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.save_feed_icon(feed_id, 'none', null, null, null, callback, error_callback);
     },
 
+    // =============================
+    // = Auto Mark Read Settings =
+    // =============================
+
+    get_feed_folders: function (feed_id) {
+        // Find the immediate folder containing a given feed_id
+        // Returns folder titles (not full nested paths) to match folder_auto_mark_read keys
+        var folders = [];
+        feed_id = parseInt(feed_id, 10);
+
+        var search_collection = function (collection, current_folder_title) {
+            if (!collection || !collection.each) return;
+
+            collection.each(function (item) {
+                if (item.is_feed && item.is_feed()) {
+                    // This is a feed - check if it matches
+                    // FeedInFolder stores the feed reference in item.feed
+                    var item_feed_id = item.feed ? item.feed.id : item.get('feed_id');
+                    if (item_feed_id === feed_id) {
+                        // Return the immediate folder title, not the full path
+                        folders.push(current_folder_title || '');
+                    }
+                } else if (item.is_folder && item.is_folder()) {
+                    // This is a folder - recurse into it with this folder's title
+                    var folder_title = item.get('folder_title') || '';
+                    if (item.folders) {
+                        search_collection(item.folders, folder_title);
+                    }
+                }
+            });
+        };
+
+        // Start from the root folders collection
+        if (this.folders) {
+            search_collection(this.folders, '');
+        }
+
+        return folders;
+    },
+
+    get_folder_auto_mark_read: function (folder_title) {
+        var setting = this.folder_auto_mark_read[folder_title];
+        return setting ? setting.auto_mark_read_days : null;
+    },
+
+    save_feed_auto_mark_read: function (feed_id, days, callback, error_callback) {
+        var self = this;
+        var feed = this.get_feed(feed_id);
+        this.make_request('/reader/save_feed_auto_mark_read', {
+            feed_id: feed_id,
+            auto_mark_read_days: days
+        }, function (response) {
+            if (response.code == 1 && feed) {
+                if (days === null || days === '') {
+                    feed.unset('auto_mark_read_days');
+                } else {
+                    feed.set('auto_mark_read_days', parseInt(days, 10));
+                }
+            }
+            callback && callback(response);
+        }, error_callback);
+    },
+
+    save_folder_auto_mark_read: function (folder_title, days, callback, error_callback) {
+        var self = this;
+        this.make_request('/reader/save_folder_auto_mark_read', {
+            folder_title: folder_title,
+            auto_mark_read_days: days
+        }, function (response) {
+            if (response.code == 1) {
+                self.folder_auto_mark_read = response.folder_auto_mark_read || {};
+            }
+            callback && callback(response);
+        }, error_callback);
+    },
+
+    get_auto_mark_read_settings: function (callback, error_callback) {
+        var self = this;
+        this.make_request('/reader/get_auto_mark_read_settings', {}, function (response) {
+            if (response.code == 1) {
+                self.folder_auto_mark_read = response.folder_auto_mark_read || {};
+            }
+            callback && callback(response);
+        }, error_callback, { request_type: 'GET' });
+    },
+
     save_dashboard_river: function (river_id, river_side, river_order, callback, error_callback) {
         this.make_request('/reader/save_dashboard_river', {
             river_id: river_id,
@@ -2212,6 +2352,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     recalculate_story_scores: function (feed_id, options) {
         options = options || {};
+        var user_is_pro = NEWSBLUR.Globals.is_pro;
+
         this.stories.each(_.bind(function (story, i) {
             if (story.get('story_feed_id') != feed_id) return;
             var intelligence = {
@@ -2219,13 +2361,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 feed: 0,
                 tags: 0,
                 title: 0,
-                text: 0
+                title_regex: 0,
+                text: 0,
+                text_regex: 0,
+                url: 0,
+                url_regex: 0
             };
 
             _.each(this.classifiers[feed_id].titles, function (classifier_score, classifier_title) {
-                if (intelligence.title <= 0 &&
-                    story.get('story_title', '').toLowerCase().indexOf(classifier_title.toLowerCase()) != -1) {
-                    intelligence.title = classifier_score;
+                if (intelligence.title <= 0) {
+                    // Standard substring matching
+                    if (story.get('story_title', '').toLowerCase().indexOf(classifier_title.toLowerCase()) != -1) {
+                        intelligence.title = classifier_score;
+                    }
                 }
             });
 
@@ -2251,11 +2399,72 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             });
 
             _.each(this.classifiers[feed_id].texts, function (classifier_score, classifier_text) {
-                if (intelligence.text <= 0 &&
-                    story.get('story_content', '').toLowerCase().indexOf(classifier_text.toLowerCase()) != -1) {
-                    intelligence.text = classifier_score;
+                if (intelligence.text <= 0) {
+                    // Standard substring matching
+                    if (story.get('story_content', '').toLowerCase().indexOf(classifier_text.toLowerCase()) != -1) {
+                        intelligence.text = classifier_score;
+                    }
                 }
             });
+
+            // Title regex classifiers (PRO only)
+            if (user_is_pro && this.classifiers[feed_id].title_regex) {
+                _.each(this.classifiers[feed_id].title_regex, function (classifier_score, pattern) {
+                    if (intelligence.title_regex <= 0) {
+                        try {
+                            var regex = new RegExp(pattern, 'i');
+                            if (regex.test(story.get('story_title', ''))) {
+                                intelligence.title_regex = classifier_score;
+                            }
+                        } catch (e) {
+                            // Invalid regex, skip
+                        }
+                    }
+                });
+            }
+
+            // Text regex classifiers (PRO only)
+            if (user_is_pro && this.classifiers[feed_id].text_regex) {
+                _.each(this.classifiers[feed_id].text_regex, function (classifier_score, pattern) {
+                    if (intelligence.text_regex <= 0) {
+                        try {
+                            var regex = new RegExp(pattern, 'i');
+                            if (regex.test(story.get('story_content', ''))) {
+                                intelligence.text_regex = classifier_score;
+                            }
+                        } catch (e) {
+                            // Invalid regex, skip
+                        }
+                    }
+                });
+            }
+
+            // URL exact phrase classifiers
+            _.each(this.classifiers[feed_id].urls, function (classifier_score, classifier_url) {
+                if (intelligence.url <= 0) {
+                    var permalink = story.get('story_permalink') || '';
+                    if (permalink.toLowerCase().indexOf(classifier_url.toLowerCase()) != -1) {
+                        intelligence.url = classifier_score;
+                    }
+                }
+            });
+
+            // URL regex classifiers (PRO only)
+            if (user_is_pro && this.classifiers[feed_id].url_regex) {
+                _.each(this.classifiers[feed_id].url_regex, function (classifier_score, pattern) {
+                    if (intelligence.url_regex <= 0) {
+                        try {
+                            var regex = new RegExp(pattern, 'i');
+                            var permalink = story.get('story_permalink') || '';
+                            if (regex.test(permalink)) {
+                                intelligence.url_regex = classifier_score;
+                            }
+                        } catch (e) {
+                            // Invalid regex, skip
+                        }
+                    }
+                });
+            }
 
             story.set('intelligence', intelligence, options);
         }, this));

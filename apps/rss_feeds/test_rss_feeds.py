@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock, patch
+
 import redis
 from django.conf import settings
 from django.core import management
@@ -6,6 +8,7 @@ from django.test.client import Client
 from django.urls import reverse
 
 from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.tasks import SchedulePremiumSetup
 from utils import json_functions as json
 
 
@@ -420,3 +423,219 @@ class Test_Feed(TransactionTestCase):
 
     def test_all_feeds(self):
         pass
+
+
+class Test_PremiumSetupResyncPassthrough(TestCase):
+    """Tests for allow_skip_resync pass-through in SchedulePremiumSetup and Feed methods."""
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address="http://example.com/resync.xml",
+            feed_link="http://example.com/resync",
+            feed_title="Resync Test Feed",
+        )
+
+    @patch("apps.rss_feeds.models.Feed.setup_feed_for_premium_subscribers")
+    def test_setup_feeds_passes_allow_skip_resync_true(self, mock_setup):
+        """setup_feeds_for_premium_subscribers should pass allow_skip_resync to each feed."""
+        Feed.setup_feeds_for_premium_subscribers([self.feed.pk], allow_skip_resync=True)
+
+        mock_setup.assert_called_once_with(allow_skip_resync=True)
+
+    @patch("apps.rss_feeds.models.Feed.setup_feed_for_premium_subscribers")
+    def test_setup_feeds_defaults_allow_skip_resync_false(self, mock_setup):
+        """setup_feeds_for_premium_subscribers should default allow_skip_resync to False."""
+        Feed.setup_feeds_for_premium_subscribers([self.feed.pk])
+
+        mock_setup.assert_called_once_with(allow_skip_resync=False)
+
+    @patch("apps.rss_feeds.models.Feed.setup_feeds_for_premium_subscribers")
+    def test_task_passes_allow_skip_resync_true(self, mock_setup_feeds):
+        """SchedulePremiumSetup task should pass allow_skip_resync to setup_feeds_for_premium_subscribers."""
+        SchedulePremiumSetup(feed_ids=[self.feed.pk], allow_skip_resync=True)
+
+        mock_setup_feeds.assert_called_once_with([self.feed.pk], allow_skip_resync=True)
+
+    @patch("apps.rss_feeds.models.Feed.setup_feeds_for_premium_subscribers")
+    def test_task_defaults_allow_skip_resync_false(self, mock_setup_feeds):
+        """SchedulePremiumSetup task should default allow_skip_resync to False."""
+        SchedulePremiumSetup(feed_ids=[self.feed.pk])
+
+        mock_setup_feeds.assert_called_once_with([self.feed.pk], allow_skip_resync=False)
+
+    @patch("apps.rss_feeds.models.MStory.sync_feed_redis")
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    @patch("apps.rss_feeds.models.Feed.count_similar_feeds")
+    @patch("apps.rss_feeds.models.Feed.set_next_scheduled_update")
+    def test_setup_feed_for_premium_passes_allow_skip_resync_to_sync_redis(
+        self, mock_scheduled, mock_similar, mock_count, mock_sync
+    ):
+        """setup_feed_for_premium_subscribers should pass allow_skip_resync to sync_redis."""
+        self.feed.setup_feed_for_premium_subscribers(allow_skip_resync=True)
+
+        mock_sync.assert_called_once_with(self.feed.pk, allow_skip_resync=True)
+
+    @patch("apps.rss_feeds.models.MStory.sync_feed_redis")
+    @patch("apps.rss_feeds.models.Feed.count_subscribers")
+    @patch("apps.rss_feeds.models.Feed.count_similar_feeds")
+    @patch("apps.rss_feeds.models.Feed.set_next_scheduled_update")
+    def test_setup_feed_for_premium_defaults_resync_false(
+        self, mock_scheduled, mock_similar, mock_count, mock_sync
+    ):
+        """setup_feed_for_premium_subscribers should default allow_skip_resync=False."""
+        self.feed.setup_feed_for_premium_subscribers()
+
+        mock_sync.assert_called_once_with(self.feed.pk, allow_skip_resync=False)
+
+
+class Test_PageImporterEncoding(TestCase):
+    """Tests for encoding detection in PageImporter when fetching story pages."""
+
+    def setUp(self):
+        self.feed = Feed.objects.create(
+            feed_address="http://example.com/feed.xml",
+            feed_link="http://example.com",
+            feed_title="Test Feed",
+        )
+
+    def _make_mock_response(self, content_bytes, encoding):
+        """Create a mock requests response with given raw bytes and encoding."""
+        resp = MagicMock()
+        resp.content = content_bytes
+        resp.encoding = encoding
+        resp.text = content_bytes.decode(encoding or "utf-8", errors="replace")
+        resp.connection = MagicMock()
+        return resp
+
+    @patch("apps.rss_feeds.page_importer.requests.get")
+    def test_fetch_story_utf8_declared_in_html_with_iso8859_header(self, mock_get):
+        """When server says ISO-8859-1 but HTML declares UTF-8, use UTF-8."""
+        from apps.rss_feeds.page_importer import PageImporter
+
+        html_bytes = (
+            b'<html><head><meta charset="utf-8"></head>'
+            b"<body><p>Les poumons \xc2\xab se liqu\xc3\xa9fiaient \xc2\xbb</p></body></html>"
+        )
+        mock_get.return_value = self._make_mock_response(html_bytes, "ISO-8859-1")
+
+        story = MagicMock()
+        story.story_permalink = "http://example.com/article"
+
+        importer = PageImporter(feed=self.feed, story=story)
+        html = importer.fetch_story()
+
+        self.assertIn("liquéfiaient", html)
+        self.assertNotIn("Ã©", html)
+
+    @patch("apps.rss_feeds.page_importer.requests.get")
+    def test_fetch_story_utf8_bom_with_iso8859_header(self, mock_get):
+        """When server says ISO-8859-1 but content has UTF-8 BOM, use UTF-8."""
+        from apps.rss_feeds.page_importer import PageImporter
+
+        html_bytes = b"\xef\xbb\xbf<html><body><p>caf\xc3\xa9</p></body></html>"
+        mock_get.return_value = self._make_mock_response(html_bytes, "ISO-8859-1")
+
+        story = MagicMock()
+        story.story_permalink = "http://example.com/article"
+
+        importer = PageImporter(feed=self.feed, story=story)
+        html = importer.fetch_story()
+
+        self.assertIn("café", html)
+
+    @patch("apps.rss_feeds.page_importer.requests.get")
+    def test_fetch_story_actual_iso8859_content(self, mock_get):
+        """When server says ISO-8859-1 and HTML has no UTF-8 declaration, use ISO-8859-1."""
+        from apps.rss_feeds.page_importer import PageImporter
+
+        html_bytes = b"<html><body><p>caf\xe9</p></body></html>"
+        mock_get.return_value = self._make_mock_response(html_bytes, "ISO-8859-1")
+
+        story = MagicMock()
+        story.story_permalink = "http://example.com/article"
+
+        importer = PageImporter(feed=self.feed, story=story)
+        html = importer.fetch_story()
+
+        self.assertIn("café", html)
+
+    @patch("apps.rss_feeds.page_importer.requests.get")
+    def test_fetch_page_utf8_declared_in_html_with_iso8859_header(self, mock_get):
+        """fetch_page_timeout: when server says ISO-8859-1 but HTML declares UTF-8, use UTF-8."""
+        from apps.rss_feeds.page_importer import PageImporter
+
+        html_bytes = (
+            b'<html><head><meta charset="utf-8"></head>'
+            b"<body><p>d\xc3\xa9veloppe une pneumonie</p></body></html>"
+        )
+        mock_get.return_value = self._make_mock_response(html_bytes, "ISO-8859-1")
+
+        importer = PageImporter(feed=self.feed)
+        importer.save_page = MagicMock()
+        importer.feed.save_page_history = MagicMock()
+        importer.fetch_page(urllib_fallback=False)
+
+        saved_html = importer.save_page.call_args[0][0]
+        self.assertIn("développe", saved_html)
+        self.assertNotIn("Ã©", saved_html)
+
+
+class Test_TextImporterEncoding(TestCase):
+    """Tests for encoding detection in TextImporter readability fallback."""
+
+    def _make_mock_response(self, content_bytes, encoding):
+        """Create a mock requests response with given raw bytes and encoding."""
+        resp = MagicMock()
+        resp.content = content_bytes
+        resp.encoding = encoding
+        resp.text = content_bytes.decode(encoding or "utf-8", errors="replace")
+        resp.url = "http://example.com/article"
+        resp.connection = MagicMock()
+        return resp
+
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    def test_fetch_manually_utf8_declared_in_html_with_iso8859_header(self, mock_get):
+        """When server says ISO-8859-1 but HTML declares UTF-8, readability should use UTF-8."""
+        from apps.rss_feeds.text_importer import TextImporter
+
+        html_bytes = (
+            b'<html><head><meta charset="utf-8"><title>Test</title></head>'
+            b"<body><article><p>Les chirurgiens de la Northwestern University ont repouss\xc3\xa9 "
+            b"les limites de leur profession. Ils lui ont retir\xc3\xa9 les deux organes "
+            b"respiratoires et on confi\xc3\xa9 sa vie \xc3\xa0 une machine.</p></article></body></html>"
+        )
+        mock_get.return_value = self._make_mock_response(html_bytes, "ISO-8859-1")
+
+        story = MagicMock()
+        story.story_permalink = "http://example.com/article"
+        story.story_content_z = None
+        story.image_urls = []
+
+        importer = TextImporter(story=story, story_url="http://example.com/article")
+        result = importer.fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertIn("repoussé", result["content"])
+        self.assertNotIn("Ã©", result["content"])
+
+    @patch("apps.rss_feeds.text_importer.requests.get")
+    def test_fetch_manually_utf8_bom_with_iso8859_header(self, mock_get):
+        """When server says ISO-8859-1 but content has UTF-8 BOM, use UTF-8."""
+        from apps.rss_feeds.text_importer import TextImporter
+
+        html_bytes = (
+            b"\xef\xbb\xbf<html><head><title>Test</title></head>"
+            b"<body><article><p>d\xc3\xa9veloppe une pneumonie foudroyante</p></article></body></html>"
+        )
+        mock_get.return_value = self._make_mock_response(html_bytes, "ISO-8859-1")
+
+        story = MagicMock()
+        story.story_permalink = "http://example.com/article"
+        story.story_content_z = None
+        story.image_urls = []
+
+        importer = TextImporter(story=story, story_url="http://example.com/article")
+        result = importer.fetch_manually(skip_save=True, return_document=True)
+
+        self.assertIsNotNone(result)
+        self.assertIn("développe", result["content"])

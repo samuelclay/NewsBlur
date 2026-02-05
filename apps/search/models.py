@@ -28,6 +28,7 @@ from apps.search.tasks import (
 from utils import log as logging
 from utils.ai_functions import setup_openai_model
 from utils.feed_functions import chunks
+from utils.llm_costs import LLMCostTracker
 
 
 class MUserSearch(mongo.Document):
@@ -524,8 +525,8 @@ class SearchStory:
         }
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
-        except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+        except (elasticsearch.exceptions.RequestError, elasticsearch.exceptions.ConnectionError) as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
             return []
 
         # s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
@@ -585,8 +586,8 @@ class SearchStory:
         }
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
-        except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+        except (elasticsearch.exceptions.RequestError, elasticsearch.exceptions.ConnectionError) as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
             return []
 
         # sort     = "date:desc" if order == "newest" else "date:asc"
@@ -644,8 +645,8 @@ class SearchStory:
         }
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
-        except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+        except (elasticsearch.exceptions.RequestError, elasticsearch.exceptions.ConnectionError) as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
             return []
 
         logging.info(
@@ -900,8 +901,8 @@ class DiscoverStory:
         logging.debug(f"~FBVector query: {body}")
         try:
             results = cls.ES().search(body=body, index=cls.index_name())
-        except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+        except (elasticsearch.exceptions.RequestError, elasticsearch.exceptions.ConnectionError) as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
             return []
 
         logging.info(
@@ -922,8 +923,8 @@ class DiscoverStory:
         body = {"query": {"ids": {"values": [story_hash]}}}
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
-        except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+        except (elasticsearch.exceptions.RequestError, elasticsearch.exceptions.ConnectionError) as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
             return []
         # logging.debug(f"Results: {results}")
         if len(results["hits"]["hits"]) == 0:
@@ -995,6 +996,15 @@ class DiscoverStory:
         except APITimeoutError as e:
             logging.debug(f" ***> ~FROpenAI API timeout: {e}")
             return []
+
+        # Track embedding cost
+        LLMCostTracker.record_embedding(
+            model=model_name,
+            input_tokens=response.usage.total_tokens,
+            feature="search_story_embedding",
+            metadata={"story_hash": story_hash},
+        )
+
         story_embedding = response.data[0].embedding
 
         # Project the embedding down to 256 dimensions
@@ -1259,8 +1269,8 @@ class SearchFeed:
         }
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
-        except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+        except (elasticsearch.exceptions.RequestError, elasticsearch.exceptions.ConnectionError) as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
             return []
 
         logging.info(
@@ -1301,8 +1311,8 @@ class SearchFeed:
         }
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
-        except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+        except (elasticsearch.exceptions.RequestError, elasticsearch.exceptions.ConnectionError) as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
             return []
 
         logging.info(
@@ -1351,6 +1361,15 @@ class SearchFeed:
         try:
             client = OpenAI(api_key=settings.OPENAI_API_KEY)
             response = client.embeddings.create(model="text-embedding-3-small", input=text.lower())
+
+            # Track embedding cost
+            LLMCostTracker.record_embedding(
+                model="text-embedding-3-small",
+                input_tokens=response.usage.total_tokens,
+                feature="search_query_embedding",
+                metadata={"query": text[:100]},
+            )
+
             query_vector = response.data[0].embedding
 
             semantic_results = cls.vector_query(query_vector, max_results=max_results)
@@ -1407,8 +1426,8 @@ class SearchFeed:
 
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
-        except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+        except (elasticsearch.exceptions.RequestError, elasticsearch.exceptions.ConnectionError) as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
             return []
 
         # logging.debug(f"Results: {results}")
@@ -1469,6 +1488,14 @@ class SearchFeed:
         client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
         response = client.embeddings.create(model=model_name, input=truncated_text)
+
+        # Track embedding cost
+        LLMCostTracker.record_embedding(
+            model=model_name,
+            input_tokens=response.usage.total_tokens,
+            feature="search_feed_embedding",
+            metadata={"feed_id": feed_id},
+        )
 
         embedding = response.data[0].embedding
         # normalized_embedding = np.array(embedding) / np.linalg.norm(embedding)

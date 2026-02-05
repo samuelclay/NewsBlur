@@ -303,7 +303,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     fill_out: function (options) {
         if (this.collection.no_more_stories ||
             !NEWSBLUR.reader.flags.story_titles_closed) {
-            this.show_no_more_stories();
             return;
         }
 
@@ -318,8 +317,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             _.delay(_.bind(function () {
                 this.scroll();
             }, this), 10);
-        } else {
-            this.show_no_more_stories();
         }
     },
 

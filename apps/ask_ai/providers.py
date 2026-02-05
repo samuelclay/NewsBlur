@@ -12,6 +12,11 @@ from google.genai import types as genai_types
 class LLMProvider(ABC):
     """Abstract base class for LLM providers."""
 
+    def __init__(self):
+        # Track usage from the last API call
+        self._last_input_tokens = 0
+        self._last_output_tokens = 0
+
     @abstractmethod
     def is_configured(self) -> bool:
         """Check if the provider's API key is configured."""
@@ -32,6 +37,15 @@ class LLMProvider(ABC):
     def format_error(self, error: Exception) -> str:
         """Format an error message for this provider."""
         pass
+
+    def get_last_usage(self) -> tuple[int, int]:
+        """
+        Get token usage from the last API call.
+
+        Returns:
+            Tuple of (input_tokens, output_tokens)
+        """
+        return (self._last_input_tokens, self._last_output_tokens)
 
 
 class AnthropicProvider(LLMProvider):
@@ -55,6 +69,11 @@ class AnthropicProvider(LLMProvider):
         ) as stream:
             for text in stream.text_stream:
                 yield text
+            # Get usage after stream completes
+            final_message = stream.get_final_message()
+            if final_message and final_message.usage:
+                self._last_input_tokens = final_message.usage.input_tokens
+                self._last_output_tokens = final_message.usage.output_tokens
 
     @property
     def error_types(self) -> tuple:
@@ -63,6 +82,14 @@ class AnthropicProvider(LLMProvider):
     def format_error(self, error: Exception) -> str:
         if isinstance(error, anthropic.APIConnectionError):
             return "Anthropic API connection error"
+        if isinstance(error, anthropic.APIStatusError):
+            # Check for common error types
+            if error.status_code == 401:
+                return "Anthropic API key is invalid. Please check your ANTHROPIC_API_KEY setting."
+            if error.status_code == 403:
+                return "Anthropic API access denied. Your API key may be invalid, expired, or lack permissions. Please check your ANTHROPIC_API_KEY setting."
+            if error.status_code == 429:
+                return "Anthropic API rate limit exceeded. Please try again later."
         return f"Anthropic API error: {str(error)}"
 
 
@@ -74,10 +101,19 @@ class OpenAIProvider(LLMProvider):
 
     def stream_response(self, messages: list, model_id: str) -> Generator[str, None, None]:
         client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-        response = client.chat.completions.create(model=model_id, messages=messages, stream=True)
+        response = client.chat.completions.create(
+            model=model_id,
+            messages=messages,
+            stream=True,
+            stream_options={"include_usage": True},
+        )
 
         for chunk in response:
-            if chunk.choices[0].delta.content:
+            # The final chunk contains usage info
+            if chunk.usage:
+                self._last_input_tokens = chunk.usage.prompt_tokens
+                self._last_output_tokens = chunk.usage.completion_tokens
+            if chunk.choices and chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
 
     @property
@@ -87,6 +123,13 @@ class OpenAIProvider(LLMProvider):
     def format_error(self, error: Exception) -> str:
         if isinstance(error, openai.APITimeoutError):
             return "OpenAI API timeout"
+        if isinstance(error, openai.APIStatusError):
+            if error.status_code == 401:
+                return "OpenAI API key is invalid. Please check your OPENAI_API_KEY setting."
+            if error.status_code == 403:
+                return "OpenAI API access denied. Your API key may be invalid or lack permissions. Please check your OPENAI_API_KEY setting."
+            if error.status_code == 429:
+                return "OpenAI API rate limit exceeded. Please try again later."
         return f"OpenAI API error: {str(error)}"
 
 
@@ -101,10 +144,19 @@ class XAIProvider(LLMProvider):
             api_key=settings.XAI_GROK_API_KEY,
             base_url="https://api.x.ai/v1",
         )
-        response = client.chat.completions.create(model=model_id, messages=messages, stream=True)
+        response = client.chat.completions.create(
+            model=model_id,
+            messages=messages,
+            stream=True,
+            stream_options={"include_usage": True},
+        )
 
         for chunk in response:
-            if chunk.choices[0].delta.content:
+            # The final chunk contains usage info
+            if chunk.usage:
+                self._last_input_tokens = chunk.usage.prompt_tokens
+                self._last_output_tokens = chunk.usage.completion_tokens
+            if chunk.choices and chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
 
     @property
@@ -114,6 +166,13 @@ class XAIProvider(LLMProvider):
     def format_error(self, error: Exception) -> str:
         if isinstance(error, openai.APITimeoutError):
             return "xAI API timeout"
+        if isinstance(error, openai.APIStatusError):
+            if error.status_code == 401:
+                return "xAI API key is invalid. Please check your XAI_GROK_API_KEY setting."
+            if error.status_code == 403:
+                return "xAI API access denied. Your API key may be invalid or lack permissions. Please check your XAI_GROK_API_KEY setting."
+            if error.status_code == 429:
+                return "xAI API rate limit exceeded. Please try again later."
         return f"xAI API error: {str(error)}"
 
 
@@ -142,9 +201,17 @@ class GeminiProvider(LLMProvider):
 
         response = client.models.generate_content_stream(model=model_id, contents=contents, config=config)
 
+        last_chunk = None
         for chunk in response:
+            last_chunk = chunk
             if chunk.text:
                 yield chunk.text
+
+        # Get usage from the last chunk's usage_metadata
+        if last_chunk and hasattr(last_chunk, "usage_metadata") and last_chunk.usage_metadata:
+            usage = last_chunk.usage_metadata
+            self._last_input_tokens = getattr(usage, "prompt_token_count", 0) or 0
+            self._last_output_tokens = getattr(usage, "candidates_token_count", 0) or 0
 
     @property
     def error_types(self) -> tuple:
@@ -171,18 +238,25 @@ LLM_EXCEPTIONS = (
 # Only top-tier models per provider
 MODELS = {
     "opus": (AnthropicProvider, "claude-opus-4-5-20251101"),
-    "gpt-5.1": (OpenAIProvider, "gpt-5.1"),
+    "gpt-5.2": (OpenAIProvider, "gpt-5.2"),
     "gemini-3": (GeminiProvider, "gemini-3-pro-preview"),
     "grok-4.1": (XAIProvider, "grok-4-1-fast-non-reasoning"),
 }
 
 VALID_MODELS = list(MODELS.keys())
 DEFAULT_MODEL = "opus"
+# MODEL_VENDORS includes both current and historical models for metrics tracking.
+# When retiring a model, remove it from MODELS above but keep it here.
 MODEL_VENDORS = {
+    # Current models
     "opus": "anthropic",
-    "gpt-5.1": "openai",
+    "gpt-5.2": "openai",
     "gemini-3": "google",
     "grok-4.1": "xai",
+    # Historical models (kept for metrics)
+    "gpt-5.1": "openai",
+    "gpt-4.1": "openai",
+    "grok-4": "xai",
 }
 
 

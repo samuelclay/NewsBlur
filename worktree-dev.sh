@@ -72,6 +72,10 @@ fi
 if [ ! -f "config/certificates/localhost.pem" ]; then
     NEEDS_SETUP=true
 fi
+# Regenerate if template is newer than the generated compose file
+if [ -f ".worktree/docker-compose.${WORKSPACE_NAME}.yml" ] && [ "docker/compose/worktree.yml.j2" -nt ".worktree/docker-compose.${WORKSPACE_NAME}.yml" ]; then
+    NEEDS_SETUP=true
+fi
 
 # Run setup if needed
 if [ "$NEEDS_SETUP" = true ]; then
@@ -351,6 +355,30 @@ if [ -d "../../.claude/skills" ]; then
             done
         fi
         echo -e "${GREEN}✓ Synced .claude skills from parent repo${NC}"
+    fi
+fi
+
+# Configure Chrome DevTools MCP with --isolated flag for worktrees
+# This allows multiple worktrees to run Chrome DevTools MCP simultaneously
+if [ "$IS_MAIN_REPO" = false ] && command -v jq &>/dev/null; then
+    CLAUDE_CONFIG="$HOME/.claude.json"
+    WORKTREE_PATH="$(pwd)"
+
+    if [ -f "$CLAUDE_CONFIG" ]; then
+        # Check if this worktree already has chrome-devtools configured with --isolated
+        CURRENT_ARGS=$(jq -r ".projects[\"$WORKTREE_PATH\"].mcpServers[\"chrome-devtools\"].args // [] | join(\" \")" "$CLAUDE_CONFIG" 2>/dev/null || echo "")
+
+        if ! echo "$CURRENT_ARGS" | grep -q "\-\-isolated"; then
+            # Add or update chrome-devtools MCP with --isolated flag
+            TEMP_CONFIG=$(mktemp)
+            jq ".projects[\"$WORKTREE_PATH\"].mcpServers[\"chrome-devtools\"] = {
+                \"type\": \"stdio\",
+                \"command\": \"npx\",
+                \"args\": [\"-y\", \"chrome-devtools-mcp@latest\", \"--isolated\", \"--accept-insecure-certs\"],
+                \"env\": {}
+            }" "$CLAUDE_CONFIG" > "$TEMP_CONFIG" && mv "$TEMP_CONFIG" "$CLAUDE_CONFIG"
+            echo -e "${GREEN}✓ Configured Chrome DevTools MCP with --isolated flag${NC}"
+        fi
     fi
 fi
 

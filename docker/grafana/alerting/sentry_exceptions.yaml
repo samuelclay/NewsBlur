@@ -1,0 +1,287 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: sentry_alerts
+    folder: Infrastructure
+    interval: 1m
+    rules:
+      - uid: sentry_exceptions_web
+        title: Sentry Exceptions - Web
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: eAFk0807z
+            model:
+              queryType: statsV2
+              statsCategory:
+                - error
+              statsFields:
+                - sum(quantity)
+              statsOutcome:
+                - accepted
+              projectIds:
+                - "1"
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              refId: B
+              expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 100
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: NoData
+        execErrState: Alerting
+        for: 30m
+        annotations:
+          __dashboardUid__: T86VjXrG2
+          __panelId__: "86"
+          summary: "Sentry Web exceptions high: {{ printf \"%.0f\" $values.B.Value }} errors"
+          description: "Sentry Web project is receiving {{ printf \"%.0f\" $values.B.Value }} exceptions in the last 30 minutes (threshold: 100)"
+        labels:
+          severity: warning
+          project: web
+        isPaused: false
+
+      - uid: sentry_exceptions_task
+        title: Sentry Exceptions - Task
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: eAFk0807z
+            model:
+              queryType: statsV2
+              statsCategory:
+                - error
+              statsFields:
+                - sum(quantity)
+              statsOutcome:
+                - accepted
+              projectIds:
+                - "2"
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              refId: B
+              expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 100
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: NoData
+        execErrState: Alerting
+        for: 30m
+        annotations:
+          __dashboardUid__: T86VjXrG2
+          __panelId__: "86"
+          summary: "Sentry Task exceptions high: {{ printf \"%.0f\" $values.B.Value }} errors"
+          description: "Sentry Task project is receiving {{ printf \"%.0f\" $values.B.Value }} exceptions in the last 30 minutes (threshold: 100)"
+        labels:
+          severity: warning
+          project: task
+        isPaused: false
+
+      - uid: sentry_exceptions_node
+        title: Sentry Exceptions - Node
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: eAFk0807z
+            model:
+              queryType: statsV2
+              statsCategory:
+                - error
+              statsFields:
+                - sum(quantity)
+              statsOutcome:
+                - accepted
+              projectIds:
+                - "3"
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              refId: B
+              expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 100
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: NoData
+        execErrState: Alerting
+        for: 30m
+        annotations:
+          __dashboardUid__: T86VjXrG2
+          __panelId__: "86"
+          summary: "Sentry Node exceptions high: {{ printf \"%.0f\" $values.B.Value }} errors"
+          description: "Sentry Node project is receiving {{ printf \"%.0f\" $values.B.Value }} exceptions in the last 30 minutes (threshold: 100)"
+        labels:
+          severity: warning
+          project: node
+        isPaused: false
+
+      - uid: sentry_exceptions_monitor
+        title: Sentry Exceptions - Monitor
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: eAFk0807z
+            model:
+              queryType: statsV2
+              statsCategory:
+                - error
+              statsFields:
+                - sum(quantity)
+              statsOutcome:
+                - accepted
+              projectIds:
+                - "4"
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              refId: B
+              expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 1800
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 100
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: NoData
+        execErrState: Alerting
+        for: 30m
+        annotations:
+          __dashboardUid__: T86VjXrG2
+          __panelId__: "86"
+          summary: "Sentry Monitor exceptions high: {{ printf \"%.0f\" $values.B.Value }} errors"
+          description: "Sentry Monitor project is receiving {{ printf \"%.0f\" $values.B.Value }} exceptions in the last 30 minutes (threshold: 100)"
+        labels:
+          severity: warning
+          project: monitor
+        isPaused: false

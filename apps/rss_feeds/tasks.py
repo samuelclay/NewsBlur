@@ -224,13 +224,13 @@ def ScheduleImmediateFetches(feed_ids, user_id=None):
 
 
 @app.task()
-def SchedulePremiumSetup(feed_ids):
+def SchedulePremiumSetup(feed_ids, allow_skip_resync=False):
     from apps.rss_feeds.models import Feed
 
     if not isinstance(feed_ids, list):
         feed_ids = [feed_ids]
 
-    Feed.setup_feeds_for_premium_subscribers(feed_ids)
+    Feed.setup_feeds_for_premium_subscribers(feed_ids, allow_skip_resync=allow_skip_resync)
 
 
 @app.task()

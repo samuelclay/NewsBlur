@@ -455,3 +455,29 @@ class RTrendingStory:
 
         results.sort(key=lambda x: x["seconds_per_subscriber"], reverse=True)
         return results[:limit]
+
+    @classmethod
+    def get_long_reads(cls, days=7, limit=50, min_readers=3):
+        """
+        Get stories sorted by average read time, filtered by minimum reader count.
+        This finds "long reads" - captivating content that multiple people spend time on.
+
+        Args:
+            days: Number of days to aggregate (default 7)
+            limit: Maximum stories to return (default 50)
+            min_readers: Minimum reader count to include (default 3)
+
+        Returns:
+            List of dicts with story_hash, feed_id, total_seconds, reader_count, avg_seconds_per_reader
+            sorted by avg_seconds_per_reader desc
+        """
+        # Get more stories than limit to account for filtering
+        all_stories = cls.get_trending_stories_detailed(days=days, limit=limit * 5)
+
+        # Filter by minimum readers
+        filtered = [s for s in all_stories if s["reader_count"] >= min_readers]
+
+        # Sort by average seconds per reader (descending)
+        filtered.sort(key=lambda x: x["avg_seconds_per_reader"], reverse=True)
+
+        return filtered[:limit]
