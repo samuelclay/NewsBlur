@@ -843,7 +843,13 @@ class MClassifierPrompt(mongo.Document):
         return classifications
 
 
-SCOPED_CLASSIFIER_CLASSES = [MClassifierTitle, MClassifierText, MClassifierUrl, MClassifierAuthor, MClassifierTag]
+SCOPED_CLASSIFIER_CLASSES = [
+    MClassifierTitle,
+    MClassifierText,
+    MClassifierUrl,
+    MClassifierAuthor,
+    MClassifierTag,
+]
 
 
 def load_scoped_classifiers(user_id):
@@ -1014,7 +1020,7 @@ def sort_classifiers_by_feed(
                 scope = getattr(classifier, "scope", "feed")
                 if scope == "global":
                     # Global classifiers apply to all feed_ids
-                    for fid in (feed_ids or []):
+                    for fid in feed_ids or []:
                         feed_classifiers[fid].append(classifier)
                 elif scope == "folder" and folder_feed_ids:
                     # Folder classifiers apply to feeds in their folder

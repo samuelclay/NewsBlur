@@ -937,7 +937,12 @@ class Profile(models.Model):
                     paypal_subscription = None
 
                 if paypal_subscription:
-                    if paypal_subscription["status"] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE", "SUSPENDED"]:
+                    if paypal_subscription["status"] in [
+                        "APPROVAL_PENDING",
+                        "APPROVED",
+                        "ACTIVE",
+                        "SUSPENDED",
+                    ]:
                         active_plan = paypal_subscription.get("plan_id", None)
                         if not active_plan:
                             active_plan = paypal_subscription["plan"]["name"]
