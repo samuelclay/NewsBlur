@@ -841,50 +841,27 @@ class PreferencesViewModel: ObservableObject {
 @available(iOS 15.0, *)
 struct PreferencesView: View {
     @ObservedObject var viewModel: PreferencesViewModel
-    var onDismiss: () -> Void
 
     @State private var expandedSections: Set<String> = []
 
-    init(viewModel: PreferencesViewModel, onDismiss: @escaping () -> Void) {
+    init(viewModel: PreferencesViewModel) {
         self.viewModel = viewModel
-        self.onDismiss = onDismiss
         // Initially expand all sections
         _expandedSections = State(initialValue: Set(viewModel.sections.map { $0.title }))
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Custom header
-            HStack {
-                Spacer()
-                Text("Preferences")
-                    .font(.headline)
-                    .foregroundColor(PreferencesColors.textPrimary)
-                Spacer()
-            }
-            .overlay(alignment: .trailing) {
-                Button("Done") {
-                    onDismiss()
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                ForEach(viewModel.sections) { section in
+                    PreferenceSectionView(
+                        section: section,
+                        viewModel: viewModel
+                    )
                 }
-                .font(.body.bold())
-                .foregroundColor(PreferencesColors.newsblurGreen)
-                .padding(.trailing, 16)
             }
+            .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(PreferencesColors.cardBackground)
-
-            ScrollView {
-                LazyVStack(spacing: 16) {
-                    ForEach(viewModel.sections) { section in
-                        PreferenceSectionView(
-                            section: section,
-                            viewModel: viewModel
-                        )
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-            }
         }
         .background(PreferencesColors.background.ignoresSafeArea())
         .onAppear {
@@ -1495,7 +1472,7 @@ struct LinkItemView: View {
 
     override func loadView() {
         view = UIView()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .clear
     }
 
     override func viewDidLoad() {
@@ -1504,12 +1481,7 @@ struct LinkItemView: View {
     }
 
     private func setupHostingController() {
-        let preferencesView = PreferencesView(
-            viewModel: viewModel,
-            onDismiss: { [weak self] in
-                self?.delegate?.preferencesDidDismiss()
-            }
-        )
+        let preferencesView = PreferencesView(viewModel: viewModel)
 
         let hosting = UIHostingController(rootView: preferencesView)
         hostingController = hosting
@@ -1536,5 +1508,12 @@ struct LinkItemView: View {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.updateHiddenKeys()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if isBeingDismissed || navigationController?.isBeingDismissed == true {
+            delegate?.preferencesDidDismiss()
+        }
     }
 }

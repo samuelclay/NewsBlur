@@ -76,16 +76,43 @@
                     forControlEvents:UIControlEventTouchUpInside];
     [customView addSubview:self.invisibleHeaderButton];
     
-    UIImage *folderImage = [UIImage imageNamed:@"folder-open"];
+    UIImage *folderImage = nil;
+    NewsBlurAppDelegate *appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+
+    // Check for custom folder icon
+    NSDictionary *customIcon = appDelegate.dictFolderIcons[self.title];
+    if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+        folderImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(20, 20)];
+    }
+    if (!folderImage) {
+        folderImage = [UIImage imageNamed:self.imageName];
+    }
+
     CGFloat folderImageViewX = 10.0;
-    
-    if (((NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]).isPhone) {
+
+    if (appDelegate.isPhone) {
         folderImageViewX = 7.0;
     }
-    
+
     [folderImage drawInRect:CGRectMake(folderImageViewX, 8.0, 20.0, 20.0)];
     
     [self addSubview:customView];
+}
+
+- (NSString *)imageName {
+    if (self.isSelected) {
+        return @"accept";
+    } else if (self.isFlat) {
+        return @"dialog-organize";
+    } else if ([self.title isEqualToString:@"All Shared Stories"]) {
+        return @"all-shares";
+    } else if ([self.title isEqualToString:@"Saved Searches"]) {
+        return @"search";
+    } else if ([self.title isEqualToString:@"Saved Stories"]) {
+        return @"saved-stories";
+    } else {
+        return @"folder-open";
+    }
 }
 
 - (UIFontDescriptor *)fontDescriptor {

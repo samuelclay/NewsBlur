@@ -10,7 +10,7 @@ import UIKit
 import UniformTypeIdentifiers
 
 /// Singleton class to import or export the preferences.
-class ImportExportPreferences: NSObject {
+@MainActor class ImportExportPreferences: NSObject {
     /// Singleton shared instance.
     static let shared = ImportExportPreferences()
     

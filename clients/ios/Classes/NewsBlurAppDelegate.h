@@ -15,14 +15,13 @@
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
 #define FEED_TITLE_GRADIENT_TAG 100003
-#define FEED_DASHBOARD_VIEW_TAG 100004
 #define SHARE_MODAL_HEIGHT 120
 #define STORY_TITLES_HEIGHT 240
-#define DASHBOARD_TITLE @"NewsBlur"
 
+@class AppDelegateHelper;
 @class SplitViewController;
 @class FeedsViewController;
-@class DashboardViewController;
+@class ActivitiesViewController;
 @class FeedDetailViewController;
 @class MarkReadMenuViewController;
 @class FirstTimeUserViewController;
@@ -71,9 +70,8 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
     FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
     
-    DashboardViewController *dashboardViewController;
+    ActivitiesViewController *activitiesViewController;
     FeedsViewController *feedsViewController;
-    FeedDetailViewController *feedDetailViewController;
     FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
     
@@ -152,9 +150,12 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     
     PINCache *cachedFavicons;
     PINCache *cachedStoryImages;
+    PINCache *cachedUserAvatars;
 }
 
 @property (class, nonatomic, readonly) NewsBlurAppDelegate *shared;
+@property (class, nonatomic, readonly) AppDelegateHelper *helper;
+@property (nonatomic, readonly) AppDelegateHelper *helper;
 
 @property (nonatomic, readonly) NSURL *documentsURL;
 @property (nonatomic) SplitViewController *splitViewController;
@@ -170,9 +171,9 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) UINavigationController *originalStoryViewNavController;
 @property (nonatomic) IBOutlet DetailViewController *detailViewController;
-@property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
+@property (nonatomic) IBOutlet ActivitiesViewController *activitiesViewController;
 @property (nonatomic) IBOutlet FeedsViewController *feedsViewController;
-@property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
+@property (nonatomic, readonly) FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) UINavigationController *feedDetailMenuNavigationController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic, readonly) StoryPagesViewController *storyPagesViewController;
@@ -202,6 +203,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic, readwrite) StoriesCollection *storiesCollection;
 @property (nonatomic, readwrite) PINCache *cachedFavicons;
 @property (nonatomic, readwrite) PINCache *cachedStoryImages;
+@property (nonatomic, readwrite) PINCache *cachedUserAvatars;
 
 @property (nonatomic, readonly) NSString *url;
 @property (nonatomic, readonly) NSString *host;
@@ -215,6 +217,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
 @property (nonatomic, readwrite) BOOL hasLoadedFeedDetail;
 @property (nonatomic, readwrite) NSDate *findingStoryStartDate;
+@property (nonatomic) NSDictionary *findingStoryDictionary;
 @property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic) NSString *tryFeedFeedId;
 @property (nonatomic) NSString *tryFeedCategory;
@@ -250,7 +253,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSMutableDictionary *collapsedFolders;
 @property (nonatomic) UIFontDescriptor *fontDescriptorTitleSize;
 
-
 @property (nonatomic) NSDictionary *dictFolders;
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
 @property (nonatomic, strong) NSMutableDictionary *dictInactiveFeeds;
@@ -264,6 +266,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSDictionary *dictSocialServices;
 @property (nonatomic) BOOL isPremium;
 @property (nonatomic) BOOL isPremiumArchive;
+@property (nonatomic) BOOL isPremiumPro;
 @property (nonatomic) NSInteger premiumExpire;
 @property (nonatomic, strong) NSMutableDictionary *dictUnreadCounts;
 @property (nonatomic, strong) NSMutableDictionary *dictTextFeeds;
@@ -271,6 +274,9 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
 @property (nonatomic) NSArray *notificationFeedIds;
+@property (nonatomic) NSArray *dashboardArray;
+@property (nonatomic) NSDictionary *dictFolderIcons;
+@property (nonatomic) NSDictionary *dictFeedIcons;
 
 @property (nonatomic, readonly) NSString *widgetFolder;
 @property (nonatomic, strong) NSString *pendingFolder;
@@ -320,15 +326,19 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showMuteSites;
 - (void)showOrganizeSites;
 - (void)showWidgetSites;
+- (void)showDashboardSites:(NSString *)selectedRiverId;
 - (void)showPremiumDialog;
 - (void)showPremiumDialogForArchive;
+- (void)showPremiumDialogForPro;
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
+- (void)applySheetPresentationTheme:(UISheetPresentationController *)sheet;
+- (void)applyCustomGrabberToNavigationController:(UINavigationController *)navController;
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
 - (void)popToRootWithCompletion:(void (^)(void))completion;
-- (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo;
+- (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo animated:(BOOL)animated;
 
 - (void)showMoveSite;
 - (void)openTrainSite;
@@ -350,8 +360,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)backgroundLoadNotificationStory;
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder;
-- (void)openDashboardRiverForStory:(NSString *)contentId
-                  showFindingStory:(BOOL)showHUD;
 
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;
@@ -481,9 +489,18 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial;
 - (UIImage *)getFavicon:(NSString *)filename isSocial:(BOOL)isSocial isSaved:(BOOL)isSaved;
 
+- (void)saveUserAvatar:(UIImage *)image forUserId:(NSString *)userId;
+- (UIImage *)getCachedUserAvatar:(NSString *)userId;
+- (UIImage *)defaultUserAvatar;
+
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score;
+- (void)toggleTitleRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score;
+- (void)toggleTextClassifier:(NSString *)text feedId:(NSString *)feedId score:(NSInteger)score;
+- (void)toggleTextRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score;
+- (void)toggleUrlClassifier:(NSString *)url feedId:(NSString *)feedId score:(NSInteger)score;
+- (void)toggleUrlRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId score:(NSInteger)score;
 - (void)toggleFeedClassifier:(NSString *)feedId;
 
 - (NSInteger)databaseSchemaVersion:(FMDatabase *)db;
@@ -505,6 +522,8 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)fetchTextForStory:(NSString *)storyHash inFeed:(NSString *)feedId checkCache:(BOOL)checkCache withCallback:(void(^)(NSString *))callback;
 - (void)prepareActiveCachedImages:(FMDatabase *)db;
 - (UIImage *)cachedImageForStoryHash:(NSString *)storyHash;
+- (void)cacheStoryImage:(UIImage *)image forStoryHash:(NSString *)storyHash;
+- (void)cacheStoryImagePlaceholder:(NSString *)storyHash;
 - (void)cleanImageCache;
 - (void)deleteAllCachedImages;
 
@@ -523,4 +542,3 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)addCounts:(UnreadCounts *)counts;
 
 @end
-

@@ -44,12 +44,8 @@
 {
     [super viewDidLoad];
     
-    self.navigationItem.title = @"Find Friends";
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done" 
-                                                                     style: UIBarButtonItemStylePlain 
-                                                                    target: self 
-                                                                    action: @selector(doCancelButton)];
-    [self.navigationItem setRightBarButtonItem:cancelButton];
+    self.navigationItem.title = nil;
+    self.navigationItem.rightBarButtonItem = nil;
     
     // Do any additional setup after loading the view from its nib.
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
@@ -61,10 +57,37 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    self.friendsTable.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    
+    [self updateTheme];
     [self.friendSearchBar becomeFirstResponder];
+}
+
+- (void)updateTheme {
+    self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x1C1C1E, 0x111111);
+    self.friendsTable.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x1C1C1E, 0x111111);
+
+    UIColor *searchBarBackground = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x2C2C2E, 0x1C1C1E);
+    UIColor *searchFieldBackground = UIColorFromLightSepiaMediumDarkRGB(0xF7F8F5, 0xF3E2CB, 0x3A3A3C, 0x2C2C2E);
+    UIColor *searchTextColor = UIColorFromLightSepiaMediumDarkRGB(0x0, 0x3C3226, 0xFFFFFF, 0xFFFFFF);
+    UIColor *searchTintColor = UIColorFromLightSepiaMediumDarkRGB(0x4C4C4C, 0x5C4A3D, 0xFFFFFF, 0xFFFFFF);
+    UIColor *searchPlaceholderColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
+
+    self.friendSearchBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
+    self.friendSearchBar.backgroundColor = searchBarBackground;
+    self.friendSearchBar.barTintColor = searchBarBackground;
+    self.friendSearchBar.tintColor = searchTintColor;
+    self.friendSearchBar.keyboardAppearance = ThemeManager.shared.isDarkTheme ? UIKeyboardAppearanceDark : UIKeyboardAppearanceDefault;
+
+    UITextField *searchField = self.friendSearchBar.nb_searchField;
+    if (searchField) {
+        searchField.backgroundColor = searchFieldBackground;
+        searchField.textColor = searchTextColor;
+        searchField.tintColor = searchTintColor;
+        if (searchField.placeholder.length > 0) {
+            searchField.attributedPlaceholder = [[NSAttributedString alloc]
+                                                 initWithString:searchField.placeholder
+                                                 attributes:@{NSForegroundColorAttributeName: searchPlaceholderColor}];
+        }
+    }
 }
 
 //- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

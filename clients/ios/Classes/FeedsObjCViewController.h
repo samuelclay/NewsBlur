@@ -13,11 +13,14 @@
 #import "NBNotifier.h"
 #import "MCSwipeTableViewCell.h"
 
+@class SyncNotifierView;
+
 // indices in appDelegate.dictFoldersArray and button tags
 // keep in sync with NewsBlurTopSectionNames
 static enum {
-    NewsBlurTopSectionInfrequentSiteStories = 0,
-    NewsBlurTopSectionAllStories = 1
+    NewsBlurTopSectionDashboard = 0,
+    NewsBlurTopSectionInfrequentSiteStories = 1,
+    NewsBlurTopSectionAllStories = 2
 } NewsBlurTopSection;
 
 @interface FeedsObjCViewController : BaseViewController
@@ -25,7 +28,7 @@ static enum {
 NSCacheDelegate,
 UIPopoverControllerDelegate,
 MCSwipeTableViewCellDelegate,
-UIGestureRecognizerDelegate, UISearchBarDelegate> {
+UIGestureRecognizerDelegate, UITextFieldDelegate> {
     NSMutableDictionary * activeFeedLocations;
     NSMutableDictionary *stillVisibleFeeds;
     NSMutableDictionary *visibleFolders;
@@ -79,7 +82,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 #if !TARGET_OS_MACCATALYST
 @property (nonatomic) UIRefreshControl *refreshControl;
 #endif
-@property (nonatomic) UISearchBar *searchBar;
+@property (nonatomic) UITextField *searchField;
 @property (nonatomic, strong) NSArray<NSString *> *searchFeedIds;
 @property (nonatomic) NSCache *imageCache;
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
@@ -89,6 +92,7 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 @property (strong, nonatomic) IBOutlet UILabel *noFocusLabel;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *toolbarLeftMargin;
 @property (nonatomic, retain) NBNotifier *notifier;
+@property (nonatomic, strong) SyncNotifierView *syncNotifier;
 @property (nonatomic, retain) UIImageView *avatarImageView;
 
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
@@ -100,17 +104,27 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)selectNextFolderOrFeed;
 
 - (IBAction)selectIntelligence;
+- (void)selectDashboard:(id)sender;
 - (void)selectEverything:(id)sender;
 - (void)selectNextFeed:(id)sender;
 - (void)selectPreviousFeed:(id)sender;
 - (void)selectNextFolder:(id)sender;
 - (void)selectPreviousFolder:(id)sender;
 
+- (void)selectWidgetStories;
+
+- (void)selectFolder:(NSString *)folder;
+- (void)selectFeed:(NSString *)feedId inFolder:(NSString *)folder;
+
+
 - (void)markFeedRead:(NSString *)feedId cutoffDays:(NSInteger)days;
 - (void)markFeedsRead:(NSArray *)feedIds cutoffDays:(NSInteger)days;
 - (void)markEverythingReadWithDays:(NSInteger)days;
 - (void)markVisibleStoriesRead;
 - (void)didCollapseFolder:(UIButton *)button;
+- (void)didToggleAllFolders:(UIButton *)button;
+- (BOOL)anyFolderExpanded;
+- (void)updateAllStoriesCollapseButton;
 - (BOOL)isFeedVisible:(id)feedId;
 - (void)changeToAllMode;
 - (void)calculateFeedLocations;
@@ -132,8 +146,6 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)fadeFeed:(NSString *)feedId;
 - (IBAction)tapAddSite:(id)sender;
 
-- (void)selectWidgetStories;
-
 - (void)reloadFeedTitlesTable;
 - (void)resetToolbar;
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
@@ -143,6 +155,9 @@ UIGestureRecognizerDelegate, UISearchBarDelegate> {
 - (void)resizePreviewSize;
 - (void)resizeFontSize;
 - (void)settingDidChange:(NSNotification*)notification;
+
+- (void)updateSidebarButton;
+- (void)updateSidebarButtonForDisplayMode:(UISplitViewControllerDisplayMode)displayMode;
 
 - (void)showRefreshNotifier;
 - (void)showCountingNotifier;
