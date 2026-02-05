@@ -29631,6 +29631,18 @@ span.NB-briefing-inline-favicon {
     margin-bottom: 2px;
 }
 
+/* reader.css: Notification hint for briefing settings */
+.NB-briefing-notification-hint {
+    font-size: 11px;
+    color: #999;
+    font-style: italic;
+    margin-top: 4px;
+}
+
+.NB-dark .NB-briefing-notification-hint {
+    color: #666;
+}
+
 /* reader.css: Dark mode overrides for briefing popover */
 .NB-dark .NB-briefing-popover .NB-briefing-style-description {
     color: #6A8BA8;

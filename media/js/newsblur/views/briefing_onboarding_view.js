@@ -13,7 +13,8 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         "mouseenter .NB-briefing-section-hint-icon": "show_hint_popover",
         "mouseleave .NB-briefing-section-hint-icon": "hide_hint_popover",
         "click .NB-briefing-add-custom-section": "add_custom_section",
-        "click .NB-briefing-remove-custom-section": "remove_custom_section"
+        "click .NB-briefing-remove-custom-section": "remove_custom_section",
+        "click .NB-briefing-notification-option": "toggle_notification_type"
     },
 
     initialize: function (options) {
@@ -133,7 +134,8 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                     ['true', 'Include read']
                 ])
             ]),
-            this.make_sections_ui(prefs)
+            this.make_sections_ui(prefs),
+            this.make_notification_section(prefs)
         ]));
 
         // briefing_onboarding_view.js: Highlight active options based on loaded prefs
@@ -588,6 +590,72 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                 $popover.removeClass('NB-visible');
             }
         }, 100);
+    },
+
+    make_notification_section: function (prefs) {
+        var notification_types = (prefs && prefs.notification_types) || [];
+        var briefing_feed_id = (prefs && prefs.briefing_feed_id) || null;
+
+        var items = _.map([
+            ['email', 'Email'],
+            ['web', 'Web'],
+            ['ios', 'iOS'],
+            ['android', 'Android']
+        ], function (opt) {
+            var is_active = _.contains(notification_types, opt[0]);
+            return $.make('li', {
+                className: 'NB-briefing-notification-option NB-briefing-setting-option'
+                    + (is_active ? ' NB-active' : ''),
+                'data-type': opt[0],
+                role: 'button'
+            }, opt[1]);
+        });
+
+        var controls = [
+            $.make('ul', {
+                className: 'segmented-control NB-briefing-control-notifications'
+            }, items)
+        ];
+
+        if (!briefing_feed_id) {
+            controls.push($.make('div', { className: 'NB-briefing-notification-hint' },
+                'Available after your first briefing is generated'));
+        }
+
+        return this.make_section('Notifications', 'Get notified when a new briefing is ready', controls);
+    },
+
+    toggle_notification_type: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var briefing_feed_id = (this.prefs && this.prefs.briefing_feed_id) || null;
+        if (!briefing_feed_id) return;
+
+        var $target = $(e.currentTarget);
+        $target.toggleClass('NB-active');
+        this.save_notification_types();
+    },
+
+    save_notification_types: function () {
+        var feed_id = (this.prefs && this.prefs.briefing_feed_id) || null;
+        if (!feed_id) return;
+
+        var notification_types = [];
+        this.$('.NB-briefing-notification-option.NB-active').each(function () {
+            notification_types.push($(this).data('type'));
+        });
+
+        // briefing_onboarding_view.js: Save notification prefs via existing notifications API
+        $.ajax({
+            url: '/notifications/feed/',
+            type: 'POST',
+            data: {
+                'feed_id': feed_id,
+                'notification_types': notification_types,
+                'notification_filter': 'unread'
+            }
+        });
     },
 
     generate: function (e) {
