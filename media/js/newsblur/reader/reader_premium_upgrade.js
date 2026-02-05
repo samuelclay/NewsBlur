@@ -164,6 +164,14 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('li', { className: 'NB-11' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             'Filter stories by date range'
+                        ]),
+                        $.make('li', { className: 'NB-12' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Apply training across a folder'
+                        ]),
+                        $.make('li', { className: 'NB-13' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            'Apply training globally'
                         ])
                     ]),
                     $.make('div', { className: 'NB-premium-tier-actions' }, [
@@ -187,7 +195,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         ]),
                         $.make('li', { className: 'NB-2' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
-                            'All feeds fetched every 5 minutes'
+                            'All feeds fetched every 5-15 minutes'
                         ]),
                         $.make('li', { className: 'NB-3' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),

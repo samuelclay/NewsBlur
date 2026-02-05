@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-27T15:45:03-05:00</updated>
+  <updated>2026-02-03T19:57:01-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,44 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Story thumbnails for story titles</title>
+    <link href="https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles/" rel="alternate" type="text/html" title="Story thumbnails for story titles" />
+    <published>2016-02-19T06:30:10-05:00</published>
+    <updated>2016-02-19T06:30:10-05:00</updated>
+    <id>https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/02/19/story-thumbnails-for-story-titles/">
+      <![CDATA[<p>The iOS app has enjoyed a feature that gives you a tiny preview of a story’s main image right in the story title. Today this feature launches on the web.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images.png" alt="" /></p>
+
+<p>What I’ve noticed is that while I don’t use the image to identify which stories I want to read, I do use them to act as a signature of a story.</p>
+
+<p>There’s precedence for this on NewsBlur. Every site already does this using the color of its favicon. NewsBlur liberally applies a two-tone color palette based on each feed’s favicon. This serves as a per-feed signature, giving context to a story when it’s in the same view as every other feed’s stories.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images_left.png" alt="" /></p>
+
+<p>These story preview thumbnails serve as the same signature. Stories are best remembered through their colors and photos, so thumbnails act as a visual signature that’s easy to recognize. It works on a subconscious but perceptable level.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/inline_images_pref.png" alt="" /></p>
+
+<p>Of course you can turn them right off.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[The iOS app has enjoyed a feature that gives you a tiny preview of a story’s main image right in the story title. Today this feature launches on the web.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Two new third-party NewsBlur apps for iOS and Windows</title>
@@ -956,37 +994,6 @@ A new sound of an old instrument.
     <summary type="html">
       <![CDATA[After launching Saved Story Tagging earlier this year, I realized that there is an inherent categorization to every saved story: the site. But instead of just allowing you to search by site, I created a new view that you can now use to see stories saved by site.
 ]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Full text search across all of your subscriptions and folders </title>
-    <link href="https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/" rel="alternate" type="text/html" title="Full text search across all of your subscriptions and folders " />
-    <published>2014-04-29T04:45:28-04:00</published>
-    <updated>2014-04-29T04:45:28-04:00</updated>
-    <id>https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/">
-      <![CDATA[<p>Last Summer <a href="http://blog.newsblur.com/2021/06/21/2013-07-30-simple-search-for-feeds-saved-stories-and-blurblogs.html">Simple Search was launched</a>, giving you the ability to search a single feed at a time. Obviously not ideal, but it was far less effort than the big enchilada: full text search across every site you subscribe to. It took a few months to come back to attack the full problem, but that means I could also take the time to do it right.</p>
-
-<p>Full text search works just like the old simple search did. Open a folder or site and search at the top of the screen. Results come back instantly as you type. And this will automatically search in story titles, full text content, authors, and tags.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/search%20screenshot.jpg" alt="" /></p>
-
-<p>Because you’re searching for a story, hidden stories are also shown in the results, albeit with a red unread mark (as shown above). Also, in order to handle the demands of full text search, the first time you perform a search the system will index all of your feeds, which can take a couple minutes. It’s a one time process and you will see a progress bar that will update automatically when finished.</p>
-
-<p>Since this was one of the most requested features since day one, I’m now looking to decide on the next big feature. There’s a few big ones to hit: an organizer that surfaces inactive feeds that no longer get read, a discovery platform that helps you find users, stories, and feeds related to what you like and what you may not even know you like yet, and porting many of these web-only features to Android and iOS.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Last Summer Simple Search was launched, giving you the ability to search a single feed at a time. Obviously not ideal, but it was far less effort than the big enchilada: full text search across every site you subscribe to. It took a few months to come back to attack...]]>
     </summary>
     
   </entry>
