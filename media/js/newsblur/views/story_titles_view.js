@@ -130,6 +130,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             if (NEWSBLUR.app.story_list) {
                 NEWSBLUR.app.story_list.reset_flags();
                 NEWSBLUR.app.story_list.render();
+                NEWSBLUR.app.story_list.reset_story_positions();
             }
         }
 
