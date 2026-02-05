@@ -22,7 +22,7 @@ from apps.analyzer.models import (
     compute_story_score,
     get_classifiers_for_user,
 )
-from apps.reader.models import UserSubscription
+from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import Feed
 from utils import json_functions as json
 
@@ -706,7 +706,7 @@ class Test_Classifiers(TransactionTestCase):
         }
 
         classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
-        score = apply_classifier_url_regex(classifiers, story, user_is_pro=True)
+        score = apply_classifier_url_regex(classifiers, story)
 
         self.assertEqual(score, 1)
 
@@ -728,30 +728,7 @@ class Test_Classifiers(TransactionTestCase):
         }
 
         classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
-        score = apply_classifier_url_regex(classifiers, story, user_is_pro=True)
-
-        self.assertEqual(score, 0)
-
-    def test_apply_classifier_url_regex_requires_pro(self):
-        """Test that regex URL classifiers require PRO tier"""
-        MClassifierUrl.objects.create(
-            user_id=self.user.pk,
-            feed_id=self.feed.pk,
-            social_user_id=0,
-            url=r"/article-\d+",
-            score=1,
-            is_regex=True,
-            creation_date=datetime.datetime.now(),
-        )
-
-        story = {
-            "story_feed_id": self.feed.pk,
-            "story_permalink": "https://example.com/news/article-12345",
-        }
-
-        classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
-        # Without PRO, should return 0
-        score = apply_classifier_url_regex(classifiers, story, user_is_pro=False)
+        score = apply_classifier_url_regex(classifiers, story)
 
         self.assertEqual(score, 0)
 
@@ -773,7 +750,7 @@ class Test_Classifiers(TransactionTestCase):
         }
 
         classifiers = list(MClassifierUrl.objects(user_id=self.user.pk, feed_id=self.feed.pk))
-        score = apply_classifier_url_regex(classifiers, story, user_is_pro=True)
+        score = apply_classifier_url_regex(classifiers, story)
 
         self.assertEqual(score, -1)
 
@@ -885,3 +862,147 @@ class Test_Classifiers(TransactionTestCase):
         self.assertIn("url_regex", classifiers)
         self.assertEqual(classifiers["urls"]["/technology/"], 1)
         self.assertEqual(classifiers["url_regex"][r"/article-\d+"], -1)
+
+    # ================================================
+    # = Global/Folder Scope Isolation Tests           =
+    # ================================================
+
+    def test_save_global_classifier_does_not_affect_feed_classifiers(self):
+        """
+        Saving a single classifier with scope=global should NOT promote other
+        feed-level classifiers to global scope. This reproduces the bug where
+        serialize_classifier() in the JS applied one classifier's scope to all.
+
+        Tests the backend invariant: /classifier/save/ with scope=global only
+        creates/updates the specific classifier in the request.
+        """
+        # Make user archive-tier (required for global classifiers)
+        self.user.profile.is_archive = True
+        self.user.profile.save()
+
+        # Pre-create feed-level classifiers for the same feed
+        MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author="Jon Brodkin",
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+        MClassifierTag.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            tag="science",
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+
+        self.client.login(username="testuser", password="testpass")
+
+        # Save ONE text classifier with scope=global
+        response = self.client.post(
+            "/classifier/save/",
+            {
+                "feed_id": self.feed.pk,
+                "like_text": ["federal government"],
+                "scope": "global",
+                "folder_name": "",
+            },
+        )
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], 0)
+
+        # The global text classifier should exist with feed_id=0, scope=global
+        global_texts = list(MClassifierText.objects(user_id=self.user.pk, scope="global"))
+        self.assertEqual(len(global_texts), 1)
+        self.assertEqual(global_texts[0].text, "federal government")
+        self.assertEqual(global_texts[0].feed_id, 0)
+
+        # The existing feed-level classifiers should be UNCHANGED
+        feed_authors = list(MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        self.assertEqual(len(feed_authors), 1)
+        self.assertEqual(feed_authors[0].author, "Jon Brodkin")
+        self.assertEqual(feed_authors[0].scope, "feed")
+
+        feed_tags = list(MClassifierTag.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        self.assertEqual(len(feed_tags), 1)
+        self.assertEqual(feed_tags[0].tag, "science")
+        self.assertEqual(feed_tags[0].scope, "feed")
+
+        # No global authors or tags should have been created
+        global_authors = list(MClassifierAuthor.objects(user_id=self.user.pk, scope="global"))
+        self.assertEqual(len(global_authors), 0)
+        global_tags = list(MClassifierTag.objects(user_id=self.user.pk, scope="global"))
+        self.assertEqual(len(global_tags), 0)
+
+    def test_all_classifiers_separates_scoped_from_feed(self):
+        """
+        The /reader/all_classifiers endpoint should put global classifiers in
+        scoped_classifiers and feed-level classifiers in folders — never mixing them.
+        """
+        self.user.profile.is_archive = True
+        self.user.profile.save()
+
+        # Create a UserSubscriptionFolders entry so the endpoint can organize by folder
+        UserSubscriptionFolders.objects.create(
+            user=self.user,
+            folders='[{"Tech": [%s]}]' % self.feed.pk,
+        )
+
+        # Create feed-level classifiers
+        MClassifierAuthor.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            author="Jon Brodkin",
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+        MClassifierTag.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            tag="policy",
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+
+        # Create one global text classifier
+        MClassifierText.objects.create(
+            user_id=self.user.pk,
+            feed_id=0,
+            social_user_id=0,
+            text="federal government",
+            score=1,
+            scope="global",
+            folder_name="",
+            creation_date=datetime.datetime.now(),
+        )
+
+        self.client.login(username="testuser", password="testpass")
+        response = self.client.get("/reader/all_classifiers")
+        data = json.decode(response.content)
+
+        # Global text should be in scoped_classifiers
+        self.assertIn("scoped_classifiers", data)
+        scoped_texts = data["scoped_classifiers"]["texts"]
+        self.assertEqual(len(scoped_texts), 1)
+        self.assertEqual(scoped_texts[0]["text"], "federal government")
+        self.assertEqual(scoped_texts[0]["scope"], "global")
+
+        # No authors or tags should be in scoped_classifiers
+        self.assertEqual(len(data["scoped_classifiers"]["authors"]), 0)
+        self.assertEqual(len(data["scoped_classifiers"]["tags"]), 0)
+
+        # Feed-level classifiers should be in folders
+        all_feed_classifiers = []
+        for folder in data["folders"]:
+            for feed in folder.get("feeds", []):
+                all_feed_classifiers.extend(feed["classifiers"].get("authors", []))
+                all_feed_classifiers.extend(feed["classifiers"].get("tags", []))
+        self.assertEqual(len(all_feed_classifiers), 2)
+        author_names = [c["author"] for c in all_feed_classifiers if "author" in c]
+        tag_names = [c["tag"] for c in all_feed_classifiers if "tag" in c]
+        self.assertIn("Jon Brodkin", author_names)
+        self.assertIn("policy", tag_names)

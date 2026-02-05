@@ -1067,6 +1067,18 @@
     /* cyan */
 }
 
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-12 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/folder-open.svg');
+    filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);
+    /* brown-orange */
+}
+
+.NB-pricing-tier-archive .NB-pricing-tier-features li.NB-13 .NB-pricing-bullet {
+    background-image: url('/media/embed/icons/nouns/world.svg');
+    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);
+    /* red */
+}
+
 /* Pro tier bullets with vivid colors */
 .NB-pricing-tier-pro .NB-pricing-tier-features li.NB-1 .NB-pricing-bullet {
     background-image: url('/media/embed/icons/nouns/stack.svg');
