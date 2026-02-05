@@ -81,6 +81,7 @@ class Profile(models.Model):
     is_premium_trial = models.BooleanField(default=None, blank=True, null=True)
     is_grandfathered = models.BooleanField(default=False, blank=True, null=True)
     grandfather_expires = models.DateTimeField(blank=True, null=True)
+    has_scoped_classifiers = models.BooleanField(default=False, blank=True, null=True)
 
     def __str__(self):
         return "%s <%s>%s%s%s" % (
@@ -118,9 +119,9 @@ class Profile(models.Model):
             if settings.DEBUG:
                 price = "P-2EG40290653242115MHZROQQ"
         elif plan == "pro":
-            price = "price_0KK5cvwdsmP8XBla2tFdDhpy"
+            price = "P-1AE0908250058421JM565SVY"
             if settings.DEBUG:
-                price = "price_0KK5twwdsmP8XBlasifbX56Z"
+                price = "P-1AE0908250058421JM565SVY"
         return price
 
     @property
@@ -278,10 +279,115 @@ class Profile(models.Model):
         except DatabaseError as e:
             print(f" ---> Profile not saved: {e}")
 
+    def archive_deleted_user(self):
+        """Archive user data before deletion for analytics and tracking."""
+        from apps.analyzer.models import (
+            MClassifierAuthor,
+            MClassifierFeed,
+            MClassifierTag,
+            MClassifierText,
+            MClassifierTitle,
+            MClassifierUrl,
+        )
+        from apps.social.models import MSharedStory, MSocialProfile
+
+        # Get payment history
+        payments = PaymentHistory.objects.filter(user=self.user)
+        payment_history = []
+        total_payments = 0
+        for payment in payments:
+            if not payment.refunded:
+                total_payments += payment.payment_amount
+            payment_history.append(
+                {
+                    "date": payment.payment_date.isoformat() if payment.payment_date else None,
+                    "amount": payment.payment_amount,
+                    "provider": payment.payment_provider,
+                    "refunded": payment.refunded,
+                }
+            )
+
+        # Get feed stats
+        feeds_count = UserSubscription.objects.filter(user=self.user).count()
+        feed_opens = (
+            UserSubscription.objects.filter(user=self.user).aggregate(sum=Sum("feed_opens"))["sum"] or 0
+        )
+
+        # Get story stats
+        read_story_count = RUserStory.read_story_count(self.user.pk)
+        starred_stories_count = MStarredStory.objects.filter(user_id=self.user.pk).count()
+        shared_stories_count = MSharedStory.objects.filter(user_id=self.user.pk).count()
+
+        # Get social stats
+        following_count = 0
+        follower_count = 0
+        try:
+            social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
+            following_count = social_profile.following_count
+            follower_count = social_profile.follower_count
+        except MSocialProfile.DoesNotExist:
+            pass
+
+        # Get training stats
+        training = {
+            "title_ps": MClassifierTitle.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "title_ng": MClassifierTitle.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "tag_ps": MClassifierTag.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "tag_ng": MClassifierTag.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "text_ps": MClassifierText.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "text_ng": MClassifierText.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "author_ps": MClassifierAuthor.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "author_ng": MClassifierAuthor.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "feed_ps": MClassifierFeed.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "feed_ng": MClassifierFeed.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+            "url_ps": MClassifierUrl.objects.filter(user_id=self.user.pk, score__gt=0).count(),
+            "url_ng": MClassifierUrl.objects.filter(user_id=self.user.pk, score__lt=0).count(),
+        }
+
+        # Create the archived record
+        deleted_user = MDeletedUser(
+            user_id=self.user.pk,
+            username=self.user.username,
+            email=self.user.email,
+            date_joined=self.user.date_joined,
+            last_seen_on=self.last_seen_on,
+            last_seen_ip=self.last_seen_ip,
+            timezone=str(self.timezone) if self.timezone else None,
+            is_premium=self.is_premium,
+            is_premium_trial=self.is_premium_trial or False,
+            is_archive=self.is_archive or False,
+            is_pro=self.is_pro or False,
+            premium_expire=self.premium_expire,
+            premium_renewal=self.premium_renewal or False,
+            payment_count=len(payments),
+            total_payments=total_payments,
+            payment_history=payment_history,
+            stripe_id=self.stripe_id,
+            paypal_email=self.latest_paypal_email,
+            feeds_count=feeds_count,
+            feed_opens=feed_opens,
+            read_story_count=read_story_count,
+            starred_stories_count=starred_stories_count,
+            shared_stories_count=shared_stories_count,
+            following_count=following_count,
+            follower_count=follower_count,
+            training=training,
+        )
+        deleted_user.save()
+
+        logging.user(
+            self.user,
+            "~FBArchived deleted user data: %s feeds, %s payments ($%s), %s stories read"
+            % (feeds_count, len(payments), total_payments, read_story_count),
+        )
+
     def delete_user(self, confirm=False, fast=False):
         if not confirm:
             print(" ---> You must pass confirm=True to delete this user.")
             return
+
+        # Archive user data BEFORE deletion for analytics
+        self.archive_deleted_user()
 
         logging.user(self.user, "Deleting user: %s / %s" % (self.user.email, self.user.profile.last_seen_ip))
         try:
@@ -415,6 +521,20 @@ class Profile(models.Model):
     def activate_premium(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremium
 
+        logging.user(
+            self.user,
+            "~FMTier change: activate_premium (was: premium=%s, archive=%s, pro=%s)"
+            % (self.is_premium, self.is_archive, self.is_pro),
+        )
+
+        if self.is_archive or self.is_pro:
+            logging.user(
+                self.user,
+                "~FRSkipping activate_premium() - user already at %s tier"
+                % ("pro" if self.is_pro else "archive"),
+            )
+            return True
+
         # Clear trial status when converting to paid premium
         if self.is_premium_trial:
             self.is_premium_trial = False
@@ -423,13 +543,6 @@ class Profile(models.Model):
         EmailNewPremium.delay(user_id=self.user.pk)
 
         subs = UserSubscription.objects.filter(user=self.user)
-        if subs.count() > 5000:
-            logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
-            mail_admins(
-                f"WARNING! {self.user.username} has {subs.count()} subscriptions",
-                f"{self.user.username} has {subs.count()} subscriptions and just upgraded to premium. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}",
-            )
-            return False
 
         was_premium = self.is_premium
         self.is_premium = True
@@ -439,14 +552,20 @@ class Profile(models.Model):
         self.user.is_active = True
         self.user.save()
 
-        # Only auto-enable every feed if a free user is moving to premium
+        # Only auto-enable feeds if a free user is moving to premium, capped at tier limit
         if not was_premium:
+            max_feeds = self.max_feed_limit
+            activated = 0
             for sub in subs:
                 if sub.active:
+                    activated += 1
                     continue
+                if max_feeds and activated >= max_feeds:
+                    break
                 sub.active = True
                 try:
                     sub.save()
+                    activated += 1
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
 
@@ -478,34 +597,49 @@ class Profile(models.Model):
         return True
 
     def activate_archive(self, never_expire=False):
+        logging.user(
+            self.user,
+            "~FMTier change: activate_archive (was: premium=%s, archive=%s, pro=%s)"
+            % (self.is_premium, self.is_archive, self.is_pro),
+        )
         UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
 
         subs = UserSubscription.objects.filter(user=self.user)
-        if subs.count() > 2000:
-            logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
-            mail_admins(
-                f"WARNING! {self.user.username} has {subs.count()} subscriptions",
-                f"{self.user.username} has {subs.count()} subscriptions and just upgraded to archive. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}",
-            )
-            return False
 
         was_premium = self.is_premium
         was_archive = self.is_archive
         was_pro = self.is_pro
+
+        if not was_archive:
+            active_subs = subs.filter(active=True).count()
+            mail_admins(
+                f"New Archive upgrade: {self.user.username} ({subs.count()} subscriptions, {active_subs} active)",
+                f"{self.user.username} upgraded to archive.\n"
+                f"Subscriptions: {subs.count()} total, {active_subs} active\n"
+                f"PayPal: {self.user.profile.paypal_sub_id}\n"
+                f"Stripe: {self.user.profile.stripe_id}\n"
+                f"Email: {self.user.email}",
+            )
         self.is_premium = True
         self.is_archive = True
         self.save()
         self.user.is_active = True
         self.user.save()
 
-        # Only auto-enable every feed if a free user is moving to premium
+        # Only auto-enable feeds if a free user is moving to premium, capped at tier limit
         if not was_premium:
+            max_feeds = self.max_feed_limit
+            activated = 0
             for sub in subs:
                 if sub.active:
+                    activated += 1
                     continue
+                if max_feeds and activated >= max_feeds:
+                    break
                 sub.active = True
                 try:
                     sub.save()
+                    activated += 1
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
 
@@ -528,7 +662,7 @@ class Profile(models.Model):
             "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..."
             % len(scheduled_feeds),
         )
-        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds, allow_skip_resync=True))
 
         UserSubscription.queue_new_feeds(self.user)
 
@@ -550,20 +684,28 @@ class Profile(models.Model):
     def activate_pro(self, never_expire=False):
         from apps.profile.tasks import EmailNewPremiumPro
 
-        EmailNewPremiumPro.delay(user_id=self.user.pk)
-
+        logging.user(
+            self.user,
+            "~FMTier change: activate_pro (was: premium=%s, archive=%s, pro=%s)"
+            % (self.is_premium, self.is_archive, self.is_pro),
+        )
         subs = UserSubscription.objects.filter(user=self.user)
-        if subs.count() > 1000:
-            logging.user(self.user, "~FR~SK~FW~SBWARNING! ~FR%s subscriptions~SN!" % (subs.count()))
-            mail_admins(
-                f"WARNING! {self.user.username} has {subs.count()} subscriptions",
-                f"{self.user.username} has {subs.count()} subscriptions and just upgraded to pro. They'll need a refund: {self.user.profile.paypal_sub_id} {self.user.profile.stripe_id} {self.user.email}",
-            )
-            return False
 
         was_premium = self.is_premium
         was_archive = self.is_archive
         was_pro = self.is_pro
+
+        if not was_pro:
+            EmailNewPremiumPro.delay(user_id=self.user.pk)
+            active_subs = subs.filter(active=True).count()
+            mail_admins(
+                f"New Pro upgrade: {self.user.username} ({subs.count()} subscriptions, {active_subs} active)",
+                f"{self.user.username} upgraded to pro.\n"
+                f"Subscriptions: {subs.count()} total, {active_subs} active\n"
+                f"PayPal: {self.user.profile.paypal_sub_id}\n"
+                f"Stripe: {self.user.profile.stripe_id}\n"
+                f"Email: {self.user.email}",
+            )
         self.is_premium = True
         self.is_archive = True
         self.is_pro = True
@@ -571,14 +713,20 @@ class Profile(models.Model):
         self.user.is_active = True
         self.user.save()
 
-        # Only auto-enable every feed if a free user is moving to premium
+        # Only auto-enable feeds if a free user is moving to premium, capped at tier limit
         if not was_premium:
+            max_feeds = self.max_feed_limit
+            activated = 0
             for sub in subs:
                 if sub.active:
+                    activated += 1
                     continue
+                if max_feeds and activated >= max_feeds:
+                    break
                 sub.active = True
                 try:
                     sub.save()
+                    activated += 1
                 except (IntegrityError, Feed.DoesNotExist):
                     pass
 
@@ -611,6 +759,11 @@ class Profile(models.Model):
         return True
 
     def deactivate_premium(self):
+        logging.user(
+            self.user,
+            "~FMTier change: deactivate_premium (was: premium=%s, archive=%s, pro=%s)"
+            % (self.is_premium, self.is_archive, self.is_pro),
+        )
         self.is_premium = False
         self.is_pro = False
         self.is_archive = False
@@ -704,9 +857,9 @@ class Profile(models.Model):
             if settings.DEBUG:
                 application_context["return_url"] = f"https://a6d3-161-77-224-226.ngrok.io{paypal_return}"
             else:
-                application_context["return_url"] = (
-                    f"https://{Site.objects.get_current().domain}{paypal_return}"
-                )
+                application_context[
+                    "return_url"
+                ] = f"https://{Site.objects.get_current().domain}{paypal_return}"
             paypal_subscription = paypal_api.post(
                 f"/v1/billing/subscriptions",
                 {
@@ -784,12 +937,18 @@ class Profile(models.Model):
                     paypal_subscription = None
 
                 if paypal_subscription:
-                    if paypal_subscription["status"] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE"]:
+                    if paypal_subscription["status"] in [
+                        "APPROVAL_PENDING",
+                        "APPROVED",
+                        "ACTIVE",
+                        "SUSPENDED",
+                    ]:
                         active_plan = paypal_subscription.get("plan_id", None)
                         if not active_plan:
                             active_plan = paypal_subscription["plan"]["name"]
                         active_provider = "paypal"
-                        premium_renewal = True
+                        if paypal_subscription["status"] != "SUSPENDED":
+                            premium_renewal = True
 
                     start_date = datetime.datetime(2009, 1, 1).strftime("%Y-%m-%dT%H:%M:%S.000Z")
                     end_date = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000Z")
@@ -1218,6 +1377,110 @@ class Profile(models.Model):
                 continue
 
         return True
+
+    def retry_stripe_invoice(self):
+        """Retry payment on any open (unpaid) Stripe invoices for this customer.
+
+        Returns dict with 'paid' (bool), 'amount' (dollars), and 'invoice_id',
+        or None if no open invoices found.
+        """
+        if not self.stripe_id:
+            logging.user(self.user, "~FRNo Stripe ID, cannot retry invoice")
+            return None
+
+        stripe.api_key = settings.STRIPE_SECRET
+        stripe_customer = self.stripe_customer()
+        if not stripe_customer:
+            return None
+
+        invoices = stripe.Invoice.list(customer=stripe_customer.id, status="open", limit=5)
+        if not invoices.data:
+            logging.user(self.user, "~FBNo open Stripe invoices to retry")
+            return None
+
+        invoice = invoices.data[0]
+        try:
+            result = stripe.Invoice.pay(invoice.id)
+            paid = result.status == "paid"
+            amount = result.amount_paid / 100.0
+            logging.user(
+                self.user,
+                "~FG~BBRetried Stripe invoice ~SB%s~SN: %s ($%.2f)"
+                % (invoice.id, "paid" if paid else "failed", amount),
+            )
+            if paid:
+                self.setup_premium_history()
+            return {"paid": paid, "amount": amount, "invoice_id": invoice.id}
+        except stripe.error.CardError as e:
+            logging.user(self.user, "~FRStripe invoice retry failed: ~SB%s" % e.user_message)
+            return {"paid": False, "amount": 0, "invoice_id": invoice.id, "error": e.user_message}
+
+    def reactivate_stripe_subscription(self, plan="premium"):
+        """Reactivate a cancelled Stripe subscription by creating a new one.
+
+        Anchors billing to the current premium_expire date so the user isn't
+        double-charged. Sets up the default payment method and syncs premium history.
+
+        Returns the new subscription ID, or None on failure.
+        """
+        if not self.stripe_id:
+            logging.user(self.user, "~FRNo Stripe ID, cannot reactivate subscription")
+            return None
+
+        stripe.api_key = settings.STRIPE_SECRET
+        stripe_customer = self.stripe_customer()
+        if not stripe_customer:
+            return None
+
+        # Check if there's already an active subscription
+        existing_subs = stripe.Subscription.list(customer=stripe_customer.id, status="active")
+        if existing_subs.data:
+            logging.user(
+                self.user,
+                "~FBStripe subscription already active: ~SB%s" % existing_subs.data[0].id,
+            )
+            return existing_subs.data[0].id
+
+        # Ensure default payment method is set
+        payment_methods = stripe.PaymentMethod.list(customer=stripe_customer.id, type="card")
+        if not payment_methods.data:
+            logging.user(self.user, "~FRNo payment methods on file, cannot reactivate subscription")
+            return None
+
+        stripe.Customer.modify(
+            stripe_customer.id,
+            invoice_settings={"default_payment_method": payment_methods.data[0].id},
+        )
+
+        # Anchor billing to premium_expire so user isn't charged again immediately
+        anchor = None
+        if self.premium_expire and self.premium_expire > datetime.datetime.now():
+            anchor = int(self.premium_expire.timestamp())
+
+        try:
+            sub_params = {
+                "customer": stripe_customer.id,
+                "items": [{"price": Profile.plan_to_stripe_price(plan)}],
+                "proration_behavior": "none",
+            }
+            if anchor:
+                sub_params["billing_cycle_anchor"] = anchor
+
+            subscription = stripe.Subscription.create(**sub_params)
+            logging.user(
+                self.user,
+                "~FG~BBReactivated Stripe subscription ~SB%s~SN (plan: %s, next billing: %s)"
+                % (subscription.id, plan, self.premium_expire),
+            )
+
+            self.premium_renewal = True
+            self.active_provider = "stripe"
+            self.save()
+
+            return subscription.id
+        except stripe.error.StripeError as e:
+            logging.user(self.user, "~FRFailed to reactivate Stripe subscription: ~SB%s" % str(e))
+            return None
 
     def retrieve_stripe_ids(self):
         if not self.stripe_id:
@@ -2231,6 +2494,13 @@ def paypal_signup(sender, **kwargs):
         except PaypalIds.DoesNotExist:
             pass
 
+    # Newer PayPal recurring payments use recurring_payment_id instead of subscr_id
+    if not user and ipn_obj.recurring_payment_id:
+        try:
+            user = PaypalIds.objects.get(paypal_sub_id=ipn_obj.recurring_payment_id).user
+        except PaypalIds.DoesNotExist:
+            pass
+
     if not user:
         logging.debug(
             " ---> Paypal subscription not found during paypal_signup: %s/%s"
@@ -2245,7 +2515,7 @@ def paypal_signup(sender, **kwargs):
             user.save()
     except:
         pass
-    user.profile.activate_premium()
+    user.profile.setup_premium_history()
     user.profile.cancel_premium_stripe()
     # user.profile.cancel_premium_paypal(second_most_recent_only=True)
 
@@ -2257,17 +2527,37 @@ valid_ipn_received.connect(paypal_signup)
 
 def paypal_payment_history_sync(sender, **kwargs):
     ipn_obj = sender
+    user = None
     try:
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
+        pass
+
+    if not user and ipn_obj.payer_email:
         try:
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
         except User.DoesNotExist:
-            logging.debug(
-                " ---> Paypal subscription not found during flagging: %s/%s"
-                % (ipn_obj.payer_email, ipn_obj.custom)
-            )
-            return {"code": -1, "message": "User doesn't exist."}
+            pass
+
+    if not user and ipn_obj.subscr_id:
+        try:
+            user = PaypalIds.objects.get(paypal_sub_id=ipn_obj.subscr_id).user
+        except PaypalIds.DoesNotExist:
+            pass
+
+    # Newer PayPal recurring payments use recurring_payment_id instead of subscr_id
+    if not user and ipn_obj.recurring_payment_id:
+        try:
+            user = PaypalIds.objects.get(paypal_sub_id=ipn_obj.recurring_payment_id).user
+        except PaypalIds.DoesNotExist:
+            pass
+
+    if not user:
+        logging.debug(
+            " ---> Paypal subscription not found during payment sync: %s/%s"
+            % (ipn_obj.payer_email, ipn_obj.custom)
+        )
+        return {"code": -1, "message": "User doesn't exist."}
 
     logging.user(user, "~BC~SB~FBPaypal subscription payment")
     try:
@@ -2281,17 +2571,37 @@ valid_ipn_received.connect(paypal_payment_history_sync)
 
 def paypal_payment_was_flagged(sender, **kwargs):
     ipn_obj = sender
+    user = None
     try:
         user = User.objects.get(username__iexact=ipn_obj.custom)
     except User.DoesNotExist:
+        pass
+
+    if not user and ipn_obj.payer_email:
         try:
             user = User.objects.get(email__iexact=ipn_obj.payer_email)
         except User.DoesNotExist:
-            logging.debug(
-                " ---> Paypal subscription not found during flagging: %s/%s"
-                % (ipn_obj.payer_email, ipn_obj.custom)
-            )
-            return {"code": -1, "message": "User doesn't exist."}
+            pass
+
+    if not user and ipn_obj.subscr_id:
+        try:
+            user = PaypalIds.objects.get(paypal_sub_id=ipn_obj.subscr_id).user
+        except PaypalIds.DoesNotExist:
+            pass
+
+    # Newer PayPal recurring payments use recurring_payment_id instead of subscr_id
+    if not user and ipn_obj.recurring_payment_id:
+        try:
+            user = PaypalIds.objects.get(paypal_sub_id=ipn_obj.recurring_payment_id).user
+        except PaypalIds.DoesNotExist:
+            pass
+
+    if not user:
+        logging.debug(
+            " ---> Paypal subscription not found during flagging: %s/%s"
+            % (ipn_obj.payer_email, ipn_obj.custom)
+        )
+        return {"code": -1, "message": "User doesn't exist."}
 
     try:
         user.profile.setup_premium_history()
@@ -2304,7 +2614,14 @@ invalid_ipn_received.connect(paypal_payment_was_flagged)
 
 
 def stripe_checkout_session_completed(sender, full_json, **kwargs):
-    newsblur_user_id = full_json["data"]["object"]["metadata"]["newsblur_user_id"]
+    metadata = full_json["data"]["object"].get("metadata", {})
+    newsblur_user_id = metadata.get("newsblur_user_id")
+
+    # If no newsblur_user_id in metadata, this is not a NewsBlur checkout (e.g., Crabigator)
+    if not newsblur_user_id:
+        logging.debug(" ---> Stripe checkout webhook for non-NewsBlur product, ignoring")
+        return
+
     stripe_id = full_json["data"]["object"]["customer"]
     profile = None
     try:
@@ -2954,3 +3271,57 @@ class RNewUserQueue:
         r.zrem(cls.KEY, user)
 
         return user
+
+
+class MDeletedUser(mongo.Document):
+    """Archive of deleted user data for analytics and tracking."""
+
+    # User identifiers
+    user_id = mongo.IntField(required=True)
+    username = mongo.StringField(max_length=255)
+    email = mongo.StringField(max_length=255)
+
+    # Dates
+    date_joined = mongo.DateTimeField()
+    date_deleted = mongo.DateTimeField(default=datetime.datetime.now)
+    last_seen_on = mongo.DateTimeField()
+    last_seen_ip = mongo.StringField(max_length=50)
+    timezone = mongo.StringField(max_length=50)
+
+    # Subscription status at deletion
+    is_premium = mongo.BooleanField(default=False)
+    is_premium_trial = mongo.BooleanField(default=False)
+    is_archive = mongo.BooleanField(default=False)
+    is_pro = mongo.BooleanField(default=False)
+    premium_expire = mongo.DateTimeField()
+    premium_renewal = mongo.BooleanField(default=False)
+
+    # Payment data
+    payment_count = mongo.IntField(default=0)
+    total_payments = mongo.IntField(default=0)  # in dollars
+    payment_history = mongo.ListField(mongo.DictField())  # [{date, amount, provider}]
+    stripe_id = mongo.StringField(max_length=255)
+    paypal_email = mongo.StringField(max_length=255)
+
+    # Usage stats
+    feeds_count = mongo.IntField(default=0)
+    feed_opens = mongo.IntField(default=0)
+    read_story_count = mongo.IntField(default=0)
+    starred_stories_count = mongo.IntField(default=0)
+    shared_stories_count = mongo.IntField(default=0)
+
+    # Social stats
+    following_count = mongo.IntField(default=0)
+    follower_count = mongo.IntField(default=0)
+
+    # Training stats (from classifiers)
+    training = mongo.DictField()  # {title_ps, title_ng, tag_ps, tag_ng, etc.}
+
+    meta = {
+        "collection": "deleted_users",
+        "indexes": [
+            "user_id",
+            "date_deleted",
+        ],
+        "allow_inheritance": False,
+    }

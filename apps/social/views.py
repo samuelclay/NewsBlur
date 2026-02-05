@@ -25,11 +25,16 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
+    apply_classifier_text_regex,
     apply_classifier_texts,
+    apply_classifier_title_regex,
     apply_classifier_titles,
+    apply_classifier_url_regex,
+    apply_classifier_urls,
     get_classifiers_for_user,
     sort_classifiers_by_feed,
 )
@@ -200,6 +205,7 @@ def load_social_stories(request, user_id, username=None):
     classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, social_user_id=social_user_id))
     classifier_tags = list(MClassifierTag.objects(user_id=user.pk, social_user_id=social_user_id))
     classifier_texts = list(MClassifierText.objects(user_id=user.pk, social_user_id=social_user_id))
+    classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, social_user_id=social_user_id))
     # Merge with feed specific classifiers
     classifier_feeds = classifier_feeds + list(
         MClassifierFeed.objects(user_id=user.pk, feed_id__in=story_feed_ids)
@@ -215,6 +221,9 @@ def load_social_stories(request, user_id, username=None):
     )
     classifier_texts = classifier_texts + list(
         MClassifierText.objects(user_id=user.pk, feed_id__in=story_feed_ids)
+    )
+    classifier_urls = classifier_urls + list(
+        MClassifierUrl.objects(user_id=user.pk, feed_id__in=story_feed_ids)
     )
 
     unread_story_hashes = []
@@ -281,11 +290,21 @@ def load_social_stories(request, user_id, username=None):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
+            "title_regex": (
+                apply_classifier_title_regex(classifier_titles, story) if user.profile.is_pro else 0
+            ),
             "text": (
                 apply_classifier_texts(classifier_texts, story)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
+            "text_regex": (
+                apply_classifier_text_regex(classifier_texts, story)
+                if user.profile.is_pro and user.profile.premium_available_text_classifiers
+                else 0
+            ),
+            "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
+            "url_regex": (apply_classifier_url_regex(classifier_urls, story) if user.profile.is_pro else 0),
         }
 
     classifiers = sort_classifiers_by_feed(
@@ -296,6 +315,7 @@ def load_social_stories(request, user_id, username=None):
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
+        classifier_urls=classifier_urls,
     )
     if socialsub:
         socialsub.feed_opens += 1
@@ -450,12 +470,14 @@ def load_river_blurblog(request):
         classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, feed_id__in=story_feed_ids))
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=story_feed_ids))
         classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=story_feed_ids))
+        classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id__in=story_feed_ids))
     else:
         classifier_feeds = []
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
         classifier_texts = []
+        classifier_urls = []
 
     # Just need to format stories
     nowtz = localtime_for_timezone(now, user.profile.timezone)
@@ -480,11 +502,21 @@ def load_river_blurblog(request):
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
             "title": apply_classifier_titles(classifier_titles, story),
+            "title_regex": (
+                apply_classifier_title_regex(classifier_titles, story) if user.profile.is_pro else 0
+            ),
             "text": (
                 apply_classifier_texts(classifier_texts, story)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
+            "text_regex": (
+                apply_classifier_text_regex(classifier_texts, story)
+                if user.profile.is_pro and user.profile.premium_available_text_classifiers
+                else 0
+            ),
+            "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
+            "url_regex": (apply_classifier_url_regex(classifier_urls, story) if user.profile.is_pro else 0),
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True
@@ -507,6 +539,7 @@ def load_river_blurblog(request):
         classifier_titles=classifier_titles,
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
+        classifier_urls=classifier_urls,
     )
 
     diff = time.time() - start
@@ -976,6 +1009,12 @@ def mark_story_as_unshared(request):
     original_story_found = True
 
     story, original_story_found = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
+
+    if not story:
+        return json.json_response(
+            request,
+            {"code": -1, "message": "Could not find the original story and no copies could be found."},
+        )
 
     shared_story = (
         MSharedStory.objects(user_id=request.user.pk, story_feed_id=feed_id, story_hash=story["story_hash"])

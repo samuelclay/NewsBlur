@@ -11,7 +11,9 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from mongoengine.queryset import NotUniqueError, OperationError
+from oauth2_provider.views import AuthorizationView as BaseAuthorizationView
 
 from apps.analyzer.models import (
     MClassifierAuthor,
@@ -19,6 +21,7 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
     compute_story_score,
 )
 from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
@@ -416,6 +419,7 @@ def api_unread_story(request, trigger_slug=None):
             )
         else:
             classifier_texts = []
+        classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
     feeds = dict(
         [
             (
@@ -444,6 +448,7 @@ def api_unread_story(request, trigger_slug=None):
                 classifier_tags=classifier_tags,
                 classifier_texts=classifier_texts,
                 classifier_feeds=classifier_feeds,
+                classifier_urls=classifier_urls,
             )
             if score < 0:
                 continue
@@ -595,6 +600,7 @@ def api_shared_story(request):
         classifier_texts = list(MClassifierText.objects(user_id=user.pk, social_user_id__in=social_user_ids))
     else:
         classifier_texts = []
+    classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, social_user_id__in=social_user_ids))
     # Merge with feed specific classifiers
     classifier_feeds = classifier_feeds + list(
         MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids)
@@ -614,6 +620,9 @@ def api_shared_story(request):
         )
     else:
         classifier_texts = []
+    classifier_urls = classifier_urls + list(
+        MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_feed_ids)
+    )
 
     for story in stories:
         if before and int(story["shared_date"].strftime("%s")) > before:
@@ -627,6 +636,7 @@ def api_shared_story(request):
             classifier_tags=classifier_tags,
             classifier_texts=classifier_texts,
             classifier_feeds=classifier_feeds,
+            classifier_urls=classifier_urls,
         )
         if score < 0:
             continue
@@ -873,3 +883,319 @@ def api_save_new_subscription(request):
             }
         ]
     }
+
+
+class ExtensionAuthorizationView(BaseAuthorizationView):
+    """
+    Custom OAuth authorization view that allows redirects to chrome-extension:// URLs.
+    This is needed for browser extension OAuth flows.
+    """
+
+    def get(self, request, *args, **kwargs):
+        """Override get to add logging for debugging OAuth issues."""
+        redirect_uri = request.GET.get("redirect_uri", "")
+        client_id = request.GET.get("client_id", "")
+        response_type = request.GET.get("response_type", "")
+
+        logging.user(
+            request,
+            "~FBArchive OAuth authorize: client=%s, response_type=%s, redirect_uri=%s"
+            % (client_id, response_type, redirect_uri),
+        )
+
+        return super().get(request, *args, **kwargs)
+
+    def redirect(self, redirect_to, application):
+        """Override redirect to allow chrome-extension:// and moz-extension:// schemes."""
+        from django.http import HttpResponse
+
+        # Log the redirect for debugging
+        logging.info(
+            "~FBArchive OAuth redirect: app=%s, redirect_to=%s"
+            % (application.name if application else "none", redirect_to[:100])
+        )
+
+        # Check if this is a browser extension redirect
+        if redirect_to.startswith("chrome-extension://") or redirect_to.startswith("moz-extension://"):
+            # Use a plain HttpResponse with Location header to bypass OAuth2ResponseRedirect scheme check
+            response = HttpResponse(status=302)
+            response["Location"] = redirect_to
+            return response
+
+        # For normal redirects, use the parent implementation
+        return super().redirect(redirect_to, application)
+
+
+def extension_oauth_callback(request):
+    """
+    OAuth callback page for browser extensions.
+    This page handles the token exchange client-side (to work with self-signed certs)
+    and sends the token to the extension via postMessage.
+    """
+    from django.http import HttpResponse
+
+    code = request.GET.get("code", "")
+    error = request.GET.get("error", "")
+
+    # Log the full request for debugging
+    full_url = request.build_absolute_uri()
+    query_string = request.META.get("QUERY_STRING", "")
+    logging.user(
+        request,
+        "~FBArchive OAuth callback: URL=%s, query=%s, code=%s, error=%s"
+        % (full_url, query_string, bool(code), error or "none"),
+    )
+
+    # If no code and no error, something went wrong in the OAuth flow
+    if not code and not error:
+        error = "no_code"
+        logging.user(
+            request,
+            "~FRArchive OAuth callback: No authorization code received. "
+            "This usually means a redirect stripped the query string. Check nginx/haproxy config.",
+        )
+
+    # Common styles for both success and error pages
+    common_styles = """
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Helvetica Neue', Helvetica, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            background-color: #304332;
+            background: linear-gradient(to bottom, #304332 0%, #172018 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 48px 56px;
+            text-align: center;
+            max-width: 420px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+        }
+        .logo {
+            margin-bottom: 28px;
+        }
+        .logo img {
+            height: 36px;
+            width: auto;
+        }
+        h1 {
+            color: #fff;
+            font-size: 26px;
+            font-weight: bold;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+            letter-spacing: -0.5px;
+            margin: 0 0 12px 0;
+        }
+        .checkmark {
+            display: inline-block;
+            color: #8EC685;
+            margin-right: 6px;
+        }
+        .error-icon {
+            color: #C5826E;
+            margin-right: 6px;
+        }
+        .description {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 15px;
+            line-height: 22px;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.33);
+        }
+        .status {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            margin-top: 16px;
+        }
+        .error-detail {
+            color: #C5826E;
+            font-size: 13px;
+            font-family: monospace;
+            margin: 16px 0;
+        }
+        .close-hint {
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 13px;
+        }
+        a {
+            color: #8EC685;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #A8D8A0;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #8EC685;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .hidden { display: none; }
+    """
+
+    if error:
+        # Map error codes to user-friendly messages
+        error_messages = {
+            "no_code": (
+                "No authorization code was received. This usually means:<br><br>"
+                "1. A redirect (HTTP→HTTPS or www) stripped the query string<br>"
+                "2. The OAuth redirect_uri doesn't match what's registered<br><br>"
+                "Check your nginx/haproxy config and ensure NEWSBLUR_URL matches your domain.<br>"
+                f"<br><small style='color: #888;'>Requested URL: {request.build_absolute_uri()}</small>"
+            ),
+            "access_denied": "You denied access to the Archive extension.",
+            "invalid_request": "The authorization request was invalid.",
+            "unauthorized_client": "The client is not authorized.",
+            "unsupported_response_type": "The response type is not supported.",
+            "invalid_scope": "The requested scope is invalid.",
+            "server_error": "The server encountered an error.",
+            "temporarily_unavailable": "The server is temporarily unavailable.",
+        }
+        error_description = error_messages.get(error, f"Error: {error}")
+
+        html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Connection Failed - NewsBlur Archive</title>
+    <style>{common_styles}</style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">
+            <img src="/media/embed/logo_newsblur_blur.png" alt="NewsBlur">
+        </div>
+        <h1><span class="error-icon">&#10007;</span> Connection Failed</h1>
+        <p class="description">
+            We couldn't connect the Archive extension to your account.
+        </p>
+        <p class="error-detail">{error_description}</p>
+        <p class="close-hint">
+            <a href="javascript:window.close()">Close this tab and try again</a>
+        </p>
+    </div>
+</body>
+</html>"""
+    else:
+        # Build the current origin for the token exchange
+        # The code is in the URL, we'll exchange it client-side
+        html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Connecting - NewsBlur Archive</title>
+    <style>{common_styles}</style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">
+            <img src="/media/embed/logo_newsblur_blur.png" alt="NewsBlur">
+        </div>
+        <div id="connecting">
+            <h1><span class="spinner"></span> Connecting...</h1>
+            <p class="description">
+                Completing the connection to your account.
+            </p>
+        </div>
+        <div id="success" class="hidden">
+            <h1><span class="checkmark">&#10003;</span> Connected</h1>
+            <p class="description">
+                The Archive extension is now linked to your account.<br>
+                You can close this tab.
+            </p>
+        </div>
+        <div id="error" class="hidden">
+            <h1><span class="error-icon">&#10007;</span> Connection Failed</h1>
+            <p class="description">
+                We couldn't complete the connection.
+            </p>
+            <p class="error-detail" id="errorDetail"></p>
+            <p class="close-hint">
+                <a href="javascript:window.close()">Close this tab and try again</a>
+            </p>
+        </div>
+    </div>
+    <script>
+        (async function() {{
+            const code = '{code}';
+            const redirectUri = window.location.origin + '/oauth/extension-callback/';
+            const tokenUrl = window.location.origin + '/oauth/token/';
+
+            try {{
+                // Exchange the authorization code for a token
+                const formData = new URLSearchParams();
+                formData.append('grant_type', 'authorization_code');
+                formData.append('code', code);
+                formData.append('client_id', 'newsblur-archive-extension');
+                formData.append('redirect_uri', redirectUri);
+
+                const response = await fetch(tokenUrl, {{
+                    method: 'POST',
+                    headers: {{
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }},
+                    body: formData.toString()
+                }});
+
+                if (!response.ok) {{
+                    const errorText = await response.text();
+                    throw new Error('Token exchange failed: ' + errorText);
+                }}
+
+                const tokenData = await response.json();
+                console.log('NewsBlur Archive: Token received');
+
+                // Send the token to the extension via postMessage
+                // The extension's content script will relay this to the service worker
+                window.postMessage({{
+                    type: 'NEWSBLUR_ARCHIVE_TOKEN',
+                    accessToken: tokenData.access_token,
+                    refreshToken: tokenData.refresh_token,
+                    expiresIn: tokenData.expires_in
+                }}, '*');
+
+                // Show success
+                document.getElementById('connecting').classList.add('hidden');
+                document.getElementById('success').classList.remove('hidden');
+                document.title = 'Connected - NewsBlur Archive';
+
+            }} catch (error) {{
+                console.error('NewsBlur Archive: Token exchange error:', error);
+
+                // Parse the error message for better user feedback
+                let errorMessage = error.message;
+                if (errorMessage.includes('invalid_grant')) {{
+                    errorMessage = 'This authorization code has already been used or expired. ' +
+                        'If you just connected successfully, you can close this tab. ' +
+                        'Otherwise, please try connecting again from the extension.';
+                }}
+
+                // Show error
+                document.getElementById('connecting').classList.add('hidden');
+                document.getElementById('error').classList.remove('hidden');
+                document.getElementById('errorDetail').textContent = errorMessage;
+                document.title = 'Connection Failed - NewsBlur Archive';
+            }}
+        }})();
+    </script>
+</body>
+</html>"""
+
+    return HttpResponse(html, content_type="text/html")

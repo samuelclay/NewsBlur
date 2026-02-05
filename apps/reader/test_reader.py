@@ -234,3 +234,29 @@ class Test_Reader(TransactionTestCase):
         compact_folders = usf.folders
 
         self.assertNotEquals(dupe_folders, compact_folders)
+
+    def test_save_feed_chooser(self):
+        """Test save_feed_chooser endpoint handles parameters correctly."""
+        self.client.login(username="conesus", password="test")
+
+        # Test with approved_feeds - should not raise NameError for approve_all
+        response = self.client.post(
+            reverse("save-feed-chooser"),
+            {"approved_feeds[]": ["1", "2", "3"]},
+        )
+        content = json.decode(response.content)
+        self.assertIn("activated", content)
+        self.assertIn("muted", content)
+
+    def test_save_feed_chooser_approve_all(self):
+        """Test save_feed_chooser with approve_all parameter."""
+        self.client.login(username="conesus", password="test")
+
+        # Test with approve_all=true - should skip safety check logging
+        response = self.client.post(
+            reverse("save-feed-chooser"),
+            {"approved_feeds[]": ["1"], "approve_all": "true"},
+        )
+        content = json.decode(response.content)
+        self.assertIn("activated", content)
+        self.assertIn("muted", content)

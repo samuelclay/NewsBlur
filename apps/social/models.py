@@ -32,11 +32,14 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
     apply_classifier_authors,
     apply_classifier_feeds,
     apply_classifier_tags,
     apply_classifier_texts,
     apply_classifier_titles,
+    apply_classifier_url_regex,
+    apply_classifier_urls,
 )
 from apps.profile.models import MSentEmail, Profile
 from apps.reader.models import RUserStory, UserSubscription
@@ -1611,6 +1614,9 @@ class MSocialSubscription(mongo.Document):
         classifier_texts = list(
             MClassifierText.objects(user_id=self.user_id, social_user_id=self.subscription_user_id)
         )
+        classifier_urls = list(
+            MClassifierUrl.objects(user_id=self.user_id, social_user_id=self.subscription_user_id)
+        )
         # Merge with feed specific classifiers
         if story_feed_ids:
             classifier_feeds = classifier_feeds + list(
@@ -1628,6 +1634,9 @@ class MSocialSubscription(mongo.Document):
             classifier_texts = classifier_texts + list(
                 MClassifierText.objects(user_id=self.user_id, feed_id__in=story_feed_ids)
             )
+            classifier_urls = classifier_urls + list(
+                MClassifierUrl.objects(user_id=self.user_id, feed_id__in=story_feed_ids)
+            )
 
         for story in stories:
             scores = {
@@ -1642,10 +1651,28 @@ class MSocialSubscription(mongo.Document):
                     if user_profile.premium_available_text_classifiers
                     else 0
                 ),
+                "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user_profile.is_premium),
+                "url_regex": (
+                    apply_classifier_url_regex(classifier_urls, story) if user_profile.is_pro else 0
+                ),
             }
 
-            max_score = max(scores["author"], scores["tags"], scores["title"], scores["text"])
-            min_score = min(scores["author"], scores["tags"], scores["title"], scores["text"])
+            max_score = max(
+                scores["author"],
+                scores["tags"],
+                scores["title"],
+                scores["text"],
+                scores["url"],
+                scores["url_regex"],
+            )
+            min_score = min(
+                scores["author"],
+                scores["tags"],
+                scores["title"],
+                scores["text"],
+                scores["url"],
+                scores["url_regex"],
+            )
 
             if max_score > 0:
                 feed_scores["positive"] += 1

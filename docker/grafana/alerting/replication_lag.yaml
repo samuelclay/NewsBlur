@@ -1,0 +1,361 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: replication_lag_alerts
+    folder: Infrastructure
+    interval: 1m
+    rules:
+      - uid: redis_replication_lag_high
+        title: Redis Replication Lag High
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: U1-fPO3Mk
+            model:
+              expr: 'max(redis_replication_lag_seconds) by (instance, slave_ip)'
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              refId: B
+              expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 5
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: "Redis replication lag high on {{ $labels.instance }}"
+          description: "Redis slave {{ $labels.slave_ip }} on {{ $labels.instance }} has replication lag of {{ printf \"%.1f\" $values.B.Value }}s (threshold: 5s)"
+        labels:
+          severity: warning
+        isPaused: false
+
+      - uid: redis_slave_disconnected
+        title: Redis Slave Disconnected
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: U1-fPO3Mk
+            model:
+              expr: 'redis_slave_state'
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              refId: B
+              expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: NoData
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: "Redis slave disconnected on {{ $labels.instance }}"
+          description: "Redis slave {{ $labels.slave_ip }} on {{ $labels.instance }} is offline or disconnected"
+        labels:
+          severity: critical
+        isPaused: false
+
+      - uid: postgres_replication_lag_high
+        title: Postgres Replication Lag High
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: U1-fPO3Mk
+            model:
+              expr: 'max(postgres_replication_lag_seconds) by (instance, client)'
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              refId: B
+              expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 5
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: "Postgres replication lag high on {{ $labels.instance }}"
+          description: "Postgres replica {{ $labels.client }} on {{ $labels.instance }} has replication lag of {{ printf \"%.1f\" $values.B.Value }}s (threshold: 5s)"
+        labels:
+          severity: warning
+        isPaused: false
+
+      - uid: postgres_replica_disconnected
+        title: Postgres Replica Disconnected
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: U1-fPO3Mk
+            model:
+              expr: 'postgres_connected_replicas'
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              refId: B
+              expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: NoData
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: "Postgres replica disconnected on {{ $labels.instance }}"
+          description: "Postgres primary {{ $labels.instance }} has no connected replicas (expected: >= 1)"
+        labels:
+          severity: critical
+        isPaused: false
+
+      - uid: mongo_replication_lag_high
+        title: Mongo Replication Lag High
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: U1-fPO3Mk
+            model:
+              expr: 'max(mongo_replication_max_lag_seconds) by (db)'
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              refId: B
+              expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 5
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: OK
+        execErrState: Alerting
+        for: 2m
+        annotations:
+          summary: "Mongo replication lag high on {{ $labels.db }}"
+          description: "Mongo replica set {{ $labels.db }} has max replication lag of {{ printf \"%.1f\" $values.B.Value }}s (threshold: 5s)"
+        labels:
+          severity: warning
+        isPaused: false
+
+      - uid: mongo_secondary_unhealthy
+        title: Mongo Secondary Unhealthy
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: U1-fPO3Mk
+            model:
+              expr: 'mongo_secondary_health'
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              refId: B
+              expression: A
+              reducer: last
+              settings:
+                mode: ""
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    params:
+                      - 1
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+        noDataState: NoData
+        execErrState: Alerting
+        for: 1m
+        annotations:
+          summary: "Mongo secondary unhealthy on {{ $labels.db }}"
+          description: "Mongo secondary {{ $labels.secondary }} on {{ $labels.db }} is unhealthy"
+        labels:
+          severity: critical
+        isPaused: false

@@ -80,6 +80,14 @@ scrape_configs:
       relabel_configs:
         - target_label: instance
           replacement: '{{ monitor_server }}:443'
+    - job_name: 'llm_costs'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/llm-costs
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'trending_feeds'
       static_configs:
         - targets: ['{{ monitor_server }}']
@@ -100,6 +108,14 @@ scrape_configs:
       static_configs:
         - targets: ['{{ monitor_server }}']
       metrics_path: /monitor/db-times
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
+    - job_name: 'deleted_users'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      metrics_path: /monitor/deleted-users
       scheme: https
       relabel_configs:
         - target_label: instance
@@ -225,14 +241,14 @@ scrape_configs:
       - source_labels: ['__meta_consul_node']
         target_label: instance
       metrics_path: /objects/
-    # - job_name: 'mongo repl set lag'
-    #   consul_sd_configs:
-    #   - server: 'consul.service.nyc1.consul:8500'
-    #     services: ['flask_metrics_mongo']
-    #   relabel_configs:
-    #   - source_labels: ['__meta_consul_node']
-    #     target_label: instance
-    #   metrics_path: /mongo-replset-lag/
+    - job_name: 'mongo replication lag'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_mongo']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /mongo-replset-lag/
     - job_name: 'mongo size'
       consul_sd_configs:
       - server: 'consul.service.nyc1.consul:8500'
@@ -314,6 +330,24 @@ scrape_configs:
       - source_labels: ['__meta_consul_node']
         target_label: instance
       metrics_path: /used-memory/
+
+    - job_name: 'redis replication lag'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_redis']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /replication-lag/
+
+    - job_name: 'postgres replication lag'
+      consul_sd_configs:
+      - server: 'consul.service.nyc1.consul:8500'
+        services: ['flask_metrics_postgres']
+      relabel_configs:
+      - source_labels: ['__meta_consul_node']
+        target_label: instance
+      metrics_path: /replication-lag/
 
     - job_name: 'elastic search exporter'
       consul_sd_configs:

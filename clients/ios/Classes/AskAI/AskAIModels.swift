@@ -13,7 +13,7 @@ import SwiftUI
 
 enum AskAIProvider: String, CaseIterable, Identifiable {
     case opus = "opus"
-    case gpt = "gpt-5.1"
+    case gpt = "gpt-5.2"
     case gemini = "gemini-3"
     case grok = "grok-4.1"
 
@@ -22,7 +22,7 @@ enum AskAIProvider: String, CaseIterable, Identifiable {
     var displayName: String {
         switch self {
         case .opus: return "Anthropic Claude Opus 4.5"
-        case .gpt: return "OpenAI GPT 5.1"
+        case .gpt: return "OpenAI GPT 5.2"
         case .gemini: return "Google Gemini 3 Pro"
         case .grok: return "xAI Grok 4.1 Fast"
         }
@@ -31,7 +31,7 @@ enum AskAIProvider: String, CaseIterable, Identifiable {
     var shortName: String {
         switch self {
         case .opus: return "Opus 4.5"
-        case .gpt: return "GPT 5.1"
+        case .gpt: return "GPT 5.2"
         case .gemini: return "Gemini 3"
         case .grok: return "Grok 4.1"
         }
