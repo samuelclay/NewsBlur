@@ -19,6 +19,9 @@ def GenerateBriefings():
     from apps.briefing.models import MBriefing, MBriefingPreferences
     from apps.profile.models import Profile
 
+    DAY_NAME_TO_WEEKDAY = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
+    MORNING_HOUR = 7
+
     now = datetime.datetime.utcnow()
 
     eligible_profiles = Profile.objects.filter(
@@ -37,12 +40,19 @@ def GenerateBriefings():
             skipped += 1
             continue
 
+        try:
+            tz = pytz.timezone(str(profile.timezone))
+        except Exception:
+            tz = pytz.utc
+        local_now = datetime.datetime.now(tz)
+
+        # tasks.py: Compute generation_time (UTC, naive) — 30 min before preferred delivery.
         if prefs.preferred_time:
             try:
-                tz = pytz.timezone(str(profile.timezone))
                 hour, minute = map(int, prefs.preferred_time.split(":"))
-                today = datetime.datetime.now(tz).date()
-                local_target = tz.localize(datetime.datetime.combine(today, datetime.time(hour, minute)))
+                local_target = tz.localize(
+                    datetime.datetime.combine(local_now.date(), datetime.time(hour, minute))
+                )
                 generation_time = (local_target - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(
                     tzinfo=None
                 )
@@ -51,29 +61,55 @@ def GenerateBriefings():
         else:
             generation_time = RUserActivity.get_briefing_generation_time(user.pk, profile.timezone)
 
-        if now < generation_time:
-            skipped += 1
-            continue
+        # tasks.py: For twice_daily, preferred_time is the second slot (afternoon or evening).
+        # The morning slot always fires at MORNING_HOUR local. Check both windows independently
+        # so the morning run isn't blocked by a later preferred_time.
+        if prefs.frequency == "twice_daily":
+            morning_local = tz.localize(
+                datetime.datetime.combine(local_now.date(), datetime.time(MORNING_HOUR, 0))
+            )
+            morning_gen_utc = (morning_local - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(
+                tzinfo=None
+            )
+            is_morning_window = now >= morning_gen_utc and local_now.hour < 15
+            is_second_window = now >= generation_time
+            if not is_morning_window and not is_second_window:
+                skipped += 1
+                continue
+        else:
+            if now < generation_time:
+                skipped += 1
+                continue
+
+        # tasks.py: Build period bounds in the user's local timezone so dedupe
+        # matches local days, not UTC day boundaries.
+        local_midnight = tz.localize(
+            datetime.datetime.combine(local_now.date(), datetime.time(0, 0))
+        )
 
         if prefs.frequency == "daily":
-            period_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            period_end = period_start + datetime.timedelta(days=1)
+            period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
+            period_end = (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
         elif prefs.frequency == "twice_daily":
-            if now.hour < 12:
-                period_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-                period_end = now.replace(hour=12, minute=0, second=0, microsecond=0)
+            local_noon = local_midnight + datetime.timedelta(hours=12)
+            if local_now.hour < 12:
+                period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
+                period_end = local_noon.astimezone(pytz.utc).replace(tzinfo=None)
             else:
-                period_start = now.replace(hour=12, minute=0, second=0, microsecond=0)
-                period_end = period_start + datetime.timedelta(hours=12)
+                period_start = local_noon.astimezone(pytz.utc).replace(tzinfo=None)
+                period_end = (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(
+                    tzinfo=None
+                )
         elif prefs.frequency == "weekly":
-            weekday = now.weekday()
-            period_start = (now - datetime.timedelta(days=weekday)).replace(
-                hour=0, minute=0, second=0, microsecond=0
-            )
-            period_end = period_start + datetime.timedelta(days=7)
+            preferred_weekday = DAY_NAME_TO_WEEKDAY.get(prefs.preferred_day, 6)
+            if local_now.weekday() != preferred_weekday:
+                skipped += 1
+                continue
+            period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
+            period_end = (local_midnight + datetime.timedelta(days=7)).astimezone(pytz.utc).replace(tzinfo=None)
         else:
-            period_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            period_end = period_start + datetime.timedelta(days=1)
+            period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
+            period_end = (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
 
         if MBriefing.exists_for_period(user.pk, period_start, period_end):
             skipped += 1
