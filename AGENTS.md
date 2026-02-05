@@ -2,7 +2,10 @@
 
 ## Ask Questions Liberally
 
-**Use the AskUserQuestion tool frequently throughout development - not just during planning.**
+**Codex: Use the `request_user_input` tool frequently throughout development - not just during planning.**
+**Claude: Continue using the AskUserQuestion tool frequently throughout development - not just during planning.**
+
+Actively interview the user at any point (especially during planning). Prefer multiple rounds of short questions.
 
 Asking questions is encouraged and appreciated because it:
 - Helps both of us think through problems more clearly
@@ -19,6 +22,10 @@ Ask about:
 - Anything you're uncertain about
 
 Don't assume - ask. Multiple rounds of questions are better than one large batch. Even mid-implementation, if something feels unclear or you're choosing between options, ask. The interactive back-and-forth is valuable.
+
+## Debugging
+
+For debugging sessions: always take a screenshot first, reproduce the issue, then form a hypothesis before changing code. Do not start editing until the root cause is identified.
 
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
