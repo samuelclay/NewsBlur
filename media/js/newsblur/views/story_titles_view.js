@@ -221,8 +221,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             _.delay(_.bind(function () {
                 this.scroll();
             }, this), 10);
-        } else {
-            this.show_no_more_stories();
         }
     },
 
