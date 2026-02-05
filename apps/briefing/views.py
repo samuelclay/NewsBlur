@@ -146,7 +146,7 @@ def load_briefing_stories(request):
     # views.py: Include full preferences when not enabled so the onboarding view
     # can render settings immediately without a separate AJAX call.
     if not prefs.enabled and not briefing_list:
-        TIME_DISPLAY_MAP = {"07:00": "morning", "12:00": "afternoon", "18:00": "evening"}
+        TIME_DISPLAY_MAP = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
         preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
         result["preferences"] = {
             "frequency": prefs.frequency,
@@ -188,7 +188,7 @@ def briefing_preferences(request):
         if preferred_time == "auto":
             prefs.preferred_time = None
         elif preferred_time in ("morning", "afternoon", "evening"):
-            time_map = {"morning": "07:00", "afternoon": "12:00", "evening": "18:00"}
+            time_map = {"morning": "08:00", "afternoon": "13:00", "evening": "17:00"}
             prefs.preferred_time = time_map[preferred_time]
         elif preferred_time:
             try:
@@ -271,7 +271,7 @@ def briefing_preferences(request):
         prefs.read_filter = "focus"
         prefs.save()
 
-    TIME_DISPLAY_MAP = {"07:00": "morning", "12:00": "afternoon", "18:00": "evening"}
+    TIME_DISPLAY_MAP = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
     preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
 
     folders = []
