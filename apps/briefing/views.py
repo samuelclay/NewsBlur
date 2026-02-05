@@ -8,10 +8,33 @@ from django.utils.encoding import smart_str
 
 from apps.briefing.activity import RUserActivity
 from apps.briefing.models import BRIEFING_SECTION_DEFINITIONS, DEFAULT_SECTIONS, MBriefing, MBriefingPreferences, VALID_SECTION_KEYS
+from apps.briefing.summary import normalize_section_key
 from apps.notifications.models import MUserFeedNotification
 from apps.rss_feeds.models import Feed, MStory
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
+
+
+def _normalize_section_dict(d, merge_lists=False):
+    """
+    Normalize all keys in a section dict using normalize_section_key.
+
+    Drops keys that can't be normalized. If merge_lists=True and multiple keys
+    normalize to the same key, their list values are merged (for curated_sections).
+    Otherwise, later values overwrite earlier ones (for section_summaries).
+    """
+    if not d:
+        return {}
+    result = {}
+    for key, value in d.items():
+        normalized = normalize_section_key(key)
+        if normalized is None:
+            continue
+        if merge_lists and normalized in result and isinstance(value, list):
+            result[normalized] = result[normalized] + value
+        else:
+            result[normalized] = value
+    return result
 
 
 def _get_briefing_notification_types(user_id, briefing_feed_id):
@@ -109,6 +132,10 @@ def load_briefing_stories(request):
                         story_dict["feed_id"] = feed.pk
                     curated_stories.append(story_dict)
 
+        # views.py: Normalize section keys to handle legacy data with incorrect keys
+        normalized_curated_sections = _normalize_section_dict(briefing.curated_sections, merge_lists=True)
+        normalized_section_summaries = _normalize_section_dict(briefing.section_summaries)
+
         briefing_data = {
             "briefing_id": str(briefing.id),
             "briefing_date": (briefing.briefing_date.isoformat() + "Z") if briefing.briefing_date else None,
@@ -117,8 +144,8 @@ def load_briefing_stories(request):
             "summary_story": summary_story,
             "curated_story_hashes": curated_hashes,
             "curated_stories": curated_stories,
-            "curated_sections": briefing.curated_sections or {},
-            "section_summaries": briefing.section_summaries or {},
+            "curated_sections": normalized_curated_sections,
+            "section_summaries": normalized_section_summaries,
         }
         briefing_list.append(briefing_data)
 
