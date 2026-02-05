@@ -7292,7 +7292,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "classifiers{scope=\"feed\"} or classifiers{classifier=\"feeds\"}",
+          "expr": "classifiers{scope=\"feed\"} or label_replace(classifiers{scope=\"\"}, \"scope\", \"feed\", \"\", \"\")",
           "interval": "",
           "legendFormat": "{{classifier}}",
           "queryType": "randomWalk",
