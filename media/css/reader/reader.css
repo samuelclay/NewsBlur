@@ -9412,6 +9412,59 @@ form.opml_import_form input {
     text-decoration: underline;
 }
 
+/* ====================================== */
+/* = Briefing Classifier Pills          = */
+/* ====================================== */
+
+/* reader.css: Classifier pills in briefing summary (non-interactive, inline) */
+.NB-briefing-classifier {
+    display: inline-flex;
+    align-items: center;
+    float: none;
+    margin: 0 4px 0 0;
+    padding: 0 8px 0 20px;
+    vertical-align: middle;
+    cursor: default;
+    font-size: 10px;
+    background-color: #34912E;
+    border: 1px solid #202020;
+    border-radius: 14px;
+    box-shadow: 1px 1px 1px #BDC0D7;
+    position: relative;
+}
+
+.NB-briefing-classifier .NB-classifier-icon-like {
+    width: 12px;
+    height: 12px;
+    background: transparent url('/media/embed/icons/nouns/thumbs-up.svg') no-repeat 0 0;
+    background-size: 12px;
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 1;
+}
+
+.NB-briefing-classifier .NB-classifier-icon-dislike {
+    display: none;
+}
+
+.NB-briefing-classifier label {
+    cursor: default;
+    color: white;
+    padding: 1px 0;
+}
+
+.NB-briefing-classifier label b {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: normal;
+}
+
+.NB-briefing-classifier label span {
+    color: white;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
 /* =============================== */
 /* = Regex Classifier Input      = */
 /* =============================== */

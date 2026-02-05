@@ -282,7 +282,12 @@ NEWSBLUR.log = function(msg) {
                         'duplicates': 'venn.svg',
                         'quick_catchup': 'pulse.svg',
                         'emerging_topics': 'growth-rocket.svg',
-                        'contrarian_views': 'stack.svg'
+                        'contrarian_views': 'stack.svg',
+                        'custom_1': 'prompt.svg',
+                        'custom_2': 'prompt.svg',
+                        'custom_3': 'prompt.svg',
+                        'custom_4': 'prompt.svg',
+                        'custom_5': 'prompt.svg'
                     };
                     var section_key = feed_id.replace('briefing:', '');
                     var icon = BRIEFING_SECTION_ICONS[section_key] || 'briefing.svg';

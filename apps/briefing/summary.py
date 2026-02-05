@@ -72,11 +72,23 @@ STYLE_INSTRUCTIONS = {
 SECTION_PROMPTS = {
     "trending_unread": '"Stories you missed" — CATEGORY: trending_unread. Popular stories the reader hasn\'t read yet.',
     "long_read": '"Long reads for later" — CATEGORY: long_read. Longer articles worth setting time aside for. Use the WORD_COUNT field to judge which stories qualify as long reads relative to other stories.',
-    "classifier_match": '"Based on your interests" — CATEGORY: classifier_match. Stories matching topics, authors, or feeds the reader has trained as interesting. Mention which interest matched using the MATCHES field.',
+    "classifier_match": (
+        '"Based on your interests" — CATEGORY: classifier_match. '
+        "Stories matching topics, authors, or feeds the reader has trained as interesting. "
+        "After each story link, include ALL matching classifiers from the MATCHES field as pills. "
+        "For each match in MATCHES, output this exact HTML: "
+        '<span class="NB-classifier NB-classifier-TYPE NB-classifier-like NB-briefing-classifier">'
+        '<div class="NB-classifier-icon-like"></div>'
+        "<label><b>TYPE_TITLE: </b><span>VALUE</span></label>"
+        "</span> "
+        "where TYPE is the prefix before the colon (feed, author, tag, or title), "
+        "TYPE_TITLE is the ALL CAPS version (SITE for feed, AUTHOR, TAG, or TITLE), "
+        "and VALUE is the text after the colon. Include all matches, not just the first one."
+    ),
     "follow_up": '"Follow-ups" — CATEGORY: follow_up. New posts from feeds where the reader recently read other stories.',
     "trending_global": '"Trending across NewsBlur" — CATEGORY: trending_global. Widely-read stories from across the platform.',
     "duplicates": '"Common stories" — CATEGORY: duplicates. Stories covered by multiple feeds. For each story, show the shared headline then list each source\'s unique angle or perspective as sub-items.',
-    "quick_catchup": '"Quick catch-up" — This is a special section. Select the 3-5 most important stories from the entire briefing and write a 1-2 sentence TL;DR for each. This section should appear first.',
+    "quick_catchup": '"Quick catch-up" — KEY: quick_catchup. This is a special section. Select the 3-5 most important stories from the entire briefing and write a 1-2 sentence TL;DR for each. Link to each story using the anchor tag format specified below. This section should appear first.',
     "emerging_topics": '"Emerging topics" — Look across all the stories for topics that appear multiple times or are getting increasing coverage. Group these stories under the topic and explain why it\'s trending.',
     "contrarian_views": '"Contrarian views" — Look for stories where different feeds have notably different perspectives on the same topic. Highlight the disagreement and present each side.',
 }
@@ -103,9 +115,9 @@ def _build_system_prompt(summary_length="medium", summary_style="bullets", secti
         custom_key = "custom_%d" % (i + 1)
         if active_sections.get(custom_key, False) and prompt:
             section_lines.append(
-                '%d. Custom section — The reader has requested a custom section with this prompt: "%s". '
+                '%d. Custom section (KEY: %s) — The reader has requested a custom section with this prompt: "%s". '
                 "Generate an appropriate section header for this content. Use your best judgment "
-                "to select relevant stories from the provided list." % (num, prompt)
+                "to select relevant stories from the provided list." % (num, custom_key, prompt)
             )
             num += 1
 
