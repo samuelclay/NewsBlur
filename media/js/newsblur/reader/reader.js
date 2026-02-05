@@ -5707,6 +5707,9 @@
                 has_exception: false
             });
 
+            NEWSBLUR.app.story_titles.show_fetching_indicator();
+            this.poll_for_fetch_completion(feed_id);
+
             this.model.save_exception_retry(feed_id, _.bind(this.force_feed_refresh, this, feed_id),
                 NEWSBLUR.app.taskbar_info.show_stories_error);
         },
