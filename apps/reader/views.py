@@ -1687,9 +1687,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     if found_trained_feed_ids or has_scoped:
         if found_trained_feed_ids:
             classifier_feeds = list(
-                MClassifierFeed.objects(
-                    user_id=user.pk, feed_id__in=found_trained_feed_ids, social_user_id=0
-                )
+                MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids, social_user_id=0)
             )
             classifier_authors = list(
                 MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
@@ -1748,9 +1746,7 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     for story in stories:
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
-            "author": apply_classifier_authors(
-                classifier_authors, story, folder_feed_ids=folder_feed_ids
-            ),
+            "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
             "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
             "title_regex": (
@@ -2185,9 +2181,7 @@ def load_river_stories__redis(request):
     if found_trained_feed_ids or has_scoped:
         if found_trained_feed_ids:
             classifier_feeds = list(
-                MClassifierFeed.objects(
-                    user_id=user.pk, feed_id__in=found_trained_feed_ids, social_user_id=0
-                )
+                MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids, social_user_id=0)
             )
             classifier_authors = list(
                 MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
@@ -2279,9 +2273,7 @@ def load_river_stories__redis(request):
             story["highlights"] = starred_stories[story["story_hash"]]["highlights"]
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
-            "author": apply_classifier_authors(
-                classifier_authors, story, folder_feed_ids=folder_feed_ids
-            ),
+            "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
             "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
             "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
             "title_regex": (

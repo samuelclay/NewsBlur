@@ -91,7 +91,9 @@ class Test_TierProtection(TestCase):
 
     def test_plan_to_paypal_plan_id_pro_returns_paypal_id(self):
         plan_id = Profile.plan_to_paypal_plan_id("pro")
-        self.assertTrue(plan_id.startswith("P-"), "Pro PayPal plan ID should start with 'P-', got: %s" % plan_id)
+        self.assertTrue(
+            plan_id.startswith("P-"), "Pro PayPal plan ID should start with 'P-', got: %s" % plan_id
+        )
 
 
 class Test_ArchiveRedisThrottling(TestCase):

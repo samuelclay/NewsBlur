@@ -8,6 +8,7 @@ import redis
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.http import (
     Http404,
     HttpResponse,
@@ -20,8 +21,6 @@ from django.views.decorators.http import condition
 from apps.analyzer.models import get_classifiers_for_user
 from apps.push.models import PushSubscription
 from apps.reader.models import UserSubscription
-
-# from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, MFeedIcon, MFetchHistory, MStory, merge_feeds
 from apps.search.models import MUserSearch
 from apps.statistics.rtrending_subscriptions import RTrendingSubscription
@@ -408,7 +407,12 @@ def exception_change_feed_address(request):
                 hash_address_and_link=Feed.generate_hash_address_and_link(feed_address, feed.feed_link)
             )
         except Feed.DoesNotExist:
-            feed = Feed.objects.create(feed_address=feed_address, feed_link=feed.feed_link)
+            try:
+                feed = Feed.objects.create(feed_address=feed_address, feed_link=feed.feed_link)
+            except IntegrityError:
+                feed = Feed.objects.get(
+                    hash_address_and_link=Feed.generate_hash_address_and_link(feed_address, feed.feed_link)
+                )
         code = 1
         if feed.pk != original_feed.pk:
             try:
@@ -498,7 +502,12 @@ def exception_change_feed_link(request):
                 hash_address_and_link=Feed.generate_hash_address_and_link(feed.feed_address, feed_link)
             )
         except Feed.DoesNotExist:
-            feed = Feed.objects.create(feed_address=feed.feed_address, feed_link=feed_link)
+            try:
+                feed = Feed.objects.create(feed_address=feed.feed_address, feed_link=feed_link)
+            except IntegrityError:
+                feed = Feed.objects.get(
+                    hash_address_and_link=Feed.generate_hash_address_and_link(feed.feed_address, feed_link)
+                )
         code = 1
         if feed.pk != original_feed.pk:
             try:
