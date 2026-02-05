@@ -8,9 +8,29 @@ from django.utils.encoding import smart_str
 
 from apps.briefing.activity import RUserActivity
 from apps.briefing.models import BRIEFING_SECTION_DEFINITIONS, DEFAULT_SECTIONS, MBriefing, MBriefingPreferences, VALID_SECTION_KEYS
+from apps.notifications.models import MUserFeedNotification
 from apps.rss_feeds.models import Feed, MStory
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
+
+
+def _get_briefing_notification_types(user_id, briefing_feed_id):
+    """Return list of active notification types for the user's briefing feed."""
+    notification_types = []
+    if briefing_feed_id:
+        try:
+            notif = MUserFeedNotification.objects.get(user_id=user_id, feed_id=briefing_feed_id)
+            if notif.is_email:
+                notification_types.append("email")
+            if notif.is_web:
+                notification_types.append("web")
+            if notif.is_ios:
+                notification_types.append("ios")
+            if notif.is_android:
+                notification_types.append("android")
+        except MUserFeedNotification.DoesNotExist:
+            pass
+    return notification_types
 
 
 @ajax_login_required
@@ -140,6 +160,8 @@ def load_briefing_stories(request):
             "include_read": prefs.include_read,
             "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
             "custom_section_prompts": prefs.custom_section_prompts or [],
+            "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
+            "briefing_feed_id": prefs.briefing_feed_id,
         }
 
     return result
@@ -276,6 +298,7 @@ def briefing_preferences(request):
         "include_read": prefs.include_read,
         "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
         "custom_section_prompts": prefs.custom_section_prompts or [],
+        "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
         "folders": folders,
     }
 
