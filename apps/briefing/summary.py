@@ -11,6 +11,42 @@ from utils.llm_costs import LLMCostTracker
 
 BRIEFING_MODEL = "claude-haiku-4-5"
 
+
+def normalize_section_key(key):
+    """
+    Normalize a section key to match VALID_SECTION_KEYS.
+
+    1. Lowercase and strip whitespace
+    2. Replace hyphens with underscores
+    3. Collapse multiple underscores to single
+    4. Fuzzy match to closest valid key if no exact match
+
+    Returns normalized key if valid, None if no match found.
+    """
+    from apps.briefing.models import VALID_SECTION_KEYS
+
+    if not key:
+        return None
+
+    # Basic normalization
+    normalized = key.lower().strip()
+    normalized = normalized.replace("-", "_")
+    normalized = re.sub(r"_+", "_", normalized)  # Collapse multiple underscores
+    normalized = normalized.strip("_")  # Remove leading/trailing underscores
+
+    # Exact match after normalization
+    if normalized in VALID_SECTION_KEYS:
+        return normalized
+
+    # Fuzzy match: find closest valid key by removing all separators and comparing
+    key_no_sep = normalized.replace("_", "")
+    for valid_key in VALID_SECTION_KEYS:
+        if valid_key.replace("_", "") == key_no_sep:
+            return valid_key
+
+    # No match found - reject this key
+    return None
+
 LENGTH_INSTRUCTIONS = {
     "short": "Include only the top 1-2 sections with the most important stories. Keep it under 150 words.",
     "medium": "Include 2-4 sections. Keep each section to 1-3 sentences per story. Under 400 words total.",
@@ -237,7 +273,19 @@ def extract_section_summaries(summary_html):
     i = 1
     while i < len(parts) - 2:
         h3_tag = parts[i]
-        section_key = parts[i + 1]
+        raw_section_key = parts[i + 1]
+
+        # summary.py: Normalize and validate section key
+        section_key = normalize_section_key(raw_section_key)
+        if section_key is None:
+            logging.warning(" ---> Briefing: rejecting invalid section key '%s'" % raw_section_key)
+            i += 3
+            continue
+
+        # summary.py: Update h3 tag to use normalized key if it changed
+        if section_key != raw_section_key:
+            h3_tag = re.sub(r'data-section="[^"]+"', 'data-section="%s"' % section_key, h3_tag)
+
         # Content runs until the next h3 or end
         content = parts[i + 2] if i + 2 < len(parts) else ""
 
