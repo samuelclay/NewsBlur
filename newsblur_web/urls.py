@@ -16,7 +16,7 @@ urlpatterns = [
     url(r"^reader/", include("apps.reader.urls")),
     url(r"^ask-ai/", include("apps.ask_ai.urls")),
     url(r"^webfeed/", include("apps.webfeed.urls")),
-    url(r"^add/?", reader_views.index),
+    url(r"^add(?:/.*)?$", reader_views.index),
     url(r"^try/?", reader_views.index),
     url(r"^site/(?P<feed_id>\d+)?", reader_views.index),
     url(r"^folder/(?P<folder_name>\d+)?", reader_views.index, name="folder"),

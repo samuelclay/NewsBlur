@@ -198,6 +198,16 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.overflow_tabs = [];  // Tabs currently in overflow menu
 
         this.init_tab_states();
+
+        // Apply initial category/subcategory from URL routing
+        if (this.options.initial_category) {
+            this.apply_initial_category_state(
+                this.active_tab,
+                this.options.initial_category,
+                this.options.initial_subcategory
+            );
+        }
+
         this.render();
 
         // Set up resize handler for tab overflow
@@ -864,10 +874,16 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         this.model.make_request('/discover/popular_feeds', params, function (data) {
             if (data && data.feeds) {
+                // Sort feeds with stories before feeds without, preserving
+                // subscriber-count order within each group.
+                var sorted_feeds = _.sortBy(data.feeds, function (f) {
+                    var linked = f.feed || {};
+                    return (linked.last_story_date || f.last_story_date) ? 0 : 1;
+                });
                 if (is_load_more) {
-                    state.popular_feeds = state.popular_feeds.concat(data.feeds);
+                    state.popular_feeds = state.popular_feeds.concat(sorted_feeds);
                 } else {
-                    state.popular_feeds = data.feeds;
+                    state.popular_feeds = sorted_feeds;
                 }
                 state.popular_offset = offset + data.feeds.length;
                 state.popular_has_more = data.has_more;
@@ -877,6 +893,23 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 if (data.grouped_categories && data.grouped_categories.length > 0) {
                     var had_categories = state.grouped_categories && state.grouped_categories.length > 0;
                     state.grouped_categories = data.grouped_categories;
+
+                    // Resolve pending URL slugs now that real category names are available
+                    if (state._pending_category_slug) {
+                        var resolved = self._resolve_from_grouped(state._pending_category_slug, data.grouped_categories, 'category');
+                        if (resolved !== state.selected_category) {
+                            state.selected_category = resolved;
+                        }
+                        state._pending_category_slug = null;
+                    }
+                    if (state._pending_subcategory_slug) {
+                        var resolved_sub = self._resolve_from_grouped(state._pending_subcategory_slug, data.grouped_categories, 'subcategory');
+                        if (resolved_sub !== state.selected_subcategory) {
+                            state.selected_subcategory = resolved_sub;
+                        }
+                        state._pending_subcategory_slug = null;
+                    }
+
                     // Only rebuild pills on first load when categories arrive;
                     // subsequent fetches (category/subcategory filter changes) keep
                     // existing pills to avoid re-render flash.
@@ -1327,6 +1360,17 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         // List view with linked Feed objects
         if (this.view_mode === 'list' && state.popular_feeds_collection && state.popular_feeds_collection.length > 0) {
             var $list = this.render_list_view_feeds(state.popular_feeds_collection);
+
+            // Also render unfetched feeds as cards below the list view feeds
+            var unfetched = _.filter(state.popular_feeds, function (f) { return !f.feed; });
+            if (unfetched.length > 0) {
+                var $grid = self.make_results_container();
+                _.each(unfetched, function (feed) {
+                    $grid.append(self.render_popular_card(feed));
+                });
+                $list.append($grid);
+            }
+
             if (state.popular_has_more) {
                 $list.append(self.make_load_more_button('rss'));
             }
@@ -1463,6 +1507,16 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         // List view with linked Feed objects: Use FeedBadge + StoryTitlesView
         if (this.view_mode === 'list' && state.popular_feeds_collection && state.popular_feeds_collection.length > 0) {
             var $list = this.render_list_view_feeds(state.popular_feeds_collection);
+
+            var unfetched = _.filter(state.popular_feeds, function (f) { return !f.feed; });
+            if (unfetched.length > 0) {
+                var $grid = self.make_results_container();
+                _.each(unfetched, function (channel) {
+                    $grid.append(self.render_youtube_card(channel));
+                });
+                $list.append($grid);
+            }
+
             if (state.popular_has_more) {
                 $list.append(self.make_load_more_button('youtube'));
             }
@@ -1800,6 +1854,16 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         // List view with linked Feed objects: Use FeedBadge + StoryTitlesView
         if (this.view_mode === 'list' && state.popular_feeds_collection && state.popular_feeds_collection.length > 0) {
             var $list = this.render_list_view_feeds(state.popular_feeds_collection);
+
+            var unfetched = _.filter(state.popular_feeds, function (f) { return !f.feed; });
+            if (unfetched.length > 0) {
+                var $grid = self.make_results_container();
+                _.each(unfetched, function (newsletter) {
+                    $grid.append(self.render_newsletter_card(newsletter));
+                });
+                $list.append($grid);
+            }
+
             if (state.popular_has_more) {
                 $list.append(self.make_load_more_button('newsletter'));
             }
@@ -1954,6 +2018,16 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         // List view with linked Feed objects: Use FeedBadge + StoryTitlesView
         if (this.view_mode === 'list' && state.popular_feeds_collection && state.popular_feeds_collection.length > 0) {
             var $list = this.render_list_view_feeds(state.popular_feeds_collection);
+
+            var unfetched = _.filter(state.popular_feeds, function (f) { return !f.feed; });
+            if (unfetched.length > 0) {
+                var $grid = self.make_results_container();
+                _.each(unfetched, function (podcast) {
+                    $grid.append(self.render_podcast_card(podcast));
+                });
+                $list.append($grid);
+            }
+
             if (state.popular_has_more) {
                 $list.append(self.make_load_more_button('podcast'));
             }
@@ -3055,12 +3129,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (category) {
             this.categories_state.selected_category = category;
             this.render_categories_tab();
+            this.update_url();
         }
     },
 
     go_back_to_categories: function () {
         this.categories_state.selected_category = null;
         this.render_categories_tab();
+        this.update_url();
     },
 
     handle_source_pill_click: function (e) {
@@ -3068,6 +3144,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (tab_id) {
             this.active_tab = tab_id;
             this.render();
+            this.update_url();
         }
     },
 
@@ -3076,6 +3153,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (tab_id) {
             this.active_tab = tab_id;
             this.render();
+            this.update_url();
         }
     },
 
@@ -3148,6 +3226,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             if (source === 'youtube') this.youtube_state.results = [];
             this[render_method]();
             this._scroll_popular_to_top();
+            this.update_url();
 
         } else if (level === 'subcategory') {
             // Subcategory pill clicked: highlight it, refetch with subcategory filter
@@ -3163,6 +3242,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             if (source === 'youtube') this.youtube_state.results = [];
             this[render_method]();
             this._scroll_popular_to_top();
+            this.update_url();
         }
     },
 
@@ -3659,6 +3739,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.render_active_tab();
         this.bind_scroll_handler();
         this.update_tab_overflow();
+        this.update_url();
     },
 
     update_tab_overflow: function () {
@@ -3772,6 +3853,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
             this.render_active_tab();
             this.update_tab_overflow();
+            this.update_url();
         }
     },
 
@@ -4327,6 +4409,135 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         setTimeout(function () {
             $btn.removeClass('NB-error').text('Subscribe');
         }, 2000);
+    },
+
+    // ================
+    // = URL Routing  =
+    // ================
+
+    // add_site_view.js - slugify/deslugify for URL-friendly category names
+    _slugify: function (str) {
+        return str.replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').toLowerCase();
+    },
+
+    _deslugify: function (str) {
+        return str.replace(/-/g, ' ').toLowerCase();
+    },
+
+    // add_site_view.js - _normalize: strip non-alphanumeric chars for comparison
+    _normalize: function (str) {
+        return str.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+    },
+
+    // add_site_view.js - _resolve_from_grouped: find real category/subcategory name by matching slug
+    _resolve_from_grouped: function (slug, grouped, field) {
+        if (!slug || !grouped || !grouped.length) return slug;
+        var normalized_slug = this._normalize(slug);
+        if (field === 'category') {
+            var match = _.find(grouped, function (g) {
+                return g.name.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase() === normalized_slug;
+            });
+            return match ? match.name : slug;
+        } else if (field === 'subcategory') {
+            // Search all groups for a matching subcategory
+            for (var i = 0; i < grouped.length; i++) {
+                var subcats = grouped[i].subcategories || [];
+                for (var j = 0; j < subcats.length; j++) {
+                    var subcat_name = (typeof subcats[j] === 'string') ? subcats[j] : subcats[j].name;
+                    if (subcat_name.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase() === normalized_slug) {
+                        return subcat_name;
+                    }
+                }
+            }
+            return slug;
+        }
+        return slug;
+    },
+
+    // add_site_view.js - update_url: push current tab/category/subcategory state into the URL
+    update_url: function () {
+        var parts = ['add'];
+
+        if (this.active_tab && this.active_tab !== 'search') {
+            parts.push(this.active_tab);
+
+            var source_config = this.SOURCE_MAP[this.active_tab];
+            if (source_config) {
+                var state = this[source_config.state];
+                if (state && state.selected_category && state.selected_category !== 'all') {
+                    parts.push(this._slugify(state.selected_category));
+                    if (state.selected_subcategory && state.selected_subcategory !== 'all') {
+                        parts.push(this._slugify(state.selected_subcategory));
+                    }
+                }
+            }
+        }
+
+        var url = '/' + parts.join('/');
+        NEWSBLUR.router.navigate(url);
+    },
+
+    // add_site_view.js - navigate_to_state: called on back/forward when view is already open
+    navigate_to_state: function (tab, category, subcategory) {
+        var target_tab = tab || 'search';
+        var deslug_cat = category ? this._deslugify(category) : null;
+        var deslug_sub = subcategory ? this._deslugify(subcategory) : null;
+
+        if (target_tab !== this.active_tab) {
+            this.active_tab = target_tab;
+
+            this.$('.NB-add-site-tab').removeClass('NB-active');
+            this.$('.NB-add-site-tab[data-tab="' + target_tab + '"]').addClass('NB-active');
+
+            this.$('.NB-add-site-tab-pane').removeClass('NB-active');
+            this.$('.NB-add-site-' + target_tab + '-tab').addClass('NB-active');
+        }
+
+        // Apply category/subcategory state
+        var source_config = this.SOURCE_MAP[target_tab];
+        if (source_config) {
+            var state = this[source_config.state];
+            var grouped = state.grouped_categories || [];
+            if (deslug_cat) {
+                state.selected_category = this._resolve_from_grouped(deslug_cat, grouped, 'category');
+                state.selected_subcategory = deslug_sub ? this._resolve_from_grouped(deslug_sub, grouped, 'subcategory') : 'all';
+                // Store pending slugs for resolution when categories load from API
+                state._pending_category_slug = deslug_cat;
+                state._pending_subcategory_slug = deslug_sub;
+            } else {
+                state.selected_category = 'all';
+                state.selected_subcategory = 'all';
+                state._pending_category_slug = null;
+                state._pending_subcategory_slug = null;
+            }
+            state.popular_feeds_loaded = false;
+            state.popular_feeds = [];
+            state.popular_feeds_collection = null;
+            state.popular_offset = 0;
+        }
+
+        this.render_active_tab();
+        this.bind_scroll_handler();
+        this.update_tab_overflow();
+    },
+
+    // add_site_view.js - apply_initial_category_state: set category/subcategory on tab state during init
+    apply_initial_category_state: function (tab, category, subcategory) {
+        var source_config = this.SOURCE_MAP[tab];
+        if (!source_config) return;
+
+        var state = this[source_config.state];
+        if (!state) return;
+
+        var deslug_cat = this._deslugify(category);
+        state.selected_category = deslug_cat || 'all';
+        // Store pending slug for resolution when grouped_categories arrive from API
+        state._pending_category_slug = deslug_cat;
+        if (subcategory) {
+            var deslug_sub = this._deslugify(subcategory);
+            state.selected_subcategory = deslug_sub;
+            state._pending_subcategory_slug = deslug_sub;
+        }
     }
 
 });
