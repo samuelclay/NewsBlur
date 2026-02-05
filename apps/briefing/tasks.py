@@ -15,12 +15,13 @@ def GenerateBriefings():
     """
     import pytz
 
-    from apps.briefing.activity import RUserActivity
     from apps.briefing.models import MBriefing, MBriefingPreferences
     from apps.profile.models import Profile
 
     DAY_NAME_TO_WEEKDAY = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
-    MORNING_HOUR = 7
+    # tasks.py: Fixed delivery times for each slot (user's local timezone)
+    SLOT_TIMES = {"morning": (8, 0), "afternoon": (13, 0), "evening": (17, 0)}
+    DEFAULT_SLOT = "morning"
 
     now = datetime.datetime.utcnow()
 
@@ -47,26 +48,24 @@ def GenerateBriefings():
         local_now = datetime.datetime.now(tz)
 
         # tasks.py: Compute generation_time (UTC, naive) — 30 min before preferred delivery.
-        if prefs.preferred_time:
-            try:
-                hour, minute = map(int, prefs.preferred_time.split(":"))
-                local_target = tz.localize(
-                    datetime.datetime.combine(local_now.date(), datetime.time(hour, minute))
-                )
-                generation_time = (local_target - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(
-                    tzinfo=None
-                )
-            except Exception:
-                generation_time = RUserActivity.get_briefing_generation_time(user.pk, profile.timezone)
-        else:
-            generation_time = RUserActivity.get_briefing_generation_time(user.pk, profile.timezone)
+        # Parse preferred_time "HH:MM" to determine slot, default to morning (8 AM).
+        TIME_TO_SLOT = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
+        slot = TIME_TO_SLOT.get(prefs.preferred_time, DEFAULT_SLOT)
+        hour, minute = SLOT_TIMES[slot]
+        local_target = tz.localize(
+            datetime.datetime.combine(local_now.date(), datetime.time(hour, minute))
+        )
+        generation_time = (local_target - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(
+            tzinfo=None
+        )
 
         # tasks.py: For twice_daily, preferred_time is the second slot (afternoon or evening).
-        # The morning slot always fires at MORNING_HOUR local. Check both windows independently
+        # The morning slot always fires at 8 AM local. Check both windows independently
         # so the morning run isn't blocked by a later preferred_time.
         if prefs.frequency == "twice_daily":
+            morning_hour, morning_minute = SLOT_TIMES["morning"]
             morning_local = tz.localize(
-                datetime.datetime.combine(local_now.date(), datetime.time(MORNING_HOUR, 0))
+                datetime.datetime.combine(local_now.date(), datetime.time(morning_hour, morning_minute))
             )
             morning_gen_utc = (morning_local - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(
                 tzinfo=None
