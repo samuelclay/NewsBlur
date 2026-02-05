@@ -729,11 +729,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.feed_authors = data.feed_authors || {};
                 this.active_feed = this.get_feed(feed_id);
                 if (this.active_feed) {
-                    this.active_feed.set({
+                    var feed_updates = {
                         feed_title: data.feed_title || this.active_feed.get('feed_title'),
                         updated: data.updated || this.active_feed.get('updated'),
                         feed_address: data.feed_address || this.active_feed.get('feed_address')
-                    });
+                    };
+                    if ('not_yet_fetched' in data) {
+                        feed_updates.not_yet_fetched = data.not_yet_fetched;
+                        feed_updates.fetched_once = data.fetched_once;
+                    }
+                    this.active_feed.set(feed_updates);
                 }
                 this.feed_id = feed_id;
                 this.starred_stories = data.starred_stories;

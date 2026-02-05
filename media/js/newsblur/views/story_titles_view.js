@@ -283,6 +283,19 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
     },
 
+    show_fetching_indicator: function () {
+        this.$('.NB-feed-fetching-indicator').remove();
+        var $indicator = $.make('div', { className: 'NB-feed-fetching-indicator' }, [
+            $.make('div', { className: 'NB-feed-fetching-spinner' }),
+            $.make('div', { className: 'NB-feed-fetching-text' }, 'Fetching stories...')
+        ]);
+        this.$el.prepend($indicator);
+    },
+
+    hide_fetching_indicator: function () {
+        this.$('.NB-feed-fetching-indicator').remove();
+    },
+
     show_no_more_stories: function () {
         this.$('.NB-end-line').remove();
         var $end_stories_line = $.make('div', { className: "NB-end-line" }, [

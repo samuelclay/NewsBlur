@@ -8,6 +8,7 @@ urlpatterns = [
     url(r"^trending/?$", views.trending_sites, name="trending-sites"),
     url(r"^popular_channels/?$", views.popular_channels, name="popular-channels"),
     url(r"^popular_feeds/?$", views.popular_feeds, name="popular-feeds"),
+    url(r"^link_popular_feed/?$", views.link_popular_feed, name="link-popular-feed"),
     url(r"^youtube/search/?$", views.youtube_search, name="youtube-search"),
     url(r"^reddit/search/?$", views.reddit_search, name="reddit-search"),
     url(r"^reddit/popular/?$", views.reddit_popular, name="reddit-popular"),

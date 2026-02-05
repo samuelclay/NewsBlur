@@ -468,6 +468,13 @@ if NEWSBLUR_WORKTREE:
         for name, config in CELERY_TASK_QUEUES.items()
     }
     CELERY_TASK_DEFAULT_QUEUE = f"{NEWSBLUR_WORKTREE}_{CELERY_TASK_DEFAULT_QUEUE}"
+    CELERY_TASK_ROUTES = {
+        name: {
+            "queue": f"{NEWSBLUR_WORKTREE}_{route['queue']}",
+            "binding_key": f"{NEWSBLUR_WORKTREE}_{route['binding_key']}",
+        }
+        for name, route in CELERY_TASK_ROUTES.items()
+    }
 
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERY_IMPORTS = (
@@ -556,6 +563,11 @@ CELERY_BEAT_SCHEDULE = {
         "options": {"queue": "cron_queue"},
     },
 }
+
+# Worktrees don't need periodic beat tasks (feed updates, stats, etc.).
+# Only worktree-specific tasks triggered manually or via apply_async matter.
+if NEWSBLUR_WORKTREE:
+    CELERY_BEAT_SCHEDULE = {}
 
 # =========
 # = Mongo =
