@@ -6,6 +6,7 @@ from mongoengine.queryset import NotUniqueError
 
 from apps.analyzer.forms import PopularityQueryForm
 from apps.analyzer.models import (
+    SCOPED_CLASSIFIER_CLASSES,
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierTag,
@@ -36,17 +37,33 @@ def save_classifier(request):
     feed_id = post["feed_id"]
     feed = None
     social_user_id = None
+
+    # Scope controls: 'feed' (default), 'folder', or 'global'
+    scope = post.get("scope", "feed")
+
     if feed_id.startswith("social:"):
         social_user_id = int(feed_id.replace("social:", ""))
         feed_id = None
     else:
         feed_id = int(feed_id)
-        feed = get_object_or_404(Feed, pk=feed_id)
+        if feed_id:
+            feed = get_object_or_404(Feed, pk=feed_id)
     code = 0
     message = "OK"
     payload = {}
+    scope_folder_name = post.get("folder_name", "")
+    if scope not in ("feed", "folder", "global"):
+        scope = "feed"
 
-    logging.user(request, "~FGSaving classifier: ~SB%s~SN ~FW%s" % (feed, post))
+    # Archive gating for folder/global scope
+    if scope != "feed" and not request.user.profile.is_archive:
+        return dict(code=-1, message="Premium Archive required for folder and global classifiers")
+
+    logging.user(
+        request,
+        "~FGSaving classifier: ~SB%s~SN (scope=%s%s) ~FW%s"
+        % (feed, scope, " folder=%s" % scope_folder_name if scope == "folder" else "", post),
+    )
 
     # Mark subscription as dirty, so unread counts can be recalculated
     usersub = None
@@ -58,7 +75,7 @@ def save_classifier(request):
         if not socialsub.needs_unread_recalc:
             socialsub.needs_unread_recalc = True
             socialsub.save()
-    else:
+    elif scope == "feed":
         try:
             usersub = UserSubscription.objects.get(user=request.user, feed=feed)
         except UserSubscription.DoesNotExist:
@@ -67,6 +84,23 @@ def save_classifier(request):
             usersub.needs_unread_recalc = True
             usersub.is_trained = True
             usersub.save()
+    elif scope == "global":
+        # Mark all user subscriptions as needing recalc
+        UserSubscription.objects.filter(user=request.user).update(needs_unread_recalc=True)
+    elif scope == "folder":
+        # Mark subscriptions in the folder as needing recalc
+        from apps.reader.models import UserSubscriptionFolders
+
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=request.user)
+            flat_folders = usf.flatten_folders()
+            folder_feed_ids = flat_folders.get(scope_folder_name, [])
+            if folder_feed_ids:
+                UserSubscription.objects.filter(user=request.user, feed_id__in=folder_feed_ids).update(
+                    needs_unread_recalc=True
+                )
+        except UserSubscriptionFolders.DoesNotExist:
+            pass
 
     def _save_classifier(ClassifierCls, content_type):
         # Standard classifiers (non-regex)
@@ -87,6 +121,9 @@ def save_classifier(request):
                 }
             )
 
+        # Determine scope fields for this classifier type (not applicable to feed classifier)
+        use_scope = content_type != "feed" and scope != "feed"
+
         for opinion, (score, is_regex) in classifiers.items():
             if opinion in post:
                 post_contents = post.getlist(opinion)
@@ -105,9 +142,12 @@ def save_classifier(request):
 
                     classifier_dict = {
                         "user_id": request.user.pk,
-                        "feed_id": feed_id or 0,
+                        "feed_id": 0 if use_scope else (feed_id or 0),
                         "social_user_id": social_user_id or 0,
                     }
+                    if use_scope:
+                        classifier_dict["scope"] = scope
+                        classifier_dict["folder_name"] = scope_folder_name if scope == "folder" else ""
                     if content_type in ("author", "tag", "title", "text", "url"):
                         max_length = ClassifierCls._fields[content_type].max_length
                         classifier_dict.update({content_type: post_content[:max_length]})
@@ -152,6 +192,12 @@ def save_classifier(request):
     _save_classifier(MClassifierText, "text")
     _save_classifier(MClassifierUrl, "url")
     _save_classifier(MClassifierFeed, "feed")
+
+    # Update has_scoped_classifiers flag on profile
+    if scope != "feed":
+        if not request.user.profile.has_scoped_classifiers:
+            request.user.profile.has_scoped_classifiers = True
+            request.user.profile.save()
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "feed:%s" % feed_id)

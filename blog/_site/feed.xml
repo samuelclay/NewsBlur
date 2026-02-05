@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-27T15:45:03-05:00</updated>
+  <updated>2026-02-03T19:57:01-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,95 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Global and folder-scoped intelligence training: Train once, apply everywhere</title>
+    <link href="https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training/" rel="alternate" type="text/html" title="Global and folder-scoped intelligence training: Train once, apply everywhere" />
+    <published>2026-02-02T00:00:00-05:00</published>
+    <updated>2026-02-02T00:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/02/02/global-and-folder-scoped-intelligence-training/">
+      <![CDATA[<p>Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s tedious. With five hundred, it’s a non-starter.</p>
+
+<p>If you’re a <a href="https://newsblur.com/?next=premium">Premium Archive</a> subscriber, you can now set any classifier to apply globally across all your feeds, or scoped to a specific folder. Train “sponsored” as a dislike once, and it hides sponsored stories everywhere. Train “kubernetes” as a like in your Tech folder, and it highlights kubernetes stories across every feed in that folder without touching the rest of your subscriptions.</p>
+
+<h3 id="three-scope-levels">Three scope levels</h3>
+
+<p>Every classifier pill in the Intelligence Trainer now shows three small scope icons on the left: a feed icon, a folder icon, and a globe icon.</p>
+
+<!-- SCREENSHOT: Intelligence trainer showing a classifier pill with the three scope toggle icons (feed, folder, globe) -->
+<p><img src="/assets/scope-toggle-icons.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<ul>
+  <li><strong>Per Site</strong> (feed icon) — The default. The classifier only applies to the feed you’re training. This is how classifiers have always worked.</li>
+  <li><strong>Per Folder</strong> (folder icon) — The classifier applies to every feed in the same folder. If you later move the feed to a different folder, the classifier stays tied to the original folder.</li>
+  <li><strong>Global</strong> (globe icon) — The classifier applies to every feed you subscribe to.</li>
+</ul>
+
+<p>Click any scope icon to switch. The active scope is highlighted, and a tooltip explains each level. Your choice is saved with the classifier.</p>
+
+<h3 id="real-world-examples">Real-world examples</h3>
+
+<p><strong>Hide a topic everywhere.</strong> Subscribe to lots of news feeds but never want to read about a recurring topic? Open the trainer on any feed, add the topic as a text or title classifier, thumbs-down it, and click the globe icon. Done — it’s hidden across all your feeds.</p>
+
+<p><strong>Focus on a topic within a folder.</strong> Have a “Tech” folder with 40 feeds? Train “machine learning” as a like with the folder scope, and every feed in that folder will surface machine learning stories in your Focus view. Your cooking and sports feeds stay untouched.</p>
+
+<p><strong>Dislike a prolific author.</strong> Some authors are syndicated across multiple sites. Instead of training the same author name on each feed, set it to global and it applies everywhere at once.</p>
+
+<h3 id="manage-training-scope-filter">Manage Training scope filter</h3>
+
+<p>The Manage Training tab now includes a scope filter alongside the existing sentiment, type, and search filters. You can quickly see all your global classifiers, all your folder-scoped classifiers, or narrow down to just per-site training.</p>
+
+<!-- SCREENSHOT: Manage Training tab showing the scope filter segmented control (All, Per Site, Per Folder, Global) -->
+<p><img src="/assets/manage-training-scope-filter.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Each classifier pill in the Manage Training list also shows a small colored scope badge, so you can tell at a glance whether a classifier is site-level, folder-level, or global.</p>
+
+<h3 id="how-scoping-works-under-the-hood">How scoping works under the hood</h3>
+
+<p>When NewsBlur scores a story, it checks all classifiers that apply to that story’s feed — including any folder-scoped classifiers for the feed’s folder and any global classifiers. The same “green always wins” rule applies: if a story matches both a liked global classifier and a disliked per-site classifier, the story is marked as Focus.</p>
+
+<p>Scope controls work with all classifier types: titles, authors, tags, text, and URLs. They also work with regex classifiers.</p>
+
+<h3 id="subscription-tiers">Subscription tiers</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Tier Required</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Per-site classifiers (default)</td>
+      <td>Free</td>
+    </tr>
+    <tr>
+      <td>Global and folder-scoped classifiers</td>
+      <td>Premium Archive</td>
+    </tr>
+    <tr>
+      <td>Manage Training scope filter</td>
+      <td>Premium Archive</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Global and folder-scoped classifiers are available now on the web. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Until now, the Intelligence Trainer was strictly per-feed. Train a title, author, or tag on one site and it only affected that site. If you wanted to hide a topic everywhere, you had to repeat that training on each feed. With a few feeds, that’s fine. With a hundred, it’s...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Premium Archive: Per-feed and per-folder auto-mark-as-read settings</title>
@@ -1409,59 +1498,6 @@ $ cat /var/log/mongodb/mongod.log | egrep -v "159.65.XX.XX|161.89.XX.XX|&lt;&lt;
     
     <summary type="html">
       <![CDATA[There are two ways to connect to the NewsBlur website. The first is http://www.newsblur.com. The second is https://www.newsblur.com. The first is plain text and the second is encrypted. You get to choose which one you want to use.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story</title>
-    <link href="https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/" rel="alternate" type="text/html" title="NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story" />
-    <published>2019-07-01T09:29:07-04:00</published>
-    <updated>2019-07-01T09:29:07-04:00</updated>
-    <id>https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2019/07/01/newsblur-ios-v9-full-screen-autoscroll/">
-      <![CDATA[<p>A whopper of a release with many, many new features!</p>
-
-<ul>
-  <li>Autoscroll: Read long stories hands-free</li>
-  <li>Full screen: Reading stories without the toolbar for a better experience</li>
-  <li>Longer story titles: New options for longer and shorter story title and content previews in the story titles list</li>
-  <li>Smaller image previews: New option for smaller image previews in the story titles list</li>
-  <li>Show story changes: All stories with edits now show a “Show Changes” button at the top that lets you see the differences</li>
-  <li>Return to last read story: When you return to the app, you will start where you left off</li>
-  <li>Return to last read scroll position: When you return to a story, you will automatically scroll to where you left off</li>
-</ul>
-
-<p>Take a look at some of the image and story title customizations you can now make:</p>
-
-<figure class="tmblr-full" data-orig-height="968" data-orig-width="1068" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v9.png"><img style="width:650px;margin: 24px auto;" data-orig-height="968" data-orig-width="1068" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-v9.png" /></figure>
-
-<p>There’s also many smaller fixes that improve the polish of the app:</p>
-
-<ul>
-  <li>If you had a slow connection, some stories would take a while to draw while images were downloaded. Now they show immediately</li>
-  <li>Support for larger iPad Pros</li>
-  <li>Suport for iOS 13</li>
-  <li>Fixes for split mode on iPad</li>
-  <li>Fixes for marking stories as read while scrolling the story titles list</li>
-  <li>Fixes for navigating stories with an external keyboard</li>
-  <li>Fixes for scroll performance on the feed list and the story titles list</li>
-  <li>Fixes for sharing stories accidentally having double titles in emails and messages</li>
-</ul>
-
-<p>Thanks to <a href="https://github.com/dejal">David Sinclair</a> for putting together this release. Keep up the great work! And if you have ideas for what you’d like to see in the next NewsBlur iOS release, please, please, please <a href="https://forum.newsblur.com/c/idea">submit them to the forum</a>.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="iOS" />
-    
-    
-    <summary type="html">
-      <![CDATA[A whopper of a release with many, many new features!
 ]]>
     </summary>
     
