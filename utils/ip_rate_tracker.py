@@ -35,13 +35,6 @@ ABUSE_REQUESTS_TOTAL = Counter(
     "Total requests from IPs exceeding threshold",
 )
 
-# High-cardinality metric - only emitted for abusers (top 20 max)
-ABUSER_REQUESTS = Gauge(
-    "newsblur_rate_limit_abuser_requests",
-    "Requests per abusing IP (limited to top offenders)",
-    ["ip", "user", "ua"],
-)
-
 # Soft launch metrics - track what WOULD be denied without actually denying
 WOULD_BE_DENIED_TOTAL = Counter(
     "newsblur_rate_limit_would_deny_total",
@@ -50,11 +43,6 @@ WOULD_BE_DENIED_TOTAL = Counter(
 WOULD_BE_DENIED_IPS = Gauge(
     "newsblur_rate_limit_would_deny_ips_current",
     "Current number of unique IPs that would be denied",
-)
-WOULD_BE_DENIED_DETAILS = Gauge(
-    "newsblur_rate_limit_would_deny_details",
-    "Details of IPs that would be denied (high cardinality, limited)",
-    ["ip", "user", "ua", "endpoint"],
 )
 
 
@@ -73,7 +61,7 @@ class IPRateTracker:
     TTL_SECONDS = 3600  # 1 hour
     META_TTL_SECONDS = 7200  # 2 hours
     ABUSE_THRESHOLD = 300  # requests per 5-min window
-    MAX_ABUSER_METRICS = 20  # limit high-cardinality Prometheus labels
+    MAX_ABUSER_METRICS = 20  # limit Redis zrevrange scan to top N IPs
 
     # User agent classification patterns
     UA_PATTERNS = {
@@ -86,6 +74,7 @@ class IPRateTracker:
     def __init__(self):
         self._redis = None
         self._last_gauge_update = 0
+        self._last_denial_gauge_update = 0
         self._gauge_update_interval = 30  # seconds
 
     @property
@@ -228,19 +217,13 @@ class IPRateTracker:
         if not top_ips:
             ABUSERS_CURRENT.set(0)
             TOP_ABUSER_REQUESTS.set(0)
-            # Clear previous abuser metrics
-            ABUSER_REQUESTS._metrics.clear()
             return
 
         # Count IPs over threshold
         abuser_count = 0
         top_count = 0
 
-        # Clear previous abuser metrics before setting new ones
-        ABUSER_REQUESTS._metrics.clear()
-
         for ip_bytes, count in top_ips:
-            ip = ip_bytes if isinstance(ip_bytes, str) else ip_bytes.decode("utf-8")
             count = int(count)
 
             if count > top_count:
@@ -248,16 +231,6 @@ class IPRateTracker:
 
             if count > self.ABUSE_THRESHOLD:
                 abuser_count += 1
-
-                # Get metadata for this IP
-                meta = self.get_ip_metadata(ip)
-
-                # Emit high-cardinality metric for abuser
-                ABUSER_REQUESTS.labels(
-                    ip=ip,
-                    user=meta.get("username", "unknown"),
-                    ua=meta.get("user_agent", "unknown"),
-                ).set(count)
 
         ABUSERS_CURRENT.set(abuser_count)
         TOP_ABUSER_REQUESTS.set(top_count)
@@ -409,11 +382,11 @@ class IPRateTracker:
         self._maybe_update_denial_gauges(window)
 
     def _maybe_update_denial_gauges(self, window):
-        """Update denial gauges periodically."""
-        # Reuse the same rate limiting as regular gauge updates
+        """Update denial gauges periodically (independent of regular gauges)."""
         now = time.time()
-        if now - self._last_gauge_update < self._gauge_update_interval:
+        if now - self._last_denial_gauge_update < self._gauge_update_interval:
             return
+        self._last_denial_gauge_update = now
         self._update_denial_gauges(window)
 
     def _update_denial_gauges(self, window):
@@ -423,53 +396,6 @@ class IPRateTracker:
         # Get count of unique denied IPs
         denied_count = self.redis.scard(denied_ips_key)
         WOULD_BE_DENIED_IPS.set(denied_count)
-
-        # Clear previous detail metrics
-        WOULD_BE_DENIED_DETAILS._metrics.clear()
-
-        # Get details for top denied IPs (by request count)
-        denied_ips = self.redis.smembers(denied_ips_key)
-        if not denied_ips:
-            return
-
-        # Get denial counts for each IP
-        ip_counts = []
-        for ip_bytes in denied_ips:
-            ip = ip_bytes if isinstance(ip_bytes, str) else ip_bytes.decode("utf-8")
-            denied_count_key = f"ipr:denied_count:{ip}:{window}"
-            count = self.redis.get(denied_count_key)
-            if count:
-                ip_counts.append((ip, int(count)))
-
-        # Sort by count descending, limit to top 20
-        ip_counts.sort(key=lambda x: x[1], reverse=True)
-        for ip, count in ip_counts[:self.MAX_ABUSER_METRICS]:
-            meta = self.get_ip_metadata(ip)
-            username = meta.get(b"username", meta.get("username", b"unknown"))
-            if isinstance(username, bytes):
-                username = username.decode("utf-8")
-            ua = meta.get(b"user_agent", meta.get("user_agent", b"unknown"))
-            if isinstance(ua, bytes):
-                ua = ua.decode("utf-8")
-
-            # Get last endpoint for this IP
-            denial_key = f"ipr:denied:{window}"
-            last_denial = self.redis.lindex(denial_key, 0)
-            endpoint = "unknown"
-            if last_denial:
-                try:
-                    denial_data = json.loads(last_denial)
-                    if denial_data.get("ip") == ip:
-                        endpoint = denial_data.get("endpoint", "unknown")
-                except Exception:
-                    pass
-
-            WOULD_BE_DENIED_DETAILS.labels(
-                ip=ip,
-                user=username,
-                ua=ua,
-                endpoint=endpoint,
-            ).set(count)
 
     def get_denied_requests(self, window=None, limit=100):
         """
@@ -543,11 +469,6 @@ SCANNER_IPS_CURRENT = Gauge(
 SCANNER_TOP_404_COUNT = Gauge(
     "newsblur_scanner_top_404_count",
     "404 count from highest-volume scanning IP",
-)
-SCANNER_IP_404S = Gauge(
-    "newsblur_scanner_ip_404s",
-    "404 count per flagged scanner IP",
-    ["ip", "sample_path"],
 )
 
 
@@ -682,16 +603,12 @@ class ScannerTracker:
         if not top_ips:
             SCANNER_IPS_CURRENT.set(0)
             SCANNER_TOP_404_COUNT.set(0)
-            SCANNER_IP_404S._metrics.clear()
             return
 
         scanner_count = 0
         top_count = 0
 
-        SCANNER_IP_404S._metrics.clear()
-
         for ip_bytes, count in top_ips:
-            ip = ip_bytes if isinstance(ip_bytes, str) else ip_bytes.decode("utf-8")
             count = int(count)
 
             if count > top_count:
@@ -699,10 +616,6 @@ class ScannerTracker:
 
             if count >= self.SCANNER_THRESHOLD:
                 scanner_count += 1
-                meta = self.get_ip_metadata(ip)
-                sample_path = meta.get("last_path", "unknown")[:50]
-
-                SCANNER_IP_404S.labels(ip=ip, sample_path=sample_path).set(count)
 
         SCANNER_IPS_CURRENT.set(scanner_count)
         SCANNER_TOP_404_COUNT.set(top_count)
