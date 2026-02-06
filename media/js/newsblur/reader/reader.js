@@ -2267,7 +2267,7 @@
             this.flags['story_titles_loaded'] = true;
         },
 
-        generate_daily_briefing: function () {
+        generate_daily_briefing: function (callback) {
             this.flags.briefing_generating = true;
 
             if (this.briefing_onboarding_view) {
@@ -2275,7 +2275,7 @@
             } else if (NEWSBLUR.app.story_titles) {
                 NEWSBLUR.app.story_titles.show_briefing_progress("Starting briefing generation...");
             }
-            this.model.generate_briefing();
+            this.model.generate_briefing(callback);
 
             // reader.js: Timeout safety net — if no socket event arrives within 90s,
             // show an error so the UI doesn't spin forever (e.g. Celery crash).

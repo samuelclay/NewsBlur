@@ -594,7 +594,6 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
 
     make_notification_section: function (prefs) {
         var notification_types = (prefs && prefs.notification_types) || [];
-        var briefing_feed_id = (prefs && prefs.briefing_feed_id) || null;
 
         var items = _.map([
             ['email', 'Email'],
@@ -617,11 +616,6 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             }, items)
         ];
 
-        if (!briefing_feed_id) {
-            controls.push($.make('div', { className: 'NB-briefing-notification-hint' },
-                'Available after your first briefing is generated'));
-        }
-
         return this.make_section('Notifications', 'Get notified when a new briefing is ready', controls);
     },
 
@@ -629,12 +623,14 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         e.preventDefault();
         e.stopPropagation();
 
-        var briefing_feed_id = (this.prefs && this.prefs.briefing_feed_id) || null;
-        if (!briefing_feed_id) return;
-
         var $target = $(e.currentTarget);
         $target.toggleClass('NB-active');
-        this.save_notification_types();
+
+        // briefing_onboarding_view.js: Save immediately if feed exists, otherwise deferred to generate
+        var briefing_feed_id = (this.prefs && this.prefs.briefing_feed_id) || null;
+        if (briefing_feed_id) {
+            this.save_notification_types();
+        }
     },
 
     save_notification_types: function () {
@@ -660,6 +656,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
 
     generate: function (e) {
         e.preventDefault();
+        var self = this;
         var data = _.extend({}, this.pending || {});
 
         // briefing_onboarding_view.js: Save all pending preferences, then generate briefing
@@ -668,7 +665,15 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             type: 'POST',
             data: data,
             success: function () {
-                NEWSBLUR.reader.generate_daily_briefing();
+                NEWSBLUR.reader.generate_daily_briefing(function (response) {
+                    // briefing_onboarding_view.js: Feed created during generate,
+                    // now save any notification selections the user made
+                    if (response && response.briefing_feed_id) {
+                        self.prefs = self.prefs || {};
+                        self.prefs.briefing_feed_id = response.briefing_feed_id;
+                        self.save_notification_types();
+                    }
+                });
             }
         });
     }
