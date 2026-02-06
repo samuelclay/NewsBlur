@@ -2593,9 +2593,26 @@ class UserSubscriptionFolders(models.Model):
             for feed_id in missing_folder_feeds:
                 feed = Feed.get_by_id(feed_id)
                 if feed and feed.pk == feed_id:
+                    if feed.is_daily_briefing:
+                        continue
                     user_sub_folders = add_object_to_folder(feed_id, "", user_sub_folders)
             self.folders = json.encode(user_sub_folders)
             self.save()
+
+        # Cleanup: remove any briefing feeds that were previously added to folders
+        if all_feeds:
+            briefing_feed_ids = set(
+                Feed.objects.filter(pk__in=all_feeds, feed_address__startswith="daily-briefing:").values_list(
+                    "pk", flat=True
+                )
+            )
+            if briefing_feed_ids:
+                logging.debug(
+                    " ---> %s has %s briefing feeds in folders. Removing..."
+                    % (self.user, len(briefing_feed_ids))
+                )
+                for feed_id in briefing_feed_ids:
+                    self.delete_feed(feed_id, "", commit_delete=False)
 
     def auto_activate(self):
         max_feed_limit = self.user.profile.max_feed_limit
