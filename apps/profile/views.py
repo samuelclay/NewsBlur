@@ -28,6 +28,7 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierText,
     MClassifierTitle,
+    MClassifierUrl,
 )
 from apps.profile.forms import (
     PLANS,
@@ -1247,6 +1248,63 @@ def delete_shared_stories(request):
     )
 
     return dict(code=1, stories_deleted=stories_deleted, shared_stories_count=shared_stories_count)
+
+
+@ajax_login_required
+@json.json_view
+def count_classifiers(request):
+    user_id = request.user.pk
+    counts = {
+        "title": MClassifierTitle.objects.filter(user_id=user_id, is_regex__ne=True).count(),
+        "title_regex": MClassifierTitle.objects.filter(user_id=user_id, is_regex=True).count(),
+        "author": MClassifierAuthor.objects.filter(user_id=user_id).count(),
+        "tag": MClassifierTag.objects.filter(user_id=user_id).count(),
+        "text": MClassifierText.objects.filter(user_id=user_id, is_regex__ne=True).count(),
+        "text_regex": MClassifierText.objects.filter(user_id=user_id, is_regex=True).count(),
+        "feed": MClassifierFeed.objects.filter(user_id=user_id).count(),
+        "url": MClassifierUrl.objects.filter(user_id=user_id, is_regex__ne=True).count(),
+        "url_regex": MClassifierUrl.objects.filter(user_id=user_id, is_regex=True).count(),
+    }
+    total = sum(counts.values())
+    return dict(code=1, counts=counts, total=total)
+
+
+@ajax_login_required
+@json.json_view
+def delete_classifiers(request):
+    user_id = request.user.pk
+    categories = request.POST.getlist("categories")
+
+    classifier_map = {
+        "title": (MClassifierTitle, {"is_regex__ne": True}),
+        "title_regex": (MClassifierTitle, {"is_regex": True}),
+        "author": (MClassifierAuthor, {}),
+        "tag": (MClassifierTag, {}),
+        "text": (MClassifierText, {"is_regex__ne": True}),
+        "text_regex": (MClassifierText, {"is_regex": True}),
+        "feed": (MClassifierFeed, {}),
+        "url": (MClassifierUrl, {"is_regex__ne": True}),
+        "url_regex": (MClassifierUrl, {"is_regex": True}),
+    }
+
+    total_deleted = 0
+    deleted_counts = {}
+    for category in categories:
+        if category in classifier_map:
+            model, extra_filters = classifier_map[category]
+            qs = model.objects.filter(user_id=user_id, **extra_filters)
+            count = qs.count()
+            qs.delete()
+            deleted_counts[category] = count
+            total_deleted += count
+
+    logging.user(
+        request.user,
+        "~BC~FRDeleting %s classifiers (%s)"
+        % (total_deleted, ", ".join("%s: %s" % (k, v) for k, v in deleted_counts.items())),
+    )
+
+    return dict(code=1, total_deleted=total_deleted, deleted_counts=deleted_counts)
 
 
 @ajax_login_required
