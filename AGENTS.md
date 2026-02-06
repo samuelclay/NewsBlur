@@ -57,7 +57,7 @@ For debugging sessions: always take a screenshot first, reproduce the issue, the
 
 **IMPORTANT: Do NOT run `make rebuild` or `make nb` during development!**
 - Web and Node servers restart automatically when code changes
-- Task/Celery server must be manually restarted only when working on background tasks
+- Task/Celery server must be manually restarted when modifying **any** code that runs inside a Celery task — this includes the task file itself and any module it calls (e.g., scoring, summary, models). Without a restart, the worker keeps running the old code. Restart with: `docker restart newsblur_celery` (or `newsblur_celery_<worktree-name>` in worktrees)
 - Use `make` to apply migrations after git pull
 - Running `make rebuild` unnecessarily rebuilds everything and wastes time
 
