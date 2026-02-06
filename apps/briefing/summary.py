@@ -48,11 +48,18 @@ def normalize_section_key(key):
     return None
 
 LENGTH_INSTRUCTIONS = {
-    "short": "Include only the top 1-2 sections with the most important stories. Keep it under 150 words.",
-    "medium": "Include 2-4 sections. Keep each section to 1-3 sentences per story. Under 400 words total.",
+    "short": (
+        "Include ALL sections listed above that have relevant stories, but keep each story to a single "
+        "sentence or headline. Under 300 words total."
+    ),
+    "medium": (
+        "Include ALL sections listed above that have relevant stories. "
+        "Keep each story to 1-2 sentences. Under 600 words total."
+    ),
     "detailed": (
-        "Include all relevant sections with 2-3 sentences of analysis per story. "
-        "Explain connections between stories where relevant. Up to 800 words."
+        "Include ALL sections listed above that have relevant stories. "
+        "Write 2-3 sentences of analysis per story. Explain connections between stories where relevant. "
+        "Up to 1000 words."
     ),
 }
 
@@ -116,8 +123,10 @@ def _build_system_prompt(summary_length="medium", summary_style="bullets", secti
         if active_sections.get(custom_key, False) and prompt:
             section_lines.append(
                 '%d. Custom section (KEY: %s) — The reader has requested a custom section with this prompt: "%s". '
-                "Generate an appropriate section header for this content. Use your best judgment "
-                "to select relevant stories from the provided list." % (num, custom_key, prompt)
+                "Generate an appropriate section header for this content. "
+                "ONLY include stories that are genuinely and directly about this topic. "
+                "If no stories clearly match this prompt, do NOT include this section at all — "
+                "do not stretch or loosely interpret the prompt to fit unrelated stories." % (num, custom_key, prompt)
             )
             num += 1
 
@@ -129,7 +138,8 @@ it was selected for them.
 
 Organize the briefing into sections based on these categories. Use ONLY these section headers
 (as <h3 data-section="CATEGORY_KEY"> tags, where CATEGORY_KEY is the category value like
-"trending_unread" or "classifier_match"), and only include a section if there are stories for it:
+"trending_unread" or "classifier_match"). You MUST include every section listed below if there
+are stories that match it. Do not omit sections to save space:
 
 %s
 
@@ -222,10 +232,13 @@ def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_le
 
     try:
         system_prompt = _build_system_prompt(summary_length, summary_style, sections, custom_section_prompts)
+        # summary.py: Scale max_tokens based on story/section count to avoid truncation
+        num_sections = sum(1 for v in (sections or {}).values() if v)
+        max_tokens = min(1024 + (len(scored_stories) * 80) + (num_sections * 100), 4096)
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
         response = client.messages.create(
             model=BRIEFING_MODEL,
-            max_tokens=2048,
+            max_tokens=max_tokens,
             system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
         )

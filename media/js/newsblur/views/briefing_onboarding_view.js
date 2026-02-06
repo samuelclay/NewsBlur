@@ -96,7 +96,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                         ['evening', 'Evening']
                     ]),
                     this.make_control('twice_daily_time', [
-                        ['morning', 'Morning + Afternoon'],
+                        ['afternoon', 'Morning + Afternoon'],
                         ['evening', 'Morning + Evening']
                     ]),
                     this.make_control('preferred_day', [
@@ -142,7 +142,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         var preferred_time = prefs.preferred_time || 'morning';
         this.set_active($settings, 'frequency', prefs.frequency || 'daily');
         this.set_active($settings, 'preferred_time', preferred_time);
-        var twice_value = (preferred_time === 'evening') ? 'evening' : 'morning';
+        var twice_value = (preferred_time === 'evening') ? 'evening' : 'afternoon';
         this.set_active($settings, 'twice_daily_time', twice_value);
         this.set_active($settings, 'preferred_day', prefs.preferred_day || 'sun');
         this.set_active($settings, 'story_count', String(prefs.story_count || 5));
