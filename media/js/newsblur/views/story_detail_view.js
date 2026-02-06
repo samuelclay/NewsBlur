@@ -1712,12 +1712,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <div class="NB-menu-ask-ai-submit-dropdown-trigger" title="Choose model">\
                                 <span class="NB-dropdown-arrow">▾</span>\
                             </div>\
-                            <div class="NB-menu-ask-ai-model-dropdown">\
-                                <div class="NB-model-option NB-selected" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude Opus 4.5</div>\
-                                <div class="NB-model-option" data-model="gpt-5.2"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.2</div>\
-                                <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
-                                <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
-                            </div>\
+                            <div class="NB-menu-ask-ai-model-dropdown"></div>\
                         </div>\
                     </div>\
                 </div>\
@@ -1732,6 +1727,17 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
         $menu.data('story_id', this.model.id);
         $menu.data('story_view', this);
+
+        // Populate model dropdown from backend data
+        var models = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_models) || [];
+        var dropdown_html = '';
+        _.each(models, function (m) {
+            dropdown_html += '<div class="NB-model-option" data-model="' + _.escape(m.key) + '">' +
+                             '<span class="NB-provider-pill NB-provider-' + _.escape(m.vendor) + '">' +
+                             _.escape(m.vendor_display) + '</span> ' +
+                             _.escape(m.display_name) + '</div>';
+        });
+        $menu.find('.NB-menu-ask-ai-model-dropdown').html(dropdown_html);
 
         // Set model from preference (default to opus)
         var saved_model = NEWSBLUR.assets.preference('ask_ai_model') || 'opus';

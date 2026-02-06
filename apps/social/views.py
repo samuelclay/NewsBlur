@@ -304,9 +304,7 @@ def load_social_stories(request, user_id, username=None):
                 else 0
             ),
             "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
-            "url_regex": (
-                apply_classifier_url_regex(classifier_urls, story) if user.profile.is_pro else 0
-            ),
+            "url_regex": (apply_classifier_url_regex(classifier_urls, story) if user.profile.is_pro else 0),
         }
 
     classifiers = sort_classifiers_by_feed(
@@ -518,9 +516,7 @@ def load_river_blurblog(request):
                 else 0
             ),
             "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
-            "url_regex": (
-                apply_classifier_url_regex(classifier_urls, story) if user.profile.is_pro else 0
-            ),
+            "url_regex": (apply_classifier_url_regex(classifier_urls, story) if user.profile.is_pro else 0),
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True

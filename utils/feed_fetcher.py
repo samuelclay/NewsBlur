@@ -40,6 +40,9 @@ from apps.statistics.models import MAnalyticsFetcher, MStatistics
 
 feedparser.sanitizer._HTMLSanitizer.acceptable_elements.update(["iframe"])
 feedparser.sanitizer._HTMLSanitizer.acceptable_elements.update(["text"])
+feedparser.sanitizer._BaseHTMLProcessor.elements_no_end_tag.update(
+    ["line", "circle", "rect", "path", "polygon", "polyline", "ellipse", "use", "image"]
+)
 
 from bs4 import BeautifulSoup
 from celery.exceptions import SoftTimeLimitExceeded
