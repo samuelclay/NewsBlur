@@ -19678,6 +19678,95 @@ h5.NB-classifier-section-header {
     gap: 4px;
 }
 
+/* Classifier delete pills */
+.NB-modal-account .NB-preference-delete-classifiers .NB-preference-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.NB-modal-account .NB-preference-classifier-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+/* Override .NB-modal-preferences .NB-preference .NB-preference-options label (line 18790) */
+.NB-modal-preferences .NB-preference .NB-preference-options .NB-classifier-pill {
+    float: none;
+    margin: 0;
+    padding: 6px 10px 6px 14px;
+}
+
+.NB-modal-account .NB-classifier-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #c0c0c0;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #505050;
+    background: #fff;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.NB-modal-account .NB-classifier-pill:hover {
+    border-color: #909090;
+    background: #f6f6f6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.NB-modal-account .NB-classifier-pill input[type="checkbox"] {
+    display: none;
+}
+
+.NB-modal-account .NB-classifier-pill.NB-checked {
+    background: #e8f5e9;
+    border-color: #4caf50;
+    color: #2e7d32;
+    box-shadow: 0 1px 3px rgba(76, 175, 80, 0.15);
+}
+
+.NB-modal-account .NB-classifier-pill.NB-checked .NB-classifier-pill-count {
+    background: #4caf50;
+    color: #fff;
+}
+
+.NB-modal-account .NB-classifier-pill-all {
+    font-weight: 600;
+}
+
+.NB-modal-account .NB-classifier-pill-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    background: rgba(0, 0, 0, 0.08);
+    color: #707070;
+    transition: all 0.15s ease;
+}
+
+.NB-modal-account .NB-classifier-pill-count:empty {
+    display: none;
+}
+
+.NB-modal-account .NB-preference-classifiers-count.NB-empty {
+    background: #f5f5f5;
+    color: #999;
+    border-color: #e0e0e0;
+}
+
 /* ================ */
 /* = Static Pages = */
 /* ================ */
