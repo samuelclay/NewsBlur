@@ -2087,6 +2087,7 @@ def load_river_stories__redis(request):
             user_search.touch_search_date()
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter="all")
             feed_ids = [sub.feed_id for sub in usersubs]
+            feed_ids = Feed.exclude_briefing_feeds(feed_ids)
             if infrequent:
                 feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
             stories = Feed.find_feed_stories(feed_ids, query, order=order, offset=offset, limit=limit)
@@ -2129,6 +2130,7 @@ def load_river_stories__redis(request):
         else:
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
             feed_ids = [sub.feed_id for sub in usersubs]
+            feed_ids = Feed.exclude_briefing_feeds(feed_ids)
             if infrequent:
                 feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
             if feed_ids:

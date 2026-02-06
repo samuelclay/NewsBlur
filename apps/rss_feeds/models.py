@@ -424,11 +424,27 @@ class Feed(models.Model):
             stories_per_month = int(stories_per_month)
         except ValueError:
             stories_per_month = 30
-        feeds = Feed.objects.filter(
-            pk__in=feed_ids, average_stories_per_month__lte=stories_per_month
-        ).exclude(feed_address__startswith="daily-briefing:").only("pk")
+        feeds = (
+            Feed.objects.filter(pk__in=feed_ids, average_stories_per_month__lte=stories_per_month)
+            .exclude(feed_address__startswith="daily-briefing:")
+            .only("pk")
+        )
 
         return [f.pk for f in feeds]
+
+    @classmethod
+    def exclude_briefing_feeds(cls, feed_ids):
+        """Exclude daily briefing feeds from a list of feed IDs."""
+        if not feed_ids:
+            return feed_ids
+        briefing_ids = set(
+            cls.objects.filter(pk__in=feed_ids, feed_address__startswith="daily-briefing:").values_list(
+                "pk", flat=True
+            )
+        )
+        if not briefing_ids:
+            return feed_ids
+        return [f for f in feed_ids if f not in briefing_ids]
 
     @classmethod
     def autocomplete(cls, prefix, limit=5):

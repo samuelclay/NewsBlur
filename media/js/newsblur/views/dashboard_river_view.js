@@ -482,6 +482,11 @@ NEWSBLUR.Views.DashboardRiver = Backbone.View.extend({
             return;
         }
 
+        // Exclude briefing feed stories from all dashboard rivers
+        if (feed.get('is_daily_briefing')) {
+            return;
+        }
+
         if (this.options.infrequent) {
             var feed_stories_per_month = feed.get('average_stories_per_month');
             if (feed_stories_per_month > NEWSBLUR.assets.preference('infrequent_stories_per_month')) {
