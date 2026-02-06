@@ -63,6 +63,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             question_id: this.question_id
         }));
 
+        // Populate model dropdowns from backend data
+        var dropdown_html = this.build_model_dropdown_html();
+        this.$('.NB-story-ask-ai-model-dropdown').html(dropdown_html);
+
         // Store view instance on DOM element for Socket.IO handler access
         this.$el.data('view', this);
 
@@ -108,6 +112,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     },
 
     get_provider_display_name: function (provider) {
+        var models = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_models) || [];
+        var match = _.find(models, function (m) { return m.vendor === provider; });
+        if (match) return match.vendor_display;
         var names = {
             'anthropic': 'Anthropic',
             'openai': 'OpenAI',
@@ -190,36 +197,21 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                             <span>Re-ask</span>\
                             <span class="NB-dropdown-arrow">▾</span>\
                         </div>\
-                        <div class="NB-story-ask-ai-model-dropdown NB-reask-dropdown">\
-                            <div class="NB-model-option" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude Opus 4.5</div>\
-                            <div class="NB-model-option" data-model="gpt-5.2"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.2</div>\
-                            <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
-                            <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
-                        </div>\
+                        <div class="NB-story-ask-ai-model-dropdown NB-reask-dropdown"></div>\
                     </div>\
                     <div class="NB-story-ask-ai-send-menu" style="display: none;">\
                         <div class="NB-button NB-story-ask-ai-send-button">Send</div>\
                         <div class="NB-story-ask-ai-send-dropdown-trigger" title="Choose model">\
                             <span class="NB-dropdown-arrow">▾</span>\
                         </div>\
-                        <div class="NB-story-ask-ai-model-dropdown NB-send-dropdown">\
-                            <div class="NB-model-option" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude Opus 4.5</div>\
-                            <div class="NB-model-option" data-model="gpt-5.2"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.2</div>\
-                            <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
-                            <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
-                        </div>\
+                        <div class="NB-story-ask-ai-model-dropdown NB-send-dropdown"></div>\
                     </div>\
                     <div class="NB-story-ask-ai-finish-recording-menu" style="display: none;">\
                         <div class="NB-button NB-story-ask-ai-finish-recording-button">Finish recording...</div>\
                         <div class="NB-story-ask-ai-finish-recording-dropdown-trigger" title="Choose model">\
                             <span class="NB-dropdown-arrow">▾</span>\
                         </div>\
-                        <div class="NB-story-ask-ai-model-dropdown NB-finish-recording-dropdown">\
-                            <div class="NB-model-option" data-model="opus"><span class="NB-provider-pill NB-provider-anthropic">Anthropic</span> Claude Opus 4.5</div>\
-                            <div class="NB-model-option" data-model="gpt-5.2"><span class="NB-provider-pill NB-provider-openai">OpenAI</span> GPT 5.2</div>\
-                            <div class="NB-model-option" data-model="gemini-3"><span class="NB-provider-pill NB-provider-google">Google</span> Gemini 3 Pro</div>\
-                            <div class="NB-model-option" data-model="grok-4.1"><span class="NB-provider-pill NB-provider-xai">xAI</span> Grok 4.1 Fast</div>\
-                        </div>\
+                        <div class="NB-story-ask-ai-model-dropdown NB-finish-recording-dropdown"></div>\
                     </div>\
                 </div>\
             </div>\
@@ -875,23 +867,27 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
     },
 
     get_model_display_name: function (model) {
-        var names = {
-            'opus': 'Claude Opus 4.5',
-            'gpt-5.2': 'GPT 5.2',
-            'gemini-3': 'Gemini 3 Pro',
-            'grok-4.1': 'Grok 4.1 Fast'
-        };
-        return names[model] || model;
+        var models = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_models) || [];
+        var match = _.find(models, function (m) { return m.key === model; });
+        return (match && match.display_name) || model;
     },
 
     get_model_provider: function (model) {
-        var providers = {
-            'opus': 'anthropic',
-            'gpt-5.2': 'openai',
-            'gemini-3': 'google',
-            'grok-4.1': 'xai'
-        };
-        return providers[model] || 'unknown';
+        var models = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_models) || [];
+        var match = _.find(models, function (m) { return m.key === model; });
+        return (match && match.vendor) || 'unknown';
+    },
+
+    build_model_dropdown_html: function () {
+        var models = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_models) || [];
+        var html = '';
+        _.each(models, function (m) {
+            html += '<div class="NB-model-option" data-model="' + _.escape(m.key) + '">' +
+                    '<span class="NB-provider-pill NB-provider-' + _.escape(m.vendor) + '">' +
+                    _.escape(m.vendor_display) + '</span> ' +
+                    _.escape(m.display_name) + '</div>';
+        });
+        return html;
     },
 
     create_model_pill_html: function (model, visible, loading) {

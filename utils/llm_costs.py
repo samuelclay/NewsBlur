@@ -32,6 +32,7 @@ from utils import log as logging
 # - xAI: https://docs.x.ai/docs/models
 MODEL_PRICING = {
     # Anthropic Claude models (full IDs and short aliases)
+    "claude-opus-4-6": {"input": 5.00, "output": 25.00},
     "claude-opus-4-5-20251101": {"input": 5.00, "output": 25.00},
     "claude-opus-4-5": {"input": 5.00, "output": 25.00},
     "claude-sonnet-4-20250514": {"input": 3.00, "output": 15.00},
@@ -67,6 +68,7 @@ MODEL_PRICING = {
 
 # Provider mapping for models (full IDs and short aliases)
 MODEL_PROVIDERS = {
+    "claude-opus-4-6": "anthropic",
     "claude-opus-4-5-20251101": "anthropic",
     "claude-opus-4-5": "anthropic",
     "claude-sonnet-4-20250514": "anthropic",
