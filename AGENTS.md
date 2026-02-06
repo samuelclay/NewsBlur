@@ -234,3 +234,8 @@ p.save()
   - Mongo (`hdb-mongo-*`): `mongo`
   - Postgres (`hdb-postgres-*`): `postgres`
   - Nginx (`hwww`): `nginx`, `haproxy`
+
+## Writing Emails
+- Never use em dashes
+- Sign off with just "Sam" (no "Best," "Thanks," or other closings before it)
+- Keep it concise and direct
