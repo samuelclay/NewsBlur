@@ -2339,6 +2339,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, callback, error_callback);
     },
 
+    count_classifiers: function (callback, error_callback) {
+        this.make_request('/profile/count_classifiers', {}, callback, error_callback);
+    },
+
+    delete_classifiers: function (categories, callback, error_callback) {
+        this.make_request('/profile/delete_classifiers', {
+            'categories': categories
+        }, callback, error_callback);
+    },
+
     delete_all_sites: function (callback, error_callback) {
         this.make_request('/profile/delete_all_sites', {}, callback, error_callback);
     },

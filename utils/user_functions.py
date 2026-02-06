@@ -185,5 +185,7 @@ def extract_user_agent(request):
         platform = "FeedRe"
     elif "feed reader-background" in user_agent:
         platform = "FeReBg"
+    elif "netnewswire" in user_agent:
+        platform = "NNWire"
 
     return platform

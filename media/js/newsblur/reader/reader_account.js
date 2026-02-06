@@ -33,6 +33,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
         this.fetch_payment_history();
         this.render_dates();
+        this.fetch_classifiers_count();
+        this.handle_classifier_pill_change();
 
         if (this.options.tab) {
             this.switch_tab(this.options.tab);
@@ -124,6 +126,38 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         ]),
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Erase your shared stories'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-delete NB-preference-delete-classifiers' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', { className: 'NB-preference-classifier-pills' },
+                                [$.make('label', { className: 'NB-classifier-pill NB-classifier-pill-all' }, [
+                                    $.make('input', { type: 'checkbox', name: 'classifier_all', value: 'all' }),
+                                    $.make('span', { className: 'NB-classifier-pill-label' }, 'All'),
+                                    $.make('span', { className: 'NB-classifier-pill-count' })
+                                ])].concat(_.map([
+                                    { key: 'title', label: 'Title' },
+                                    { key: 'title_regex', label: 'Title Regex' },
+                                    { key: 'author', label: 'Author' },
+                                    { key: 'tag', label: 'Tag' },
+                                    { key: 'text', label: 'Text' },
+                                    { key: 'text_regex', label: 'Text Regex' },
+                                    { key: 'feed', label: 'Feed' },
+                                    { key: 'url', label: 'URL' },
+                                    { key: 'url_regex', label: 'URL Regex' }
+                                ], function (type) {
+                                    return $.make('label', { className: 'NB-classifier-pill NB-classifier-pill-' + type.key }, [
+                                        $.make('input', { type: 'checkbox', name: 'classifier_type', value: type.key }),
+                                        $.make('span', { className: 'NB-classifier-pill-label' }, type.label),
+                                        $.make('span', { className: 'NB-classifier-pill-count' })
+                                    ]);
+                                }))
+                            ),
+                            $.make('div', { className: 'NB-preference-stories-count NB-preference-classifiers-count' }),
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-account-delete-classifiers NB-disabled' }, 'Delete my intelligence training classifiers')
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Erase your intelligence training classifiers'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-delete' }, [
@@ -491,6 +525,128 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         }
     },
 
+    fetch_classifiers_count: function () {
+        var self = this;
+        var $count = $('.NB-preference-classifiers-count', this.$modal);
+        var $pills = $('.NB-preference-classifier-pills', this.$modal);
+        var $button = $('.NB-account-delete-classifiers', this.$modal);
+
+        $pills.hide();
+        $button.hide();
+        $count.text('Loading classifiers...').addClass('NB-empty').removeClass('NB-has-selection');
+
+        NEWSBLUR.assets.count_classifiers(_.bind(function (data) {
+            $pills.show();
+            $button.show();
+            self.classifier_counts = data.counts;
+
+            // Update individual pill counts and hide 0-count pills
+            _.each(data.counts, function (count, category) {
+                var $pill = $('.NB-classifier-pill-' + category, self.$modal);
+                $pill.find('.NB-classifier-pill-count').text(count);
+                if (count === 0) {
+                    $pill.hide();
+                } else {
+                    $pill.show();
+                }
+            });
+
+            // Update "All" pill count
+            var $all_pill = $('.NB-classifier-pill-all', self.$modal);
+            $all_pill.find('.NB-classifier-pill-count').text(data.total);
+
+            self.update_classifiers_count_display();
+        }, this), _.bind(function () {
+            $count.text('');
+        }, this));
+    },
+
+    update_classifiers_count_display: function () {
+        var $count = $('.NB-preference-classifiers-count', this.$modal);
+        var $button = $('.NB-account-delete-classifiers', this.$modal);
+        var counts = this.classifier_counts || {};
+        var total = 0;
+
+        $('input[name=classifier_type]:checked', this.$modal).each(function () {
+            var category = $(this).val();
+            total += (counts[category] || 0);
+        });
+
+        if (total === 0) {
+            $count.text('Select classifiers to remove').addClass('NB-empty').removeClass('NB-has-selection');
+            $button.addClass('NB-disabled').attr('disabled', 'disabled');
+        } else {
+            $count.text(total + ' ' + Inflector.pluralize('classifier', total) + ' will be deleted').removeClass('NB-empty').addClass('NB-has-selection');
+            $button.removeClass('NB-disabled').removeAttr('disabled');
+        }
+    },
+
+    handle_classifier_pill_change: function () {
+        var self = this;
+
+        // "All" checkbox logic
+        this.$modal.on('change', 'input[name=classifier_all]', function () {
+            var is_checked = $(this).is(':checked');
+            $('input[name=classifier_type]', self.$modal).each(function () {
+                var $pill = $(this).closest('.NB-classifier-pill');
+                if ($pill.is(':visible')) {
+                    $(this).prop('checked', is_checked);
+                    $pill.toggleClass('NB-checked', is_checked);
+                }
+            });
+            $(this).closest('.NB-classifier-pill').toggleClass('NB-checked', is_checked);
+            self.update_classifiers_count_display();
+        });
+
+        // Individual checkbox logic
+        this.$modal.on('change', 'input[name=classifier_type]', function () {
+            var $pill = $(this).closest('.NB-classifier-pill');
+            $pill.toggleClass('NB-checked', $(this).is(':checked'));
+
+            // Check if all visible individuals are checked
+            var $visible = $('input[name=classifier_type]', self.$modal).filter(function () {
+                return $(this).closest('.NB-classifier-pill').is(':visible');
+            });
+            var all_checked = $visible.length === $visible.filter(':checked').length;
+            $('input[name=classifier_all]', self.$modal).prop('checked', all_checked);
+            $('.NB-classifier-pill-all', self.$modal).toggleClass('NB-checked', all_checked);
+
+            self.update_classifiers_count_display();
+        });
+    },
+
+    delete_classifiers: function () {
+        var $link = $(".NB-account-delete-classifiers", this.$modal);
+        var $count = $('.NB-preference-classifiers-count', this.$modal);
+        var $loading = $('.NB-modal-loading', this.$modal);
+
+        var categories = [];
+        $('input[name=classifier_type]:checked', this.$modal).each(function () {
+            categories.push($(this).val());
+        });
+
+        if (!categories.length) return;
+
+        if (window.confirm("Positive you want to delete your intelligence training classifiers?")) {
+            $loading.addClass('NB-active');
+            $link.attr('disabled', 'disabled');
+            $link.text("Deleting...");
+
+            NEWSBLUR.assets.delete_classifiers(categories, _.bind(function (data) {
+                $loading.removeClass('NB-active');
+                $link.replaceWith($.make('div',
+                    data.total_deleted + ' ' + Inflector.pluralize('classifier', data.total_deleted) +
+                    ' ' + Inflector.pluralize('has', data.total_deleted) + ' been deleted.'));
+                $count.text('');
+                NEWSBLUR.assets.load_feeds();
+            }, this), _.bind(function () {
+                $loading.removeClass('NB-active');
+                $link.replaceWith($.make('div', { className: 'NB-error' },
+                    'There was a problem deleting your classifiers.')).show();
+            }, this));
+        }
+    },
+
     handle_cancel: function () {
         var $cancel = $('.NB-modal-cancel', this.$modal);
 
@@ -683,6 +839,11 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
             self.delete_shared_stories();
         });
+        $.targetIs(e, { tagSelector: '.NB-account-delete-classifiers' }, function ($t, $p) {
+            e.preventDefault();
+
+            self.delete_classifiers();
+        });
         $.targetIs(e, { tagSelector: '.NB-modal-cancel' }, function ($t, $p) {
             e.preventDefault();
 
@@ -691,8 +852,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     },
 
     handle_change: function () {
-        $('input[type=radio],input[type=checkbox],select,input', this.$modal).bind('change', _.bind(this.enable_save, this));
-        $('input', this.$modal).bind('keydown', _.bind(this.enable_save, this));
+        $('input[type=radio],input[type=checkbox],select,input', this.$modal).not('.NB-preference-delete-classifiers input').bind('change', _.bind(this.enable_save, this));
+        $('input', this.$modal).not('.NB-preference-delete-classifiers input').bind('keydown', _.bind(this.enable_save, this));
         $('.NB-tab-custom', this.$modal).delegate('input[type=text],textarea', 'keydown', _.bind(this.enable_save, this));
         $('.NB-tab-custom', this.$modal).delegate('input,textarea', 'change', _.bind(this.enable_save, this));
     },

@@ -6492,7 +6492,7 @@
             if (!feed) return;
 
             var subs = feed.get('num_subscribers');
-            var delay = options.realtime ? subs * 2 : 0; // 1,000 subs = 2 seconds
+            var delay = options.realtime ? subs * 10 : 0; // subs/100 seconds: 6,000 subs = 60s, 20 subs = 0.2s
 
             _.delay(_.bind(function () {
                 this.model.feed_unread_count(feed_id, options.callback);

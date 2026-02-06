@@ -905,7 +905,9 @@ class UserSubscription(models.Model):
         # Sync Redis story hashes now that archive fetch is done, staggered to avoid Redis spike.
         # This is needed because sync_redis was skipped during SchedulePremiumSetup to avoid
         # concurrent Redis storms with the archive fetch.
-        logging.user(user, "~FC~SBSyncing Redis story hashes for ~SB%s feeds~SN after archive fetch..." % total)
+        logging.user(
+            user, "~FC~SBSyncing Redis story hashes for ~SB%s feeds~SN after archive fetch..." % total
+        )
         for i, sub in enumerate(subscriptions):
             try:
                 feed = Feed.get_by_id(sub.feed.pk)
