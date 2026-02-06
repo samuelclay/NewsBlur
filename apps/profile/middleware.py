@@ -572,8 +572,18 @@ class UserAgentBanMiddleware:
             return
         if any(ua in user_agent for ua in BANNED_USER_AGENTS):
             data = {"error": "User agent banned: %s" % user_agent, "code": -1}
+            ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", "unknown"))
+            host = request.META.get("HTTP_HOST", "unknown")
+            full_path = request.get_full_path()  # Includes query string
+            body = ""
+            if request.method == "POST":
+                try:
+                    body = " body=%s" % dict(request.POST)
+                except Exception:
+                    pass
             logging.user(
-                request, "~FB~SN~BBBanned UA: ~SB%s / %s (%s)" % (user_agent, request.path, request.META)
+                request,
+                "~FW~BR~SB BLOCKED ~BT~FR Banned UA: ~SB%s~SN~FR %s %s%s" % (ip, host, full_path, body),
             )
 
             return HttpResponse(json.encode(data), status=403, content_type="text/json")
@@ -582,9 +592,17 @@ class UserAgentBanMiddleware:
             username == request.user.username for username in BANNED_USERNAMES
         ):
             data = {"error": "User banned: %s" % request.user.username, "code": -1}
+            ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR", "unknown"))
+            full_path = request.get_full_path()
+            body = ""
+            if request.method == "POST":
+                try:
+                    body = " body=%s" % dict(request.POST)
+                except Exception:
+                    pass
             logging.user(
                 request,
-                "~FB~SN~BBBanned Username: ~SB%s / %s (%s)" % (request.user, request.path, request.META),
+                "~FW~BR~SB BLOCKED ~BT~FR Banned User: ~SB%s~SN~FR %s %s%s" % (request.user.username, ip, full_path, body),
             )
 
             return HttpResponse(json.encode(data), status=403, content_type="text/json")
@@ -599,3 +617,132 @@ class UserAgentBanMiddleware:
             response = self.process_response(request, response)
 
         return response
+
+
+class ScannerTrackingMiddleware:
+    """
+    Fail2ban-style tracking for vulnerability scanners.
+
+    Tracks 404 responses and suspicious paths (.php, wp-*, etc.) per IP.
+    Data is stored in Redis and exposed via Prometheus metrics for Grafana.
+
+    This middleware only tracks; it does not block.
+    See utils/ip_rate_tracker.py ScannerTracker for implementation.
+    """
+
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+        self._tracker = None
+
+    @property
+    def tracker(self):
+        if self._tracker is None:
+            from utils.ip_rate_tracker import ScannerTracker
+
+            self._tracker = ScannerTracker()
+        return self._tracker
+
+    def __call__(self, request):
+        response = self.get_response(request)
+
+        # Track 404 responses
+        if response.status_code == 404:
+            try:
+                self.tracker.track_404(request, request.path)
+            except Exception as e:
+                logging.debug(" ***> Scanner tracking error: %s" % e)
+
+        return response
+
+
+class IPRateTrackingMiddleware:
+    """
+    Track request rates by IP for /reader/* story-fetching endpoints.
+
+    Records IP, user, user agent type, and endpoint for each request.
+    Data is stored in Redis and exposed via Prometheus metrics for Grafana.
+
+    SOFT LAUNCH MODE (current):
+    - Tracks all requests and detects rate limit violations
+    - Logs what WOULD be denied but does NOT return 429
+    - Stores denial details in Redis for investigation
+    - Exposes metrics in Prometheus for Grafana dashboards
+
+    To enable actual blocking, set IP_RATE_LIMITING_ENABLED=True in settings.
+    See utils/ip_rate_tracker.py for implementation details.
+    """
+
+    # Map URL prefixes to endpoint shortcodes
+    ENDPOINT_PATTERNS = {
+        "/reader/feeds": "feeds",
+        "/reader/feed/": "feed",
+        "/reader/refresh_feeds": "refresh",
+        "/reader/river_stories": "river",
+        "/reader/starred_stories": "starred",
+        "/reader/read_stories": "read",
+    }
+
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+        self._tracker = None
+
+    @property
+    def tracker(self):
+        """Lazy initialization of IPRateTracker."""
+        if self._tracker is None:
+            from utils.ip_rate_tracker import IPRateTracker
+
+            self._tracker = IPRateTracker()
+        return self._tracker
+
+    def get_endpoint(self, path):
+        """
+        Match request path to endpoint shortcode.
+        Returns None if path doesn't match any tracked endpoints.
+        """
+        for prefix, endpoint in self.ENDPOINT_PATTERNS.items():
+            if path.startswith(prefix):
+                return endpoint
+        return None
+
+    def __call__(self, request):
+        endpoint = self.get_endpoint(request.path)
+
+        if endpoint:
+            try:
+                # Track the request
+                self.tracker.track_request(request, endpoint)
+
+                # Check if rate limit would be exceeded
+                ip = self.tracker.get_ip(request)
+                if self.tracker.is_rate_limited(ip):
+                    full_path = request.get_full_path()
+                    user_info = ""
+                    if hasattr(request, "user") and request.user.is_authenticated:
+                        user_info = " user=%s" % request.user.username
+
+                    # Track this "would be denied" event for soft launch monitoring
+                    self.tracker.track_would_be_denied(request, endpoint)
+
+                    # Log what would have been blocked
+                    logging.user(
+                        request,
+                        "~FY~SB WOULD BLOCK ~SN~FR Rate Limit: ~SB%s~SN~FR %s%s" % (ip, full_path, user_info),
+                    )
+
+                    # SOFT LAUNCH: Only block if explicitly enabled
+                    if getattr(settings, "IP_RATE_LIMITING_ENABLED", False):
+                        logging.user(
+                            request,
+                            "~FW~BR~SB BLOCKED ~BT~FR Rate Limit: ~SB%s~SN~FR %s%s" % (ip, full_path, user_info),
+                        )
+                        return HttpResponse(
+                            '{"error": "Rate limit exceeded", "code": -1}',
+                            status=429,
+                            content_type="application/json",
+                        )
+            except Exception as e:
+                # Don't let tracking errors break the request
+                logging.debug(" ***> IP rate tracking error: %s" % e)
+
+        return self.get_response(request)

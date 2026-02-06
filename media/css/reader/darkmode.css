@@ -642,6 +642,42 @@ color: #a85b40;
     box-shadow: none;
 }
 
+/* Classifier delete pills */
+.NB-dark .NB-modal-account .NB-classifier-pill {
+    background: #3a3a3a;
+    border-color: #555;
+    color: #c0c0c0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-modal-account .NB-classifier-pill:hover {
+    background: #454545;
+    border-color: #707070;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-modal-account .NB-classifier-pill.NB-checked {
+    background: #1b3d1b;
+    border-color: #3a8a3a;
+    color: #a0d0a0;
+    box-shadow: 0 1px 3px rgba(56, 142, 60, 0.2);
+}
+
+.NB-dark .NB-modal-account .NB-classifier-pill-count {
+    background: rgba(255, 255, 255, 0.1);
+    color: #999;
+}
+
+.NB-dark .NB-modal-account .NB-classifier-pill.NB-checked .NB-classifier-pill-count {
+    background: #3a8a3a;
+    color: #e8f5e9;
+}
+
+.NB-dark .NB-modal-account .NB-preference-classifiers-count.NB-empty {
+    background: #333;
+    color: #777;
+    border-color: #444;
+}
 
 /* Goodies & Extras: Section "blobs" */
 .NB-dark .NB-goodies-group,

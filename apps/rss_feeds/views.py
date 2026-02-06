@@ -1,5 +1,6 @@
 import base64
 import datetime
+import re
 import time
 
 import redis
@@ -7,6 +8,7 @@ import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.http import (
     Http404,
     HttpResponse,
@@ -19,8 +21,6 @@ from django.views.decorators.http import condition
 from apps.analyzer.models import get_classifiers_for_user
 from apps.push.models import PushSubscription
 from apps.reader.models import UserSubscription
-
-# from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, MFeedIcon, MFetchHistory, MStory, merge_feeds
 from utils import feedfinder_forman as feedfinder
 from utils import json_functions as json
@@ -66,6 +66,89 @@ def load_feed_favicon(request, feed_id):
 
     icon_data = base64.b64decode(feed_icon.data)
     return HttpResponse(icon_data, content_type="image/png")
+
+
+@json.json_view
+def feed_autocomplete(request):
+    query = request.GET.get("term") or request.GET.get("query")
+    version = int(request.GET.get("v", 1))
+    autocomplete_format = request.GET.get("format", "autocomplete")
+
+    # user = get_user(request)
+    # if True or not user.profile.is_premium:
+    #     return dict(code=-1, message="Overloaded, no autocomplete results.", feeds=[], term=query)
+
+    if not query:
+        return dict(code=-1, message="Specify a search 'term'.", feeds=[], term=query)
+
+    if "." in query:
+        try:
+            parts = urlparse(query)
+            if not parts.hostname and not re.match(r'https?://', query):
+                parts = urlparse("http://%s" % re.sub(r'^https?:', '', query))
+            if parts.hostname:
+                query = [parts.hostname]
+                query.extend([p for p in parts.path.split("/") if p])
+                query = " ".join(query)
+        except:
+            logging.user(request, "~FGAdd search, could not parse url in ~FR%s" % query)
+
+    query_params = query.split(" ")
+    tries_left = 5
+    while len(query_params) and tries_left:
+        tries_left -= 1
+        feed_ids = Feed.autocomplete(" ".join(query_params))
+        if feed_ids:
+            break
+        else:
+            query_params = query_params[:-1]
+
+    feeds = list(set([Feed.get_by_id(feed_id) for feed_id in feed_ids]))
+    feeds = [feed for feed in feeds if feed and not feed.branch_from_feed]
+    feeds = [feed for feed in feeds if all([x not in feed.feed_address for x in IGNORE_AUTOCOMPLETE])]
+
+    if autocomplete_format == "autocomplete":
+        feeds = [
+            {
+                "id": feed.pk,
+                "value": feed.feed_address,
+                "label": feed.feed_title,
+                "tagline": feed.data and feed.data.feed_tagline,
+                "num_subscribers": feed.num_subscribers,
+            }
+            for feed in feeds
+        ]
+    else:
+        feeds = [feed.canonical(full=True) for feed in feeds]
+    feeds = sorted(feeds, key=lambda f: -1 * f["num_subscribers"])
+
+    feed_ids = [f["id"] for f in feeds]
+    feed_icons = dict((icon.feed_id, icon) for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids))
+
+    for feed in feeds:
+        if feed["id"] in feed_icons:
+            feed_icon = feed_icons[feed["id"]]
+            if feed_icon.data:
+                feed["favicon_color"] = feed_icon.color
+                feed["favicon"] = feed_icon.data
+
+    logging.user(
+        request,
+        "~FGAdd Search: ~SB%s ~SN(%s matches)"
+        % (
+            query,
+            len(feeds),
+        ),
+    )
+
+    if version > 1:
+        return {
+            "feeds": feeds,
+            "term": query,
+        }
+    else:
+        return feeds
+
 
 
 @ratelimit(minutes=1, requests=30)
@@ -295,7 +378,12 @@ def exception_change_feed_address(request):
                 hash_address_and_link=Feed.generate_hash_address_and_link(feed_address, feed.feed_link)
             )
         except Feed.DoesNotExist:
-            feed = Feed.objects.create(feed_address=feed_address, feed_link=feed.feed_link)
+            try:
+                feed = Feed.objects.create(feed_address=feed_address, feed_link=feed.feed_link)
+            except IntegrityError:
+                feed = Feed.objects.get(
+                    hash_address_and_link=Feed.generate_hash_address_and_link(feed_address, feed.feed_link)
+                )
         code = 1
         if feed.pk != original_feed.pk:
             try:
@@ -385,7 +473,12 @@ def exception_change_feed_link(request):
                 hash_address_and_link=Feed.generate_hash_address_and_link(feed.feed_address, feed_link)
             )
         except Feed.DoesNotExist:
-            feed = Feed.objects.create(feed_address=feed.feed_address, feed_link=feed_link)
+            try:
+                feed = Feed.objects.create(feed_address=feed.feed_address, feed_link=feed_link)
+            except IntegrityError:
+                feed = Feed.objects.get(
+                    hash_address_and_link=Feed.generate_hash_address_and_link(feed.feed_address, feed_link)
+                )
         code = 1
         if feed.pk != original_feed.pk:
             try:
