@@ -51,6 +51,10 @@ def GenerateBriefings():
         # Parse preferred_time "HH:MM" to determine slot, default to morning (8 AM).
         TIME_TO_SLOT = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
         slot = TIME_TO_SLOT.get(prefs.preferred_time, DEFAULT_SLOT)
+        # tasks.py: For twice_daily, preferred_time stores the second slot.
+        # If it resolves to "morning" (legacy bug), default to "afternoon" instead.
+        if prefs.frequency == "twice_daily" and slot == "morning":
+            slot = "afternoon"
         hour, minute = SLOT_TIMES[slot]
         local_target = tz.localize(
             datetime.datetime.combine(local_now.date(), datetime.time(hour, minute))
@@ -187,14 +191,18 @@ def GenerateUserBriefing(user_id, on_demand=False):
         story_sources=prefs.story_sources or "all",
         read_filter=prefs.read_filter or "unread",
         include_read=prefs.include_read,
+        custom_section_prompts=prefs.custom_section_prompts,
+        active_sections=prefs.sections,
     )
 
-    if len(scored_stories) < 3:
+    # tasks.py: Lower minimum threshold for twice_daily since 12-hour windows may have fewer stories
+    min_stories = 1 if prefs.frequency == "twice_daily" else 3
+    if len(scored_stories) < min_stories:
         logging.debug(
-            " ---> GenerateUserBriefing: only %s stories for user %s, skipping"
-            % (len(scored_stories), user_id)
+            " ---> GenerateUserBriefing: only %s stories for user %s, skipping (need %s)"
+            % (len(scored_stories), user_id, min_stories)
         )
-        publish("error", {"error": "Not enough stories to generate a briefing (found %s, need 3)." % len(scored_stories)})
+        publish("error", {"error": "Not enough stories to generate a briefing (found %s, need %s)." % (len(scored_stories), min_stories)})
         return
 
     publish("progress", {"step": "summary", "message": "Writing your briefing summary..."})

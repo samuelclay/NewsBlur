@@ -105,7 +105,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                         ['evening', 'Evening']
                     ]),
                     this.make_control('twice_daily_time', [
-                        ['morning', 'Morning + Afternoon'],
+                        ['afternoon', 'Morning + Afternoon'],
                         ['evening', 'Morning + Evening']
                     ]),
                     this.make_control('preferred_day', [
@@ -226,7 +226,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         this.set_active('frequency', prefs.frequency || 'daily');
         this.set_active('preferred_time', preferred_time);
         // briefing_preferences_popover.js: For 2x daily, map preferred_time to the combo control
-        var twice_value = (preferred_time === 'evening') ? 'evening' : 'morning';
+        var twice_value = (preferred_time === 'evening') ? 'evening' : 'afternoon';
         this.set_active('twice_daily_time', twice_value);
         this.set_active('preferred_day', prefs.preferred_day || 'sun');
         this.set_active('story_count', String(prefs.story_count || 5));

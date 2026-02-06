@@ -21,7 +21,8 @@ from utils import log as logging
 
 def select_briefing_stories(
     user_id, period_start, period_end, max_stories=20, story_sources="all",
-    read_filter="unread", include_read=False
+    read_filter="unread", include_read=False, custom_section_prompts=None,
+    active_sections=None,
 ):
     """
     Select the most important stories for a user's briefing and categorize them
@@ -288,7 +289,41 @@ def select_briefing_stories(
             }
         )
 
-    return enriched[:max_stories]
+    result = enriched[:max_stories]
+
+    # scoring.py: Reserve slots for stories matching custom section prompts.
+    # Search through remaining candidates for keyword matches in story titles.
+    if custom_section_prompts and active_sections:
+        selected_hashes = {s["story_hash"] for s in result}
+        remaining = [s for s in enriched[max_stories:] if s["story_hash"] not in selected_hashes]
+
+        for i, prompt in enumerate(custom_section_prompts):
+            custom_key = "custom_%d" % (i + 1)
+            if not active_sections.get(custom_key, False) or not prompt:
+                continue
+            keywords = [w.lower() for w in prompt.split() if len(w) >= 3]
+            if not keywords:
+                continue
+            reserved = 0
+            for s in remaining:
+                if reserved >= 2:
+                    break
+                story = stories_by_hash.get(s["story_hash"])
+                if not story or not story.story_title:
+                    continue
+                title_lower = story.story_title.lower()
+                if any(kw in title_lower for kw in keywords):
+                    s["category"] = custom_key
+                    result.append(s)
+                    selected_hashes.add(s["story_hash"])
+                    reserved += 1
+            if reserved > 0:
+                logging.debug(
+                    " ---> Briefing scoring: reserved %s stories for %s (%s)"
+                    % (reserved, custom_key, prompt)
+                )
+
+    return result
 
 
 def _normalize_title(title):
