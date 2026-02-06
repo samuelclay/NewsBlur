@@ -629,7 +629,6 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
 
     make_notification_section: function () {
         var notification_types = this.prefs.notification_types || [];
-        var briefing_feed_id = this.prefs.briefing_feed_id;
 
         var items = _.map([
             ['email', 'Email'],
@@ -652,11 +651,6 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             }, items)
         ];
 
-        if (!briefing_feed_id) {
-            controls.push($.make('div', { className: 'NB-briefing-notification-hint' },
-                'Available after your first briefing is generated'));
-        }
-
         return this.make_section('Notifications', 'Get notified when a new briefing is ready', controls);
     },
 
@@ -664,11 +658,13 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         e.preventDefault();
         e.stopPropagation();
 
-        if (!this.prefs.briefing_feed_id) return;
-
         var $target = $(e.currentTarget);
         $target.toggleClass('NB-active');
-        this.save_notification_types();
+
+        // briefing_preferences_popover.js: Save immediately if feed exists
+        if (this.prefs.briefing_feed_id) {
+            this.save_notification_types();
+        }
     },
 
     save_notification_types: function () {

@@ -391,9 +391,13 @@ def generate_briefing(request):
         prefs.enabled = True
         prefs.save()
 
+    # views.py: Create the briefing feed synchronously so the frontend can save
+    # notification preferences immediately, before the Celery task runs.
+    feed = ensure_briefing_feed(user)
+
     GenerateUserBriefing.delay(user.pk, on_demand=True)
 
-    return {"status": "generating"}
+    return {"status": "generating", "briefing_feed_id": feed.pk}
 
 
 def _story_to_dict(story):
