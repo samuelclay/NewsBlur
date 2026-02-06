@@ -234,30 +234,120 @@ LLM_EXCEPTIONS = (
     genai_errors.APIError,
 )
 
-# Model registry: maps friendly names to (provider_class, model_id)
-# Only top-tier models per provider
-MODELS = {
-    "opus": (AnthropicProvider, "claude-opus-4-5-20251101"),
-    "gpt-5.2": (OpenAIProvider, "gpt-5.2"),
-    "gemini-3": (GeminiProvider, "gemini-3-pro-preview"),
-    "grok-4.1": (XAIProvider, "grok-4-1-fast-non-reasoning"),
+# Provider classes by vendor slug, used for settings override resolution
+PROVIDER_CLASSES = {
+    "anthropic": AnthropicProvider,
+    "openai": OpenAIProvider,
+    "google": GeminiProvider,
+    "xai": XAIProvider,
 }
 
+# Model registry: single source of truth for all model configuration.
+# Each entry contains everything needed by both backend and frontend.
+# To add/update a model, only change this dict — frontend dropdowns are populated from it.
+_DEFAULT_MODELS = {
+    "opus": {
+        "provider_class": AnthropicProvider,
+        "model_id": "claude-opus-4-6",
+        "display_name": "Claude Opus 4.6",
+        "vendor": "anthropic",
+        "vendor_display": "Anthropic",
+        "order": 1,
+    },
+    "gpt-5.2": {
+        "provider_class": OpenAIProvider,
+        "model_id": "gpt-5.2",
+        "display_name": "GPT 5.2",
+        "vendor": "openai",
+        "vendor_display": "OpenAI",
+        "order": 2,
+    },
+    "gemini-3": {
+        "provider_class": GeminiProvider,
+        "model_id": "gemini-3-pro-preview",
+        "display_name": "Gemini 3 Pro",
+        "vendor": "google",
+        "vendor_display": "Google",
+        "order": 3,
+    },
+    "grok-4.1": {
+        "provider_class": XAIProvider,
+        "model_id": "grok-4-1-fast-non-reasoning",
+        "display_name": "Grok 4.1 Fast",
+        "vendor": "xai",
+        "vendor_display": "xAI",
+        "order": 4,
+    },
+}
+
+
+def _load_models():
+    """Load models, applying settings override if ASK_AI_MODELS is defined.
+
+    Self-hosters can define ASK_AI_MODELS in settings as a dict of model configs:
+        ASK_AI_MODELS = {
+            "my-model": {
+                "provider": "openai",  # one of: anthropic, openai, google, xai
+                "model_id": "gpt-4o-mini",
+                "display_name": "GPT-4o Mini",
+                "order": 1,
+            },
+        }
+    """
+    custom = getattr(settings, "ASK_AI_MODELS", None)
+    if not custom:
+        return _DEFAULT_MODELS
+
+    models = {}
+    for key, cfg in custom.items():
+        provider_slug = cfg.get("provider", cfg.get("vendor", ""))
+        provider_class = PROVIDER_CLASSES.get(provider_slug)
+        if not provider_class:
+            continue
+        models[key] = {
+            "provider_class": provider_class,
+            "model_id": cfg["model_id"],
+            "display_name": cfg.get("display_name", key),
+            "vendor": provider_slug,
+            "vendor_display": cfg.get("vendor_display", provider_slug.title()),
+            "order": cfg.get("order", 99),
+        }
+    return models if models else _DEFAULT_MODELS
+
+
+MODELS = _load_models()
 VALID_MODELS = list(MODELS.keys())
-DEFAULT_MODEL = "opus"
+DEFAULT_MODEL = getattr(settings, "ASK_AI_MODEL", "opus")
+
 # MODEL_VENDORS includes both current and historical models for metrics tracking.
 # When retiring a model, remove it from MODELS above but keep it here.
 MODEL_VENDORS = {
-    # Current models
-    "opus": "anthropic",
-    "gpt-5.2": "openai",
-    "gemini-3": "google",
-    "grok-4.1": "xai",
+    **{key: m["vendor"] for key, m in MODELS.items()},
     # Historical models (kept for metrics)
     "gpt-5.1": "openai",
     "gpt-4.1": "openai",
     "grok-4": "xai",
 }
+
+
+def get_models_for_frontend() -> list:
+    """Get model list for frontend JavaScript consumption.
+
+    Returns a sorted list of dicts with key, display_name, vendor, vendor_display.
+    Passed to the frontend via the template tag pipeline as NEWSBLUR.Globals.ask_ai_models.
+    """
+    return sorted(
+        [
+            {
+                "key": key,
+                "display_name": m["display_name"],
+                "vendor": m["vendor"],
+                "vendor_display": m["vendor_display"],
+            }
+            for key, m in MODELS.items()
+        ],
+        key=lambda x: MODELS[x["key"]].get("order", 99),
+    )
 
 
 def get_provider(model_name: str) -> tuple[LLMProvider, str]:
@@ -270,5 +360,5 @@ def get_provider(model_name: str) -> tuple[LLMProvider, str]:
     if model_name not in MODELS:
         model_name = DEFAULT_MODEL
 
-    provider_class, model_id = MODELS[model_name]
-    return provider_class(), model_id
+    model = MODELS[model_name]
+    return model["provider_class"](), model["model_id"]
