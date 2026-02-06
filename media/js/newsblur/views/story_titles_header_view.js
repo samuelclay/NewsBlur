@@ -12,7 +12,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         "click .NB-feedbar-mark-feed-read-expand": "expand_mark_read",
         "click .NB-feedbar-mark-feed-read-time": "mark_folder_as_read_days",
         "click .NB-story-title-indicator": "show_hidden_story_titles",
-        "click .NB-trending-time-option": "change_trending_time_window"
+        "click .NB-trending-time-option": "change_trending_time_window",
+        "click .NB-briefing-preferences-icon": "open_briefing_preferences"
     },
 
     initialize: function () {
@@ -172,6 +173,35 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             }).render();
             $view = this.view.$el;
             this.search_view = this.view.search_view;
+        } else if (NEWSBLUR.reader.flags['briefing_view']) {
+            // story_titles_header_view.js: Briefing view header with icon and title
+            // story_titles_header_view.js: Hide settings button during onboarding
+            var show_settings = !NEWSBLUR.reader.briefing_onboarding_view;
+            $view = $(_.template('\
+                <div class="NB-folder NB-no-hover NB-briefing-folder">\
+                    <div class="NB-folder-icon">\
+                        <img class="feed_favicon" src="<%= MEDIA_URL %>img/icons/nouns/briefing.svg">\
+                    </div>\
+                    <div class="NB-feedlist-manage-icon" role="button"></div>\
+                    <span class="folder_title_text"><%= folder_title %></span>\
+                    <% if (show_settings) { %>\
+                    <span class="NB-briefing-preferences-icon" title="Briefing Preferences">\
+                        <div class="NB-icon"></div>\
+                        Briefing Settings\
+                    </span>\
+                    <% } %>\
+                    <div class="NB-feedbar-options-container">\
+                        <span class="NB-feedbar-options">\
+                            <div class="NB-icon"></div>\
+                            <%= NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, "order") %>\
+                        </span>\
+                    </div>\
+                </div>\
+            ', {
+                folder_title: 'Daily Briefing',
+                MEDIA_URL: NEWSBLUR.Globals.MEDIA_URL,
+                show_settings: show_settings
+            }));
         } else {
             this.view = new NEWSBLUR.Views.FeedTitleView({
                 model: NEWSBLUR.assets.get_feed(this.options.feed_id),
@@ -314,13 +344,22 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     },
 
     open_options_popover: function (e) {
+        if ($(e.currentTarget).hasClass('NB-briefing-preferences-icon')) return;
+
         if (!(this.showing_fake_folder ||
             NEWSBLUR.reader.active_feed == "read" ||
-            NEWSBLUR.reader.flags['starred_view'])) return;
+            NEWSBLUR.reader.flags['starred_view'] ||
+            NEWSBLUR.reader.flags['briefing_view'])) return;
 
         NEWSBLUR.FeedOptionsPopover.create({
             anchor: this.$(".NB-feedbar-options"),
             feed_id: NEWSBLUR.reader.active_feed
+        });
+    },
+
+    open_briefing_preferences: function () {
+        NEWSBLUR.BriefingPreferencesPopover.create({
+            anchor: this.$(".NB-briefing-preferences-icon")
         });
     },
 

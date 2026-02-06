@@ -18,8 +18,17 @@ NEWSBLUR.ReaderPreferences.prototype.constructor = NEWSBLUR.ReaderPreferences;
 _.extend(NEWSBLUR.ReaderPreferences.prototype, {
 
     runner: function () {
+        var self = this;
         this.options.onOpen = _.bind(function () {
             this.resize_modal();
+            if (self.options.scroll_to === 'briefing') {
+                _.defer(function () {
+                    var $target = self.$modal.find('.NB-preference-briefing-enabled');
+                    if ($target.length) {
+                        $target[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            }
         }, this);
         this.make_modal();
         this.select_preferences();
@@ -353,6 +362,32 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Right-clicking',
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Folders, feeds, and story titles')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-briefing-enabled' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', { className: 'NB-social-card NB-social-card-enable' }, [
+                                $.make('input', { id: 'NB-preference-briefing-enabled-1', type: 'radio', name: 'briefing_enabled', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-enabled-1', className: 'NB-social-card-content' }, [
+                                    $.make('span', { className: 'NB-social-card-title' }, 'Enable daily briefings'),
+                                    $.make('ul', { className: 'NB-social-features-list' }, [
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'AI-curated summary of your top stories']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Customizable writing style and length']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Scheduled delivery (daily or twice daily)']),
+                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Choose which feeds to include'])
+                                    ])
+                                ])
+                            ]),
+                            $.make('div', { className: 'NB-social-card NB-social-card-disable' }, [
+                                $.make('input', { id: 'NB-preference-briefing-enabled-2', type: 'radio', name: 'briefing_enabled', value: 'false' }),
+                                $.make('label', { 'for': 'NB-preference-briefing-enabled-2', className: 'NB-social-card-content' }, [
+                                    $.make('span', { className: 'NB-social-card-title' }, 'Disable daily briefings'),
+                                    $.make('span', { className: 'NB-social-card-desc' }, 'Turn off automatic briefing generation')
+                                ])
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label' }, [
+                            'Daily Briefing'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-opml' }, [
@@ -1308,6 +1343,33 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         this.slide_read_story_delay_slider();
         this.slide_arrow_scroll_spacing_slider();
         this.slide_space_scroll_spacing_slider();
+
+        // reader_preferences.js: Load briefing preferences from API
+        this.load_briefing_preferences();
+    },
+
+    load_briefing_preferences: function () {
+        var $modal = this.$modal;
+        $.ajax({
+            url: '/briefing/preferences',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                var enabled = data.enabled !== false;
+                $('input[name=briefing_enabled][value=' + enabled + ']', $modal).prop('checked', true);
+            }
+        });
+    },
+
+    save_briefing_preferences: function (form) {
+        // reader_preferences.js: Save briefing enabled/disabled to separate API endpoint
+        $.ajax({
+            url: '/briefing/preferences',
+            type: 'POST',
+            data: { enabled: form['briefing_enabled'] },
+            dataType: 'json'
+        });
+        delete form['briefing_enabled'];
     },
 
     // ===================
@@ -1552,6 +1614,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var form = this.serialize_preferences();
         $('.NB-preference-error', this.$modal).text('');
         $('.NB-modal-submit-button', this.$modal).text('Saving...').attr('disabled', true).addClass('NB-disabled');
+
+        // reader_preferences.js: Save briefing preferences separately
+        this.save_briefing_preferences(form);
 
         this.model.save_preferences(form, function (data) {
             NEWSBLUR.reader.switch_feed_view_unread_view();

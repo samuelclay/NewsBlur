@@ -405,6 +405,7 @@ CELERY_TASK_ROUTES = {
     "archive-index-elasticsearch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-process-batch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-cleanup-old": {"queue": "push_feeds", "binding_key": "push_feeds"},
+    "generate-user-briefing": {"queue": "work_queue", "binding_key": "work_queue"},
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {
@@ -488,6 +489,7 @@ CELERY_IMPORTS = (
     "apps.ask_ai.tasks",
     "apps.archive_extension.tasks",
     "apps.archive_assistant.tasks",
+    "apps.briefing.tasks",
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
@@ -562,12 +564,28 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": datetime.timedelta(hours=24),
         "options": {"queue": "cron_queue"},
     },
+    "generate-briefings": {
+        "task": "generate-briefings",
+        "schedule": datetime.timedelta(minutes=15),
+        "options": {"queue": "cron_queue"},
+    },
 }
 
-# Worktrees don't need periodic beat tasks (feed updates, stats, etc.).
-# Only worktree-specific tasks triggered manually or via apply_async matter.
+# Beat tasks that should also run in worktrees during development.
+# Tasks here ALSO exist in CELERY_BEAT_SCHEDULE above — this set just controls
+# which ones survive the worktree filter. In production (no NEWSBLUR_WORKTREE env),
+# this set is ignored and the full CELERY_BEAT_SCHEDULE runs as-is.
+# Entries can be removed once a feature is stable and no longer needs worktree testing.
+CELERY_WORKTREE_BEAT_TASKS = {
+    "generate-briefings",
+}
+
 if NEWSBLUR_WORKTREE:
-    CELERY_BEAT_SCHEDULE = {}
+    CELERY_BEAT_SCHEDULE = {
+        name: entry
+        for name, entry in CELERY_BEAT_SCHEDULE.items()
+        if name in CELERY_WORKTREE_BEAT_TASKS
+    }
 
 # =========
 # = Mongo =

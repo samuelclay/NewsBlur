@@ -74,6 +74,22 @@ NEWSBLUR.Globals.ask_ai_models = {{ ask_ai_models_json|safe }};
                         </div>
                     </div>
 
+                    <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-briefing-container">
+                        <div class="NB-feeds-header NB-feeds-header-river-briefing NB-empty" role="link">
+                            <div class="NB-feeds-header-count unread_count"></div>
+                            <img class="NB-feeds-header-icon" src="{{ MEDIA_URL }}img/icons/nouns/briefing.svg" />
+                            <div class="NB-feedlist-collapse-icon"></div>
+                            <div class="NB-feeds-header-title">
+                                Daily Briefing
+                            </div>
+                            <span class="NB-staff-badge">Staff Only</span>
+                        </div>
+                    </div>
+
+                    <div class="NB-briefing-sections-folder">
+                        <ul class="NB-briefing-section-feeds NB-feedlist"></ul>
+                    </div>
+
                     <div class="NB-feeds-header-container NB-feeds-header-river-container NB-feeds-header-river-infrequent-container">
                         <div class="NB-feeds-header NB-feeds-header-river-infrequent NB-empty" role="link">
                             <div class="NB-feeds-header-count unread_count"></div>
