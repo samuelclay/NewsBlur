@@ -100,8 +100,19 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         'beehiiv': 'Beehiiv',
         'convertkit': 'ConvertKit',
         'revue': 'Revue',
+        'independent': 'Independent',
         'generic': 'Newsletter',
         'direct': 'RSS Feed'
+    },
+
+    PLATFORM_FAVICONS: {
+        'substack': 'https://substack.com/favicon.ico',
+        'medium': 'https://miro.medium.com/v2/1*m-R_BkNf1Qjr1YbyOIJY2w.png',
+        'ghost': 'https://ghost.org/favicon.ico',
+        'buttondown': 'https://www.google.com/s2/favicons?domain=buttondown.com&sz=32',
+        'beehiiv': 'https://www.google.com/s2/favicons?domain=beehiiv.com&sz=32',
+        'convertkit': 'https://www.google.com/s2/favicons?domain=convertkit.com&sz=32',
+        'independent': '/media/img/icons/heroicons-solid/rss.svg'
     },
 
     YOUTUBE_CATEGORIES: [
@@ -914,6 +925,16 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 }
                 if (data.categories && data.categories.length > 0) {
                     state.available_categories = data.categories;
+                }
+                if (data.platform_counts) {
+                    var had_platform_counts = state.platform_counts && _.keys(state.platform_counts).length > 0;
+                    state.platform_counts = data.platform_counts;
+                    if (!had_platform_counts && feed_type === 'newsletter') {
+                        var $existing_pills = self.$('.NB-add-site-newsletters-tab .NB-add-site-filter-pills');
+                        if ($existing_pills.length) {
+                            $existing_pills.replaceWith(self.make_platform_pills(state));
+                        }
+                    }
                 }
                 if (data.grouped_categories && data.grouped_categories.length > 0) {
                     var had_categories = state.grouped_categories && state.grouped_categories.length > 0;
@@ -1772,40 +1793,62 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     // = Newsletters Tab =
     // ===================
 
-    render_newsletters_tab: function () {
-        var state = this.newsletters_state;
-        var $tab = this.$('.NB-add-site-newsletters-tab');
+    make_platform_pills: function (state) {
+        var self = this;
+        var platform_counts = state.platform_counts || {};
+        var selected = state.selected_platform || 'all';
 
-        var platforms = [
-            { id: 'all', name: 'All', icon: '/media/img/icons/bootstrap-fill/grid-fill.svg' },
-            { id: 'substack', name: 'Substack', favicon: 'https://substack.com/favicon.ico' },
-            { id: 'medium', name: 'Medium', favicon: 'https://miro.medium.com/v2/1*m-R_BkNf1Qjr1YbyOIJY2w.png' },
-            { id: 'buttondown', name: 'Buttondown', favicon: 'https://buttondown.com/static/images/icons/icon@72.png' },
-            { id: 'ghost', name: 'Ghost', favicon: 'https://ghost.org/favicon.ico' }
-        ];
-        var $platform_pills = $.make('div', { className: 'NB-add-site-filter-pills' },
-            _.map(platforms, function(platform) {
-                var pill_content;
+        // Build platform list dynamically from data
+        var platforms = [{ id: 'all', name: 'All', icon: '/media/img/icons/bootstrap-fill/grid-fill.svg' }];
+        var platform_order = ['substack', 'medium', 'ghost', 'buttondown', 'beehiiv', 'convertkit', 'independent'];
+        _.each(platform_order, function (pid) {
+            if (platform_counts[pid]) {
+                platforms.push({
+                    id: pid,
+                    name: self.NEWSLETTER_PLATFORMS[pid] || pid,
+                    favicon: self.PLATFORM_FAVICONS[pid],
+                    count: platform_counts[pid]
+                });
+            }
+        });
+        // Add any remaining platforms not in the ordered list
+        _.each(platform_counts, function (count, pid) {
+            if (pid && !_.find(platforms, function (p) { return p.id === pid; })) {
+                platforms.push({
+                    id: pid,
+                    name: self.NEWSLETTER_PLATFORMS[pid] || pid,
+                    favicon: self.PLATFORM_FAVICONS[pid],
+                    count: count
+                });
+            }
+        });
+
+        return $.make('div', { className: 'NB-add-site-filter-pills' },
+            _.map(platforms, function (platform) {
+                var pill_content = [];
                 if (platform.favicon) {
-                    pill_content = [
-                        $.make('img', { src: platform.favicon, className: 'NB-add-site-filter-pill-favicon' }),
-                        $.make('span', platform.name)
-                    ];
+                    pill_content.push($.make('img', { src: platform.favicon, className: 'NB-add-site-filter-pill-favicon' }));
                 } else if (platform.icon) {
-                    pill_content = [
-                        $.make('img', { src: platform.icon, className: 'NB-add-site-filter-pill-icon' }),
-                        $.make('span', platform.name)
-                    ];
-                } else {
-                    pill_content = platform.name;
+                    pill_content.push($.make('img', { src: platform.icon, className: 'NB-add-site-filter-pill-icon' }));
+                }
+                pill_content.push($.make('span', platform.name));
+                if (platform.count) {
+                    pill_content.push($.make('span', { className: 'NB-add-site-filter-pill-count' }, '' + platform.count));
                 }
                 return $.make('div', {
-                    className: 'NB-add-site-filter-pill' + (state.selected_platform === platform.id || (!state.selected_platform && platform.id === 'all') ? ' NB-active' : ''),
+                    className: 'NB-add-site-filter-pill' + (selected === platform.id ? ' NB-active' : ''),
                     'data-category': platform.id,
                     'data-source': 'newsletters-platform'
                 }, pill_content);
             })
         );
+    },
+
+    render_newsletters_tab: function () {
+        var state = this.newsletters_state;
+        var $tab = this.$('.NB-add-site-newsletters-tab');
+
+        var $platform_pills = this.make_platform_pills(state);
 
         var $category_pills = this.make_category_pills('newsletters', state);
 
@@ -3210,11 +3253,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         if (source === 'newsletters-platform') {
             this.newsletters_state.selected_platform = category;
+            this.newsletters_state.selected_category = 'all';
+            this.newsletters_state.selected_subcategory = 'all';
             this.newsletters_state.popular_feeds_loaded = false;
             this.newsletters_state.popular_feeds = [];
             this.newsletters_state.popular_feeds_collection = null;
             this.newsletters_state.popular_offset = 0;
-            this.render_newsletters_popular();
+            this.newsletters_state.grouped_categories = [];
+            this.render_newsletters_tab();
         }
     },
 
