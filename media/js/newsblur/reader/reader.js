@@ -2310,7 +2310,7 @@
             this.flags.briefing_generate_timeout = _.delay(_.bind(function () {
                 if (!this.flags.briefing_generating) return;
                 this.handle_briefing_error({ error: "Briefing generation timed out. Please try again." });
-            }, this), 90 * 1000);
+            }, this), 120 * 1000);
         },
 
         handle_briefing_start: function () {

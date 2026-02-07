@@ -141,6 +141,7 @@ class MBriefingPreferences(mongo.Document):
     story_sources = mongo.StringField(default="all")  # "all" or "folder:FolderName"
     read_filter = mongo.StringField(choices=["unread", "focus"], default="unread")  # unread or focus stories
     summary_style = mongo.StringField(choices=["editorial", "bullets", "headlines"], default="bullets")
+    briefing_model = mongo.StringField(default=None)  # Model key from BRIEFING_MODELS, None = server default
     include_read = mongo.BooleanField(default=False)  # False = unread only, True = include read stories
     sections = mongo.DictField(
         default=None

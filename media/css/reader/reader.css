@@ -33705,17 +33705,14 @@ span.NB-briefing-inline-favicon {
     line-height: 16px;
 }
 
-/* reader.css: Section icons in briefing summary h3 headers (span with background-image) */
+/* reader.css: Section icons in briefing summary h3 headers (img embedded server-side) */
 .NB-briefing-section-icon {
     display: inline-block;
     width: 1em;
     height: 1em;
     vertical-align: -0.1em;
     margin-right: 0.3em;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
+    filter: grayscale(1);
 }
 
 /* reader.css: Section icons in briefing settings/onboarding */
@@ -33724,7 +33721,7 @@ span.NB-briefing-inline-favicon {
     height: 16px;
     margin-top: 1px;
     flex-shrink: 0;
-    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
+    filter: grayscale(1);
 }
 
 /* reader.css: Briefing curated stories container */
@@ -34218,6 +34215,24 @@ span.NB-briefing-inline-favicon {
 .NB-dark .NB-briefing-style-option-subtitle {
     color: #777;
 }
+
+/* reader.css: Briefing AI model selector */
+.NB-briefing-model-chooser {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.NB-briefing-model-chooser .NB-provider-pill {
+    flex-shrink: 0;
+    font-size: 10px;
+    padding: 1px 5px;
+}
+
+.NB-briefing-model-chooser .NB-briefing-style-option-label {
+    margin-left: 2px;
+}
+
 
 /* reader.css: Briefing sections — tappable checkbox rows */
 .NB-briefing-sections {

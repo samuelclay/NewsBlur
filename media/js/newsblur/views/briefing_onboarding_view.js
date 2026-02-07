@@ -76,7 +76,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
 
     populate_settings: function (prefs) {
         var sources = prefs.story_sources || 'all';
-        var selected_folder = sources.indexOf('folder:') === 0 ? sources.replace('folder:', 'river:') : null;
+        var selected_folder = sources.indexOf('folder:') === 0 ? sources.slice(7) : null;
 
         var $folder_chooser = NEWSBLUR.utils.make_folders(selected_folder, "All Site Stories", 'feed', false);
         $folder_chooser.addClass('NB-modal-feed-chooser');
