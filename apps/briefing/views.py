@@ -13,6 +13,7 @@ from apps.briefing.models import (
     VALID_SECTION_KEYS,
     MBriefing,
     MBriefingPreferences,
+    ensure_briefing_feed,
 )
 from apps.briefing.summary import normalize_section_key
 from apps.notifications.models import MUserFeedNotification
