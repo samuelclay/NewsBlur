@@ -641,15 +641,17 @@ class ScannerTracker:
             sus_key = f"scan:sus:{ip}:{window}"
             sus_count = self.redis.get(sus_key)
 
-            results.append({
-                "ip": ip,
-                "total_404s": int(count),
-                "suspicious_404s": int(sus_count) if sus_count else 0,
-                "last_path": meta.get("last_path", "unknown"),
-                "first_path": meta.get("first_path", "unknown"),
-                "first_seen": meta.get("first_seen"),
-                "last_seen": meta.get("last_seen"),
-            })
+            results.append(
+                {
+                    "ip": ip,
+                    "total_404s": int(count),
+                    "suspicious_404s": int(sus_count) if sus_count else 0,
+                    "last_path": meta.get("last_path", "unknown"),
+                    "first_path": meta.get("first_path", "unknown"),
+                    "first_seen": meta.get("first_seen"),
+                    "last_seen": meta.get("last_seen"),
+                }
+            )
 
         return results
 

@@ -582,9 +582,7 @@ CELERY_WORKTREE_BEAT_TASKS = {
 
 if NEWSBLUR_WORKTREE:
     CELERY_BEAT_SCHEDULE = {
-        name: entry
-        for name, entry in CELERY_BEAT_SCHEDULE.items()
-        if name in CELERY_WORKTREE_BEAT_TASKS
+        name: entry for name, entry in CELERY_BEAT_SCHEDULE.items() if name in CELERY_WORKTREE_BEAT_TASKS
     }
 
 # =========

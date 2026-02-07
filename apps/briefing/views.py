@@ -7,7 +7,13 @@ from django.conf import settings
 from django.utils.encoding import smart_str
 
 from apps.briefing.activity import RUserActivity
-from apps.briefing.models import BRIEFING_SECTION_DEFINITIONS, DEFAULT_SECTIONS, MBriefing, MBriefingPreferences, VALID_SECTION_KEYS
+from apps.briefing.models import (
+    BRIEFING_SECTION_DEFINITIONS,
+    DEFAULT_SECTIONS,
+    VALID_SECTION_KEYS,
+    MBriefing,
+    MBriefingPreferences,
+)
 from apps.briefing.summary import normalize_section_key
 from apps.notifications.models import MUserFeedNotification
 from apps.rss_feeds.models import Feed, MStory
@@ -80,7 +86,7 @@ def load_briefing_stories(request):
     for briefing in briefings:
         if briefing.summary_story_hash:
             all_briefing_hashes.add(briefing.summary_story_hash)
-        for h in (briefing.curated_story_hashes or []):
+        for h in briefing.curated_story_hashes or []:
             all_briefing_hashes.add(h)
 
     read_hashes = set()
@@ -347,7 +353,9 @@ def briefing_status(request):
     latest_briefing = MBriefing.latest_for_user(user.pk, limit=1)
     last_generated = None
     if latest_briefing:
-        last_generated = latest_briefing[0].generated_at.isoformat() if latest_briefing[0].generated_at else None
+        last_generated = (
+            latest_briefing[0].generated_at.isoformat() if latest_briefing[0].generated_at else None
+        )
 
     next_generation = None
     if prefs.enabled:
