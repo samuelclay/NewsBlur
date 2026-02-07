@@ -1,15 +1,11 @@
 import re
 import zlib
 
-import anthropic
-from django.conf import settings
 from django.utils.encoding import smart_str
 
 from apps.rss_feeds.models import Feed, MStory
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
-
-BRIEFING_MODEL = "claude-haiku-4-5"
 
 
 def normalize_section_key(key):
@@ -175,6 +171,7 @@ def generate_briefing_summary(
     summary_style="bullets",
     sections=None,
     custom_section_prompts=None,
+    model=None,
 ):
     """
     Generate an editorial summary of the selected stories.
@@ -243,19 +240,36 @@ def generate_briefing_summary(
     )
 
     try:
+        from apps.ask_ai.providers import (
+            BRIEFING_MODELS,
+            DEFAULT_BRIEFING_MODEL,
+            LLM_EXCEPTIONS,
+            get_briefing_provider,
+        )
+
+        model_name = model if model and model in BRIEFING_MODELS else DEFAULT_BRIEFING_MODEL
+        provider, model_id = get_briefing_provider(model_name)
+
+        # summary.py: Fall back to default if the chosen provider's API key isn't configured
+        if not provider.is_configured():
+            if model_name != DEFAULT_BRIEFING_MODEL:
+                provider, model_id = get_briefing_provider(DEFAULT_BRIEFING_MODEL)
+                model_name = DEFAULT_BRIEFING_MODEL
+            if not provider.is_configured():
+                logging.error(" ---> Briefing summary failed for user %s: no API key configured" % user_id)
+                return None
+
         system_prompt = _build_system_prompt(summary_length, summary_style, sections, custom_section_prompts)
         # summary.py: Scale max_tokens based on story/section count to avoid truncation
         num_sections = sum(1 for v in (sections or {}).values() if v)
         max_tokens = min(1024 + (len(scored_stories) * 80) + (num_sections * 100), 4096)
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-        response = client.messages.create(
-            model=BRIEFING_MODEL,
-            max_tokens=max_tokens,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_prompt}],
-        )
 
-        summary_html = "".join(block.text for block in response.content if hasattr(block, "text"))
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+        summary_html = provider.generate(messages, model_id, max_tokens=max_tokens)
 
         summary_html = summary_html.strip()
         if summary_html.startswith("```"):
@@ -263,30 +277,35 @@ def generate_briefing_summary(
             summary_html = re.sub(r"\n?```\s*$", "", summary_html)
             summary_html = summary_html.strip()
 
-        if response.usage:
-            LLMCostTracker.record_usage(
-                provider="anthropic",
-                model=BRIEFING_MODEL,
-                feature="daily_briefing",
-                input_tokens=response.usage.input_tokens,
-                output_tokens=response.usage.output_tokens,
-                user_id=user_id,
-            )
-
-        logging.debug(
-            " ---> Briefing summary generated for user %s: %s input, %s output tokens"
-            % (
-                user_id,
-                response.usage.input_tokens if response.usage else "?",
-                response.usage.output_tokens if response.usage else "?",
-            )
+        input_tokens, output_tokens = provider.get_last_usage()
+        model_config = BRIEFING_MODELS.get(model_name, {})
+        vendor = model_config.get("vendor", "unknown")
+        LLMCostTracker.record_usage(
+            provider=vendor,
+            model=model_id,
+            feature="daily_briefing",
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            user_id=user_id,
         )
 
-        return summary_html
+        logging.debug(
+            " ---> Briefing summary generated for user %s: %s input, %s output tokens (model: %s)"
+            % (user_id, input_tokens, output_tokens, model_name)
+        )
 
-    except (anthropic.APIConnectionError, anthropic.APIStatusError) as e:
+        metadata = {
+            "model_name": model_name,
+            "display_name": model_config.get("display_name", model_name),
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+        }
+
+        return summary_html, metadata
+
+    except LLM_EXCEPTIONS as e:
         logging.error(" ---> Briefing summary failed for user %s: %s" % (user_id, str(e)))
-        return None
+        return None, None
 
 
 def extract_section_summaries(summary_html):
@@ -349,6 +368,114 @@ def extract_section_story_hashes(section_summaries):
         if hashes:
             result[key] = hashes
     return result
+
+
+BRIEFING_SECTION_ICONS = {
+    "trending_unread": "indicator-unread-gray.svg",
+    "long_read": "scroll.svg",
+    "classifier_match": "train.svg",
+    "follow_up": "boomerang.svg",
+    "trending_global": "discover.svg",
+    "duplicates": "venn.svg",
+    "quick_catchup": "pulse.svg",
+    "emerging_topics": "growth-rocket-gray.svg",
+    "contrarian_views": "stack.svg",
+    "custom_1": "prompt.svg",
+    "custom_2": "prompt.svg",
+    "custom_3": "prompt.svg",
+    "custom_4": "prompt.svg",
+    "custom_5": "prompt.svg",
+}
+
+
+def embed_briefing_icons(summary_html, scored_stories):
+    """
+    Post-process briefing summary HTML to embed feed favicons before story links
+    and section icons in h3 headers. Uses inline data URIs (base64-encoded) so
+    icons render instantly without network requests on the web, and also appear
+    in email notifications.
+    """
+    import base64
+    import os
+
+    from apps.rss_feeds.models import MFeedIcon
+
+    if not summary_html:
+        return summary_html
+
+    # summary.py: Build story_hash -> favicon data URI mapping
+    story_hashes = [s["story_hash"] for s in scored_stories]
+    stories_by_hash = {}
+    for story in MStory.objects(story_hash__in=story_hashes):
+        stories_by_hash[story.story_hash] = story
+
+    feed_ids = set(s.story_feed_id for s in stories_by_hash.values())
+
+    # summary.py: Batch-load favicon base64 data from MFeedIcon
+    favicon_data_map = {}
+    for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids):
+        if icon.data:
+            favicon_data_map[icon.feed_id] = "data:image/png;base64,%s" % icon.data
+
+    favicon_map = {}
+    for story_hash, story in stories_by_hash.items():
+        data_uri = favicon_data_map.get(story.story_feed_id)
+        if data_uri:
+            favicon_map[story_hash] = data_uri
+
+    # summary.py: Embed feed favicons before story titles in briefing links
+    favicon_style = (
+        "display:inline-block;width:16px;height:16px;"
+        "vertical-align:middle;margin-right:2px;margin-top:-1px;"
+        "border-radius:2px;"
+    )
+
+    def _replace_story_link(match):
+        tag = match.group(0)
+        story_hash = match.group(1)
+        url = favicon_map.get(story_hash)
+        if not url:
+            return tag
+        img = '<img src="%s" class="NB-briefing-inline-favicon" style="%s">' % (url, favicon_style)
+        return tag + img
+
+    summary_html = re.sub(r'<a\s[^>]*data-story-hash="([^"]+)"[^>]*>', _replace_story_link, summary_html)
+
+    # summary.py: Build section icon data URI cache from SVG files on disk
+    icon_data_cache = {}
+    icons_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "media", "img", "icons", "nouns")
+
+    section_icon_style = (
+        "display:inline-block;width:1em;height:1em;"
+        "vertical-align:-0.1em;margin-right:0.3em;"
+    )
+
+    def _get_icon_data_uri(icon_file):
+        if icon_file in icon_data_cache:
+            return icon_data_cache[icon_file]
+        icon_path = os.path.join(icons_dir, icon_file)
+        try:
+            with open(icon_path, "rb") as f:
+                svg_data = base64.b64encode(f.read()).decode("ascii")
+            data_uri = "data:image/svg+xml;base64,%s" % svg_data
+        except FileNotFoundError:
+            data_uri = None
+        icon_data_cache[icon_file] = data_uri
+        return data_uri
+
+    def _replace_section_header(match):
+        tag = match.group(0)
+        section_key = match.group(1)
+        icon_file = BRIEFING_SECTION_ICONS.get(section_key, "briefing.svg")
+        data_uri = _get_icon_data_uri(icon_file)
+        if not data_uri:
+            return tag
+        img = '<img src="%s" class="NB-briefing-section-icon" style="%s">' % (data_uri, section_icon_style)
+        return tag + img
+
+    summary_html = re.sub(r'<h3\s[^>]*data-section="([^"]+)"[^>]*>', _replace_section_header, summary_html)
+
+    return summary_html
 
 
 def _get_content_excerpt(story, max_chars=300):

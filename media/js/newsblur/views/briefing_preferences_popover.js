@@ -39,7 +39,8 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         "mouseleave .NB-briefing-section-hint-icon": "hide_hint_popover",
         "click .NB-briefing-add-custom-section": "add_custom_section",
         "click .NB-briefing-remove-custom-section": "remove_custom_section",
-        "click .NB-briefing-notification-option": "toggle_notification_type"
+        "click .NB-briefing-notification-option": "toggle_notification_type",
+        "click .NB-briefing-model-option": "change_model"
     },
 
     initialize: function (options) {
@@ -79,7 +80,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.ReaderPopover.prototype.render.call(this);
 
         var sources = this.prefs.story_sources || 'all';
-        var selected_folder = sources.indexOf('folder:') === 0 ? sources.replace('folder:', 'river:') : null;
+        var selected_folder = sources.indexOf('folder:') === 0 ? sources.slice(7) : null;
 
         // briefing_preferences_popover.js: Folder-only chooser
         var $folder_chooser = NEWSBLUR.utils.make_folders(selected_folder, "All Site Stories", 'feed', false);
@@ -144,6 +145,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                 ])
             ]),
             this.make_sections_ui(),
+            this.make_model_section(),
             this.make_notification_section()
         ]));
 
@@ -686,6 +688,49 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                 'notification_filter': 'unread'
             }
         });
+    },
+
+    make_model_section: function () {
+        var current_model = this.prefs.briefing_model || 'haiku';
+        var models = this.prefs.briefing_models || [];
+
+        var items = _.map(models, function (m) {
+            return $.make('div', {
+                className: 'NB-briefing-style-option NB-briefing-model-option'
+                    + (m.key === current_model ? ' NB-active' : ''),
+                'data-setting': 'briefing_model',
+                'data-value': m.key
+            }, [
+                $.make('div', { className: 'NB-briefing-style-radio' }),
+                $.make('span', {
+                    className: 'NB-provider-pill NB-provider-' + m.vendor
+                }, m.vendor_display),
+                $.make('div', { className: 'NB-briefing-style-option-label' }, [
+                    $.make('div', { className: 'NB-briefing-style-option-name' }, m.display_name)
+                ])
+            ]);
+        });
+
+        var controls = [
+            $.make('div', {
+                className: 'NB-briefing-model-chooser NB-briefing-control-briefing_model'
+            }, items)
+        ];
+
+        return this.make_section('AI Model', 'Choose which AI model writes your briefing', controls);
+    },
+
+    change_model: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $target = $(e.currentTarget);
+        var value = $target.data('value');
+
+        this.$('.NB-briefing-model-option').removeClass('NB-active');
+        $target.addClass('NB-active');
+
+        this.save_preference({ briefing_model: value });
     },
 
     save_preference: function (data) {

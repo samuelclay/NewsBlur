@@ -39,28 +39,28 @@ class DumpRequestMiddleware:
 
     def process_response(self, request, response):
         if hasattr(request, "sql_times_elapsed"):
-            redis_log = (
-                "~FCuser:%s%.6f~SNs ~FCstory:%s%.6f~SNs ~FCsession:%s%.6f~SNs ~FCpubsub:%s%.6f~SNs"
-                % (
-                    self.color_db(request.sql_times_elapsed["redis_user"], "~FC"),
-                    request.sql_times_elapsed["redis_user"],
-                    self.color_db(request.sql_times_elapsed["redis_story"], "~FC"),
-                    request.sql_times_elapsed["redis_story"],
-                    self.color_db(request.sql_times_elapsed["redis_session"], "~FC"),
-                    request.sql_times_elapsed["redis_session"],
-                    self.color_db(request.sql_times_elapsed["redis_pubsub"], "~FC"),
-                    request.sql_times_elapsed["redis_pubsub"],
-                )
-            )
+            counts = getattr(request, "sql_call_counts", {})
+            times = request.sql_times_elapsed
+            redis_parts = []
+            for key, label in [("redis_user", "user"), ("redis_story", "story"), ("redis_session", "session"), ("redis_pubsub", "pubsub")]:
+                c = counts.get(key, 0)
+                t = times[key]
+                color = self.color_db(t, "~FC")
+                redis_parts.append("%s%s:%s/%s~SN" % (color, label, c, self.format_db_time(t)))
+            redis_log = " ".join(redis_parts)
+            sql_color = self.color_db(times["sql"], "~FY")
+            mongo_color = self.color_db(times["mongo"], "~FM")
             logging.user(
                 request,
-                "~SN~FCDB times ~SB~FK%s~SN~FC: ~FYsql: %s%.4f~SNs ~SN~FMmongo: %s%.5f~SNs ~SN~FCredis: %s"
+                "~SN~FCDB times ~SD~FW%s~SN~FC: %ssql: %s/%s~SN %smongo: %s/%s~SN ~FCredis: %s"
                 % (
                     request.path,
-                    self.color_db(request.sql_times_elapsed["sql"], "~FY"),
-                    request.sql_times_elapsed["sql"],
-                    self.color_db(request.sql_times_elapsed["mongo"], "~FM"),
-                    request.sql_times_elapsed["mongo"],
+                    sql_color,
+                    counts.get("sql", 0),
+                    self.format_db_time(times["sql"]),
+                    mongo_color,
+                    counts.get("mongo", 0),
+                    self.format_db_time(times["mongo"]),
                     redis_log,
                 ),
             )
@@ -91,14 +91,17 @@ class DumpRequestMiddleware:
 
         return response
 
+    def format_db_time(self, seconds):
+        return "%.3fs" % seconds
+
     def color_db(self, seconds, default):
         color = default
         if seconds >= 0.25:
             color = "~SB~FR"
         elif seconds > 0.1:
             color = "~FW"
-        # elif seconds == 0:
-        #     color = '~FK~SB'
+        elif seconds == 0:
+            color = "~SD~FW"
         return color
 
     def __init__(self, get_response=None):

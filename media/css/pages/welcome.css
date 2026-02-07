@@ -216,6 +216,10 @@
 .NB-welcome-header-branding {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 .NB-welcome-header .NB-welcome-header-logo {
@@ -251,7 +255,7 @@
     color: #FBDB9B;
     margin: 0 0 32px;
     line-height: 1.5;
-    max-width: 340px;
+    max-width: 400px;
 }
 
 /* ==================== */
@@ -627,9 +631,12 @@
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 40px;
     font-weight: 700;
-    color: #3a2e1e;
+    color: #FFF5E0;
     margin: 0 0 12px;
     letter-spacing: -0.5px;
+    text-shadow:
+        0 0 40px rgba(217, 166, 33, 0.25),
+        0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
 .NB-platforms-subheading {
@@ -676,6 +683,7 @@
     display: inline-block;
     padding: 4px 12px;
     border: 1px solid rgba(251, 219, 155, 0.4);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     border-radius: 4px;
     background: rgba(217, 166, 33, 0.12);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
@@ -685,15 +693,18 @@
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 32px;
     font-weight: 700;
-    color: #3a2e1e;
+    color: #FFF5E0;
     line-height: 1.2;
+    text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.3),
+        0 0 30px rgba(50, 70, 70, 0.4);
     margin: 0 0 16px;
     letter-spacing: -0.3px;
 }
 
 .NB-platform-description {
     font-size: 16px;
-    color: rgba(58, 46, 30, 0.6);
+    color: rgba(58, 46, 30, 0.75);
     line-height: 1.65;
 }
 
@@ -787,6 +798,28 @@
 /* = Features = */
 /* ============ */
 
+.NB-welcome-features-header {
+    text-align: center;
+    padding: 64px 24px 0;
+}
+
+.NB-features-heading {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: #3a2e1e;
+    letter-spacing: -0.5px;
+    margin: 0 0 12px;
+}
+
+.NB-features-subheading {
+    font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #8a7a5a;
+    line-height: 1.5;
+}
+
 .NB-welcome-features {
     margin: 64px 0;
     overflow: hidden;
@@ -874,10 +907,12 @@
 
 .NB-welcome-pricing h2 {
     text-align: center;
-    font-size: 32px;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 40px;
     font-weight: 700;
     margin: 0 0 12px;
     color: #3a2e1e;
+    letter-spacing: -0.5px;
 }
 
 .NB-welcome-pricing>.NB-inner>p {
@@ -1572,6 +1607,14 @@
     padding: 36px 0;
 }
 
+.NB-welcome-activity h2 {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #3a2e1e;
+    margin: 0 0 16px;
+}
+
 .NB-welcome-activity .NB-module {
     width: 47%;
 }
@@ -1876,6 +1919,18 @@
 }
 
 .NB-dark .NB-platform-title {
+    color: white;
+}
+
+.NB-dark .NB-features-heading {
+    color: white;
+}
+
+.NB-dark .NB-features-subheading {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-welcome-activity h2 {
     color: white;
 }
 
