@@ -657,10 +657,14 @@
     [self.previousPage updateContentInsetForNavigationBarAlpha:clampedAlpha maintainVisualPosition:YES];
     [self.nextPage updateContentInsetForNavigationBarAlpha:clampedAlpha maintainVisualPosition:YES];
 
-    self.isNavigationBarFaded = clampedAlpha < 0.05;
+    if (self.isNavigationBarFaded) {
+        self.isNavigationBarFaded = clampedAlpha < 0.10;  // must rise above 0.10 to unfade
+    } else {
+        self.isNavigationBarFaded = clampedAlpha < 0.03;  // must drop below 0.03 to fade
+    }
 
     if (wasFaded != self.isNavigationBarFaded) {
-        [self.currentPage drawFeedGradient];
+        [self.currentPage updateFeedTitleGradientPosition];
         [self updateStatusBarState];
     }
 

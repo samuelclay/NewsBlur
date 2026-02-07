@@ -68,7 +68,7 @@
                 self.premiumProProduct = product;
             }
         }
-        
+
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.appDelegate.premiumViewController loadedProducts];
         });

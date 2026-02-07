@@ -836,8 +836,7 @@
     // This prevents jitter and content jumping during scroll gestures
     // The inset will be updated when scrolling ends
     BOOL isActivelyScrolling = scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating;
-    BOOL isSinglePage = scrollView.contentSize.height - 200 <= self.view.frame.size.height;
-    if (!force && isActivelyScrolling && isCurrentPage && !isSinglePage) {
+    if (!force && isActivelyScrolling && isCurrentPage) {
         self.isUpdatingContentInset = NO;
         return;
     }
@@ -856,14 +855,7 @@
         self.webView.scrollView.contentInset = newInset;
         self.webView.scrollView.scrollIndicatorInsets = newInset;
 
-        // Only adjust content offset for the current page when not actively scrolling
-        // For adjacent pages, we just update the inset without shifting their content
-        BOOL shouldMaintainVisualPosition = maintainVisualPosition;
-        if (isSinglePage && isActivelyScrolling && isCurrentPage) {
-            shouldMaintainVisualPosition = NO;
-        }
-
-        if (shouldMaintainVisualPosition) {
+        if (maintainVisualPosition) {
             // Calculate the visual position of content on screen
             // Visual position = contentOffset + contentInset
             // We want to keep this constant when inset changes
@@ -1690,7 +1682,22 @@
                 return;
             }
         } else if (!scrollView.isDecelerating) {
-            self.isUserScrolling = NO;
+            if (self.isUserScrolling) {
+                self.isUserScrolling = NO;
+                if (appDelegate.storyPagesViewController.currentPage == self) {
+                    CGFloat currentAlpha = appDelegate.storyPagesViewController.navigationBarFadeAlpha;
+                    CGFloat targetAlpha = currentAlpha > 0.5 ? 1.0 : 0.0;
+                    if (fabs(currentAlpha - targetAlpha) > 0.01) {
+                        [UIView animateWithDuration:0.2 animations:^{
+                            [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:targetAlpha];
+                        }];
+                        [self updateContentInsetForNavigationBarAlpha:targetAlpha
+                                               maintainVisualPosition:YES
+                                                                force:YES];
+                    }
+                }
+            }
+            return;
         }
 
         if (!(isUserDragging || scrollView.isDecelerating) || !self.isUserScrolling) {
@@ -1733,7 +1740,11 @@
         }
         
 #if !TARGET_OS_MACCATALYST
-        if (self.canHideNavigationBar) {
+        if (atTop) {
+            [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:1.0];
+        } else if (atBottom && !isUserDragging) {
+            // Hold current state during bottom bounce - don't recalculate
+        } else if (self.canHideNavigationBar) {
             StoryPagesObjCViewController *pagesViewController = appDelegate.storyPagesViewController;
             CGFloat fadeStart = 0.0;
             CGFloat fadeEnd = 80.0;
