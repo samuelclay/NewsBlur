@@ -30044,26 +30044,6 @@ span.NB-briefing-inline-favicon {
     margin-left: 2px;
 }
 
-.NB-briefing-model-upgrade-link {
-    color: #5C89C4;
-    text-decoration: underline;
-    cursor: pointer;
-}
-
-/* reader.css: Disabled model options for non-pro users */
-.NB-briefing-model-locked .NB-briefing-model-option {
-    opacity: 0.5;
-    cursor: default;
-    pointer-events: none;
-}
-
-.NB-briefing-model-locked .NB-briefing-model-option .NB-briefing-style-radio {
-    border-color: #ccc;
-}
-
-.NB-dark .NB-briefing-model-locked .NB-briefing-model-option {
-    opacity: 0.4;
-}
 
 /* reader.css: Briefing sections — tappable checkbox rows */
 .NB-briefing-sections {
