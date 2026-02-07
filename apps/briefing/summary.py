@@ -362,6 +362,91 @@ def extract_section_story_hashes(section_summaries):
     return result
 
 
+BRIEFING_SECTION_ICONS = {
+    "trending_unread": "indicator-unread-gray.svg",
+    "long_read": "scroll.svg",
+    "classifier_match": "train.svg",
+    "follow_up": "boomerang.svg",
+    "trending_global": "discover.svg",
+    "duplicates": "venn.svg",
+    "quick_catchup": "pulse.svg",
+    "emerging_topics": "growth-rocket-gray.svg",
+    "contrarian_views": "stack.svg",
+    "custom_1": "prompt.svg",
+    "custom_2": "prompt.svg",
+    "custom_3": "prompt.svg",
+    "custom_4": "prompt.svg",
+    "custom_5": "prompt.svg",
+}
+
+
+def embed_briefing_icons(summary_html, scored_stories):
+    """
+    Post-process briefing summary HTML to embed feed favicons before story links
+    and section icons in h3 headers. Embeds as <img> tags with absolute URLs and
+    inline styles so they render in both web and email notifications.
+    """
+    from django.contrib.sites.models import Site
+
+    if not summary_html:
+        return summary_html
+
+    fqdn = Site.objects.get_current().domain
+
+    # summary.py: Build story_hash -> favicon URL mapping
+    story_hashes = [s["story_hash"] for s in scored_stories]
+    stories_by_hash = {}
+    for story in MStory.objects(story_hash__in=story_hashes):
+        stories_by_hash[story.story_hash] = story
+
+    feed_ids = set(s.story_feed_id for s in stories_by_hash.values())
+    feeds_by_id = {}
+    for feed in Feed.objects.filter(pk__in=feed_ids):
+        feeds_by_id[feed.pk] = feed
+
+    favicon_map = {}
+    for story_hash, story in stories_by_hash.items():
+        feed = feeds_by_id.get(story.story_feed_id)
+        if feed:
+            favicon_map[story_hash] = feed.favicon_url_fqdn
+
+    # summary.py: Embed feed favicons before story titles in briefing links
+    favicon_style = (
+        "display:inline-block;width:16px;height:16px;"
+        "vertical-align:middle;margin-right:2px;margin-top:-1px;"
+        "border-radius:2px;"
+    )
+
+    def _replace_story_link(match):
+        tag = match.group(0)
+        story_hash = match.group(1)
+        url = favicon_map.get(story_hash)
+        if not url:
+            return tag
+        img = '<img src="%s" class="NB-briefing-inline-favicon" style="%s">' % (url, favicon_style)
+        return tag + img
+
+    summary_html = re.sub(r'(<a\s[^>]*data-story-hash="([^"]+)"[^>]*>)', _replace_story_link, summary_html)
+
+    # summary.py: Embed section icons in h3 headers
+    section_icon_style = (
+        "display:inline-block;width:1em;height:1em;"
+        "vertical-align:-0.1em;margin-right:0.3em;"
+    )
+
+    def _replace_section_header(match):
+        tag = match.group(0)
+        section_key = match.group(1)
+        icon_file = BRIEFING_SECTION_ICONS.get(section_key, "briefing.svg")
+        icon_url = "https://%s/media/img/icons/nouns/%s" % (fqdn, icon_file)
+        img = '<img src="%s" class="NB-briefing-section-icon" style="%s">' % (icon_url, section_icon_style)
+        return tag + img
+
+    summary_html = re.sub(r'(<h3\s[^>]*data-section="([^"]+)"[^>]*>)', _replace_section_header, summary_html)
+
+    return summary_html
+
+
 def _get_content_excerpt(story, max_chars=300):
     """Extract a plain text excerpt from a story's content."""
     content = story.story_content

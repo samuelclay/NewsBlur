@@ -155,6 +155,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
     )
     from apps.briefing.scoring import select_briefing_stories
     from apps.briefing.summary import (
+        embed_briefing_icons,
         extract_section_story_hashes,
         extract_section_summaries,
         generate_briefing_summary,
@@ -237,6 +238,10 @@ def GenerateUserBriefing(user_id, on_demand=False):
         logging.error(" ---> GenerateUserBriefing: summary generation failed for user %s" % user_id)
         publish("error", {"error": "Summary generation failed. Please try again."})
         return
+
+    # tasks.py: Embed feed favicons and section icons directly in the HTML so they
+    # appear in email notifications and don't pop in on the web.
+    summary_html = embed_briefing_icons(summary_html, scored_stories)
 
     curated_hashes = [s["story_hash"] for s in scored_stories]
     curated_sections = {}
