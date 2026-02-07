@@ -6509,6 +6509,7 @@
             var feed = NEWSBLUR.assets.get_feed(feed_id);
             if (!feed) {
                 console.log(['Notification setup failed, no feed!', feed_id]);
+                return;
             }
             Push.create("NewsBlur", {
                 body: feed.get('feed_title') + " notifications are setup",
