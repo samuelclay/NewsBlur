@@ -857,6 +857,10 @@ def popular_feeds(request):
     if platform and platform != "all":
         qs = qs.filter(platform=platform)
 
+    query = request.GET.get("query", "").strip()
+    if query:
+        qs = qs.filter(title__icontains=query)
+
     # Build grouped category structure with feed counts:
     # [{name, feed_count, subcategories: [{name, feed_count}, ...]}, ...]
     cat_qs = PopularFeed.objects.filter(**base_filter)

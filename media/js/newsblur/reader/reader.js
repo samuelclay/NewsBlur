@@ -2789,9 +2789,9 @@
         open_add_site: function (options) {
             options = options || {};
 
-            // Already in add site view — handle back/forward navigation between sub-states
+            // Already in add site view — handle navigation between sub-states
             if (this.flags['add_site_view'] && this.add_site_view) {
-                if (options.router) {
+                if (options.tab) {
                     this.add_site_view.navigate_to_state(options.tab, options.category, options.subcategory);
                 }
                 return;
