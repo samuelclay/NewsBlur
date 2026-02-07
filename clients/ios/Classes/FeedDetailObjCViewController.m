@@ -728,6 +728,11 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.feedListSwipeGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFeedListSwipe:)];
     self.feedListSwipeGesture.delegate = self;
     self.feedListSwipeGesture.maximumNumberOfTouches = 1;
+#if TARGET_OS_MACCATALYST
+    // On Mac, trackpad two-finger swipes generate scroll events, not direct touch events.
+    // Allow the pan gesture to respond to trackpad scroll gestures.
+    self.feedListSwipeGesture.allowedScrollTypesMask = UIScrollTypeMaskAll;
+#endif
     [self.view addGestureRecognizer:self.feedListSwipeGesture];
 }
 
@@ -919,6 +924,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             CGFloat clampedTranslation = MAX(0.0, MIN(translation.x, effectiveRevealWidth));
             CGPoint velocity = [gestureRecognizer velocityInView:self.view];
             BOOL shouldOpen = (clampedTranslation > effectiveRevealWidth * 0.33f) || (velocity.x > 800.0f);
+
             UIView *container = self.feedListRevealContainer ?: primaryContainer;
 
             [UIView animateWithDuration:0.2
@@ -2420,8 +2426,15 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     NSString *readTitle = isUnread ? @"Mark Read" : @"Mark Unread";
     UIImage *readImage = [Utilities templateImageNamed:(isUnread ? @"indicator-read" : @"indicator-unread") sized:18];
-    UIColor *readColor = isUnread ? UIColorFromRGB(0xBED49F) : UIColorFromRGB(0xFFFFD2);
-    
+    UIColor *readColor = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *traitCollection) {
+        if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+            return isUnread ? [UIColor colorWithRed:0x4C/255.0 green:0xAF/255.0 blue:0x50/255.0 alpha:1.0]
+                            : [UIColor colorWithRed:0xD4/255.0 green:0xA0/255.0 blue:0x20/255.0 alpha:1.0];
+        }
+        return isUnread ? [UIColor colorWithRed:0x4C/255.0 green:0xAF/255.0 blue:0x50/255.0 alpha:1.0]
+                        : [UIColor colorWithRed:0xD4/255.0 green:0xA0/255.0 blue:0x20/255.0 alpha:1.0];
+    }];
+
     UIContextualAction *readAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
                                                                              title:readTitle
                                                                            handler:^(__unused UIContextualAction *action, __unused UIView *sourceView, void (^completionHandler)(BOOL)) {
@@ -2431,11 +2444,13 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     }];
     readAction.backgroundColor = readColor;
     readAction.image = readImage;
-    
+
     NSString *saveTitle = isSaved ? @"Unsave" : @"Save";
     UIImage *saveImage = [Utilities templateImageNamed:@"saved-stories" sized:18];
-    UIColor *saveColor = isSaved ? UIColorFromRGB(0xF69E89) : UIColorFromRGB(0xA4D97B);
-    
+    UIColor *saveColor = isSaved
+        ? UIColorFromLightSepiaMediumDarkRGB(0x00838F, 0x007A86, 0x00636E, 0x004A52)
+        : UIColorFromLightSepiaMediumDarkRGB(0x26C6DA, 0x1FB5C8, 0x0FA3B5, 0x0B8FA0);
+
     UIContextualAction *saveAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
                                                                              title:saveTitle
                                                                            handler:^(__unused UIContextualAction *action, __unused UIView *sourceView, void (^completionHandler)(BOOL)) {
@@ -2445,9 +2460,14 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
     }];
     saveAction.backgroundColor = saveColor;
     saveAction.image = saveImage;
-    
+
     UIImage *shareImage = [Utilities templateImageNamed:@"email" sized:18];
-    UIColor *shareColor = UIColorFromRGB(0xC6C6C6);
+    UIColor *shareColor = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *traitCollection) {
+        if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+            return [UIColor colorWithRed:0x8E/255.0 green:0x8E/255.0 blue:0x93/255.0 alpha:1.0];
+        }
+        return [UIColor colorWithRed:0x8E/255.0 green:0x8E/255.0 blue:0x93/255.0 alpha:1.0];
+    }];
 
     UIContextualAction *shareAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
                                                                               title:@"Share"
@@ -3839,7 +3859,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
     self.storyTitlesTable.separatorColor = UIColorFromRGB(0xE9E8E4);
-    
+    if (@available(iOS 13.0, *)) {
+        self.storyTitlesTable.overrideUserInterfaceStyle = ThemeManager.shared.isDarkTheme ? UIUserInterfaceStyleDark : UIUserInterfaceStyleLight;
+    }
+
     [self reload];
 }
 

@@ -20,6 +20,8 @@
 @property (nonatomic, strong) UIButton *forgotPasswordButton;
 @property (nonatomic, strong) UILabel *errorLabel;
 @property (nonatomic, strong) UISegmentedControl *loginControl;
+@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) CAGradientLayer *backgroundGradientLayer;
 
 - (void)checkPassword;
 - (void)registerAccount;

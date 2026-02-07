@@ -80,10 +80,10 @@ struct CardView: View {
                 Label(story.isRead ? "Mark Unread" : "Mark Read",
                       image: story.isRead ? "indicator-unread" : "indicator-read")
             }
-            .tint(Color.themed([story.isRead ? 0xFFFFD2 : 0xBED49F,
-                                story.isRead ? 0xFFFFD2 : 0xBED49F,
-                                story.isRead ? 0xFFFFD2 : 0xBED49F,
-                                story.isRead ? 0xFFFFD2 : 0xBED49F]))
+            .tint(Color.themed([story.isRead ? 0xD4A020 : 0x4CAF50,
+                                story.isRead ? 0xC89628 : 0x4A9648,
+                                story.isRead ? 0xBF8C1C : 0x2E7D32,
+                                story.isRead ? 0xA67C00 : 0x1B5E20]))
             
             Button {
                 cache.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
@@ -91,10 +91,10 @@ struct CardView: View {
             } label: {
                 Label(story.isSaved ? "Unsave" : "Save", image: "saved-stories")
             }
-            .tint(Color.themed([story.isSaved ? 0xF69E89 : 0xA4D97B,
-                                story.isSaved ? 0xF69E89 : 0xA4D97B,
-                                story.isSaved ? 0xF69E89 : 0xA4D97B,
-                                story.isSaved ? 0xF69E89 : 0xA4D97B]))
+            .tint(Color.themed([story.isSaved ? 0x00838F : 0x26C6DA,
+                                story.isSaved ? 0x007A86 : 0x1FB5C8,
+                                story.isSaved ? 0x00636E : 0x0FA3B5,
+                                story.isSaved ? 0x004A52 : 0x0B8FA0]))
             
             Button {
                 cache.appDelegate.activeStory = story.dictionary
@@ -103,7 +103,7 @@ struct CardView: View {
             } label: {
                 Label("Share", image: "email")
             }
-            .tint(Color.themed([0xC6C6C6, 0xC6C6C6, 0x555555, 0x3A3A3A]))
+            .tint(Color.themed([0x8E8E93, 0x847A6E, 0x545458, 0x48484A]))
         }
         .contextMenu {
             if !cache.isDashboard {

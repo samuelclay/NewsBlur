@@ -165,6 +165,7 @@
 @synthesize dictTextFeeds;
 @synthesize isPremium;
 @synthesize isPremiumArchive;
+@synthesize isPremiumPro;
 @synthesize premiumExpire;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
@@ -224,6 +225,7 @@
     cachedUserAvatars.memoryCache.costLimit = 10 * 1024 * 1024; // 10 MB
     isPremium = NO;
     isPremiumArchive = NO;
+    isPremiumPro = NO;
     premiumExpire = 0;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
@@ -267,6 +269,9 @@
     }
     
     [self registerBackgroundTask];
+#if TARGET_OS_MACCATALYST
+    [CatalystModalDismissal install];
+#endif
 
     return YES;
 }
@@ -878,22 +883,27 @@
 }
 
 - (void)showPremiumDialog {
-    [self showPremiumDialogScrollToArchive:NO];
+    [self showPremiumDialogScrollTo:nil];
 }
 
 - (void)showPremiumDialogForArchive {
-    [self showPremiumDialogScrollToArchive:YES];
+    [self showPremiumDialogScrollTo:@"archive"];
 }
 
-- (void)showPremiumDialogScrollToArchive:(BOOL)scrollToArchive {
+- (void)showPremiumDialogForPro {
+    [self showPremiumDialogScrollTo:@"pro"];
+}
+
+- (void)showPremiumDialogScrollTo:(NSString *)section {
     if (self.premiumNavigationController == nil) {
         self.premiumNavigationController = [[UINavigationController alloc]
                                             initWithRootViewController:self.premiumViewController];
     }
     self.premiumNavigationController.navigationBar.translucent = NO;
 
-    // Configure the premium view to scroll to archive section if requested
-    [self.premiumViewController configureForArchive:scrollToArchive];
+    BOOL scrollToArchive = [section isEqualToString:@"archive"];
+    BOOL scrollToPro = [section isEqualToString:@"pro"];
+    [self.premiumViewController configureScrollToArchive:scrollToArchive scrollToPro:scrollToPro];
 
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
     premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -922,7 +932,17 @@
                 screenSize = UIScreen.mainScreen.bounds.size;
             }
             BOOL isLandscape = screenSize.width > screenSize.height;
+#if TARGET_OS_MACCATALYST
+            // On Mac, use a minimum width threshold instead of just aspect ratio.
+            // Below 900pt the sidebar should auto-hide to overlay mode.
+            BOOL isTooNarrow = screenSize.width < 900;
+            if (isTooNarrow) {
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeSecondaryOnly;
+            } else if (isLandscape) {
+#else
             if (isLandscape) {
+#endif
                 self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
                 self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
                 if (!self.splitViewController.isCollapsed) {
@@ -1417,9 +1437,9 @@
         sheet.preferredCornerRadius = 12.0;
 
         [navController presentViewController:askAINavController animated:YES completion:^{
-            // Add tap gesture to container view to dismiss on tap outside sheet
+            // Add tap gesture to container view to dismiss on tap outside sheet (iOS only)
             UIView *containerView = askAINavController.presentationController.containerView;
-            if (containerView) {
+            if (containerView && !self.isMac) {
                 UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
                     initWithTarget:self
                     action:@selector(dismissAskAIOnTap:)];
@@ -1523,6 +1543,9 @@
 
 - (void)dismissAskAIOnTap:(UITapGestureRecognizer *)gesture {
     UIViewController *presentedVC = self.feedsNavigationController.presentedViewController;
+    if (!presentedVC) {
+        presentedVC = self.splitViewController.presentedViewController;
+    }
     if (presentedVC) {
         [presentedVC dismissViewControllerAnimated:YES completion:nil];
     }

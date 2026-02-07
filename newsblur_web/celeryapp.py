@@ -37,6 +37,20 @@ if _worktree_name:
 
     app.Task.apply_async = _prefixed_apply_async
 
+    # Also patch send_task, which is the path Celery Beat uses to dispatch
+    # periodic tasks. Without this, beat-scheduled tasks would go to unprefixed
+    # queues (consumed by main, not the worktree).
+    _original_send_task = app.send_task
+
+    @functools.wraps(_original_send_task)
+    def _prefixed_send_task(*args, **kwargs):
+        queue = kwargs.get("queue")
+        if queue and not queue.startswith(_worktree_prefix):
+            kwargs["queue"] = _worktree_prefix + queue
+        return _original_send_task(*args, **kwargs)
+
+    app.send_task = _prefixed_send_task
+
 
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
