@@ -230,6 +230,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
         summary_style=prefs.summary_style or "bullets",
         sections=prefs.sections,
         custom_section_prompts=prefs.custom_section_prompts,
+        model=prefs.briefing_model,
     )
 
     if not summary_html:

@@ -30027,6 +30027,44 @@ span.NB-briefing-inline-favicon {
     color: #777;
 }
 
+/* reader.css: Briefing AI model selector */
+.NB-briefing-model-chooser {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.NB-briefing-model-chooser .NB-provider-pill {
+    flex-shrink: 0;
+    font-size: 10px;
+    padding: 1px 5px;
+}
+
+.NB-briefing-model-chooser .NB-briefing-style-option-label {
+    margin-left: 2px;
+}
+
+.NB-briefing-model-upgrade-link {
+    color: #5C89C4;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* reader.css: Disabled model options for non-pro users */
+.NB-briefing-model-locked .NB-briefing-model-option {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
+.NB-briefing-model-locked .NB-briefing-model-option .NB-briefing-style-radio {
+    border-color: #ccc;
+}
+
+.NB-dark .NB-briefing-model-locked .NB-briefing-model-option {
+    opacity: 0.4;
+}
+
 /* reader.css: Briefing sections — tappable checkbox rows */
 .NB-briefing-sections {
     display: flex;

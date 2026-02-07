@@ -180,6 +180,8 @@ def load_briefing_stories(request):
     # views.py: Include full preferences when not enabled so the onboarding view
     # can render settings immediately without a separate AJAX call.
     if not prefs.enabled and not briefing_list:
+        from apps.ask_ai.providers import DEFAULT_BRIEFING_MODEL, get_briefing_models_for_frontend
+
         TIME_DISPLAY_MAP = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
         preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
         result["preferences"] = {
@@ -196,6 +198,9 @@ def load_briefing_stories(request):
             "custom_section_prompts": prefs.custom_section_prompts or [],
             "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
             "briefing_feed_id": prefs.briefing_feed_id,
+            "briefing_model": prefs.briefing_model or DEFAULT_BRIEFING_MODEL,
+            "briefing_models": get_briefing_models_for_frontend(),
+            "is_pro": user.profile.is_pro,
         }
 
     return result
@@ -264,6 +269,19 @@ def briefing_preferences(request):
         if summary_style in ("editorial", "bullets", "headlines"):
             prefs.summary_style = summary_style
 
+        briefing_model = request.POST.get("briefing_model")
+        if briefing_model is not None:
+            from apps.ask_ai.providers import VALID_BRIEFING_MODELS
+
+            if briefing_model in VALID_BRIEFING_MODELS:
+                # views.py: Only pro users can select non-default models
+                if user.profile.is_pro:
+                    prefs.briefing_model = briefing_model
+                else:
+                    prefs.briefing_model = None
+            elif briefing_model in ("", "default"):
+                prefs.briefing_model = None
+
         include_read = request.POST.get("include_read")
         if include_read is not None:
             prefs.include_read = include_read in ("true", "1", True)
@@ -308,6 +326,8 @@ def briefing_preferences(request):
     TIME_DISPLAY_MAP = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
     preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
 
+    from apps.ask_ai.providers import DEFAULT_BRIEFING_MODEL, get_briefing_models_for_frontend
+
     folders = []
     try:
         from apps.reader.models import UserSubscriptionFolders
@@ -333,6 +353,9 @@ def briefing_preferences(request):
         "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
         "custom_section_prompts": prefs.custom_section_prompts or [],
         "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
+        "briefing_model": prefs.briefing_model or DEFAULT_BRIEFING_MODEL,
+        "briefing_models": get_briefing_models_for_frontend(),
+        "is_pro": user.profile.is_pro,
         "folders": folders,
     }
 
