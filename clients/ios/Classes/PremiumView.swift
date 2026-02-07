@@ -146,7 +146,25 @@ struct PremiumView: View {
     }
 
     var body: some View {
-        NavigationView {
+        VStack(spacing: 0) {
+            HStack {
+                Button("Done") {
+                    onDismiss()
+                }
+                .foregroundColor(PremiumColors.newsblurGreen)
+                Spacer()
+                Text("NewsBlur Premium")
+                    .font(.headline)
+                    .foregroundColor(PremiumColors.textPrimary)
+                Spacer()
+                Button("Restore") {
+                    onRestore()
+                }
+                .foregroundColor(PremiumColors.newsblurGreen)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack(spacing: 24) {
@@ -183,24 +201,8 @@ struct PremiumView: View {
                     }
                 }
             }
-            .background(PremiumColors.background.ignoresSafeArea())
-            .navigationTitle("NewsBlur Premium")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Done") {
-                        onDismiss()
-                    }
-                    .foregroundColor(PremiumColors.newsblurGreen)
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Restore") {
-                        onRestore()
-                    }
-                    .foregroundColor(PremiumColors.newsblurGreen)
-                }
-            }
         }
+        .background(PremiumColors.background.ignoresSafeArea())
     }
 
     // MARK: - Premium Section

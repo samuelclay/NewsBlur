@@ -1443,11 +1443,23 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         return;
     }
 
-    CGSize size = CGSizeMake(self.view.frame.size.width - 36,
-                             self.view.frame.size.height - 60);
+    if (!self.appDelegate.isPhone) {
+        CGSize size = CGSizeMake(self.view.frame.size.width - 36,
+                                 self.view.frame.size.height - 60);
 
-    // Use settings button as the popover anchor since activities button was removed from nav bar
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.settingsBarButton];
+        // Use settings button as the popover anchor since activities button was removed from nav bar
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.settingsBarButton];
+    } else {
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.appDelegate.activitiesViewController];
+        navController.navigationBarHidden = YES;
+        navController.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (navController.sheetPresentationController) {
+            navController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+            navController.sheetPresentationController.prefersGrabberVisible = YES;
+            navController.sheetPresentationController.preferredCornerRadius = 12.0;
+        }
+        [self.appDelegate.feedsNavigationController presentViewController:navController animated:YES completion:nil];
+    }
 
     [appDelegate.activitiesViewController refreshInteractions];
     [appDelegate.activitiesViewController refreshActivity];

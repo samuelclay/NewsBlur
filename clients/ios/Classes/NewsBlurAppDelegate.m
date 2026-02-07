@@ -802,13 +802,7 @@
     newUserProfile.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [newUserProfile getUserProfile];
     if (!self.isPhone) {
-        // iPad: show as popover with Close button
-        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                       initWithTitle:@"Close"
-                                       style:UIBarButtonItemStyleDone
-                                       target:self
-                                       action:@selector(hideUserProfileModal)];
-        newUserProfile.navigationItem.rightBarButtonItem = donebutton;
+        // iPad: show as popover, tap outside to dismiss
         [self showPopoverWithViewController:self.userProfileNavigationController contentSize:CGSizeMake(320, 454) sender:sender];
     } else {
         // iPhone: show as sheet with grabber, no Close button needed
@@ -823,16 +817,7 @@
 
 - (void)pushUserProfile {
     UserProfileViewController *userProfileView = [[UserProfileViewController alloc] init];
-    
-    
-    // adding Done button
-    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Close"
-                                   style:UIBarButtonItemStyleDone
-                                   target:self
-                                   action:@selector(hideUserProfileModal)];
-    
-    userProfileView.navigationItem.rightBarButtonItem = donebutton;
+
     userProfileView.navigationItem.title = self.activeUserProfileName;
     userProfileView.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [userProfileView getUserProfile];
@@ -899,14 +884,19 @@
         self.premiumNavigationController = [[UINavigationController alloc]
                                             initWithRootViewController:self.premiumViewController];
     }
-    self.premiumNavigationController.navigationBar.translucent = NO;
+    self.premiumNavigationController.navigationBarHidden = YES;
 
     BOOL scrollToArchive = [section isEqualToString:@"archive"];
     BOOL scrollToPro = [section isEqualToString:@"pro"];
     [self.premiumViewController configureScrollToArchive:scrollToArchive scrollToPro:scrollToPro];
 
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    premiumNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+    if (premiumNavigationController.sheetPresentationController) {
+        premiumNavigationController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+        premiumNavigationController.sheetPresentationController.prefersGrabberVisible = YES;
+        premiumNavigationController.sheetPresentationController.preferredCornerRadius = 12.0;
+    }
     [self.splitViewController presentViewController:premiumNavigationController animated:YES completion:nil];
     [self.premiumViewController.view setNeedsLayout];
 }
@@ -1000,8 +990,11 @@
     if (@available(iOS 15.0, *)) {
         PreferencesViewHostingController *swiftUIPrefs = [[PreferencesViewHostingController alloc] init];
 
-        if (!self.isPhone) {
-            swiftUIPrefs.modalPresentationStyle = UIModalPresentationFormSheet;
+        swiftUIPrefs.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (swiftUIPrefs.sheetPresentationController) {
+            swiftUIPrefs.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+            swiftUIPrefs.sheetPresentationController.prefersGrabberVisible = YES;
+            swiftUIPrefs.sheetPresentationController.preferredCornerRadius = 12.0;
         }
 
         [feedsNavigationController presentViewController:swiftUIPrefs animated:YES completion:^{
@@ -1022,7 +1015,14 @@
     
     self.modalNavigationController = nav;
     self.modalNavigationController.navigationBar.translucent = NO;
-    
+
+    nav.modalPresentationStyle = UIModalPresentationPageSheet;
+    if (nav.sheetPresentationController) {
+        nav.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+        nav.sheetPresentationController.prefersGrabberVisible = YES;
+        nav.sheetPresentationController.preferredCornerRadius = 12.0;
+    }
+
     [self.splitViewController presentViewController:modalNavigationController animated:YES completion:nil];
 }
 
@@ -1053,7 +1053,12 @@
     self.modalNavigationController.navigationBar.translucent = NO;
     
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    self.modalNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+    if (self.modalNavigationController.sheetPresentationController) {
+        self.modalNavigationController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+        self.modalNavigationController.sheetPresentationController.prefersGrabberVisible = YES;
+        self.modalNavigationController.sheetPresentationController.preferredCornerRadius = 12.0;
+    }
     [self.splitViewController presentViewController:modalNavigationController animated:YES completion:nil];
     
     [self.friendsListViewController loadSuggestedFriendsList];
@@ -1584,6 +1589,12 @@
                                                       initWithRootViewController:self.notificationsViewController];
         }
         self.notificationsNavigationController.navigationBar.translucent = NO;
+        self.notificationsNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (self.notificationsNavigationController.sheetPresentationController) {
+            self.notificationsNavigationController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+            self.notificationsNavigationController.sheetPresentationController.prefersGrabberVisible = YES;
+            self.notificationsNavigationController.sheetPresentationController.preferredCornerRadius = 12.0;
+        }
         [navController presentViewController:self.notificationsNavigationController animated:YES completion:nil];
     }
 }
