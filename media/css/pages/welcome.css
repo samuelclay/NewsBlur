@@ -54,10 +54,12 @@
 /* ========== */
 
 .NB-welcome .NB-inner {
-    width: 960px;
+    width: 100%;
+    max-width: 960px;
     margin: 0 auto;
     position: relative;
     height: 100%;
+    box-sizing: border-box;
 }
 
 
@@ -180,7 +182,7 @@
 
 .NB-welcome-hero-wrap {
     position: relative;
-    background: linear-gradient(180deg, #3F5354 0%, #1B2424 50%, #111919 100%);
+    background: linear-gradient(180deg, #5a7a7b 0%, #334848 50%, #243636 100%);
     overflow: hidden;
 }
 
@@ -237,7 +239,7 @@
     font-size: 48px;
     font-weight: 700;
     color: white;
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
     margin: 0 0 12px;
     line-height: 1.1;
 }
@@ -261,22 +263,22 @@
     flex-shrink: 0;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    background: rgba(255, 255, 255, 0.08);
-    border: 0.5px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.15);
+    border: 0.5px solid rgba(255, 255, 255, 0.2);
     border-radius: 20px;
     padding: 24px;
 }
 
 @supports not (backdrop-filter: blur(20px)) {
     .NB-welcome-header-formcard {
-        background: rgba(27, 36, 36, 0.85);
+        background: rgba(50, 70, 70, 0.85);
     }
 }
 
 /* Segmented control */
 .NB-welcome-header-segment {
     display: flex;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     padding: 2px;
     margin: 0 0 20px;
@@ -606,10 +608,10 @@
     position: relative;
     z-index: 1;
     background: linear-gradient(180deg,
-        rgba(0, 0, 0, 0) 0px,
-        rgba(0, 0, 0, 0.35) 60px,
-        rgba(0, 0, 0, 0.5) 150px,
-        rgba(0, 0, 0, 0.6) 400px);
+        rgba(255, 255, 255, 0) 0px,
+        rgba(255, 255, 255, 0.2) 100px,
+        rgba(255, 255, 255, 0.4) 300px,
+        rgba(255, 255, 255, 0.6) 600px);
     padding: 80px 0 0;
     overflow: hidden;
 }
@@ -625,7 +627,7 @@
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 40px;
     font-weight: 700;
-    color: white;
+    color: #3a2e1e;
     margin: 0 0 12px;
     letter-spacing: -0.5px;
 }
@@ -636,6 +638,7 @@
     font-size: 18px;
     color: #FBDB9B;
     line-height: 1.5;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Each platform row */
@@ -668,20 +671,21 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
-    color: #D9A621;
+    color: #FBDB9B;
     margin: 0 0 16px;
     display: inline-block;
     padding: 4px 12px;
-    border: 1px solid rgba(217, 166, 33, 0.3);
+    border: 1px solid rgba(251, 219, 155, 0.4);
     border-radius: 4px;
-    background: rgba(217, 166, 33, 0.08);
+    background: rgba(217, 166, 33, 0.12);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .NB-platform-title {
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 32px;
     font-weight: 700;
-    color: white;
+    color: #3a2e1e;
     line-height: 1.2;
     margin: 0 0 16px;
     letter-spacing: -0.3px;
@@ -689,7 +693,7 @@
 
 .NB-platform-description {
     font-size: 16px;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(58, 46, 30, 0.6);
     line-height: 1.65;
 }
 
@@ -863,9 +867,9 @@
     clear: both;
     margin: 48px 0 0;
     padding: 48px 0;
-    background: linear-gradient(180deg, #1a2222 0%, #141c1c 100%);
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(180deg, #f5f3f0 0%, #eee9e2 100%);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .NB-welcome-pricing h2 {
@@ -873,33 +877,33 @@
     font-size: 32px;
     font-weight: 700;
     margin: 0 0 12px;
-    color: #ffffff;
+    color: #3a2e1e;
 }
 
 .NB-welcome-pricing>.NB-inner>p {
     text-align: center;
     line-height: 26px;
     font-size: 16px;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(58, 46, 30, 0.6);
     margin: 0 auto 24px;
     max-width: 750px;
 }
 
 .NB-pricing-trial-callout {
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(110, 231, 183, 0.3);
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
     border-radius: 8px;
     padding: 14px 20px;
     margin: 0 auto 32px;
     text-align: center;
     font-size: 15px;
-    color: #6ee7b7;
+    color: #0d7c5a;
     max-width: 580px;
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05);
 }
 
 .NB-pricing-trial-callout strong {
-    color: #a7f3d0;
+    color: #0a6b4d;
     font-weight: 600;
 }
 
@@ -913,15 +917,15 @@
 
 .NB-pricing-tier {
     flex: 1;
-    background: rgba(255, 255, 255, 0.06);
+    background: white;
     border-radius: 12px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     box-shadow:
-        0 2px 4px rgba(0, 0, 0, 0.15),
-        0 8px 24px rgba(0, 0, 0, 0.2);
+        0 2px 4px rgba(0, 0, 0, 0.04),
+        0 8px 24px rgba(0, 0, 0, 0.06);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
 }
@@ -929,8 +933,8 @@
 .NB-pricing-tier:hover {
     transform: translateY(-4px);
     box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.2),
-        0 16px 40px rgba(0, 0, 0, 0.3);
+        0 4px 8px rgba(0, 0, 0, 0.06),
+        0 16px 40px rgba(0, 0, 0, 0.1);
 }
 
 /* Premium tier proportions: 34-38-28 */
@@ -978,13 +982,13 @@
 }
 
 .NB-pricing-tier-free .NB-pricing-tier-features {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(0, 0, 0, 0.02);
     padding: 16px 20px;
     flex: 1;
 }
 
 .NB-pricing-tier-free .NB-pricing-tier-features li {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(58, 46, 30, 0.7);
     padding: 8px 0;
     font-size: 14px;
     display: flex;
@@ -1031,13 +1035,13 @@
 }
 
 .NB-pricing-tier-selfhosted .NB-pricing-tier-features {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(0, 0, 0, 0.02);
     padding: 16px 20px;
     flex: 1;
 }
 
 .NB-pricing-tier-selfhosted .NB-pricing-tier-features li {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(58, 46, 30, 0.7);
     padding: 8px 0;
     font-size: 14px;
     display: flex;
@@ -1059,8 +1063,8 @@
 
 .NB-pricing-tier-actions {
     padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.04);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.02);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .NB-pricing-github-button {
@@ -1144,13 +1148,13 @@
 .NB-pricing-tier-premium .NB-pricing-tier-features,
 .NB-pricing-tier-archive .NB-pricing-tier-features,
 .NB-pricing-tier-pro .NB-pricing-tier-features {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(0, 0, 0, 0.02);
 }
 
 .NB-pricing-tier-features li {
     padding: 8px 0;
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(58, 46, 30, 0.7);
     display: flex;
     align-items: flex-start;
     gap: 10px;
@@ -1169,7 +1173,7 @@
     letter-spacing: 0.5px;
     padding-bottom: 12px;
     margin-bottom: 4px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     display: block;
 }
 
@@ -1376,7 +1380,7 @@
     color: #9ca3af;
     padding-top: 12px;
     margin-top: 8px;
-    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    border-top: 1px dashed rgba(0, 0, 0, 0.1);
     display: block;
 }
 
@@ -1396,10 +1400,10 @@
     gap: 20px;
     margin-top: 32px;
     padding: 20px 24px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .NB-pricing-lyric .NB-lyric-photo {
@@ -1407,7 +1411,7 @@
     height: 80px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid rgba(255, 255, 255, 0.15);
+    border: 3px solid rgba(0, 0, 0, 0.08);
     flex-shrink: 0;
 }
 
@@ -1418,13 +1422,13 @@
 .NB-pricing-lyric .NB-lyric-title {
     font-size: 16px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
+    color: #3a2e1e;
     margin-bottom: 4px;
 }
 
 .NB-pricing-lyric .NB-lyric-description {
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(58, 46, 30, 0.6);
     line-height: 1.5;
 }
 
@@ -1467,8 +1471,8 @@
     clear: both;
     margin: 0;
     padding: 64px 0;
-    background: linear-gradient(180deg, #111919 0%, #1a2222 100%);
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(180deg, #eee9e2 0%, #f5f3f0 100%);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
     text-align: center;
 }
 
@@ -1476,7 +1480,7 @@
     font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
     font-size: 28px;
     font-weight: 700;
-    color: white;
+    color: #3a2e1e;
     margin: 0 0 28px;
     letter-spacing: -0.3px;
 }
@@ -1508,23 +1512,22 @@
 
 /* Ghost / outline style — try out */
 .NB-welcome-bottomactions .NB-bottomaction-tryout {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    color: #3a2e1e;
 }
 
 .NB-welcome-bottomactions .NB-bottomaction-tryout:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: white;
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(0, 0, 0, 0.25);
+    color: #1a1408;
 }
 
 .NB-welcome-bottomactions .NB-bottomaction-tryout:active {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.85);
 }
 
 .NB-welcome-bottomactions .NB-bottomaction-tryout img {
-    filter: brightness(0) invert(1);
     opacity: 0.7;
     transition: opacity 0.2s ease;
 }
@@ -1694,4 +1697,310 @@
     bottom: 0;
     margin: 0 2px 0 4px;
     border-radius: 2px;
+}
+
+
+/* ================================= */
+/* = Responsive — all sections     = */
+/* ================================= */
+
+@media (max-width: 960px) {
+    .NB-welcome .NB-inner {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Features: 4-across → 2 columns */
+    .NB-welcome-features {
+        margin: 48px 0;
+    }
+    .NB-welcome-features .NB-inner {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 32px 0;
+    }
+    .NB-welcome-features .NB-feature {
+        float: none;
+        width: 50%;
+        margin: 0;
+        box-sizing: border-box;
+        padding: 0 16px;
+    }
+    .NB-welcome-features img {
+        width: 100%;
+        height: auto;
+        max-width: 200px;
+    }
+
+    /* Subfeatures: keep 2-col, stack image above text in each card */
+    .NB-welcome-subfeatures .NB-inner {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .NB-welcome-subfeatures .NB-feature {
+        float: none;
+        width: 50%;
+        margin: 0 0 36px 0;
+        box-sizing: border-box;
+        padding: 0 12px;
+        text-align: center;
+    }
+    .NB-welcome-subfeatures img {
+        float: none;
+        width: 100%;
+        height: auto;
+        max-width: 120px;
+        margin: 0 auto 12px;
+        display: block;
+    }
+
+    /* Pricing: reduce heading and padding */
+    .NB-welcome-pricing {
+        padding: 36px 0;
+    }
+    .NB-welcome-pricing h2 {
+        font-size: 26px;
+    }
+    .NB-welcome-pricing > .NB-inner > p {
+        font-size: 15px;
+        padding: 0 12px;
+    }
+
+    /* Bottom actions: reduce vertical padding */
+    .NB-welcome-bottomactions {
+        padding: 48px 0;
+    }
+
+    /* Activity/Stats: stack columns */
+    .NB-welcome-activity .NB-module {
+        width: 100%;
+        float: none;
+    }
+    .NB-welcome-activity .NB-module-stats {
+        float: none;
+        margin-right: 0;
+        margin-bottom: 32px;
+    }
+    .NB-welcome-activity .NB-module-features {
+        float: none;
+    }
+
+    /* Footer: center content, stack icons above text */
+    .NB-welcome-footer .NB-welcome-footer-content {
+        text-align: center;
+        line-height: 28px;
+    }
+    .NB-welcome-footer .NB-footer-icons {
+        float: none;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .NB-welcome-footer .NB-footer-icons a {
+        float: none;
+        margin: 0;
+    }
+
+    /* Footer links bar */
+    .NB-welcome .NB-splash-info.NB-splash-bottom {
+        float: none;
+    }
+    .NB-welcome .NB-splash-info .NB-splash-links {
+        float: none;
+        left: auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 8px 12px;
+    }
+    .NB-welcome .NB-splash-info .NB-splash-links li {
+        right: auto;
+        position: static;
+    }
+}
+
+@media (max-width: 500px) {
+    /* Features: keep 2 columns, tighten padding */
+    .NB-welcome-features .NB-feature {
+        padding: 0 8px;
+    }
+
+    /* Pricing: Lyric section stacks */
+    .NB-pricing-lyric {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    /* Footer: tighter padding */
+    .NB-welcome-footer {
+        padding: 32px 0 0;
+    }
+    .NB-welcome-footer .NB-welcome-footer-content {
+        margin-bottom: 24px;
+    }
+}
+
+/* ================================= */
+/* = Dark Mode Overrides           = */
+/* ================================= */
+
+/* Hero / Header — darker teal in dark mode */
+.NB-dark .NB-welcome-hero-wrap {
+    background: linear-gradient(180deg, #3F5354 0%, #1B2424 50%, #111919 100%);
+}
+
+/* Platforms */
+.NB-dark .NB-welcome-platforms {
+    background: linear-gradient(180deg,
+        rgba(0, 0, 0, 0) 0px,
+        rgba(0, 0, 0, 0.35) 60px,
+        rgba(0, 0, 0, 0.5) 150px,
+        rgba(0, 0, 0, 0.6) 400px);
+}
+
+.NB-dark .NB-platforms-heading {
+    color: white;
+}
+
+.NB-dark .NB-platforms-subheading {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-platform-badge {
+    color: #D9A621;
+    border-color: rgba(217, 166, 33, 0.3);
+    background: rgba(217, 166, 33, 0.15);
+}
+
+.NB-dark .NB-platform-title {
+    color: white;
+}
+
+.NB-dark .NB-platform-description {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* Pricing */
+.NB-dark .NB-welcome-pricing {
+    background: linear-gradient(180deg, #1a2222 0%, #141c1c 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-welcome-pricing h2 {
+    color: #ffffff;
+}
+
+.NB-dark .NB-welcome-pricing>.NB-inner>p {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.NB-dark .NB-pricing-tier {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.15),
+        0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-pricing-tier:hover {
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.2),
+        0 16px 40px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-pricing-tier-free .NB-pricing-tier-features,
+.NB-dark .NB-pricing-tier-selfhosted .NB-pricing-tier-features {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.NB-dark .NB-pricing-tier-free .NB-pricing-tier-features li,
+.NB-dark .NB-pricing-tier-selfhosted .NB-pricing-tier-features li {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-dark .NB-pricing-tier-premium .NB-pricing-tier-features,
+.NB-dark .NB-pricing-tier-archive .NB-pricing-tier-features,
+.NB-dark .NB-pricing-tier-pro .NB-pricing-tier-features {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.NB-dark .NB-pricing-tier-features li {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.NB-dark .NB-pricing-tier-features li.NB-pricing-tier-includes {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-pricing-tier-features li.NB-pricing-tier-upcoming-header {
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-pricing-tier-actions {
+    background: rgba(255, 255, 255, 0.04);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Lyric */
+.NB-dark .NB-pricing-lyric {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-pricing-lyric .NB-lyric-photo {
+    border: 3px solid rgba(255, 255, 255, 0.15);
+}
+
+.NB-dark .NB-pricing-lyric .NB-lyric-title {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-dark .NB-pricing-lyric .NB-lyric-description {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* Bottom Actions */
+.NB-dark .NB-welcome-bottomactions {
+    background: linear-gradient(180deg, #111919 0%, #1a2222 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-welcome-bottomactions-heading {
+    color: white;
+}
+
+.NB-dark .NB-welcome-bottomactions .NB-bottomaction-tryout {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.NB-dark .NB-welcome-bottomactions .NB-bottomaction-tryout:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.NB-dark .NB-welcome-bottomactions .NB-bottomaction-tryout:active {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.NB-dark .NB-welcome-bottomactions .NB-bottomaction-tryout img {
+    filter: brightness(0) invert(1);
+}
+
+/* Trial callout */
+.NB-dark .NB-pricing-trial-callout {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(110, 231, 183, 0.3);
+    color: #6ee7b7;
+}
+
+.NB-dark .NB-pricing-trial-callout strong {
+    color: #a7f3d0;
 }
