@@ -30,7 +30,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         "click .NB-add-site-reddit-tab .NB-add-site-tab-search-btn": "perform_reddit_search",
         "keypress .NB-add-site-reddit-search": "handle_reddit_search_keypress",
         // Newsletter tab events
-        "click .NB-add-site-newsletters-tab .NB-add-site-tab-search-btn": "perform_newsletter_convert",
+        "input .NB-add-site-newsletters-search": "handle_newsletter_search_input",
+        "click .NB-add-site-newsletters-tab .NB-add-site-tab-search-btn": "perform_newsletter_search_or_convert",
         "keypress .NB-add-site-newsletters-search": "handle_newsletter_search_keypress",
         // Podcast tab events
         "click .NB-add-site-podcasts-tab .NB-add-site-tab-search-btn": "perform_podcast_search",
@@ -195,6 +196,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.view_mode = NEWSBLUR.assets.preference('add_site_view_mode') || 'grid';
         this.search_query = '';
         this.search_debounced = _.debounce(_.bind(this.perform_search, this), 300);
+        this.newsletter_search_debounced = _.debounce(_.bind(this.perform_newsletter_search, this), 300);
         this.search_version = 0;  // Track search version to cancel stale responses
         this.overflow_tabs = [];  // Tabs currently in overflow menu
 
@@ -888,6 +890,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (platform && platform !== 'all') {
             params.platform = platform;
         }
+        if (state.query) {
+            params.query = state.query;
+        }
 
         this.model.make_request('/discover/popular_feeds', params, function (data) {
             if (data && data.feeds) {
@@ -904,6 +909,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 }
                 state.popular_offset = offset + data.feeds.length;
                 state.popular_has_more = data.has_more;
+                if (data.total !== undefined) {
+                    state.popular_total = data.total;
+                }
                 if (data.categories && data.categories.length > 0) {
                     state.available_categories = data.categories;
                 }
@@ -1803,7 +1811,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         var $search_bar = this.render_tab_search_bar({
             input_class: 'NB-add-site-tab-search-input NB-add-site-newsletters-search',
-            placeholder: 'Paste newsletter URL (e.g., example.substack.com)...',
+            placeholder: 'Search newsletters or paste URL...',
             value: state.query || ''
         });
 
@@ -1905,9 +1913,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         var $container = $.make('div', { className: 'NB-add-site-newsletters-popular' });
 
+        var title_parts = ['Newsletters'];
+        if (state.popular_total !== undefined) {
+            title_parts.push(' ');
+            title_parts.push($.make('span', { className: 'NB-add-site-section-count' }, String(state.popular_total)));
+        }
         var $section = $.make('div', { className: 'NB-add-site-section' }, [
             $.make('div', { className: 'NB-add-site-section-header' }, [
-                $.make('div', { className: 'NB-add-site-section-title' }, 'Popular Newsletters')
+                $.make('div', { className: 'NB-add-site-section-title' }, title_parts)
             ]),
             $.make('div', { className: 'NB-add-site-section-content' })
         ]);
@@ -3959,6 +3972,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var state = this[config.state_key];
         state.results = [];
         state.query = '';
+        state.popular_feeds_loaded = false;
+        state.popular_feeds = [];
+        state.popular_feeds_collection = null;
+        state.popular_offset = 0;
         this[config.render_popular]();
     },
 
@@ -4152,8 +4169,27 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (e.which === 13) this.perform_reddit_search();
     },
 
+    handle_newsletter_search_input: function (e) {
+        var query = $(e.currentTarget).val().trim();
+        var $clear = $(e.currentTarget).closest('.NB-add-site-search-wrapper').find('.NB-add-site-search-clear');
+        $clear.toggleClass('NB-hidden', query.length === 0);
+        this.newsletters_state.query = query;
+
+        if (!query) {
+            this.newsletters_state.results = [];
+            this.newsletters_state.popular_feeds_loaded = false;
+            this.newsletters_state.popular_feeds = [];
+            this.newsletters_state.popular_feeds_collection = null;
+            this.newsletters_state.popular_offset = 0;
+            this.render_newsletters_popular();
+            return;
+        }
+
+        this.newsletter_search_debounced();
+    },
+
     handle_newsletter_search_keypress: function (e) {
-        if (e.which === 13) this.perform_newsletter_convert();
+        if (e.which === 13) this.perform_newsletter_search_or_convert();
     },
 
     handle_podcast_search_keypress: function (e) {
@@ -4234,6 +4270,33 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             render_results: this.render_podcast_results,
             error_message: 'Failed to search podcasts'
         });
+    },
+
+    perform_newsletter_search: function () {
+        var query = this.newsletters_state.query;
+        var state = this.newsletters_state;
+
+        if (!query || query.length < 2) {
+            state.results = [];
+            this.render_newsletters_popular();
+            return;
+        }
+
+        state.popular_feeds_loaded = false;
+        state.popular_feeds = [];
+        state.popular_feeds_collection = null;
+        state.popular_offset = 0;
+        this.render_newsletters_popular();
+    },
+
+    perform_newsletter_search_or_convert: function () {
+        var query = this.$('.NB-add-site-newsletters-search').val().trim();
+        if (query && query.match(/\.\w{2,}/) && !query.match(/\s/)) {
+            this.perform_newsletter_convert();
+        } else {
+            this.newsletters_state.query = query;
+            this.perform_newsletter_search();
+        }
     },
 
     perform_newsletter_convert: function () {
@@ -4537,6 +4600,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.render_active_tab();
         this.bind_scroll_handler();
         this.update_tab_overflow();
+        this.update_url();
     },
 
     // add_site_view.js - apply_initial_category_state: set category/subcategory on tab state during init

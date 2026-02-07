@@ -27294,6 +27294,15 @@ h5.NB-classifier-section-header {
     color: #333;
 }
 
+.NB-add-site-section-count {
+    font-size: 12px;
+    color: #888;
+    background: #E8E8E8;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
 .NB-add-site-section-icon {
     width: 20px;
     height: 20px;
@@ -28051,6 +28060,11 @@ h5.NB-classifier-section-header {
 
 .NB-dark .NB-add-site-section-title {
     color: #E0E0E0;
+}
+
+.NB-dark .NB-add-site-section-count {
+    background: #444;
+    color: #AAA;
 }
 
 .NB-dark .NB-add-site-section-icon {
