@@ -51,23 +51,71 @@ class MBriefing(mongo.Document):
 
     @classmethod
     def exists_for_period(cls, user_id, period_start, period_end):
-        return cls.objects.filter(
-            user_id=user_id,
-            briefing_date__gte=period_start,
-            briefing_date__lte=period_end,
-        ).count() > 0
+        return (
+            cls.objects.filter(
+                user_id=user_id,
+                briefing_date__gte=period_start,
+                briefing_date__lte=period_end,
+            ).count()
+            > 0
+        )
 
 
 BRIEFING_SECTION_DEFINITIONS = [
-    {"key": "trending_unread", "name": "Stories you missed", "subtitle": "Popular stories you haven't read yet", "default": True},
-    {"key": "long_read", "name": "Long reads for later", "subtitle": "Longer articles worth setting time aside for", "default": True},
-    {"key": "classifier_match", "name": "Based on your interests", "subtitle": "Stories matching your trained topics and authors", "default": True},
-    {"key": "follow_up", "name": "Follow-ups", "subtitle": "New posts from feeds you recently read", "default": True},
-    {"key": "trending_global", "name": "Trending across NewsBlur", "subtitle": "Widely-read stories from across the platform", "default": True},
-    {"key": "duplicates", "name": "Common stories", "subtitle": "Stories covered by multiple feeds", "default": False},
-    {"key": "quick_catchup", "name": "Quick catch-up", "subtitle": "TL;DR of the most important stories", "default": False},
-    {"key": "emerging_topics", "name": "Emerging topics", "subtitle": "Topics getting increasing coverage", "default": False},
-    {"key": "contrarian_views", "name": "Contrarian views", "subtitle": "Different perspectives on the same topic", "default": False},
+    {
+        "key": "trending_unread",
+        "name": "Stories you missed",
+        "subtitle": "Popular stories you haven't read yet",
+        "default": True,
+    },
+    {
+        "key": "long_read",
+        "name": "Long reads for later",
+        "subtitle": "Longer articles worth setting time aside for",
+        "default": True,
+    },
+    {
+        "key": "classifier_match",
+        "name": "Based on your interests",
+        "subtitle": "Stories matching your trained topics and authors",
+        "default": True,
+    },
+    {
+        "key": "follow_up",
+        "name": "Follow-ups",
+        "subtitle": "New posts from feeds you recently read",
+        "default": True,
+    },
+    {
+        "key": "trending_global",
+        "name": "Trending across NewsBlur",
+        "subtitle": "Widely-read stories from across the platform",
+        "default": True,
+    },
+    {
+        "key": "duplicates",
+        "name": "Common stories",
+        "subtitle": "Stories covered by multiple feeds",
+        "default": False,
+    },
+    {
+        "key": "quick_catchup",
+        "name": "Quick catch-up",
+        "subtitle": "TL;DR of the most important stories",
+        "default": False,
+    },
+    {
+        "key": "emerging_topics",
+        "name": "Emerging topics",
+        "subtitle": "Topics getting increasing coverage",
+        "default": False,
+    },
+    {
+        "key": "contrarian_views",
+        "name": "Contrarian views",
+        "subtitle": "Different perspectives on the same topic",
+        "default": False,
+    },
 ]
 
 VALID_SECTION_KEYS = {s["key"] for s in BRIEFING_SECTION_DEFINITIONS}
@@ -94,7 +142,9 @@ class MBriefingPreferences(mongo.Document):
     read_filter = mongo.StringField(choices=["unread", "focus"], default="unread")  # unread or focus stories
     summary_style = mongo.StringField(choices=["editorial", "bullets", "headlines"], default="bullets")
     include_read = mongo.BooleanField(default=False)  # False = unread only, True = include read stories
-    sections = mongo.DictField(default=None)  # {"trending_unread": True, "custom_1": True, ...} or None for defaults
+    sections = mongo.DictField(
+        default=None
+    )  # {"trending_unread": True, "custom_1": True, ...} or None for defaults
     custom_section_prompts = mongo.ListField(mongo.StringField(), default=None)  # Up to 5 custom prompts
 
     meta = {
@@ -165,7 +215,16 @@ def ensure_briefing_feed(user):
     return feed
 
 
-def create_briefing_story(feed, user, summary_html, briefing_date, curated_story_hashes, on_demand=False, curated_sections=None, section_summaries=None):
+def create_briefing_story(
+    feed,
+    user,
+    summary_html,
+    briefing_date,
+    curated_story_hashes,
+    on_demand=False,
+    curated_sections=None,
+    section_summaries=None,
+):
     """
     Create or update an MStory in the briefing feed with the summary, and an MBriefing
     record linking the summary to the curated stories.
@@ -202,11 +261,15 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
     day_end_utc = local_day_end.astimezone(pytz.utc).replace(tzinfo=None)
     if on_demand:
         # models.py: Regenerate overwrites the most recent briefing today
-        existing_briefing = MBriefing.objects.filter(
-            user_id=user.pk,
-            briefing_date__gte=day_start_utc,
-            briefing_date__lte=day_end_utc,
-        ).order_by("-briefing_date").first()
+        existing_briefing = (
+            MBriefing.objects.filter(
+                user_id=user.pk,
+                briefing_date__gte=day_start_utc,
+                briefing_date__lte=day_end_utc,
+            )
+            .order_by("-briefing_date")
+            .first()
+        )
     else:
         # models.py: Scheduled generation only overwrites same time-of-day window
         if local_hour < 12:
@@ -244,7 +307,8 @@ def create_briefing_story(feed, user, summary_html, briefing_date, curated_story
             story_title=title,
             story_content=summary_html,
             story_author_name="NewsBlur",
-            story_permalink="https://newsblur.com/briefing/%s/%s" % (user.pk, briefing_date.strftime("%Y-%m-%d")),
+            story_permalink="https://newsblur.com/briefing/%s/%s"
+            % (user.pk, briefing_date.strftime("%Y-%m-%d")),
             story_guid=guid,
         )
         story.save()

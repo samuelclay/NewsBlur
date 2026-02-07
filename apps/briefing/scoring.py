@@ -20,8 +20,14 @@ from utils import log as logging
 
 
 def select_briefing_stories(
-    user_id, period_start, period_end, max_stories=20, story_sources="all",
-    read_filter="unread", include_read=False, custom_section_prompts=None,
+    user_id,
+    period_start,
+    period_end,
+    max_stories=20,
+    story_sources="all",
+    read_filter="unread",
+    include_read=False,
+    custom_section_prompts=None,
     active_sections=None,
 ):
     """
@@ -199,12 +205,19 @@ def select_briefing_stories(
             if raw_score > 0:
                 intelligence_score = 0.1
                 classifier_matches = _get_classifier_matches(
-                    story, classifier_feeds, classifier_authors, classifier_tags, classifier_titles, feed_title_map
+                    story,
+                    classifier_feeds,
+                    classifier_authors,
+                    classifier_tags,
+                    classifier_titles,
+                    feed_title_map,
                 )
             elif raw_score < 0:
                 intelligence_score = -0.1
 
-        total_score = trending_score + feed_engagement_score + user_affinity + recency_score + intelligence_score
+        total_score = (
+            trending_score + feed_engagement_score + user_affinity + recency_score + intelligence_score
+        )
         scored.append(
             {
                 "story_hash": story_hash,
@@ -319,8 +332,7 @@ def select_briefing_stories(
                     reserved += 1
             if reserved > 0:
                 logging.debug(
-                    " ---> Briefing scoring: reserved %s stories for %s (%s)"
-                    % (reserved, custom_key, prompt)
+                    " ---> Briefing scoring: reserved %s stories for %s (%s)" % (reserved, custom_key, prompt)
                 )
 
     return result
@@ -365,7 +377,9 @@ def _find_duplicate_stories(candidates, stories_by_hash):
     return duplicate_hashes
 
 
-def _get_classifier_matches(story, classifier_feeds, classifier_authors, classifier_tags, classifier_titles, feed_title_map):
+def _get_classifier_matches(
+    story, classifier_feeds, classifier_authors, classifier_tags, classifier_titles, feed_title_map
+):
     """Identify which classifiers matched positively for a story."""
     matches = []
     for cf in classifier_feeds:

@@ -47,6 +47,7 @@ def normalize_section_key(key):
     # No match found - reject this key
     return None
 
+
 LENGTH_INSTRUCTIONS = {
     "short": (
         "Include ALL sections listed above that have relevant stories, but keep each story to a single "
@@ -101,7 +102,9 @@ SECTION_PROMPTS = {
 }
 
 
-def _build_system_prompt(summary_length="medium", summary_style="bullets", sections=None, custom_section_prompts=None):
+def _build_system_prompt(
+    summary_length="medium", summary_style="bullets", sections=None, custom_section_prompts=None
+):
     """Build the system prompt based on user preferences for length, style, and sections."""
     from apps.briefing.models import DEFAULT_SECTIONS
 
@@ -126,7 +129,8 @@ def _build_system_prompt(summary_length="medium", summary_style="bullets", secti
                 "Generate an appropriate section header for this content. "
                 "ONLY include stories that are genuinely and directly about this topic. "
                 "If no stories clearly match this prompt, do NOT include this section at all — "
-                "do not stretch or loosely interpret the prompt to fit unrelated stories." % (num, custom_key, prompt)
+                "do not stretch or loosely interpret the prompt to fit unrelated stories."
+                % (num, custom_key, prompt)
             )
             num += 1
 
@@ -163,7 +167,15 @@ Wrap everything in a <div class="NB-briefing-summary"> tag.""" % (
     )
 
 
-def generate_briefing_summary(user_id, scored_stories, briefing_date, summary_length="medium", summary_style="bullets", sections=None, custom_section_prompts=None):
+def generate_briefing_summary(
+    user_id,
+    scored_stories,
+    briefing_date,
+    summary_length="medium",
+    summary_style="bullets",
+    sections=None,
+    custom_section_prompts=None,
+):
     """
     Generate an editorial summary of the selected stories.
 
@@ -315,7 +327,7 @@ def extract_section_summaries(summary_html):
         content = parts[i + 2] if i + 2 < len(parts) else ""
 
         # summary.py: Strip trailing </div> that closes the outer wrapper
-        content = re.sub(r'\s*</div>\s*$', '', content)
+        content = re.sub(r"\s*</div>\s*$", "", content)
 
         section_html = '<div class="NB-briefing-summary">%s%s</div>' % (h3_tag, content)
         sections[section_key] = section_html

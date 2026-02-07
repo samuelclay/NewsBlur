@@ -2,8 +2,8 @@ import datetime
 
 from django.contrib.auth.models import User
 from django.db.models import Q
-from newsblur_web.celeryapp import app
 
+from newsblur_web.celeryapp import app
 from utils import log as logging
 
 
@@ -56,11 +56,9 @@ def GenerateBriefings():
         if prefs.frequency == "twice_daily" and slot == "morning":
             slot = "afternoon"
         hour, minute = SLOT_TIMES[slot]
-        local_target = tz.localize(
-            datetime.datetime.combine(local_now.date(), datetime.time(hour, minute))
-        )
-        generation_time = (local_target - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(
-            tzinfo=None
+        local_target = tz.localize(datetime.datetime.combine(local_now.date(), datetime.time(hour, minute)))
+        generation_time = (
+            (local_target - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(tzinfo=None)
         )
 
         # tasks.py: For twice_daily, preferred_time is the second slot (afternoon or evening).
@@ -71,8 +69,8 @@ def GenerateBriefings():
             morning_local = tz.localize(
                 datetime.datetime.combine(local_now.date(), datetime.time(morning_hour, morning_minute))
             )
-            morning_gen_utc = (morning_local - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(
-                tzinfo=None
+            morning_gen_utc = (
+                (morning_local - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(tzinfo=None)
             )
             is_morning_window = now >= morning_gen_utc and local_now.hour < 15
             is_second_window = now >= generation_time
@@ -86,13 +84,13 @@ def GenerateBriefings():
 
         # tasks.py: Build period bounds in the user's local timezone so dedupe
         # matches local days, not UTC day boundaries.
-        local_midnight = tz.localize(
-            datetime.datetime.combine(local_now.date(), datetime.time(0, 0))
-        )
+        local_midnight = tz.localize(datetime.datetime.combine(local_now.date(), datetime.time(0, 0)))
 
         if prefs.frequency == "daily":
             period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
-            period_end = (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
+            period_end = (
+                (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
+            )
         elif prefs.frequency == "twice_daily":
             local_noon = local_midnight + datetime.timedelta(hours=12)
             if local_now.hour < 12:
@@ -100,8 +98,8 @@ def GenerateBriefings():
                 period_end = local_noon.astimezone(pytz.utc).replace(tzinfo=None)
             else:
                 period_start = local_noon.astimezone(pytz.utc).replace(tzinfo=None)
-                period_end = (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(
-                    tzinfo=None
+                period_end = (
+                    (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
                 )
         elif prefs.frequency == "weekly":
             preferred_weekday = DAY_NAME_TO_WEEKDAY.get(prefs.preferred_day, 6)
@@ -109,10 +107,14 @@ def GenerateBriefings():
                 skipped += 1
                 continue
             period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
-            period_end = (local_midnight + datetime.timedelta(days=7)).astimezone(pytz.utc).replace(tzinfo=None)
+            period_end = (
+                (local_midnight + datetime.timedelta(days=7)).astimezone(pytz.utc).replace(tzinfo=None)
+            )
         else:
             period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
-            period_end = (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
+            period_end = (
+                (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
+            )
 
         if MBriefing.exists_for_period(user.pk, period_start, period_end):
             skipped += 1
@@ -144,11 +146,19 @@ def GenerateUserBriefing(user_id, on_demand=False):
     import json
 
     import redis
-
-    from apps.briefing.models import MBriefingPreferences, create_briefing_story, ensure_briefing_feed
-    from apps.briefing.scoring import select_briefing_stories
-    from apps.briefing.summary import extract_section_story_hashes, extract_section_summaries, generate_briefing_summary
     from django.conf import settings
+
+    from apps.briefing.models import (
+        MBriefingPreferences,
+        create_briefing_story,
+        ensure_briefing_feed,
+    )
+    from apps.briefing.scoring import select_briefing_stories
+    from apps.briefing.summary import (
+        extract_section_story_hashes,
+        extract_section_summaries,
+        generate_briefing_summary,
+    )
 
     try:
         user = User.objects.get(pk=user_id)
@@ -202,7 +212,13 @@ def GenerateUserBriefing(user_id, on_demand=False):
             " ---> GenerateUserBriefing: only %s stories for user %s, skipping (need %s)"
             % (len(scored_stories), user_id, min_stories)
         )
-        publish("error", {"error": "Not enough stories to generate a briefing (found %s, need %s)." % (len(scored_stories), min_stories)})
+        publish(
+            "error",
+            {
+                "error": "Not enough stories to generate a briefing (found %s, need %s)."
+                % (len(scored_stories), min_stories)
+            },
+        )
         return
 
     publish("progress", {"step": "summary", "message": "Writing your briefing summary..."})
@@ -235,8 +251,13 @@ def GenerateUserBriefing(user_id, on_demand=False):
         if key not in curated_sections:
             curated_sections[key] = [h for h in hashes if h in curated_hash_set]
     briefing, story = create_briefing_story(
-        feed, user, summary_html, now, curated_hashes,
-        on_demand=on_demand, curated_sections=curated_sections,
+        feed,
+        user,
+        summary_html,
+        now,
+        curated_hashes,
+        on_demand=on_demand,
+        curated_sections=curated_sections,
         section_summaries=section_summaries,
     )
 

@@ -610,7 +610,8 @@ class UserAgentBanMiddleware:
                     pass
             logging.user(
                 request,
-                "~FW~BR~SB BLOCKED ~BT~FR Banned User: ~SB%s~SN~FR %s %s%s" % (request.user.username, ip, full_path, body),
+                "~FW~BR~SB BLOCKED ~BT~FR Banned User: ~SB%s~SN~FR %s %s%s"
+                % (request.user.username, ip, full_path, body),
             )
 
             return HttpResponse(json.encode(data), status=403, content_type="text/json")
@@ -742,7 +743,8 @@ class IPRateTrackingMiddleware:
                     if getattr(settings, "IP_RATE_LIMITING_ENABLED", False):
                         logging.user(
                             request,
-                            "~FW~BR~SB BLOCKED ~BT~FR Rate Limit: ~SB%s~SN~FR %s%s" % (ip, full_path, user_info),
+                            "~FW~BR~SB BLOCKED ~BT~FR Rate Limit: ~SB%s~SN~FR %s%s"
+                            % (ip, full_path, user_info),
                         )
                         return HttpResponse(
                             '{"error": "Rate limit exceeded", "code": -1}',

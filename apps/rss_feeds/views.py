@@ -115,8 +115,8 @@ def feed_autocomplete(request):
     if "." in query:
         try:
             parts = urlparse(query)
-            if not parts.hostname and not re.match(r'https?://', query):
-                parts = urlparse("http://%s" % re.sub(r'^https?:', '', query))
+            if not parts.hostname and not re.match(r"https?://", query):
+                parts = urlparse("http://%s" % re.sub(r"^https?:", "", query))
             if parts.hostname:
                 query = [parts.hostname]
                 query.extend([p for p in parts.path.split("/") if p])
