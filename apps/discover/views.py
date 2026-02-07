@@ -864,6 +864,8 @@ def popular_feeds(request):
     # Build grouped category structure with feed counts:
     # [{name, feed_count, subcategories: [{name, feed_count}, ...]}, ...]
     cat_qs = PopularFeed.objects.filter(**base_filter)
+    if platform and platform != "all":
+        cat_qs = cat_qs.filter(platform=platform)
 
     # Clear default ordering to avoid GROUP BY interference, then count feeds
     unordered_qs = cat_qs.order_by()
@@ -908,6 +910,12 @@ def popular_feeds(request):
         cat_qs.values_list("category", flat=True)
         .distinct()
         .order_by("category")
+    )
+
+    # Platform counts (unfiltered by platform so pills always show totals)
+    platform_base_qs = PopularFeed.objects.filter(**base_filter).order_by()
+    platform_counts = dict(
+        platform_base_qs.values("platform").annotate(count=Count("id")).values_list("platform", "count")
     )
 
     # For type=all, sort by subscriber_count desc to surface the best feeds first
@@ -980,6 +988,7 @@ def popular_feeds(request):
         "feeds": results,
         "categories": categories,
         "grouped_categories": grouped_categories,
+        "platform_counts": platform_counts,
         "total": total,
         "has_more": has_more,
     }

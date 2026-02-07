@@ -27712,6 +27712,17 @@ h5.NB-classifier-section-header {
     border-radius: 2px;
 }
 
+.NB-add-site-filter-pill-count {
+    font-size: 10px;
+    color: #999;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.NB-add-site-filter-pill.NB-active .NB-add-site-filter-pill-count {
+    color: rgba(255,255,255,0.7);
+}
+
 /* Tips Grid */
 .NB-add-site-tips-grid {
     display: grid;
@@ -27921,6 +27932,14 @@ h5.NB-classifier-section-header {
 .NB-dark .NB-add-site-filter-pill.NB-active .NB-add-site-filter-pill-icon {
     filter: brightness(0) invert(1);
     opacity: 1;
+}
+
+.NB-dark .NB-add-site-filter-pill-count {
+    color: #777;
+}
+
+.NB-dark .NB-add-site-filter-pill.NB-active .NB-add-site-filter-pill-count {
+    color: rgba(255,255,255,0.7);
 }
 
 .NB-dark .NB-add-site-category-card {
