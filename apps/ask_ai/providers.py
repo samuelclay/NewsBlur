@@ -4,6 +4,8 @@ from typing import Generator
 import anthropic
 import openai
 from django.conf import settings
+
+from utils import log as logging
 from google import genai
 from google.genai import errors as genai_errors
 from google.genai import types as genai_types
@@ -145,10 +147,14 @@ class OpenAIProvider(LLMProvider):
 
     def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
         client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+        # providers.py: OpenAI reasoning models (gpt-5-*) include internal reasoning
+        # tokens in max_completion_tokens, so we need a much higher limit to leave
+        # room for actual content output after reasoning.
+        effective_max = max(max_tokens * 5, 16384)
         response = client.chat.completions.create(
             model=model_id,
             messages=messages,
-            max_tokens=max_tokens,
+            max_completion_tokens=effective_max,
         )
 
         if response.usage:
@@ -205,10 +211,12 @@ class XAIProvider(LLMProvider):
             api_key=settings.XAI_GROK_API_KEY,
             base_url="https://api.x.ai/v1",
         )
+        # providers.py: Use higher limit like OpenAI to handle potential reasoning models
+        effective_max = max(max_tokens * 5, 16384)
         response = client.chat.completions.create(
             model=model_id,
             messages=messages,
-            max_tokens=max_tokens,
+            max_completion_tokens=effective_max,
         )
 
         if response.usage:

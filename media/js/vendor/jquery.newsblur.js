@@ -274,14 +274,14 @@ NEWSBLUR.log = function(msg) {
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/archive.svg';
                 if (_.string.startsWith(feed_id, 'briefing:')) {
                     var BRIEFING_SECTION_ICONS = {
-                        'trending_unread': 'indicator-unread.svg',
+                        'trending_unread': 'indicator-unread-gray.svg',
                         'long_read': 'scroll.svg',
                         'classifier_match': 'train.svg',
                         'follow_up': 'boomerang.svg',
                         'trending_global': 'discover.svg',
                         'duplicates': 'venn.svg',
                         'quick_catchup': 'pulse.svg',
-                        'emerging_topics': 'growth-rocket.svg',
+                        'emerging_topics': 'growth-rocket-gray.svg',
                         'contrarian_views': 'stack.svg',
                         'custom_1': 'prompt.svg',
                         'custom_2': 'prompt.svg',
