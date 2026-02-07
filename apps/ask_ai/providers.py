@@ -27,6 +27,15 @@ class LLMProvider(ABC):
         """Stream response chunks from the LLM."""
         pass
 
+    @abstractmethod
+    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+        """Generate a complete (non-streaming) response from the LLM.
+
+        Returns the full response text. Updates self._last_input_tokens
+        and self._last_output_tokens for cost tracking.
+        """
+        pass
+
     @property
     @abstractmethod
     def error_types(self) -> tuple:
@@ -75,6 +84,24 @@ class AnthropicProvider(LLMProvider):
                 self._last_input_tokens = final_message.usage.input_tokens
                 self._last_output_tokens = final_message.usage.output_tokens
 
+    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        system_msg = next((m["content"] for m in messages if m["role"] == "system"), None)
+        user_messages = [m for m in messages if m["role"] != "system"]
+
+        response = client.messages.create(
+            model=model_id,
+            max_tokens=max_tokens,
+            system=system_msg,
+            messages=user_messages,
+        )
+
+        if response.usage:
+            self._last_input_tokens = response.usage.input_tokens
+            self._last_output_tokens = response.usage.output_tokens
+
+        return "".join(block.text for block in response.content if hasattr(block, "text"))
+
     @property
     def error_types(self) -> tuple:
         return (anthropic.APIConnectionError, anthropic.APIStatusError)
@@ -115,6 +142,20 @@ class OpenAIProvider(LLMProvider):
                 self._last_output_tokens = chunk.usage.completion_tokens
             if chunk.choices and chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
+
+    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+        client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
+        response = client.chat.completions.create(
+            model=model_id,
+            messages=messages,
+            max_tokens=max_tokens,
+        )
+
+        if response.usage:
+            self._last_input_tokens = response.usage.prompt_tokens
+            self._last_output_tokens = response.usage.completion_tokens
+
+        return response.choices[0].message.content or ""
 
     @property
     def error_types(self) -> tuple:
@@ -158,6 +199,23 @@ class XAIProvider(LLMProvider):
                 self._last_output_tokens = chunk.usage.completion_tokens
             if chunk.choices and chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
+
+    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+        client = openai.OpenAI(
+            api_key=settings.XAI_GROK_API_KEY,
+            base_url="https://api.x.ai/v1",
+        )
+        response = client.chat.completions.create(
+            model=model_id,
+            messages=messages,
+            max_tokens=max_tokens,
+        )
+
+        if response.usage:
+            self._last_input_tokens = response.usage.prompt_tokens
+            self._last_output_tokens = response.usage.completion_tokens
+
+        return response.choices[0].message.content or ""
 
     @property
     def error_types(self) -> tuple:
@@ -212,6 +270,33 @@ class GeminiProvider(LLMProvider):
             usage = last_chunk.usage_metadata
             self._last_input_tokens = getattr(usage, "prompt_token_count", 0) or 0
             self._last_output_tokens = getattr(usage, "candidates_token_count", 0) or 0
+
+    def generate(self, messages: list, model_id: str, max_tokens: int = 4096) -> str:
+        client = genai.Client(api_key=settings.GOOGLE_GEMINI_API_KEY)
+
+        system_msg = next((m["content"] for m in messages if m["role"] == "system"), None)
+        config_kwargs = {}
+        if system_msg:
+            config_kwargs["system_instruction"] = system_msg
+        config_kwargs["max_output_tokens"] = max_tokens
+        config = genai_types.GenerateContentConfig(**config_kwargs)
+
+        contents = []
+        for m in messages:
+            if m["role"] == "system":
+                continue
+            role = "model" if m["role"] == "assistant" else m["role"]
+            contents.append(
+                genai_types.Content(role=role, parts=[genai_types.Part.from_text(text=m["content"])])
+            )
+
+        response = client.models.generate_content(model=model_id, contents=contents, config=config)
+
+        if hasattr(response, "usage_metadata") and response.usage_metadata:
+            self._last_input_tokens = getattr(response.usage_metadata, "prompt_token_count", 0) or 0
+            self._last_output_tokens = getattr(response.usage_metadata, "candidates_token_count", 0) or 0
+
+        return response.text or ""
 
     @property
     def error_types(self) -> tuple:
@@ -361,4 +446,108 @@ def get_provider(model_name: str) -> tuple[LLMProvider, str]:
         model_name = DEFAULT_MODEL
 
     model = MODELS[model_name]
+    return model["provider_class"](), model["model_id"]
+
+
+# Briefing model registry: cheap models optimized for daily briefing generation.
+# Separate from the Ask AI models (which use flagship models).
+_DEFAULT_BRIEFING_MODELS = {
+    "haiku": {
+        "provider_class": AnthropicProvider,
+        "model_id": "claude-haiku-4-5",
+        "display_name": "Claude Haiku",
+        "vendor": "anthropic",
+        "vendor_display": "Anthropic",
+        "order": 1,
+    },
+    "gpt-5-mini": {
+        "provider_class": OpenAIProvider,
+        "model_id": "gpt-5-mini",
+        "display_name": "GPT 5 Mini",
+        "vendor": "openai",
+        "vendor_display": "OpenAI",
+        "order": 2,
+    },
+    "gemini-flash-lite": {
+        "provider_class": GeminiProvider,
+        "model_id": "gemini-2.5-flash-lite",
+        "display_name": "Gemini Flash Lite",
+        "vendor": "google",
+        "vendor_display": "Google",
+        "order": 3,
+    },
+    "grok-4.1-fast": {
+        "provider_class": XAIProvider,
+        "model_id": "grok-4-1-fast-non-reasoning",
+        "display_name": "Grok 4.1 Fast",
+        "vendor": "xai",
+        "vendor_display": "xAI",
+        "order": 4,
+    },
+}
+
+
+def _load_briefing_models():
+    """Load briefing models, applying settings override if BRIEFING_MODELS is defined.
+
+    Self-hosters can define BRIEFING_MODELS in settings as a dict of model configs:
+        BRIEFING_MODELS = {
+            "my-model": {
+                "provider": "openai",
+                "model_id": "gpt-4o-mini",
+                "display_name": "GPT-4o Mini",
+                "order": 1,
+            },
+        }
+    """
+    custom = getattr(settings, "BRIEFING_MODELS", None)
+    if not custom:
+        return _DEFAULT_BRIEFING_MODELS
+
+    models = {}
+    for key, cfg in custom.items():
+        provider_slug = cfg.get("provider", cfg.get("vendor", ""))
+        provider_class = PROVIDER_CLASSES.get(provider_slug)
+        if not provider_class:
+            continue
+        models[key] = {
+            "provider_class": provider_class,
+            "model_id": cfg["model_id"],
+            "display_name": cfg.get("display_name", key),
+            "vendor": provider_slug,
+            "vendor_display": cfg.get("vendor_display", provider_slug.title()),
+            "order": cfg.get("order", 99),
+        }
+    return models if models else _DEFAULT_BRIEFING_MODELS
+
+
+BRIEFING_MODELS = _load_briefing_models()
+VALID_BRIEFING_MODELS = list(BRIEFING_MODELS.keys())
+DEFAULT_BRIEFING_MODEL = getattr(settings, "BRIEFING_MODEL", "haiku")
+
+
+def get_briefing_models_for_frontend() -> list:
+    """Get briefing model list for frontend JavaScript consumption.
+
+    Returns a sorted list of dicts with key, display_name, vendor, vendor_display.
+    """
+    return sorted(
+        [
+            {
+                "key": key,
+                "display_name": m["display_name"],
+                "vendor": m["vendor"],
+                "vendor_display": m["vendor_display"],
+            }
+            for key, m in BRIEFING_MODELS.items()
+        ],
+        key=lambda x: BRIEFING_MODELS[x["key"]].get("order", 99),
+    )
+
+
+def get_briefing_provider(model_name: str) -> tuple[LLMProvider, str]:
+    """Get a provider instance and model ID for the given briefing model name."""
+    if not model_name or model_name not in BRIEFING_MODELS:
+        model_name = DEFAULT_BRIEFING_MODEL
+    model = BRIEFING_MODELS[model_name]
     return model["provider_class"](), model["model_id"]

@@ -1,15 +1,11 @@
 import re
 import zlib
 
-import anthropic
-from django.conf import settings
 from django.utils.encoding import smart_str
 
 from apps.rss_feeds.models import Feed, MStory
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
-
-BRIEFING_MODEL = "claude-haiku-4-5"
 
 
 def normalize_section_key(key):
@@ -175,6 +171,7 @@ def generate_briefing_summary(
     summary_style="bullets",
     sections=None,
     custom_section_prompts=None,
+    model=None,
 ):
     """
     Generate an editorial summary of the selected stories.
@@ -243,19 +240,36 @@ def generate_briefing_summary(
     )
 
     try:
+        from apps.ask_ai.providers import (
+            BRIEFING_MODELS,
+            DEFAULT_BRIEFING_MODEL,
+            LLM_EXCEPTIONS,
+            get_briefing_provider,
+        )
+
+        model_name = model if model and model in BRIEFING_MODELS else DEFAULT_BRIEFING_MODEL
+        provider, model_id = get_briefing_provider(model_name)
+
+        # summary.py: Fall back to default if the chosen provider's API key isn't configured
+        if not provider.is_configured():
+            if model_name != DEFAULT_BRIEFING_MODEL:
+                provider, model_id = get_briefing_provider(DEFAULT_BRIEFING_MODEL)
+                model_name = DEFAULT_BRIEFING_MODEL
+            if not provider.is_configured():
+                logging.error(" ---> Briefing summary failed for user %s: no API key configured" % user_id)
+                return None
+
         system_prompt = _build_system_prompt(summary_length, summary_style, sections, custom_section_prompts)
         # summary.py: Scale max_tokens based on story/section count to avoid truncation
         num_sections = sum(1 for v in (sections or {}).values() if v)
         max_tokens = min(1024 + (len(scored_stories) * 80) + (num_sections * 100), 4096)
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-        response = client.messages.create(
-            model=BRIEFING_MODEL,
-            max_tokens=max_tokens,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_prompt}],
-        )
 
-        summary_html = "".join(block.text for block in response.content if hasattr(block, "text"))
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+        summary_html = provider.generate(messages, model_id, max_tokens=max_tokens)
 
         summary_html = summary_html.strip()
         if summary_html.startswith("```"):
@@ -263,28 +277,25 @@ def generate_briefing_summary(
             summary_html = re.sub(r"\n?```\s*$", "", summary_html)
             summary_html = summary_html.strip()
 
-        if response.usage:
-            LLMCostTracker.record_usage(
-                provider="anthropic",
-                model=BRIEFING_MODEL,
-                feature="daily_briefing",
-                input_tokens=response.usage.input_tokens,
-                output_tokens=response.usage.output_tokens,
-                user_id=user_id,
-            )
+        input_tokens, output_tokens = provider.get_last_usage()
+        vendor = BRIEFING_MODELS.get(model_name, {}).get("vendor", "unknown")
+        LLMCostTracker.record_usage(
+            provider=vendor,
+            model=model_id,
+            feature="daily_briefing",
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            user_id=user_id,
+        )
 
         logging.debug(
-            " ---> Briefing summary generated for user %s: %s input, %s output tokens"
-            % (
-                user_id,
-                response.usage.input_tokens if response.usage else "?",
-                response.usage.output_tokens if response.usage else "?",
-            )
+            " ---> Briefing summary generated for user %s: %s input, %s output tokens (model: %s)"
+            % (user_id, input_tokens, output_tokens, model_name)
         )
 
         return summary_html
 
-    except (anthropic.APIConnectionError, anthropic.APIStatusError) as e:
+    except LLM_EXCEPTIONS as e:
         logging.error(" ---> Briefing summary failed for user %s: %s" % (user_id, str(e)))
         return None
 
