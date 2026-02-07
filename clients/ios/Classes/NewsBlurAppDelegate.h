@@ -266,6 +266,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSDictionary *dictSocialServices;
 @property (nonatomic) BOOL isPremium;
 @property (nonatomic) BOOL isPremiumArchive;
+@property (nonatomic) BOOL isPremiumPro;
 @property (nonatomic) NSInteger premiumExpire;
 @property (nonatomic, strong) NSMutableDictionary *dictUnreadCounts;
 @property (nonatomic, strong) NSMutableDictionary *dictTextFeeds;
@@ -328,6 +329,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showDashboardSites:(NSString *)selectedRiverId;
 - (void)showPremiumDialog;
 - (void)showPremiumDialogForArchive;
+- (void)showPremiumDialogForPro;
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
 - (void)showPreferences;
