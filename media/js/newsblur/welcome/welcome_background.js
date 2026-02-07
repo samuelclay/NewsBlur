@@ -1,7 +1,9 @@
 NEWSBLUR.WelcomeBackground = (function () {
-    var gl, canvas, program, timeUniform, resolutionUniform;
+    var gl, canvas, program, timeUniform, resolutionUniform, themeUniform;
     var startTime, animationId;
     var running = false;
+    var currentTheme = 1.0; // 0.0 = light, 1.0 = dark
+    var targetTheme = 1.0;
 
     var VERT_SRC = [
         'attribute vec2 a_position;',
@@ -14,19 +16,34 @@ NEWSBLUR.WelcomeBackground = (function () {
         'precision mediump float;',
         'uniform float u_time;',
         'uniform vec2 u_resolution;',
+        'uniform float u_theme;',
 
         'void main() {',
         '    vec2 uv = gl_FragCoord.xy / u_resolution;',
 
-        // Base colors matching the iOS palette
-        '    vec3 darkBase  = vec3(0.106, 0.141, 0.141);',
-        '    vec3 teal      = vec3(0.247, 0.326, 0.329);',
-        '    vec3 lightTeal = vec3(0.35, 0.54, 0.55);',
-        '    vec3 gold      = vec3(0.85, 0.65, 0.13);',
-        '    vec3 softGold  = vec3(0.98, 0.86, 0.61);',
+        // Dark palette (original)
+        '    vec3 d_base     = vec3(0.106, 0.141, 0.141);',
+        '    vec3 d_mid      = vec3(0.247, 0.326, 0.329);',
+        '    vec3 d_light    = vec3(0.35, 0.54, 0.55);',
+        '    vec3 d_gold     = vec3(0.85, 0.65, 0.13);',
+        '    vec3 d_softGold = vec3(0.98, 0.86, 0.61);',
 
-        // Base gradient: teal at top fading to dark at bottom
-        '    vec3 base = mix(teal, darkBase, smoothstep(0.0, 1.0, uv.y));',
+        // Light palette — lighter teal/green, still recognizable
+        '    vec3 l_base     = vec3(0.20, 0.28, 0.28);',
+        '    vec3 l_mid      = vec3(0.35, 0.46, 0.47);',
+        '    vec3 l_light    = vec3(0.48, 0.66, 0.67);',
+        '    vec3 l_gold     = vec3(0.85, 0.65, 0.13);',
+        '    vec3 l_softGold = vec3(0.98, 0.86, 0.61);',
+
+        // Interpolate palettes based on theme
+        '    vec3 base     = mix(l_base,     d_base,     u_theme);',
+        '    vec3 mid      = mix(l_mid,      d_mid,      u_theme);',
+        '    vec3 light    = mix(l_light,    d_light,    u_theme);',
+        '    vec3 gold     = mix(l_gold,     d_gold,     u_theme);',
+        '    vec3 softGold = mix(l_softGold, d_softGold, u_theme);',
+
+        // Base gradient: mid at top fading to base at bottom
+        '    vec3 bg = mix(mid, base, smoothstep(0.0, 1.0, uv.y));',
 
         // Diagonal coordinate for wave ridges
         '    float diag = uv.x * 0.6 + uv.y * 0.4;',
@@ -43,10 +60,10 @@ NEWSBLUR.WelcomeBackground = (function () {
         '    float wave3 = sin(diag * 22.0 + u_time * 0.3 + 3.0) * 0.5 + 0.5;',
         '    wave3 = pow(wave3, 5.0);',
 
-        // Combine ridges with teal/gold tinting
-        '    vec3 ridge1 = mix(base, lightTeal, wave1 * 0.4);',
-        '    vec3 ridge2 = mix(ridge1, lightTeal, wave2 * 0.25);',
-        '    vec3 color  = mix(ridge2, lightTeal, wave3 * 0.15);',
+        // Combine ridges with light tinting
+        '    vec3 ridge1 = mix(bg, light, wave1 * 0.4);',
+        '    vec3 ridge2 = mix(ridge1, light, wave2 * 0.25);',
+        '    vec3 color  = mix(ridge2, light, wave3 * 0.15);',
 
         // Slow gold glow that drifts across
         '    float glow = sin(uv.x * 3.0 + u_time * 0.2) * sin(uv.y * 2.0 - u_time * 0.15);',
@@ -88,9 +105,18 @@ NEWSBLUR.WelcomeBackground = (function () {
     function render() {
         if (!running) return;
         resize();
+
+        // Smooth theme transition
+        if (currentTheme !== targetTheme) {
+            var delta = targetTheme - currentTheme;
+            currentTheme += delta * 0.08;
+            if (Math.abs(delta) < 0.005) currentTheme = targetTheme;
+        }
+
         var elapsed = (Date.now() - startTime) / 1000.0 * 0.4;
         gl.uniform1f(timeUniform, elapsed);
         gl.uniform2f(resolutionUniform, canvas.width, canvas.height);
+        gl.uniform1f(themeUniform, currentTheme);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
         animationId = requestAnimationFrame(render);
     }
@@ -147,6 +173,7 @@ NEWSBLUR.WelcomeBackground = (function () {
 
             timeUniform = gl.getUniformLocation(program, 'u_time');
             resolutionUniform = gl.getUniformLocation(program, 'u_resolution');
+            themeUniform = gl.getUniformLocation(program, 'u_theme');
 
             document.addEventListener('visibilitychange', onVisibilityChange);
             return true;
@@ -164,6 +191,15 @@ NEWSBLUR.WelcomeBackground = (function () {
                 cancelAnimationFrame(animationId);
                 animationId = null;
             }
+        },
+
+        setTheme: function (isDark) {
+            targetTheme = isDark ? 1.0 : 0.0;
+        },
+
+        setThemeImmediate: function (isDark) {
+            targetTheme = isDark ? 1.0 : 0.0;
+            currentTheme = targetTheme;
         },
 
         destroy: function () {

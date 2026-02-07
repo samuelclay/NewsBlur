@@ -56,32 +56,6 @@ body.NB-dark {
     background-color: rgba(255, 255, 255, 0.4);
 }
 
-.NB-dark .NB-welcome-pricing,
-.NB-dark .NB-welcome-bottomactions {
-    background-color: #303335;
-    border-top: 1px solid #222425;
-    border-bottom: 1px solid #222425;
-}
-
-.NB-dark .NB-pricing th {
-    border-right: 1px solid #545a5d;
-}
-
-.NB-dark .NB-pricing td {
-    border-top: 1px solid #545a5d;
-    border-right: 1px solid #545a5d;
-}
-
-.NB-dark .NB-welcome-pricing .NB-price {
-    background-color: #3B5370;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
-}
-
-.NB-dark .NB-welcome-bottomactions .NB-welcome-header-action-subtext {
-    color: white;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
-}
-
 /* ============== */
 /* = Scrollbars = */
 /* ============== */

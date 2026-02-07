@@ -11,6 +11,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
 
     initialize: function () {
         this.init_webgl_background();
+        this.watch_theme_changes();
         NEWSBLUR.reader.$s.$layout.hide();
     },
 
@@ -23,8 +24,30 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         if (!canvas) return;
 
         if (NEWSBLUR.WelcomeBackground && NEWSBLUR.WelcomeBackground.init(canvas)) {
+            var isDark = $('body').hasClass('NB-dark');
+            NEWSBLUR.WelcomeBackground.setThemeImmediate(isDark);
             NEWSBLUR.WelcomeBackground.start();
         }
+    },
+
+    // ==========
+    // = Theme  =
+    // ==========
+
+    watch_theme_changes: function () {
+        var observer = new MutationObserver(function (mutations) {
+            for (var i = 0; i < mutations.length; i++) {
+                if (mutations[i].attributeName === 'class') {
+                    var isDark = $('body').hasClass('NB-dark');
+                    if (NEWSBLUR.WelcomeBackground) {
+                        NEWSBLUR.WelcomeBackground.setTheme(isDark);
+                    }
+                    break;
+                }
+            }
+        });
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        this._themeObserver = observer;
     },
 
     // ====================
