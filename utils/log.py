@@ -98,6 +98,7 @@ def colorize(msg):
     }
     colors = {
         "~SB": Style.BRIGHT,
+        "~SD": Style.DIM,
         "~SN": Style.NORMAL,
         "~SK": Style.BLINK,
         "~SU": Style.UNDERLINE,
