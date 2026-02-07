@@ -10,7 +10,30 @@
 - Testing expectations
 - Any constraints or preferences I might have
 
-Don't assume - ask. Multiple rounds of questions are encouraged before writing code.
+**Codex: Use the `request_user_input` tool frequently throughout development - not just during planning.**
+**Claude: Continue using the AskUserQuestion tool frequently throughout development - not just during planning.**
+
+Actively interview the user at any point (especially during planning). Prefer multiple rounds of short questions.
+
+Asking questions is encouraged and appreciated because it:
+- Helps both of us think through problems more clearly
+- Surfaces edge cases and requirements that might be missed
+- Leads to better solutions through collaborative dialogue
+- Catches misunderstandings early before code is written
+
+Ask about:
+- Clarifying requirements and desired behavior
+- UI/UX preferences and design decisions
+- Trade-offs between different approaches
+- Edge cases and error handling
+- Whether a proposed solution matches expectations
+- Anything you're uncertain about
+
+Don't assume - ask. Multiple rounds of questions are better than one large batch. Even mid-implementation, if something feels unclear or you're choosing between options, ask. The interactive back-and-forth is valuable.
+
+## Debugging
+
+For debugging sessions: always take a screenshot first, reproduce the issue, then form a hypothesis before changing code. Do not start editing until the root cause is identified.
 
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
@@ -43,7 +66,7 @@ Don't assume - ask. Multiple rounds of questions are encouraged before writing c
 
 **IMPORTANT: Do NOT run `make rebuild` or `make nb` during development!**
 - Web and Node servers restart automatically when code changes
-- Task/Celery server must be manually restarted only when working on background tasks
+- Task/Celery server must be manually restarted when modifying **any** code that runs inside a Celery task — this includes the task file itself and any module it calls (e.g., scoring, summary, models). Without a restart, the worker keeps running the old code. Restart with: `docker restart newsblur_celery` (or `newsblur_celery_<worktree-name>` in worktrees)
 - Use `make` to apply migrations after git pull
 - Running `make rebuild` unnecessarily rebuilds everything and wastes time
 
@@ -140,38 +163,10 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 4. Commit the fix
 5. Resolve the issue with `sentry-cli issues resolve -i <issue_id>`
 
-## Browser Testing with Puppeteer Skill
-- Scripts are in `.claude/skills/chrome-devtools/scripts/` — always `cd` there before running
+## Browser Testing
+- Use the Chrome DevTools MCP server for browser automation and testing
 - Local dev: `https://localhost` (self-signed certs are accepted by default)
 - **Screenshots**: Save to `/tmp/newsblur-screenshot.png`, then use Read tool to view
-
-### Puppeteer Scripts
-All scripts output JSON. Chain commands with `--close false` to reuse the browser session.
-```bash
-cd .claude/skills/chrome-devtools/scripts
-
-# Navigate and auto-login
-node navigate.js --url "https://localhost/reader/dev/autologin/" --close false
-
-# Take a screenshot
-node screenshot.js --url "https://localhost/reader/dev/autologin/" --output /tmp/newsblur-screenshot.png
-
-# Execute JavaScript (use --url to navigate first, or omit to use current page with --close false)
-node evaluate.js --url "https://localhost/reader/dev/autologin/" --script "NEWSBLUR.assets.feeds.length"
-
-# Wait for async data before evaluating
-node evaluate.js --url "https://localhost/reader/dev/autologin/" --script "new Promise(resolve => { const check = () => { if (NEWSBLUR.assets.feeds.length > 0) resolve(NEWSBLUR.assets.feeds.length); else setTimeout(check, 500); }; check(); })"
-
-# Fill form fields and click
-node fill.js --url "https://example.com" --selector "#email" --value "user@example.com" --close false
-node click.js --selector "button[type=submit]"
-
-# Get page snapshot (interactive elements with selectors)
-node snapshot.js --url "https://localhost"
-```
-
-### Chrome DevTools MCP (disabled by default)
-For interactive browser testing where you need to see and control a real Chrome window, enable the chrome-devtools MCP in Claude Code settings. It connects to your actual browser via DevTools Protocol.
 
 ### Dev Auto-Login (DEBUG mode only)
 - `https://localhost/reader/dev/autologin/` - Login as default dev user (configured in `DEV_AUTOLOGIN_USERNAME`)
@@ -184,12 +179,12 @@ For interactive browser testing where you need to see and control a real Chrome 
 - `?test=growth1` - Test feed_added growth prompt
 - `?test=growth2` - Test stories_read growth prompt
 
-### Theme Switching (via evaluate.js)
+### Theme Switching
 - `NEWSBLUR.reader.switch_theme('dark')` - Switch to dark mode
 - `NEWSBLUR.reader.switch_theme('light')` - Switch to light mode
 - `NEWSBLUR.reader.switch_theme('auto')` - Switch to auto/system theme
 
-### Opening Modals (via evaluate.js)
+### Opening Modals
 - `NEWSBLUR.reader.open_premium_upgrade_modal()` - Premium upgrade dialog
 - `NEWSBLUR.reader.open_feedchooser_modal()` - Feed chooser (mute sites)
 - `NEWSBLUR.reader.open_account_modal()` - Account settings
@@ -209,14 +204,13 @@ For interactive browser testing where you need to see and control a real Chrome 
 - `NEWSBLUR.reader.open_social_profile_modal(user_id)` - Social profile
 - `$.modal.close()` - Close any open modal
 
-### Feed & Story Operations (via evaluate.js)
+### Feed & Story Operations
 - `NEWSBLUR.reader.open_river_stories()` - Open All Site Stories
 - `NEWSBLUR.reader.open_feed(feed_id)` - Open a specific feed
 - `NEWSBLUR.assets.feeds.find(f => f.get('nt') > 0)` - Get feed with unread stories
 - `NEWSBLUR.assets.feeds` - Backbone.js collection of all feeds
 
-### Element Interactions (via click.js/snapshot.js)
-- Use `node snapshot.js --url <url>` to discover CSS selectors
+### Element Interactions
 - `.NB-feed-story` - Select first story
 - `.NB-feed-story-train` - Open story intelligence trainer
 - `.NB-feedbar-options` - Open feed options popover
@@ -249,3 +243,8 @@ p.save()
   - Mongo (`hdb-mongo-*`): `mongo`
   - Postgres (`hdb-postgres-*`): `postgres`
   - Nginx (`hwww`): `nginx`, `haproxy`
+
+## Writing Emails
+- Never use em dashes
+- Sign off with just "Sam" (no "Best," "Thanks," or other closings before it)
+- Keep it concise and direct

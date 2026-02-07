@@ -1,27 +1,22 @@
-# Assets for Jammit -- http://documentcloud.github.com/jammit/
+# Asset pipeline configuration (django-pipeline)
+# CSS: lightningcss (minification + data URI embedding for /media/embed/ assets)
+# JS: Google Closure Compiler
 
-# Use the Google Closure Compiler to minify JavaScript
+# Closure Compiler options (used by django-pipeline JS_COMPRESSOR)
 javascript_compressor: closure
 compressor_options:
   language_in: "ECMASCRIPT6"
 
-# YUI for CSS (not cssmin)
-css_compressor: yui
-
-# Compile JavaScript templates (JSTs) and wrap with this Underscore.js
-# micro-templating string function.
+# JST template wrapper
 template_function: _.template
 
 # Location of static assets relative to CWD.
 public_root: /srv/newsblur/
 
-# Package data-uri and mhtml variants of stylesheets, with whitelisted
-# images embedded inline.
-embed_assets: datauri
+# Data URI embedding for /media/embed/ assets is handled by
+# LightningCSSCompressor in utils/pipeline_utils.py (4KB size limit)
 
 # Minify JS+CSS. Turn `off` to have uncompressed but concatenated files.
-# Turning this off also makes compile-time near negligible, so it's useful
-# for testing.
 compress_assets: on
 
 javascripts:
@@ -151,10 +146,7 @@ stylesheets:
     - css/reader/darkmode.css
     - css/jquery-ui/jquery-ui.theme.css
     - css/jquery-ui/jquery-ui.structure.css
-    - css/jquery.tipsy.css
-    - css/vendor/bootstrap-progressbar.css
     - css/vendor/jquery.tagit.css
-    - css/vendor/highlight.css
   # mobile:
   #     - css/mobile/jquery.mobile-1.0b1.css
   #     - css/mobile/mobile.css
@@ -164,5 +156,4 @@ stylesheets:
     - css/bookmarklet/bookmarklet.css
   blurblog:
     - css/controls/jquery.tipsy.css
-    - css/vendor/bootstrap-*.css
     - css/circular/css/social_page.css

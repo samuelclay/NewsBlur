@@ -525,8 +525,11 @@ class SearchStory:
         }
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.ConnectionError as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
         except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            logging.debug(" ***> ~FRSearch query error: %s" % e)
             return []
 
         # s = elasticsearch_dsl.Search(using=cls.ES(), index=cls.index_name())
@@ -586,8 +589,11 @@ class SearchStory:
         }
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.ConnectionError as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
         except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            logging.debug(" ***> ~FRSearch query error: %s" % e)
             return []
 
         # sort     = "date:desc" if order == "newest" else "date:asc"
@@ -645,8 +651,11 @@ class SearchStory:
         }
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.ConnectionError as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
         except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            logging.debug(" ***> ~FRSearch query error: %s" % e)
             return []
 
         logging.info(
@@ -901,8 +910,11 @@ class DiscoverStory:
         logging.debug(f"~FBVector query: {body}")
         try:
             results = cls.ES().search(body=body, index=cls.index_name())
+        except elasticsearch.exceptions.ConnectionError as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
         except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            logging.debug(" ***> ~FRSearch query error: %s" % e)
             return []
 
         logging.info(
@@ -923,8 +935,11 @@ class DiscoverStory:
         body = {"query": {"ids": {"values": [story_hash]}}}
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.ConnectionError as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
         except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            logging.debug(" ***> ~FRSearch query error: %s" % e)
             return []
         # logging.debug(f"Results: {results}")
         if len(results["hits"]["hits"]) == 0:
@@ -1209,8 +1224,8 @@ class SearchFeed:
             logging.debug(f" ***> ~FRNo search server available: {e}")
             return []
 
-        # Escape special characters for query_string wildcards
-        escaped_text = text.replace("\\", "\\\\").replace('"', '\\"')
+        # Escape all Elasticsearch query_string reserved characters
+        escaped_text = re.sub(r'([+\-=&|!(){}\[\]^"~*?:\\/])', r"\\\1", text)
 
         body = {
             "query": {
@@ -1269,8 +1284,11 @@ class SearchFeed:
         }
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.ConnectionError as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
         except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            logging.debug(" ***> ~FRSearch query error: %s" % e)
             return []
 
         logging.info(
@@ -1311,8 +1329,11 @@ class SearchFeed:
         }
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.ConnectionError as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
         except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            logging.debug(" ***> ~FRSearch query error: %s" % e)
             return []
 
         logging.info(
@@ -1426,8 +1447,11 @@ class SearchFeed:
 
         try:
             results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.ConnectionError as e:
+            logging.error(" ***> ~FRNo search server available for querying: %s" % e)
+            return []
         except elasticsearch.exceptions.RequestError as e:
-            logging.debug(" ***> ~FRNo search server available for querying: %s" % e)
+            logging.debug(" ***> ~FRSearch query error: %s" % e)
             return []
 
         # logging.debug(f"Results: {results}")

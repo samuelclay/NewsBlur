@@ -1,6 +1,5 @@
 import datetime
 import time
-
 from unittest.mock import MagicMock, call, patch
 
 from django.conf import settings
@@ -393,16 +392,15 @@ class Test_ArchiveFetchStaggering(TestCase):
         self.assertEqual(len(countdowns), len(self.feeds))
         for i, countdown in enumerate(countdowns):
             self.assertEqual(
-                countdown, i * 10,
+                countdown,
+                i * 10,
                 f"Feed chunk {i} should have countdown={i * 10}, got {countdown}",
             )
 
     @patch("apps.reader.models.celery")
     @patch("apps.profile.tasks.FinishFetchArchiveFeeds")
     @patch("apps.profile.tasks.FetchArchiveFeedsChunk")
-    def test_archive_fetch_creates_chord_with_callback(
-        self, mock_chunk_task, mock_finish_task, mock_celery
-    ):
+    def test_archive_fetch_creates_chord_with_callback(self, mock_chunk_task, mock_finish_task, mock_celery):
         """The archive fetch should create a Celery chord with a FinishFetchArchiveFeeds callback."""
         mock_signature = MagicMock()
         mock_signature.set.return_value = mock_signature
@@ -471,9 +469,7 @@ class Test_FinishArchiveFeedsSyncRedis(TestCase):
     @patch("apps.reader.models.time.sleep")
     @patch("apps.rss_feeds.models.Feed.sync_redis")
     @patch("apps.reader.models.redis.Redis")
-    def test_finish_fetch_calls_sync_redis_for_each_feed(
-        self, mock_redis_cls, mock_sync_redis, mock_sleep
-    ):
+    def test_finish_fetch_calls_sync_redis_for_each_feed(self, mock_redis_cls, mock_sync_redis, mock_sleep):
         """finish_fetch_archive_feeds should call sync_redis on each subscribed feed."""
         mock_redis_cls.return_value = MagicMock()
 
@@ -482,16 +478,15 @@ class Test_FinishArchiveFeedsSyncRedis(TestCase):
 
         # sync_redis should be called once per feed
         self.assertEqual(
-            mock_sync_redis.call_count, len(self.feeds),
+            mock_sync_redis.call_count,
+            len(self.feeds),
             f"sync_redis should be called {len(self.feeds)} times, got {mock_sync_redis.call_count}",
         )
 
     @patch("apps.reader.models.time.sleep")
     @patch("apps.rss_feeds.models.Feed.sync_redis")
     @patch("apps.reader.models.redis.Redis")
-    def test_finish_fetch_staggers_sync_redis_with_sleep(
-        self, mock_redis_cls, mock_sync_redis, mock_sleep
-    ):
+    def test_finish_fetch_staggers_sync_redis_with_sleep(self, mock_redis_cls, mock_sync_redis, mock_sleep):
         """finish_fetch_archive_feeds should sleep between sync_redis calls to avoid Redis spike."""
         mock_redis_cls.return_value = MagicMock()
 
@@ -501,7 +496,8 @@ class Test_FinishArchiveFeedsSyncRedis(TestCase):
         # sleep(2) should be called between feeds (n-1 times for n feeds)
         expected_sleeps = len(self.feeds) - 1
         self.assertEqual(
-            mock_sleep.call_count, expected_sleeps,
+            mock_sleep.call_count,
+            expected_sleeps,
             f"time.sleep should be called {expected_sleeps} times (between feeds), got {mock_sleep.call_count}",
         )
         for c in mock_sleep.call_args_list:
@@ -510,9 +506,7 @@ class Test_FinishArchiveFeedsSyncRedis(TestCase):
     @patch("apps.reader.models.time.sleep")
     @patch("apps.rss_feeds.models.Feed.sync_redis")
     @patch("apps.reader.models.redis.Redis")
-    def test_finish_fetch_publishes_done_before_sync(
-        self, mock_redis_cls, mock_sync_redis, mock_sleep
-    ):
+    def test_finish_fetch_publishes_done_before_sync(self, mock_redis_cls, mock_sync_redis, mock_sleep):
         """finish_fetch_archive_feeds should publish fetch_archive:done to Redis pubsub."""
         mock_r = MagicMock()
         mock_redis_cls.return_value = mock_r
