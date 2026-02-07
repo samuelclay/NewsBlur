@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) SKProduct * _Nullable premiumProduct;
 @property (nonatomic, strong) SKProduct * _Nullable premiumArchiveProduct;
+@property (nonatomic, strong) SKProduct * _Nullable premiumProProduct;
 
 - (void)loadProducts;
 - (void)purchase:(SKProduct *)product;

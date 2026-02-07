@@ -165,6 +165,7 @@
 @synthesize dictTextFeeds;
 @synthesize isPremium;
 @synthesize isPremiumArchive;
+@synthesize isPremiumPro;
 @synthesize premiumExpire;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
@@ -224,6 +225,7 @@
     cachedUserAvatars.memoryCache.costLimit = 10 * 1024 * 1024; // 10 MB
     isPremium = NO;
     isPremiumArchive = NO;
+    isPremiumPro = NO;
     premiumExpire = 0;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
@@ -881,22 +883,27 @@
 }
 
 - (void)showPremiumDialog {
-    [self showPremiumDialogScrollToArchive:NO];
+    [self showPremiumDialogScrollTo:nil];
 }
 
 - (void)showPremiumDialogForArchive {
-    [self showPremiumDialogScrollToArchive:YES];
+    [self showPremiumDialogScrollTo:@"archive"];
 }
 
-- (void)showPremiumDialogScrollToArchive:(BOOL)scrollToArchive {
+- (void)showPremiumDialogForPro {
+    [self showPremiumDialogScrollTo:@"pro"];
+}
+
+- (void)showPremiumDialogScrollTo:(NSString *)section {
     if (self.premiumNavigationController == nil) {
         self.premiumNavigationController = [[UINavigationController alloc]
                                             initWithRootViewController:self.premiumViewController];
     }
     self.premiumNavigationController.navigationBar.translucent = NO;
 
-    // Configure the premium view to scroll to archive section if requested
-    [self.premiumViewController configureForArchive:scrollToArchive];
+    BOOL scrollToArchive = [section isEqualToString:@"archive"];
+    BOOL scrollToPro = [section isEqualToString:@"pro"];
+    [self.premiumViewController configureScrollToArchive:scrollToArchive scrollToPro:scrollToPro];
 
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
     premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
