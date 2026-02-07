@@ -4186,9 +4186,12 @@ class MStarredStoryCounts(mongo.Document):
 
     @classmethod
     def count_tags_for_user(cls, user_id):
-        all_tags = MStarredStory.objects(user_id=user_id, user_tags__exists=True).item_frequencies(
-            "user_tags"
-        )
+        pipeline = [
+            {"$match": {"user_id": user_id, "user_tags": {"$exists": True}}},
+            {"$unwind": "$user_tags"},
+            {"$group": {"_id": "$user_tags", "_count": {"$sum": 1}}},
+        ]
+        all_tags = {doc["_id"]: doc["_count"] for doc in MStarredStory.objects.aggregate(pipeline)}
         user_tags = sorted(
             [(k, v) for k, v in list(all_tags.items()) if int(v) > 0 and k],
             key=lambda x: x[0].lower(),
@@ -4216,7 +4219,11 @@ class MStarredStoryCounts(mongo.Document):
 
     @classmethod
     def count_feeds_for_user(cls, user_id):
-        all_feeds = MStarredStory.objects(user_id=user_id).item_frequencies("story_feed_id")
+        pipeline = [
+            {"$match": {"user_id": user_id}},
+            {"$group": {"_id": "$story_feed_id", "_count": {"$sum": 1}}},
+        ]
+        all_feeds = {doc["_id"]: doc["_count"] for doc in MStarredStory.objects.aggregate(pipeline)}
         user_feeds = dict([(k, v) for k, v in list(all_feeds.items()) if v])
 
         # Clean up None'd and 0'd feed_ids, so they can be counted against the total
