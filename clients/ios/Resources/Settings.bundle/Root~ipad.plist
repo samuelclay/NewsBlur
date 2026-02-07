@@ -552,7 +552,7 @@
 				<string>Dark</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>light</string>
+			<string>auto</string>
 			<key>Values</key>
 			<array>
 				<string>auto</string>
