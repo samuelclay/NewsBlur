@@ -72,6 +72,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         { id: 'search', label: 'Search', icon: '/media/img/icons/nouns/search.svg', mono: true },
         { id: 'web-feed', label: 'Web Feed', icon: '/media/img/icons/nouns/web-feed.svg', mono: true },
         { id: 'popular', label: 'Popular', icon: '/media/img/icons/heroicons-solid/fire.svg', mono: true },
+        { id: 'trending', label: 'Trending', icon: '/media/img/icons/nouns/pulse.svg', mono: true },
         { id: 'youtube', label: 'YouTube', icon: '/media/img/reader/youtube_play.png' },
         { id: 'reddit', label: 'Reddit', icon: '/media/img/reader/reddit.png' },
         { id: 'newsletters', label: 'Newsletters', icon: '/media/img/reader/newsletters_folder.png' },
@@ -208,7 +209,23 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             );
         }
 
+        // Pre-fill URL or search query from popover redirect
+        if (this.options.initial_url) {
+            this.webfeed_state.url = this.options.initial_url;
+        }
+        if (this.options.initial_query) {
+            this.search_query = this.options.initial_query;
+        }
+
         this.render();
+
+        // Auto-trigger analysis or search if pre-filled from popover
+        if (this.options.initial_url && this.active_tab === 'web-feed') {
+            _.defer(_.bind(this.perform_webfeed_analyze, this));
+        }
+        if (this.options.initial_query && this.active_tab === 'search') {
+            _.defer(_.bind(this.perform_search, this));
+        }
 
         // Set up resize handler for tab overflow
         this.resize_handler = _.debounce(_.bind(this.update_tab_overflow, this), 100);

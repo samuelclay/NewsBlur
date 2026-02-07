@@ -443,40 +443,15 @@ color: #a85b40;
     color: #c0c0c0;
 }
 
-/* Input field suggestions window (2 of 6) */
-.NB-dark .NB-add-form .ui-menu .ui-menu-item a {
-    display: inline-block;
-    width: 345px;
-    height: 40px;
-    border-radius: 4px;
-    border-right: none;
-    background: #303739;
+/* Autocomplete suggestions - dark mode */
+.NB-dark .ui-menu.ui-autocomplete .ui-menu-item a {
+    background: transparent;
     color: #c0c0c0;
 }
 
-/* Input field suggestions window (3 of 6) */
-.NB-dark .NB-add-form .ui-menu .ui-menu-item a:hover {
-    /*  border: 1px solid #90928b; */
-    border-radius: 4px;
-    border-right: none;
-    display: inline-block;
-    background: #252D30;
+.NB-dark .ui-menu.ui-autocomplete .ui-menu-item a:hover {
+    background: #353A40;
     color: #c0c0c0;
-}
-
-/* Input field suggestions window (4 of 6) */
-.NB-dark .NB-add-form .ui-autocomplete li a .NB-add-autocomplete-title {
-    color: #c0c0c0;
-}
-
-/* Input field suggestions window (5 of 6) */
-.NB-dark .NB-add-form .ui-autocomplete li a .NB-add-autocomplete-address {
-    color: #83b4e0;
-}
-
-/* Input field suggestions window (6 of 6) */
-.NB-dark .NB-add-form .ui-autocomplete.ui-widget-content {
-    background: #303739;
 }
 
 /* Discover Section in Add Popover - Dark Mode */
@@ -503,16 +478,197 @@ color: #a85b40;
     filter: brightness(0.9);
 }
 
+.NB-dark .NB-add-discover-source img.NB-mono {
+    filter: brightness(0.8);
+}
+
 .NB-dark .NB-add-discover-source span {
     color: #B0B0B0;
 }
 
-.NB-dark .NB-add-discover-link {
-    background: linear-gradient(135deg, #5C89C9 0%, #4A73B0 100%);
+.NB-dark .NB-add-header {
+    color: #D0D0D0;
 }
 
-.NB-dark .NB-add-discover-link:hover {
-    background: linear-gradient(135deg, #6A9AD8 0%, #5580C0 100%);
+.NB-dark .NB-add-header-icon {
+    background: #5C89C9;
+}
+
+.NB-dark .NB-pill-rss {
+    background: #3A3020;
+    color: #D8A060;
+    border-color: #504030;
+}
+
+.NB-dark .NB-pill-web {
+    background: #202838;
+    color: #80A8D0;
+    border-color: #304058;
+}
+
+
+.NB-dark .NB-add-input-row {
+    border-color: #505458;
+    background: #282C30;
+}
+
+.NB-dark .NB-add-input-row:focus-within {
+    border-color: #5C89C9;
+    box-shadow: 0 0 0 2px rgba(92, 137, 201, 0.2);
+}
+
+.NB-dark .NB-add-input-row .NB-add-url {
+    color: #D0D0D0;
+}
+
+.NB-dark .NB-add-input-row .NB-add-url::placeholder {
+    color: #707070;
+}
+
+.NB-dark .NB-add-input-row .NB-add-url-submit {
+    background: #4A73B0;
+}
+
+.NB-dark .NB-add-input-row .NB-add-url-submit:hover {
+    background: #5C89C9;
+}
+
+.NB-dark .NB-add-folder-label {
+    color: #707070;
+}
+
+.NB-dark .NB-add-folder-row .NB-folders {
+    border-color: #505458;
+    background: #282C30;
+    color: #B0B0B0;
+}
+
+.NB-dark .NB-add-folder-input-row {
+    border-color: #505458;
+    background: #282C30;
+}
+
+.NB-dark .NB-add-folder-input-row:focus-within {
+    border-color: #5C89C9;
+    box-shadow: 0 0 0 2px rgba(92, 137, 201, 0.2);
+}
+
+.NB-dark .NB-add-folder-input-row .NB-add-folder-input {
+    color: #D0D0D0;
+}
+
+.NB-dark .NB-add-folder-input-row .NB-add-folder-input::placeholder {
+    color: #707070;
+}
+
+.NB-dark .NB-add-folder-input-row .NB-add-folder-submit {
+    background: #4A8A4A;
+}
+
+.NB-dark .NB-add-discover-trending {
+    border-color: #4A6A90;
+    background: #2A3440;
+}
+
+.NB-dark .NB-add-discover-trending span {
+    color: #8BB0D8;
+}
+
+.NB-dark .NB-add-discover-trending img {
+    filter: brightness(0) saturate(100%) invert(70%) sepia(20%) saturate(400%) hue-rotate(180deg);
+}
+
+.NB-dark .NB-add-discover-trending:hover {
+    background: #33404E;
+    border-color: #5C89C9;
+}
+
+.NB-dark .NB-add-discover-popular {
+    border-color: #8B6040;
+    background: #3A3028;
+}
+
+.NB-dark .NB-add-discover-popular > span {
+    color: #D8A070;
+}
+
+.NB-dark .NB-add-discover-popular > img {
+    filter: brightness(0) saturate(100%) invert(70%) sepia(40%) saturate(400%) hue-rotate(350deg);
+}
+
+.NB-dark .NB-add-discover-popular-arrow {
+    color: #D8A070;
+}
+
+.NB-dark .NB-add-discover-popular:hover {
+    background: #453828;
+    border-color: #D4742B;
+}
+
+.NB-dark .NB-add-discover-popular-flyout-inner {
+    background: #303438;
+    border-color: #404548;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-add-discover-popular-category:hover {
+    background: #383C40;
+}
+
+.NB-dark .NB-add-discover-popular-category-name {
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-add-discover-popular-category-count {
+    color: #808080;
+}
+
+.NB-dark .NB-add-discover-popular-loading {
+    color: #808080;
+}
+
+.NB-dark .NB-add-discover-popular-category.NB-category-all .NB-add-discover-popular-category-name {
+    color: #8BB0D8;
+}
+
+.NB-dark .NB-add-discover-popular-separator {
+    background: #404548;
+}
+
+/* Autocomplete dropdown dark mode */
+.NB-dark .ui-menu.ui-autocomplete.ui-widget-content {
+    background: #282C30;
+    border-color: #404548;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .ui-menu.ui-autocomplete li a.ui-state-hover,
+.NB-dark .ui-menu.ui-autocomplete li a.ui-state-active,
+.NB-dark .ui-menu.ui-autocomplete li a.ui-state-focus {
+    background: #353A40;
+}
+
+.NB-dark .ui-menu.ui-autocomplete .NB-add-autocomplete-title {
+    color: #E0E0E0;
+}
+
+.NB-dark .ui-menu.ui-autocomplete .NB-add-autocomplete-subscribers {
+    color: #707070;
+}
+
+.NB-dark .ui-menu.ui-autocomplete .NB-add-autocomplete-address {
+    color: #707070;
+}
+
+.NB-dark .NB-autocomplete-freshness.NB-freshness-stale .NB-freshness-label {
+    color: #F9A825;
+}
+
+.NB-dark .NB-autocomplete-freshness.NB-freshness-none .NB-freshness-dot {
+    background: #505458;
+}
+.NB-dark .NB-autocomplete-freshness.NB-freshness-none .NB-freshness-label {
+    color: #606060;
 }
 
 /* Unread/Oldest text color */

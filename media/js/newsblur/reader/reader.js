@@ -2578,7 +2578,9 @@
             this.add_site_view = new NEWSBLUR.Views.AddSiteView({
                 initial_tab: options.tab,
                 initial_category: options.category,
-                initial_subcategory: options.subcategory
+                initial_subcategory: options.subcategory,
+                initial_url: options.initial_url,
+                initial_query: options.initial_query
             });
             this.$s.$content_pane.append(this.add_site_view.$el);
 
