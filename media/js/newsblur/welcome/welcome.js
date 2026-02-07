@@ -103,22 +103,70 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         });
 
         this.$('.NB-welcome-container')[open ? 'addClass' : 'removeClass']('NB-welcome-tryout');
+
+        if (open) {
+            this.show_signup_banner();
+        } else {
+            this.hide_signup_banner();
+        }
     },
 
     hide_tryout: function () {
         if (!NEWSBLUR.reader) return;
 
-        NEWSBLUR.reader.close_sidebar();
+        // Close sidebar so toggle_sidebar will open it next time
+        if (!NEWSBLUR.reader.flags['sidebar_closed']) {
+            NEWSBLUR.reader.close_sidebar();
+        }
 
+        this.$('.NB-welcome-container').removeClass('NB-welcome-tryout');
+        this.hide_signup_banner();
+
+        // Show welcome content again
+        NEWSBLUR.reader.$s.$body.removeClass('NB-show-reader');
+        NEWSBLUR.reader.flags['splash_page_frontmost'] = true;
+
+        // Animate hero padding back, then hide layout after animation
         this.$('.NB-welcome-header-hero').animate({
             paddingLeft: 0
         }, {
             queue: false,
             easing: 'easeInOutQuint',
-            duration: 560
+            duration: 560,
+            complete: _.bind(function () {
+                NEWSBLUR.reader.reset_feed();
+                NEWSBLUR.reader.$s.$layout.hide();
+                this.flags.loaded = false;
+            }, this)
+        });
+    },
+
+    // ==================
+    // = Signup Banner  =
+    // ==================
+
+    show_signup_banner: function () {
+        if ($('.NB-tryout-signup-banner').length) return;
+
+        var self = this;
+        var $banner = $.make('div', { className: 'NB-tryout-signup-banner' }, [
+            $.make('div', { className: 'NB-tryout-signup-banner-logo' }),
+            $.make('div', { className: 'NB-tryout-signup-banner-content' }, [
+                $.make('div', { className: 'NB-tryout-signup-banner-text' }, 'This is just the demo.'),
+                $.make('div', { className: 'NB-tryout-signup-banner-subtext' }, 'Sign up to read your own feeds.')
+            ]),
+            $.make('div', { className: 'NB-tryout-signup-banner-button' }, 'Sign up')
+        ]);
+
+        $banner.on('click', function () {
+            self.scroll_to_login();
         });
 
-        this.$('.NB-welcome-container').removeClass('NB-welcome-tryout');
+        $('#story_titles').find('.NB-story-titles').before($banner);
+    },
+
+    hide_signup_banner: function () {
+        $('.NB-tryout-signup-banner').remove();
     }
 
 });
