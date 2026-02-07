@@ -223,7 +223,10 @@ def GenerateUserBriefing(user_id, on_demand=False):
         return
 
     publish("progress", {"step": "summary", "message": "Writing your briefing summary..."})
-    summary_html = generate_briefing_summary(
+    import time
+
+    t_summary_start = time.monotonic()
+    summary_html, summary_meta = generate_briefing_summary(
         user_id,
         scored_stories,
         now,
@@ -233,6 +236,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
         custom_section_prompts=prefs.custom_section_prompts,
         model=prefs.briefing_model,
     )
+    t_summary_elapsed = time.monotonic() - t_summary_start
 
     if not summary_html:
         logging.error(" ---> GenerateUserBriefing: summary generation failed for user %s" % user_id)
@@ -242,6 +246,17 @@ def GenerateUserBriefing(user_id, on_demand=False):
     # tasks.py: Embed feed favicons and section icons directly in the HTML so they
     # appear in email notifications and don't pop in on the web.
     summary_html = embed_briefing_icons(summary_html, scored_stories)
+
+    # tasks.py: Append debug footer with model and generation stats
+    if summary_meta:
+        num_candidates = len(scored_stories)
+        footer_parts = [
+            summary_meta.get("display_name", "Unknown model"),
+            "%s stories" % num_candidates,
+            "{:,} in / {:,} out tokens".format(summary_meta.get("input_tokens", 0), summary_meta.get("output_tokens", 0)),
+            "%.1fs" % t_summary_elapsed,
+        ]
+        summary_html += '\n<p class="NB-briefing-debug" style="margin-top:2em;font-style:italic;color:#999;font-size:12px;">%s</p>' % " · ".join(footer_parts)
 
     curated_hashes = [s["story_hash"] for s in scored_stories]
     curated_sections = {}
