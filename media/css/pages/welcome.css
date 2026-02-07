@@ -2004,3 +2004,34 @@
 .NB-dark .NB-pricing-trial-callout strong {
     color: #a7f3d0;
 }
+
+/* Footer */
+.NB-dark .NB-welcome-footer {
+    background-color: #2a3030;
+    background-blend-mode: overlay;
+    color: rgba(255, 255, 255, 0.7);
+    text-shadow: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-welcome-footer .NB-splash-link {
+    color: #FBDB9B;
+    text-shadow: none;
+}
+
+.NB-dark .NB-welcome-footer .NB-splash-link:hover {
+    color: #fff;
+}
+
+.NB-dark .NB-welcome-footer .NB-footer-icons a img {
+    filter: invert(1);
+    opacity: 0.5;
+}
+
+.NB-dark .NB-welcome-footer .NB-footer-icons a img:hover {
+    opacity: 0.9;
+}
+
+.NB-dark .NB-welcome-footer .NB-twitter-avatar {
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.3);
+}
