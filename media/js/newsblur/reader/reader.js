@@ -6140,6 +6140,21 @@
                         console.log(["Reloading feeds due to server reload", NEWSBLUR.reader.flags['reloading_feeds']]);
                         NEWSBLUR.assets.load_feeds();
                     }
+                } else if (_.string.startsWith(message, 'briefing:')) {
+                    try {
+                        var briefing_data = JSON.parse(message.replace('briefing:', ''));
+                        if (briefing_data.type === 'start') {
+                            this.handle_briefing_start();
+                        } else if (briefing_data.type === 'progress') {
+                            this.handle_briefing_progress(briefing_data);
+                        } else if (briefing_data.type === 'complete') {
+                            this.handle_briefing_complete();
+                        } else if (briefing_data.type === 'error') {
+                            this.handle_briefing_error(briefing_data);
+                        }
+                    } catch (e) {
+                        NEWSBLUR.log(['Error parsing briefing message', e]);
+                    }
                 }
             }
         },
