@@ -113,7 +113,7 @@ class Feed(models.Model):
     s3_icon = models.BooleanField(default=False, blank=True, null=True)
     search_indexed = models.BooleanField(default=None, null=True, blank=True)
     discover_indexed = models.BooleanField(default=None, null=True, blank=True)
-    fs_size_bytes = models.IntegerField(null=True, blank=True)
+    fs_size_bytes = models.BigIntegerField(null=True, blank=True)
     archive_count = models.IntegerField(null=True, blank=True)
     similar_feeds = models.ManyToManyField(
         "self", related_name="feeds_by_similarity", symmetrical=False, blank=True
@@ -224,6 +224,10 @@ class Feed(models.Model):
             "http://newsletter:"
         )
 
+    @property
+    def is_daily_briefing(self):
+        return self.feed_address.startswith("daily-briefing:")
+
     def canonical(self, full=False, include_favicon=True):
         feed = {
             "id": self.pk,
@@ -243,6 +247,7 @@ class Feed(models.Model):
             "subs": self.num_subscribers,
             "is_push": self.is_push,
             "is_newsletter": self.is_newsletter,
+            "is_daily_briefing": self.is_daily_briefing,
             "fetched_once": self.fetched_once,
             "search_indexed": self.search_indexed,
             "discover_indexed": self.discover_indexed,
@@ -419,11 +424,27 @@ class Feed(models.Model):
             stories_per_month = int(stories_per_month)
         except ValueError:
             stories_per_month = 30
-        feeds = Feed.objects.filter(pk__in=feed_ids, average_stories_per_month__lte=stories_per_month).only(
-            "pk"
+        feeds = (
+            Feed.objects.filter(pk__in=feed_ids, average_stories_per_month__lte=stories_per_month)
+            .exclude(feed_address__startswith="daily-briefing:")
+            .only("pk")
         )
 
         return [f.pk for f in feeds]
+
+    @classmethod
+    def exclude_briefing_feeds(cls, feed_ids):
+        """Exclude daily briefing feeds from a list of feed IDs."""
+        if not feed_ids:
+            return feed_ids
+        briefing_ids = set(
+            cls.objects.filter(pk__in=feed_ids, feed_address__startswith="daily-briefing:").values_list(
+                "pk", flat=True
+            )
+        )
+        if not briefing_ids:
+            return feed_ids
+        return [f for f in feed_ids if f not in briefing_ids]
 
     @classmethod
     def autocomplete(cls, prefix, limit=5):
@@ -626,12 +647,20 @@ class Feed(models.Model):
                     feed = feed.update()
                 elif create:
                     logging.debug(" ---> Feed doesn't exist, creating: %s" % (feed_finder_url))
-                    feed = cls.objects.create(feed_address=feed_finder_url)
-                    feed = feed.update()
+                    try:
+                        feed = cls.objects.create(feed_address=feed_finder_url)
+                        feed = feed.update()
+                    except IntegrityError:
+                        feed = by_url(feed_finder_url)
+                        feed = feed[offset] if feed and len(feed) > offset else None
             elif without_rss:
                 logging.debug(" ---> Found without_rss feed: %s / %s" % (url, original_url))
-                feed = cls.objects.create(feed_address=url, feed_link=original_url)
-                feed = feed.update(requesting_user_id=user.pk if user else None)
+                try:
+                    feed = cls.objects.create(feed_address=url, feed_link=original_url)
+                    feed = feed.update(requesting_user_id=user.pk if user else None)
+                except IntegrityError:
+                    feed = by_url(url)
+                    feed = feed[offset] if feed and len(feed) > offset else None
 
         # Check for JSON feed
         if not feed and fetch and create:
@@ -640,16 +669,24 @@ class Feed(models.Model):
             except (requests.ConnectionError, requests.models.InvalidURL):
                 r = None
             if r and "application/json" in r.headers.get("Content-Type"):
-                feed = cls.objects.create(feed_address=url)
-                feed = feed.update()
+                try:
+                    feed = cls.objects.create(feed_address=url)
+                    feed = feed.update()
+                except IntegrityError:
+                    feed = by_url(url)
+                    feed = feed[offset] if feed and len(feed) > offset else None
 
         # Still nothing? Maybe the URL has some clues.
         if not feed and fetch and len(found_feed_urls):
             feed_finder_url = found_feed_urls[0]
             feed = by_url(feed_finder_url)
             if not feed and create:
-                feed = cls.objects.create(feed_address=feed_finder_url)
-                feed = feed.update()
+                try:
+                    feed = cls.objects.create(feed_address=feed_finder_url)
+                    feed = feed.update()
+                except IntegrityError:
+                    feed = by_url(feed_finder_url)
+                    feed = feed[offset] if feed and len(feed) > offset else None
             elif feed and len(feed) > offset:
                 feed = feed[offset]
 
@@ -1479,6 +1516,9 @@ class Feed(models.Model):
 
         if self.is_newsletter:
             feed = self.update_newsletter_icon()
+            if not feed.fetched_once:
+                feed.fetched_once = True
+                feed.save(update_fields=["fetched_once"])
         else:
             disp = feed_fetcher.Dispatcher(options, 1)
             disp.add_jobs([[self.pk]])

@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-01-27T15:45:03-05:00</updated>
+  <updated>2026-02-03T19:57:01-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,37 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Full text search across all of your subscriptions and folders </title>
+    <link href="https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/" rel="alternate" type="text/html" title="Full text search across all of your subscriptions and folders " />
+    <published>2014-04-29T04:45:28-04:00</published>
+    <updated>2014-04-29T04:45:28-04:00</updated>
+    <id>https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/04/29/full-text-search-across-all-of-your-subscriptions-and/">
+      <![CDATA[<p>Last Summer <a href="http://blog.newsblur.com/2021/06/21/2013-07-30-simple-search-for-feeds-saved-stories-and-blurblogs.html">Simple Search was launched</a>, giving you the ability to search a single feed at a time. Obviously not ideal, but it was far less effort than the big enchilada: full text search across every site you subscribe to. It took a few months to come back to attack the full problem, but that means I could also take the time to do it right.</p>
+
+<p>Full text search works just like the old simple search did. Open a folder or site and search at the top of the screen. Results come back instantly as you type. And this will automatically search in story titles, full text content, authors, and tags.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/search%20screenshot.jpg" alt="" /></p>
+
+<p>Because you’re searching for a story, hidden stories are also shown in the results, albeit with a red unread mark (as shown above). Also, in order to handle the demands of full text search, the first time you perform a search the system will index all of your feeds, which can take a couple minutes. It’s a one time process and you will see a progress bar that will update automatically when finished.</p>
+
+<p>Since this was one of the most requested features since day one, I’m now looking to decide on the next big feature. There’s a few big ones to hit: an organizer that surfaces inactive feeds that no longer get read, a discovery platform that helps you find users, stories, and feeds related to what you like and what you may not even know you like yet, and porting many of these web-only features to Android and iOS.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[Last Summer Simple Search was launched, giving you the ability to search a single feed at a time. Obviously not ideal, but it was far less effort than the big enchilada: full text search across every site you subscribe to. It took a few months to come back to attack...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Unread is a new iOS app with NewsBlur support</title>
@@ -1076,45 +1107,6 @@ color: #606060;
     <summary type="html">
       <![CDATA[That’s right, t-shirts, stickers, buttons, and magnets. I’ve got a whole lot of good stuff to send out, so give me some critical info and I’ll get you hooked up with the latest in startup love.
 ]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Extreme makeover: NewsBlur iOS app edition</title>
-    <link href="https://blog.newsblur.com/2012/10/26/ios-update-1-6/" rel="alternate" type="text/html" title="Extreme makeover: NewsBlur iOS app edition" />
-    <published>2012-10-26T14:37:00-04:00</published>
-    <updated>2012-10-26T14:37:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/10/26/ios-update-1-6</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/10/26/ios-update-1-6/">
-      <![CDATA[<p>Now that NewsBlur has joined the wonderful world of Android, we’re turning our attention back to the iOS app, with a full-scale feature parity push for the new iPhone 5 and iOS 6. It’s perfect for catching up on your reading when you realize that Apple Maps has sent you to the wrong address. Again.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/iOS%20v1.6%20-%20Folders.png" alt="image" /> <img src="https://s3.amazonaws.com/static.newsblur.com/blog/iOS%20v1.6%20-%20Menus.png" alt="image" /></p>
-
-<p>We’ve tried to incorporate as many of your suggestions as possible, and here are some of the new features you’ll find:</p>
-
-<ul>
-  <li>Collapsible folders: Check out folders one at a time (and save your scrolling fingers some work)</li>
-  <li>Saved stories: Access all your saved stories from the Web or other devices, and save other stories for later</li>
-  <li>Mark stories as unread: For that fresh new-story feeling</li>
-  <li>Send stories to Instapaper for reading later, or e-mail them to your friends/enemies</li>
-  <li>Share stories on Twitter and Facebook, and crush social-media naysayers who think you’re just telling people what you ate for breakfast</li>
-  <li>New app-wide menus: An interface almost as stylish as your new device, and far less vulnerable to breakage and theft</li>
-  <li>Bug fixes, improvements, speed-ups, fine-tuning, and other things that aren’t particularly noticeable (but done because we love you)</li>
-</ul>
-
-<p>Check out the update, and be sure to let us know if anything isn’t working the way it should. And Android folks, don’t feel left out; an update with bug fixes is in the pipeline, so stay tuned (and thanks for the feedback!).</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="iOS" />
-    
-    
-    <summary type="html">
-      <![CDATA[Now that NewsBlur has joined the wonderful world of Android, we’re turning our attention back to the iOS app, with a full-scale feature parity push for the new iPhone 5 and iOS 6. It’s perfect for catching up on your reading when you realize that Apple Maps has sent you...]]>
     </summary>
     
   </entry>
