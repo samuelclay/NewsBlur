@@ -209,25 +209,38 @@ class SQLLogToConsoleMiddleware:
                         )
                     )
                 )
+            sql_queries = [
+                q
+                for q in queries
+                if not q.get("mongo")
+                and not q.get("redis_user")
+                and not q.get("redis_story")
+                and not q.get("redis_session")
+                and not q.get("redis_pubsub")
+            ]
+            mongo_queries = [q for q in queries if q.get("mongo")]
+            redis_user_queries = [q for q in queries if q.get("redis_user")]
+            redis_story_queries = [q for q in queries if q.get("redis_story")]
+            redis_session_queries = [q for q in queries if q.get("redis_session")]
+            redis_pubsub_queries = [q for q in queries if q.get("redis_pubsub")]
             times_elapsed = {
-                "sql": sum(
-                    [
-                        float(q["time"])
-                        for q in queries
-                        if not q.get("mongo")
-                        and not q.get("redis_user")
-                        and not q.get("redis_story")
-                        and not q.get("redis_session")
-                        and not q.get("redis_pubsub")
-                    ]
-                ),
-                "mongo": sum([float(q["time"]) for q in queries if q.get("mongo")]),
-                "redis_user": sum([float(q["time"]) for q in queries if q.get("redis_user")]),
-                "redis_story": sum([float(q["time"]) for q in queries if q.get("redis_story")]),
-                "redis_session": sum([float(q["time"]) for q in queries if q.get("redis_session")]),
-                "redis_pubsub": sum([float(q["time"]) for q in queries if q.get("redis_pubsub")]),
+                "sql": sum(float(q["time"]) for q in sql_queries),
+                "mongo": sum(float(q["time"]) for q in mongo_queries),
+                "redis_user": sum(float(q["time"]) for q in redis_user_queries),
+                "redis_story": sum(float(q["time"]) for q in redis_story_queries),
+                "redis_session": sum(float(q["time"]) for q in redis_session_queries),
+                "redis_pubsub": sum(float(q["time"]) for q in redis_pubsub_queries),
+            }
+            call_counts = {
+                "sql": len(sql_queries),
+                "mongo": len(mongo_queries),
+                "redis_user": len(redis_user_queries),
+                "redis_story": len(redis_story_queries),
+                "redis_session": len(redis_session_queries),
+                "redis_pubsub": len(redis_pubsub_queries),
             }
             setattr(request, "sql_times_elapsed", times_elapsed)
+            setattr(request, "sql_call_counts", call_counts)
         else:
             print(" ***> No queries")
         if not getattr(settings, "ORIGINAL_DEBUG", settings.DEBUG):
