@@ -2,157 +2,87 @@ NEWSBLUR.Welcome = Backbone.View.extend({
 
     el: '.NB-body-inner',
     flags: {},
-    rotation: 0,
 
     events: {
-        "click .NB-button-login": "show_signin_form",
         "click .NB-button-tryout": "show_tryout",
-        "click .NB-welcome-header-caption": "click_header_caption",
-        "focus input": "stop_rotation",
-        "mouseenter .NB-welcome-header-caption": "enter_header_caption",
-        "mouseleave .NB-welcome-header-caption": "leave_header_caption"
+        "click .NB-button-login": "scroll_to_login",
+        "click .NB-segment-option": "toggle_form_mode"
     },
 
     initialize: function () {
-        this.start_rotation();
-        _.delay(_.bind(function () {
-            // this.debug_password_autocomplete();
-        }, this), 500);
+        this.init_webgl_background();
         NEWSBLUR.reader.$s.$layout.hide();
     },
 
-    debug_password_autocomplete: function () {
-        console.log(['Triggering focus']);
-        this.$("input[name=login-username]").trigger('focus');
-    },
-
     // ==========
-    // = Header =
+    // = WebGL  =
     // ==========
 
-    fix_misalignment: function (e) {
-        console.log(['Fixing misalignment', e]);
+    init_webgl_background: function () {
+        var canvas = document.getElementById('welcome-canvas');
+        if (!canvas) return;
 
-        this.flags.on_signin = true;
-        this.show_signin_form();
-    },
-
-    click_header_caption: function (e) {
-        this.flags.on_signin = false;
-        this.enter_header_caption(e);
-    },
-
-    enter_header_caption: function (e) {
-        this.flags.on_header_caption = true;
-        var $caption = $(e.currentTarget);
-
-        if (this.flags.on_signin) return;
-
-        if ($caption.hasClass('NB-welcome-header-caption-signin')) {
-            this.flags.on_signin = true;
-            this.show_signin_form();
-        } else {
-            var r = parseInt($caption.data('ss'), 10);
-            this.rotate_screenshots(r);
+        if (NEWSBLUR.WelcomeBackground && NEWSBLUR.WelcomeBackground.init(canvas)) {
+            NEWSBLUR.WelcomeBackground.start();
         }
     },
 
-    leave_header_caption: function (e) {
-        var $caption = $(e.currentTarget);
+    // ====================
+    // = Segment Control  =
+    // ====================
 
-        if ($caption.hasClass('NB-welcome-header-caption-signin')) {
+    toggle_form_mode: function (e) {
+        var $option = $(e.currentTarget);
+        var is_signup = $option.hasClass('NB-segment-signup');
 
-        } else {
-            this.flags.on_header_caption = false;
-        }
+        this.$('.NB-segment-option').removeClass('NB-active');
+        $option.addClass('NB-active');
+
+        this.$('.NB-welcome-header-segment')[is_signup ? 'addClass' : 'removeClass']('NB-segment-right');
+
+        var $active = this.$('.NB-formcard-panel.NB-active');
+        var $next = is_signup ? this.$('.NB-formcard-signup') : this.$('.NB-formcard-login');
+        var $card = this.$('.NB-welcome-header-formcard');
+
+        if ($active[0] === $next[0]) return;
+
+        var start_height = $card.height();
+
+        // Stage 1: Fade out the active panel
+        $active.fadeOut(150, function () {
+            $active.removeClass('NB-active');
+
+            // Measure target height with next panel visible but invisible
+            $next.css({ display: 'block', opacity: 0 }).addClass('NB-active');
+            var end_height = $card.height();
+
+            // Lock card at start height
+            $card.css({ height: start_height, overflow: 'hidden' });
+
+            // Stage 2: Animate height to make room, then fade in content
+            $card.animate({ height: end_height }, {
+                duration: 200,
+                easing: 'easeInOutQuint',
+                complete: function () {
+                    $card.css({ height: '', overflow: '' });
+                    // Stage 3: Fade in the new panel
+                    $next.animate({ opacity: 1 }, { duration: 180 });
+                }
+            });
+        });
     },
 
-    start_rotation: function () {
-        if (this.$('.NB-welcome-header-account').hasClass('NB-active')) {
-            this.stop_rotation();
-        }
-        var $first_img = this.$('.NB-welcome-header-image img').eq(0);
-        if ($first_img[0].complete) {
-            setInterval(_.bind(this.rotate_screenshots, this), 3000);
-        } else {
-            $first_img.on('load', _.bind(function () {
-                setInterval(_.bind(this.rotate_screenshots, this), 3000);
-            }, this));
-        }
-    },
-
-    rotate_screenshots: function (force, callback) {
-        if (this.flags.on_header_caption && _.isUndefined(force)) {
-            return;
-        }
-        if (this.flags.on_signin && _.isUndefined(force)) {
-            return;
-        }
-
-        var NUM_CAPTIONS = 3;
-        var r = force ? force - 1 : (this.rotation + 1) % NUM_CAPTIONS;
-        if (!force) {
-            this.rotation += 1;
-        }
-
-        var $images = $('.NB-welcome-header-image').add('.NB-welcome-header-account');
-        var $captions = $('.NB-welcome-header-caption');
-        var $in_img = $images.eq(r);
-        var $out_img = $images.not($in_img);
-        var $in_caption = $captions.eq(r);
-        var $out_caption = $captions.not($in_caption);
-        console.log(['Rotate screenshots', force]);
-        $out_img.removeClass('NB-active');
-        $in_img.addClass('NB-active');
-
-        // $out_img.css({zIndex: 0}).stop(true).animate({
-        //     bottom: -300,
-        //     opacity: 0
-        // }, {easing: 'easeInOutQuart', queue: false, duration: force ? 650 : 1400, complete: callback});
-        // $in_img.css({zIndex: 1}).stop(true).animate({
-        //     bottom: 0,
-        //     opacity: 1
-        // }, {easing: 'easeInOutQuart', queue: false, duration: force ? 650 : 1400});
-        $out_caption.removeClass('NB-active');
-        $in_caption.addClass('NB-active');
-        callback && callback();
-        if (r < 3) {
-            this.$('input').blur();
-        }
-    },
-
-    stop_rotation: function () {
-        console.log(['stop_rotation']);
-        this.flags.on_signin = true;
-    },
-
-    show_signin_form: function () {
-        var open = !NEWSBLUR.reader.flags['sidebar_closed'];
+    scroll_to_login: function () {
         this.hide_tryout();
-
-        this.flags.on_header_caption = true;
-        this.flags.on_signin = true;
-
-        var add_url = $.getQueryString('add') || $.getQueryString('url');
-        if (add_url) {
-            this.$("input[name=next]").val("/?add=" + add_url);
-        }
-
         this.$el.scrollTo(0, 500, { queue: false, easing: 'easeInOutQuint' });
-
         _.delay(_.bind(function () {
-            this.rotate_screenshots(4, _.bind(function () {
-                _.delay(_.bind(function () {
-                    if (this.$("input:focus").length) {
-                        console.log(['Already focused']);
-                        return;
-                    }
-                    this.$('input[name=login-username]').focus();
-                }), 50);
-            }, this));
-        }, this), open ? 560 : 0);
-
+            this.$('.NB-welcome-header-formcard input[type=text]').first().focus();
+        }, this), 520);
     },
+
+    // ==========
+    // = Tryout =
+    // ==========
 
     show_tryout: function () {
         if (!NEWSBLUR.reader) return;
@@ -164,7 +94,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         }
         var open = NEWSBLUR.reader.toggle_sidebar();
 
-        this.$('.NB-inner,.NB-inner-account').animate({
+        this.$('.NB-welcome-header-hero').animate({
             paddingLeft: open ? 240 : 0
         }, {
             queue: false,
@@ -180,7 +110,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
 
         NEWSBLUR.reader.close_sidebar();
 
-        this.$('.NB-inner,.NB-inner-account').animate({
+        this.$('.NB-welcome-header-hero').animate({
             paddingLeft: 0
         }, {
             queue: false,
