@@ -200,7 +200,6 @@ def load_briefing_stories(request):
             "briefing_feed_id": prefs.briefing_feed_id,
             "briefing_model": prefs.briefing_model or DEFAULT_BRIEFING_MODEL,
             "briefing_models": get_briefing_models_for_frontend(),
-            "is_pro": user.profile.is_pro,
         }
 
     return result
@@ -274,11 +273,7 @@ def briefing_preferences(request):
             from apps.ask_ai.providers import VALID_BRIEFING_MODELS
 
             if briefing_model in VALID_BRIEFING_MODELS:
-                # views.py: Only pro users can select non-default models
-                if user.profile.is_pro:
-                    prefs.briefing_model = briefing_model
-                else:
-                    prefs.briefing_model = None
+                prefs.briefing_model = briefing_model
             elif briefing_model in ("", "default"):
                 prefs.briefing_model = None
 
@@ -355,7 +350,6 @@ def briefing_preferences(request):
         "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
         "briefing_model": prefs.briefing_model or DEFAULT_BRIEFING_MODEL,
         "briefing_models": get_briefing_models_for_frontend(),
-        "is_pro": user.profile.is_pro,
         "folders": folders,
     }
 
