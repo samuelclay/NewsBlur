@@ -41,12 +41,16 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         NEWSBLUR.assets.starred_feeds.bind('reset', _.bind(function (models, options) {
             this.make_starred_tags(options);
         }, this));
+        NEWSBLUR.assets.briefing_section_feeds.bind('reset', _.bind(function (models, options) {
+            this.make_briefing_sections(options);
+        }, this));
         NEWSBLUR.assets.searches_feeds.bind('reset', _.bind(function (models, options) {
             this.make_saved_searches(options);
         }, this));
         NEWSBLUR.assets.social_feeds.bind('change:selected', this.scroll_to_selected, this);
         NEWSBLUR.assets.feeds.bind('change:selected', this.scroll_to_selected, this);
         NEWSBLUR.assets.starred_feeds.bind('change:selected', this.scroll_to_selected, this);
+        NEWSBLUR.assets.briefing_section_feeds.bind('change:selected', this.scroll_to_selected, this);
         NEWSBLUR.assets.searches_feeds.bind('change:selected', this.scroll_to_selected, this);
         if (!NEWSBLUR.assets.folders.size()) {
             NEWSBLUR.assets.load_feeds(null, _.bind(this.handle_error, this));
@@ -204,6 +208,19 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             });
         }
 
+        // feed_list_view.js: Show Daily Briefing sidebar entry for staff users only
+        if (NEWSBLUR.Globals.is_staff && NEWSBLUR.assets.folders.length) {
+            $('.NB-feeds-header-river-briefing-container').css({
+                'display': 'block',
+                'opacity': 0
+            }).animate({ 'opacity': 1 }, { 'duration': 700 });
+        } else {
+            $('.NB-feeds-header-river-briefing-container').css({
+                'display': 'none',
+                'opacity': 0
+            });
+        }
+
         // Show Archive folder for staff users only
         if (NEWSBLUR.Globals.is_staff) {
             $('.NB-feeds-header-archive-container').css({
@@ -284,6 +301,36 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
 
         var collapsed = NEWSBLUR.app.sidebar.check_starred_collapsed({ skip_animation: true });
         $starred_feeds.animate({ 'opacity': 1 }, { 'duration': (collapsed || options.update) ? 0 : 700 });
+    },
+
+    make_briefing_sections: function (options) {
+        options = options || {};
+        var $briefing_feeds = $('.NB-briefing-section-feeds', this.$s.$feed_lists);
+        var $feeds = _.compact(NEWSBLUR.assets.briefing_section_feeds.map(function (feed) {
+            var feed_view = new NEWSBLUR.Views.FeedTitleView({
+                model: feed,
+                type: 'feed',
+                depth: 0,
+                briefing_section: true
+            }).render();
+            feed.views.push(feed_view);
+            return feed_view.el;
+        }));
+
+        $briefing_feeds.empty().css({
+            'display': 'block',
+            'opacity': options.update ? 1 : 0
+        });
+        $briefing_feeds.html($feeds);
+        if (NEWSBLUR.assets.briefing_section_feeds.length) {
+            $('.NB-briefing-sections-folder').css({
+                'display': 'block',
+                'opacity': 0
+            }).animate({ 'opacity': 1 }, { 'duration': options.update ? 0 : 700 });
+        }
+
+        var collapsed = NEWSBLUR.app.sidebar.check_briefing_collapsed({ skip_animation: true });
+        $briefing_feeds.animate({ 'opacity': 1 }, { 'duration': (collapsed || options.update) ? 0 : 700 });
     },
 
     make_saved_searches: function (options) {
@@ -406,6 +453,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         var model = NEWSBLUR.assets.feeds.selected() ||
             NEWSBLUR.assets.social_feeds.selected() ||
             NEWSBLUR.assets.starred_feeds.selected() ||
+            NEWSBLUR.assets.briefing_section_feeds.selected() ||
             NEWSBLUR.assets.searches_feeds.selected();
         if (!model) return;
         var feed_view = model.get("selected_title_view");

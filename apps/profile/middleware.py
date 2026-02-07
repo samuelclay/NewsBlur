@@ -48,6 +48,14 @@ class LastSeenMiddleware(object):
             request.user.profile.last_seen_ip = ip[-15:]
             request.user.profile.save()
 
+            # apps/profile/middleware.py: Record activity for daily briefing scheduling
+            try:
+                from apps.briefing.activity import RUserActivity
+
+                RUserActivity.record_activity(request.user.pk, request.user.profile.timezone)
+            except Exception:
+                pass
+
         return response
 
     def __call__(self, request):
@@ -602,7 +610,8 @@ class UserAgentBanMiddleware:
                     pass
             logging.user(
                 request,
-                "~FW~BR~SB BLOCKED ~BT~FR Banned User: ~SB%s~SN~FR %s %s%s" % (request.user.username, ip, full_path, body),
+                "~FW~BR~SB BLOCKED ~BT~FR Banned User: ~SB%s~SN~FR %s %s%s"
+                % (request.user.username, ip, full_path, body),
             )
 
             return HttpResponse(json.encode(data), status=403, content_type="text/json")
@@ -734,7 +743,8 @@ class IPRateTrackingMiddleware:
                     if getattr(settings, "IP_RATE_LIMITING_ENABLED", False):
                         logging.user(
                             request,
-                            "~FW~BR~SB BLOCKED ~BT~FR Rate Limit: ~SB%s~SN~FR %s%s" % (ip, full_path, user_info),
+                            "~FW~BR~SB BLOCKED ~BT~FR Rate Limit: ~SB%s~SN~FR %s%s"
+                            % (ip, full_path, user_info),
                         )
                         return HttpResponse(
                             '{"error": "Rate limit exceeded", "code": -1}',

@@ -228,6 +228,10 @@ class Feed(models.Model):
     def is_webfeed(self):
         return self.feed_address.startswith("webfeed:")
 
+    @property
+    def is_daily_briefing(self):
+        return self.feed_address.startswith("daily-briefing:")
+
     def canonical(self, full=False, include_favicon=True):
         feed = {
             "id": self.pk,
@@ -248,6 +252,7 @@ class Feed(models.Model):
             "is_push": self.is_push,
             "is_newsletter": self.is_newsletter,
             "is_webfeed": self.is_webfeed,
+            "is_daily_briefing": self.is_daily_briefing,
             "fetched_once": self.fetched_once,
             "search_indexed": self.search_indexed,
             "discover_indexed": self.discover_indexed,
@@ -424,11 +429,27 @@ class Feed(models.Model):
             stories_per_month = int(stories_per_month)
         except ValueError:
             stories_per_month = 30
-        feeds = Feed.objects.filter(pk__in=feed_ids, average_stories_per_month__lte=stories_per_month).only(
-            "pk"
+        feeds = (
+            Feed.objects.filter(pk__in=feed_ids, average_stories_per_month__lte=stories_per_month)
+            .exclude(feed_address__startswith="daily-briefing:")
+            .only("pk")
         )
 
         return [f.pk for f in feeds]
+
+    @classmethod
+    def exclude_briefing_feeds(cls, feed_ids):
+        """Exclude daily briefing feeds from a list of feed IDs."""
+        if not feed_ids:
+            return feed_ids
+        briefing_ids = set(
+            cls.objects.filter(pk__in=feed_ids, feed_address__startswith="daily-briefing:").values_list(
+                "pk", flat=True
+            )
+        )
+        if not briefing_ids:
+            return feed_ids
+        return [f for f in feed_ids if f not in briefing_ids]
 
     @classmethod
     def autocomplete(cls, prefix, limit=5):
@@ -4197,9 +4218,12 @@ class MStarredStoryCounts(mongo.Document):
 
     @classmethod
     def count_tags_for_user(cls, user_id):
-        all_tags = MStarredStory.objects(user_id=user_id, user_tags__exists=True).item_frequencies(
-            "user_tags"
-        )
+        pipeline = [
+            {"$match": {"user_id": user_id, "user_tags": {"$exists": True}}},
+            {"$unwind": "$user_tags"},
+            {"$group": {"_id": "$user_tags", "_count": {"$sum": 1}}},
+        ]
+        all_tags = {doc["_id"]: doc["_count"] for doc in MStarredStory.objects.aggregate(pipeline)}
         user_tags = sorted(
             [(k, v) for k, v in list(all_tags.items()) if int(v) > 0 and k],
             key=lambda x: x[0].lower(),
@@ -4227,7 +4251,11 @@ class MStarredStoryCounts(mongo.Document):
 
     @classmethod
     def count_feeds_for_user(cls, user_id):
-        all_feeds = MStarredStory.objects(user_id=user_id).item_frequencies("story_feed_id")
+        pipeline = [
+            {"$match": {"user_id": user_id}},
+            {"$group": {"_id": "$story_feed_id", "_count": {"$sum": 1}}},
+        ]
+        all_feeds = {doc["_id"]: doc["_count"] for doc in MStarredStory.objects.aggregate(pipeline)}
         user_feeds = dict([(k, v) for k, v in list(all_feeds.items()) if v])
 
         # Clean up None'd and 0'd feed_ids, so they can be counted against the total
