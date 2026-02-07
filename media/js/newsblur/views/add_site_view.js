@@ -1963,6 +1963,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             description: newsletter.description || ('Subscribe to ' + title + ' via RSS'),
             feed_url: newsletter.feed_url,
             feed_id: newsletter.feed_id || newsletter.feed || null,
+            popular_feed_id: newsletter.id,
             last_story_date: newsletter.last_story_date,
             show_empty_freshness: true
         });
@@ -2117,6 +2118,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             description: description,
             feed_url: podcast.feed_url,
             feed_id: podcast.feed_id || podcast.feed || null,
+            popular_feed_id: podcast.id,
             last_story_date: podcast.last_story_date,
             show_empty_freshness: true
         });
