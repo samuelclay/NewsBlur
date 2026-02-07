@@ -32,6 +32,13 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
     render: function (options) {
         if (NEWSBLUR.reader.flags.briefing_view && NEWSBLUR.assets.briefing_data) {
+            // story_titles_view.js: When triggered by a collection reset event
+            // (Backbone passes the collection as first arg), skip re-rendering
+            // briefing to avoid resetting the scroll position while reading.
+            // Only re-render on explicit calls (options is undefined or a plain object).
+            if (options && options.models) {
+                return;
+            }
             return this.render_briefing(options);
         }
         // console.log(['render story_titles', this.options.override_layout, this.collection.length, this.$story_titles[0]]);
@@ -119,9 +126,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 });
             }
         });
-        // story_titles_view.js: Briefing has all stories; prevent fill_out from paging.
-        this.collection.no_more_stories = true;
-
         if (all_stories.length) {
             this.collection.reset(all_stories, { added: all_stories.length, silent: true });
             // story_titles_view.js: Manually trigger the story list view to create
@@ -133,6 +137,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 NEWSBLUR.app.story_list.reset_story_positions();
             }
         }
+        // story_titles_view.js: Set no_more_stories AFTER reset_flags, because
+        // reset_flags->clear() resets it to false.
+        this.collection.no_more_stories = true;
 
         _.each(briefings, function (briefing) {
             briefing.is_preview = data.is_preview;
