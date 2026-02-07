@@ -1225,7 +1225,7 @@ class SearchFeed:
             return []
 
         # Escape all Elasticsearch query_string reserved characters
-        escaped_text = re.sub(r'([+\-=&|!(){}\[\]^"~*?:\\/])', r'\\\1', text)
+        escaped_text = re.sub(r'([+\-=&|!(){}\[\]^"~*?:\\/])', r"\\\1", text)
 
         body = {
             "query": {

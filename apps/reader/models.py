@@ -2593,6 +2593,8 @@ class UserSubscriptionFolders(models.Model):
             for feed_id in missing_folder_feeds:
                 feed = Feed.get_by_id(feed_id)
                 if feed and feed.pk == feed_id:
+                    if feed.is_daily_briefing:
+                        continue
                     user_sub_folders = add_object_to_folder(feed_id, "", user_sub_folders)
             self.folders = json.encode(user_sub_folders)
             self.save()

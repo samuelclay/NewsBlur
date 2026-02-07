@@ -416,6 +416,12 @@ def load_river_blurblog(request):
     story_hashes_to_dates = dict(list(zip(story_hashes, story_dates)))
     sorted_mstories = reversed(sorted(mstories, key=lambda x: int(story_hashes_to_dates[str(x.story_hash)])))
     stories = Feed.format_stories(sorted_mstories)
+    # Exclude briefing feed stories from social/shared rivers
+    if stories:
+        social_feed_id_set = list(set(s["story_feed_id"] for s in stories))
+        allowed_feed_ids = set(Feed.exclude_briefing_feeds(social_feed_id_set))
+        if len(allowed_feed_ids) < len(social_feed_id_set):
+            stories = [s for s in stories if s["story_feed_id"] in allowed_feed_ids]
     for s, story in enumerate(stories):
         timestamp = story_hashes_to_dates[story["story_hash"]]
         story["story_date"] = datetime.datetime.fromtimestamp(timestamp)
