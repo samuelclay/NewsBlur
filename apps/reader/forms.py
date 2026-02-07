@@ -25,12 +25,12 @@ class LoginForm(forms.Form):
     username = forms.CharField(
         label=_("Username or Email"),
         max_length=30,
-        widget=forms.TextInput(attrs={"tabindex": 1, "class": "NB-input"}),
+        widget=forms.TextInput(attrs={"tabindex": 1, "class": "NB-input", "placeholder": "Username or email"}),
         error_messages={"required": "Please enter a username."},
     )
     password = forms.CharField(
         label=_("Password"),
-        widget=forms.PasswordInput(attrs={"tabindex": 2, "class": "NB-input"}),
+        widget=forms.PasswordInput(attrs={"tabindex": 2, "class": "NB-input", "placeholder": "Password"}),
         required=False,
     )
     # error_messages={'required': 'Please enter a password.'})
@@ -98,7 +98,7 @@ class SignupForm(forms.Form):
     username = forms.RegexField(
         regex=r"^\w+$",
         max_length=30,
-        widget=forms.TextInput(attrs={"class": "NB-input"}),
+        widget=forms.TextInput(attrs={"class": "NB-input", "placeholder": "Username"}),
         label=_("Username"),
         error_messages={
             "required": "Please enter a username.",
@@ -106,14 +106,14 @@ class SignupForm(forms.Form):
         },
     )
     email = forms.EmailField(
-        widget=forms.TextInput(attrs={"maxlength": 75, "class": "NB-input"}),
+        widget=forms.TextInput(attrs={"maxlength": 75, "class": "NB-input", "placeholder": "Email address"}),
         label=_("Email"),
         required=True,
         error_messages={"required": "Please enter an email."},
     )
     password = forms.CharField(
         widget=forms.PasswordInput(
-            attrs={"class": "NB-input"},
+            attrs={"class": "NB-input", "placeholder": "Password (optional)"},
             render_value=True,
         ),
         label=_("Password"),
