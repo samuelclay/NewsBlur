@@ -2755,44 +2755,57 @@ var classifier_prototype = {
                 ])
             ]);
         } else {
-            // Build scoped classifiers section (global + folder) using standard classifier items
+            // Split scoped classifiers into global (top section) and folder (under their folders)
             var $scoped_section = [];
+            var folder_scoped_map = {}; // folder_name -> [$items]
             if (this.all_classifiers_data.scoped_classifiers) {
                 var scoped = this.all_classifiers_data.scoped_classifiers;
-                var $scoped_items = [];
+                var $global_items = [];
 
-                _.each(scoped.titles || [], function (item) {
-                    $scoped_items.push(self.make_manage_classifier_item(0, 'title', item.title, item.score, item.scope, item.folder_name));
-                });
-                _.each(scoped.authors || [], function (item) {
-                    $scoped_items.push(self.make_manage_classifier_item(0, 'author', item.author, item.score, item.scope, item.folder_name));
-                });
-                _.each(scoped.tags || [], function (item) {
-                    $scoped_items.push(self.make_manage_classifier_item(0, 'tag', item.tag, item.score, item.scope, item.folder_name));
-                });
-                _.each(scoped.texts || [], function (item) {
-                    $scoped_items.push(self.make_manage_classifier_item(0, 'text', item.text, item.score, item.scope, item.folder_name));
-                });
-                _.each(scoped.urls || [], function (item) {
-                    $scoped_items.push(self.make_manage_classifier_item(0, 'url', item.url, item.score, item.scope, item.folder_name));
-                });
+                var route_scoped_item = function (item, type, value_key) {
+                    var $el = self.make_manage_classifier_item(0, type, item[value_key], item.score, item.scope, item.folder_name);
+                    if (item.scope === 'global') {
+                        $global_items.push($el);
+                    } else if (item.scope === 'folder') {
+                        var fn = item.folder_name || ' ';
+                        if (!folder_scoped_map[fn]) folder_scoped_map[fn] = [];
+                        folder_scoped_map[fn].push($el);
+                    }
+                };
 
-                if ($scoped_items.length) {
+                _.each(scoped.titles || [], function (item) { route_scoped_item(item, 'title', 'title'); });
+                _.each(scoped.authors || [], function (item) { route_scoped_item(item, 'author', 'author'); });
+                _.each(scoped.tags || [], function (item) { route_scoped_item(item, 'tag', 'tag'); });
+                _.each(scoped.texts || [], function (item) { route_scoped_item(item, 'text', 'text'); });
+                _.each(scoped.urls || [], function (item) { route_scoped_item(item, 'url', 'url'); });
+
+                if ($global_items.length) {
                     $scoped_section.push($.make('div', { className: 'NB-manage-folder NB-manage-scoped-section', 'data-feed-id': 0 }, [
                         $.make('div', { className: 'NB-manage-folder-title NB-manage-scoped-title' }, [
-                            $.make('span', 'Global & Folder Classifiers'),
-                            $.make('span', { className: 'NB-manage-scoped-count' }, String($scoped_items.length))
+                            $.make('span', 'Global Classifiers'),
+                            $.make('span', { className: 'NB-manage-scoped-count' }, String($global_items.length))
                         ]),
-                        $.make('div', { className: 'NB-manage-folder-feeds NB-classifiers' }, $scoped_items)
+                        $.make('div', { className: 'NB-manage-folder-feeds NB-classifiers' }, $global_items)
                     ]));
                 }
             }
 
-            // Build classifier list by folder
+            // Build classifier list by folder, injecting folder-scoped classifiers
             var $folders = [];
 
             _.each(this.all_classifiers_data.folders, function (folder) {
                 var $folder_feeds = [];
+                var raw_folder_name = folder.folder_name;
+
+                // Prepend folder-scoped classifiers for this folder
+                var $folder_classifiers = folder_scoped_map[raw_folder_name] || [];
+                if ($folder_classifiers.length) {
+                    $folder_feeds.push($.make('div', {
+                        className: 'NB-manage-folder-classifiers NB-classifiers',
+                        'data-folder-name': raw_folder_name
+                    }, $folder_classifiers));
+                }
+                delete folder_scoped_map[raw_folder_name];
 
                 _.each(folder.feeds, function (feed) {
                     var $feed_classifiers = self.make_feed_classifiers_for_manage(feed);
@@ -2802,10 +2815,26 @@ var classifier_prototype = {
                 });
 
                 if ($folder_feeds.length) {
-                    var folder_name = folder.folder_name === ' ' ? 'Top Level' : folder.folder_name;
-                    $folders.push($.make('div', { className: 'NB-manage-folder' }, [
+                    var folder_name = raw_folder_name === ' ' ? 'Top Level' : raw_folder_name;
+                    $folders.push($.make('div', { className: 'NB-manage-folder', 'data-folder-name': raw_folder_name }, [
                         $.make('div', { className: 'NB-manage-folder-title' }, folder_name),
                         $.make('div', { className: 'NB-manage-folder-feeds' }, $folder_feeds)
+                    ]));
+                }
+            });
+
+            // Handle orphan folders (folder-scoped classifiers for folders not in the feed list)
+            _.each(folder_scoped_map, function ($items, raw_folder_name) {
+                if ($items.length) {
+                    var folder_name = raw_folder_name === ' ' ? 'Top Level' : raw_folder_name;
+                    $folders.push($.make('div', { className: 'NB-manage-folder', 'data-folder-name': raw_folder_name }, [
+                        $.make('div', { className: 'NB-manage-folder-title' }, folder_name),
+                        $.make('div', { className: 'NB-manage-folder-feeds' }, [
+                            $.make('div', {
+                                className: 'NB-manage-folder-classifiers NB-classifiers',
+                                'data-folder-name': raw_folder_name
+                            }, $items)
+                        ])
                     ]));
                 }
             });
@@ -2830,7 +2859,7 @@ var classifier_prototype = {
         return $content;
     },
 
-    count_classifiers: function (sentiment_filter, type_filter, scope_filter, allowed_feed_ids, search_filter, feeds_matching_search) {
+    count_classifiers: function (sentiment_filter, type_filter, scope_filter, allowed_feed_ids, search_filter, feeds_matching_search, filter_feed) {
         // Count classifiers, optionally filtered by sentiment, type, scope, feed, and search
         var counts = {
             all: 0,
@@ -2862,8 +2891,22 @@ var classifier_prototype = {
                 var sentiment_match = !sentiment_filter || sentiment_filter === 'all' || sentiment_filter === sentiment;
                 var type_match = !type_filter || type_filter === 'all' || type_filter === type;
                 var scope_match = !scope_filter || scope_filter === 'all' || scope_filter === item_scope;
-                // Scoped classifiers (feed_id=0) bypass the feed/folder dropdown filter
-                var feed_match = item_scope !== 'feed' || !allowed_feed_ids || allowed_feed_ids[feed_id];
+                // Feed/folder filter: global bypasses, folder matches by folder name, feed matches by feed_id
+                var feed_match;
+                if (item_scope === 'global') {
+                    feed_match = true;
+                } else if (item_scope === 'folder') {
+                    if (!filter_feed) {
+                        feed_match = true;
+                    } else if (_.string.startsWith(filter_feed, 'river:')) {
+                        var cf = filter_feed.replace('river:', '');
+                        feed_match = cf === '' || cf === (item.folder_name || '');
+                    } else {
+                        feed_match = false;
+                    }
+                } else {
+                    feed_match = !allowed_feed_ids || allowed_feed_ids[feed_id];
+                }
                 var search_match = !search_filter;
                 if (!search_match) {
                     var value = '';
@@ -2950,11 +2993,11 @@ var classifier_prototype = {
         }
 
         // For type buttons: filter by current sentiment, scope, feed, and search
-        var type_counts = this.count_classifiers(sentiment, null, scope, allowed_feed_ids, search_filter, feeds_matching_search);
+        var type_counts = this.count_classifiers(sentiment, null, scope, allowed_feed_ids, search_filter, feeds_matching_search, this.manage_filter_feed);
         // For sentiment buttons: filter by current type, scope, feed, and search
-        var sentiment_counts = this.count_classifiers(null, type, scope, allowed_feed_ids, search_filter, feeds_matching_search);
+        var sentiment_counts = this.count_classifiers(null, type, scope, allowed_feed_ids, search_filter, feeds_matching_search, this.manage_filter_feed);
         // For scope buttons: filter by current sentiment, type, feed, and search (NOT scope)
-        var scope_counts = this.count_classifiers(sentiment, type, null, allowed_feed_ids, search_filter, feeds_matching_search);
+        var scope_counts = this.count_classifiers(sentiment, type, null, allowed_feed_ids, search_filter, feeds_matching_search, this.manage_filter_feed);
 
         return {
             // Sentiment control counts (filtered by type + scope)
@@ -3245,8 +3288,23 @@ var classifier_prototype = {
             var type_match = self.manage_filter_types === 'all' || self.manage_filter_types === type;
             var sentiment_match = self.manage_filter_sentiment === 'all' || self.manage_filter_sentiment === sentiment;
             var scope_match = self.manage_filter_scope === 'all' || self.manage_filter_scope === item_scope;
-            // Scoped classifiers (feed_id=0) bypass the feed/folder dropdown filter
-            var feed_match = item_scope !== 'feed' || !allowed_feed_ids || allowed_feed_ids[feed_id];
+            // Feed/folder filter: global bypasses, folder matches by folder name, feed matches by feed_id
+            var feed_match;
+            if (item_scope === 'global') {
+                feed_match = true;
+            } else if (item_scope === 'folder') {
+                if (!self.manage_filter_feed) {
+                    feed_match = true;
+                } else if (_.string.startsWith(self.manage_filter_feed, 'river:')) {
+                    var filter_folder = self.manage_filter_feed.replace('river:', '');
+                    var item_folder = $item.data('folder-name') || '';
+                    feed_match = filter_folder === '' || filter_folder === item_folder;
+                } else {
+                    feed_match = false;
+                }
+            } else {
+                feed_match = !allowed_feed_ids || allowed_feed_ids[feed_id];
+            }
             // Search matches if: no search, OR classifier value matches, OR parent feed title matches
             var search_match = !self.manage_filter_search ||
                                value.indexOf(self.manage_filter_search) !== -1 ||
@@ -3272,11 +3330,24 @@ var classifier_prototype = {
             }
         });
 
+        // Hide/show folder-scoped classifier containers
+        $('.NB-manage-folder-classifiers', $modal).each(function () {
+            var $container = $(this);
+            var has_visible = $container.find('.NB-manage-classifier-item').filter(function () {
+                return $(this).css('display') !== 'none';
+            }).length > 0;
+            if (has_visible) {
+                $container.show();
+            } else {
+                $container.hide();
+            }
+        });
+
         // Hide/show folders based on whether they have visible feeds or items
         $('.NB-manage-folder', $modal).each(function () {
             var $folder = $(this);
 
-            // For the scoped section, check visible classifier items directly
+            // For the global scoped section, check visible classifier items directly
             if ($folder.hasClass('NB-manage-scoped-section')) {
                 var has_visible_items = $folder.find('.NB-manage-classifier-item').filter(function () {
                     return $(this).css('display') !== 'none';
@@ -3289,12 +3360,16 @@ var classifier_prototype = {
                 return;
             }
 
-            // Check display property directly since :visible checks parent visibility
-            var has_visible = $folder.find('.NB-manage-feed').filter(function () {
+            // Check for visible feeds OR visible folder-scoped classifiers
+            var has_visible_feed = $folder.find('.NB-manage-feed').filter(function () {
                 return $(this).css('display') !== 'none';
             }).length > 0;
 
-            if (has_visible) {
+            var has_visible_folder_classifier = $folder.find('.NB-manage-folder-classifiers .NB-manage-classifier-item').filter(function () {
+                return $(this).css('display') !== 'none';
+            }).length > 0;
+
+            if (has_visible_feed || has_visible_folder_classifier) {
                 $folder.show();
             } else {
                 $folder.hide();

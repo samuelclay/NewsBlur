@@ -8714,6 +8714,10 @@ form.opml_import_form input {
     padding-left: 12px;
 }
 
+.NB-manage-folder-classifiers {
+    margin-bottom: 8px;
+}
+
 .NB-manage-feed {
     margin-bottom: 12px;
     border-left: 3px solid #E0E0E0;
