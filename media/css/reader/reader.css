@@ -29513,16 +29513,13 @@ span.NB-briefing-inline-favicon {
     line-height: 16px;
 }
 
-/* reader.css: Section icons in briefing summary h3 headers (span with background-image) */
+/* reader.css: Section icons in briefing summary h3 headers (img embedded server-side) */
 .NB-briefing-section-icon {
     display: inline-block;
     width: 1em;
     height: 1em;
     vertical-align: -0.1em;
     margin-right: 0.3em;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
     filter: grayscale(1);
 }
 
