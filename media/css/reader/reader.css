@@ -29523,7 +29523,7 @@ span.NB-briefing-inline-favicon {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
+    filter: grayscale(1);
 }
 
 /* reader.css: Section icons in briefing settings/onboarding */
@@ -29532,7 +29532,7 @@ span.NB-briefing-inline-favicon {
     height: 16px;
     margin-top: 1px;
     flex-shrink: 0;
-    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
+    filter: grayscale(1);
 }
 
 /* reader.css: Briefing curated stories container */
