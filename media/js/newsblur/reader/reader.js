@@ -2108,9 +2108,12 @@
         open_daily_briefing: function (options) {
             options = options || {};
             var self = this;
+            var new_section = options.section || null;
+            var same_section = new_section === this.flags.briefing_section;
             var switching_section = this.flags.briefing_view &&
                 NEWSBLUR.assets.briefing_data &&
-                this.active_feed == 'river:daily-briefing';
+                this.active_feed == 'river:daily-briefing' &&
+                new_section && !same_section;
 
             if (!switching_section) {
                 this.reset_feed(options);
