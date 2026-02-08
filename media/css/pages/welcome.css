@@ -869,7 +869,8 @@
     width: 120px;
     height: 100px;
     margin: 0 24px 0 0;
-    object-fit: contain;
+    object-fit: cover;
+    object-position: left top;
     box-shadow: 0 0 3px rgba(30, 30, 30, 0.3);
 }
 
