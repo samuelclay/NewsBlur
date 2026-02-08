@@ -13368,8 +13368,6 @@ h5.NB-classifier-section-header {
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     min-width: 230px;
-    max-height: 240px;
-    overflow-y: auto;
     opacity: 0;
     visibility: hidden;
     transform: translateY(4px);
@@ -13815,8 +13813,6 @@ h5.NB-classifier-section-header {
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     min-width: 250px;
-    max-height: 240px;
-    overflow-y: auto;
     opacity: 0;
     visibility: hidden;
     transform: translateY(4px);

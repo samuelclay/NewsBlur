@@ -832,7 +832,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             e.preventDefault();
             e.stopPropagation();
         }
-        var selected_model = this.$(e.target).data('model');
+        var selected_model = this.$(e.target).closest('.NB-model-option').data('model');
 
         // Close dropdown
         this.$('.NB-story-ask-ai-reask-menu').removeClass('NB-dropdown-open');
@@ -853,7 +853,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             e.preventDefault();
             e.stopPropagation();
         }
-        var selected_model = this.$(e.target).data('model');
+        var selected_model = this.$(e.target).closest('.NB-model-option').data('model');
         this.model = selected_model;
         NEWSBLUR.assets.preference('ask_ai_model', selected_model);
         this.update_model_dropdown_selection();
@@ -1036,7 +1036,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             e.preventDefault();
             e.stopPropagation();
         }
-        var selected_model = this.$(e.target).data('model');
+        var selected_model = this.$(e.target).closest('.NB-model-option').data('model');
         this.model = selected_model;
         NEWSBLUR.assets.preference('ask_ai_model', selected_model);
         this.update_model_dropdown_selection();
