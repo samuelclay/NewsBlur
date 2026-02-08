@@ -3085,7 +3085,7 @@ var classifier_prototype = {
             collect_folder_names(scoped.texts || []);
             collect_folder_names(scoped.urls || []);
 
-            _.each(folder_names, function (_, folder_name) {
+            _.each(folder_names, function (val, folder_name) {
                 var folder = NEWSBLUR.assets.get_folder(folder_name);
                 if (folder) {
                     _.each(folder.feed_ids_in_folder(), function (feed_id) {
