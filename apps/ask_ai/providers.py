@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generator
+from typing import Generator, Optional
 
 import anthropic
 import openai
@@ -25,7 +25,7 @@ class LLMProvider(ABC):
         pass
 
     @abstractmethod
-    def stream_response(self, messages: list, model_id: str) -> Generator[str, None, None]:
+    def stream_response(self, messages: list, model_id: str, thinking_config: Optional[dict] = None) -> Generator[str, None, None]:
         """Stream response chunks from the LLM."""
         pass
 
@@ -65,19 +65,24 @@ class AnthropicProvider(LLMProvider):
     def is_configured(self) -> bool:
         return bool(getattr(settings, "ANTHROPIC_API_KEY", None))
 
-    def stream_response(self, messages: list, model_id: str) -> Generator[str, None, None]:
+    def stream_response(self, messages: list, model_id: str, thinking_config: Optional[dict] = None) -> Generator[str, None, None]:
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
         # Extract system message and convert to Anthropic format
         system_msg = next((m["content"] for m in messages if m["role"] == "system"), None)
         user_messages = [m for m in messages if m["role"] != "system"]
 
-        with client.messages.stream(
-            model=model_id,
-            max_tokens=4096,
-            system=system_msg,
-            messages=user_messages,
-        ) as stream:
+        kwargs = {
+            "model": model_id,
+            "max_tokens": 4096,
+            "system": system_msg,
+            "messages": user_messages,
+        }
+        if thinking_config:
+            kwargs["thinking"] = thinking_config["thinking"]
+            kwargs["max_tokens"] = thinking_config.get("max_tokens", 16384)
+
+        with client.messages.stream(**kwargs) as stream:
             for text in stream.text_stream:
                 yield text
             # Get usage after stream completes
@@ -128,14 +133,18 @@ class OpenAIProvider(LLMProvider):
     def is_configured(self) -> bool:
         return bool(getattr(settings, "OPENAI_API_KEY", None))
 
-    def stream_response(self, messages: list, model_id: str) -> Generator[str, None, None]:
+    def stream_response(self, messages: list, model_id: str, thinking_config: Optional[dict] = None) -> Generator[str, None, None]:
         client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-        response = client.chat.completions.create(
-            model=model_id,
-            messages=messages,
-            stream=True,
-            stream_options={"include_usage": True},
-        )
+        kwargs = {
+            "model": model_id,
+            "messages": messages,
+            "stream": True,
+            "stream_options": {"include_usage": True},
+        }
+        if thinking_config and "reasoning_effort" in thinking_config:
+            kwargs["extra_body"] = {"reasoning_effort": thinking_config["reasoning_effort"]}
+
+        response = client.chat.completions.create(**kwargs)
 
         for chunk in response:
             # The final chunk contains usage info
@@ -186,7 +195,7 @@ class XAIProvider(LLMProvider):
     def is_configured(self) -> bool:
         return bool(getattr(settings, "XAI_GROK_API_KEY", None))
 
-    def stream_response(self, messages: list, model_id: str) -> Generator[str, None, None]:
+    def stream_response(self, messages: list, model_id: str, thinking_config: Optional[dict] = None) -> Generator[str, None, None]:
         client = openai.OpenAI(
             api_key=settings.XAI_GROK_API_KEY,
             base_url="https://api.x.ai/v1",
@@ -248,12 +257,19 @@ class GeminiProvider(LLMProvider):
     def is_configured(self) -> bool:
         return bool(getattr(settings, "GOOGLE_GEMINI_API_KEY", None))
 
-    def stream_response(self, messages: list, model_id: str) -> Generator[str, None, None]:
+    def stream_response(self, messages: list, model_id: str, thinking_config: Optional[dict] = None) -> Generator[str, None, None]:
         client = genai.Client(api_key=settings.GOOGLE_GEMINI_API_KEY)
 
         # Extract system message for config
         system_msg = next((m["content"] for m in messages if m["role"] == "system"), None)
-        config = genai_types.GenerateContentConfig(system_instruction=system_msg) if system_msg else None
+        config_kwargs = {}
+        if system_msg:
+            config_kwargs["system_instruction"] = system_msg
+        if thinking_config:
+            config_kwargs["thinking_config"] = genai_types.ThinkingConfig(
+                thinking_budget=thinking_config.get("thinking_budget", -1)
+            )
+        config = genai_types.GenerateContentConfig(**config_kwargs) if config_kwargs else None
 
         # Convert messages to Gemini format (user/model roles, not assistant)
         contents = []
@@ -346,6 +362,10 @@ _DEFAULT_MODELS = {
         "vendor": "anthropic",
         "vendor_display": "Anthropic",
         "order": 1,
+        "thinking_config": {
+            "thinking": {"type": "enabled", "budget_tokens": 10000},
+            "max_tokens": 16384,
+        },
     },
     "gpt-5.2": {
         "provider_class": OpenAIProvider,
@@ -354,6 +374,9 @@ _DEFAULT_MODELS = {
         "vendor": "openai",
         "vendor_display": "OpenAI",
         "order": 2,
+        "thinking_config": {
+            "reasoning_effort": "high",
+        },
     },
     "gemini-3": {
         "provider_class": GeminiProvider,
@@ -362,6 +385,9 @@ _DEFAULT_MODELS = {
         "vendor": "google",
         "vendor_display": "Google",
         "order": 3,
+        "thinking_config": {
+            "thinking_budget": -1,
+        },
     },
     "grok-4.1": {
         "provider_class": XAIProvider,
@@ -370,6 +396,7 @@ _DEFAULT_MODELS = {
         "vendor": "xai",
         "vendor_display": "xAI",
         "order": 4,
+        "thinking_model_id": "grok-4-1-fast-reasoning",
     },
 }
 
@@ -397,7 +424,7 @@ def _load_models():
         provider_class = PROVIDER_CLASSES.get(provider_slug)
         if not provider_class:
             continue
-        models[key] = {
+        entry = {
             "provider_class": provider_class,
             "model_id": cfg["model_id"],
             "display_name": cfg.get("display_name", key),
@@ -405,6 +432,11 @@ def _load_models():
             "vendor_display": cfg.get("vendor_display", provider_slug.title()),
             "order": cfg.get("order", 99),
         }
+        if "thinking_config" in cfg:
+            entry["thinking_config"] = cfg["thinking_config"]
+        if "thinking_model_id" in cfg:
+            entry["thinking_model_id"] = cfg["thinking_model_id"]
+        models[key] = entry
     return models if models else _DEFAULT_MODELS
 
 
@@ -443,18 +475,24 @@ def get_models_for_frontend() -> list:
     )
 
 
-def get_provider(model_name: str) -> tuple[LLMProvider, str]:
+def get_provider(model_name: str, thinking: bool = False) -> tuple[LLMProvider, str, Optional[dict]]:
     """
-    Get a provider instance and model ID for the given model name.
+    Get a provider instance, model ID, and optional thinking config for the given model name.
 
     Returns:
-        Tuple of (provider_instance, model_id)
+        Tuple of (provider_instance, model_id, thinking_config)
     """
     if model_name not in MODELS:
         model_name = DEFAULT_MODEL
 
     model = MODELS[model_name]
-    return model["provider_class"](), model["model_id"]
+    if thinking:
+        model_id = model.get("thinking_model_id", model["model_id"])
+        thinking_config = model.get("thinking_config")
+    else:
+        model_id = model["model_id"]
+        thinking_config = None
+    return model["provider_class"](), model_id, thinking_config
 
 
 # Briefing model registry: cheap models optimized for daily briefing generation.

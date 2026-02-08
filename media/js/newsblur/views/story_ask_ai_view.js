@@ -17,7 +17,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         "click .NB-story-ask-ai-usage-message a": "open_premium_modal",
         "click .NB-reask-dropdown .NB-model-option": "handle_reask_model_click",
         "click .NB-send-dropdown .NB-model-option": "handle_send_model_click",
-        "click .NB-finish-recording-dropdown .NB-model-option": "handle_finish_recording_model_click"
+        "click .NB-finish-recording-dropdown .NB-model-option": "handle_finish_recording_model_click",
+        "click .NB-thinking-toggle-option": "handle_thinking_toggle"
     },
 
     initialize: function (options) {
@@ -26,6 +27,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.custom_question = options.custom_question;
         this.transcription_error = options.transcription_error;
         this.model = options.model || 'opus';  // Default to opus
+        this.thinking = options.thinking || false;
 
         // If there's a transcription error, show "Audio not transcribed" as the question text
         if (this.transcription_error) {
@@ -44,6 +46,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.original_question_id = this.question_id;  // Store for re-ask
         this.original_custom_question = this.custom_question;  // Store for re-ask
         this.response_model = this.model;  // Track which model produced current response
+        this.response_thinking = this.thinking;  // Track thinking mode of current response
         this.is_comparison_response = false;  // Track if comparing multiple model responses
         this.section_models = [];  // Track models for each answer section (for pills)
 
@@ -70,8 +73,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Store view instance on DOM element for Socket.IO handler access
         this.$el.data('view', this);
 
-        // Set the model dropdown to the current model
+        // Set the model dropdown to the current model and thinking toggle
         this.update_model_dropdown_selection();
+        this.update_thinking_toggle_selection();
 
         // If there's a transcription error, display it instead of sending a question
         if (this.transcription_error) {
@@ -288,11 +292,13 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         var params = {
             story_hash: this.story_hash,
             question_id: this.question_id,
-            model: this.model
+            model: this.model,
+            thinking: this.thinking
         };
 
-        // Track which model is producing this response
+        // Track which model and thinking mode is producing this response
         this.response_model = this.model;
+        this.response_thinking = this.thinking;
 
         var request_id = this.generate_request_id();
         this.active_request_id = request_id;
@@ -581,8 +587,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.$('.NB-story-ask-ai-reask-menu').show();
         this.$('.NB-story-ask-ai-send-menu').hide();
 
-        // Update model dropdown selection
+        // Update model dropdown and thinking toggle selection
         this.update_model_dropdown_selection();
+        this.update_thinking_toggle_selection();
     },
 
     show_error: function (error_message) {
@@ -830,8 +837,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Close dropdown
         this.$('.NB-story-ask-ai-reask-menu').removeClass('NB-dropdown-open');
 
-        // Only re-ask if model is different from current response
-        if (selected_model === this.response_model) {
+        // Only re-ask if model or thinking mode is different from current response
+        if (selected_model === this.response_model && this.thinking === this.response_thinking) {
             return;
         }
 
@@ -866,6 +873,41 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         });
     },
 
+    update_thinking_toggle_selection: function () {
+        var thinking = this.thinking;
+        this.$('.NB-thinking-toggle-option').each(function () {
+            var $option = $(this);
+            var is_thinking = $option.data('thinking') === true || $option.data('thinking') === 'true';
+            if (is_thinking === thinking) {
+                $option.addClass('NB-selected');
+            } else {
+                $option.removeClass('NB-selected');
+            }
+        });
+    },
+
+    handle_thinking_toggle: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        var $option = this.$(e.currentTarget);
+        var thinking = $option.data('thinking') === true || $option.data('thinking') === 'true';
+
+        // Update selected state
+        this.$('.NB-thinking-toggle-option').removeClass('NB-selected');
+        $option.addClass('NB-selected');
+
+        // Save preference
+        this.thinking = thinking;
+        NEWSBLUR.assets.preference('ask_ai_thinking', thinking);
+
+        // Re-ask if thinking mode changed from what produced the current response
+        if (thinking !== this.response_thinking) {
+            this.reask_with_new_model();
+        }
+    },
+
     get_model_display_name: function (model) {
         var models = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_models) || [];
         var match = _.find(models, function (m) { return m.key === model; });
@@ -887,6 +929,18 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                     _.escape(m.vendor_display) + '</span> ' +
                     _.escape(m.display_name) + '</div>';
         });
+        html += '<div class="NB-thinking-toggle-wrapper">' +
+            '<div class="NB-thinking-toggle-segmented">' +
+                '<div class="NB-thinking-toggle-option NB-thinking-fast NB-selected" data-thinking="false">' +
+                    '<img src="/media/img/icons/nouns/lightning-bolt.svg" class="NB-thinking-toggle-icon" />' +
+                    '<span>Fast</span>' +
+                '</div>' +
+                '<div class="NB-thinking-toggle-option NB-thinking-thinking" data-thinking="true">' +
+                    '<img src="/media/img/icons/nouns/ai-brain.svg" class="NB-thinking-toggle-icon" />' +
+                    '<span>Thinking</span>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
         return html;
     },
 

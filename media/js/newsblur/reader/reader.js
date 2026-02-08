@@ -4081,7 +4081,7 @@
             story_view.show_ask_ai_menu(fake_event);
         },
 
-        open_ask_ai_pane: function (story, question_id, custom_question, transcription_error, model) {
+        open_ask_ai_pane: function (story, question_id, custom_question, transcription_error, model, thinking) {
             var story_view = story.latest_story_detail_view;
             if (!story_view) {
                 console.log(['No story view found for Ask AI', story]);
@@ -4102,6 +4102,7 @@
                 custom_question: custom_question,
                 transcription_error: transcription_error,
                 model: model,
+                thinking: thinking,
                 inline: true
             });
 

@@ -13483,6 +13483,57 @@ h5.NB-classifier-section-header {
     border-bottom-right-radius: 4px;
 }
 
+/* Thinking Toggle - inside model dropdown */
+.NB-thinking-toggle-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 8px 10px;
+    border-top: 1px solid #E8EAE4;
+    border-radius: 0 0 5px 5px;
+}
+
+.NB-thinking-toggle-segmented {
+    display: inline-flex;
+    background-color: #E8EAE4;
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+    flex: 1;
+}
+
+.NB-thinking-toggle-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #808080;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.NB-thinking-toggle-option:hover {
+    color: #505050;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-thinking-toggle-option.NB-selected {
+    background-color: white;
+    color: #303030;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.NB-thinking-toggle-icon {
+    width: 14px;
+    height: 14px;
+}
+
 /* =================== */
 /* = Ask AI Pane     = */
 /* =================== */
