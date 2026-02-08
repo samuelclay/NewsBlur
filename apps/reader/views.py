@@ -1263,6 +1263,9 @@ def load_single_feed(request, feed_id):
         data["dupe_feed_id"] = dupe_feed_id
     if not usersub:
         data.update(feed.canonical())
+    if not usersub and not feed.fetched_once:
+        from apps.rss_feeds.tasks import NewFeeds
+        NewFeeds.delay(feed.pk)
     # if not usersub and feed.num_subscribers <= 1:
     #     data = dict(code=-1, message="You must be subscribed to this feed.")
 

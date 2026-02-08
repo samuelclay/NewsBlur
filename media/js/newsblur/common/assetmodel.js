@@ -732,11 +732,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.feed_authors = data.feed_authors || {};
                 this.active_feed = this.get_feed(feed_id);
                 if (this.active_feed) {
-                    this.active_feed.set({
+                    var feed_updates = {
                         feed_title: data.feed_title || this.active_feed.get('feed_title'),
                         updated: data.updated || this.active_feed.get('updated'),
                         feed_address: data.feed_address || this.active_feed.get('feed_address')
-                    });
+                    };
+                    if ('not_yet_fetched' in data) {
+                        feed_updates.not_yet_fetched = data.not_yet_fetched;
+                        feed_updates.fetched_once = data.fetched_once;
+                    }
+                    this.active_feed.set(feed_updates);
                 }
                 this.feed_id = feed_id;
                 this.starred_stories = data.starred_stories;
@@ -1500,6 +1505,38 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
 
+    analyze_webfeed: function (url, request_id, callback, story_hint) {
+        var params = {
+            'url': url,
+            'request_id': request_id
+        };
+        if (story_hint) {
+            params['story_hint'] = story_hint;
+        }
+        this.make_request('/webfeed/analyze', params, callback, function (data) {
+            callback({ 'code': -1, 'message': data.message || 'Failed to analyze page.' });
+        });
+    },
+
+    subscribe_webfeed: function (url, variant_index, folder, options, callback) {
+        this.make_request('/webfeed/subscribe', _.extend({
+            'url': url,
+            'variant_index': variant_index,
+            'folder': folder
+        }, options), callback, function (data) {
+            callback({ 'code': -1, 'message': data.message || 'Failed to subscribe to web feed.' });
+        });
+    },
+
+    reanalyze_webfeed: function (feed_id, request_id, callback) {
+        this.make_request('/webfeed/reanalyze', {
+            'feed_id': feed_id,
+            'request_id': request_id
+        }, callback, function (data) {
+            callback({ 'code': -1, 'message': data.message || 'Failed to re-analyze web feed.' });
+        });
+    },
+
     save_add_url: function (url, folder, callback, options) {
         options = _.extend({ 'auto_active': true }, options);
         this.make_request('/reader/add_url/', {
@@ -2007,7 +2044,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     search_for_feeds: function (query, callback) {
-        this.make_request('/rss_feeds/feed_autocomplete', {
+        this.make_request('/discover/autocomplete', {
             'query': query,
             'format': 'full',
             'v': 2

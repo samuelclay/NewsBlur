@@ -1,7 +1,7 @@
 NEWSBLUR.Collections.DiscoverStories = NEWSBLUR.Collections.Stories.extend({
 
     url: function () {
-        return '/rss_feeds/discover/stories/' + this.similar_to_story_hash + '/';
+        return '/discover/similar/stories/' + this.similar_to_story_hash + '/';
     },
 
     parse: function (response) {

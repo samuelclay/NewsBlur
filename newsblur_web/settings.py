@@ -362,7 +362,9 @@ INSTALLED_APPS = (
     "apps.oauth",
     "apps.search",
     "apps.categories",
+    "apps.discover",
     "apps.ask_ai",
+    "apps.webfeed",
     "apps.archive_extension",
     "apps.archive_assistant",
     "utils",  # missing models so no migrations
