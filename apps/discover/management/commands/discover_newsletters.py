@@ -5,7 +5,9 @@ Substack, Medium, Ghost, and Buttondown.
 
 Data Sources:
 1. Substack Category API (unauthenticated) - browse by category for top publications
-2. Feedly Search API (unauthenticated) - search by domain-scoped keywords for Medium/Ghost/Buttondown
+2. TopPub.xyz scraping - leaderboard of Medium publications by tag
+3. Feedly Search API (unauthenticated) - search by domain-scoped keywords for Medium
+4. Ghost Explore sitemap scraping - top publications from Ghost's directory
 
 Usage:
     python manage.py discover_newsletters
@@ -38,6 +40,9 @@ FEEDLY_RATE_LIMIT_WAIT = 60
 
 SUBSTACK_DELAY = 2.0
 SUBSTACK_PAGE_SIZE = 25
+
+TOPPUB_DELAY = 1.0
+TOPPUB_PAGES_PER_TAG = 3  # 15 pubs per page × 3 pages = 45 per tag
 
 CLAUDE_MODEL = "claude-haiku-4-5"
 CATEGORIZE_BATCH_SIZE = 100
@@ -575,6 +580,123 @@ PLATFORM_DOMAINS = {
 }
 
 
+# TopPub.xyz tags: (id, name, taxonomy_category)
+# Scraped from https://toppub.xyz/publications/tags
+# We select a diverse subset of the 103 available tags, mapped to our taxonomy.
+TOPPUB_TAGS = [
+    # Technology
+    (2, "artificial intelligence", "technology"),
+    (518, "ai", "technology"),
+    (20, "technology", "technology"),
+    (4, "tech", "technology"),
+    (85, "programming", "technology"),
+    (447, "javascript", "technology"),
+    (508, "python", "technology"),
+    (312, "react", "technology"),
+    (59, "web development", "technology"),
+    (306, "coding", "technology"),
+    (340, "software engineering", "technology"),
+    (324, "software development", "technology"),
+    (454, "software", "technology"),
+    (192, "devops", "technology"),
+    (191, "cloud computing", "technology"),
+    (1218, "cybersecurity", "technology"),
+    (296, "open source", "technology"),
+    (302, "mobile app development", "technology"),
+    (547, "android", "technology"),
+    (58, "engineering", "technology"),
+    (719, "digital transformation", "technology"),
+    # Data & AI
+    (546, "data science", "technology"),
+    (348, "machine learning", "technology"),
+    (670, "deep learning", "technology"),
+    (221, "data", "technology"),
+    (219, "data visualization", "technology"),
+    # Business & Startups
+    (41, "business", "business"),
+    (12, "startup", "entrepreneurship & startups"),
+    (10, "entrepreneurship", "entrepreneurship & startups"),
+    (49, "venture capital", "finance"),
+    (32, "marketing", "business"),
+    (245, "leadership", "business"),
+    (108, "innovation", "business"),
+    (56, "product management", "business"),
+    (530, "product development", "business"),
+    (55, "productivity", "lifestyle"),
+    (149, "social media", "business"),
+    # Design
+    (13, "design", "design"),
+    (226, "design thinking", "design"),
+    (57, "product design", "design"),
+    (47, "user experience", "design"),
+    (44, "ux", "design"),
+    (45, "ux design", "design"),
+    # Science & Health
+    (193, "science", "science"),
+    (342, "research", "science"),
+    (23, "health", "health & fitness"),
+    (387, "mental health", "health & fitness"),
+    (554, "psychology", "health & fitness"),
+    # Finance & Crypto
+    (214, "finance", "finance"),
+    (213, "investing", "finance"),
+    (274, "economics", "finance"),
+    (510, "fintech", "finance"),
+    (512, "money", "finance"),
+    (136, "bitcoin", "cryptocurrency & web3"),
+    (148, "blockchain", "cryptocurrency & web3"),
+    (137, "cryptocurrency", "cryptocurrency & web3"),
+    (138, "ethereum", "cryptocurrency & web3"),
+    # Culture & Society
+    (7, "culture", "arts & culture"),
+    (79, "art", "arts & culture"),
+    (17, "creativity", "arts & culture"),
+    (248, "society", "arts & culture"),
+    (88, "politics", "news & politics"),
+    (38, "news", "news & politics"),
+    (9, "journalism", "news & politics"),
+    (11, "media", "news & politics"),
+    (171, "history", "history"),
+    (371, "philosophy", "philosophy"),
+    (22, "education", "education"),
+    (354, "learning", "education"),
+    # Writing & Books
+    (165, "writing", "books & reading"),
+    (1336, "writing tips", "books & reading"),
+    (91, "books", "books & reading"),
+    (21, "fiction", "books & reading"),
+    (63, "poetry", "books & reading"),
+    # Lifestyle
+    (14, "life", "lifestyle"),
+    (16, "life lessons", "lifestyle"),
+    (18, "personal growth", "lifestyle"),
+    (19, "personal development", "lifestyle"),
+    (365, "self improvement", "lifestyle"),
+    (287, "self", "lifestyle"),
+    (272, "inspiration", "lifestyle"),
+    (90, "lifestyle", "lifestyle"),
+    (60, "love", "lifestyle"),
+    (61, "relationships", "lifestyle"),
+    # Entertainment & Media
+    (182, "film", "entertainment"),
+    (94, "movies", "entertainment"),
+    (74, "music", "music"),
+    (133, "sports", "sports"),
+    (40, "humor", "comedy & humor"),
+    (157, "photography", "photography"),
+    # Other
+    (184, "travel", "travel"),
+    (66, "food", "food & cooking"),
+    (119, "parenting", "parenting"),
+    (64, "environment", "environment & sustainability"),
+    (68, "climate change", "environment & sustainability"),
+    (505, "sustainability", "environment & sustainability"),
+    (140, "feminism", "arts & culture"),
+    (139, "women", "arts & culture"),
+    (954, "spirituality", "religion & spirituality"),
+]
+
+
 class Command(BaseCommand):
     help = "Discover real newsletters from Substack, Medium, Ghost, and Buttondown APIs"
 
@@ -606,6 +728,12 @@ class Command(BaseCommand):
         parser.add_argument(
             "--feedly-count", type=int, default=40, help="Results per Feedly search (default: 40)"
         )
+        parser.add_argument(
+            "--toppub-pages",
+            type=int,
+            default=TOPPUB_PAGES_PER_TAG,
+            help=f"Pages per TopPub tag to scrape (default: {TOPPUB_PAGES_PER_TAG}, 15 pubs/page)",
+        )
 
     def handle(self, *args, **options):
         self.verbose = options["verbose"]
@@ -630,12 +758,26 @@ class Command(BaseCommand):
             cache["feeds"] = all_newsletters
             self._save_cache(cache)
 
-        # Phase 2: Feedly search for Medium
+        # Phase 2a: TopPub.xyz scraping for Medium publications
+        if platform in ("medium", "all"):
+            toppub_feeds = self._discover_medium_toppub(
+                cache, options.get("toppub_pages", TOPPUB_PAGES_PER_TAG)
+            )
+            self.stdout.write(
+                self.style.SUCCESS(f"Medium (TopPub): discovered {len(toppub_feeds)} newsletters")
+            )
+            all_newsletters.update(toppub_feeds)
+            cache["feeds"] = all_newsletters
+            self._save_cache(cache)
+
+        # Phase 2b: Feedly search for additional Medium feeds
         if platform in ("medium", "all"):
             medium_feeds = self._search_feedly_for_platform(
                 "medium", "site:medium.com", options["feedly_count"], cache
             )
-            self.stdout.write(self.style.SUCCESS(f"Medium: discovered {len(medium_feeds)} newsletters"))
+            self.stdout.write(
+                self.style.SUCCESS(f"Medium (Feedly): discovered {len(medium_feeds)} newsletters")
+            )
             for url, feed in medium_feeds.items():
                 if url not in all_newsletters:
                     all_newsletters[url] = feed
@@ -1024,6 +1166,150 @@ class Command(BaseCommand):
             "subcategory": "",
             "source": "feedly",
         }
+
+    # -- TopPub.xyz Medium Discovery --
+
+    def _discover_medium_toppub(self, cache, pages_per_tag):
+        """Discover Medium publications by scraping TopPub.xyz tag pages.
+
+        TopPub.xyz is a leaderboard of ~20,000 Medium publications organized by tags.
+        We scrape the top publications from each tag page (sorted by follower count)
+        and construct RSS feed URLs as medium.com/feed/{slug}.
+        """
+        feeds = {}
+        completed = set(cache.get("completed", []))
+        total_tags = len(TOPPUB_TAGS)
+
+        for idx, (tag_id, tag_name, taxonomy_cat) in enumerate(TOPPUB_TAGS, 1):
+            for page in range(1, pages_per_tag + 1):
+                cache_key = f"toppub:{tag_id}:p{page}"
+                if cache_key in completed:
+                    continue
+
+                if page == 1:
+                    self.stdout.write(f"  [{idx}/{total_tags}] TopPub tag: {tag_name}")
+                    self.stdout.flush()
+
+                try:
+                    url = f"https://toppub.xyz/publications/tags/{tag_id}"
+                    resp = requests.get(
+                        url,
+                        params={"page": page},
+                        timeout=15,
+                        headers={"User-Agent": "NewsBlur/1.0 (newsletter discovery)"},
+                    )
+
+                    if resp.status_code == 429:
+                        self.stdout.write(self.style.WARNING("    Rate limited, saving cache..."))
+                        cache["feeds"].update(feeds)
+                        cache["completed"] = list(completed)
+                        self._save_cache(cache)
+                        time.sleep(30)
+                        continue
+
+                    if resp.status_code != 200:
+                        completed.add(cache_key)
+                        continue
+
+                    page_feeds = self._parse_toppub_page(resp.text, taxonomy_cat)
+
+                    new_count = 0
+                    for feed_url, feed in page_feeds.items():
+                        if feed_url not in feeds:
+                            feeds[feed_url] = feed
+                            new_count += 1
+
+                    completed.add(cache_key)
+
+                    if self.verbose and new_count > 0:
+                        self.stdout.write(f"    p{page}: +{new_count} new ({len(page_feeds)} on page)")
+
+                    # If page had fewer than 15 results, no more pages
+                    if len(page_feeds) < 15:
+                        # Mark remaining pages as completed
+                        for remaining_page in range(page + 1, pages_per_tag + 1):
+                            completed.add(f"toppub:{tag_id}:p{remaining_page}")
+                        break
+
+                except requests.RequestException as e:
+                    if self.verbose:
+                        self.stdout.write(self.style.WARNING(f"    Request error: {e}"))
+
+                time.sleep(TOPPUB_DELAY)
+
+            # Periodic cache save
+            if idx % 10 == 0:
+                cache["feeds"].update(feeds)
+                cache["completed"] = list(completed)
+                self._save_cache(cache)
+
+        # Final cache save
+        cache["feeds"].update(feeds)
+        cache["completed"] = list(completed)
+        self._save_cache(cache)
+
+        return feeds
+
+    def _parse_toppub_page(self, html, taxonomy_category):
+        """Parse a TopPub.xyz tag page to extract Medium publication data.
+
+        HTML structure per publication:
+        <tr>
+          <td><a href="https://toppub.xyz/publications/{slug}">...</a></td>
+          <td><a href="https://toppub.xyz/publications/{slug}">{Name}</a></td>
+          <td>{Description}</td>
+          <td class="text-right">{Follower Count}</td>
+        </tr>
+        """
+        feeds = {}
+
+        # Match each table row with publication data
+        # Pattern: slug from href, name from link text, description, follower count
+        row_pattern = re.compile(
+            r'<tr>\s*<td>\s*<a href="https://toppub\.xyz/publications/([^"]+)">'
+            r".*?</td>\s*"
+            r'<td><a href="https://toppub\.xyz/publications/[^"]+">([^<]+)</a></td>\s*'
+            r"<td>(.*?)</td>\s*"
+            r'<td class="text-right">([\d,]+)</td>\s*</tr>',
+            re.DOTALL,
+        )
+
+        for match in row_pattern.finditer(html):
+            slug = match.group(1).strip()
+            name = match.group(2).strip()
+            description = match.group(3).strip()
+            follower_str = match.group(4).strip()
+
+            if not slug or not name:
+                continue
+
+            # Clean up HTML entities in description
+            description = description.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
+            description = re.sub(r"<[^>]+>", "", description)  # strip any HTML tags
+            if len(description) > 200:
+                description = description[:197] + "..."
+
+            # Parse follower count
+            try:
+                follower_count = int(follower_str.replace(",", ""))
+            except ValueError:
+                follower_count = 0
+
+            # Construct Medium RSS feed URL
+            feed_url = f"https://medium.com/feed/{slug}"
+
+            feeds[feed_url] = {
+                "feed_url": feed_url,
+                "title": name,
+                "description": description,
+                "subscriber_count": follower_count,
+                "platform": "medium",
+                "category": taxonomy_category,
+                "subcategory": "",
+                "source": "toppub",
+            }
+
+        return feeds
 
     # -- Ghost Explore Discovery --
 
