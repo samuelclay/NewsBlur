@@ -27,6 +27,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         "click .NB-add-site-youtube-tab .NB-add-site-tab-search-btn": "perform_youtube_search",
         "keypress .NB-add-site-youtube-search": "handle_youtube_search_keypress",
         // Reddit tab events
+        "input .NB-add-site-reddit-search": "handle_reddit_search_input",
         "click .NB-add-site-reddit-tab .NB-add-site-tab-search-btn": "perform_reddit_search",
         "keypress .NB-add-site-reddit-search": "handle_reddit_search_keypress",
         // Newsletter tab events
@@ -208,6 +209,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.search_query = '';
         this.search_debounced = _.debounce(_.bind(this.perform_search, this), 300);
         this.newsletter_search_debounced = _.debounce(_.bind(this.perform_newsletter_search, this), 300);
+        this.reddit_search_debounced = _.debounce(_.bind(this.perform_reddit_popular_search, this), 300);
         this.search_version = 0;  // Track search version to cancel stale responses
         this.overflow_tabs = [];  // Tabs currently in overflow menu
 
@@ -1717,9 +1719,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             subreddits = state.popular_subreddits;
         }
 
+        var title_parts = ['Popular Subreddits'];
+        if (state.popular_total !== undefined) {
+            title_parts.push(' ');
+            title_parts.push($.make('span', { className: 'NB-add-site-section-count' }, String(state.popular_total)));
+        }
         var $section = $.make('div', { className: 'NB-add-site-section' }, [
             $.make('div', { className: 'NB-add-site-section-header' }, [
-                $.make('div', { className: 'NB-add-site-section-title' }, 'Popular Subreddits')
+                $.make('div', { className: 'NB-add-site-section-title' }, title_parts)
             ]),
             $.make('div', { className: 'NB-add-site-section-content' })
         ]);
@@ -1765,13 +1772,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         return this.make_source_card({
             card_class: 'NB-add-site-reddit-card',
-            icon: subreddit.icon || '/media/img/reader/reddit.png',
+            icon: subreddit.icon || subreddit.thumbnail_url || '/media/img/reader/reddit.png',
             fallback_icon: '/media/img/reader/reddit.png',
             title: title,
             meta: subscriber_text,
             description: subreddit.description,
             feed_url: subreddit.feed_url,
             feed_id: subreddit.feed_id || subreddit.feed || null,
+            popular_feed_id: subreddit.id,
             last_story_date: subreddit.last_story_date,
             show_empty_freshness: true
         });
@@ -4215,6 +4223,42 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
     handle_reddit_search_keypress: function (e) {
         if (e.which === 13) this.perform_reddit_search();
+    },
+
+    handle_reddit_search_input: function (e) {
+        var query = $(e.currentTarget).val().trim();
+        var $clear = $(e.currentTarget).closest('.NB-add-site-search-wrapper').find('.NB-add-site-search-clear');
+        $clear.toggleClass('NB-hidden', query.length === 0);
+        this.reddit_state.query = query;
+
+        if (!query) {
+            this.reddit_state.results = [];
+            this.reddit_state.popular_feeds_loaded = false;
+            this.reddit_state.popular_feeds = [];
+            this.reddit_state.popular_feeds_collection = null;
+            this.reddit_state.popular_offset = 0;
+            this.render_reddit_popular();
+            return;
+        }
+
+        this.reddit_search_debounced();
+    },
+
+    perform_reddit_popular_search: function () {
+        var query = this.reddit_state.query;
+        var state = this.reddit_state;
+
+        if (!query || query.length < 2) {
+            state.results = [];
+            this.render_reddit_popular();
+            return;
+        }
+
+        state.popular_feeds_loaded = false;
+        state.popular_feeds = [];
+        state.popular_feeds_collection = null;
+        state.popular_offset = 0;
+        this.render_reddit_popular();
     },
 
     handle_newsletter_search_input: function (e) {
