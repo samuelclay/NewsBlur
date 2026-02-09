@@ -901,6 +901,7 @@
 
 - (void)clearWebView {
     self.hasStory = NO;
+    self.fullStoryHTML = nil;
     self.lastWidthClassKey = nil;
 
     self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
