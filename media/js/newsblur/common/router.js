@@ -94,6 +94,10 @@ NEWSBLUR.Router = Backbone.Router.extend({
         var options = {
             router: true
         };
+        var story = $.getQueryString('story');
+        if (story) {
+            options.story_hash = story;
+        }
         NEWSBLUR.reader.open_daily_briefing(options);
     },
 

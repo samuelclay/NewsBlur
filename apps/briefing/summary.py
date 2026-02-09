@@ -1,6 +1,8 @@
+import html as html_mod
 import re
 import zlib
 
+from django.conf import settings
 from django.utils.encoding import smart_str
 
 from apps.rss_feeds.models import Feed, MStory
@@ -443,11 +445,21 @@ def embed_briefing_icons(summary_html, scored_stories):
         if data_uri:
             favicon_map[story_hash] = data_uri
 
+    # Build story_hash -> feed_title mapping for favicon title attributes
+    feed_title_map = {}
+    feeds_by_id = {}
+    for feed_obj in Feed.objects.filter(pk__in=feed_ids):
+        feeds_by_id[feed_obj.pk] = feed_obj.feed_title
+    for story_hash, story in stories_by_hash.items():
+        title = feeds_by_id.get(story.story_feed_id)
+        if title:
+            feed_title_map[story_hash] = title
+
     # --- Phase 2: Style wrapper div ---
 
     wrapper_style = (
         "font-family:'Helvetica Neue',Arial,sans-serif;"
-        "font-size:15px;line-height:1.5;color:#333;"
+        "font-size:16px;line-height:1.5;color:#333;"
     )
     summary_html = re.sub(
         r'(<div\s+class="NB-briefing-summary")([^>]*>)',
@@ -482,10 +494,23 @@ def embed_briefing_icons(summary_html, scored_stories):
     def _replace_story_link(match):
         tag = match.group(0)
         story_hash = match.group(1)
+
+        # summary.py: Add href to <a> tag so links work in email and look clickable on web
+        href = '%s/briefing?story=%s' % (settings.NEWSBLUR_URL, story_hash)
+        tag = tag.replace(
+            'class="NB-briefing-story-link"',
+            'href="%s" class="NB-briefing-story-link"' % href,
+        )
+
         url = favicon_map.get(story_hash)
         if not url:
             return tag
-        img = '<img src="%s" class="NB-briefing-inline-favicon" style="%s">' % (url, favicon_style)
+        title_attr = ""
+        feed_title = feed_title_map.get(story_hash)
+        if feed_title:
+            title_attr = ' title="%s"' % html_mod.escape(feed_title, quote=True)
+        img = '<img src="%s" class="NB-briefing-inline-favicon" style="%s"%s>' % (
+            url, favicon_style, title_attr)
         return img + tag
 
     summary_html = re.sub(

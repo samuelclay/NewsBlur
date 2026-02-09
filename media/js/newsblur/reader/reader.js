@@ -2127,6 +2127,9 @@
             this.flags.river_view = true;
             this.flags.briefing_view = true;
             this.flags.briefing_section = options.section || null;
+            if (options.story_hash) {
+                this.flags['briefing_select_story'] = options.story_hash;
+            }
 
             // reader.js: Highlight the section model or the parent header, not both
             NEWSBLUR.assets.briefing_section_feeds.deselect();
@@ -2268,6 +2271,18 @@
             }
 
             this.flags['story_titles_loaded'] = true;
+
+            // reader.js: Auto-select story from ?story=HASH query param (email deep links)
+            if (this.flags['briefing_select_story']) {
+                var story_hash = this.flags['briefing_select_story'];
+                this.flags['briefing_select_story'] = null;
+                var story = NEWSBLUR.assets.stories.get_by_story_hash(story_hash);
+                if (story) {
+                    _.delay(function () {
+                        story.set('selected', true);
+                    }, 100);
+                }
+            }
         },
 
         generate_daily_briefing: function (callback) {
