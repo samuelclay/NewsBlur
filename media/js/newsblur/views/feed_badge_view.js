@@ -29,6 +29,7 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
     render: function () {
         var subscribed = NEWSBLUR.assets.get_feed(this.model.id);
         var in_add_site = this.options.in_add_site_view;
+        var actions_in_header = in_add_site && !this.options.in_popover;
 
         // Build folder selector based on context
         var $folder_selector = null;
@@ -54,7 +55,7 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
 
         // Build meta string like grid view
         var meta_parts = [];
-        var num_subscribers = this.model.get('num_subscribers');
+        var num_subscribers = Math.max(0, this.model.get('num_subscribers') || 0);
         var stories_per_month = this.model.get('average_stories_per_month');
         if (num_subscribers) {
             meta_parts.push(Inflector.commas(num_subscribers) + ' ' + Inflector.pluralize('subscriber', num_subscribers));
@@ -79,7 +80,7 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
         ]);
 
         var $actions;
-        if (subscribed && in_add_site) {
+        if (subscribed && actions_in_header) {
             // Two-row layout: Subscribed badge on top, Stats+Open below
             $actions = $.make('div', { className: 'NB-feed-badge-subscribed-actions NB-feed-badge-actions-add-site' }, [
                 $.make('div', { className: 'NB-subscribed-badge' }, [
@@ -97,7 +98,7 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
                 $stats_btn,
                 $.make('div', { className: 'NB-badge-action-open NB-modal-submit-button NB-modal-submit-green' }, 'Open')
             ]);
-        } else if (in_add_site) {
+        } else if (actions_in_header) {
             // Two-row layout for add site list view: Try+Stats on top, folder+Add below
             $actions = $.make('div', { className: actions_class }, [
                 $.make('div', { className: 'NB-badge-actions-row' }, [
@@ -111,7 +112,7 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
                 $.make('div', { className: 'NB-badge-folder-add-group' }, [
                     $folder_selector,
                     $.make('div', {
-                        className: 'NB-badge-action-add NB-modal-submit-button NB-modal-submit-grey'
+                        className: 'NB-badge-action-add NB-modal-submit-button NB-modal-submit-green'
                     }, 'Add')
                 ]),
                 $.make("div", { className: "NB-loading" }),
@@ -128,7 +129,7 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
                 $.make('div', { className: 'NB-badge-folder-add-group' }, [
                     $folder_selector,
                     $.make('div', {
-                        className: 'NB-badge-action-add NB-modal-submit-button NB-modal-submit-grey'
+                        className: 'NB-badge-action-add NB-modal-submit-button NB-modal-submit-green'
                     }, 'Add')
                 ]),
                 $.make("div", { className: "NB-loading" }),
@@ -146,10 +147,10 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
                     $.make('div', { className: "NB-feed-badge-meta" }, meta_parts.join(' • ')),
                     $freshness
                 ].filter(Boolean)),
-                (in_add_site && $actions)
+                (actions_in_header && $actions)
             ].filter(Boolean)),
             $.make('div', { className: "NB-feed-badge-tagline" }, this.model.get('tagline')),
-            (!in_add_site && $actions)
+            (!actions_in_header && $actions)
         ].filter(Boolean)));
 
         return this;

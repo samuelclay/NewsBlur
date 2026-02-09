@@ -2062,7 +2062,7 @@ img.feed_favicon {
     float: left;
     width: 180px;
     font-size: 16px;
-    margin: 8px 0 0 1px;
+    margin: 0px 10px 0 1px;
 }
 
 .NB-discover-feed-badges .NB-feed-badge {
@@ -2086,6 +2086,53 @@ img.feed_favicon {
     padding: 4px 0 0;
     line-height: 14px;
     font-weight: bold;
+}
+
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 10px;
+    margin-top: 8px;
+    border-top: 1px solid #E0E0E0;
+}
+
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-actions .NB-modal-submit-button {
+    float: none;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-actions .NB-badge-folder-add-group {
+    flex: 1 1 auto;
+    margin-left: auto;
+}
+
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-actions .NB-badge-folder-add-group .NB-add-site-folder-select {
+    max-width: none;
+    flex: 1 1 auto;
+}
+
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-actions .NB-badge-folder-add-group .NB-badge-action-add {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 3px;
+    height: auto;
+}
+
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-subscribed-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 10px;
+    margin-top: 8px;
+    border-top: 1px solid #E0E0E0;
+}
+
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-subscribed-actions .NB-modal-submit-button {
+    float: none;
+    flex-shrink: 0;
+    margin: 0;
 }
 
 /* ============================= */
@@ -25058,19 +25105,22 @@ h5.NB-classifier-section-header {
 
 /* List view FeedBadge styling to match grid view */
 .NB-add-site-trending-content .NB-feed-badge,
-.NB-add-site-source-results .NB-feed-badge {
+.NB-add-site-source-results .NB-feed-badge,
+.NB-discover-feed-badges .NB-feed-badge {
     padding: 18px;
 }
 
 .NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-inner,
-.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-inner {
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-inner,
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-inner {
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
 .NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-header,
-.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-header {
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-header,
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-header {
     display: flex;
     align-items: flex-start;
     gap: 12px;
@@ -25078,7 +25128,8 @@ h5.NB-classifier-section-header {
 }
 
 .NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-info,
-.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-info {
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-info,
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-info {
     flex: 1 1 auto;
     min-width: 200px;
 }
@@ -25099,7 +25150,8 @@ h5.NB-classifier-section-header {
 }
 
 .NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-header .NB-feed-badge-subscribed-actions,
-.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-header .NB-feed-badge-subscribed-actions {
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-header .NB-feed-badge-subscribed-actions,
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-header .NB-feed-badge-subscribed-actions {
     margin-left: auto;
     flex-shrink: 0;
     padding-top: 0;
@@ -25122,7 +25174,8 @@ h5.NB-classifier-section-header {
 }
 
 .NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-icon,
-.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-icon {
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-icon,
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-icon {
     width: 40px !important;
     height: 40px !important;
     min-width: 40px;
@@ -25143,7 +25196,10 @@ h5.NB-classifier-section-header {
 .NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-icon .NB-feed-icon-colored,
 .NB-add-site-source-results .NB-feed-badge .NB-feed-badge-icon img,
 .NB-add-site-source-results .NB-feed-badge .NB-feed-badge-icon .NB-feed-emoji,
-.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-icon .NB-feed-icon-colored {
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-icon .NB-feed-icon-colored,
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-icon img,
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-icon .NB-feed-emoji,
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-icon .NB-feed-icon-colored {
     width: 40px !important;
     height: 40px !important;
     max-width: 40px !important;
@@ -25155,7 +25211,8 @@ h5.NB-classifier-section-header {
 }
 
 .NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-title,
-.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-title {
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-title,
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-title {
     font-size: 14px;
     font-weight: 600;
     color: #303030;
@@ -25166,13 +25223,15 @@ h5.NB-classifier-section-header {
 }
 
 .NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-meta,
-.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-meta {
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-meta,
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-meta {
     font-size: 12px;
     color: #808080;
 }
 
 .NB-add-site-trending-content .NB-feed-badge .NB-feed-badge-tagline,
-.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-tagline {
+.NB-add-site-source-results .NB-feed-badge .NB-feed-badge-tagline,
+.NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-tagline {
     font-size: 13px;
     color: #606060;
     line-height: 1.4;
@@ -27428,6 +27487,82 @@ h5.NB-classifier-section-header {
     flex-direction: column;
 }
 
+/* Inline section search bar */
+.NB-add-site-section-search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #F0F0F0;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 4px 10px;
+}
+
+.NB-add-site-section-search-icon {
+    width: 14px;
+    height: 14px;
+    opacity: 0.4;
+}
+
+.NB-add-site-section-search-input {
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    width: 160px;
+    outline: none;
+    padding: 2px 0;
+    color: #333;
+}
+
+.NB-add-site-section-search-input::placeholder {
+    color: #999;
+}
+
+.NB-add-site-section-search-clear {
+    cursor: pointer;
+    font-size: 16px;
+    color: #999;
+    line-height: 1;
+}
+
+.NB-add-site-section-search-clear:hover {
+    color: #333;
+}
+
+.NB-add-site-section-filter-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0 18px;
+    padding: 6px 14px;
+    background: #EEF2FF;
+    border: 1px solid #C7D2FE;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #4338CA;
+    line-height: 1.3;
+}
+
+.NB-add-site-section-filter-badge-label {
+    opacity: 0.6;
+}
+
+.NB-add-site-section-filter-badge-query {
+    font-weight: 600;
+}
+
+.NB-add-site-section-filter-badge-close {
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.5;
+    margin-left: 2px;
+    line-height: 1;
+}
+
+.NB-add-site-section-filter-badge-close:hover {
+    opacity: 1;
+}
+
 /* Source Pills */
 .NB-add-site-source-pills {
     display: flex;
@@ -28187,6 +28322,29 @@ h5.NB-classifier-section-header {
 .NB-dark .NB-add-site-section-count {
     background: #444;
     color: #AAA;
+}
+
+.NB-dark .NB-add-site-section-search {
+    background: #333;
+    border-color: #555;
+}
+
+.NB-dark .NB-add-site-section-search-input {
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-add-site-section-search-input::placeholder {
+    color: #777;
+}
+
+.NB-dark .NB-add-site-section-search-clear:hover {
+    color: #E0E0E0;
+}
+
+.NB-dark .NB-add-site-section-filter-badge {
+    background: #1E1B4B;
+    border-color: #3730A3;
+    color: #A5B4FC;
 }
 
 .NB-dark .NB-add-site-section-icon {

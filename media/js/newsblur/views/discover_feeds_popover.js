@@ -134,6 +134,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                             show_folders: true,
                             selected_folder_title: self.options.selected_folder_title,
                             in_popover: self,
+                            in_add_site_view: self,
                             load_feed_after_add: false
                         }),
                         story_titles_view.render().el
@@ -234,6 +235,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                     show_folders: true,
                     selected_folder_title: self.options.selected_folder_title,
                     in_popover: self,
+                    in_add_site_view: self,
                     load_feed_after_add: false
                 }),
                 story_titles_view.render().el
@@ -273,6 +275,52 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
     // = Events =
     // ==========
 
+    make_freshness_indicator: function (last_story_date, options) {
+        options = options || {};
+        var freshness_class = 'NB-add-site-card-freshness';
+        var freshness_label;
 
+        if (!last_story_date) {
+            if (!options.show_empty) return null;
+            freshness_class += ' NB-freshness-none';
+            freshness_label = 'No stories yet';
+            return $.make('div', { className: freshness_class }, [
+                $.make('span', { className: 'NB-freshness-dot' }),
+                $.make('span', { className: 'NB-freshness-label' }, freshness_label)
+            ]);
+        }
+
+        var last_date = new Date(last_story_date);
+        if (isNaN(last_date.getTime())) return null;
+
+        var now = new Date();
+        var days_ago = Math.floor((now - last_date) / (1000 * 60 * 60 * 24));
+
+        if (days_ago < 365) {
+            freshness_class += ' NB-freshness-active';
+            if (days_ago < 1) {
+                freshness_label = 'Updated today';
+            } else if (days_ago < 7) {
+                freshness_label = 'Updated ' + days_ago + (days_ago === 1 ? ' day ago' : ' days ago');
+            } else if (days_ago < 30) {
+                var weeks = Math.floor(days_ago / 7);
+                freshness_label = 'Updated ' + weeks + (weeks === 1 ? ' week ago' : ' weeks ago');
+            } else {
+                var months = Math.floor(days_ago / 30);
+                freshness_label = 'Updated ' + (months === 1 ? '1 month ago' : months + ' months ago');
+            }
+        } else {
+            freshness_class += ' NB-freshness-stale';
+            var date_str = last_date.toLocaleDateString(undefined, {
+                month: 'short', day: 'numeric', year: 'numeric'
+            });
+            freshness_label = 'Stale \u2014 last story ' + date_str;
+        }
+
+        return $.make('div', { className: freshness_class }, [
+            $.make('span', { className: 'NB-freshness-dot' }),
+            $.make('span', { className: 'NB-freshness-label' }, freshness_label)
+        ]);
+    }
 
 });
