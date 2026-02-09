@@ -57,6 +57,17 @@ import SwiftUI
         hostingController.rootView = freshView
         storyCache.reload()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // Reload when the popover actually appears, same pattern as ShareViewController.
+        // The initial reload() call from openTrainStory fires before the view is in the
+        // hierarchy, so SwiftUI may miss the @Published changes.
+        let freshView = TrainerView(interaction: self, cache: storyCache)
+        hostingController.rootView = freshView
+        storyCache.reload()
+    }
 }
 
 extension TrainerViewController: TrainerInteraction {
