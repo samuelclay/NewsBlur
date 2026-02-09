@@ -390,10 +390,11 @@ BRIEFING_SECTION_ICONS = {
 
 def embed_briefing_icons(summary_html, scored_stories):
     """
-    Post-process briefing summary HTML to embed feed favicons before story links
-    and section icons in h3 headers. Uses inline data URIs (base64-encoded) so
-    icons render instantly without network requests on the web, and also appear
-    in email notifications.
+    Post-process briefing summary HTML to embed feed favicons, section icons,
+    and inline styles for email-compatible rendering. Uses inline data URIs
+    (base64-encoded) so icons render without network requests, and inline CSS
+    so classifier pills and layout look correct in email clients that strip
+    class-based styles.
     """
     import base64
     import os
@@ -403,52 +404,11 @@ def embed_briefing_icons(summary_html, scored_stories):
     if not summary_html:
         return summary_html
 
-    # summary.py: Build story_hash -> favicon data URI mapping
-    story_hashes = [s["story_hash"] for s in scored_stories]
-    stories_by_hash = {}
-    for story in MStory.objects(story_hash__in=story_hashes):
-        stories_by_hash[story.story_hash] = story
-
-    feed_ids = set(s.story_feed_id for s in stories_by_hash.values())
-
-    # summary.py: Batch-load favicon base64 data from MFeedIcon
-    favicon_data_map = {}
-    for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids):
-        if icon.data:
-            favicon_data_map[icon.feed_id] = "data:image/png;base64,%s" % icon.data
-
-    favicon_map = {}
-    for story_hash, story in stories_by_hash.items():
-        data_uri = favicon_data_map.get(story.story_feed_id)
-        if data_uri:
-            favicon_map[story_hash] = data_uri
-
-    # summary.py: Embed feed favicons before story titles in briefing links
-    favicon_style = (
-        "display:inline-block;width:16px;height:16px;"
-        "vertical-align:middle;margin-right:2px;margin-top:-1px;"
-        "border-radius:2px;"
+    icons_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+        "media", "img", "icons", "nouns",
     )
-
-    def _replace_story_link(match):
-        tag = match.group(0)
-        story_hash = match.group(1)
-        url = favicon_map.get(story_hash)
-        if not url:
-            return tag
-        img = '<img src="%s" class="NB-briefing-inline-favicon" style="%s">' % (url, favicon_style)
-        return tag + img
-
-    summary_html = re.sub(r'<a\s[^>]*data-story-hash="([^"]+)"[^>]*>', _replace_story_link, summary_html)
-
-    # summary.py: Build section icon data URI cache from SVG files on disk
     icon_data_cache = {}
-    icons_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "media", "img", "icons", "nouns")
-
-    section_icon_style = (
-        "display:inline-block;width:1em;height:1em;"
-        "vertical-align:-0.1em;margin-right:0.3em;"
-    )
 
     def _get_icon_data_uri(icon_file):
         if icon_file in icon_data_cache:
@@ -463,17 +423,198 @@ def embed_briefing_icons(summary_html, scored_stories):
         icon_data_cache[icon_file] = data_uri
         return data_uri
 
+    # --- Phase 1: Build story_hash -> favicon data URI mapping ---
+
+    story_hashes = [s["story_hash"] for s in scored_stories]
+    stories_by_hash = {}
+    for story in MStory.objects(story_hash__in=story_hashes):
+        stories_by_hash[story.story_hash] = story
+
+    feed_ids = set(s.story_feed_id for s in stories_by_hash.values())
+
+    favicon_data_map = {}
+    for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids):
+        if icon.data:
+            favicon_data_map[icon.feed_id] = "data:image/png;base64,%s" % icon.data
+
+    favicon_map = {}
+    for story_hash, story in stories_by_hash.items():
+        data_uri = favicon_data_map.get(story.story_feed_id)
+        if data_uri:
+            favicon_map[story_hash] = data_uri
+
+    # --- Phase 2: Style wrapper div ---
+
+    wrapper_style = (
+        "font-family:'Helvetica Neue',Arial,sans-serif;"
+        "font-size:15px;line-height:1.5;color:#333;"
+    )
+    summary_html = re.sub(
+        r'(<div\s+class="NB-briefing-summary")([^>]*>)',
+        lambda m: '%s%s style="%s">' % (m.group(1), m.group(2).rstrip(">"), wrapper_style),
+        summary_html,
+    )
+
+    # --- Phase 3: Style <ul> tags — remove disc bullets for favicon-based layout ---
+
+    ul_style = "list-style:none;margin:0 0 16px 0;padding:0 0 0 22px;"
+    summary_html = re.sub(
+        r"<ul(?P<attrs>[^>]*)>",
+        lambda m: '<ul%s style="%s">' % (m.group("attrs"), ul_style),
+        summary_html,
+    )
+
+    # --- Phase 4: Style <li> tags — clean spacing, no bottom border ---
+
+    li_style = "margin:0 0 12px 0;padding:0;line-height:1.5;"
+    summary_html = re.sub(
+        r"<li(?P<attrs>[^>]*)>",
+        lambda m: '<li%s style="%s">' % (m.group("attrs"), li_style),
+        summary_html,
+    )
+
+    # --- Phase 5: Embed favicons BEFORE story links as visual bullets ---
+
+    favicon_style = (
+        "width:16px;height:16px;border-radius:2px;"
+    )
+
+    def _replace_story_link(match):
+        tag = match.group(0)
+        story_hash = match.group(1)
+        url = favicon_map.get(story_hash)
+        if not url:
+            return tag
+        img = '<img src="%s" class="NB-briefing-inline-favicon" style="%s">' % (url, favicon_style)
+        return img + tag
+
+    summary_html = re.sub(
+        r'<a\s[^>]*data-story-hash="([^"]+)"[^>]*>',
+        _replace_story_link,
+        summary_html,
+    )
+
+    # --- Phase 5b: Wrap favicon + text in table layout for email alignment ---
+
+    def _tablify_li(match):
+        li_tag = match.group(1)
+        content = match.group(2)
+        favicon_match = re.match(
+            r'(\s*<img[^>]*NB-briefing-inline-favicon[^>]*>)\s*(.*)',
+            content, re.DOTALL,
+        )
+        if not favicon_match:
+            return match.group(0)
+        favicon_img = favicon_match.group(1)
+        rest = favicon_match.group(2)
+        return (
+            '%s<table cellpadding="0" cellspacing="0" border="0" style="width:100%%;">'
+            "<tr>"
+            '<td style="width:22px;vertical-align:top;padding-top:0;">%s</td>'
+            '<td style="vertical-align:top;">%s</td>'
+            "</tr></table></li>"
+            % (li_tag, favicon_img, rest)
+        )
+
+    summary_html = re.sub(
+        r"(<li[^>]*>)(.*?)</li>",
+        _tablify_li,
+        summary_html,
+        flags=re.DOTALL,
+    )
+
+    # --- Phase 6: Style classifier pills with inline CSS ---
+
+    classifier_pill_style = (
+        "display:inline-block;background-color:#34912E;"
+        "border:1px solid #202020;border-radius:14px;"
+        "padding:2px 8px;font-size:10px;line-height:16px;"
+        "margin:3px 4px 3px 0;white-space:nowrap;"
+    )
+    classifier_label_style = "color:white;"
+    classifier_b_style = "color:rgba(255,255,255,0.7);font-weight:normal;"
+    classifier_value_style = "color:white;text-shadow:1px 1px 0 rgba(0,0,0,0.5);"
+
+    def _style_classifier_block(match):
+        block = match.group(0)
+        block = block.replace(
+            'class="NB-classifier',
+            'style="%s" class="NB-classifier' % classifier_pill_style,
+            1,
+        )
+        block = block.replace("<label>", '<label style="%s">' % classifier_label_style)
+        block = block.replace("<b>", '<b style="%s">' % classifier_b_style)
+        block = re.sub(
+            r"(<label[^>]*>.*?)<span>",
+            lambda m: m.group(1) + '<span style="%s">' % classifier_value_style,
+            block,
+        )
+        return block
+
+    summary_html = re.sub(
+        r'<span\s+class="[^"]*NB-briefing-classifier[^"]*">.*?</label>\s*</span>',
+        _style_classifier_block,
+        summary_html,
+        flags=re.DOTALL,
+    )
+
+    # --- Phase 7: Replace classifier icon <div> with inline thumbs-up <img> ---
+
+    thumbs_up_path = os.path.join(icons_dir, "thumbs-up.svg")
+    try:
+        with open(thumbs_up_path, "rb") as f:
+            thumbs_up_svg = f.read()
+        thumbs_up_svg = thumbs_up_svg.replace(b'fill="#FFC021"', b'fill="#FFFFFF"')
+        thumbs_up_b64 = base64.b64encode(thumbs_up_svg).decode("ascii")
+        thumbs_up_data_uri = "data:image/svg+xml;base64,%s" % thumbs_up_b64
+    except FileNotFoundError:
+        thumbs_up_data_uri = None
+
+    if thumbs_up_data_uri:
+        thumbs_up_style = (
+            "display:inline-block;width:12px;height:12px;"
+            "vertical-align:middle;margin-right:3px;"
+        )
+        thumbs_up_img = (
+            '<img src="%s" class="NB-classifier-icon-like" style="%s" alt="">'
+            % (thumbs_up_data_uri, thumbs_up_style)
+        )
+        summary_html = re.sub(
+            r'<div\s+class="NB-classifier-icon-like"[^>]*>\s*</div>',
+            thumbs_up_img,
+            summary_html,
+        )
+
+    # --- Phase 8: Style <h3> section headers and embed section icons ---
+
+    h3_style = (
+        "font-size:16px;font-weight:bold;color:#2d5273;"
+        "margin:24px 0 10px 0;padding-bottom:6px;"
+        "border-bottom:2px solid #e8e8e8;"
+    )
+    section_icon_style = (
+        "display:inline-block;width:1em;height:1em;"
+        "vertical-align:-0.1em;margin-right:0.3em;"
+    )
+
     def _replace_section_header(match):
         tag = match.group(0)
         section_key = match.group(1)
         icon_file = BRIEFING_SECTION_ICONS.get(section_key, "briefing.svg")
         data_uri = _get_icon_data_uri(icon_file)
+        styled_tag = tag.replace(">", ' style="%s">' % h3_style, 1)
         if not data_uri:
-            return tag
-        img = '<img src="%s" class="NB-briefing-section-icon" style="%s">' % (data_uri, section_icon_style)
-        return tag + img
+            return styled_tag
+        img = '<img src="%s" class="NB-briefing-section-icon" style="%s">' % (
+            data_uri, section_icon_style,
+        )
+        return styled_tag + img
 
-    summary_html = re.sub(r'<h3\s[^>]*data-section="([^"]+)"[^>]*>', _replace_section_header, summary_html)
+    summary_html = re.sub(
+        r'<h3\s[^>]*data-section="([^"]+)"[^>]*>',
+        _replace_section_header,
+        summary_html,
+    )
 
     return summary_html
 

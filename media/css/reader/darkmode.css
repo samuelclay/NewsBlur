@@ -3937,17 +3937,17 @@ a.mention, a.mention-group {
 
 /* darkmode.css: Briefing summary story */
 .NB-dark .NB-briefing-summary-story .NB-story-title {
-    background: linear-gradient(160deg, #1E2430 0%, #282420 50%, #1E2430 100%);
+    background: linear-gradient(135deg, #1C2233 0%, #212838 40%, #1E2535 100%);
     border-left-color: #4A73A8;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 .NB-dark .NB-briefing-summary-story .NB-story-title:hover {
-    background: linear-gradient(160deg, #242A38 0%, #302C28 50%, #242A38 100%);
+    background: linear-gradient(135deg, #222840 0%, #283040 40%, #242A3E 100%);
 }
 
 .NB-dark .NB-briefing-summary-story .NB-story-title.NB-selected {
-    background: linear-gradient(160deg, #2A3040 0%, #383430 50%, #2A3040 100%);
+    background: linear-gradient(135deg, #283048 0%, #2E3648 40%, #2A3246 100%);
 }
 
 .NB-dark .NB-briefing-summary-story .NB-storytitles-title {

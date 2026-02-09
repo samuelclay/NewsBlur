@@ -29862,18 +29862,23 @@ span.NB-briefing-inline-favicon {
 }
 
 .NB-briefing-summary-story .NB-story-title {
-    background: linear-gradient(160deg, #EEF2FA 0%, #F4F0EE 50%, #EEF2FA 100%);
+    background: linear-gradient(135deg, #E8EEF8 0%, #F0F4FA 40%, #EDF0F8 100%);
     border-left: 3px solid #5C89C4;
     padding-left: 9px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 4px rgba(60, 100, 160, 0.1);
 }
 
 .NB-briefing-summary-story .NB-story-title:hover {
-    background: linear-gradient(160deg, #E4EAF4 0%, #EDE8E6 50%, #E4EAF4 100%);
+    background: linear-gradient(135deg, #DEE6F4 0%, #E8EEF8 40%, #E4EAF4 100%);
 }
 
 .NB-briefing-summary-story .NB-story-title.NB-selected {
-    background: linear-gradient(160deg, #D8E2F0 0%, #E6E0DE 50%, #D8E2F0 100%);
+    background: linear-gradient(135deg, #D4DEF0 0%, #DFE6F4 40%, #DAE2F0 100%);
+}
+
+/* reader.css: Hide image preview on briefing summary story — it shows a generic icon */
+.NB-briefing-summary-story .NB-storytitles-story-image-container {
+    display: none;
 }
 
 .NB-briefing-summary-story .NB-storytitles-title {
