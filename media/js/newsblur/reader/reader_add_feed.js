@@ -3,14 +3,15 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
     className: "NB-add-popover",
 
     options: {
-        'width': 540,
+        'width': 608,
+        'popover_class': 'NB-add-popover-container',
         'anchor': function () {
             return NEWSBLUR.reader.$s.$add_button;
         },
         'placement': 'top -left',
         offset: {
             top: 6,
-            left: 1
+            left: 3
         },
         'onOpen': _.bind(function () {
             this.focus_add_feed();
@@ -29,7 +30,8 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         "click .NB-add-discover-popular-category": "close_and_open_popular_category",
         "click .NB-add-discover-source": "close_and_open_discover_tab",
         "focus .NB-add-url": "handle_focus_add_site",
-        "blur .NB-add-url": "handle_blur_add_site"
+        "blur .NB-add-url": "handle_blur_add_site",
+        "change .NB-folders": "update_folder_placeholder"
     },
 
     initialize: function (options) {
@@ -63,20 +65,16 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-add-header' }, [
                         $.make('span', { className: 'NB-add-header-icon' }, '+'),
                         $.make('span', 'Add any site or feed'),
-                        $.make('div', { className: 'NB-add-header-pills' }, [
-                            $.make('span', { className: 'NB-add-header-pill NB-pill-rss' }, 'RSS feeds'),
-                            $.make('span', { className: 'NB-add-header-pill NB-pill-web' }, 'Web feeds')
+                        $.make('div', { className: 'NB-add-folder-row' }, [
+                            $.make('span', { className: 'NB-add-folder-label' }, 'in'),
+                            NEWSBLUR.utils.make_folders(this.options.folder_title),
+                            $.make('div', { className: 'NB-add-folder-icon', title: "New folder", role: "button" })
                         ])
                     ]),
                     $.make('div', { className: 'NB-add-input-row' }, [
                         $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-add-url', name: 'url', value: self.options.url, placeholder: 'Site URL or search by name...' }),
                         $.make('div', { className: 'NB-loading' }),
                         $.make('div', { className: 'NB-add-url-submit' }, 'Add site')
-                    ]),
-                    $.make('div', { className: 'NB-add-folder-row' }, [
-                        $.make('span', { className: 'NB-add-folder-label' }, 'in'),
-                        NEWSBLUR.utils.make_folders(this.options.folder_title),
-                        $.make('div', { className: 'NB-add-folder-icon', title: "New folder", role: "button" })
                     ]),
                     $.make('div', { className: "NB-add-folder NB-hidden" }, [
                         $.make('div', { className: 'NB-add-folder-input-row' }, [
@@ -215,7 +213,8 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
             var feed = new NEWSBLUR.Models.Feed(item);
             var freshness = self.make_freshness_indicator(item.last_story_date);
-            var subscriber_text = item.num_subscribers === 1 ? '1 subscriber' : Inflector.commas(item.num_subscribers) + ' subscribers';
+            var num_subscribers = Math.max(0, item.num_subscribers);
+            var subscriber_text = num_subscribers === 1 ? '1 subscriber' : Inflector.commas(num_subscribers) + ' subscribers';
             return $.make('li', [
                 $.make('a', { className: 'NB-autocomplete-item' }, [
                     $.favicon_el(feed, {
@@ -501,6 +500,11 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.reader.flags['reloading_feeds'] = false;
     },
 
+    update_folder_placeholder: function () {
+        var parent_folder = this.$('.NB-folders option:selected').text().trim() || 'Top Level';
+        this.$('.NB-add-folder-input').attr('placeholder', 'New folder under ' + parent_folder + '...');
+    },
+
     open_add_folder: function () {
         var $folder = this.$(".NB-add-folder");
         var $icon = this.$(".NB-add-folder-icon");
@@ -512,6 +516,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         } else {
             this._open_folder = true;
             $icon.addClass('NB-active');
+            this.update_folder_placeholder();
             $folder.slideDown(300);
         }
     },

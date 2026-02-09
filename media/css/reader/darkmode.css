@@ -383,12 +383,13 @@ color: #a85b40;
     padding: 1px;
 }
 
+.NB-dark .NB-add-popover-container.popover {
+    background: linear-gradient(160deg, #353A3D 0%, #2A2F32 100%);
+}
+
 /* Add new site color */
 .NB-dark .NB-add-form {
     color: #c0c0c0;
-    background-color: #303739;
-    border: none;
-    padding: 0px;
 }
 
 /* Add new site input field and drop down menu */
@@ -468,17 +469,6 @@ color: #a85b40;
     background: #5C89C9;
 }
 
-.NB-dark .NB-pill-rss {
-    background: #3A3020;
-    color: #D8A060;
-    border-color: #504030;
-}
-
-.NB-dark .NB-pill-web {
-    background: #202838;
-    color: #80A8D0;
-    border-color: #304058;
-}
 
 
 .NB-dark .NB-add-input-row {

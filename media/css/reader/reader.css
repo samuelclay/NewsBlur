@@ -9129,12 +9129,21 @@ form.opml_import_form input {
     margin: 14px 0 0 16px;
 }
 
+.NB-add-popover-container.popover {
+    background: linear-gradient(160deg, #FAFBF9 0%, #F0F1ED 100%);
+    border-radius: 10px;
+}
+
+.NB-add-popover-container.popover.top-left .arrow {
+    left: 12px;
+}
+
+.NB-add-popover {
+    padding: 18px 18px;
+}
+
 .NB-add-form {
     position: relative;
-    border-radius: 2px;
-    background-color: #F7F8F5;
-    border: 1px solid rgba(0, 0, 0, .1);
-    padding: 12px;
 }
 
 .NB-add-form .NB-module-content-header {
@@ -9146,7 +9155,7 @@ form.opml_import_form input {
     display: flex;
     align-items: center;
     gap: 9px;
-    margin: 0 0 12px;
+    margin: 0 0 16px;
     font-size: 18px;
     font-weight: 600;
     color: #333;
@@ -9166,41 +9175,13 @@ form.opml_import_form input {
     line-height: 1;
 }
 
-/* Header pills */
-.NB-add-header-pills {
-    display: flex;
-    gap: 5px;
-    margin-left: auto;
-}
-
-.NB-add-header-pill {
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    padding: 3px 7px;
-    border-radius: 10px;
-    line-height: 1;
-    text-transform: uppercase;
-}
-
-.NB-pill-rss {
-    background: #FFF0E0;
-    color: #E08030;
-    border: 1px solid #F0D8B8;
-}
-
-.NB-pill-web {
-    background: #E8F0FA;
-    color: #5078A8;
-    border: 1px solid #C8D8F0;
-}
 
 /* URL input row */
 .NB-add-input-row {
     display: flex;
     align-items: stretch;
     gap: 0;
-    margin: 0 0 10px;
+    margin: 0 0 14px;
     border: 1px solid #C8C8C8;
     border-radius: 8px;
     overflow: hidden;
@@ -9218,7 +9199,7 @@ form.opml_import_form input {
     min-width: 0;
     border: none;
     outline: none;
-    padding: 11px 14px;
+    padding: 12px 14px;
     font-size: 15px;
     background: transparent;
     color: #333;
@@ -9269,30 +9250,30 @@ form.opml_import_form input {
     margin-right: 8px;
 }
 
-/* Folder selector row */
+/* Folder selector row (inside header) */
 .NB-add-folder-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin: 0 0 4px;
+    gap: 6px;
+    margin-left: auto;
 }
 
 .NB-add-folder-label {
-    font-size: 13px;
+    font-size: 12px;
     color: #909090;
     font-weight: 500;
 }
 
 .NB-add-folder-row .NB-folders {
-    font-size: 14px;
+    font-size: 12px;
     margin: 0;
-    padding: 5px 6px;
+    padding: 3px 4px;
     border: 1px solid #D8D8D8;
-    border-radius: 5px;
+    border-radius: 4px;
     background: #FAFAFA;
     color: #555;
     outline: none;
-    max-width: 360px;
+    max-width: 200px;
 }
 
 .NB-add-folder-row .NB-folders:focus {
@@ -9420,7 +9401,7 @@ form.opml_import_form input {
 
 /* Discover Section in Add Popover */
 .NB-add-discover-section {
-    margin-top: 14px;
+    margin-top: 22px;
     padding-top: 0;
 }
 
@@ -9428,7 +9409,7 @@ form.opml_import_form input {
     display: flex;
     align-items: center;
     text-align: center;
-    margin-bottom: 14px;
+    margin: 0 -18px 18px;
 }
 
 .NB-add-discover-divider::before,
@@ -9450,7 +9431,7 @@ form.opml_import_form input {
 .NB-add-discover-sources {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 14px;
 }
 
@@ -9459,7 +9440,7 @@ form.opml_import_form input {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 12px 8px;
+    padding: 14px 8px;
     background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 100%);
     border: 1px solid #E0E0E0;
     border-radius: 8px;
@@ -9500,7 +9481,7 @@ form.opml_import_form input {
 
 .NB-add-discover-buttons {
     display: flex;
-    gap: 10px;
+    gap: 12px;
 }
 
 .NB-add-discover-btn {
@@ -9509,7 +9490,7 @@ form.opml_import_form input {
     justify-content: center;
     gap: 6px;
     flex: 1;
-    padding: 9px 14px;
+    padding: 11px 14px;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -9656,7 +9637,7 @@ form.opml_import_form input {
     border-radius: 10px;
     background: #FFFFFF;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
-    max-height: 480px;
+    max-height: calc(100vh - 100px);
     overflow-y: auto;
 }
 
@@ -9678,7 +9659,6 @@ form.opml_import_form input {
     width: 100%;
     box-sizing: border-box;
     cursor: pointer;
-    transition: background 0.1s ease;
 }
 
 .ui-menu.ui-autocomplete li a.ui-state-hover,
