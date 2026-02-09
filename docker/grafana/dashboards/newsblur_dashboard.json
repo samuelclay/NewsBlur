@@ -9919,10 +9919,22 @@
       },
       "targets": [
         {
-          "expr": "llm_costs{metric=\"cost_usd\",period=\"daily\"}",
+          "expr": "llm_costs{metric=\"cost_usd\",period=\"daily\",provider!~\".+\",feature!~\".+\"}",
           "instant": true,
-          "legendFormat": "Today",
+          "legendFormat": "Total",
           "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",provider=~\".+\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "{{provider}}",
+          "refId": "B"
+        },
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",feature=~\".+\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "{{feature}}",
+          "refId": "C"
         }
       ],
       "title": "Today's Cost",
@@ -9989,10 +10001,22 @@
       },
       "targets": [
         {
-          "expr": "llm_costs{metric=\"cost_usd\",period=\"weekly\"}",
+          "expr": "llm_costs{metric=\"cost_usd\",period=\"weekly\",provider!~\".+\",feature!~\".+\"}",
           "instant": true,
-          "legendFormat": "This Week",
+          "legendFormat": "Total",
           "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",provider=~\".+\",period=\"weekly\"}",
+          "instant": true,
+          "legendFormat": "{{provider}}",
+          "refId": "B"
+        },
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",feature=~\".+\",period=\"weekly\"}",
+          "instant": true,
+          "legendFormat": "{{feature}}",
+          "refId": "C"
         }
       ],
       "title": "This Week's Cost",
@@ -10059,10 +10083,22 @@
       },
       "targets": [
         {
-          "expr": "llm_costs{metric=\"cost_usd\",period=\"monthly\"}",
+          "expr": "llm_costs{metric=\"cost_usd\",period=\"monthly\",provider!~\".+\",feature!~\".+\"}",
           "instant": true,
-          "legendFormat": "This Month",
+          "legendFormat": "Total",
           "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",provider=~\".+\",period=\"monthly\"}",
+          "instant": true,
+          "legendFormat": "{{provider}}",
+          "refId": "B"
+        },
+        {
+          "expr": "llm_costs{metric=\"cost_usd\",feature=~\".+\",period=\"monthly\"}",
+          "instant": true,
+          "legendFormat": "{{feature}}",
+          "refId": "C"
         }
       ],
       "title": "This Month's Cost",
@@ -10116,10 +10152,22 @@
       },
       "targets": [
         {
-          "expr": "llm_costs{metric=\"requests\",period=\"daily\"}",
+          "expr": "llm_costs{metric=\"requests\",period=\"daily\",provider!~\".+\",feature!~\".+\"}",
           "instant": true,
-          "legendFormat": "Requests Today",
+          "legendFormat": "Total",
           "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"requests\",provider=~\".+\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "{{provider}}",
+          "refId": "B"
+        },
+        {
+          "expr": "llm_costs{metric=\"requests\",feature=~\".+\",period=\"daily\"}",
+          "instant": true,
+          "legendFormat": "{{feature}}",
+          "refId": "C"
         }
       ],
       "title": "Today's Requests",
@@ -10173,10 +10221,22 @@
       },
       "targets": [
         {
-          "expr": "llm_costs{metric=\"requests\",period=\"weekly\"}",
+          "expr": "llm_costs{metric=\"requests\",period=\"weekly\",provider!~\".+\",feature!~\".+\"}",
           "instant": true,
-          "legendFormat": "Requests This Week",
+          "legendFormat": "Total",
           "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"requests\",provider=~\".+\",period=\"weekly\"}",
+          "instant": true,
+          "legendFormat": "{{provider}}",
+          "refId": "B"
+        },
+        {
+          "expr": "llm_costs{metric=\"requests\",feature=~\".+\",period=\"weekly\"}",
+          "instant": true,
+          "legendFormat": "{{feature}}",
+          "refId": "C"
         }
       ],
       "title": "This Week's Requests",
@@ -10230,10 +10290,22 @@
       },
       "targets": [
         {
-          "expr": "llm_costs{metric=\"requests\",period=\"monthly\"}",
+          "expr": "llm_costs{metric=\"requests\",period=\"monthly\",provider!~\".+\",feature!~\".+\"}",
           "instant": true,
-          "legendFormat": "Requests This Month",
+          "legendFormat": "Total",
           "refId": "A"
+        },
+        {
+          "expr": "llm_costs{metric=\"requests\",provider=~\".+\",period=\"monthly\"}",
+          "instant": true,
+          "legendFormat": "{{provider}}",
+          "refId": "B"
+        },
+        {
+          "expr": "llm_costs{metric=\"requests\",feature=~\".+\",period=\"monthly\"}",
+          "instant": true,
+          "legendFormat": "{{feature}}",
+          "refId": "C"
         }
       ],
       "title": "This Month's Requests",
