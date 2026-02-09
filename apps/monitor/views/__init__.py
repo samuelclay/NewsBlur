@@ -4,6 +4,7 @@ from apps.monitor.views.newsblur_ask_ai import AskAI
 from apps.monitor.views.newsblur_classifiers import Classifiers
 from apps.monitor.views.newsblur_dbtimes import DbTimes
 from apps.monitor.views.newsblur_deleted_users import DeletedUsers
+from apps.monitor.views.newsblur_discover import Discover
 from apps.monitor.views.newsblur_errors import Errors
 from apps.monitor.views.newsblur_feed_counts import FeedCounts
 from apps.monitor.views.newsblur_feed_sizes import FeedSizes

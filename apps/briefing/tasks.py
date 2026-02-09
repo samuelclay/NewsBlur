@@ -14,9 +14,22 @@ def GenerateBriefings():
     Finds users who need a briefing generated and dispatches per-user tasks.
     """
     import pytz
+    import redis
+    from django.conf import settings
 
     from apps.briefing.models import MBriefing, MBriefingPreferences
     from apps.profile.models import Profile
+
+    # tasks.py: Distributed lock — multiple celery beat schedulers (one per htask-work
+    # server) fire this task concurrently. Only one instance should run per 15-min cycle.
+    # TTL of 14 minutes (just under the 15-min schedule) ensures the lock persists for
+    # the entire interval. We intentionally do NOT delete the lock on completion — the
+    # task finishes in ~0.1s, and deleting would let later beat tasks acquire the lock.
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    lock_key = "briefing:generate_all_lock"
+    if not r.set(lock_key, "1", nx=True, ex=840):
+        logging.debug(" ---> GenerateBriefings: another instance is running, skipping")
+        return
 
     DAY_NAME_TO_WEEKDAY = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
     # tasks.py: Fixed delivery times for each slot (user's local timezone)
@@ -161,6 +174,19 @@ def GenerateUserBriefing(user_id, on_demand=False):
         generate_briefing_summary,
     )
 
+    # tasks.py: Per-user distributed lock prevents duplicate generation from
+    # concurrent task dispatches (race conditions, retries, multiple beat schedulers).
+    # For scheduled generation, the lock persists via TTL (not deleted on completion)
+    # so that duplicate dispatches arriving after the first completes are still blocked.
+    # For on_demand (user-initiated regeneration), we delete the lock on completion
+    # so the user can regenerate again immediately.
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    lock_key = "briefing:generate_user:%s" % user_id
+    lock_ttl = 120 if on_demand else 840
+    if not r.set(lock_key, "1", nx=True, ex=lock_ttl):
+        logging.debug(" ---> GenerateUserBriefing: already running for user %s, skipping" % user_id)
+        return
+
     try:
         user = User.objects.get(pk=user_id)
     except User.DoesNotExist:
@@ -171,11 +197,11 @@ def GenerateUserBriefing(user_id, on_demand=False):
         if not on_demand:
             return
         try:
-            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r2 = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             payload = {"type": event_type}
             if extra:
                 payload.update(extra)
-            r.publish(user.username, "briefing:%s" % json.dumps(payload))
+            r2.publish(user.username, "briefing:%s" % json.dumps(payload))
         except Exception as e:
             logging.error(" ---> GenerateUserBriefing: publish error: %s" % e)
 
@@ -253,10 +279,15 @@ def GenerateUserBriefing(user_id, on_demand=False):
         footer_parts = [
             summary_meta.get("display_name", "Unknown model"),
             "%s stories" % num_candidates,
-            "{:,} in / {:,} out tokens".format(summary_meta.get("input_tokens", 0), summary_meta.get("output_tokens", 0)),
+            "{:,} in / {:,} out tokens".format(
+                summary_meta.get("input_tokens", 0), summary_meta.get("output_tokens", 0)
+            ),
             "%.1fs" % t_summary_elapsed,
         ]
-        summary_html += '\n<p class="NB-briefing-debug" style="margin-top:2em;font-style:italic;color:#999;font-size:12px;">%s</p>' % " · ".join(footer_parts)
+        summary_html += (
+            '\n<p class="NB-briefing-debug" style="margin-top:2em;font-style:italic;'
+            'color:#999;font-size:12px;">%s</p>' % " · ".join(footer_parts)
+        )
 
     curated_hashes = [s["story_hash"] for s in scored_stories]
     curated_sections = {}
@@ -288,3 +319,6 @@ def GenerateUserBriefing(user_id, on_demand=False):
     )
 
     publish("complete")
+
+    if on_demand:
+        r.delete(lock_key)

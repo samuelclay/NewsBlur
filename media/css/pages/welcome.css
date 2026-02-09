@@ -857,8 +857,12 @@
     overflow: hidden;
 }
 
+.NB-welcome-subfeatures .NB-inner {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .NB-welcome-subfeatures .NB-feature {
-    float: left;
     width: 46%;
     margin: 0 4% 48px 0;
     text-align: left;
@@ -866,6 +870,7 @@
 
 .NB-welcome-subfeatures img {
     float: left;
+    flex-shrink: 0;
     width: 120px;
     height: 100px;
     margin: 0 24px 0 0;
