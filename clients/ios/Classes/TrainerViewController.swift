@@ -49,7 +49,13 @@ import SwiftUI
     }
     
     @objc func reload() {
-        trainerView.reload()
+        // Update the hosting controller with a fresh TrainerView that uses
+        // the current storyCache (which may have changed if feedDetailViewController
+        // was recreated). This also ensures SwiftUI picks up the latest
+        // isStoryTrainer value and story data.
+        let freshView = TrainerView(interaction: self, cache: storyCache)
+        hostingController.rootView = freshView
+        storyCache.reload()
     }
 }
 
