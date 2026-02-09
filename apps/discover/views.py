@@ -873,18 +873,24 @@ def popular_feeds(request):
                 semantic_feed_ids = [int(r["feed_id"]) for r in semantic_results]
 
                 if semantic_feed_ids:
-                    # Find PopularFeed entries linked to semantically matching feeds
+                    # Find PopularFeed entries linked to semantically matching feeds,
+                    # respecting the same category/subcategory filters as the text search
                     linked_qs = PopularFeed.objects.filter(is_active=True, feed_id__in=semantic_feed_ids)
                     if feed_type != "all":
                         linked_qs = linked_qs.filter(feed_type=feed_type)
+                    if category and category != "all":
+                        linked_qs = linked_qs.filter(category=category)
+                    if subcategory and subcategory != "all":
+                        linked_qs = linked_qs.filter(subcategory=subcategory)
                     semantic_pf_ids = set(linked_qs.values_list("id", flat=True)) - text_pf_ids
 
                     if semantic_pf_ids:
                         qs = PopularFeed.objects.filter(id__in=text_pf_ids | semantic_pf_ids)
 
                     # Find Feed objects matching URL pattern that aren't in PopularFeed
+                    # (skip when filtering by category/subcategory since these feeds lack category metadata)
                     url_patterns = {"reddit": "reddit.com", "youtube": "youtube.com"}
-                    if feed_type in url_patterns:
+                    if feed_type in url_patterns and (not category or category == "all"):
                         linked_feed_ids = set(
                             PopularFeed.objects.filter(
                                 is_active=True, feed_id__in=semantic_feed_ids
