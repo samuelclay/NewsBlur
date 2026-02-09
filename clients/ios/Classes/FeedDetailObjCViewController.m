@@ -3316,12 +3316,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #if TARGET_OS_MACCATALYST
     UIView *sourceView = navController.view;
     CGRect sourceRect = CGRectMake(430, 0, 20, 20);
-    
+
     if (appDelegate.splitViewController.isFeedsListHidden) {
         sourceRect = CGRectMake(270, 0, 20, 20);
     }
-    
-    [appDelegate showPopoverWithViewController:viewController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
+
+    UINavigationController *menuNavController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    menuNavController.navigationBarHidden = YES;
+    menuNavController.delegate = viewController;
+    [appDelegate showPopoverWithViewController:menuNavController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
 #else
     [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
 #endif

@@ -229,7 +229,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (readwrite) NSURL * activeOriginalStoryURL;
 @property (readwrite) NSDictionary * activeComment;
 @property (readwrite) NSString * activeShareType;
-@property (nonatomic, strong) id activeAskAIViewModel;
 @property (readwrite) NSInteger feedDetailPortraitYCoordinate;
 @property (readwrite) NSInteger originalStoryCount;
 @property (readwrite) NSInteger savedSearchesCount;
@@ -349,7 +348,6 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)openTrainStory:(id)sender;
 - (void)openAskAIDialog:(NSDictionary *)story;
 - (void)openAskAIDialog:(NSDictionary *)story sourceRect:(NSValue *)sourceRectValue;
-- (void)showAskAIInlineResponse;
 - (void)openUserTagsStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadFeedDetailView:(BOOL)transition;
@@ -395,6 +393,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showFeedsListAnimated:(BOOL)animated;
 - (void)changeActiveFeedDetailRow;
 - (void)showShareView:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex;
+- (void)showShareView:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex sourceRect:(NSValue *)sourceRectValue;
 - (void)hideShareView:(BOOL)resetComment;
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;

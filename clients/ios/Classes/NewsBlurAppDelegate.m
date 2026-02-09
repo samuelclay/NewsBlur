@@ -1196,22 +1196,37 @@
             setUserId:(NSString *)userId
           setUsername:(NSString *)username
            setReplyId:(NSString *)replyId {
-    
+    [self showShareView:type setUserId:userId setUsername:username setReplyId:replyId sourceRect:nil];
+}
+
+- (void)showShareView:(NSString *)type
+            setUserId:(NSString *)userId
+          setUsername:(NSString *)username
+           setReplyId:(NSString *)replyId
+           sourceRect:(NSValue *)sourceRectValue {
+
     [self.shareViewController setCommentType:type];
-    //    if (!self.isPhone) {
-    //        [self.masterContainerViewController transitionToShareView];
-    //        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
-    //    } else {
+
+    if (!self.isPhone && sourceRectValue != nil) {
+        CGRect sourceRect = [sourceRectValue CGRectValue];
+        if (!CGRectIsEmpty(sourceRect)) {
+            [self.shareViewController loadViewIfNeeded];
+            [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
+            [self showPopoverWithViewController:self.shareViewController contentSize:CGSizeMake(380, 220) sourceView:self.storyPagesViewController.currentPage.webView sourceRect:sourceRect];
+            return;
+        }
+    }
+
     if (self.shareNavigationController == nil) {
         UINavigationController *shareNav = [[UINavigationController alloc]
                                             initWithRootViewController:self.shareViewController];
         self.shareNavigationController = shareNav;
         self.shareNavigationController.navigationBar.translucent = NO;
     }
+    self.shareNavigationController.navigationBarHidden = YES;
     [self.feedsNavigationController presentViewController:self.shareNavigationController animated:YES completion:^{
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
     }];
-    //    }
 }
 
 - (void)hideShareView:(BOOL)resetComment {
@@ -1219,13 +1234,15 @@
         self.shareViewController.commentField.text = @"";
         self.shareViewController.currentType = nil;
     }
-    
-    //    if (!self.isPhone) {
-    //        [self.masterContainerViewController transitionFromShareView];
-    //        [self.storyPagesViewController becomeFirstResponder];
-    //    } else
+
     if (!self.showingSafariViewController) {
-        [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
+        // Try popover dismissal first (iPad/Mac with sourceRect)
+        if (self.shareViewController.presentingViewController &&
+            self.shareViewController.modalPresentationStyle == UIModalPresentationPopover) {
+            [self hidePopoverAnimated:YES];
+        } else {
+            [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
+        }
         [self.shareViewController.commentField resignFirstResponder];
     }
 }
@@ -1467,11 +1484,11 @@
     if (@available(iOS 15.0, *)) {
         CGRect sourceRect = [sourceRectValue CGRectValue];
 
-        // On iPad with valid coordinates, show as popover anchored to the Ask AI button
+        // On iPad/Mac with valid coordinates, show as popover anchored to the Ask AI button
         if (!self.isPhone && !CGRectIsEmpty(sourceRect)) {
             AskAIViewController *askAIVC = [[AskAIViewController alloc] initWithStory:story];
             askAIVC.modalPresentationStyle = UIModalPresentationPopover;
-            askAIVC.preferredContentSize = CGSizeMake(400, 420);
+            askAIVC.preferredContentSize = CGSizeMake(500, 440);
 
             // Set up popover presentation
             UIPopoverPresentationController *popover = askAIVC.popoverPresentationController;
@@ -1480,24 +1497,6 @@
             popover.sourceRect = sourceRect;
             popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
 
-            // Store view model for re-presentation as sheet
-            __weak typeof(self) weakSelf = self;
-            __weak AskAIViewController *weakAskAIVC = askAIVC;
-            askAIVC.onQuestionAsked = ^{
-                AskAIViewController *strongAskAIVC = weakAskAIVC;
-                if (!strongAskAIVC) {
-                    return;
-                }
-                // Store the view model before dismissing
-                weakSelf.activeAskAIViewModel = strongAskAIVC.viewModelAsAny;
-                // Break the retain cycle once the question is asked
-                strongAskAIVC.onQuestionAsked = nil;
-                // Dismiss popover and re-present as bottom sheet
-                [strongAskAIVC dismissViewControllerAnimated:YES completion:^{
-                    [weakSelf showAskAIInlineResponse];
-                }];
-            };
-
             [self.navigationControllerForPopover presentViewController:askAIVC animated:YES completion:nil];
         } else {
             // On iPhone or if no coordinates, use the existing sheet presentation
@@ -1505,44 +1504,6 @@
         }
     } else {
         [self openAskAIDialog:story];
-    }
-}
-
-- (void)showAskAIInlineResponse {
-    if (@available(iOS 15.0, *)) {
-        // Get the active view model that was set when question was asked
-        id viewModel = self.activeAskAIViewModel;
-        if (!viewModel) {
-            return;
-        }
-
-        // Create new view controller with existing view model (already has response streaming)
-        AskAIViewController *askAIVC = [AskAIViewController createWithViewModel:viewModel];
-        if (!askAIVC) {
-            return;
-        }
-
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:askAIVC];
-        navController.navigationBarHidden = YES;
-
-        // Present as a sheet from the bottom
-        navController.modalPresentationStyle = UIModalPresentationPageSheet;
-
-        UISheetPresentationController *sheet = navController.sheetPresentationController;
-        sheet.detents = @[
-            UISheetPresentationControllerDetent.mediumDetent,
-            UISheetPresentationControllerDetent.largeDetent
-        ];
-        sheet.prefersGrabberVisible = YES;
-        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
-        // Allow interaction with story content behind the sheet
-        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
-        sheet.preferredCornerRadius = 12.0;
-
-        [self.splitViewController presentViewController:navController animated:YES completion:nil];
-
-        // Clear the stored view model
-        self.activeAskAIViewModel = nil;
     }
 }
 

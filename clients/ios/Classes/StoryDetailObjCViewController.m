@@ -2073,6 +2073,13 @@
             [appDelegate.feedDetailViewController reload];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
+        } else if ([action isEqualToString:@"share"] && [urlComponents count] > 5) {
+            [self openShareDialog:[[urlComponents objectAtIndex:2] intValue]
+                      yCoordinate:[[urlComponents objectAtIndex:3] intValue]
+                            width:[[urlComponents objectAtIndex:4] intValue]
+                           height:[[urlComponents objectAtIndex:5] intValue]];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
         } else if ([action isEqualToString:@"share"]) {
             [self openShareDialog];
             decisionHandler(WKNavigationActionPolicyCancel);
@@ -2501,6 +2508,49 @@
                        setUsername:nil
                         setReplyId:nil];
     }
+}
+
+- (void)openShareDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
+    CGRect frame = CGRectZero;
+    if (!self.isPhoneOrCompact) {
+        // only adjust for the bar if user is scrolling
+        if (appDelegate.storiesCollection.isRiverView ||
+            appDelegate.storiesCollection.isSocialView ||
+            appDelegate.storiesCollection.isSavedView ||
+            appDelegate.storiesCollection.isWidgetView ||
+            appDelegate.storiesCollection.isReadView) {
+            if (self.webView.scrollView.contentOffset.y == -20) {
+                y = y + 20;
+            }
+        } else {
+            if (self.webView.scrollView.contentOffset.y == -9) {
+                y = y + 9;
+            }
+        }
+
+        frame = CGRectMake(x, y, width, height);
+    }
+
+    // Find the active comment (same logic as openShareDialog)
+    NSArray *friendComments = [self.activeStory objectForKey:@"friend_comments"];
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
+    for (int i = 0; i < friendComments.count; i++) {
+        NSString *userId = [NSString stringWithFormat:@"%@",
+                            [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
+        if([userId isEqualToString:currentUserId]){
+            appDelegate.activeComment = [friendComments objectAtIndex:i];
+            break;
+        } else {
+            appDelegate.activeComment = nil;
+        }
+    }
+
+    NSString *type = (appDelegate.activeComment == nil) ? @"share" : @"edit-share";
+    [appDelegate showShareView:type
+                     setUserId:nil
+                   setUsername:nil
+                    setReplyId:nil
+                    sourceRect:[NSValue valueWithCGRect:frame]];
 }
 
 - (void)openTrainingDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {

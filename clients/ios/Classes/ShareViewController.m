@@ -17,9 +17,6 @@
 
 @implementation ShareViewController
 
-@synthesize facebookButton;
-@synthesize twitterButton;
-@synthesize submitButton;
 @synthesize commentField;
 @synthesize activeReplyId;
 @synthesize activeCommentId;
@@ -28,7 +25,7 @@
 @synthesize storyTitle;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    
+
     if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
 
     }
@@ -38,36 +35,42 @@
 
 - (void)viewDidLoad {
     [[NSNotificationCenter defaultCenter]
-     addObserver:self 
+     addObserver:self
      selector:@selector(onTextChange:)
-     name:UITextViewTextDidChangeNotification 
+     name:UITextViewTextDidChangeNotification
      object:self.commentField];
-    
-    UIBarButtonItem *cancel = [[UIBarButtonItem alloc]
-                               initWithTitle:@"Cancel"
-                               style:UIBarButtonItemStylePlain
-                               target:self
-                               action:@selector(doCancelButton:)];
-    self.navigationItem.leftBarButtonItem = cancel;
-    
-    UIBarButtonItem *submit = [[UIBarButtonItem alloc]
-                               initWithTitle:@"Post"
-                               style:UIBarButtonItemStyleDone
-                               target:self
-                               action:@selector(doShareThisStory:)];
-    self.submitButton = submit;
-    self.navigationItem.rightBarButtonItem = submit;
-    
-    // Do any additional setup after loading the view from its nib.
+
+    // Hide the navigation bar items — we use inline controls instead
+    self.navigationItem.leftBarButtonItem = nil;
+    self.navigationItem.rightBarButtonItem = nil;
+
+    // Comment field styling
     commentField.layer.borderWidth = 1.0f;
-    commentField.layer.cornerRadius = 4;
-    commentField.layer.borderColor = [UIColorFromRGB(0x808080) CGColor];
-    
-    twitterButton.layer.borderWidth = 1.0f;
-    twitterButton.layer.cornerRadius = 1.0f;
-    facebookButton.layer.borderWidth = 1.0f;
-    facebookButton.layer.cornerRadius = 1.0f;
-    
+    commentField.layer.cornerRadius = 6;
+    commentField.font = [UIFont systemFontOfSize:14];
+
+    // Create header label
+    UILabel *header = [[UILabel alloc] init];
+    header.text = @"Share this story";
+    header.font = [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
+    header.textAlignment = NSTextAlignmentLeft;
+    self.headerLabel = header;
+    [self.view addSubview:header];
+
+    // Create inline submit button (UIButtonTypeCustom to avoid system tint/double border)
+    UIButton *inlineBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [inlineBtn setTitle:@"Share" forState:UIControlStateNormal];
+    inlineBtn.titleLabel.font = [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
+    [inlineBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [inlineBtn setTitleColor:[[UIColor whiteColor] colorWithAlphaComponent:0.4] forState:UIControlStateDisabled];
+    // Use direct color to avoid theme matrix transformation
+    inlineBtn.backgroundColor = [UIColor colorWithRed:0.439 green:0.620 blue:0.365 alpha:1.0]; // #709E5D
+    inlineBtn.layer.cornerRadius = 6;
+    inlineBtn.contentEdgeInsets = UIEdgeInsetsMake(10, 20, 10, 20);
+    [inlineBtn addTarget:self action:@selector(doShareThisStory:) forControlEvents:UIControlEventTouchUpInside];
+    self.inlineSubmitButton = inlineBtn;
+    [self.view addSubview:inlineBtn];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillBeHidden:) name:UIKeyboardWillHideNotification object:nil];
 
@@ -90,16 +93,16 @@
 - (void)keyboardWasShown:(NSNotification*)aNotification
 {
     NSDictionary* info = [aNotification userInfo];
-    
+
     // Get the size of the keyboard.
     NSValue* keyboardFrameValue     = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
     CGRect keyboardRectWrtScreen    = [keyboardFrameValue CGRectValue];
-    
+
     CGFloat keyboardWidth = keyboardRectWrtScreen.size.width;
     CGFloat keyboardHeight = [[[self view] window] frame].size.height - keyboardRectWrtScreen.origin.y;
-    NSLog(@"Keyboard height: %f %d", keyboardHeight, [self isHardwareKeyboardUsed:aNotification]);
     CGSize kbSize = CGSizeMake(keyboardWidth, keyboardHeight);
-    
+
+    self.lastKeyboardSize = kbSize;
     [UIView animateWithDuration:0.2f animations:^{
         [self adjustCommentField:kbSize];
     }];
@@ -109,48 +112,54 @@
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification
 {
     NSDictionary* info = [aNotification userInfo];
-    
+
     // Get the size of the keyboard.
     NSValue* keyboardFrameValue     = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
     CGRect keyboardRectWrtScreen    = [keyboardFrameValue CGRectValue];
-    
+
     CGFloat keyboardWidth = keyboardRectWrtScreen.size.width;
     CGFloat keyboardHeight = [[[self view] window] frame].size.height - keyboardRectWrtScreen.origin.y;
-    NSLog(@"Keyboard height on hide: %f %d", keyboardHeight, [self isHardwareKeyboardUsed:aNotification]);
     CGSize kbSize = CGSizeMake(keyboardWidth, keyboardHeight);
 
+    self.lastKeyboardSize = kbSize;
     [UIView animateWithDuration:0.2f animations:^{
         [self adjustCommentField:kbSize];
     }];
 }
 
-//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-//	return YES;
-//}
-//
-//- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-//    [self adjustCommentField:CGSizeZero];
-//}
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    // Re-layout when the popover resizes our view (e.g. first presentation).
+    // Guard against infinite recursion: sizeToFit -> layout -> viewDidLayoutSubviews.
+    CGSize currentSize = self.view.bounds.size;
+    if (!CGSizeEqualToSize(currentSize, _lastLayoutSize)) {
+        _lastLayoutSize = currentSize;
+        [self adjustCommentField:self.lastKeyboardSize];
+    }
+}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+
+    // Hide navigation bar for compact popover look
+    self.navigationController.navigationBarHidden = YES;
+
     [self adjustCommentField:CGSizeZero];
-    [self adjustShareButtons];
-    
-    self.view.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
-    self.commentField.layer.borderColor = [UIColorFromRGB(0x808080) CGColor];
-    self.commentField.backgroundColor = UIColorFromRGB(0xDCDFD6);
-    self.commentField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
-    self.commentField.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
-    self.storyTitle.textColor = UIColorFromRGB(0x404040);
-    self.storyTitle.shadowColor = UIColorFromRGB(0xF0F0F0);
-    
+
+    self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xEAECE6, 0xF3E2CB, 0x3D3D3D, 0x1A1A1A);
+    self.commentField.layer.borderColor = [UIColorFromLightSepiaMediumDarkRGB(0xD0D2CC, 0xD4C8B8, 0x5A5A5A, 0x404040) CGColor];
+    self.commentField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xF8F9F6, 0xFAF5ED, 0x3A3A3A, 0x222222);
+    self.commentField.textColor = UIColorFromLightSepiaMediumDarkRGB(0x5E6267, 0x5C4A3D, 0xE0E0E0, 0xE8E8E8);
+    self.commentField.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x5E6267, 0x5C4A3D, 0xE0E0E0, 0xE8E8E8);
+    self.headerLabel.textColor = UIColorFromLightSepiaMediumDarkRGB(0x5E6267, 0x5C4A3D, 0xC0C0C0, 0xD0D0D0);
+    self.storyTitle.textColor = UIColorFromLightSepiaMediumDarkRGB(0x404040, 0x5C4A3D, 0xA0A0A0, 0xB0B0B0);
+    self.storyTitle.shadowColor = nil;
+
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         self.storyTitle.text = [[appDelegate.activeStory objectForKey:@"story_title"]
                                 stringByDecodingHTMLEntities];
         [self.commentField becomeFirstResponder];
-        
+
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                [appDelegate.activeStory objectForKey:@"story_feed_id"]];
         UIImage *titleImage  = [appDelegate getFavicon:feedIdStr];
@@ -166,35 +175,17 @@
     }
 }
 
-- (void)adjustShareButtons {
-    if (twitterButton.selected &&
-        [[[appDelegate.dictSocialServices objectForKey:@"twitter"]
-          objectForKey:@"twitter_uid"] class] == [NSNull class]) {
-        [self doToggleButton:twitterButton];
-    } else {
-        twitterButton.selected = NO;
-        twitterButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
-    }
-    
-    if (facebookButton.selected &&
-        [[[appDelegate.dictSocialServices objectForKey:@"facebook"]
-          objectForKey:@"facebook_uid"] class] == [NSNull class]) {
-        [self doToggleButton:facebookButton];
-    } else {
-        facebookButton.selected = NO;
-        facebookButton.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
-    }
-}
-
 - (void)adjustCommentField:(CGSize)kbSize {
     CGSize v = self.view.frame.size;
-    int bP = 8;
-    int bW = 32;
-    int bH = 24;
     int k = kbSize.height;
-    int stOffset = 6;
+    int margin = 12;
+    int headerHeight = 20;
+    int btnHeight = 38;
+    int btnPadding = 10;
+    int topPadding = 12;
+    int stOffset = 0;
     int stHeight = 0;
-    
+
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         self.storyTitle.frame = CGRectMake(20, 8, v.width - 20*2, 24);
         stOffset = self.storyTitle.frame.origin.y + self.storyTitle.frame.size.height;
@@ -202,56 +193,30 @@
     } else if (!self.isPhone) {
         k = 0;
     }
-    NSLog(@"Share type: %@", self.currentType);
-    BOOL showingShareButtons = [self.currentType isEqualToString:@"share"] ||
-                               [self.currentType isEqualToString:@"edit-share"];
-    self.commentField.frame = CGRectMake(20, stOffset + 4,
-                                         v.width - 20*2,
-                                         v.height - k - (showingShareButtons ? bH + bP*2 : 6) - 12 - stHeight);
-    CGPoint o = self.commentField.frame.origin;
-    CGSize c = self.commentField.frame.size;
-    self.twitterButton.frame   = CGRectMake(v.width - 20 - bW*2 - bP*2, o.y + c.height + bP, bW, bH);
-    self.facebookButton.frame  = CGRectMake(v.width - 20 - bW*1 - bP*1, o.y + c.height + bP, bW, bH);
-    
+
+    // Header label at top
+    self.headerLabel.frame = CGRectMake(margin, topPadding + stOffset, v.width - margin*2, headerHeight);
+
+    // Comment field below header
+    CGFloat fieldTop = CGRectGetMaxY(self.headerLabel.frame) + 8;
+    CGFloat fieldHeight = v.height - k - fieldTop - btnHeight - btnPadding*2 - stHeight;
+    if (fieldHeight < 40) fieldHeight = 40;
+    self.commentField.frame = CGRectMake(margin, fieldTop, v.width - margin*2, fieldHeight);
+
+    // Position inline submit button below the comment field, right-aligned
+    [self.inlineSubmitButton sizeToFit];
+    CGFloat btnWidth = self.inlineSubmitButton.frame.size.width;
+    if (btnWidth < 100) btnWidth = 100;
+    self.inlineSubmitButton.frame = CGRectMake(v.width - margin - btnWidth,
+                                               CGRectGetMaxY(self.commentField.frame) + btnPadding,
+                                               btnWidth,
+                                               btnHeight);
+
     [self onTextChange:nil];
 }
 
 - (IBAction)doCancelButton:(id)sender {
     [appDelegate hideShareView:NO];
-}
-
-- (IBAction)doToggleButton:(id)sender {
-    UIButton *button = (UIButton *)sender;
-    button.selected = !button.selected;
-    int selected = button.selected ? 1 : 0;
-    
-    if (button.tag == 1) { // Twitter
-        if (selected) {
-            [self checkService:@"twitter"];
-            button.layer.borderColor = [UIColorFromRGB(0x4E8ECD) CGColor];
-        } else {
-            button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
-        }
-    } else if (button.tag == 2) { // Facebook
-        if (selected) {
-            [self checkService:@"facebook"];
-            button.layer.borderColor = [UIColorFromRGB(0x6884CD) CGColor];
-        } else {
-            button.layer.borderColor = [UIColorFromRGB(0xD9DBD6) CGColor];
-        }
-    }
-}
-
-- (void)checkService:(NSString *)service {
-    if ([service isEqualToString:@"twitter"] &&
-        [[[appDelegate.dictSocialServices objectForKey:@"twitter"]
-          objectForKey:@"twitter_uid"] class] == [NSNull class]) {
-        [appDelegate showConnectToService:service];
-    } else if ([service isEqualToString:@"facebook"] &&
-              [[[appDelegate.dictSocialServices objectForKey:@"facebook"]
-                objectForKey:@"facebook_uid"] class] == [NSNull class]) {
-        [appDelegate showConnectToService:service];
-    }
 }
 
 - (void)setCommentType:(NSString *)type {
@@ -262,15 +227,13 @@
           setUserId:(NSString *)userId
         setUsername:(NSString *)username
          setReplyId:(NSString *)replyId {
-    NSLog(@"SetSiteInfo: %@", type);
-    [self.submitButton setStyle:UIBarButtonItemStyleDone];
     if ([type isEqualToString: @"edit-reply"]) {
-        [submitButton setTitle:@"Save your reply"];
-        facebookButton.hidden = YES;
-        twitterButton.hidden = YES;
-        [submitButton setAction:(@selector(doReplyToComment:))];
+        self.headerLabel.text = @"Edit your reply";
+        [self.inlineSubmitButton setTitle:@"Save reply" forState:UIControlStateNormal];
+        [self.inlineSubmitButton removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
+        [self.inlineSubmitButton addTarget:self action:@selector(doReplyToComment:) forControlEvents:UIControlEventTouchUpInside];
         self.activeReplyId = replyId;
-        
+
         // get existing reply
         NSArray *replies = [appDelegate.activeComment objectForKey:@"replies"];
         NSDictionary *reply = nil;
@@ -282,17 +245,15 @@
             }
         }
         if (reply) {
-            self.commentField.text = [self stringByStrippingHTML:[reply objectForKey:@"comments"]]; 
+            self.commentField.text = [self stringByStrippingHTML:[reply objectForKey:@"comments"]];
         }
     } else if ([type isEqualToString: @"reply"]) {
         self.activeReplyId = nil;
-        [submitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
-        facebookButton.hidden = YES;
-        twitterButton.hidden = YES;
-        [submitButton setAction:(@selector(doReplyToComment:))];
-        
-        // Don't bother to reset comment field for replies while on the same story.
-        // It'll get cleared out on a new story and when posting a reply.
+        self.headerLabel.text = [NSString stringWithFormat:@"Reply to %@", username];
+        [self.inlineSubmitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username] forState:UIControlStateNormal];
+        [self.inlineSubmitButton removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
+        [self.inlineSubmitButton addTarget:self action:@selector(doReplyToComment:) forControlEvents:UIControlEventTouchUpInside];
+
         if (!self.activeCommentId || ![self.activeCommentId isEqualToString:userId] ||
             !self.activeStoryId || ![self.activeStoryId isEqualToString:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
             self.activeCommentId = userId;
@@ -300,33 +261,28 @@
             self.commentField.text = @"";
         }
     } else if ([type isEqualToString: @"edit-share"]) {
-        facebookButton.hidden = NO;
-        twitterButton.hidden = NO;
-        
+        self.headerLabel.text = @"Edit your comment";
         // get old comment
         self.commentField.text = [self stringByStrippingHTML:[appDelegate.activeComment objectForKey:@"comments"]];
-        
-        [submitButton setTitle:@"Share with comments"];
-        [submitButton setAction:(@selector(doShareThisStory:))];
-    } else if ([type isEqualToString: @"share"]) {        
-        facebookButton.hidden = NO;
-        twitterButton.hidden = NO;
-        [submitButton setTitle:@"Share this story"];
-        [submitButton setAction:(@selector(doShareThisStory:))];
+
+        [self.inlineSubmitButton removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
+        [self.inlineSubmitButton addTarget:self action:@selector(doShareThisStory:) forControlEvents:UIControlEventTouchUpInside];
+    } else if ([type isEqualToString: @"share"]) {
+        self.headerLabel.text = @"Share this story";
+        [self.inlineSubmitButton removeTarget:self action:NULL forControlEvents:UIControlEventTouchUpInside];
+        [self.inlineSubmitButton addTarget:self action:@selector(doShareThisStory:) forControlEvents:UIControlEventTouchUpInside];
         if (![self.currentType isEqualToString:@"share"] &&
             ![self.currentType isEqualToString:@"reply"]) {
             self.commentField.text = @"";
         }
     }
-    
+
     [self onTextChange:nil];
 }
 
 - (void)clearComments {
     self.commentField.text = nil;
     self.currentType = nil;
-    self.twitterButton.selected = NO;
-    self.facebookButton.selected = NO;
 }
 
 # pragma mark
@@ -337,22 +293,14 @@
     NSString *urlString = [NSString stringWithFormat:@"%@/social/share_story",
                            self.appDelegate.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    NSMutableArray *services = [NSMutableArray array];
-    
+
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
     NSString *storyIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
 
-    [params setObject:feedIdStr forKey:@"feed_id"]; 
+    [params setObject:feedIdStr forKey:@"feed_id"];
     [params setObject:storyIdStr forKey:@"story_id"];
-    
-    if (facebookButton.selected) {
-        [services addObject:@"facebook"];
-    }
-    if (twitterButton.selected) {
-        [services addObject:@"twitter"];
-    }
-    [params setObject:services forKey:@"post_to_services"];
-    
+    [params setObject:@[] forKey:@"post_to_services"];
+
     if (appDelegate.storiesCollection.isSocialRiverView) {
         if ([[appDelegate.activeStory objectForKey:@"friend_user_ids"] count] > 0) {
             [params setObject:[NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"friend_user_ids"][0]] forKey:@"source_user_id"];
@@ -362,14 +310,13 @@
     } else {
         if ([appDelegate.activeStory objectForKey:@"social_user_id"] != nil) {
             NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"social_user_id"]];
-            [params setObject:sourceUserIdStr forKey:@"source_user_id"]; 
+            [params setObject:sourceUserIdStr forKey:@"source_user_id"];
         }
     }
 
-    
     NSString *comments = commentField.text;
     if ([comments length]) {
-        [params setObject:comments forKey:@"comments"]; 
+        [params setObject:comments forKey:@"comments"];
     }
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishShareThisStory:responseObject];
@@ -402,24 +349,23 @@
     if ([comments length] == 0) {
         return;
     }
-    
-//    NSLog(@"REPLY TO COMMENT, %@", appDelegate.activeComment);
+
     NSString *urlString = [NSString stringWithFormat:@"%@/social/save_comment_reply",
                            self.appDelegate.url];
-    
+
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
     NSString *storyIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
-    
+
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    [params setObject:feedIdStr forKey:@"story_feed_id"]; 
+    [params setObject:feedIdStr forKey:@"story_feed_id"];
     [params setObject:storyIdStr forKey:@"story_id"];
     [params setObject:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
-    [params setObject:commentField.text forKey:@"reply_comments"]; 
-    
+    [params setObject:commentField.text forKey:@"reply_comments"];
+
     if (self.activeReplyId) {
-        [params setObject:activeReplyId forKey:@"reply_id"]; 
+        [params setObject:activeReplyId forKey:@"reply_id"];
     }
-    
+
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self finishAddReply:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -455,7 +401,7 @@
     [appDelegate.storyPagesViewController.currentPage setActiveStoryAtIndex:-1];
 
     NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
-    
+
     for (int i = 0; i < appDelegate.storiesCollection.activeFeedStories.count; i++)  {
         NSDictionary *feedStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:i];
         NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"id"]];
@@ -466,9 +412,9 @@
             [newActiveFeedStories addObject:[appDelegate.storiesCollection.activeFeedStories objectAtIndex:i]];
         }
     }
-    
+
     appDelegate.storiesCollection.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
-    
+
     self.commentField.text = nil;
     [appDelegate.storyPagesViewController.currentPage refreshComments:replyId];
     [appDelegate changeActiveFeedDetailRow];
@@ -479,7 +425,7 @@
     NSRange r;
     while ((r = [s rangeOfString:@"<[^>]+>" options:NSRegularExpressionSearch]).location != NSNotFound)
         s = [s stringByReplacingCharactersInRange:r withString:@""];
-    return s; 
+    return s;
 }
 
 -(void)onTextChange:(NSNotification*)notification {
@@ -487,16 +433,23 @@
     if ([self.currentType isEqualToString: @"share"] ||
         [self.currentType isEqualToString:@"edit-share"]) {
         if (text.length) {
-            self.submitButton.title = @"Share with comments";
+            [self.inlineSubmitButton setTitle:@"Share with comment" forState:UIControlStateNormal];
         } else {
-            self.submitButton.title = @"Share this story";
+            [self.inlineSubmitButton setTitle:@"Share" forState:UIControlStateNormal];
         }
-        self.submitButton.enabled = YES;
+        self.inlineSubmitButton.enabled = YES;
     } else if ([self.currentType isEqualToString: @"reply"] ||
                [self.currentType isEqualToString:@"edit-reply"]) {
-        self.submitButton.enabled = [self.commentField.text length] > 0;
+        self.inlineSubmitButton.enabled = [self.commentField.text length] > 0;
     }
-    
 
+    // Resize button for new title text
+    [self.inlineSubmitButton sizeToFit];
+    CGFloat margin = 12;
+    CGFloat btnWidth = self.inlineSubmitButton.frame.size.width + 40; // add back content insets
+    if (btnWidth < 100) btnWidth = 100;
+    CGFloat v = self.view.frame.size.width;
+    CGRect f = self.inlineSubmitButton.frame;
+    self.inlineSubmitButton.frame = CGRectMake(v - margin - btnWidth, f.origin.y, btnWidth, f.size.height);
 }
 @end
