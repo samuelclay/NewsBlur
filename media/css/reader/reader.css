@@ -6972,10 +6972,107 @@ body {
     align-self: flex-end;
 }
 
-#story_taskbar .NB-tryfeed-add,
-#story_taskbar .NB-tryfeed-follow,
-#story_taskbar .NB-tryfeed-signup {
-    display: none;
+/* ========================== */
+/* = Tryfeed Subscribe Banner = */
+/* ========================== */
+
+.NB-tryfeed-subscribe-banner,
+.NB-tryfeed-follow-banner,
+.NB-tryfeed-signup-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(106, 168, 79, 0.15);
+    cursor: pointer;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.NB-tryfeed-subscribe-banner,
+.NB-tryfeed-follow-banner {
+    background: linear-gradient(135deg, #e8f0e6 0%, #dce8d5 100%);
+}
+
+.NB-tryfeed-subscribe-banner:hover,
+.NB-tryfeed-follow-banner:hover {
+    background: linear-gradient(135deg, #dfe9dc 0%, #d3dfcb 100%);
+}
+
+.NB-tryfeed-signup-banner {
+    background: linear-gradient(135deg, #f5f0e6 0%, #ece5d5 100%);
+    border-bottom-color: rgba(217, 166, 33, 0.15);
+}
+
+.NB-tryfeed-signup-banner:hover {
+    background: linear-gradient(135deg, #efe9d8 0%, #e6dece 100%);
+}
+
+.NB-tryfeed-banner-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 4px;
+}
+
+.NB-tryfeed-banner-logo {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    background: url(/media/img/logo_512.png) no-repeat center center;
+    background-size: 28px;
+    filter: drop-shadow(0 1px 4px rgba(217, 166, 33, 0.3));
+}
+
+.NB-tryfeed-banner-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-tryfeed-banner-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3a3226;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.NB-tryfeed-banner-subtext {
+    font-size: 11px;
+    color: rgba(58, 50, 38, 0.55);
+    margin-top: 2px;
+    line-height: 1.3;
+}
+
+.NB-tryfeed-banner-button {
+    flex-shrink: 0;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+.NB-tryfeed-banner-button-green {
+    background: #6AA84F;
+}
+
+.NB-tryfeed-subscribe-banner:hover .NB-tryfeed-banner-button-green,
+.NB-tryfeed-follow-banner:hover .NB-tryfeed-banner-button-green {
+    background: #5C9441;
+}
+
+.NB-tryfeed-banner-button-gold {
+    background: #D9A621;
+}
+
+.NB-tryfeed-signup-banner:hover .NB-tryfeed-banner-button-gold {
+    background: #C4941B;
 }
 
 .NB-feedbar .NB-taskbar-nav {
@@ -7177,16 +7274,6 @@ body {
 }
 
 
-#story_taskbar .NB-tryfeed-add,
-#story_taskbar .NB-tryfeed-follow,
-#story_taskbar .NB-tryout-signup {
-    margin: 0px auto 0px;
-    width: 80px;
-    height: 14px;
-    text-align: center;
-    cursor: pointer;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
-}
 
 .NB-narrow #story_taskbar .NB-task-title {
     display: none;
@@ -7196,14 +7283,6 @@ body {
     padding: 0;
 }
 
-#story_taskbar .NB-modal-submit {
-    flex-grow: 1;
-    margin: 0 6px;
-    display: flex;
-    align-items: center;
-    /* height: 100%; */
-    place-self: flex-end;
-}
 
 #story_taskbar .NB-taskbar-options-container {
     flex-shrink: 1;
@@ -9557,15 +9636,10 @@ form.opml_import_form input {
     position: relative;
 }
 
+/* reader.css: Classifier icon is now an <img> element with inline styles */
 .NB-briefing-classifier .NB-classifier-icon-like {
     width: 12px;
     height: 12px;
-    background: transparent url('/media/embed/icons/nouns/thumbs-up.svg') no-repeat 0 0;
-    background-size: 12px;
-    position: absolute;
-    left: 5px;
-    top: 50%;
-    transform: translateY(-50%);
     opacity: 1;
 }
 

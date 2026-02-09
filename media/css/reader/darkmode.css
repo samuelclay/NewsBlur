@@ -1984,6 +1984,34 @@ background: #191b1c;
     background-color: #217412;
 }
 
+.NB-dark .NB-tryfeed-subscribe-banner,
+.NB-dark .NB-tryfeed-follow-banner {
+    background: linear-gradient(135deg, #1a2a1a 0%, #1f2f1f 100%);
+    border-bottom-color: rgba(106, 168, 79, 0.2);
+}
+
+.NB-dark .NB-tryfeed-subscribe-banner:hover,
+.NB-dark .NB-tryfeed-follow-banner:hover {
+    background: linear-gradient(135deg, #1f2f1f 0%, #243524 100%);
+}
+
+.NB-dark .NB-tryfeed-signup-banner {
+    background: linear-gradient(135deg, #1a1f1f 0%, #242b2b 100%);
+    border-bottom-color: rgba(217, 166, 33, 0.2);
+}
+
+.NB-dark .NB-tryfeed-signup-banner:hover {
+    background: linear-gradient(135deg, #1f2626 0%, #2a3232 100%);
+}
+
+.NB-dark .NB-tryfeed-banner-text {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-tryfeed-banner-subtext {
+    color: rgba(255, 255, 255, 0.45);
+}
+
 .NB-dark .NB-story-list-empty {
     color: rgba(255, 255, 255, .6);
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
