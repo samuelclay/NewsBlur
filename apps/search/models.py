@@ -1527,6 +1527,39 @@ class SearchFeed:
         return embedding
 
     @classmethod
+    def generate_content_vector_from_text(cls, text, feature="search_feed_embedding", metadata=None):
+        """Generate a content vector from arbitrary text using OpenAI embeddings.
+        Used for indexing PopularFeed entries that may not have stories yet."""
+        # Clean text
+        text = re.sub(r"http\S+", "", text)
+        text = re.sub(r"[^\w\s]", "", text)
+        text = text.lower()
+        text = " ".join(text.split())
+
+        if not text.strip():
+            return None
+
+        model_name = "text-embedding-3-small"
+        encoding = setup_openai_model(model_name)
+
+        max_tokens = 8191
+        encoded_text = encoding.encode(text)
+        truncated_tokens = encoded_text[:max_tokens]
+        truncated_text = encoding.decode(truncated_tokens)
+
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        response = client.embeddings.create(model=model_name, input=truncated_text)
+
+        LLMCostTracker.record_embedding(
+            model=model_name,
+            input_tokens=response.usage.total_tokens,
+            feature=feature,
+            metadata=metadata or {},
+        )
+
+        return response.data[0].embedding
+
+    @classmethod
     def export_csv(cls):
         import djqscsv
 

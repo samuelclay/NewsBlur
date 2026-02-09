@@ -10,10 +10,12 @@ import requests
 from django.conf import settings
 from django.db.models import Count
 
+from django.db.models import Q
+
 from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MFeedIcon, MStory
-from apps.search.models import MUserSearch
+from apps.search.models import MUserSearch, SearchFeed
 from apps.statistics.rtrending_subscriptions import RTrendingSubscription
 from utils import json_functions as json
 from utils import log as logging
@@ -224,7 +226,7 @@ def trending_sites(request):
     """
     page = int(request.GET.get("page", 1))
     days = int(request.GET.get("days", 7))
-    limit = 10
+    limit = 20
     offset = (page - 1) * limit
 
     # Validate days parameter
@@ -858,8 +860,46 @@ def popular_feeds(request):
         qs = qs.filter(platform=platform)
 
     query = request.GET.get("query", "").strip()
+    extra_semantic_feeds = []  # Feed objects found via embeddings but not in PopularFeed table
     if query:
-        qs = qs.filter(title__icontains=query)
+        # Text search across title, description, and feed_url
+        qs = qs.filter(Q(title__icontains=query) | Q(description__icontains=query) | Q(feed_url__icontains=query))
+
+        # Semantic search via embeddings to find related feeds
+        if len(query) >= 3:
+            try:
+                text_pf_ids = set(qs.values_list("id", flat=True))
+                semantic_results = SearchFeed.hybrid_query(query, max_results=50)
+                semantic_feed_ids = [int(r["feed_id"]) for r in semantic_results]
+
+                if semantic_feed_ids:
+                    # Find PopularFeed entries linked to semantically matching feeds
+                    linked_qs = PopularFeed.objects.filter(is_active=True, feed_id__in=semantic_feed_ids)
+                    if feed_type != "all":
+                        linked_qs = linked_qs.filter(feed_type=feed_type)
+                    semantic_pf_ids = set(linked_qs.values_list("id", flat=True)) - text_pf_ids
+
+                    if semantic_pf_ids:
+                        qs = PopularFeed.objects.filter(id__in=text_pf_ids | semantic_pf_ids)
+
+                    # Find Feed objects matching URL pattern that aren't in PopularFeed
+                    url_patterns = {"reddit": "reddit.com", "youtube": "youtube.com"}
+                    if feed_type in url_patterns:
+                        linked_feed_ids = set(
+                            PopularFeed.objects.filter(
+                                is_active=True, feed_id__in=semantic_feed_ids
+                            ).values_list("feed_id", flat=True)
+                        )
+                        unlinked_ids = [fid for fid in semantic_feed_ids if fid not in linked_feed_ids]
+                        if unlinked_ids:
+                            extra_semantic_feeds = list(
+                                Feed.objects.filter(
+                                    pk__in=unlinked_ids,
+                                    feed_address__icontains=url_patterns[feed_type],
+                                )
+                            )
+            except Exception as e:
+                logging.debug(f" ***> ~FRSemantic search failed for popular_feeds: {e}")
 
     # Build grouped category structure with feed counts:
     # [{name, feed_count, subcategories: [{name, feed_count}, ...]}, ...]
@@ -922,13 +962,23 @@ def popular_feeds(request):
     if feed_type == "all":
         qs = qs.order_by("-subscriber_count")
 
-    total = qs.count()
+    total = qs.count() + len(extra_semantic_feeds)
     popular_feeds_list = list(qs[offset : offset + limit + 1])
+
+    # Append semantic Feed objects if PopularFeed results don't fill the page
+    remaining_slots = limit + 1 - len(popular_feeds_list)
+    semantic_feeds_page = []
+    if remaining_slots > 0 and extra_semantic_feeds:
+        semantic_offset = max(0, offset - qs.count())
+        semantic_feeds_page = extra_semantic_feeds[semantic_offset : semantic_offset + remaining_slots]
+        popular_feeds_list.extend(semantic_feeds_page)
+
     has_more = len(popular_feeds_list) > limit
     popular_feeds_list = popular_feeds_list[:limit]
 
     # Batch-load linked Feed objects and their icons
-    feed_ids = [pf.feed_id for pf in popular_feeds_list if pf.feed_id]
+    feed_ids = [pf.feed_id for pf in popular_feeds_list if isinstance(pf, PopularFeed) and pf.feed_id]
+    feed_ids.extend([f.pk for f in semantic_feeds_page if isinstance(f, Feed)])
     feeds_by_id = {}
     feed_icons = {}
     if feed_ids:
@@ -937,6 +987,33 @@ def popular_feeds(request):
 
     results = []
     for pf in popular_feeds_list:
+        if isinstance(pf, Feed):
+            # Semantic match from Feed table, not in PopularFeed
+            feed_obj = pf
+            entry = {
+                "id": None,
+                "feed_id": feed_obj.pk,
+                "feed_type": feed_type,
+                "category": "",
+                "subcategory": "",
+                "title": feed_obj.feed_title,
+                "description": feed_obj.data.feed_tagline if feed_obj.data else "",
+                "feed_url": feed_obj.feed_address,
+                "thumbnail_url": "",
+                "platform": "",
+                "subscriber_count": feed_obj.num_subscribers,
+                "feed": feed_obj.canonical(include_favicon=False, full=True),
+            }
+            if feed_obj.pk in feed_icons:
+                icon = feed_icons[feed_obj.pk]
+                if icon.data:
+                    entry["feed"]["favicon_color"] = icon.color
+                    entry["feed"]["favicon"] = icon.data
+            if include_stories:
+                entry["stories"] = feed_obj.get_stories(limit=5)
+            results.append(entry)
+            continue
+
         entry = {
             "id": pf.pk,
             "feed_id": pf.feed_id,
