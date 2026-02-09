@@ -448,5 +448,6 @@ def _story_to_dict(story):
         "story_feed_id": story.story_feed_id,
         "story_tags": story.story_tags or [],
         "image_urls": story.image_urls or [],
+        "secure_image_urls": MStory.secure_image_urls(story.image_urls or []),
         "id": story.story_guid or story.story_hash,
     }

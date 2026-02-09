@@ -212,7 +212,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             });
             if ($largest) {
                 // console.log(["Largest!", $largest, this.model.get('story_title').substr(0, 30), this.model, $largest.attr('src')]);
-                this.model.story_title_view.found_largest_image($largest.attr('src'));
+                if (this.model.story_title_view) {
+                    this.model.story_title_view.found_largest_image($largest.attr('src'));
+                }
             }
         }, this));
     },
