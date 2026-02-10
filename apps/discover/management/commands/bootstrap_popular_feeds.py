@@ -11,6 +11,7 @@ Usage:
 
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from django.core.management.base import BaseCommand
 
@@ -53,6 +54,12 @@ class Command(BaseCommand):
             help="Create PopularFeed records without fetching Feed objects (faster, for data-only updates)",
         )
         parser.add_argument(
+            "--workers",
+            type=int,
+            default=10,
+            help="Number of parallel workers for feed fetching (default: 10)",
+        )
+        parser.add_argument(
             "--discover-rss",
             action="store_true",
             help="Discover well-read RSS feeds from the Feed table and output JSON candidates for taxonomy generation",
@@ -74,6 +81,7 @@ class Command(BaseCommand):
         force_update = options["force_update"]
         verbose = options["verbose"]
         skip_fetch = options["skip_fetch"]
+        workers = options["workers"]
 
         fixture_path = os.path.normpath(self.FIXTURE_PATH)
         if not os.path.exists(fixture_path):
@@ -93,6 +101,9 @@ class Command(BaseCommand):
         feed_linked = 0
         failed = 0
 
+        # Phase 1: Create/update PopularFeed records sequentially
+        feeds_to_fetch = []
+        feeds_to_force_update = []
         for entry in all_feeds:
             feed_url = entry["feed_url"]
             entry_type = entry["feed_type"]
@@ -103,7 +114,6 @@ class Command(BaseCommand):
                     self.stdout.write(f"  Would process: [{entry_type}/{entry['category']}] {title}")
                 continue
 
-            # Create or update PopularFeed record
             popular_feed, was_created = PopularFeed.objects.update_or_create(
                 feed_url=feed_url,
                 feed_type=entry_type,
@@ -128,28 +138,22 @@ class Command(BaseCommand):
                 action = "+" if was_created else "="
                 self.stdout.write(f"  {action} [{entry_type}/{entry['category']}] {title}")
 
-            # Create/link Feed object unless skipping
             if not skip_fetch and not popular_feed.feed:
-                try:
-                    feed = Feed.get_feed_from_url(feed_url, create=True, fetch=False, max_stories=1)
-                    if feed:
-                        popular_feed.feed = feed
-                        popular_feed.save(update_fields=["feed"])
-                        feed_linked += 1
-                        if verbose:
-                            self.stdout.write(f"    Linked to Feed id={feed.pk}")
-                except Exception as e:
-                    failed += 1
-                    if verbose:
-                        self.stdout.write(self.style.WARNING(f"    Failed to create Feed: {e}"))
+                feeds_to_fetch.append((popular_feed, feed_url))
+            elif force_update and popular_feed.feed:
+                feeds_to_force_update.append(popular_feed)
 
-            # Force update existing Feed if requested
-            if force_update and popular_feed.feed:
-                try:
-                    popular_feed.feed.update(force=True, single_threaded=True)
-                except Exception as e:
-                    if verbose:
-                        self.stdout.write(self.style.WARNING(f"    Failed to update Feed: {e}"))
+        # Phase 2: Fetch and link Feed objects in parallel
+        if feeds_to_fetch:
+            self.stdout.write(f"Fetching {len(feeds_to_fetch)} feeds with {workers} workers...")
+            linked, fetch_failed = self._fetch_feeds_parallel(feeds_to_fetch, workers, verbose)
+            feed_linked += linked
+            failed += fetch_failed
+
+        # Phase 3: Force-update existing feeds in parallel
+        if feeds_to_force_update:
+            self.stdout.write(f"Force-updating {len(feeds_to_force_update)} feeds with {workers} workers...")
+            self._force_update_parallel(feeds_to_force_update, workers, verbose)
 
         if dry_run:
             self.stdout.write(self.style.WARNING(f"\nDry run complete - {len(all_feeds)} entries would be processed"))
@@ -163,6 +167,58 @@ class Command(BaseCommand):
         # Print category summary
         if verbose or dry_run:
             self._print_summary(all_feeds)
+
+    def _fetch_one_feed(self, popular_feed, feed_url):
+        """Fetch a single feed. Runs in a worker thread."""
+        import django.db
+
+        try:
+            feed = Feed.get_feed_from_url(feed_url, create=True, fetch=False, max_stories=1)
+            return (popular_feed, feed, None)
+        except Exception as e:
+            return (popular_feed, None, e)
+        finally:
+            django.db.connection.close()
+
+    def _fetch_feeds_parallel(self, feeds_to_fetch, workers, verbose):
+        linked = 0
+        failed = 0
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = {
+                executor.submit(self._fetch_one_feed, pf, url): pf for pf, url in feeds_to_fetch
+            }
+            for future in as_completed(futures):
+                popular_feed, feed, error = future.result()
+                if error:
+                    failed += 1
+                    if verbose:
+                        self.stdout.write(self.style.WARNING(f"    Failed to create Feed for {popular_feed.feed_url}: {error}"))
+                elif feed:
+                    popular_feed.feed = feed
+                    popular_feed.save(update_fields=["feed"])
+                    linked += 1
+                    if verbose:
+                        self.stdout.write(f"    Linked {popular_feed.title} to Feed id={feed.pk}")
+        return linked, failed
+
+    def _force_update_parallel(self, popular_feeds, workers, verbose):
+        import django.db
+
+        def update_one(popular_feed):
+            try:
+                popular_feed.feed.update(force=True, single_threaded=True)
+                return (popular_feed, None)
+            except Exception as e:
+                return (popular_feed, e)
+            finally:
+                django.db.connection.close()
+
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = {executor.submit(update_one, pf): pf for pf in popular_feeds}
+            for future in as_completed(futures):
+                popular_feed, error = future.result()
+                if error and verbose:
+                    self.stdout.write(self.style.WARNING(f"    Failed to update Feed for {popular_feed.title}: {error}"))
 
     # bootstrap_popular_feeds.py - _discover_rss_feeds
     def _discover_rss_feeds(self, options):
