@@ -4158,14 +4158,40 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     try_feed: function (e) {
         var $btn = $(e.currentTarget);
         var feed_id = $btn.data('feed-id');
+        var discover_origin = this.get_discover_origin();
 
         if (feed_id) {
-            NEWSBLUR.reader.load_feed_in_tryfeed_view(feed_id);
+            NEWSBLUR.reader.load_feed_in_tryfeed_view(feed_id, { discover_origin: discover_origin });
         } else {
             this.link_popular_feed($btn, function (linked_feed_id) {
-                NEWSBLUR.reader.load_feed_in_tryfeed_view(linked_feed_id);
+                NEWSBLUR.reader.load_feed_in_tryfeed_view(linked_feed_id, { discover_origin: discover_origin });
             });
         }
+    },
+
+    get_discover_origin: function () {
+        var tab = this.active_tab;
+        var tab_info = _.find(this.TABS, function (t) { return t.id === tab; });
+        var tab_label = tab_info ? tab_info.label : tab;
+        var origin = { tab: tab, tab_label: tab_label };
+
+        var tab_config = this.TAB_SEARCH_CONFIG[tab];
+        if (tab_config) {
+            var state = this[tab_config.state_key];
+            if (state) {
+                if (state.selected_category && state.selected_category !== 'all') {
+                    origin.category = state.selected_category;
+                }
+                if (state.selected_subcategory && state.selected_subcategory !== 'all') {
+                    origin.subcategory = state.selected_subcategory;
+                }
+                if (state.query) {
+                    origin.query = state.query;
+                }
+            }
+        }
+
+        return origin;
     },
 
     link_popular_feed: function ($btn, callback) {

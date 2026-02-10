@@ -2204,6 +2204,24 @@ background: #191b1c;
     color: rgba(255, 255, 255, 0.45);
 }
 
+.NB-dark .NB-tryfeed-go-back {
+    background: linear-gradient(135deg, #151f15 0%, #1a251a 100%);
+    border-bottom-color: rgba(106, 168, 79, 0.2);
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.NB-dark .NB-tryfeed-go-back:hover {
+    background: linear-gradient(135deg, #1a251a 0%, #1f2b1f 100%);
+}
+
+.NB-dark .NB-tryfeed-go-back-breadcrumb {
+    color: #6aba4a;
+}
+
+.NB-dark .NB-tryfeed-go-back-separator {
+    color: rgba(255, 255, 255, 0.3);
+}
+
 .NB-dark .NB-story-list-empty {
     color: rgba(255, 255, 255, .6);
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);

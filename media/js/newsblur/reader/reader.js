@@ -7131,6 +7131,8 @@
             }, options.feed && options.feed.attributes);
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
 
+            this.flags['tryfeed_discover_origin'] = options.discover_origin || null;
+
             this.reset_feed(options);
             feed = this.model.set_feed(feed_id, feed);
 
@@ -7191,11 +7193,13 @@
         hide_tryfeed_view: function () {
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
             $tryfeed_container.slideUp(350);
+            $('.NB-tryfeed-banner-container').remove();
             $('.NB-tryfeed-subscribe-banner').remove();
             $('.NB-tryfeed-follow-banner').remove();
             $('.NB-tryfeed-signup-banner').remove();
             this.flags['showing_feed_in_tryfeed_view'] = false;
             this.flags['showing_social_feed_in_tryfeed_view'] = false;
+            this.flags['tryfeed_discover_origin'] = null;
         },
 
         show_tryfeed_add_button: function () {
@@ -7210,6 +7214,8 @@
                 colored_class: 'NB-tryfeed-banner-icon NB-feed-icon-colored'
             });
 
+            var $go_back = this.make_tryfeed_go_back_link();
+
             var $banner = $.make('div', { className: 'NB-tryfeed-subscribe-banner' }, [
                 $icon || $.make('div', { className: 'NB-tryfeed-banner-icon' }),
                 $.make('div', { className: 'NB-tryfeed-banner-content' }, [
@@ -7217,15 +7223,66 @@
                     $.make('div', { className: 'NB-tryfeed-banner-subtext' }, 'Subscribe to add this feed to your NewsBlur')
                 ]),
                 $.make('div', { className: 'NB-tryfeed-banner-button NB-tryfeed-banner-button-green' }, 'Subscribe')
-            ]).css({ 'opacity': 0 });
+            ]);
 
             $banner.on('click', function (e) {
+                if ($(e.target).closest('.NB-tryfeed-go-back').length) return;
                 e.preventDefault();
                 self.add_recommended_feed(feed_id);
             });
 
-            $('#story_titles').find('.NB-story-titles').before($banner);
-            $banner.animate({ 'opacity': 1 }, { 'duration': 600 });
+            var $container = $.make('div', { className: 'NB-tryfeed-banner-container' }, [
+                $banner,
+                $go_back
+            ].filter(Boolean)).css({ 'opacity': 0 });
+
+            $('#story_titles').find('.NB-story-titles').before($container);
+            $container.animate({ 'opacity': 1 }, { 'duration': 600 });
+        },
+
+        make_tryfeed_go_back_link: function () {
+            var origin = this.flags['tryfeed_discover_origin'];
+            if (!origin) return null;
+
+            var self = this;
+            var parts = ['Discover'];
+            if (origin.tab_label) {
+                parts.push(origin.tab_label);
+            }
+            if (origin.category) {
+                parts.push(origin.category.charAt(0).toUpperCase() + origin.category.slice(1));
+            }
+            if (origin.subcategory) {
+                parts.push(origin.subcategory.charAt(0).toUpperCase() + origin.subcategory.slice(1));
+            }
+            if (origin.query) {
+                parts.push('"' + origin.query + '"');
+            }
+
+            var breadcrumb_els = [];
+            for (var i = 0; i < parts.length; i++) {
+                if (i > 0) {
+                    breadcrumb_els.push($.make('span', { className: 'NB-tryfeed-go-back-separator' }, ' \u203a '));
+                }
+                breadcrumb_els.push($.make('span', { className: 'NB-tryfeed-go-back-part' }, parts[i]));
+            }
+
+            var $link = $.make('div', { className: 'NB-tryfeed-go-back' }, [
+                $.make('span', { className: 'NB-tryfeed-go-back-label' }, 'Go back to '),
+                $.make('span', { className: 'NB-tryfeed-go-back-breadcrumb' }, breadcrumb_els)
+            ]);
+
+            $link.on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                self.open_add_site({
+                    tab: origin.tab,
+                    category: origin.category,
+                    subcategory: origin.subcategory
+                });
+            });
+
+            return $link;
         },
 
         correct_tryfeed_title: function () {

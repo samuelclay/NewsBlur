@@ -7190,6 +7190,33 @@ body {
     background: #C4941B;
 }
 
+.NB-tryfeed-go-back {
+    padding: 6px 16px 8px;
+    background: linear-gradient(135deg, #f0f4ee 0%, #e6ede2 100%);
+    border-bottom: 1px solid rgba(106, 168, 79, 0.15);
+    font-size: 12px;
+    cursor: pointer;
+    color: rgba(58, 50, 38, 0.55);
+}
+
+.NB-tryfeed-go-back:hover {
+    background: linear-gradient(135deg, #e8efe5 0%, #dfe8da 100%);
+}
+
+.NB-tryfeed-go-back-breadcrumb {
+    color: #4a8a2a;
+    font-weight: 600;
+}
+
+.NB-tryfeed-go-back:hover .NB-tryfeed-go-back-breadcrumb {
+    text-decoration: underline;
+}
+
+.NB-tryfeed-go-back-separator {
+    color: rgba(58, 50, 38, 0.4);
+    font-weight: normal;
+}
+
 .NB-feedbar .NB-taskbar-nav {
     float: right;
     margin: 6px 18px 0 0;
