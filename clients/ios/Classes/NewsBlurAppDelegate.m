@@ -1451,7 +1451,7 @@
 
         UISheetPresentationController *sheet = askAINavController.sheetPresentationController;
         // Start with only medium detent - AskAIViewController will add large when answer mode
-        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent];
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
         sheet.prefersGrabberVisible = YES;
         sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
         // Allow interaction with story content behind the sheet when at medium height
