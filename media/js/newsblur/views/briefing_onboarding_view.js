@@ -12,7 +12,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         "blur .NB-briefing-custom-prompt-input": "update_custom_prompt",
         "mouseenter .NB-briefing-section-hint-icon": "show_hint_popover",
         "mouseleave .NB-briefing-section-hint-icon": "hide_hint_popover",
-        "click .NB-briefing-add-custom-section": "add_custom_section",
+        "click .NB-briefing-add-keyword-section": "add_custom_section",
         "click .NB-briefing-remove-custom-section": "remove_custom_section",
         "click .NB-briefing-notification-option": "toggle_notification_type"
     },
@@ -135,6 +135,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                 ])
             ]),
             this.make_sections_ui(prefs),
+            this.make_keywords_ui(prefs),
             this.make_notification_section(prefs)
         ]));
 
@@ -205,19 +206,6 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             return this.make_section_item(def, sections[def.key]);
         }, this));
 
-        var custom_prompts = prefs.custom_section_prompts || [];
-        for (var i = 0; i < custom_prompts.length; i++) {
-            var custom_key = 'custom_' + (i + 1);
-            items.push(this.make_custom_section_item(i + 1, custom_prompts[i], sections[custom_key]));
-        }
-
-        if (custom_prompts.length < NEWSBLUR.MAX_CUSTOM_SECTIONS) {
-            items.push($.make('div', { className: 'NB-briefing-add-custom-section', role: 'button' }, [
-                $.make('span', { className: 'NB-briefing-add-custom-icon' }, '+'),
-                'Add custom section'
-            ]));
-        }
-
         var $section = this.make_section('Sections', 'Choose which sections appear in your briefing', [
             $.make('div', { className: 'NB-briefing-sections' }, items)
         ]);
@@ -226,6 +214,28 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                 'Sections are only included when matching stories are found.')
         );
         return $section;
+    },
+
+    make_keywords_ui: function (prefs) {
+        var sections = prefs.sections || {};
+        var custom_prompts = prefs.custom_section_prompts || [];
+        var items = [];
+
+        for (var i = 0; i < custom_prompts.length; i++) {
+            var custom_key = 'custom_' + (i + 1);
+            items.push(this.make_keyword_section_item(i + 1, custom_prompts[i], sections[custom_key]));
+        }
+
+        if (custom_prompts.length < NEWSBLUR.MAX_CUSTOM_SECTIONS) {
+            items.push($.make('div', { className: 'NB-briefing-add-keyword-section', role: 'button' }, [
+                $.make('span', { className: 'NB-briefing-add-custom-icon' }, '+'),
+                'Add keyword section'
+            ]));
+        }
+
+        return this.make_section('Keyword sections', 'Add keyword filters that create their own briefing section. All keywords must match.', [
+            $.make('div', { className: 'NB-briefing-sections NB-briefing-keyword-sections' }, items)
+        ]);
     },
 
     make_style_chooser: function () {
@@ -282,7 +292,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         ]);
     },
 
-    make_custom_section_item: function (index, prompt, is_enabled) {
+    make_keyword_section_item: function (index, prompt, is_enabled) {
         var custom_key = 'custom_' + index;
         var $item = $.make('div', {
             className: 'NB-briefing-section-item NB-briefing-section-custom' + (is_enabled ? ' NB-active' : ''),
@@ -292,7 +302,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             $.make('div', { className: 'NB-briefing-section-checkbox' }),
             $.make('div', { className: 'NB-briefing-section-label' }, [
                 $.make('div', { className: 'NB-briefing-section-name' }, [
-                    'Custom section ' + index,
+                    'Keyword section ' + index,
                     $.make('img', {
                         className: 'NB-briefing-remove-custom-section',
                         'data-custom-index': index,
@@ -300,7 +310,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                         src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/close.svg'
                     })
                 ]),
-                $.make('div', { className: 'NB-briefing-section-subtitle' }, 'Custom section from your prompt')
+                $.make('div', { className: 'NB-briefing-section-subtitle' }, 'Matches story titles containing all keywords')
             ])
         ]);
 
@@ -309,7 +319,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
                 type: 'text',
                 className: 'NB-briefing-custom-prompt-input',
                 'data-custom-index': index,
-                placeholder: 'e.g. Summarize AI/ML news',
+                placeholder: 'e.g. Claude Code',
                 value: prompt || ''
             }),
             $.make('span', { className: 'NB-briefing-section-hint-icon' }, '\u24D8')
@@ -318,15 +328,15 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
 
         $item.append($.make('div', { className: 'NB-briefing-section-hint-popover' }, [
             $.make('div', { className: 'NB-briefing-section-hint-content' }, [
-                $.make('div', { className: 'NB-briefing-section-hint-title' }, 'Custom Section Prompt'),
+                $.make('div', { className: 'NB-briefing-section-hint-title' }, 'Keyword Section'),
                 $.make('div', { className: 'NB-briefing-section-hint-text' },
-                    'Write a prompt describing what you want this section to cover. Relevant stories will be selected and an appropriate section header generated.'),
+                    'Enter keywords to create a section for matching stories. All keywords must appear in the story title.'),
                 $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, 'Examples'),
                 $.make('ul', { className: 'NB-briefing-section-hint-examples' }, [
-                    $.make('li', 'Summarize AI and machine learning news'),
-                    $.make('li', 'Focus on climate and environment stories'),
-                    $.make('li', 'What\'s happening in tech policy and regulation'),
-                    $.make('li', 'Stories about open source projects')
+                    $.make('li', 'Claude Code'),
+                    $.make('li', 'machine learning'),
+                    $.make('li', 'open source'),
+                    $.make('li', 'climate change')
                 ])
             ])
         ]));
@@ -493,9 +503,9 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
         var new_index = this._custom_prompts.length;
         var custom_key = 'custom_' + new_index;
 
-        var $sections_container = this.$('.NB-briefing-sections');
-        var $add_btn = $sections_container.find('.NB-briefing-add-custom-section');
-        var $new_item = this.make_custom_section_item(new_index, '', true);
+        var $sections_container = this.$('.NB-briefing-keyword-sections');
+        var $add_btn = $sections_container.find('.NB-briefing-add-keyword-section');
+        var $new_item = this.make_keyword_section_item(new_index, '', true);
         $add_btn.before($new_item);
 
         if (this._custom_prompts.length >= NEWSBLUR.MAX_CUSTOM_SECTIONS) {

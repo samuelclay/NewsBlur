@@ -123,12 +123,10 @@ def _build_system_prompt(
         custom_key = "custom_%d" % (i + 1)
         if active_sections.get(custom_key, False) and prompt:
             section_lines.append(
-                '%d. Custom section (KEY: %s) — The reader has requested a custom section with this prompt: "%s". '
-                "Generate an appropriate section header for this content. "
-                "ONLY include stories that are genuinely and directly about this topic. "
-                "If no stories clearly match this prompt, do NOT include this section at all — "
-                "do not stretch or loosely interpret the prompt to fit unrelated stories."
-                % (num, custom_key, prompt)
+                '%d. Keyword section (KEY: %s) — The reader has a keyword section that matches stories '
+                'with these keywords: "%s". Generate a section header based on the keywords. '
+                "ONLY include stories whose CATEGORY field is set to %s."
+                % (num, custom_key, prompt, custom_key)
             )
             num += 1
 

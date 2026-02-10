@@ -4012,11 +4012,11 @@ a.mention, a.mention-group {
 }
 
 /* darkmode.css: Briefing sections dark mode */
-.NB-dark .NB-briefing-add-custom-section {
+.NB-dark .NB-briefing-add-keyword-section {
     color: #7BA3D0;
 }
 
-.NB-dark .NB-briefing-add-custom-section:hover {
+.NB-dark .NB-briefing-add-keyword-section:hover {
     background: rgba(92, 137, 196, 0.12);
 }
 
