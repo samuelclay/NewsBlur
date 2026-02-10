@@ -15,7 +15,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMultiAlternatives, mail_admins
-from django.db import IntegrityError, models
+from django.db import IntegrityError, models, transaction
 from django.db.models import Avg, Count, Q, Sum
 from django.db.models.signals import post_save
 from django.db.utils import DatabaseError
@@ -81,6 +81,7 @@ class Profile(models.Model):
     is_premium_trial = models.BooleanField(default=None, blank=True, null=True)
     is_grandfathered = models.BooleanField(default=False, blank=True, null=True)
     grandfather_expires = models.DateTimeField(blank=True, null=True)
+    has_scoped_classifiers = models.BooleanField(default=False, blank=True, null=True)
 
     def __str__(self):
         return "%s <%s>%s%s%s" % (
@@ -526,6 +527,14 @@ class Profile(models.Model):
             % (self.is_premium, self.is_archive, self.is_pro),
         )
 
+        # Atomically check premium to prevent duplicate processing from concurrent webhooks
+        with transaction.atomic():
+            fresh = Profile.objects.select_for_update().get(pk=self.pk)
+            if fresh.is_premium:
+                logging.user(self.user, "~FMactivate_premium: already premium, skipping")
+                return True
+            Profile.objects.filter(pk=self.pk).update(is_premium=True)
+
         if self.is_archive or self.is_pro:
             logging.user(
                 self.user,
@@ -601,13 +610,21 @@ class Profile(models.Model):
             "~FMTier change: activate_archive (was: premium=%s, archive=%s, pro=%s)"
             % (self.is_premium, self.is_archive, self.is_pro),
         )
+
+        # Atomically check archive to prevent duplicate processing from concurrent webhooks
+        with transaction.atomic():
+            fresh = Profile.objects.select_for_update().get(pk=self.pk)
+            if fresh.is_archive:
+                logging.user(self.user, "~FMactivate_archive: already archive, skipping")
+                return True
+            was_premium = fresh.is_premium
+            was_archive = fresh.is_archive
+            was_pro = fresh.is_pro
+            Profile.objects.filter(pk=self.pk).update(is_premium=True, is_archive=True)
+
         UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
 
         subs = UserSubscription.objects.filter(user=self.user)
-
-        was_premium = self.is_premium
-        was_archive = self.is_archive
-        was_pro = self.is_pro
 
         if not was_archive:
             active_subs = subs.filter(active=True).count()
@@ -688,10 +705,18 @@ class Profile(models.Model):
             "~FMTier change: activate_pro (was: premium=%s, archive=%s, pro=%s)"
             % (self.is_premium, self.is_archive, self.is_pro),
         )
-        subs = UserSubscription.objects.filter(user=self.user)
 
-        was_premium = self.is_premium
-        was_archive = self.is_archive
+        # Atomically check pro to prevent duplicate processing from concurrent webhooks
+        with transaction.atomic():
+            fresh = Profile.objects.select_for_update().get(pk=self.pk)
+            if fresh.is_pro:
+                logging.user(self.user, "~FMactivate_pro: already pro, skipping")
+                return True
+            was_premium = fresh.is_premium
+            was_archive = fresh.is_archive
+            Profile.objects.filter(pk=self.pk).update(is_premium=True, is_archive=True, is_pro=True)
+
+        subs = UserSubscription.objects.filter(user=self.user)
         was_pro = self.is_pro
 
         if not was_pro:
@@ -936,7 +961,12 @@ class Profile(models.Model):
                     paypal_subscription = None
 
                 if paypal_subscription:
-                    if paypal_subscription["status"] in ["APPROVAL_PENDING", "APPROVED", "ACTIVE", "SUSPENDED"]:
+                    if paypal_subscription["status"] in [
+                        "APPROVAL_PENDING",
+                        "APPROVED",
+                        "ACTIVE",
+                        "SUSPENDED",
+                    ]:
                         active_plan = paypal_subscription.get("plan_id", None)
                         if not active_plan:
                             active_plan = paypal_subscription["plan"]["name"]

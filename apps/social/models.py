@@ -1652,8 +1652,8 @@ class MSocialSubscription(mongo.Document):
                     else 0
                 ),
                 "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user_profile.is_premium),
-                "url_regex": apply_classifier_url_regex(
-                    classifier_urls, story, user_is_pro=user_profile.is_pro
+                "url_regex": (
+                    apply_classifier_url_regex(classifier_urls, story) if user_profile.is_pro else 0
                 ),
             }
 

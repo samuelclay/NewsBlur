@@ -289,22 +289,22 @@ def load_social_stories(request, user_id, username=None):
             ),
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user.profile.is_pro),
-            "title_regex": apply_classifier_title_regex(
-                classifier_titles, story, user_is_pro=user.profile.is_pro
+            "title": apply_classifier_titles(classifier_titles, story),
+            "title_regex": (
+                apply_classifier_title_regex(classifier_titles, story) if user.profile.is_pro else 0
             ),
             "text": (
-                apply_classifier_texts(classifier_texts, story, user_is_pro=user.profile.is_pro)
+                apply_classifier_texts(classifier_texts, story)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
             "text_regex": (
-                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user.profile.is_pro)
-                if user.profile.premium_available_text_classifiers
+                apply_classifier_text_regex(classifier_texts, story)
+                if user.profile.is_pro and user.profile.premium_available_text_classifiers
                 else 0
             ),
             "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
-            "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user.profile.is_pro),
+            "url_regex": (apply_classifier_url_regex(classifier_urls, story) if user.profile.is_pro else 0),
         }
 
     classifiers = sort_classifiers_by_feed(
@@ -416,6 +416,12 @@ def load_river_blurblog(request):
     story_hashes_to_dates = dict(list(zip(story_hashes, story_dates)))
     sorted_mstories = reversed(sorted(mstories, key=lambda x: int(story_hashes_to_dates[str(x.story_hash)])))
     stories = Feed.format_stories(sorted_mstories)
+    # Exclude briefing feed stories from social/shared rivers
+    if stories:
+        social_feed_id_set = list(set(s["story_feed_id"] for s in stories))
+        allowed_feed_ids = set(Feed.exclude_briefing_feeds(social_feed_id_set))
+        if len(allowed_feed_ids) < len(social_feed_id_set):
+            stories = [s for s in stories if s["story_feed_id"] in allowed_feed_ids]
     for s, story in enumerate(stories):
         timestamp = story_hashes_to_dates[story["story_hash"]]
         story["story_date"] = datetime.datetime.fromtimestamp(timestamp)
@@ -501,22 +507,22 @@ def load_river_blurblog(request):
             ),
             "author": apply_classifier_authors(classifier_authors, story),
             "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user.profile.is_pro),
-            "title_regex": apply_classifier_title_regex(
-                classifier_titles, story, user_is_pro=user.profile.is_pro
+            "title": apply_classifier_titles(classifier_titles, story),
+            "title_regex": (
+                apply_classifier_title_regex(classifier_titles, story) if user.profile.is_pro else 0
             ),
             "text": (
-                apply_classifier_texts(classifier_texts, story, user_is_pro=user.profile.is_pro)
+                apply_classifier_texts(classifier_texts, story)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
             "text_regex": (
-                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user.profile.is_pro)
-                if user.profile.premium_available_text_classifiers
+                apply_classifier_text_regex(classifier_texts, story)
+                if user.profile.is_pro and user.profile.premium_available_text_classifiers
                 else 0
             ),
             "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
-            "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user.profile.is_pro),
+            "url_regex": (apply_classifier_url_regex(classifier_urls, story) if user.profile.is_pro else 0),
         }
         if story["story_hash"] in shared_stories:
             story["shared"] = True

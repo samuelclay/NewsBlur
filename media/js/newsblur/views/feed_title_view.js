@@ -247,6 +247,9 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         if ((starred_feed && starred_feed.get('count')) || feed.is_starred()) {
             extra_classes += ' unread_starred';
         }
+        if (feed.is_briefing_section && feed.is_briefing_section()) {
+            extra_classes += ' unread_positive NB-briefing-section-feed';
+        }
 
         if (feed.is_feed()) {
             if (feed.get('has_exception') && feed.get('exception_type') == 'feed') {
@@ -383,6 +386,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                 model: this.model,
                 $feed: this.$el
             });
+        } else if (this.model.is_briefing_section && this.model.is_briefing_section()) {
+            NEWSBLUR.reader.open_daily_briefing({
+                section: this.model.get('section_key')
+            });
         } else {
             NEWSBLUR.reader.open_feed(this.model.id, { $feed: this.$el });
         }
@@ -417,6 +424,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         if (dblclick_pref == "ignore") return;
         if (this.options.type == "story") return;
         if (this.options.starred_tag) return;
+        if (this.options.briefing_section) return;
         if (this.options.feed_chooser) return;
         if ($('.NB-modal-feedchooser').is(':visible')) return;
 
@@ -446,6 +454,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
 
     mark_feed_as_read: function (e, days) {
         if (this.options.starred_tag) return;
+        if (this.options.briefing_section) return;
         if (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -509,6 +518,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     show_manage_menu: function (e) {
         if (this.options.feed_chooser) return;
 
+        if (this.model.is_briefing_section && this.model.is_briefing_section()) return;
         var feed_type = this.model.is_social() ? 'socialfeed' :
             this.model.is_starred() ? 'starred' :
                 this.model.is_search() ? 'search' :

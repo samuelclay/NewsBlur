@@ -51,6 +51,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.favicons = {};
         this.stories = new NEWSBLUR.Collections.Stories();
         this.starred_feeds = new NEWSBLUR.Collections.StarredFeeds();
+        this.briefing_section_feeds = new NEWSBLUR.Collections.BriefingSectionFeeds();
         this.searches_feeds = new NEWSBLUR.Collections.SearchesFeeds();
         this.queued_read_stories = {};
         this.queued_realtime_stories = {};
@@ -254,6 +255,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
         if (!story.get('read_status')) {
             story.set('read_status', 1);
+            // assetmodel.js: Keep briefing_data in sync so re-renders preserve read status
+            this.stories.sync_briefing_read_status(story.get('story_hash'), 1);
 
             if (NEWSBLUR.Globals.is_authenticated) {
                 if (!('hashes' in this.queued_read_stories)) { this.queued_read_stories['hashes'] = []; }
@@ -876,6 +879,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'request_type': 'GET'
         });
 
+    },
+
+    fetch_briefing_stories: function (callback, error_callback) {
+        this.make_request('/briefing/stories', {}, callback, error_callback, {
+            'ajax_group': 'feed',
+            'request_type': 'GET'
+        });
+    },
+
+    generate_briefing: function (callback, error_callback) {
+        this.make_request('/briefing/generate', {}, callback, error_callback, {
+            'request_type': 'POST'
+        });
     },
 
     complete_river: function (feed_id, feeds, page, callback) {
@@ -2320,6 +2336,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     delete_shared_stories: function (timestamp, callback, error_callback) {
         this.make_request('/profile/delete_shared_stories', {
             timestamp: timestamp
+        }, callback, error_callback);
+    },
+
+    count_classifiers: function (callback, error_callback) {
+        this.make_request('/profile/count_classifiers', {}, callback, error_callback);
+    },
+
+    delete_classifiers: function (categories, callback, error_callback) {
+        this.make_request('/profile/delete_classifiers', {
+            'categories': categories
         }, callback, error_callback);
     },
 

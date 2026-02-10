@@ -272,6 +272,27 @@ NEWSBLUR.log = function(msg) {
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/search.svg';
                 if (feed_id == "archive")
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/archive.svg';
+                if (_.string.startsWith(feed_id, 'briefing:')) {
+                    var BRIEFING_SECTION_ICONS = {
+                        'trending_unread': 'indicator-unread-gray.svg',
+                        'long_read': 'scroll.svg',
+                        'classifier_match': 'train.svg',
+                        'follow_up': 'boomerang.svg',
+                        'trending_global': 'discover.svg',
+                        'duplicates': 'venn.svg',
+                        'quick_catchup': 'pulse.svg',
+                        'emerging_topics': 'growth-rocket-gray.svg',
+                        'contrarian_views': 'stack.svg',
+                        'custom_1': 'prompt.svg',
+                        'custom_2': 'prompt.svg',
+                        'custom_3': 'prompt.svg',
+                        'custom_4': 'prompt.svg',
+                        'custom_5': 'prompt.svg'
+                    };
+                    var section_key = feed_id.replace('briefing:', '');
+                    var icon = BRIEFING_SECTION_ICONS[section_key] || 'briefing.svg';
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/' + icon;
+                }
                 if (_.string.startsWith(feed_id, 'starred:'))
                     return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/tag.svg';
                 if (_.string.startsWith(feed_id, 'feed:'))
@@ -280,8 +301,11 @@ NEWSBLUR.log = function(msg) {
                     return $.favicon(NEWSBLUR.assets.get_feed(feed_id));
             }
             
-            // Feed is a model - check for custom feed icon first
+            // Feed is a model - check for briefing section or custom feed icon first
             var feed_id = feed.id;
+            if (_.isString(feed_id) && _.string.startsWith(feed_id, 'briefing:')) {
+                return $.favicon(feed_id);
+            }
             if (_.isNumber(feed_id)) {
                 var custom_feed_icon = NEWSBLUR.assets && NEWSBLUR.assets.get_feed_icon(feed_id);
                 if (custom_feed_icon && custom_feed_icon.icon_type && custom_feed_icon.icon_type !== 'none') {

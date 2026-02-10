@@ -6345,9 +6345,11 @@ body {
 }
 
 .NB-taskbar-info {
-    position: absolute;
-    top: 0;
-    left: 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
 }
 
 /* ============== */
@@ -6643,9 +6645,65 @@ body {
     display: none;
 }
 
+/* reader.css: Daily Briefing sidebar entry — hidden by default like other river headers */
+.NB-feeds-header-river-briefing-container {
+    display: none;
+}
+
+.NB-feeds-header-river-briefing-container.NB-block {
+    display: block;
+}
+
+/* reader.css: Briefing sections folder — expandable sub-items under Daily Briefing */
+.NB-briefing-sections-folder {
+    display: none;
+}
+
+.NB-briefing-section-feeds {
+    background-color: #dfdcd5;
+}
+
+.NB-briefing-section-feeds .feed {
+    background-color: #dfdcd5;
+}
+
+/* reader.css: Briefing section count — muted outline pill, not an unread indicator */
+.NB-briefing-section-feeds .unread_count_positive {
+    background-color: transparent;
+    color: #808080;
+    border: 1.5px solid #a0a0a0;
+    font-weight: 600;
+    text-shadow: none;
+    font-size: 10px;
+    padding: 1px 4px;
+    line-height: 13px;
+    min-width: 14px;
+    text-align: center;
+}
+
+/* reader.css: Per-section icons — tint to muted slate-blue via $.favicon() */
+.NB-briefing-section-feed .feed_favicon img {
+    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
+}
+
+/* reader.css: Dark mode for briefing section feeds */
+.NB-dark .NB-briefing-section-feeds {
+    background-color: #292b2e;
+}
+
+.NB-dark .NB-briefing-section-feeds .feed {
+    background-color: #292b2e;
+}
+
+/* reader.css: Dark mode briefing section count outline pill */
+.NB-dark .NB-briefing-section-feeds .unread_count_positive {
+    color: #888;
+    border-color: #555;
+}
+
 .NB-staff-badge {
     position: absolute;
-    right: 8px;
+    right: 28px;
     top: 50%;
     transform: translateY(-50%);
     color: #8B7355;
@@ -6653,6 +6711,7 @@ body {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.3px;
+    pointer-events: none;
 }
 
 /* ============================ */
@@ -6915,10 +6974,107 @@ body {
     align-self: flex-end;
 }
 
-#story_taskbar .NB-tryfeed-add,
-#story_taskbar .NB-tryfeed-follow,
-#story_taskbar .NB-tryfeed-signup {
-    display: none;
+/* ========================== */
+/* = Tryfeed Subscribe Banner = */
+/* ========================== */
+
+.NB-tryfeed-subscribe-banner,
+.NB-tryfeed-follow-banner,
+.NB-tryfeed-signup-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(106, 168, 79, 0.15);
+    cursor: pointer;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.NB-tryfeed-subscribe-banner,
+.NB-tryfeed-follow-banner {
+    background: linear-gradient(135deg, #e8f0e6 0%, #dce8d5 100%);
+}
+
+.NB-tryfeed-subscribe-banner:hover,
+.NB-tryfeed-follow-banner:hover {
+    background: linear-gradient(135deg, #dfe9dc 0%, #d3dfcb 100%);
+}
+
+.NB-tryfeed-signup-banner {
+    background: linear-gradient(135deg, #f5f0e6 0%, #ece5d5 100%);
+    border-bottom-color: rgba(217, 166, 33, 0.15);
+}
+
+.NB-tryfeed-signup-banner:hover {
+    background: linear-gradient(135deg, #efe9d8 0%, #e6dece 100%);
+}
+
+.NB-tryfeed-banner-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 4px;
+}
+
+.NB-tryfeed-banner-logo {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    background: url(/media/img/logo_512.png) no-repeat center center;
+    background-size: 28px;
+    filter: drop-shadow(0 1px 4px rgba(217, 166, 33, 0.3));
+}
+
+.NB-tryfeed-banner-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-tryfeed-banner-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3a3226;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.NB-tryfeed-banner-subtext {
+    font-size: 11px;
+    color: rgba(58, 50, 38, 0.55);
+    margin-top: 2px;
+    line-height: 1.3;
+}
+
+.NB-tryfeed-banner-button {
+    flex-shrink: 0;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+.NB-tryfeed-banner-button-green {
+    background: #6AA84F;
+}
+
+.NB-tryfeed-subscribe-banner:hover .NB-tryfeed-banner-button-green,
+.NB-tryfeed-follow-banner:hover .NB-tryfeed-banner-button-green {
+    background: #5C9441;
+}
+
+.NB-tryfeed-banner-button-gold {
+    background: #D9A621;
+}
+
+.NB-tryfeed-signup-banner:hover .NB-tryfeed-banner-button-gold {
+    background: #C4941B;
 }
 
 .NB-feedbar .NB-taskbar-nav {
@@ -7120,16 +7276,6 @@ body {
 }
 
 
-#story_taskbar .NB-tryfeed-add,
-#story_taskbar .NB-tryfeed-follow,
-#story_taskbar .NB-tryout-signup {
-    margin: 0px auto 0px;
-    width: 80px;
-    height: 14px;
-    text-align: center;
-    cursor: pointer;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
-}
 
 .NB-narrow #story_taskbar .NB-task-title {
     display: none;
@@ -7139,14 +7285,6 @@ body {
     padding: 0;
 }
 
-#story_taskbar .NB-modal-submit {
-    flex-grow: 1;
-    margin: 0 6px;
-    display: flex;
-    align-items: center;
-    /* height: 100%; */
-    place-self: flex-end;
-}
 
 #story_taskbar .NB-taskbar-options-container {
     flex-shrink: 1;
@@ -7959,7 +8097,7 @@ form.opml_import_form input {
     padding: 18px;
     display: flex;
     flex-direction: column;
-    min-width: 700px;
+    min-width: 760px;
 }
 
 /* Loading indicator positioned top right */
@@ -8410,30 +8548,150 @@ form.opml_import_form input {
     align-items: center;
 }
 
+/* Row 1: Feed dropdown + search (full width) */
 .NB-manage-filter-row-1 {
     margin-bottom: 10px;
+}
+
+.NB-manage-filter-row-1 .NB-manage-filter-feed {
+    flex: 0 0 auto;
 }
 
 .NB-manage-filter-row-1 .NB-manage-filter-search {
     flex: 1;
 }
 
-.NB-manage-filter-row-1 .NB-manage-filter-sentiment {
+/* Row 2: Sentiment (left) + Scope (right) */
+.NB-manage-filter-row-2 {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 8px;
+}
+
+.NB-manage-filter-row-2 .NB-manage-filter-sentiment {
     flex: 0 0 auto;
 }
 
-.NB-manage-filter-row-2 {
+.NB-manage-filter-row-2 .NB-manage-filter-scope {
+    flex: 0 0 auto;
+}
+
+/* Row 3: Type control (full width) */
+.NB-manage-filter-row-3 {
     display: flex;
 }
 
-.NB-manage-filter-row-2 .NB-manage-types-control {
+.NB-manage-filter-row-3 .NB-manage-types-control {
     width: 100%;
     display: flex;
 }
 
-.NB-manage-filter-row-2 .NB-manage-types-control li {
+.NB-manage-filter-row-3 .NB-manage-types-control li {
     flex: 1;
     justify-content: center;
+}
+
+/* Scope filter icons in manage tab */
+.NB-manage-scope-icon {
+    width: 12px;
+    height: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 2px;
+}
+
+.NB-manage-scope-icon svg {
+    width: 12px;
+    height: 12px;
+}
+
+.NB-manage-scope-icon-feed {
+    color: #777;
+}
+
+.NB-manage-scope-icon-folder {
+    color: #3B82F6;
+}
+
+.NB-manage-scope-icon-global {
+    color: #8B5CF6;
+}
+
+.NB-manage-scope-control li.NB-active .NB-manage-scope-icon-feed {
+    color: #555;
+}
+
+.NB-manage-scope-control li.NB-active .NB-manage-scope-icon-folder {
+    color: #2563EB;
+}
+
+.NB-manage-scope-control li.NB-active .NB-manage-scope-icon-global {
+    color: #7C3AED;
+}
+
+/* Pro banner for scope filter */
+.NB-manage-scope-pro-banner {
+    display: none;
+    width: 100%;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    border: 1px solid #F59E0B;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #92400E;
+    text-align: center;
+    animation: scope-banner-in 0.3s ease-out;
+}
+
+.NB-manage-scope-pro-banner.NB-visible {
+    display: block;
+}
+
+.NB-manage-scope-pro-banner a {
+    color: #D97706;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.NB-manage-scope-pro-banner a:hover {
+    color: #B45309;
+}
+
+@keyframes scope-banner-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scoped section title */
+.NB-manage-scoped-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #EDE9FE, #E0E7FF) !important;
+    color: #4C1D95 !important;
+}
+
+.NB-manage-scoped-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(124, 58, 237, 0.15);
+    border-radius: 9px;
+    color: #6D28D9;
 }
 
 /* Type filter count badges */
@@ -8535,6 +8793,10 @@ form.opml_import_form input {
 
 .NB-manage-folder-feeds {
     padding-left: 12px;
+}
+
+.NB-manage-folder-classifiers {
+    margin-bottom: 8px;
 }
 
 .NB-manage-feed {
@@ -9355,6 +9617,54 @@ form.opml_import_form input {
     text-decoration: underline;
 }
 
+/* ====================================== */
+/* = Briefing Classifier Pills          = */
+/* ====================================== */
+
+/* reader.css: Classifier pills in briefing summary (non-interactive, inline) */
+.NB-briefing-classifier {
+    display: inline-flex;
+    align-items: center;
+    float: none;
+    margin: 0 4px 0 0;
+    padding: 0 8px 0 20px;
+    vertical-align: middle;
+    cursor: default;
+    font-size: 10px;
+    background-color: #34912E;
+    border: 1px solid #202020;
+    border-radius: 14px;
+    box-shadow: 1px 1px 1px #BDC0D7;
+    position: relative;
+}
+
+/* reader.css: Classifier icon is now an <img> element with inline styles */
+.NB-briefing-classifier .NB-classifier-icon-like {
+    width: 12px;
+    height: 12px;
+    opacity: 1;
+}
+
+.NB-briefing-classifier .NB-classifier-icon-dislike {
+    display: none;
+}
+
+.NB-briefing-classifier label {
+    cursor: default;
+    color: white;
+    padding: 1px 0;
+}
+
+.NB-briefing-classifier label b {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: normal;
+}
+
+.NB-briefing-classifier label span {
+    color: white;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
 /* =============================== */
 /* = Regex Classifier Input      = */
 /* =============================== */
@@ -9597,6 +9907,240 @@ form.opml_import_form input {
     text-decoration: underline;
 }
 
+/* Type badge: scope toggle icons + type label inside classifier pill */
+.NB-classifier-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 5px 2px 2px;
+    border-radius: 3px;
+    margin-right: 4px;
+    vertical-align: middle;
+    background: rgba(128, 128, 128, 0.15);
+    color: #777;
+    line-height: 1;
+}
+
+/* Feed-type classifier badge (Site) — no scope controls */
+.NB-classifier-type-badge.NB-classifier-type-feed {
+    cursor: default;
+    padding-left: 3px;
+}
+
+/* Scope toggle group: three icons side by side */
+.NB-classifier-scope-toggles {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+}
+
+/* Individual scope toggle icon */
+.NB-scope-toggle {
+    display: inline-flex;
+    width: 11px;
+    height: 11px;
+    cursor: pointer;
+    opacity: 0.25;
+    transition: opacity 0.15s, transform 0.15s, color 0.15s;
+    color: inherit;
+    flex-shrink: 0;
+    border-radius: 2px;
+    padding: 1px;
+    position: relative;
+}
+
+.NB-scope-toggle svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.NB-scope-toggle:hover {
+    opacity: 0.7;
+}
+
+/* Instant tooltip for scope toggles (appended to body) */
+.NB-scope-tooltip {
+    position: fixed;
+    z-index: 100000;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 4px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    line-height: 1.3;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Active scope toggle — fully visible with scope color */
+.NB-scope-toggle.NB-active {
+    opacity: 1;
+}
+
+.NB-scope-toggle-feed.NB-active {
+    color: #777;
+}
+
+.NB-scope-toggle-folder.NB-active {
+    color: #3B82F6;
+}
+
+.NB-scope-toggle-global.NB-active {
+    color: #8B5CF6;
+}
+
+.NB-classifier-type-label {
+    line-height: 1;
+}
+
+/* Liked classifier — badge adapts to green background */
+.NB-classifier-like .NB-classifier-type-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-classifier-like .NB-scope-toggle {
+    opacity: 0.3;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-classifier-like .NB-scope-toggle:hover {
+    opacity: 0.6;
+}
+
+.NB-classifier-like .NB-scope-toggle.NB-active {
+    opacity: 1;
+}
+
+.NB-classifier-like .NB-scope-toggle-feed.NB-active {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-classifier-like .NB-scope-toggle-folder.NB-active {
+    color: #93c5fd;
+}
+
+.NB-classifier-like .NB-scope-toggle-global.NB-active {
+    color: #c4b5fd;
+}
+
+/* Disliked classifier — badge adapts to red background */
+.NB-classifier-dislike .NB-classifier-type-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-classifier-dislike .NB-scope-toggle {
+    opacity: 0.3;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-classifier-dislike .NB-scope-toggle:hover {
+    opacity: 0.6;
+}
+
+.NB-classifier-dislike .NB-scope-toggle.NB-active {
+    opacity: 1;
+}
+
+.NB-classifier-dislike .NB-scope-toggle-feed.NB-active {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.NB-classifier-dislike .NB-scope-toggle-folder.NB-active {
+    color: #93c5fd;
+}
+
+.NB-classifier-dislike .NB-scope-toggle-global.NB-active {
+    color: #c4b5fd;
+}
+
+/* Scope popover */
+.NB-classifier-scope-popover {
+    position: absolute;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 4px 0;
+    min-width: 180px;
+    font-size: 12px;
+}
+
+.NB-scope-option {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    cursor: pointer;
+    color: #333;
+    gap: 8px;
+}
+
+.NB-scope-option:hover {
+    background: #f5f5f5;
+}
+
+.NB-scope-option.NB-active {
+    background: #EEF2FF;
+    color: #4338CA;
+    font-weight: 600;
+}
+
+.NB-scope-option .NB-scope-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.NB-scope-option .NB-scope-icon svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+.NB-scope-option .NB-scope-label {
+    flex: 1;
+}
+
+.NB-scope-option .NB-scope-lock {
+    color: #999;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.NB-scope-option .NB-scope-lock svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+}
+
+.NB-scope-upgrade-nudge {
+    padding: 6px 12px;
+    border-top: 1px solid #eee;
+    font-size: 11px;
+    color: #666;
+}
+
+.NB-scope-upgrade-nudge a {
+    color: #8B5CF6;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.NB-scope-upgrade-nudge a:hover {
+    text-decoration: underline;
+}
+
 /* ================================== */
 /* = Compact Classifier Dialog      = */
 /* ================================== */
@@ -9681,9 +10225,51 @@ form.opml_import_form input {
 }
 
 /* Feed items container */
-.NB-classifier-feed-items {
+.NB-classifier-feed-items,
+.NB-classifier-folder-items,
+.NB-classifier-global-items {
     clear: both;
     overflow: hidden;
+}
+
+/* Folder items separator */
+.NB-classifier-this-story+.NB-classifier-folder-items,
+.NB-classifier-feed-items+.NB-classifier-folder-items {
+    padding-top: 4px;
+    border-top: 1px dashed #ddd;
+    margin-top: 4px;
+}
+
+.NB-classifier-this-story+.NB-classifier-folder-items::before,
+.NB-classifier-feed-items+.NB-classifier-folder-items::before {
+    content: 'More from this folder';
+    display: block;
+    font-size: 9px;
+    color: #3B82F6;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 12px;
+}
+
+/* Global items separator */
+.NB-classifier-this-story+.NB-classifier-global-items,
+.NB-classifier-feed-items+.NB-classifier-global-items,
+.NB-classifier-folder-items+.NB-classifier-global-items {
+    padding-top: 4px;
+    border-top: 1px dashed #ddd;
+    margin-top: 4px;
+}
+
+.NB-classifier-this-story+.NB-classifier-global-items::before,
+.NB-classifier-feed-items+.NB-classifier-global-items::before,
+.NB-classifier-folder-items+.NB-classifier-global-items::before {
+    content: 'More from global filters';
+    display: block;
+    font-size: 9px;
+    color: #8B5CF6;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 12px;
 }
 
 /* Premium notice */
@@ -9994,20 +10580,23 @@ h5.NB-classifier-section-header {
 
 /* Archive notice - always visible for non-archive users */
 .NB-classifier-archive-notice,
-.NB-classifier-pro-notice {
+.NB-classifier-pro-notice,
+.NB-classifier-scope-notice {
     color: #807060;
     white-space: nowrap;
 }
 
 .NB-classifier-archive-notice a,
-.NB-classifier-pro-notice a {
+.NB-classifier-pro-notice a,
+.NB-classifier-scope-notice a {
     color: #d97706;
     font-weight: 600;
     text-decoration: none;
 }
 
 .NB-classifier-archive-notice a:hover,
-.NB-classifier-pro-notice a:hover {
+.NB-classifier-pro-notice a:hover,
+.NB-classifier-scope-notice a:hover {
     text-decoration: underline;
 }
 
@@ -10018,6 +10607,52 @@ h5.NB-classifier-section-header {
 
 .NB-classifier-pro-notice.NB-visible {
     display: block;
+}
+
+/* Scope notice - hidden by default, animated in when non-Pro clicks scope */
+.NB-classifier-scope-notice {
+    display: none;
+    opacity: 0;
+    transform: translateX(10px);
+}
+
+.NB-classifier-scope-notice.NB-visible {
+    display: block;
+    animation: scope-notice-in 0.3s ease-out forwards;
+}
+
+@keyframes scope-notice-in {
+    0% { opacity: 0; transform: translateX(10px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Shake animation on type badge when scope change is denied */
+.NB-classifier-type-badge.NB-shake {
+    animation: badge-shake 0.4s ease-in-out;
+}
+
+@keyframes badge-shake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-3px); }
+    30% { transform: translateX(3px); }
+    45% { transform: translateX(-2px); }
+    60% { transform: translateX(2px); }
+    75% { transform: translateX(-1px); }
+    90% { transform: translateX(1px); }
+}
+
+/* Flash toggle amber when denied */
+.NB-scope-toggle.NB-scope-toggle-denied {
+    opacity: 1 !important;
+    color: #d97706 !important;
+    transition: color 0.8s ease-out;
+}
+
+/* Denied tooltip styled amber */
+.NB-scope-tooltip.NB-scope-tooltip-denied {
+    background: #d97706;
+    color: #fff;
+    font-weight: 600;
 }
 
 /* =================== */
@@ -12809,8 +13444,6 @@ h5.NB-classifier-section-header {
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     min-width: 230px;
-    max-height: 240px;
-    overflow-y: auto;
     opacity: 0;
     visibility: hidden;
     transform: translateY(4px);
@@ -12922,6 +13555,57 @@ h5.NB-classifier-section-header {
 .NB-menu-ask-ai-option:last-child {
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
+}
+
+/* Thinking Toggle - inside model dropdown */
+.NB-thinking-toggle-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 8px 10px;
+    border-top: 1px solid #E8EAE4;
+    border-radius: 0 0 5px 5px;
+}
+
+.NB-thinking-toggle-segmented {
+    display: inline-flex;
+    background-color: #E8EAE4;
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+    flex: 1;
+}
+
+.NB-thinking-toggle-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #808080;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.NB-thinking-toggle-option:hover {
+    color: #505050;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-thinking-toggle-option.NB-selected {
+    background-color: white;
+    color: #303030;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.NB-thinking-toggle-icon {
+    width: 14px;
+    height: 14px;
 }
 
 /* =================== */
@@ -13205,8 +13889,6 @@ h5.NB-classifier-section-header {
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     min-width: 250px;
-    max-height: 240px;
-    overflow-y: auto;
     opacity: 0;
     visibility: hidden;
     transform: translateY(4px);
@@ -17517,6 +18199,18 @@ h5.NB-classifier-section-header {
     /* cyan */
 }
 
+.NB-premium-tier-features-archive li.NB-12 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/folder-open.svg');
+    filter: invert(45%) sepia(70%) saturate(1200%) hue-rotate(10deg) brightness(95%) contrast(100%);
+    /* brown-orange */
+}
+
+.NB-premium-tier-features-archive li.NB-13 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/world.svg');
+    filter: invert(35%) sepia(95%) saturate(2500%) hue-rotate(350deg) brightness(95%) contrast(105%);
+    /* red */
+}
+
 /* Pro tier icons with individual vivid colors */
 .NB-premium-tier-features-pro li.NB-1 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/stack.svg');
@@ -19055,6 +19749,95 @@ h5.NB-classifier-section-header {
     display: flex;
     flex-direction: column;
     gap: 4px;
+}
+
+/* Classifier delete pills */
+.NB-modal-account .NB-preference-delete-classifiers .NB-preference-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.NB-modal-account .NB-preference-classifier-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+/* Override .NB-modal-preferences .NB-preference .NB-preference-options label (line 18790) */
+.NB-modal-preferences .NB-preference .NB-preference-options .NB-classifier-pill {
+    float: none;
+    margin: 0;
+    padding: 6px 10px 6px 14px;
+}
+
+.NB-modal-account .NB-classifier-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #c0c0c0;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #505050;
+    background: #fff;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.NB-modal-account .NB-classifier-pill:hover {
+    border-color: #909090;
+    background: #f6f6f6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.NB-modal-account .NB-classifier-pill input[type="checkbox"] {
+    display: none;
+}
+
+.NB-modal-account .NB-classifier-pill.NB-checked {
+    background: #e8f5e9;
+    border-color: #4caf50;
+    color: #2e7d32;
+    box-shadow: 0 1px 3px rgba(76, 175, 80, 0.15);
+}
+
+.NB-modal-account .NB-classifier-pill.NB-checked .NB-classifier-pill-count {
+    background: #4caf50;
+    color: #fff;
+}
+
+.NB-modal-account .NB-classifier-pill-all {
+    font-weight: 600;
+}
+
+.NB-modal-account .NB-classifier-pill-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    background: rgba(0, 0, 0, 0.08);
+    color: #707070;
+    transition: all 0.15s ease;
+}
+
+.NB-modal-account .NB-classifier-pill-count:empty {
+    display: none;
+}
+
+.NB-modal-account .NB-preference-classifiers-count.NB-empty {
+    background: #f5f5f5;
+    color: #999;
+    border-color: #e0e0e0;
 }
 
 /* ================ */
@@ -23084,8 +23867,9 @@ h5.NB-classifier-section-header {
     display: none !important;
 }
 
-/* Social features preference cards */
-.NB-preference-disablesocial .NB-preference-options {
+/* Social features and briefing preference cards */
+.NB-preference-disablesocial .NB-preference-options,
+.NB-preference-briefing-enabled .NB-preference-options {
     display: flex;
     gap: 12px;
     width: 100%;
@@ -23167,7 +23951,7 @@ h5.NB-classifier-section-header {
     color: #505050;
     padding: 3px 0;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 6px;
 }
 
@@ -23175,6 +23959,7 @@ h5.NB-classifier-section-header {
     color: #5a9e5a;
     font-weight: bold;
     font-size: 11px;
+    margin-top: 1px;
 }
 
 /* Dark mode support */
@@ -28672,4 +29457,1106 @@ button.NB-merge-group-apply.NB-button:hover {
     background: #1E1E1E;
     color: #E0E0E0;
     box-shadow: 0 0 0 2px rgba(92, 137, 201, 0.4);
+}
+
+/* =============================== */
+/* = Daily Briefing - Group View = */
+/* =============================== */
+
+/* reader.css: Briefing group container */
+.NB-briefing-group {
+    border-bottom: 1px solid #E0E0DC;
+}
+
+.NB-briefing-group:last-child {
+    border-bottom: none;
+}
+
+/* reader.css: Briefing group header — styled like folder_title */
+.NB-briefing-group-header {
+    padding: 8px 10px 8px 12px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #68696B;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #EAECE5;
+    border-bottom: 1px solid #D8DBD2;
+    user-select: none;
+}
+
+.NB-briefing-group-header:hover {
+    background-color: #E1E6D7;
+}
+
+/* reader.css: Briefing collapse icon — reuses folder collapse pattern */
+.NB-briefing-group-collapse-icon {
+    width: 16px;
+    height: 16px;
+    background: transparent url('/media/embed/icons/circular/folder_collapse.png') no-repeat center center;
+    background-size: 16px;
+    opacity: 0.5;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.NB-briefing-group-header:hover .NB-briefing-group-collapse-icon {
+    opacity: 0.8;
+}
+
+.NB-briefing-group-header.NB-collapsed .NB-briefing-group-collapse-icon {
+    background-image: url('/media/embed/icons/circular/folder_expand.png');
+    background-size: 16px;
+}
+
+/* reader.css: Briefing date label */
+.NB-briefing-group-date {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* reader.css: Briefing story count badge */
+.NB-briefing-group-count {
+    font-size: 10px;
+    font-weight: normal;
+    color: #8A8B8D;
+    white-space: nowrap;
+}
+
+/* reader.css: Briefing summary toggle button (unused, kept for reference) */
+.NB-briefing-summary-toggle {
+    display: none;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 1px 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.NB-briefing-summary-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.NB-briefing-summary-toggle.NB-active {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.7);
+}
+
+/* reader.css: Briefing AI summary panel */
+.NB-briefing-group-summary {
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #404040;
+    background-color: #F5F6F2;
+    border-bottom: 1px solid #E0E0DC;
+}
+
+.NB-briefing-group-summary.NB-hidden {
+    display: none;
+}
+
+.NB-briefing-group-summary p {
+    margin: 0 0 8px;
+}
+
+.NB-briefing-group-summary p:last-child {
+    margin-bottom: 0;
+}
+
+.NB-briefing-group-summary h3 {
+    font-size: 13px;
+    font-weight: bold;
+    margin: 0 0 6px;
+    color: #303030;
+}
+
+.NB-briefing-group-summary ul {
+    margin: 4px 0;
+    padding-left: 18px;
+    list-style: disc;
+}
+
+.NB-briefing-group-summary li {
+    margin-bottom: 4px;
+}
+
+/* reader.css: Links in AI summary that reference stories */
+.NB-briefing-story-link {
+    color: #405BA8;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.NB-briefing-story-link:hover {
+    border-bottom-color: #405BA8;
+}
+
+/* reader.css: Favicons inline within briefing story links */
+.NB-briefing-inline-favicon {
+    display: inline-block;
+    max-width: 16px;
+    max-height: 16px;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 2px;
+    margin-top: -1px;
+    background-size: 16px 16px;
+    -webkit-mask-size: 16px 16px;
+    mask-size: 16px 16px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+img.NB-briefing-inline-favicon {
+    max-width: 16px;
+    max-height: 16px;
+}
+
+span.NB-briefing-inline-favicon {
+    font-size: 14px;
+    line-height: 16px;
+}
+
+/* reader.css: Section icons in briefing summary h3 headers (img embedded server-side) */
+.NB-briefing-section-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.1em;
+    margin-right: 0.3em;
+    filter: grayscale(1);
+}
+
+/* reader.css: Section icons in briefing settings/onboarding */
+.NB-briefing-section-item-icon {
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+    filter: grayscale(1);
+}
+
+/* reader.css: Briefing curated stories container */
+.NB-briefing-group-stories {
+    padding: 0;
+}
+
+/* reader.css: CSS transition for collapse/expand — avoids jQuery's overflow:hidden */
+.NB-briefing-group-stories.NB-collapsing {
+    transition: height 200ms ease;
+}
+
+/* reader.css: Individual story items in the briefing */
+.NB-briefing-story-item {
+    padding: 8px 12px;
+    border-bottom: 1px solid #EBEBEB;
+    cursor: default;
+}
+
+.NB-briefing-story-item:last-child {
+    border-bottom: none;
+}
+
+.NB-briefing-story-item:hover {
+    background-color: #F5F6F2;
+}
+
+/* reader.css: Story highlight animation when selected from summary link */
+.NB-briefing-story-highlighted {
+    background-color: #FFF8DC;
+    transition: background-color 0.3s ease;
+}
+
+/* reader.css: Feed info row in briefing story item */
+.NB-briefing-story-feed {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 3px;
+}
+
+.NB-briefing-story-favicon {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.NB-briefing-story-feed-title {
+    font-size: 10px;
+    color: #8A8B8D;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* reader.css: Story title link in briefing */
+.NB-briefing-story-title {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #303030;
+    text-decoration: none;
+    line-height: 1.3;
+    margin-bottom: 2px;
+}
+
+.NB-briefing-story-title:hover {
+    color: #405BA8;
+}
+
+/* reader.css: Story meta (author + date) */
+.NB-briefing-story-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: #8A8B8D;
+}
+
+.NB-briefing-story-author {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-briefing-story-date {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* reader.css: Empty state for briefing */
+.NB-briefing-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: #8A8B8D;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.NB-briefing-empty-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 12px;
+    opacity: 0.3;
+}
+
+.NB-briefing-empty-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #606060;
+    margin-bottom: 6px;
+}
+
+/* reader.css: Briefing onboarding — full-pane setup screen for first-time users */
+.NB-briefing-onboarding-view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #F4F4F2;
+    background: linear-gradient(180deg, #FAFAFA 0%, #F4F4F2 100%);
+}
+
+.NB-briefing-onboarding {
+    padding: 0;
+    max-width: 560px;
+    margin: 24px auto;
+}
+
+.NB-briefing-onboarding-header {
+    text-align: center;
+    padding: 32px 20px 20px;
+}
+
+.NB-briefing-onboarding-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 12px;
+    background: url('/media/img/icons/nouns/briefing.svg') no-repeat center;
+    background-size: 48px;
+    opacity: 0.6;
+}
+
+.NB-briefing-onboarding-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #303030;
+    margin-bottom: 6px;
+}
+
+.NB-briefing-onboarding-subtitle {
+    font-size: 13px;
+    color: #808080;
+    line-height: 1.4;
+    max-width: 360px;
+    margin: 0 auto;
+}
+
+/* reader.css: Onboarding settings reuse popover styles via .NB-briefing-popover class */
+.NB-briefing-onboarding-settings {
+    border-top: 1px solid #E0E0DC;
+    border-bottom: 1px solid #E0E0DC;
+    margin: 0;
+}
+
+.NB-briefing-onboarding-footer {
+    padding: 20px;
+    text-align: center;
+}
+
+/* reader.css: Upsell banner for free users */
+.NB-briefing-upsell {
+    padding: 12px 14px;
+    background-color: #F0EDE4;
+    border-top: 1px solid #E0DDD4;
+    text-align: center;
+}
+
+.NB-briefing-upsell-text {
+    font-size: 12px;
+    color: #606060;
+    line-height: 1.4;
+}
+
+.NB-briefing-upsell-link {
+    color: #405BA8;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.NB-briefing-upsell-link:hover {
+    text-decoration: underline;
+}
+
+/* reader.css: Briefing summary story — the AI-generated overview at the top */
+/* reader.css: Summary story — the AI editorial at the top of the briefing */
+.NB-briefing-summary-story {
+    position: sticky;
+    top: 33px;
+    z-index: 2;
+}
+
+.NB-briefing-summary-story .NB-story-title {
+    background: linear-gradient(135deg, #E8EEF8 0%, #F0F4FA 40%, #EDF0F8 100%);
+    border-left: 3px solid #5C89C4;
+    padding-left: 9px;
+    box-shadow: 0 1px 4px rgba(60, 100, 160, 0.1);
+}
+
+.NB-briefing-summary-story .NB-story-title:hover {
+    background: linear-gradient(135deg, #DEE6F4 0%, #E8EEF8 40%, #E4EAF4 100%);
+}
+
+.NB-briefing-summary-story .NB-story-title.NB-selected {
+    background: linear-gradient(135deg, #D4DEF0 0%, #DFE6F4 40%, #DAE2F0 100%);
+}
+
+/* reader.css: Hide image preview on briefing summary story — it shows a generic icon */
+.NB-briefing-summary-story .NB-storytitles-story-image-container {
+    display: none;
+}
+
+.NB-briefing-summary-story .NB-storytitles-title {
+    font-weight: 700;
+    color: #303840;
+}
+
+.NB-briefing-summary-story .NB-story-feed .feed_title {
+    font-weight: 600;
+    color: #5C89C4;
+    text-transform: uppercase;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+}
+
+.NB-briefing-summary-story .NB-storytitles-sentiment {
+    border-left: none;
+}
+
+.NB-briefing-summary-story .NB-storytitles-content-preview {
+    display: none;
+}
+
+/* reader.css: Briefing feedbar — flexbox layout so preferences button sits next to title */
+.NB-feedbar .NB-briefing-folder {
+    display: flex;
+    align-items: center;
+    padding-left: 35px;
+    position: relative;
+}
+
+.NB-feedbar .NB-briefing-folder .folder_title_text {
+    display: inline;
+    overflow: visible;
+    -webkit-line-clamp: unset;
+    margin-left: 0;
+    flex-shrink: 0;
+}
+
+.NB-feedbar .NB-briefing-folder .NB-folder-icon {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.NB-feedbar .NB-briefing-folder .NB-feedbar-options-container {
+    margin-left: auto;
+    float: none;
+}
+
+.NB-feedbar .NB-briefing-folder .NB-feedbar-options {
+    float: none;
+    margin: 0;
+    display: inline-block;
+}
+
+/* reader.css: Briefing settings pill button — matches NB-feedbar-options style */
+.NB-feedbar .NB-briefing-preferences-icon {
+    cursor: pointer;
+    color: rgba(0, 0, 0, .5);
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: 16px;
+    text-transform: uppercase;
+    font-size: 10px;
+    padding: 1px 4px 1px 8px;
+    line-height: 14px;
+    margin-left: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.NB-feedbar .NB-briefing-preferences-icon:hover {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.NB-feedbar .NB-briefing-preferences-icon .NB-icon {
+    float: right;
+    width: 16px;
+    height: 12px;
+    background: transparent url('/media/embed/icons/nouns/down.svg') no-repeat 3px 2px;
+    background-size: 9px;
+    margin: 0 0 0 4px;
+}
+
+/* reader.css: Briefing popover arrow position — centered under the button */
+.NB-briefing-popover-container.popover.bottom-left .arrow {
+    left: 60px;
+}
+
+/* reader.css: Briefing preferences popover */
+.NB-briefing-popover .NB-popover-section {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    padding: 14px 0;
+    margin: 0 20px;
+}
+
+.NB-briefing-popover .NB-popover-section-label {
+    width: 160px;
+    flex-shrink: 0;
+}
+
+.NB-briefing-popover .NB-popover-section-controls {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-briefing-popover .NB-popover-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #909090;
+    margin-bottom: 3px;
+    line-height: 16px;
+}
+
+.NB-briefing-popover .NB-popover-section-description {
+    font-size: 11px;
+    color: #a0a0a0;
+    margin-bottom: 0;
+    line-height: 15px;
+}
+
+.NB-briefing-popover .NB-briefing-style-description {
+    font-size: 11.5px;
+    color: #7090B0;
+    margin-top: 6px;
+    line-height: 14px;
+    font-style: italic;
+    padding: 4px 0 0;
+    border-top: 1px solid rgba(0, 0, 0, .04);
+    min-height: 14px;
+}
+
+.NB-briefing-popover .segmented-control {
+    margin-bottom: 8px;
+}
+
+.NB-briefing-popover .segmented-control:last-child {
+    margin-bottom: 0;
+}
+
+.NB-briefing-popover .NB-briefing-schedule-controls {
+    margin-top: 2px;
+}
+
+/* reader.css: Unread/focus icons in briefing popover segmented controls */
+.NB-briefing-popover .segmented-control .NB-unread-icon,
+.NB-briefing-popover .segmented-control .NB-focus-icon {
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    margin: 0 4px 0 0;
+    vertical-align: middle;
+    background: transparent url('/media/embed/icons/nouns/indicator-unread.svg') no-repeat 0 center;
+    background-size: 8px;
+}
+
+.NB-briefing-popover .segmented-control .NB-focus-icon {
+    background-image: url('/media/embed/icons/nouns/indicator-focus.svg');
+}
+
+/* reader.css: Briefing folder chooser always visible */
+.NB-briefing-popover .NB-briefing-folder-chooser-container {
+    margin-bottom: 6px;
+}
+
+.NB-briefing-popover .segmented-control li {
+    padding: 3px 4px;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.NB-briefing-popover .NB-modal-feed-chooser {
+    width: 100%;
+    font-size: 12px;
+    margin: 0;
+}
+
+/* reader.css: Writing style — radio-button rows with icons */
+.NB-briefing-style-chooser {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.NB-briefing-style-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.NB-briefing-style-option:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.NB-briefing-style-radio {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #b0b0b0;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    transition: all 0.15s;
+}
+
+.NB-briefing-style-option.NB-active .NB-briefing-style-radio {
+    border-color: #5C89C4;
+}
+
+.NB-briefing-style-option.NB-active .NB-briefing-style-radio::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #5C89C4;
+}
+
+.NB-briefing-style-option-icon {
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
+}
+
+.NB-briefing-style-option-label {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-briefing-style-option-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    line-height: 16px;
+}
+
+.NB-briefing-style-option-subtitle {
+    font-size: 10.5px;
+    color: #909090;
+    line-height: 14px;
+    margin-top: 1px;
+}
+
+/* reader.css: Dark mode for writing style radio rows */
+.NB-dark .NB-briefing-style-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-briefing-style-radio {
+    border-color: #555;
+}
+
+.NB-dark .NB-briefing-style-option-name {
+    color: #ccc;
+}
+
+.NB-dark .NB-briefing-style-option-subtitle {
+    color: #777;
+}
+
+/* reader.css: Briefing AI model selector */
+.NB-briefing-model-chooser {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.NB-briefing-model-chooser .NB-provider-pill {
+    flex-shrink: 0;
+    font-size: 10px;
+    padding: 1px 5px;
+}
+
+.NB-briefing-model-chooser .NB-briefing-style-option-label {
+    margin-left: 2px;
+}
+
+
+/* reader.css: Briefing sections — tappable checkbox rows */
+.NB-briefing-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.NB-briefing-section-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+    flex-wrap: wrap;
+}
+
+.NB-briefing-section-item:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.NB-briefing-section-checkbox {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #b0b0b0;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    transition: all 0.15s;
+}
+
+.NB-briefing-section-item.NB-active .NB-briefing-section-checkbox {
+    background: #5C89C4;
+    border-color: #5C89C4;
+}
+
+.NB-briefing-section-item.NB-active .NB-briefing-section-checkbox::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 4px;
+    height: 8px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.NB-briefing-section-label {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-briefing-section-name {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    line-height: 16px;
+}
+
+.NB-briefing-section-subtitle {
+    font-size: 10.5px;
+    color: #909090;
+    line-height: 14px;
+    margin-top: 1px;
+}
+
+/* reader.css: Custom section prompt input */
+.NB-briefing-section-custom-input {
+    width: 100%;
+    margin-top: 4px;
+    padding-left: 24px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.NB-briefing-section-custom-input input {
+    flex: 1;
+    font-size: 11px;
+    padding: 4px 8px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    outline: none;
+    background: #fff;
+    color: #333;
+}
+
+.NB-briefing-section-custom-input input:focus {
+    border-color: #5C89C4;
+    box-shadow: 0 0 0 2px rgba(92, 137, 196, 0.15);
+}
+
+.NB-briefing-section-hint-icon {
+    font-size: 14px;
+    opacity: 0.5;
+    cursor: help;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.NB-briefing-section-hint-icon:hover {
+    opacity: 1;
+}
+
+/* reader.css: Add custom section button */
+.NB-briefing-add-custom-section {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #5C89C4;
+    transition: background 0.15s;
+}
+
+.NB-briefing-add-custom-section:hover {
+    background: rgba(92, 137, 196, 0.08);
+}
+
+.NB-briefing-add-custom-icon {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1;
+    margin-top: -2px;
+}
+
+/* reader.css: Remove custom section button */
+.NB-briefing-remove-custom-section {
+    margin-left: 6px;
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+    vertical-align: middle;
+    opacity: 0.3;
+    transition: all 0.15s;
+}
+
+.NB-briefing-remove-custom-section:hover {
+    opacity: 0.8;
+}
+
+/* reader.css: Custom section items always show input */
+.NB-briefing-section-custom .NB-briefing-section-custom-input {
+    display: flex;
+}
+
+/* reader.css: Hint popover for custom section — follows regex popover pattern */
+.NB-briefing-section-hint-popover {
+    display: none;
+    position: absolute;
+    z-index: 10000;
+    background: linear-gradient(135deg, #f8f9fc 0%, #eef1f7 100%);
+    border: 1px solid #d0d4e0;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 11px;
+    line-height: 1.5;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    width: 300px;
+}
+
+.NB-briefing-section-hint-popover.NB-visible {
+    display: block;
+}
+
+.NB-briefing-section-hint-title {
+    font-weight: 600;
+    font-size: 11px;
+    color: #5C89C4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.NB-briefing-section-hint-text {
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.NB-briefing-section-hint-examples-title {
+    font-weight: 600;
+    font-size: 10px;
+    color: #5C89C4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(92, 137, 196, 0.2);
+}
+
+.NB-briefing-section-hint-examples {
+    margin: 0;
+    padding-left: 16px;
+    color: #666;
+}
+
+.NB-briefing-section-hint-examples li {
+    margin-bottom: 2px;
+}
+
+/* reader.css: Notification hint for briefing settings */
+.NB-briefing-notification-hint {
+    font-size: 11px;
+    color: #999;
+    font-style: italic;
+    margin-top: 4px;
+}
+
+.NB-dark .NB-briefing-notification-hint {
+    color: #666;
+}
+
+/* reader.css: Dark mode overrides for briefing popover */
+.NB-dark .NB-briefing-popover .NB-briefing-style-description {
+    color: #6A8BA8;
+    border-top-color: rgba(255, 255, 255, .04);
+}
+
+/* reader.css: Dark mode overrides for briefing onboarding */
+.NB-dark .NB-briefing-onboarding-view {
+    background-color: #191b1c;
+    background: linear-gradient(180deg, #1e2022 0%, #191b1c 100%);
+}
+
+.NB-dark .NB-briefing-onboarding-title {
+    color: #D0D0D0;
+}
+
+.NB-dark .NB-briefing-onboarding-subtitle {
+    color: #808080;
+}
+
+.NB-dark .NB-briefing-onboarding-settings {
+    border-color: rgba(255, 255, 255, .08);
+}
+
+/* reader.css: Dark mode overrides for briefing sections */
+.NB-dark .NB-briefing-add-custom-section {
+    color: #7BA3D0;
+}
+
+.NB-dark .NB-briefing-add-custom-section:hover {
+    background: rgba(92, 137, 196, 0.12);
+}
+
+.NB-dark .NB-briefing-remove-custom-section {
+    filter: invert(1);
+}
+
+.NB-dark .NB-briefing-section-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-briefing-section-checkbox {
+    border-color: #555;
+}
+
+.NB-dark .NB-briefing-section-name {
+    color: #ccc;
+}
+
+.NB-dark .NB-briefing-section-subtitle {
+    color: #777;
+}
+
+.NB-dark .NB-briefing-section-custom-input input {
+    background: #2a2a2e;
+    border-color: #444;
+    color: #ccc;
+}
+
+.NB-dark .NB-briefing-section-custom-input input:focus {
+    border-color: #5C89C4;
+    box-shadow: 0 0 0 2px rgba(92, 137, 196, 0.25);
+}
+
+.NB-dark .NB-briefing-section-hint-popover {
+    background: linear-gradient(135deg, #2a2a3a 0%, #252535 100%);
+    border-color: #4a4a6a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-briefing-section-hint-title {
+    color: #7BA3D0;
+}
+
+.NB-dark .NB-briefing-section-hint-text {
+    color: #aaa;
+}
+
+.NB-dark .NB-briefing-section-hint-examples-title {
+    color: #7BA3D0;
+    border-top-color: rgba(92, 137, 196, 0.3);
+}
+
+.NB-dark .NB-briefing-section-hint-examples {
+    color: #888;
+}
+
+/* reader.css: Generate briefing button — shared styles */
+.NB-briefing-generate-btn {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #5C89C4;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.15s ease;
+    user-select: none;
+}
+
+.NB-briefing-generate-btn:hover {
+    background-color: #4A73A8;
+}
+
+.NB-briefing-generate-btn:active {
+    background-color: #3D6090;
+}
+
+/* reader.css: Large generate button for empty state */
+.NB-briefing-generate-btn-large {
+    margin-top: 16px;
+    font-size: 14px;
+    padding: 12px 24px;
+}
+
+/* reader.css: Regenerate button container at bottom of existing briefings */
+.NB-briefing-regenerate {
+    padding: 12px 14px;
+    text-align: center;
+    border-top: 1px solid #E0E0DC;
+}
+
+.NB-briefing-regenerate-btn {
+    font-size: 12px;
+    padding: 8px 16px;
+}
+
+/* reader.css: Progress indicator during generation */
+.NB-briefing-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #E0E0DC;
+    background-color: #F5F6F2;
+}
+
+.NB-briefing-progress-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #CCC;
+    border-top-color: #5C89C4;
+    border-radius: 50%;
+    animation: nb-briefing-spin 0.8s linear infinite;
+}
+
+@keyframes nb-briefing-spin {
+    to { transform: rotate(360deg); }
+}
+
+.NB-briefing-progress-message {
+    font-size: 12px;
+    color: #606060;
+}
+
+/* reader.css: Error state during generation */
+.NB-briefing-error {
+    padding: 12px 14px;
+    border-bottom: 1px solid #E0E0DC;
+    text-align: center;
+}
+
+.NB-briefing-error-message {
+    font-size: 12px;
+    color: #A04040;
+    margin-bottom: 8px;
 }

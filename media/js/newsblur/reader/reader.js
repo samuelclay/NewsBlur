@@ -49,6 +49,7 @@
                 $river_blurblogs_header: $('.NB-feeds-header-river-blurblogs'),
                 $river_global_header: $('.NB-feeds-header-river-global'),
                 $river_trending_header: $('.NB-feeds-header-river-trending'),
+                $river_briefing_header: $('.NB-feeds-header-river-briefing'),
                 $archive_header: $('.NB-feeds-header-archive'),
                 $starred_header: $('.NB-feeds-header-starred'),
                 $searches_header: $('.NB-feeds-header-searches'),
@@ -1390,6 +1391,8 @@
                 'river_view': false,
                 'social_view': false,
                 'starred_view': false,
+                'briefing_view': false,
+                'briefing_section': null,
                 'select_story_in_feed': null,
                 'global_blurblogs': false,
                 'reloading_feeds': false,
@@ -1440,6 +1443,7 @@
             this.$s.$river_blurblogs_header.removeClass('NB-selected');
             this.$s.$river_global_header.removeClass('NB-selected');
             this.$s.$river_trending_header.removeClass('NB-selected');
+            this.$s.$river_briefing_header.removeClass('NB-selected');
             this.$s.$archive_header.removeClass('NB-selected');
             this.$s.$tryfeed_header.removeClass('NB-selected');
             this.$s.$layout.removeClass('NB-view-river');
@@ -1464,6 +1468,7 @@
             this.model.feeds.deselect();
             this.model.stories.deselect();
             this.model.starred_feeds.deselect();
+            this.model.briefing_section_feeds.deselect();
             this.model.searches_feeds.deselect();
             this.model.folders.deselect();
             this.model.social_feeds.deselect();
@@ -1473,6 +1478,11 @@
                 this.trending_sites_view = null;
             }
             this.flags['trending_view'] = false;
+
+            if (this.briefing_onboarding_view) {
+                this.briefing_onboarding_view.close();
+                this.briefing_onboarding_view = null;
+            }
 
             if (this.archive_view) {
                 // Restore story titles pane and taskbars that were hidden for archive view
@@ -1935,6 +1945,8 @@
 
             if (feed_id == 'river:') {
                 this.open_river_stories(options.$feed, feed_model, options);
+            } else if (feed_id == 'river:daily-briefing') {
+                this.open_daily_briefing(options);
             } else if (feed_id == 'river:infrequent') {
                 options.infrequent = NEWSBLUR.assets.preference('infrequent_stories_per_month');
                 this.open_river_stories(options.$feed, feed_model, options);
@@ -2087,6 +2099,253 @@
             }
             // this.show_story_titles_above_intelligence_level({'animate': false});
             this.flags['story_titles_loaded'] = true;
+        },
+
+        // =========================
+        // = Daily Briefing Feed =
+        // =========================
+
+        open_daily_briefing: function (options) {
+            options = options || {};
+            var self = this;
+            var new_section = options.section || null;
+            var same_section = new_section === this.flags.briefing_section;
+            var switching_section = this.flags.briefing_view &&
+                NEWSBLUR.assets.briefing_data &&
+                this.active_feed == 'river:daily-briefing' &&
+                new_section && !same_section;
+
+            if (!switching_section) {
+                this.reset_feed(options);
+                this.hide_splash_page();
+            }
+
+            this.active_feed = 'river:daily-briefing';
+
+            this.iframe_scroll = null;
+            this.$s.$layout.addClass('NB-view-river');
+            this.flags.river_view = true;
+            this.flags.briefing_view = true;
+            this.flags.briefing_section = options.section || null;
+            if (options.story_hash) {
+                this.flags['briefing_select_story'] = options.story_hash;
+            }
+
+            // reader.js: Highlight the section model or the parent header, not both
+            NEWSBLUR.assets.briefing_section_feeds.deselect();
+            if (options.section) {
+                this.$s.$river_briefing_header.removeClass('NB-selected');
+                var section_model = NEWSBLUR.assets.briefing_section_feeds.get('briefing:' + options.section);
+                if (section_model) {
+                    section_model.set('selected', true);
+                }
+            } else {
+                this.$s.$river_briefing_header.addClass('NB-selected');
+            }
+
+            if (!options.silent) {
+                var url = options.section ? "/briefing/" + options.section : "/briefing";
+                if (window.location.pathname != url) {
+                    NEWSBLUR.log(["Navigating to url", url]);
+                    NEWSBLUR.router.navigate(url);
+                }
+            }
+
+            // reader.js: If already viewing briefing, just re-render with cached data
+            // instead of re-fetching from the server.
+            if (switching_section) {
+                if (NEWSBLUR.app.story_titles) {
+                    NEWSBLUR.app.story_titles.render();
+                }
+                return;
+            }
+
+            this.flags['opening_feed'] = true;
+
+            $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
+            var explicit_view_setting = this.model.view_setting(this.active_feed, 'view');
+            if (!explicit_view_setting || explicit_view_setting == 'page') {
+                explicit_view_setting = 'feed';
+            }
+            this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
+            this.switch_taskbar_view(this.story_view);
+            this.switch_story_layout();
+            this.setup_mousemove_on_views();
+            this.make_feed_title_in_stories();
+
+            this.model.fetch_briefing_stories(
+                _.bind(this.post_open_daily_briefing, this),
+                NEWSBLUR.app.taskbar_info.show_stories_error
+            );
+        },
+
+        post_open_daily_briefing: function (data) {
+            if (!this.flags['briefing_view']) return;
+
+            this.flags['opening_feed'] = false;
+
+            // reader.js: Store briefing data for the story titles view to render
+            NEWSBLUR.assets.briefing_data = data;
+
+            // reader.js: Build aggregate section counts from all briefings' curated_sections
+            // and include sections that only exist in section_summaries (meta sections
+            // like quick_catchup that reference stories from other sections).
+            var section_definitions = data.section_definitions || {};
+            var aggregate_sections = {};
+            var briefings = data.briefings || [];
+            _.each(briefings, function (briefing) {
+                var sections = briefing.curated_sections || {};
+                _.each(sections, function (hashes, key) {
+                    if (!aggregate_sections[key]) {
+                        aggregate_sections[key] = 0;
+                    }
+                    aggregate_sections[key] += (hashes || []).length;
+                });
+                // reader.js: Include sections from section_summaries that have no curated stories
+                var summaries = briefing.section_summaries || {};
+                _.each(summaries, function (html, key) {
+                    if (!(key in aggregate_sections)) {
+                        aggregate_sections[key] = 0;
+                    }
+                });
+            });
+
+            // reader.js: Populate briefing_section_feeds collection for the sidebar.
+            // Use section_summaries key order from the latest briefing so the sidebar
+            // matches the order sections appear in the summary.
+            var section_models = [];
+            var added_keys = {};
+            var latest_briefing = briefings[0];
+            if (latest_briefing && latest_briefing.section_summaries) {
+                _.each(_.keys(latest_briefing.section_summaries), function (key) {
+                    if (key in aggregate_sections) {
+                        section_models.push({
+                            section_key: key,
+                            section_name: section_definitions[key] || key,
+                            count: aggregate_sections[key]
+                        });
+                        added_keys[key] = true;
+                    }
+                });
+            }
+            // reader.js: Add any remaining sections not in section_summaries
+            _.each(aggregate_sections, function (count, key) {
+                if (!added_keys[key]) {
+                    section_models.push({
+                        section_key: key,
+                        section_name: section_definitions[key] || key,
+                        count: count
+                    });
+                }
+            });
+            NEWSBLUR.assets.briefing_section_feeds.reset(section_models, { parse: true });
+
+            if (NEWSBLUR.app.feed_list) {
+                NEWSBLUR.app.feed_list.make_briefing_sections();
+            }
+
+            // reader.js: Re-select section model if filtering
+            if (this.flags.briefing_section) {
+                var section_model = NEWSBLUR.assets.briefing_section_feeds.get(
+                    'briefing:' + this.flags.briefing_section
+                );
+                if (section_model) {
+                    section_model.set('selected', true);
+                }
+            }
+
+            if (!data.enabled && !briefings.length) {
+                // reader.js: Show full-pane onboarding for users who haven't opted in
+                if (this.briefing_onboarding_view) {
+                    this.briefing_onboarding_view.close();
+                }
+                this.briefing_onboarding_view = new NEWSBLUR.Views.BriefingOnboardingView({
+                    preferences: data.preferences
+                });
+                this.$s.$content_pane.append(this.briefing_onboarding_view.$el);
+            } else {
+                // reader.js: Re-render story titles for normal briefing view
+                if (NEWSBLUR.app.story_titles) {
+                    NEWSBLUR.app.story_titles.render();
+                }
+            }
+
+            this.flags['story_titles_loaded'] = true;
+
+            // reader.js: Auto-select story from ?story=HASH query param (email deep links)
+            if (this.flags['briefing_select_story']) {
+                var story_hash = this.flags['briefing_select_story'];
+                this.flags['briefing_select_story'] = null;
+                var story = NEWSBLUR.assets.stories.get_by_story_hash(story_hash);
+                if (story) {
+                    _.delay(function () {
+                        story.set('selected', true);
+                    }, 100);
+                }
+            }
+        },
+
+        generate_daily_briefing: function (callback) {
+            this.flags.briefing_generating = true;
+
+            if (this.briefing_onboarding_view) {
+                this.briefing_onboarding_view.show_progress("Starting briefing generation...");
+            } else if (NEWSBLUR.app.story_titles) {
+                NEWSBLUR.app.story_titles.show_briefing_progress("Starting briefing generation...");
+            }
+            this.model.generate_briefing(callback);
+
+            // reader.js: Timeout safety net — if no socket event arrives within 90s,
+            // show an error so the UI doesn't spin forever (e.g. Celery crash).
+            clearTimeout(this.flags.briefing_generate_timeout);
+            this.flags.briefing_generate_timeout = _.delay(_.bind(function () {
+                if (!this.flags.briefing_generating) return;
+                this.handle_briefing_error({ error: "Briefing generation timed out. Please try again." });
+            }, this), 120 * 1000);
+        },
+
+        handle_briefing_start: function () {
+            this.flags.briefing_generating = true;
+            if (this.briefing_onboarding_view) {
+                this.briefing_onboarding_view.show_progress("Starting briefing generation...");
+            } else if (NEWSBLUR.app.story_titles) {
+                NEWSBLUR.app.story_titles.show_briefing_progress("Starting briefing generation...");
+            }
+        },
+
+        handle_briefing_progress: function (data) {
+            var message = data.message || "Generating...";
+            if (this.briefing_onboarding_view) {
+                this.briefing_onboarding_view.show_progress(message);
+            } else if (NEWSBLUR.app.story_titles) {
+                NEWSBLUR.app.story_titles.show_briefing_progress(message);
+            }
+        },
+
+        handle_briefing_complete: function () {
+            clearTimeout(this.flags.briefing_generate_timeout);
+            this.flags.briefing_generating = false;
+            if (this.briefing_onboarding_view) {
+                this.briefing_onboarding_view.close();
+                this.briefing_onboarding_view = null;
+            }
+            if (this.flags.briefing_view) {
+                this.model.fetch_briefing_stories(
+                    _.bind(this.post_open_daily_briefing, this),
+                    NEWSBLUR.app.taskbar_info.show_stories_error
+                );
+            }
+        },
+
+        handle_briefing_error: function (data) {
+            clearTimeout(this.flags.briefing_generate_timeout);
+            this.flags.briefing_generating = false;
+            var error_message = data.error || "Generation failed.";
+            if (this.briefing_onboarding_view) {
+                this.briefing_onboarding_view.show_error(error_message);
+            } else if (NEWSBLUR.app.story_titles) {
+                NEWSBLUR.app.story_titles.show_briefing_error(error_message);
+            }
         },
 
         // =====================
@@ -3227,6 +3486,8 @@
 
             // console.log(['load_page_of_feed_stories', this.flags['opening_feed'], this.counts['page']]);
             if (this.flags['opening_feed']) return;
+            // reader.js: Briefing view has all stories already; no paging needed.
+            if (this.flags['briefing_view']) return;
 
             this.flags['opening_feed'] = true;
             this.counts['page'] += 1;
@@ -3300,6 +3561,8 @@
                 feed_title = "All Shared Stories";
             } else if (feed_id == 'river:infrequent') {
                 feed_title = "Infrequent Site Stories";
+            } else if (feed_id == 'river:daily-briefing') {
+                feed_title = "Daily Briefing";
             } else if (feed_id == 'river:trending') {
                 feed_title = "Trending Sites";
             } else if (_.string.startsWith(feed_id, 'river:')) {
@@ -3757,8 +4020,8 @@
             NEWSBLUR.facebook_dialog = new NEWSBLUR.ReaderFacebook(this.active_story.get('story_permalink'), this.active_story.get('shared_comments'));
         },
 
-        open_preferences_modal: function () {
-            NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences();
+        open_preferences_modal: function (options) {
+            NEWSBLUR.preferences = new NEWSBLUR.ReaderPreferences(options);
         },
 
         open_account_modal: function (options) {
@@ -3833,7 +4096,7 @@
             story_view.show_ask_ai_menu(fake_event);
         },
 
-        open_ask_ai_pane: function (story, question_id, custom_question, transcription_error, model) {
+        open_ask_ai_pane: function (story, question_id, custom_question, transcription_error, model, thinking) {
             var story_view = story.latest_story_detail_view;
             if (!story_view) {
                 console.log(['No story view found for Ask AI', story]);
@@ -3854,6 +4117,7 @@
                 custom_question: custom_question,
                 transcription_error: transcription_error,
                 model: model,
+                thinking: thinking,
                 inline: true
             });
 
@@ -5520,7 +5784,7 @@
                 return feed.unread_counts();
             } else if (this.flags['river_view'] && !this.flags['social_view']) {
                 var collection;
-                if (!this.active_folder.folder_view) {
+                if (!this.active_folder || !this.active_folder.folder_view) {
                     // River blurblog gets a special collection
                     collection = NEWSBLUR.assets.folders;
                 } else {
@@ -5757,6 +6021,19 @@
                 this.socket.removeAllListeners('archive:categories');
                 this.socket.on('archive:categories', _.bind(this.handle_archive_categories, this));
 
+                // Briefing generation progress event listeners
+                this.socket.removeAllListeners('briefing:start');
+                this.socket.on('briefing:start', _.bind(this.handle_briefing_start, this));
+
+                this.socket.removeAllListeners('briefing:progress');
+                this.socket.on('briefing:progress', _.bind(this.handle_briefing_progress, this));
+
+                this.socket.removeAllListeners('briefing:complete');
+                this.socket.on('briefing:complete', _.bind(this.handle_briefing_complete, this));
+
+                this.socket.removeAllListeners('briefing:error');
+                this.socket.on('briefing:error', _.bind(this.handle_briefing_error, this));
+
                 this.socket.on('disconnect', _.bind(function (reason) {
                     NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);
                     this.flags.feed_refreshing_in_realtime = false;
@@ -5819,6 +6096,14 @@
                     if (this.active_folder && this.active_folder.length) {
                         active_feed_ids = this.active_folder.feed_ids_in_folder();
                     }
+                    // reader.js: In briefing view, suppress feed count refresh for
+                    // feeds with stories we just read (same pattern as river views).
+                    // The briefing curated stories span many feeds, so treat all
+                    // collection feed_ids as active to preserve optimistic updates.
+                    if (this.flags.briefing_view && NEWSBLUR.assets.stories) {
+                        var briefing_feed_ids = NEWSBLUR.assets.stories.pluck('story_feed_id');
+                        active_feed_ids = _.union(active_feed_ids, briefing_feed_ids);
+                    }
                     if (feed_id != this.active_feed &&
                         !_.contains(active_feed_ids, feed_id)) {
                         NEWSBLUR.log(['Real-time user update for feed', username, feed_id]);
@@ -5873,6 +6158,21 @@
                     if (!NEWSBLUR.reader.flags['reloading_feeds']) {
                         console.log(["Reloading feeds due to server reload", NEWSBLUR.reader.flags['reloading_feeds']]);
                         NEWSBLUR.assets.load_feeds();
+                    }
+                } else if (_.string.startsWith(message, 'briefing:')) {
+                    try {
+                        var briefing_data = JSON.parse(message.replace('briefing:', ''));
+                        if (briefing_data.type === 'start') {
+                            this.handle_briefing_start();
+                        } else if (briefing_data.type === 'progress') {
+                            this.handle_briefing_progress(briefing_data);
+                        } else if (briefing_data.type === 'complete') {
+                            this.handle_briefing_complete();
+                        } else if (briefing_data.type === 'error') {
+                            this.handle_briefing_error(briefing_data);
+                        }
+                    } catch (e) {
+                        NEWSBLUR.log(['Error parsing briefing message', e]);
                     }
                 }
             }
@@ -6226,7 +6526,7 @@
             if (!feed) return;
 
             var subs = feed.get('num_subscribers');
-            var delay = options.realtime ? subs * 2 : 0; // 1,000 subs = 2 seconds
+            var delay = options.realtime ? subs * 10 : 0; // subs/100 seconds: 6,000 subs = 60s, 20 subs = 0.2s
 
             _.delay(_.bind(function () {
                 this.model.feed_unread_count(feed_id, options.callback);
@@ -6243,6 +6543,7 @@
             var feed = NEWSBLUR.assets.get_feed(feed_id);
             if (!feed) {
                 console.log(['Notification setup failed, no feed!', feed_id]);
+                return;
             }
             Push.create("NewsBlur", {
                 body: feed.get('feed_title') + " notifications are setup",
@@ -6694,19 +6995,41 @@
         hide_tryfeed_view: function () {
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
             $tryfeed_container.slideUp(350);
-            this.$s.$story_taskbar.find('.NB-tryfeed-add').hide();
-            this.$s.$story_taskbar.find('.NB-tryfeed-follow').hide();
+            $('.NB-tryfeed-subscribe-banner').remove();
+            $('.NB-tryfeed-follow-banner').remove();
+            $('.NB-tryfeed-signup-banner').remove();
             this.flags['showing_feed_in_tryfeed_view'] = false;
             this.flags['showing_social_feed_in_tryfeed_view'] = false;
         },
 
         show_tryfeed_add_button: function () {
-            if (this.$s.$story_taskbar.find('.NB-tryfeed-add:visible').length) return;
+            if ($('.NB-tryfeed-subscribe-banner').length) return;
 
-            this.$s.$story_taskbar.find(".NB-tryfeed-add")
-                .css({ 'opacity': 0 })
-                .show()
-                .animate({ 'opacity': 1 }, { 'duration': 600 });
+            var self = this;
+            var feed_id = this.active_feed;
+            var feed = this.model.get_feed(feed_id);
+            var $icon = $.favicon_el(feed, {
+                image_class: 'NB-tryfeed-banner-icon',
+                emoji_class: 'NB-tryfeed-banner-icon NB-feed-emoji',
+                colored_class: 'NB-tryfeed-banner-icon NB-feed-icon-colored'
+            });
+
+            var $banner = $.make('div', { className: 'NB-tryfeed-subscribe-banner' }, [
+                $icon || $.make('div', { className: 'NB-tryfeed-banner-icon' }),
+                $.make('div', { className: 'NB-tryfeed-banner-content' }, [
+                    $.make('div', { className: 'NB-tryfeed-banner-text' }, feed ? feed.get('feed_title') : 'Subscribe'),
+                    $.make('div', { className: 'NB-tryfeed-banner-subtext' }, 'Subscribe to add this feed to your NewsBlur')
+                ]),
+                $.make('div', { className: 'NB-tryfeed-banner-button NB-tryfeed-banner-button-green' }, 'Subscribe')
+            ]).css({ 'opacity': 0 });
+
+            $banner.on('click', function (e) {
+                e.preventDefault();
+                self.add_recommended_feed(feed_id);
+            });
+
+            $('#story_titles').find('.NB-story-titles').before($banner);
+            $banner.animate({ 'opacity': 1 }, { 'duration': 600 });
         },
 
         correct_tryfeed_title: function () {
@@ -6716,25 +7039,62 @@
         },
 
         show_tryfeed_follow_button: function () {
-            if (this.$s.$story_taskbar.find('.NB-tryfeed-follow:visible').length) return;
+            if ($('.NB-tryfeed-follow-banner').length) return;
 
-            this.$s.$story_taskbar.find(".NB-tryfeed-follow")
-                .css({ 'opacity': 0 })
-                .show()
-                .animate({ 'opacity': 1 }, { 'duration': 600 });
+            var self = this;
+            var feed_id = this.active_feed;
+            var feed = this.model.get_feed(feed_id);
+            var $icon = $.favicon_el(feed, {
+                image_class: 'NB-tryfeed-banner-icon',
+                emoji_class: 'NB-tryfeed-banner-icon NB-feed-emoji',
+                colored_class: 'NB-tryfeed-banner-icon NB-feed-icon-colored'
+            });
+
+            var $banner = $.make('div', { className: 'NB-tryfeed-follow-banner' }, [
+                $icon || $.make('div', { className: 'NB-tryfeed-banner-icon' }),
+                $.make('div', { className: 'NB-tryfeed-banner-content' }, [
+                    $.make('div', { className: 'NB-tryfeed-banner-text' }, feed ? feed.get('feed_title') || feed.get('username') : 'Follow'),
+                    $.make('div', { className: 'NB-tryfeed-banner-subtext' }, 'Follow to see their shared stories')
+                ]),
+                $.make('div', { className: 'NB-tryfeed-banner-button NB-tryfeed-banner-button-green' }, 'Follow')
+            ]).css({ 'opacity': 0 });
+
+            $banner.on('click', function (e) {
+                e.preventDefault();
+                self.follow_user_in_tryfeed(feed_id);
+            });
+
+            $('#story_titles').find('.NB-story-titles').before($banner);
+            $banner.animate({ 'opacity': 1 }, { 'duration': 600 });
         },
 
         show_tryout_signup_button: function () {
-            if (this.$s.$story_taskbar.find('.NB-tryout-signup:visible').length) return;
+            if ($('.NB-tryfeed-signup-banner').length) return;
 
-            this.$s.$story_taskbar.find(".NB-tryfeed-signup")
-                .css({ 'opacity': 0 })
-                .show()
-                .animate({ 'opacity': 1 }, { 'duration': 600 });
+            var self = this;
+            var $banner = $.make('div', { className: 'NB-tryfeed-signup-banner' }, [
+                $.make('div', { className: 'NB-tryfeed-banner-logo' }),
+                $.make('div', { className: 'NB-tryfeed-banner-content' }, [
+                    $.make('div', { className: 'NB-tryfeed-banner-text' }, 'This is just the demo.'),
+                    $.make('div', { className: 'NB-tryfeed-banner-subtext' }, 'Sign up to read your own feeds.')
+                ]),
+                $.make('div', { className: 'NB-tryfeed-banner-button NB-tryfeed-banner-button-gold' }, 'Sign up')
+            ]).css({ 'opacity': 0 });
+
+            $banner.on('click', function (e) {
+                e.preventDefault();
+                self.show_splash_page();
+                if (NEWSBLUR.welcome) {
+                    NEWSBLUR.welcome.show_signin_form();
+                }
+            });
+
+            $('#story_titles').find('.NB-story-titles').before($banner);
+            $banner.animate({ 'opacity': 1 }, { 'duration': 600 });
         },
 
         hide_tryout_signup_button: function () {
-            this.$s.$story_taskbar.find('.NB-tryout-signup:visible').remove();
+            $('.NB-tryfeed-signup-banner').remove();
         },
 
         add_recommended_feed: function (feed_id) {
@@ -7692,17 +8052,17 @@
                 }
             });
 
-            $.targetIs(e, { tagSelector: '.NB-tryfeed-add' }, function ($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-tryfeed-subscribe-banner' }, function ($t, $p) {
                 e.preventDefault();
                 var feed_id = self.active_feed;
                 self.add_recommended_feed(feed_id);
             });
-            $.targetIs(e, { tagSelector: '.NB-tryfeed-follow' }, function ($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-tryfeed-follow-banner' }, function ($t, $p) {
                 e.preventDefault();
                 var feed_id = self.active_feed;
                 self.follow_user_in_tryfeed(feed_id);
             });
-            $.targetIs(e, { tagSelector: '.NB-tryout-signup' }, function ($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-tryfeed-signup-banner' }, function ($t, $p) {
                 e.preventDefault();
                 self.show_splash_page();
                 if (NEWSBLUR.welcome) {

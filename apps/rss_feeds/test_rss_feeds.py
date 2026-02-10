@@ -1,6 +1,6 @@
-import redis
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
+import redis
 from django.conf import settings
 from django.core import management
 from django.test import TestCase, TransactionTestCase
@@ -599,7 +599,7 @@ class Test_TextImporterEncoding(TestCase):
         from apps.rss_feeds.text_importer import TextImporter
 
         html_bytes = (
-            b"<html><head><meta charset=\"utf-8\"><title>Test</title></head>"
+            b'<html><head><meta charset="utf-8"><title>Test</title></head>'
             b"<body><article><p>Les chirurgiens de la Northwestern University ont repouss\xc3\xa9 "
             b"les limites de leur profession. Ils lui ont retir\xc3\xa9 les deux organes "
             b"respiratoires et on confi\xc3\xa9 sa vie \xc3\xa0 une machine.</p></article></body></html>"

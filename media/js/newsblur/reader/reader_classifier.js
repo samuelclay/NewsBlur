@@ -1,6 +1,6 @@
 NEWSBLUR.ReaderClassifierTrainer = function (options) {
     var defaults = {
-        'width': 760,
+        'width': 820,
         'height': 600,
         'training': true,
         modal_container_class: "NB-full-container NB-classifier-container"
@@ -23,6 +23,7 @@ NEWSBLUR.ReaderClassifierTrainer = function (options) {
     // Manage tab filter state
     this.manage_filter_sentiment = 'all'; // 'all', 'like', 'dislike'
     this.manage_filter_types = 'all'; // 'all' or specific type: 'title', 'text', 'tag', 'author', 'feed', 'url'
+    this.manage_filter_scope = 'all'; // 'all', 'feed', 'folder', 'global'
     this.manage_filter_feed = null; // null = all feeds/folders, or specific feed_id/folder path
     this.manage_filter_search = ''; // search query for filtering
     this.runner_trainer();
@@ -30,7 +31,7 @@ NEWSBLUR.ReaderClassifierTrainer = function (options) {
 
 NEWSBLUR.ReaderClassifierFeed = function (feed_id, options) {
     var defaults = {
-        'width': 760,
+        'width': 820,
         'training': false,
         'feed_loaded': true,
         modal_container_class: "NB-full-container NB-classifier-container"
@@ -52,6 +53,7 @@ NEWSBLUR.ReaderClassifierFeed = function (feed_id, options) {
     this.manage_dirty_feeds = {};
     this.manage_filter_sentiment = 'all';
     this.manage_filter_types = 'all';
+    this.manage_filter_scope = 'all';
     this.manage_filter_feed = null;
     this.manage_filter_search = '';
     this.runner_feed();
@@ -60,7 +62,7 @@ NEWSBLUR.ReaderClassifierFeed = function (feed_id, options) {
 
 NEWSBLUR.ReaderClassifierStory = function (story_id, feed_id, options) {
     var defaults = {
-        'width': 760,
+        'width': 820,
         'feed_loaded': true,
         modal_container_class: "NB-full-container NB-classifier-container"
     };
@@ -84,6 +86,7 @@ NEWSBLUR.ReaderClassifierStory = function (story_id, feed_id, options) {
     this.manage_dirty_feeds = {};
     this.manage_filter_sentiment = 'all';
     this.manage_filter_types = 'all';
+    this.manage_filter_scope = 'all';
     this.manage_filter_feed = null;
     this.manage_filter_search = '';
     this.runner_story();
@@ -659,18 +662,13 @@ var classifier_prototype = {
         var matching_text_regex = this.make_user_text_regex(story_content);
         var non_matching_texts = this.make_user_texts_non_matching(story_content);
         var non_matching_text_regex = this.make_user_text_regex_non_matching(story_content);
-        var has_non_matching = non_matching_texts.length > 0 || non_matching_text_regex.length > 0;
+        var $scoped_groups = this.make_scoped_groups(non_matching_texts.concat(non_matching_text_regex));
 
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
             this.make_classifier('<span class="NB-classifier-text-placeholder">Enter text above</span>', '', 'text'),
             $.make('span', matching_texts),
             $.make('span', matching_text_regex)
         ]);
-        var $non_matching = has_non_matching ?
-            $.make('div', { className: 'NB-classifier-feed-items' }, [
-                $.make('span', non_matching_texts),
-                $.make('span', non_matching_text_regex)
-            ]) : '';
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-text-section', 'data-section': 'text' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
@@ -683,6 +681,10 @@ var classifier_prototype = {
                     (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
                         'Regex requires ',
                         $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro')
+                    ])),
+                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
+                        'Classifier scope requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
                     ]))
                 ])
             ]),
@@ -700,10 +702,9 @@ var classifier_prototype = {
                 ]),
                 $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-text-validation' }),
                 this.make_regex_popover(),
-                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
-                    $this_story,
-                    $non_matching
-                ])
+                $.make('div', { className: 'NB-classifier-content-classifiers' },
+                    [$this_story].concat($scoped_groups)
+                )
             ])
         ]);
     },
@@ -714,18 +715,13 @@ var classifier_prototype = {
         var matching_title_regex = this.make_user_title_regex_matching(story_title);
         var non_matching_titles = this.make_user_titles_non_matching(story_title);
         var non_matching_title_regex = this.make_user_title_regex_non_matching(story_title);
-        var has_non_matching = non_matching_titles.length > 0 || non_matching_title_regex.length > 0;
+        var $scoped_groups = this.make_scoped_groups(non_matching_titles.concat(non_matching_title_regex));
 
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
             this.make_classifier('<span class="NB-classifier-title-placeholder">Select title phrase</span>', '', 'title'),
             $.make('span', matching_titles),
             $.make('span', matching_title_regex)
         ]);
-        var $non_matching = has_non_matching ?
-            $.make('div', { className: 'NB-classifier-feed-items' }, [
-                $.make('span', non_matching_titles),
-                $.make('span', non_matching_title_regex)
-            ]) : '';
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-title-section', 'data-section': 'title' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
@@ -734,6 +730,10 @@ var classifier_prototype = {
                     (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
                         'Regex requires ',
                         $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro')
+                    ])),
+                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
+                        'Classifier scope requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
                     ]))
                 ])
             ]),
@@ -751,10 +751,9 @@ var classifier_prototype = {
                 ]),
                 $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-title-validation' }),
                 this.make_regex_popover(),
-                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
-                    $this_story,
-                    $non_matching
-                ])
+                $.make('div', { className: 'NB-classifier-content-classifiers' },
+                    [$this_story].concat($scoped_groups)
+                )
             ])
         ]);
     },
@@ -773,7 +772,7 @@ var classifier_prototype = {
         var matching_url_regex = this.make_user_url_regex_matching(story_url);
         var non_matching_urls = this.make_user_urls_non_matching(story_url);
         var non_matching_url_regex = this.make_user_url_regex_non_matching(story_url);
-        var has_non_matching = non_matching_urls.length > 0 || non_matching_url_regex.length > 0;
+        var $scoped_groups = this.make_scoped_groups(non_matching_urls.concat(non_matching_url_regex));
 
         // Always create the "this story" div with the placeholder, plus any matching URLs
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
@@ -781,11 +780,6 @@ var classifier_prototype = {
             $.make('span', matching_urls),
             $.make('span', matching_url_regex)
         ]);
-        var $non_matching = has_non_matching ?
-            $.make('div', { className: 'NB-classifier-feed-items' }, [
-                $.make('span', non_matching_urls),
-                $.make('span', non_matching_url_regex)
-            ]) : '';
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-section NB-classifier-url-section', 'data-section': 'url' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
@@ -794,6 +788,10 @@ var classifier_prototype = {
                     (!NEWSBLUR.Globals.is_pro && $.make('span', { className: 'NB-classifier-pro-notice' }, [
                         'Regex requires ',
                         $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Pro')
+                    ])),
+                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
+                        'Classifier scope requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
                     ]))
                 ])
             ]),
@@ -811,10 +809,9 @@ var classifier_prototype = {
                 ]),
                 $.make('div', { className: 'NB-classifier-validation-inline NB-classifier-url-validation' }),
                 this.make_regex_popover(),
-                $.make('div', { className: 'NB-classifier-content-classifiers' }, [
-                    $this_story,
-                    $non_matching
-                ])
+                $.make('div', { className: 'NB-classifier-content-classifiers' },
+                    [$this_story].concat($scoped_groups)
+                )
             ])
         ]);
     },
@@ -885,15 +882,22 @@ var classifier_prototype = {
 
         var $story_authors = has_story_author ?
             $.make('div', { className: 'NB-classifier-this-story' }, this.make_authors([story_author])) : '';
-        var $feed_authors = has_other_authors ?
-            $.make('div', { className: 'NB-classifier-feed-items' }, this.make_authors(other_authors)) : '';
+        var $scoped_groups = has_other_authors ?
+            this.make_scoped_groups(this.make_authors(other_authors)) : [];
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
-            $.make('h5', 'Story Authors'),
-            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $story_authors,
-                $feed_authors
-            ])
+            $.make('h5', { className: 'NB-classifier-section-header' }, [
+                $.make('span', 'Story Authors'),
+                $.make('span', { className: 'NB-classifier-header-notices' }, [
+                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
+                        'Classifier scope requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                    ]))
+                ])
+            ]),
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
+                [$story_authors].concat($scoped_groups)
+            )
         ]);
     },
 
@@ -922,30 +926,35 @@ var classifier_prototype = {
 
         var $story_tags = has_story_tags ?
             $.make('div', { className: 'NB-classifier-this-story' }, this.make_tags(story_tags)) : '';
-        var $feed_tags = has_other_tags ?
-            $.make('div', { className: 'NB-classifier-feed-items' }, this.make_tags(other_tags)) : '';
+        var $scoped_groups = has_other_tags ?
+            this.make_scoped_groups(this.make_tags(other_tags)) : [];
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
-            $.make('h5', 'Story Categories &amp; Tags'),
-            $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' }, [
-                $story_tags,
-                $feed_tags
-            ])
+            $.make('h5', { className: 'NB-classifier-section-header' }, [
+                $.make('span', 'Story Categories &amp; Tags'),
+                $.make('span', { className: 'NB-classifier-header-notices' }, [
+                    (!NEWSBLUR.Globals.is_archive && $.make('span', { className: 'NB-classifier-scope-notice' }, [
+                        'Classifier scope requires ',
+                        $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, 'Premium Archive')
+                    ]))
+                ])
+            ]),
+            $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
+                [$story_tags].concat($scoped_groups)
+            )
         ]);
     },
 
     make_combined_publisher_section: function (feed) {
         var has_other_publishers = this.feed_publishers && this.feed_publishers.length > 0;
-
-        var $other_publishers = has_other_publishers ?
-            $.make('div', { className: 'NB-classifier-feed-items' }, this.make_publishers(this.feed_publishers)) : '';
+        var $scoped_groups = has_other_publishers ?
+            this.make_scoped_groups(this.make_publishers(this.feed_publishers)) : [];
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
             $.make('h5', 'Publisher'),
-            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                this.make_publisher(feed),
-                $other_publishers
-            ])
+            $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
+                [this.make_publisher(feed)].concat($scoped_groups)
+            )
         ]);
     },
 
@@ -1301,6 +1310,36 @@ var classifier_prototype = {
         return $publisher;
     },
 
+    group_classifiers_by_scope: function (classifiers) {
+        var groups = { feed: [], folder: [], global: [] };
+        _.each(classifiers, function ($el) {
+            var scope = $('.NB-classifier', $el).data('scope') || 'feed';
+            if (groups[scope]) {
+                groups[scope].push($el);
+            } else {
+                groups.feed.push($el);
+            }
+        });
+        return groups;
+    },
+
+    make_scoped_groups: function (classifiers) {
+        var groups = this.group_classifiers_by_scope(classifiers);
+        var $sections = [];
+
+        if (groups.feed.length > 0) {
+            $sections.push($.make('div', { className: 'NB-classifier-feed-items' }, groups.feed));
+        }
+        if (groups.folder.length > 0) {
+            $sections.push($.make('div', { className: 'NB-classifier-folder-items' }, groups.folder));
+        }
+        if (groups.global.length > 0) {
+            $sections.push($.make('div', { className: 'NB-classifier-global-items' }, groups.global));
+        }
+
+        return $sections;
+    },
+
     make_classifier: function (classifier_title, classifier_value, classifier_type, classifier_count, classifier, is_regex) {
         var score = 0;
         // is_regex can be passed explicitly, or detected from classifier_type === 'regex'
@@ -1318,6 +1357,15 @@ var classifier_prototype = {
             score = this.user_classifiers[storage_key][classifier_value];
         }
 
+        // Check scope metadata for this classifier
+        var scope_key = classifier_type + 's_scope';
+        var scope_info = null;
+        if (this.user_classifiers[scope_key] && classifier_value in this.user_classifiers[scope_key]) {
+            scope_info = this.user_classifiers[scope_key][classifier_value];
+        }
+        var scope = scope_info ? scope_info.scope : 'feed';
+        var scope_folder_name = scope_info ? scope_info.folder_name : '';
+
         // Label shows the display type (Text, Title, etc.) not "Regex"
         var display_type = classifier_type == 'feed' ? 'site' : (classifier_type == 'url' ? 'URL' : classifier_type);
         var classifier_type_title = classifier_type == 'url' ? 'URL' : Inflector.capitalize(display_type);
@@ -1325,6 +1373,38 @@ var classifier_prototype = {
         var css_class = 'NB-classifier NB-classifier-' + classifier_type;
         if (is_regex) {
             css_class += ' NB-classifier-regex';
+        }
+
+        // Build the type badge with all three scope icons as a toggle group
+        // For feed-type classifiers, just show the favicon + "Site:" (no scope controls)
+        var $type_badge;
+        if (classifier_type === 'feed') {
+            $type_badge = $.make('span', { className: 'NB-classifier-type-badge NB-classifier-type-feed' }, [
+                $.favicon_el(classifier),
+                $.make('span', { className: 'NB-classifier-type-label' }, 'Site')
+            ]);
+        } else {
+            // Three scope icons shown simultaneously — active one highlighted
+            var scope_icon_data = [
+                { key: 'feed', title: 'This site only', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>' },
+                { key: 'folder', title: 'All sites in folder', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },
+                { key: 'global', title: 'All sites', svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>' }
+            ];
+            var $scope_toggles = $.make('span', { className: 'NB-classifier-scope-toggles' });
+            _.each(scope_icon_data, function (icon) {
+                var $toggle = $.make('span', {
+                    className: 'NB-scope-toggle NB-scope-toggle-' + icon.key + (icon.key === scope ? ' NB-active' : ''),
+                    'data-tooltip': icon.title
+                });
+                $toggle.html(icon.svg);
+                $toggle.data('scope', icon.key);
+                $scope_toggles.append($toggle);
+            });
+
+            $type_badge = $.make('span', { className: 'NB-classifier-type-badge' }, [
+                $scope_toggles,
+                $.make('span', { className: 'NB-classifier-type-label' }, classifier_type_title)
+            ]);
         }
 
         var $classifier = $.make('span', { className: 'NB-classifier-container' }, [
@@ -1346,8 +1426,7 @@ var classifier_prototype = {
                     $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
                 ]),
                 $.make('label', [
-                    (classifier_type == 'feed' && $.favicon_el(classifier)),
-                    $.make('b', classifier_type_title + ': '),
+                    $type_badge,
                     (is_regex && $.make('span', { className: 'NB-classifier-regex-badge' }, 'REGEX')),
                     $.make('span', classifier_title)
                 ])
@@ -1358,9 +1437,15 @@ var classifier_prototype = {
             ]))
         ]);
 
+        // Store scope data on the classifier element
+        $('.NB-classifier', $classifier).data('scope', scope);
+        $('.NB-classifier', $classifier).data('folder-name', scope_folder_name);
+
         // Store original state for change tracking (like, dislike, or neutral)
         var original_state = score > 0 ? 'like' : (score < 0 ? 'dislike' : 'neutral');
         $('.NB-classifier', $classifier).data('original-state', original_state);
+        $('.NB-classifier', $classifier).data('original-scope', scope || 'feed');
+        $('.NB-classifier', $classifier).data('original-folder-name', scope_folder_name || '');
 
         if (score > 0) {
             $('.NB-classifier', $classifier).addClass('NB-classifier-like');
@@ -1382,7 +1467,154 @@ var classifier_prototype = {
             $('.NB-classifier', $classifier).removeClass('NB-classifier-hover-dislike');
         });
 
+        // Click individual scope toggle icons to switch scope
+        if (classifier_type !== 'feed') {
+            var self = this;
+            $('.NB-scope-toggle', $classifier).on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                self.select_scope($(this), $classifier);
+            });
+
+            // Instant tooltip on hover (appended to body to avoid overflow clipping)
+            $('.NB-scope-toggle', $classifier).on('mouseenter', function () {
+                var $this = $(this);
+                var text = $this.attr('data-tooltip');
+                if (!text) return;
+                var $tip = $('<div class="NB-scope-tooltip">' + text + '</div>');
+                $('body').append($tip);
+                var rect = this.getBoundingClientRect();
+                $tip.css({
+                    top: rect.top - $tip.outerHeight() - 6,
+                    left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
+                });
+                $this.data('$tooltip', $tip);
+            }).on('mouseleave', function () {
+                var $tip = $(this).data('$tooltip');
+                if ($tip) { $tip.remove(); $(this).removeData('$tooltip'); }
+            });
+        }
+
         return $classifier;
+    },
+
+    select_scope: function ($toggle, $classifier_container) {
+        var $cl = $('.NB-classifier', $classifier_container);
+        var new_scope = $toggle.data('scope');
+        var current_scope = $cl.data('scope') || 'feed';
+        var is_archive = NEWSBLUR.Globals.is_archive;
+
+        // Already active — do nothing
+        if (new_scope === current_scope) return;
+
+        // Archive gating: non-Archive users can't use folder/global
+        if (!is_archive && new_scope !== 'feed') {
+            // 1. Shake the type badge to signal "denied"
+            var $badge = $toggle.closest('.NB-classifier-type-badge');
+            $badge.removeClass('NB-shake');
+            $badge[0].offsetWidth; // force reflow
+            $badge.addClass('NB-shake');
+            setTimeout(function () { $badge.removeClass('NB-shake'); }, 500);
+
+            // 2. Flash the clicked toggle amber to connect it to the notice
+            $toggle.addClass('NB-scope-toggle-denied');
+            setTimeout(function () { $toggle.removeClass('NB-scope-toggle-denied'); }, 800);
+
+            // 3. Show a brief "Requires Pro" tooltip on the blocked toggle
+            $('.NB-scope-tooltip').remove();
+            var $tip = $('<div class="NB-scope-tooltip NB-scope-tooltip-denied">Requires Premium Archive</div>');
+            $('body').append($tip);
+            var rect = $toggle[0].getBoundingClientRect();
+            $tip.css({
+                top: rect.top - $tip.outerHeight() - 6,
+                left: rect.left + rect.width / 2 - $tip.outerWidth() / 2
+            });
+            setTimeout(function () { $tip.fadeOut(300, function () { $tip.remove(); }); }, 1500);
+
+            // 4. Animate in the header notice and keep it visible
+            var $section = $classifier_container.closest('.NB-fieldset');
+            var $notice = $section.find('.NB-classifier-scope-notice');
+            if ($notice.length && !$notice.hasClass('NB-visible')) {
+                $notice.removeClass('NB-fading');
+                $notice[0].offsetWidth;
+                $notice.addClass('NB-visible');
+            }
+            return;
+        }
+
+        // For folder scope, find the folder this feed belongs to
+        var folder_name = '';
+        if (new_scope === 'folder') {
+            if (this.feed_id && NEWSBLUR.assets.folders) {
+                var feed_id = parseInt(this.feed_id, 10);
+                var find_in_collection = function (collection) {
+                    collection.each(function (item) {
+                        if (folder_name) return;
+                        if (item.is_folder()) {
+                            var feed_ids = item.feed_ids_in_folder();
+                            if (_.contains(feed_ids, feed_id)) {
+                                folder_name = item.get('folder_title') || '';
+                            }
+                        }
+                    });
+                };
+                find_in_collection(NEWSBLUR.assets.folders);
+            }
+        }
+
+        // Update data
+        $cl.data('scope', new_scope);
+        $cl.data('folder-name', folder_name);
+
+        // Update toggle active states
+        $toggle.closest('.NB-classifier-scope-toggles').find('.NB-scope-toggle').removeClass('NB-active');
+        $toggle.addClass('NB-active');
+
+        // Brief scale animation on the clicked toggle
+        $toggle.css('transform', 'scale(1.3)');
+        setTimeout(function () {
+            $toggle.css('transform', '');
+        }, 150);
+
+        // Compare scope + like/dislike to original state to determine if changed
+        var original_scope = $cl.data('original-scope') || 'feed';
+        var current_state = $cl.hasClass('NB-classifier-like') ? 'like' :
+            ($cl.hasClass('NB-classifier-dislike') ? 'dislike' : 'neutral');
+        var original_state = $cl.data('original-state') || 'neutral';
+
+        if (new_scope !== original_scope || current_state !== original_state) {
+            $cl.addClass('NB-classifier-changed');
+        } else {
+            $cl.removeClass('NB-classifier-changed');
+        }
+        this.update_save_button();
+    },
+
+    save_scope_change: function ($classifier) {
+        var value = $classifier.find('.NB-classifier-input-like').val();
+        var is_like = $classifier.hasClass('NB-classifier-like');
+        var is_dislike = $classifier.hasClass('NB-classifier-dislike');
+        var scope = $classifier.data('scope') || 'feed';
+        var folder_name = $classifier.data('folder-name') || '';
+        var input_name = $classifier.find('.NB-classifier-input-like').attr('name');
+
+        if (!is_like && !is_dislike) return;
+
+        var data = {
+            'feed_id': this.feed_id,
+            'scope': scope,
+            'folder_name': folder_name
+        };
+
+        if (is_like) {
+            data[input_name] = value;
+        } else {
+            data[input_name.replace('like_', 'dislike_')] = value;
+        }
+
+        NEWSBLUR.assets.save_classifier(data, function () {
+            NEWSBLUR.reader.force_feeds_refresh();
+        });
     },
 
     change_classifier: function ($classifier, classifier_opinion) {
@@ -1423,9 +1655,11 @@ var classifier_prototype = {
             current_state = 'dislike';
         }
 
-        // Compare to original state - only mark as changed if different
+        // Compare to original state (sentiment + scope) - only mark as changed if different
         var original_state = $classifier.data('original-state') || 'neutral';
-        if (current_state === original_state) {
+        var current_scope = $classifier.data('scope') || 'feed';
+        var original_scope = $classifier.data('original-scope') || 'feed';
+        if (current_state === original_state && current_scope === original_scope) {
             $classifier.removeClass('NB-classifier-changed');
         } else {
             $classifier.addClass('NB-classifier-changed');
@@ -1436,7 +1670,6 @@ var classifier_prototype = {
         } else {
             this.update_save_button();
         }
-        // NEWSBLUR.log(['change_classifier', classifier_opinion, $classifier, $like.is(':checked'), $dislike.is(':checked')]);
     },
 
     count_selected_classifiers: function () {
@@ -1498,12 +1731,25 @@ var classifier_prototype = {
             $text_validation.empty();
 
             if (text.length) {
-                $text_placeholder.text(text);
-                $text_placeholder.css('font-style', 'normal');
-                $text_checkboxes.val(text);
-                // Auto thumbs-up if not already rated
-                if (!$text_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
-                    self.change_classifier($text_classifier, 'like');
+                // Check if this text already exists as a classifier
+                var existing_texts = self.user_classifiers.texts || {};
+                var text_lower = text.toLowerCase();
+                var text_already_exists = _.any(_.keys(existing_texts), function (k) {
+                    return k.toLowerCase() === text_lower;
+                });
+
+                if (text_already_exists) {
+                    // Hide the placeholder classifier — the existing one is already shown
+                    $text_classifier.hide();
+                } else {
+                    $text_classifier.show();
+                    $text_placeholder.text(text);
+                    $text_placeholder.css('font-style', 'normal');
+                    $text_checkboxes.val(text);
+                    // Auto thumbs-up if not already rated
+                    if (!$text_classifier.is('.NB-classifier-like,.NB-classifier-dislike')) {
+                        self.change_classifier($text_classifier, 'like');
+                    }
                 }
 
                 // Validate based on mode
@@ -1542,6 +1788,7 @@ var classifier_prototype = {
                     }
                 }
             } else {
+                $text_classifier.show();
                 $text_placeholder.text('Enter text above');
                 $text_placeholder.css('font-style', 'italic');
             }
@@ -2064,6 +2311,37 @@ var classifier_prototype = {
             self.apply_manage_filters();
         });
 
+        // Manage tab - scope filter (single select, toggle back to all)
+        $.targetIs(e, { tagSelector: '.NB-manage-scope-control li' }, function ($t) {
+            e.preventDefault();
+            var scope = $t.data('scope');
+            // Archive gating: non-Archive users cannot filter by folder/global
+            if (scope !== 'all' && scope !== 'feed' && !NEWSBLUR.Globals.is_archive) {
+                // Show the archive banner
+                var $banner = $('.NB-manage-scope-pro-banner', self.$modal);
+                $banner.addClass('NB-visible');
+                return;
+            }
+            // Toggle back to 'all' if clicking already-selected item (except 'all' itself)
+            if (scope !== 'all' && self.manage_filter_scope === scope) {
+                scope = 'all';
+            }
+            self.manage_filter_scope = scope;
+            $('.NB-manage-scope-control li', self.$modal).removeClass('NB-active');
+            $('.NB-manage-scope-control li[data-scope="' + scope + '"]', self.$modal).addClass('NB-active');
+            // Hide pro banner if visible
+            $('.NB-manage-scope-pro-banner', self.$modal).removeClass('NB-visible');
+            self.apply_manage_filters();
+        });
+
+        // Manage tab - scope pro banner upgrade link
+        $.targetIs(e, { tagSelector: '.NB-manage-scope-pro-banner a' }, function ($t) {
+            e.preventDefault();
+            $.modal.close(function () {
+                NEWSBLUR.reader.open_premium_upgrade_modal();
+            });
+        });
+
         // Manage tab classifier clicks (handle before regular classifiers)
         var manage_stop = false;
         $.targetIs(e, { tagSelector: '.NB-manage-classifier-item .NB-classifier-icon-dislike' }, function ($t, $p) {
@@ -2153,6 +2431,14 @@ var classifier_prototype = {
         var selector = is_manage_tab ? '.NB-classifier.NB-classifier-changed' : '.NB-classifier';
 
         $active_tab.find(selector).each(function () {
+            // Skip non-feed-scope classifiers — they are saved immediately
+            // by save_scope_change() and should not be included in the
+            // batch save, which would incorrectly re-save them as feed-level.
+            var el_scope = $(this).data('scope');
+            if (el_scope && el_scope !== 'feed') {
+                return;
+            }
+
             var value = $('.NB-classifier-input-like', this).val();
             if ($('.NB-classifier-input-like, .NB-classifier-input-dislike', this).is(':checked')) {
                 var name = $('input:checked', this).attr('name');
@@ -2183,7 +2469,10 @@ var classifier_prototype = {
         }
 
         if (this.options['training']) {
-            this.cache[this.feed_id] = this.$modal.clone();
+            // Invalidate the DOM cache so the modal is rebuilt fresh next time.
+            // jQuery .clone() doesn't copy .data() attributes (scope, original-scope),
+            // so cached modals would show stale scope state.
+            delete this.cache[this.feed_id];
         }
         $save.text('Saving...');
         $save.addClass('NB-disabled');
@@ -2191,13 +2480,67 @@ var classifier_prototype = {
         this.update_opinions();
         NEWSBLUR.assets.recalculate_story_scores(feed_id);
         NEWSBLUR.assets.stories.trigger('render:intelligence');
+
+        // Collect changed non-feed-scope classifiers to save separately.
+        // Also handle scope changes: if a classifier moved from one scope to
+        // another (e.g. global→folder), we must remove the old-scope classifier
+        // before creating the new-scope one.
+        var scoped_saves = [];
+        $active_tab.find('.NB-classifier.NB-classifier-changed').each(function () {
+            var $cl = $(this);
+            var el_scope = $cl.data('scope') || 'feed';
+            var original_scope = $cl.data('original-scope') || 'feed';
+            var value = $cl.find('.NB-classifier-input-like').val();
+            var input_name = $cl.find('.NB-classifier-input-like').attr('name');
+            var is_like = $cl.hasClass('NB-classifier-like');
+            var is_dislike = $cl.hasClass('NB-classifier-dislike');
+
+            // If scope changed, remove the old classifier at its previous scope
+            if (original_scope !== el_scope) {
+                var remove_data = {
+                    'feed_id': self.feed_id,
+                    'scope': original_scope,
+                    'folder_name': $cl.data('original-folder-name') || ''
+                };
+                remove_data['remove_' + input_name] = value;
+                scoped_saves.push(remove_data);
+            }
+
+            // If the new scope is non-feed, save the classifier at the new scope
+            if (el_scope !== 'feed') {
+                var scoped_data = {
+                    'feed_id': self.feed_id,
+                    'scope': el_scope,
+                    'folder_name': $cl.data('folder-name') || ''
+                };
+
+                if (is_like) {
+                    scoped_data[input_name] = value;
+                } else if (is_dislike) {
+                    scoped_data[input_name.replace('like_', 'dislike_')] = value;
+                } else {
+                    scoped_data['remove_' + input_name] = value;
+                }
+                scoped_saves.push(scoped_data);
+            }
+        });
+
         this.model.save_classifier(data, function () {
+            // Save non-feed-scope classifiers with their individual scope
+            _.each(scoped_saves, function (scoped_data) {
+                self.model.save_classifier(scoped_data);
+            });
+
             // Clear changed markers only for the tab that was saved
             $active_tab.find('.NB-classifier-changed').removeClass('NB-classifier-changed');
             self.update_save_button();
 
             if (!keep_modal_open) {
-                NEWSBLUR.reader.feed_unread_count(feed_id);
+                if (scoped_saves.length) {
+                    NEWSBLUR.reader.force_feeds_refresh();
+                } else {
+                    NEWSBLUR.reader.feed_unread_count(feed_id);
+                }
                 $.modal.close();
             }
         });
@@ -2277,6 +2620,46 @@ var classifier_prototype = {
                 }
             }
         });
+
+        // Sync scope metadata for classifiers whose scope changed.
+        // The *_scope keys in model.classifiers are read by make_classifier()
+        // to determine scope icons when reopening the modal.
+        $active_tab.find('.NB-classifier').each(function () {
+            var $cl = $(this);
+            var current_scope = $cl.data('scope') || 'feed';
+            var original_scope = $cl.data('original-scope') || 'feed';
+            if (current_scope === original_scope) return;
+
+            var value = $cl.find('.NB-classifier-input-like').val();
+            var input_name = $cl.find('.NB-classifier-input-like').attr('name') || '';
+            var type_name = input_name.replace(/^(dis)?like_/, '').replace(/_regex$/, '');
+
+            // Map input type to scope key (e.g. 'text' → 'texts_scope', 'author' → 'authors_scope')
+            var scope_key_map = {
+                'tag': 'tags_scope', 'title': 'titles_scope', 'text': 'texts_scope',
+                'url': 'urls_scope', 'author': 'authors_scope',
+                'title_regex': 'title_regex_scope', 'text_regex': 'text_regex_scope',
+                'url_regex': 'url_regex_scope'
+            };
+            var scope_key = scope_key_map[type_name];
+            if (!scope_key) return;
+
+            if (current_scope === 'feed') {
+                // Moved back to feed scope — remove scope metadata entry
+                if (self.model.classifiers[feed_id][scope_key]) {
+                    delete self.model.classifiers[feed_id][scope_key][value];
+                }
+            } else {
+                // Moved to folder/global scope — update scope metadata
+                if (!self.model.classifiers[feed_id][scope_key]) {
+                    self.model.classifiers[feed_id][scope_key] = {};
+                }
+                self.model.classifiers[feed_id][scope_key][value] = {
+                    scope: current_scope,
+                    folder_name: $cl.data('folder-name') || ''
+                };
+            }
+        });
     },
 
     // =====================
@@ -2297,6 +2680,7 @@ var classifier_prototype = {
             // Reset filter state to defaults when switching to manage tab
             this.manage_filter_sentiment = 'all';
             this.manage_filter_types = 'all';
+            this.manage_filter_scope = 'all';
             this.manage_filter_feed = null;
             this.manage_filter_search = '';
 
@@ -2371,11 +2755,57 @@ var classifier_prototype = {
                 ])
             ]);
         } else {
-            // Build classifier list by folder
+            // Split scoped classifiers into global (top section) and folder (under their folders)
+            var $scoped_section = [];
+            var folder_scoped_map = {}; // folder_name -> [$items]
+            if (this.all_classifiers_data.scoped_classifiers) {
+                var scoped = this.all_classifiers_data.scoped_classifiers;
+                var $global_items = [];
+
+                var route_scoped_item = function (item, type, value_key) {
+                    var $el = self.make_manage_classifier_item(0, type, item[value_key], item.score, item.scope, item.folder_name);
+                    if (item.scope === 'global') {
+                        $global_items.push($el);
+                    } else if (item.scope === 'folder') {
+                        var fn = item.folder_name || ' ';
+                        if (!folder_scoped_map[fn]) folder_scoped_map[fn] = [];
+                        folder_scoped_map[fn].push($el);
+                    }
+                };
+
+                _.each(scoped.titles || [], function (item) { route_scoped_item(item, 'title', 'title'); });
+                _.each(scoped.authors || [], function (item) { route_scoped_item(item, 'author', 'author'); });
+                _.each(scoped.tags || [], function (item) { route_scoped_item(item, 'tag', 'tag'); });
+                _.each(scoped.texts || [], function (item) { route_scoped_item(item, 'text', 'text'); });
+                _.each(scoped.urls || [], function (item) { route_scoped_item(item, 'url', 'url'); });
+
+                if ($global_items.length) {
+                    $scoped_section.push($.make('div', { className: 'NB-manage-folder NB-manage-scoped-section', 'data-feed-id': 0 }, [
+                        $.make('div', { className: 'NB-manage-folder-title NB-manage-scoped-title' }, [
+                            $.make('span', 'Global Classifiers'),
+                            $.make('span', { className: 'NB-manage-scoped-count' }, String($global_items.length))
+                        ]),
+                        $.make('div', { className: 'NB-manage-folder-feeds NB-classifiers' }, $global_items)
+                    ]));
+                }
+            }
+
+            // Build classifier list by folder, injecting folder-scoped classifiers
             var $folders = [];
 
             _.each(this.all_classifiers_data.folders, function (folder) {
                 var $folder_feeds = [];
+                var raw_folder_name = folder.folder_name;
+
+                // Prepend folder-scoped classifiers for this folder
+                var $folder_classifiers = folder_scoped_map[raw_folder_name] || [];
+                if ($folder_classifiers.length) {
+                    $folder_feeds.push($.make('div', {
+                        className: 'NB-manage-folder-classifiers NB-classifiers',
+                        'data-folder-name': raw_folder_name
+                    }, $folder_classifiers));
+                }
+                delete folder_scoped_map[raw_folder_name];
 
                 _.each(folder.feeds, function (feed) {
                     var $feed_classifiers = self.make_feed_classifiers_for_manage(feed);
@@ -2385,17 +2815,33 @@ var classifier_prototype = {
                 });
 
                 if ($folder_feeds.length) {
-                    var folder_name = folder.folder_name === ' ' ? 'Top Level' : folder.folder_name;
-                    $folders.push($.make('div', { className: 'NB-manage-folder' }, [
+                    var folder_name = raw_folder_name === ' ' ? 'Top Level' : raw_folder_name;
+                    $folders.push($.make('div', { className: 'NB-manage-folder', 'data-folder-name': raw_folder_name }, [
                         $.make('div', { className: 'NB-manage-folder-title' }, folder_name),
                         $.make('div', { className: 'NB-manage-folder-feeds' }, $folder_feeds)
                     ]));
                 }
             });
 
+            // Handle orphan folders (folder-scoped classifiers for folders not in the feed list)
+            _.each(folder_scoped_map, function ($items, raw_folder_name) {
+                if ($items.length) {
+                    var folder_name = raw_folder_name === ' ' ? 'Top Level' : raw_folder_name;
+                    $folders.push($.make('div', { className: 'NB-manage-folder', 'data-folder-name': raw_folder_name }, [
+                        $.make('div', { className: 'NB-manage-folder-title' }, folder_name),
+                        $.make('div', { className: 'NB-manage-folder-feeds' }, [
+                            $.make('div', {
+                                className: 'NB-manage-folder-classifiers NB-classifiers',
+                                'data-folder-name': raw_folder_name
+                            }, $items)
+                        ])
+                    ]));
+                }
+            });
+
             $content = $.make('div', { className: 'NB-manage-training-content' }, [
                 this.make_manage_filter_bar(),
-                $.make('div', { className: 'NB-manage-training-folders' }, $folders),
+                $.make('div', { className: 'NB-manage-training-folders' }, $scoped_section.concat($folders)),
                 $.make('div', { className: 'NB-modal-submit-bottom' }, [
                     $.make('div', { className: 'NB-modal-submit NB-manage-submit-area' }, [
                         $.make('span', { className: 'NB-manage-saved-message' }, 'Saved'),
@@ -2413,13 +2859,8 @@ var classifier_prototype = {
         return $content;
     },
 
-    count_classifiers: function (sentiment_filter, type_filter, allowed_feed_ids, search_filter, feeds_matching_search) {
-        // Count classifiers, optionally filtered by sentiment, type, feed, and search
-        // sentiment_filter: 'all', 'like', or 'dislike'
-        // type_filter: 'all', 'title', 'author', 'tag', 'text', 'feed', or 'url'
-        // allowed_feed_ids: object with feed_id keys, or null for all feeds
-        // search_filter: lowercase search string, or empty/null for no search
-        // feeds_matching_search: object with feed_id keys for feeds whose title/address match search
+    count_classifiers: function (sentiment_filter, type_filter, scope_filter, allowed_feed_ids, search_filter, feeds_matching_search, filter_feed) {
+        // Count classifiers, optionally filtered by sentiment, type, scope, feed, and search
         var counts = {
             all: 0,
             likes: 0,
@@ -2429,7 +2870,11 @@ var classifier_prototype = {
             tag: 0,
             text: 0,
             feed: 0,
-            url: 0
+            url: 0,
+            scope_all: 0,
+            scope_feed: 0,
+            scope_folder: 0,
+            scope_global: 0
         };
 
         if (!this.all_classifiers_data || !this.all_classifiers_data.folders) {
@@ -2441,17 +2886,29 @@ var classifier_prototype = {
                 var is_like = item.score > 0;
                 var is_dislike = item.score < 0;
                 var sentiment = is_like ? 'like' : (is_dislike ? 'dislike' : 'neutral');
+                var item_scope = item.scope || 'feed';
 
-                // Check if this item matches the sentiment filter
                 var sentiment_match = !sentiment_filter || sentiment_filter === 'all' || sentiment_filter === sentiment;
-                // Check if this item matches the type filter
                 var type_match = !type_filter || type_filter === 'all' || type_filter === type;
-                // Check if this item matches the feed filter
-                var feed_match = !allowed_feed_ids || allowed_feed_ids[feed_id];
-                // Check if this item matches the search filter
+                var scope_match = !scope_filter || scope_filter === 'all' || scope_filter === item_scope;
+                // Feed/folder filter: global bypasses, folder matches by folder name, feed matches by feed_id
+                var feed_match;
+                if (item_scope === 'global') {
+                    feed_match = true;
+                } else if (item_scope === 'folder') {
+                    if (!filter_feed) {
+                        feed_match = true;
+                    } else if (_.string.startsWith(filter_feed, 'river:')) {
+                        var cf = filter_feed.replace('river:', '');
+                        feed_match = cf === '' || cf === (item.folder_name || '');
+                    } else {
+                        feed_match = false;
+                    }
+                } else {
+                    feed_match = !allowed_feed_ids || allowed_feed_ids[feed_id];
+                }
                 var search_match = !search_filter;
                 if (!search_match) {
-                    // Get the classifier value based on type
                     var value = '';
                     if (type === 'title') value = item.title || '';
                     else if (type === 'author') value = item.author || '';
@@ -2464,15 +2921,31 @@ var classifier_prototype = {
                                    (feeds_matching_search && feeds_matching_search[feed_id]);
                 }
 
-                if (sentiment_match && type_match && feed_match && search_match) {
+                if (sentiment_match && type_match && scope_match && feed_match && search_match) {
                     counts.all++;
                     counts[type]++;
                     if (is_like) counts.likes++;
                     if (is_dislike) counts.dislikes++;
                 }
+                // Scope counts: filtered by sentiment, type, feed, search (but NOT scope)
+                if (sentiment_match && type_match && feed_match && search_match) {
+                    counts.scope_all++;
+                    counts['scope_' + item_scope]++;
+                }
             });
         };
 
+        // Count scoped classifiers (global/folder)
+        if (this.all_classifiers_data.scoped_classifiers) {
+            var scoped = this.all_classifiers_data.scoped_classifiers;
+            countItems(scoped.titles, 'title', 0);
+            countItems(scoped.authors, 'author', 0);
+            countItems(scoped.tags, 'tag', 0);
+            countItems(scoped.texts, 'text', 0);
+            countItems(scoped.urls, 'url', 0);
+        }
+
+        // Count per-feed classifiers
         _.each(this.all_classifiers_data.folders, function (folder) {
             _.each(folder.feeds, function (feed) {
                 var classifiers = feed.classifiers;
@@ -2492,10 +2965,9 @@ var classifier_prototype = {
 
     get_filtered_counts: function () {
         // Get counts for display, respecting current filters
-        // Type counts are filtered by current sentiment, feed, and search
-        // Sentiment counts are filtered by current type, feed, and search
         var sentiment = this.manage_filter_sentiment;
         var type = this.manage_filter_types;
+        var scope = this.manage_filter_scope;
 
         // Get allowed feed IDs from folder/site filter
         var allowed_feed_ids = null;
@@ -2520,24 +2992,31 @@ var classifier_prototype = {
             });
         }
 
-        // For type buttons: filter by current sentiment, feed, and search
-        var type_counts = this.count_classifiers(sentiment, null, allowed_feed_ids, search_filter, feeds_matching_search);
-        // For sentiment buttons: filter by current type, feed, and search
-        var sentiment_counts = this.count_classifiers(null, type, allowed_feed_ids, search_filter, feeds_matching_search);
+        // For type buttons: filter by current sentiment, scope, feed, and search
+        var type_counts = this.count_classifiers(sentiment, null, scope, allowed_feed_ids, search_filter, feeds_matching_search, this.manage_filter_feed);
+        // For sentiment buttons: filter by current type, scope, feed, and search
+        var sentiment_counts = this.count_classifiers(null, type, scope, allowed_feed_ids, search_filter, feeds_matching_search, this.manage_filter_feed);
+        // For scope buttons: filter by current sentiment, type, feed, and search (NOT scope)
+        var scope_counts = this.count_classifiers(sentiment, type, null, allowed_feed_ids, search_filter, feeds_matching_search, this.manage_filter_feed);
 
         return {
-            // Sentiment control counts (filtered by type)
+            // Sentiment control counts (filtered by type + scope)
             sentiment_all: sentiment_counts.all,
             sentiment_likes: sentiment_counts.likes,
             sentiment_dislikes: sentiment_counts.dislikes,
-            // Type control counts (filtered by sentiment)
+            // Type control counts (filtered by sentiment + scope)
             type_all: type_counts.all,
             type_title: type_counts.title,
             type_author: type_counts.author,
             type_tag: type_counts.tag,
             type_text: type_counts.text,
             type_feed: type_counts.feed,
-            type_url: type_counts.url
+            type_url: type_counts.url,
+            // Scope control counts (filtered by sentiment + type)
+            scope_all: scope_counts.scope_all,
+            scope_feed: scope_counts.scope_feed,
+            scope_folder: scope_counts.scope_folder,
+            scope_global: scope_counts.scope_global
         };
     },
 
@@ -2565,6 +3044,12 @@ var classifier_prototype = {
         updateCount('.NB-manage-filter-type-text', counts.type_text);
         updateCount('.NB-manage-filter-type-feed', counts.type_feed);
         updateCount('.NB-manage-filter-type-url', counts.type_url);
+
+        // Update scope control counts
+        updateCount('.NB-manage-filter-scope-all', counts.scope_all);
+        updateCount('.NB-manage-filter-scope-feed', counts.scope_feed);
+        updateCount('.NB-manage-filter-scope-folder', counts.scope_folder);
+        updateCount('.NB-manage-filter-scope-global', counts.scope_global);
     },
 
     make_manage_filter_bar: function () {
@@ -2580,6 +3065,33 @@ var classifier_prototype = {
                         classifier_feed_ids[feed.feed_id] = true;
                     }
                 });
+            });
+        }
+
+        // Also include feeds from folders that have folder-scoped classifiers
+        if (this.all_classifiers_data && this.all_classifiers_data.scoped_classifiers) {
+            var scoped = this.all_classifiers_data.scoped_classifiers;
+            var folder_names = {};
+            var collect_folder_names = function (items) {
+                _.each(items, function (item) {
+                    if (item.scope === 'folder' && item.folder_name) {
+                        folder_names[item.folder_name] = true;
+                    }
+                });
+            };
+            collect_folder_names(scoped.titles || []);
+            collect_folder_names(scoped.authors || []);
+            collect_folder_names(scoped.tags || []);
+            collect_folder_names(scoped.texts || []);
+            collect_folder_names(scoped.urls || []);
+
+            _.each(folder_names, function (val, folder_name) {
+                var folder = NEWSBLUR.assets.get_folder(folder_name);
+                if (folder) {
+                    _.each(folder.feed_ids_in_folder(), function (feed_id) {
+                        classifier_feed_ids[feed_id] = true;
+                    });
+                }
             });
         }
 
@@ -2606,7 +3118,20 @@ var classifier_prototype = {
             $feed_chooser.val('');
         }
 
+        // Scope filter SVG icons (matching the scope toggle icons from classifier pills)
+        var scope_svg_feed = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>';
+        var scope_svg_folder = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>';
+        var scope_svg_global = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>';
+
+        var $scope_feed_icon = $.make('span', { className: 'NB-manage-scope-icon NB-manage-scope-icon-feed' });
+        $scope_feed_icon.html(scope_svg_feed);
+        var $scope_folder_icon = $.make('span', { className: 'NB-manage-scope-icon NB-manage-scope-icon-folder' });
+        $scope_folder_icon.html(scope_svg_folder);
+        var $scope_global_icon = $.make('span', { className: 'NB-manage-scope-icon NB-manage-scope-icon-global' });
+        $scope_global_icon.html(scope_svg_global);
+
         return $.make('div', { className: 'NB-manage-filter-bar' }, [
+            // Row 1: Feed/folder dropdown + search (full width)
             $.make('div', { className: 'NB-manage-filter-row NB-manage-filter-row-1' }, [
                 $.make('div', { className: 'NB-manage-filter-group NB-manage-filter-feed' }, [
                     $feed_chooser
@@ -2618,7 +3143,10 @@ var classifier_prototype = {
                         placeholder: 'Filter by site or classifier...',
                         value: this.manage_filter_search
                     })
-                ]),
+                ])
+            ]),
+            // Row 2: Sentiment (left) + Scope (right)
+            $.make('div', { className: 'NB-manage-filter-row NB-manage-filter-row-2' }, [
                 $.make('div', { className: 'NB-manage-filter-group NB-manage-filter-sentiment' }, [
                     $.make('ul', { className: 'segmented-control NB-manage-sentiment-control' }, [
                         $.make('li', {
@@ -2645,60 +3173,102 @@ var classifier_prototype = {
                             $.make('span', { className: 'NB-type-count' }, counts.sentiment_dislikes)
                         ])
                     ])
-                ])
-            ]),
-            $.make('div', { className: 'NB-manage-filter-row NB-manage-filter-row-2' }, [
-                $.make('ul', { className: 'segmented-control NB-manage-types-control' }, [
+                ]),
+                $.make('div', { className: 'NB-manage-filter-group NB-manage-filter-scope' }, [
+                    $.make('ul', { className: 'segmented-control NB-manage-scope-control' }, [
                         $.make('li', {
-                            className: 'NB-manage-filter-type-all' + (this.manage_filter_types === 'all' ? ' NB-active' : '') + (counts.type_all === 0 ? ' NB-zero-count' : ''),
-                            'data-type': 'all'
+                            className: 'NB-manage-filter-scope-all' + (this.manage_filter_scope === 'all' ? ' NB-active' : '') + (counts.scope_all === 0 ? ' NB-zero-count' : ''),
+                            'data-scope': 'all'
                         }, [
                             $.make('span', { className: 'NB-type-label' }, 'All'),
-                            $.make('span', { className: 'NB-type-count' }, counts.type_all)
+                            $.make('span', { className: 'NB-type-count' }, counts.scope_all)
                         ]),
                         $.make('li', {
-                            className: 'NB-manage-filter-type-title' + (this.manage_filter_types === 'title' ? ' NB-active' : '') + (counts.type_title === 0 ? ' NB-zero-count' : ''),
-                            'data-type': 'title'
+                            className: 'NB-manage-filter-scope-feed' + (this.manage_filter_scope === 'feed' ? ' NB-active' : '') + (counts.scope_feed === 0 ? ' NB-zero-count' : ''),
+                            'data-scope': 'feed'
                         }, [
-                            $.make('span', { className: 'NB-type-label' }, 'Title'),
-                            $.make('span', { className: 'NB-type-count' }, counts.type_title)
+                            $scope_feed_icon,
+                            $.make('span', { className: 'NB-type-label' }, 'Per Site'),
+                            $.make('span', { className: 'NB-type-count' }, counts.scope_feed)
                         ]),
                         $.make('li', {
-                            className: 'NB-manage-filter-type-author' + (this.manage_filter_types === 'author' ? ' NB-active' : '') + (counts.type_author === 0 ? ' NB-zero-count' : ''),
-                            'data-type': 'author'
+                            className: 'NB-manage-filter-scope-folder' + (this.manage_filter_scope === 'folder' ? ' NB-active' : '') + (counts.scope_folder === 0 ? ' NB-zero-count' : ''),
+                            'data-scope': 'folder'
                         }, [
-                            $.make('span', { className: 'NB-type-label' }, 'Author'),
-                            $.make('span', { className: 'NB-type-count' }, counts.type_author)
+                            $scope_folder_icon,
+                            $.make('span', { className: 'NB-type-label' }, 'Per Folder'),
+                            $.make('span', { className: 'NB-type-count' }, counts.scope_folder)
                         ]),
                         $.make('li', {
-                            className: 'NB-manage-filter-type-tag' + (this.manage_filter_types === 'tag' ? ' NB-active' : '') + (counts.type_tag === 0 ? ' NB-zero-count' : ''),
-                            'data-type': 'tag'
+                            className: 'NB-manage-filter-scope-global' + (this.manage_filter_scope === 'global' ? ' NB-active' : '') + (counts.scope_global === 0 ? ' NB-zero-count' : ''),
+                            'data-scope': 'global'
                         }, [
-                            $.make('span', { className: 'NB-type-label' }, 'Tag'),
-                            $.make('span', { className: 'NB-type-count' }, counts.type_tag)
-                        ]),
-                        $.make('li', {
-                            className: 'NB-manage-filter-type-text' + (this.manage_filter_types === 'text' ? ' NB-active' : '') + (counts.type_text === 0 ? ' NB-zero-count' : ''),
-                            'data-type': 'text'
-                        }, [
-                            $.make('span', { className: 'NB-type-label' }, 'Text'),
-                            $.make('span', { className: 'NB-type-count' }, counts.type_text)
-                        ]),
-                        $.make('li', {
-                            className: 'NB-manage-filter-type-feed' + (this.manage_filter_types === 'feed' ? ' NB-active' : '') + (counts.type_feed === 0 ? ' NB-zero-count' : ''),
-                            'data-type': 'feed'
-                        }, [
-                            $.make('span', { className: 'NB-type-label' }, 'Site'),
-                            $.make('span', { className: 'NB-type-count' }, counts.type_feed)
-                        ]),
-                        $.make('li', {
-                            className: 'NB-manage-filter-type-url' + (this.manage_filter_types === 'url' ? ' NB-active' : '') + (counts.type_url === 0 ? ' NB-zero-count' : ''),
-                            'data-type': 'url'
-                        }, [
-                            $.make('span', { className: 'NB-type-label' }, 'URL'),
-                            $.make('span', { className: 'NB-type-count' }, counts.type_url)
+                            $scope_global_icon,
+                            $.make('span', { className: 'NB-type-label' }, 'Global'),
+                            $.make('span', { className: 'NB-type-count' }, counts.scope_global)
                         ])
                     ])
+                ])
+            ]),
+            // Archive banner for scope filter (hidden by default)
+            $.make('div', { className: 'NB-manage-scope-pro-banner' }, [
+                $.make('span', 'Scoped classifiers are only available to '),
+                $.make('a', { href: '#', className: 'NB-manage-scope-pro-link' }, 'Premium Archive'),
+                $.make('span', ' subscribers.')
+            ]),
+            // Row 3: Type control (full width)
+            $.make('div', { className: 'NB-manage-filter-row NB-manage-filter-row-3' }, [
+                $.make('ul', { className: 'segmented-control NB-manage-types-control' }, [
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-all' + (this.manage_filter_types === 'all' ? ' NB-active' : '') + (counts.type_all === 0 ? ' NB-zero-count' : ''),
+                        'data-type': 'all'
+                    }, [
+                        $.make('span', { className: 'NB-type-label' }, 'All'),
+                        $.make('span', { className: 'NB-type-count' }, counts.type_all)
+                    ]),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-title' + (this.manage_filter_types === 'title' ? ' NB-active' : '') + (counts.type_title === 0 ? ' NB-zero-count' : ''),
+                        'data-type': 'title'
+                    }, [
+                        $.make('span', { className: 'NB-type-label' }, 'Title'),
+                        $.make('span', { className: 'NB-type-count' }, counts.type_title)
+                    ]),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-author' + (this.manage_filter_types === 'author' ? ' NB-active' : '') + (counts.type_author === 0 ? ' NB-zero-count' : ''),
+                        'data-type': 'author'
+                    }, [
+                        $.make('span', { className: 'NB-type-label' }, 'Author'),
+                        $.make('span', { className: 'NB-type-count' }, counts.type_author)
+                    ]),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-tag' + (this.manage_filter_types === 'tag' ? ' NB-active' : '') + (counts.type_tag === 0 ? ' NB-zero-count' : ''),
+                        'data-type': 'tag'
+                    }, [
+                        $.make('span', { className: 'NB-type-label' }, 'Tag'),
+                        $.make('span', { className: 'NB-type-count' }, counts.type_tag)
+                    ]),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-text' + (this.manage_filter_types === 'text' ? ' NB-active' : '') + (counts.type_text === 0 ? ' NB-zero-count' : ''),
+                        'data-type': 'text'
+                    }, [
+                        $.make('span', { className: 'NB-type-label' }, 'Text'),
+                        $.make('span', { className: 'NB-type-count' }, counts.type_text)
+                    ]),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-feed' + (this.manage_filter_types === 'feed' ? ' NB-active' : '') + (counts.type_feed === 0 ? ' NB-zero-count' : ''),
+                        'data-type': 'feed'
+                    }, [
+                        $.make('span', { className: 'NB-type-label' }, 'Site'),
+                        $.make('span', { className: 'NB-type-count' }, counts.type_feed)
+                    ]),
+                    $.make('li', {
+                        className: 'NB-manage-filter-type-url' + (this.manage_filter_types === 'url' ? ' NB-active' : '') + (counts.type_url === 0 ? ' NB-zero-count' : ''),
+                        'data-type': 'url'
+                    }, [
+                        $.make('span', { className: 'NB-type-label' }, 'URL'),
+                        $.make('span', { className: 'NB-type-count' }, counts.type_url)
+                    ])
+                ])
             ])
         ]);
     },
@@ -2738,18 +3308,36 @@ var classifier_prototype = {
             var type = $item.data('type');
             var score = $item.data('score');
             var feed_id = $item.data('feed-id');
+            var item_scope = $item.data('scope') || 'feed';
             var value = String($item.data('value') || '').toLowerCase();
             var sentiment = score > 0 ? 'like' : 'dislike';
 
             var type_match = self.manage_filter_types === 'all' || self.manage_filter_types === type;
             var sentiment_match = self.manage_filter_sentiment === 'all' || self.manage_filter_sentiment === sentiment;
-            var feed_match = !allowed_feed_ids || allowed_feed_ids[feed_id];
+            var scope_match = self.manage_filter_scope === 'all' || self.manage_filter_scope === item_scope;
+            // Feed/folder filter: global bypasses, folder matches by folder name, feed matches by feed_id
+            var feed_match;
+            if (item_scope === 'global') {
+                feed_match = true;
+            } else if (item_scope === 'folder') {
+                if (!self.manage_filter_feed) {
+                    feed_match = true;
+                } else if (_.string.startsWith(self.manage_filter_feed, 'river:')) {
+                    var filter_folder = self.manage_filter_feed.replace('river:', '');
+                    var item_folder = $item.data('folder-name') || '';
+                    feed_match = filter_folder === '' || filter_folder === item_folder;
+                } else {
+                    feed_match = false;
+                }
+            } else {
+                feed_match = !allowed_feed_ids || allowed_feed_ids[feed_id];
+            }
             // Search matches if: no search, OR classifier value matches, OR parent feed title matches
             var search_match = !self.manage_filter_search ||
                                value.indexOf(self.manage_filter_search) !== -1 ||
                                feeds_matching_search[feed_id];
 
-            if (type_match && sentiment_match && feed_match && search_match) {
+            if (type_match && sentiment_match && scope_match && feed_match && search_match) {
                 $item.show();
                 visible_feeds[feed_id] = true;
             } else {
@@ -2769,16 +3357,46 @@ var classifier_prototype = {
             }
         });
 
-        // Hide/show folders based on whether they have visible feeds
+        // Hide/show folder-scoped classifier containers
+        $('.NB-manage-folder-classifiers', $modal).each(function () {
+            var $container = $(this);
+            var has_visible = $container.find('.NB-manage-classifier-item').filter(function () {
+                return $(this).css('display') !== 'none';
+            }).length > 0;
+            if (has_visible) {
+                $container.show();
+            } else {
+                $container.hide();
+            }
+        });
+
+        // Hide/show folders based on whether they have visible feeds or items
         $('.NB-manage-folder', $modal).each(function () {
             var $folder = $(this);
 
-            // Check display property directly since :visible checks parent visibility
-            var has_visible = $folder.find('.NB-manage-feed').filter(function () {
+            // For the global scoped section, check visible classifier items directly
+            if ($folder.hasClass('NB-manage-scoped-section')) {
+                var has_visible_items = $folder.find('.NB-manage-classifier-item').filter(function () {
+                    return $(this).css('display') !== 'none';
+                }).length > 0;
+                if (has_visible_items) {
+                    $folder.show();
+                } else {
+                    $folder.hide();
+                }
+                return;
+            }
+
+            // Check for visible feeds OR visible folder-scoped classifiers
+            var has_visible_feed = $folder.find('.NB-manage-feed').filter(function () {
                 return $(this).css('display') !== 'none';
             }).length > 0;
 
-            if (has_visible) {
+            var has_visible_folder_classifier = $folder.find('.NB-manage-folder-classifiers .NB-manage-classifier-item').filter(function () {
+                return $(this).css('display') !== 'none';
+            }).length > 0;
+
+            if (has_visible_feed || has_visible_folder_classifier) {
                 $folder.show();
             } else {
                 $folder.hide();
@@ -2829,27 +3447,27 @@ var classifier_prototype = {
 
         // Titles
         _.each(classifiers.titles, function (c) {
-            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'title', c.title, c.score));
+            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'title', c.title, c.score, c.scope, c.folder_name));
         });
 
         // Authors
         _.each(classifiers.authors, function (c) {
-            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'author', c.author, c.score));
+            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'author', c.author, c.score, c.scope, c.folder_name));
         });
 
         // Tags
         _.each(classifiers.tags, function (c) {
-            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'tag', c.tag, c.score));
+            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'tag', c.tag, c.score, c.scope, c.folder_name));
         });
 
         // Texts
         _.each(classifiers.texts, function (c) {
-            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'text', c.text, c.score));
+            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'text', c.text, c.score, c.scope, c.folder_name));
         });
 
         // URLs (includes both regular URLs and URL regex, distinguished by is_regex flag)
         _.each(classifiers.urls, function (c) {
-            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'url', c.url, c.score));
+            $classifiers_list.push(self.make_manage_classifier_item(feed.feed_id, 'url', c.url, c.score, c.scope, c.folder_name));
         });
 
         // Feed-level classifier (publisher) - use feed_id as value but display feed_title
@@ -2873,17 +3491,41 @@ var classifier_prototype = {
         ]);
     },
 
-    make_manage_classifier_item: function (feed_id, type, value, score) {
+    make_manage_classifier_item: function (feed_id, type, value, score, scope, folder_name) {
         var type_label = type.charAt(0).toUpperCase() + type.slice(1);
         if (type === 'feed') type_label = 'Site';
         if (type === 'url') type_label = 'URL';
+
+        var effective_scope = scope || 'feed';
+        var scope_svgs = {
+            'feed': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>',
+            'folder': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>',
+            'global': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>'
+        };
+
+        // Build type badge with scope icon
+        var $type_badge;
+        if (type === 'feed') {
+            $type_badge = $.make('span', { className: 'NB-classifier-type-badge NB-classifier-type-feed' }, [
+                $.make('span', { className: 'NB-classifier-type-label' }, type_label)
+            ]);
+        } else {
+            var $scope_icon = $.make('span', { className: 'NB-classifier-scope-icon NB-scope-' + effective_scope });
+            $scope_icon.html(scope_svgs[effective_scope]);
+            $type_badge = $.make('span', { className: 'NB-classifier-type-badge NB-scope-' + effective_scope }, [
+                $scope_icon,
+                $.make('span', { className: 'NB-classifier-type-label' }, type_label)
+            ]);
+        }
 
         var $item = $.make('div', {
             className: 'NB-manage-classifier-item',
             'data-feed-id': feed_id,
             'data-type': type,
             'data-value': value,
-            'data-score': score
+            'data-score': score,
+            'data-scope': effective_scope,
+            'data-folder-name': folder_name || ''
         }, [
             $.make('div', { className: 'NB-classifier NB-classifier-' + type + (score > 0 ? ' NB-classifier-like' : ' NB-classifier-dislike') }, [
                 $.make('input', { type: 'checkbox', className: 'NB-classifier-input-like', name: 'like_' + type, value: value }),
@@ -2893,7 +3535,7 @@ var classifier_prototype = {
                     $.make('div', { className: 'NB-classifier-icon-dislike-inner' })
                 ]),
                 $.make('label', [
-                    $.make('b', type_label + ': '),
+                    $type_badge,
                     $.make('span', value)
                 ])
             ])
@@ -2919,6 +3561,8 @@ var classifier_prototype = {
         var type = $item.data('type');
         var value = $item.data('value');
         var orig_score = $item.data('score');
+        var scope = $item.data('scope') || 'feed';
+        var folder_name = $item.data('folder-name') || '';
         var key = feed_id + ':' + type + ':' + value;
 
         this.change_classifier($classifier, opinion);
@@ -2942,7 +3586,9 @@ var classifier_prototype = {
                 type: type,
                 value: value,
                 orig_score: orig_score,
-                current_score: current_score
+                current_score: current_score,
+                scope: scope,
+                folder_name: folder_name
             };
         } else {
             // Reverted to original - remove from dirty
@@ -2993,14 +3639,50 @@ var classifier_prototype = {
 
         $save.addClass('NB-disabled').text('Saving...');
 
-        // Build classifiers object for all dirty feeds
+        // Separate scoped classifiers (feed_id=0, non-feed scope) from feed-level ones
         var classifiers_by_feed = {};
+        var scoped_saves = [];
+
         _.each(feeds_to_save, function (feed_id) {
-            classifiers_by_feed[feed_id] = self.serialize_manage_classifiers_for_feed(feed_id);
+            var changes = self.manage_dirty_feeds[feed_id] || {};
+            var feed_changes = {};
+            _.each(changes, function (change, key) {
+                if (change.scope && change.scope !== 'feed') {
+                    // Scoped classifier — build individual save data
+                    var name;
+                    if (change.current_score === 1) {
+                        name = 'like_' + change.type;
+                    } else if (change.current_score === -1) {
+                        name = 'dislike_' + change.type;
+                    } else if (change.orig_score > 0) {
+                        name = 'remove_like_' + change.type;
+                    } else {
+                        name = 'remove_dislike_' + change.type;
+                    }
+                    var save_data = {
+                        'feed_id': 0,
+                        'scope': change.scope,
+                        'folder_name': change.folder_name || ''
+                    };
+                    save_data[name] = change.value;
+                    scoped_saves.push(save_data);
+                } else {
+                    feed_changes[key] = change;
+                }
+            });
+
+            if (Object.keys(feed_changes).length > 0) {
+                // Temporarily replace with only feed-level changes for serialization
+                self.manage_dirty_feeds[feed_id] = feed_changes;
+                classifiers_by_feed[feed_id] = self.serialize_manage_classifiers_for_feed(feed_id);
+            }
         });
 
-        // Single bulk request
-        this.model.save_all_classifiers(classifiers_by_feed, function () {
+        var pending = (Object.keys(classifiers_by_feed).length > 0 ? 1 : 0) + scoped_saves.length;
+        var on_complete = function () {
+            pending--;
+            if (pending > 0) return;
+
             // Update original scores to current scores for saved items
             _.each(self.manage_dirty_feeds, function (changes, feed_id) {
                 _.each(changes, function (change) {
@@ -3023,9 +3705,21 @@ var classifier_prototype = {
 
             // Refresh feeds without re-opening any specific feed
             NEWSBLUR.reader.force_feeds_refresh();
-        }, function () {
+        };
+
+        var on_error = function () {
             $save.removeClass('NB-disabled');
             self.update_manage_save_button();
+        };
+
+        // Save feed-level classifiers via bulk endpoint
+        if (Object.keys(classifiers_by_feed).length > 0) {
+            this.model.save_all_classifiers(classifiers_by_feed, on_complete, on_error);
+        }
+
+        // Save scoped classifiers individually with scope metadata
+        _.each(scoped_saves, function (save_data) {
+            self.model.save_classifier(save_data, on_complete);
         });
     },
 
