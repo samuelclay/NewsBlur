@@ -307,6 +307,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     [self.feedsViewController refreshHeaderCounts];
+    [[ReadTimeTracker shared] harvestAndFlush];
     [self scheduleAppRefresh];
 }
 
