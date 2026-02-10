@@ -2454,6 +2454,8 @@ class Feed(models.Model):
                 story_title = story_db.story_permalink
             if story_title and len(story_title) > 80:
                 story_title = story_title[:80] + "..."
+            if not story_title:
+                story_title = "Untitled"
 
         story = {}
         story["story_hash"] = getattr(story_db, "story_hash", None)
