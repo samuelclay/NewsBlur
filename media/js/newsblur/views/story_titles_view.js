@@ -31,7 +31,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ==========
 
     render: function (options) {
-        if (NEWSBLUR.reader.flags.briefing_view && NEWSBLUR.assets.briefing_data) {
+        if (NEWSBLUR.reader.flags.briefing_view && NEWSBLUR.assets.briefing_data && !this.options.on_dashboard) {
             // story_titles_view.js: When triggered by a collection reset event
             // (Backbone passes the collection as first arg), skip re-rendering
             // briefing to avoid resetting the scroll position while reading.

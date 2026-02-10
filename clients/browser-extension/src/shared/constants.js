@@ -46,7 +46,9 @@ export const STORAGE_KEYS = {
 export const TIME_THRESHOLDS = {
     MIN_TIME_ON_PAGE: 5000,  // 5 seconds minimum to archive
     SYNC_DEBOUNCE: 5000,     // 5 seconds debounce for sync
-    BATCH_MAX_AGE: 30000     // 30 seconds max age before force sync
+    BATCH_MAX_AGE: 30000,    // 30 seconds max age before force sync
+    IDLE_TIMEOUT: 60000,     // 60 seconds of no activity = idle
+    ACTIVE_TIME_HEARTBEAT: 10000  // Report active time to service worker every 10 seconds
 };
 
 export const BATCH_CONFIG = {

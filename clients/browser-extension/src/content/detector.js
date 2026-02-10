@@ -1,5 +1,65 @@
 // NewsBlur Archive Extension - Content Script
-// Handles content extraction from web pages
+// Handles content extraction and active reading time tracking
+
+// --- Active Time Tracker ---
+// Tracks how long the user is actively reading (visible tab + not idle)
+
+const IDLE_TIMEOUT = 60000;          // 60 seconds of no activity = idle
+const HEARTBEAT_INTERVAL = 10000;    // Report active time every 10 seconds
+
+let activeSeconds = 0;
+let lastActivityTime = Date.now();
+let lastHeartbeatActiveSeconds = 0;
+
+function isUserActive() {
+    return (Date.now() - lastActivityTime) < IDLE_TIMEOUT;
+}
+
+function onUserActivity() {
+    lastActivityTime = Date.now();
+}
+
+// Listen for user activity signals
+const activityEvents = ['mousemove', 'scroll', 'keydown', 'click', 'touchstart'];
+for (const event of activityEvents) {
+    document.addEventListener(event, onUserActivity, { passive: true });
+}
+
+// Listen for visibility changes
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        // Reset activity timer when tab becomes visible (user switched to this tab)
+        lastActivityTime = Date.now();
+    }
+});
+
+// Accumulate active seconds every 1 second
+setInterval(() => {
+    if (document.visibilityState === 'visible' && isUserActive()) {
+        activeSeconds++;
+    }
+}, 1000);
+
+// Send heartbeat to service worker every HEARTBEAT_INTERVAL
+setInterval(() => {
+    // Only send if active time has changed since last heartbeat
+    if (activeSeconds === lastHeartbeatActiveSeconds) return;
+    lastHeartbeatActiveSeconds = activeSeconds;
+
+    try {
+        chrome.runtime.sendMessage({
+            action: 'updateActiveTime',
+            activeSeconds: activeSeconds
+        }, () => {
+            // Ignore errors (tab may not be tracked by service worker)
+            if (chrome.runtime.lastError) { /* expected */ }
+        });
+    } catch (e) {
+        // Service worker not available, ignore
+    }
+}, HEARTBEAT_INTERVAL);
+
+// --- End Active Time Tracker ---
 
 /**
  * Simple content extractor (inspired by Readability)
@@ -152,6 +212,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 error: error.message
             });
         }
+    } else if (request.action === 'getActiveTime') {
+        sendResponse({ activeSeconds: activeSeconds });
     } else if (request.action === 'getMetadata') {
         try {
             const result = getPageMetadata();

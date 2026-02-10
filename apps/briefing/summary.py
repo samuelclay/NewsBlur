@@ -202,6 +202,19 @@ def generate_briefing_summary(
     for feed in Feed.objects.filter(pk__in=feed_ids).only("pk", "feed_title"):
         feeds_by_id[feed.pk] = feed.feed_title
 
+    # summary.py: Remap story categories for disabled sections to "trending_global" so the
+    # LLM doesn't see category annotations for sections it shouldn't create.
+    from apps.briefing.models import DEFAULT_SECTIONS
+
+    active_sections = sections if sections else DEFAULT_SECTIONS
+    category_overrides = {}
+    for scored in scored_stories:
+        category = scored.get("category", "trending_global")
+        if category.startswith("custom_") or category == "trending_global":
+            continue
+        if not active_sections.get(category, False):
+            category_overrides[scored["story_hash"]] = "trending_global"
+
     story_lines = []
     for scored in scored_stories:
         story_hash = scored["story_hash"]
@@ -221,7 +234,7 @@ def generate_briefing_summary(
                 feed_title,
                 story.story_author_name or "Unknown",
                 story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else "Unknown",
-                scored["category"],
+                category_overrides.get(story_hash, scored["category"]),
                 "read" if scored["is_read"] else "unread",
                 scored.get("content_word_count", 0),
                 content_excerpt,
@@ -408,7 +421,10 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     icons_dir = os.path.join(
         os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-        "media", "img", "icons", "nouns",
+        "media",
+        "img",
+        "icons",
+        "nouns",
     )
     icon_data_cache = {}
 
@@ -458,8 +474,7 @@ def embed_briefing_icons(summary_html, scored_stories):
     # --- Phase 2: Style wrapper div ---
 
     wrapper_style = (
-        "font-family:'Helvetica Neue',Arial,sans-serif;"
-        "font-size:16px;line-height:1.5;color:#333;"
+        "font-family:'Helvetica Neue',Arial,sans-serif;" "font-size:18px;line-height:1.5;color:#333;"
     )
     summary_html = re.sub(
         r'(<div\s+class="NB-briefing-summary")([^>]*>)',
@@ -487,16 +502,14 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     # --- Phase 5: Embed favicons BEFORE story links as visual bullets ---
 
-    favicon_style = (
-        "width:16px;height:16px;border-radius:2px;"
-    )
+    favicon_style = "width:16px;height:16px;border-radius:2px;"
 
     def _replace_story_link(match):
         tag = match.group(0)
         story_hash = match.group(1)
 
         # summary.py: Add href to <a> tag so links work in email and look clickable on web
-        href = '%s/briefing?story=%s' % (settings.NEWSBLUR_URL, story_hash)
+        href = "%s/briefing?story=%s" % (settings.NEWSBLUR_URL, story_hash)
         tag = tag.replace(
             'class="NB-briefing-story-link"',
             'href="%s" class="NB-briefing-story-link"' % href,
@@ -510,7 +523,10 @@ def embed_briefing_icons(summary_html, scored_stories):
         if feed_title:
             title_attr = ' title="%s"' % html_mod.escape(feed_title, quote=True)
         img = '<img src="%s" class="NB-briefing-inline-favicon" style="%s"%s>' % (
-            url, favicon_style, title_attr)
+            url,
+            favicon_style,
+            title_attr,
+        )
         return img + tag
 
     summary_html = re.sub(
@@ -525,8 +541,9 @@ def embed_briefing_icons(summary_html, scored_stories):
         li_tag = match.group(1)
         content = match.group(2)
         favicon_match = re.match(
-            r'(\s*<img[^>]*NB-briefing-inline-favicon[^>]*>)\s*(.*)',
-            content, re.DOTALL,
+            r"(\s*<img[^>]*NB-briefing-inline-favicon[^>]*>)\s*(.*)",
+            content,
+            re.DOTALL,
         )
         if not favicon_match:
             return match.group(0)
@@ -537,8 +554,7 @@ def embed_briefing_icons(summary_html, scored_stories):
             "<tr>"
             '<td style="width:22px;vertical-align:top;padding-top:0;">%s</td>'
             '<td style="vertical-align:top;">%s</td>'
-            "</tr></table></li>"
-            % (li_tag, favicon_img, rest)
+            "</tr></table></li>" % (li_tag, favicon_img, rest)
         )
 
     summary_html = re.sub(
@@ -597,12 +613,11 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     if thumbs_up_data_uri:
         thumbs_up_style = (
-            "display:inline-block;width:12px;height:12px;"
-            "vertical-align:middle;margin-right:3px;"
+            "display:inline-block;width:12px;height:12px;" "vertical-align:middle;margin-right:3px;"
         )
-        thumbs_up_img = (
-            '<img src="%s" class="NB-classifier-icon-like" style="%s" alt="">'
-            % (thumbs_up_data_uri, thumbs_up_style)
+        thumbs_up_img = '<img src="%s" class="NB-classifier-icon-like" style="%s" alt="">' % (
+            thumbs_up_data_uri,
+            thumbs_up_style,
         )
         summary_html = re.sub(
             r'<div\s+class="NB-classifier-icon-like"[^>]*>\s*</div>',
@@ -618,8 +633,7 @@ def embed_briefing_icons(summary_html, scored_stories):
         "border-bottom:2px solid #e8e8e8;"
     )
     section_icon_style = (
-        "display:inline-block;width:1em;height:1em;"
-        "vertical-align:-0.1em;margin-right:0.3em;"
+        "display:inline-block;width:1em;height:1em;" "vertical-align:-0.1em;margin-right:0.3em;"
     )
 
     def _replace_section_header(match):
@@ -631,7 +645,8 @@ def embed_briefing_icons(summary_html, scored_stories):
         if not data_uri:
             return styled_tag
         img = '<img src="%s" class="NB-briefing-section-icon" style="%s">' % (
-            data_uri, section_icon_style,
+            data_uri,
+            section_icon_style,
         )
         return styled_tag + img
 
@@ -642,6 +657,36 @@ def embed_briefing_icons(summary_html, scored_stories):
     )
 
     return summary_html
+
+
+def filter_disabled_sections(summary_html, active_sections):
+    """
+    Remove sections from briefing HTML that correspond to disabled sections.
+    Parses via extract_section_summaries and rebuilds with only allowed sections.
+    """
+    if not summary_html or not active_sections:
+        return summary_html
+
+    sections = extract_section_summaries(summary_html)
+    if not sections:
+        return summary_html
+
+    allowed = {k for k, v in active_sections.items() if v}
+    # Always keep trending_global as the fallback section
+    allowed.add("trending_global")
+
+    filtered = {k: v for k, v in sections.items() if k in allowed}
+    if not filtered:
+        return summary_html
+
+    # Rebuild: concatenate section HTML blocks
+    parts = []
+    for section_html in filtered.values():
+        inner = re.sub(r'^<div class="NB-briefing-summary">', "", section_html)
+        inner = re.sub(r"</div>$", "", inner)
+        parts.append(inner)
+
+    return '<div class="NB-briefing-summary">%s</div>' % "".join(parts)
 
 
 def _get_content_excerpt(story, max_chars=300):
