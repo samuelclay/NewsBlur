@@ -171,6 +171,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
         embed_briefing_icons,
         extract_section_story_hashes,
         extract_section_summaries,
+        filter_disabled_sections,
         generate_briefing_summary,
     )
 
@@ -248,6 +249,21 @@ def GenerateUserBriefing(user_id, on_demand=False):
         )
         return
 
+    # tasks.py: Disable custom sections that have no matching stories so the LLM
+    # doesn't force-fit unrelated stories to a custom prompt (e.g. "Trump news" in a gaming folder).
+    matched_custom_sections = set()
+    for s in scored_stories:
+        cat = s.get("category", "")
+        if cat.startswith("custom_"):
+            matched_custom_sections.add(cat)
+
+    filtered_sections = dict(prefs.sections) if prefs.sections else {}
+    if prefs.custom_section_prompts:
+        for i, prompt in enumerate(prefs.custom_section_prompts):
+            custom_key = "custom_%d" % (i + 1)
+            if custom_key not in matched_custom_sections:
+                filtered_sections[custom_key] = False
+
     publish("progress", {"step": "summary", "message": "Writing your briefing summary..."})
     import time
 
@@ -258,7 +274,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
         now,
         summary_length=prefs.summary_length or "medium",
         summary_style=prefs.summary_style or "bullets",
-        sections=prefs.sections,
+        sections=filtered_sections or prefs.sections,
         custom_section_prompts=prefs.custom_section_prompts,
         model=prefs.briefing_model,
     )
@@ -268,6 +284,13 @@ def GenerateUserBriefing(user_id, on_demand=False):
         logging.error(" ---> GenerateUserBriefing: summary generation failed for user %s" % user_id)
         publish("error", {"error": "Summary generation failed. Please try again."})
         return
+
+    # tasks.py: Strip sections from output that the user has disabled. The LLM may
+    # occasionally create sections it wasn't instructed to because it sees category
+    # annotations in the story data.
+    active_sections = filtered_sections or prefs.sections
+    if active_sections:
+        summary_html = filter_disabled_sections(summary_html, active_sections)
 
     # tasks.py: Embed feed favicons and section icons directly in the HTML so they
     # appear in email notifications and don't pop in on the web.
@@ -294,6 +317,11 @@ def GenerateUserBriefing(user_id, on_demand=False):
     for s in scored_stories:
         curated_sections.setdefault(s.get("category", "trending_global"), []).append(s["story_hash"])
     section_summaries = extract_section_summaries(summary_html)
+    # tasks.py: Filter section_summaries to remove disabled sections
+    if active_sections:
+        allowed = {k for k, v in active_sections.items() if v}
+        allowed.add("trending_global")
+        section_summaries = {k: v for k, v in section_summaries.items() if k in allowed}
     # tasks.py: Merge story hashes referenced in the AI summary into curated_sections.
     # The AI may organize stories into sections (like "Quick catch-up") that don't
     # correspond to scoring categories, referencing stories via data-story-hash links.
