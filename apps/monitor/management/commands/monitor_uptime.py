@@ -3,11 +3,10 @@ import ssl
 import subprocess
 import time
 from datetime import datetime, timezone
-from urllib.request import Request, urlopen
 from urllib.error import URLError
+from urllib.request import Request, urlopen
 
 from django.core.management.base import BaseCommand
-
 
 RESOLVERS = ["8.8.8.8", "1.1.1.1", "9.9.9.9"]
 
@@ -73,7 +72,9 @@ class Command(BaseCommand):
                 tcp_summary = self.check_tcp(domain, issues)
                 tls_summary = self.check_tls(domain, issues)
 
-                line = f"[{ts}] #{check_count} | {dns_summary} | {http_summary} | {tcp_summary} | {tls_summary}"
+                line = (
+                    f"[{ts}] #{check_count} | {dns_summary} | {http_summary} | {tcp_summary} | {tls_summary}"
+                )
 
                 if issues:
                     anomaly_count += 1
@@ -82,9 +83,7 @@ class Command(BaseCommand):
                     self.run_extra_diagnostics(domain)
                 elif not quiet:
                     if check_count % 6 == 0:
-                        self.stdout.write(
-                            f"{line} [ok, {anomaly_count} anomalies in {check_count} checks]"
-                        )
+                        self.stdout.write(f"{line} [ok, {anomaly_count} anomalies in {check_count} checks]")
                     else:
                         self.stdout.write(line)
 

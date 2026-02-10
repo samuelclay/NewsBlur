@@ -180,7 +180,10 @@ def load_briefing_stories(request):
     # views.py: Include full preferences when not enabled so the onboarding view
     # can render settings immediately without a separate AJAX call.
     if not prefs.enabled and not briefing_list:
-        from apps.ask_ai.providers import DEFAULT_BRIEFING_MODEL, get_briefing_models_for_frontend
+        from apps.ask_ai.providers import (
+            DEFAULT_BRIEFING_MODEL,
+            get_briefing_models_for_frontend,
+        )
 
         TIME_DISPLAY_MAP = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
         preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
@@ -321,7 +324,10 @@ def briefing_preferences(request):
     TIME_DISPLAY_MAP = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
     preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
 
-    from apps.ask_ai.providers import DEFAULT_BRIEFING_MODEL, get_briefing_models_for_frontend
+    from apps.ask_ai.providers import (
+        DEFAULT_BRIEFING_MODEL,
+        get_briefing_models_for_frontend,
+    )
 
     folders = []
     try:

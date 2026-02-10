@@ -25,7 +25,9 @@ class LoginForm(forms.Form):
     username = forms.CharField(
         label=_("Username or Email"),
         max_length=30,
-        widget=forms.TextInput(attrs={"tabindex": 1, "class": "NB-input", "placeholder": "Username or email"}),
+        widget=forms.TextInput(
+            attrs={"tabindex": 1, "class": "NB-input", "placeholder": "Username or email"}
+        ),
         error_messages={"required": "Please enter a username."},
     )
     password = forms.CharField(
