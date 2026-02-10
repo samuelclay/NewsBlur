@@ -435,6 +435,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
 
     toggle_classes: function () {
+        if (!this.$st) return;
         var changes = this.model.changedAttributes();
 
         if (changes && _.all(_.keys(changes), function (change) {

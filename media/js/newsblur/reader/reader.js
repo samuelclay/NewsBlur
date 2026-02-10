@@ -2108,9 +2108,12 @@
         open_daily_briefing: function (options) {
             options = options || {};
             var self = this;
+            var new_section = options.section || null;
+            var same_section = new_section === this.flags.briefing_section;
             var switching_section = this.flags.briefing_view &&
                 NEWSBLUR.assets.briefing_data &&
-                this.active_feed == 'river:daily-briefing';
+                this.active_feed == 'river:daily-briefing' &&
+                new_section && !same_section;
 
             if (!switching_section) {
                 this.reset_feed(options);
@@ -2124,6 +2127,9 @@
             this.flags.river_view = true;
             this.flags.briefing_view = true;
             this.flags.briefing_section = options.section || null;
+            if (options.story_hash) {
+                this.flags['briefing_select_story'] = options.story_hash;
+            }
 
             // reader.js: Highlight the section model or the parent header, not both
             NEWSBLUR.assets.briefing_section_feeds.deselect();
@@ -2265,6 +2271,18 @@
             }
 
             this.flags['story_titles_loaded'] = true;
+
+            // reader.js: Auto-select story from ?story=HASH query param (email deep links)
+            if (this.flags['briefing_select_story']) {
+                var story_hash = this.flags['briefing_select_story'];
+                this.flags['briefing_select_story'] = null;
+                var story = NEWSBLUR.assets.stories.get_by_story_hash(story_hash);
+                if (story) {
+                    _.delay(function () {
+                        story.set('selected', true);
+                    }, 100);
+                }
+            }
         },
 
         generate_daily_briefing: function (callback) {
@@ -2283,7 +2301,7 @@
             this.flags.briefing_generate_timeout = _.delay(_.bind(function () {
                 if (!this.flags.briefing_generating) return;
                 this.handle_briefing_error({ error: "Briefing generation timed out. Please try again." });
-            }, this), 90 * 1000);
+            }, this), 120 * 1000);
         },
 
         handle_briefing_start: function () {
@@ -4078,7 +4096,7 @@
             story_view.show_ask_ai_menu(fake_event);
         },
 
-        open_ask_ai_pane: function (story, question_id, custom_question, transcription_error, model) {
+        open_ask_ai_pane: function (story, question_id, custom_question, transcription_error, model, thinking) {
             var story_view = story.latest_story_detail_view;
             if (!story_view) {
                 console.log(['No story view found for Ask AI', story]);
@@ -4099,6 +4117,7 @@
                 custom_question: custom_question,
                 transcription_error: transcription_error,
                 model: model,
+                thinking: thinking,
                 inline: true
             });
 
@@ -6976,19 +6995,41 @@
         hide_tryfeed_view: function () {
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
             $tryfeed_container.slideUp(350);
-            this.$s.$story_taskbar.find('.NB-tryfeed-add').hide();
-            this.$s.$story_taskbar.find('.NB-tryfeed-follow').hide();
+            $('.NB-tryfeed-subscribe-banner').remove();
+            $('.NB-tryfeed-follow-banner').remove();
+            $('.NB-tryfeed-signup-banner').remove();
             this.flags['showing_feed_in_tryfeed_view'] = false;
             this.flags['showing_social_feed_in_tryfeed_view'] = false;
         },
 
         show_tryfeed_add_button: function () {
-            if (this.$s.$story_taskbar.find('.NB-tryfeed-add:visible').length) return;
+            if ($('.NB-tryfeed-subscribe-banner').length) return;
 
-            this.$s.$story_taskbar.find(".NB-tryfeed-add")
-                .css({ 'opacity': 0 })
-                .show()
-                .animate({ 'opacity': 1 }, { 'duration': 600 });
+            var self = this;
+            var feed_id = this.active_feed;
+            var feed = this.model.get_feed(feed_id);
+            var $icon = $.favicon_el(feed, {
+                image_class: 'NB-tryfeed-banner-icon',
+                emoji_class: 'NB-tryfeed-banner-icon NB-feed-emoji',
+                colored_class: 'NB-tryfeed-banner-icon NB-feed-icon-colored'
+            });
+
+            var $banner = $.make('div', { className: 'NB-tryfeed-subscribe-banner' }, [
+                $icon || $.make('div', { className: 'NB-tryfeed-banner-icon' }),
+                $.make('div', { className: 'NB-tryfeed-banner-content' }, [
+                    $.make('div', { className: 'NB-tryfeed-banner-text' }, feed ? feed.get('feed_title') : 'Subscribe'),
+                    $.make('div', { className: 'NB-tryfeed-banner-subtext' }, 'Subscribe to add this feed to your NewsBlur')
+                ]),
+                $.make('div', { className: 'NB-tryfeed-banner-button NB-tryfeed-banner-button-green' }, 'Subscribe')
+            ]).css({ 'opacity': 0 });
+
+            $banner.on('click', function (e) {
+                e.preventDefault();
+                self.add_recommended_feed(feed_id);
+            });
+
+            $('#story_titles').find('.NB-story-titles').before($banner);
+            $banner.animate({ 'opacity': 1 }, { 'duration': 600 });
         },
 
         correct_tryfeed_title: function () {
@@ -6998,25 +7039,62 @@
         },
 
         show_tryfeed_follow_button: function () {
-            if (this.$s.$story_taskbar.find('.NB-tryfeed-follow:visible').length) return;
+            if ($('.NB-tryfeed-follow-banner').length) return;
 
-            this.$s.$story_taskbar.find(".NB-tryfeed-follow")
-                .css({ 'opacity': 0 })
-                .show()
-                .animate({ 'opacity': 1 }, { 'duration': 600 });
+            var self = this;
+            var feed_id = this.active_feed;
+            var feed = this.model.get_feed(feed_id);
+            var $icon = $.favicon_el(feed, {
+                image_class: 'NB-tryfeed-banner-icon',
+                emoji_class: 'NB-tryfeed-banner-icon NB-feed-emoji',
+                colored_class: 'NB-tryfeed-banner-icon NB-feed-icon-colored'
+            });
+
+            var $banner = $.make('div', { className: 'NB-tryfeed-follow-banner' }, [
+                $icon || $.make('div', { className: 'NB-tryfeed-banner-icon' }),
+                $.make('div', { className: 'NB-tryfeed-banner-content' }, [
+                    $.make('div', { className: 'NB-tryfeed-banner-text' }, feed ? feed.get('feed_title') || feed.get('username') : 'Follow'),
+                    $.make('div', { className: 'NB-tryfeed-banner-subtext' }, 'Follow to see their shared stories')
+                ]),
+                $.make('div', { className: 'NB-tryfeed-banner-button NB-tryfeed-banner-button-green' }, 'Follow')
+            ]).css({ 'opacity': 0 });
+
+            $banner.on('click', function (e) {
+                e.preventDefault();
+                self.follow_user_in_tryfeed(feed_id);
+            });
+
+            $('#story_titles').find('.NB-story-titles').before($banner);
+            $banner.animate({ 'opacity': 1 }, { 'duration': 600 });
         },
 
         show_tryout_signup_button: function () {
-            if (this.$s.$story_taskbar.find('.NB-tryout-signup:visible').length) return;
+            if ($('.NB-tryfeed-signup-banner').length) return;
 
-            this.$s.$story_taskbar.find(".NB-tryfeed-signup")
-                .css({ 'opacity': 0 })
-                .show()
-                .animate({ 'opacity': 1 }, { 'duration': 600 });
+            var self = this;
+            var $banner = $.make('div', { className: 'NB-tryfeed-signup-banner' }, [
+                $.make('div', { className: 'NB-tryfeed-banner-logo' }),
+                $.make('div', { className: 'NB-tryfeed-banner-content' }, [
+                    $.make('div', { className: 'NB-tryfeed-banner-text' }, 'This is just the demo.'),
+                    $.make('div', { className: 'NB-tryfeed-banner-subtext' }, 'Sign up to read your own feeds.')
+                ]),
+                $.make('div', { className: 'NB-tryfeed-banner-button NB-tryfeed-banner-button-gold' }, 'Sign up')
+            ]).css({ 'opacity': 0 });
+
+            $banner.on('click', function (e) {
+                e.preventDefault();
+                self.show_splash_page();
+                if (NEWSBLUR.welcome) {
+                    NEWSBLUR.welcome.show_signin_form();
+                }
+            });
+
+            $('#story_titles').find('.NB-story-titles').before($banner);
+            $banner.animate({ 'opacity': 1 }, { 'duration': 600 });
         },
 
         hide_tryout_signup_button: function () {
-            this.$s.$story_taskbar.find('.NB-tryout-signup:visible').remove();
+            $('.NB-tryfeed-signup-banner').remove();
         },
 
         add_recommended_feed: function (feed_id) {
@@ -7974,17 +8052,17 @@
                 }
             });
 
-            $.targetIs(e, { tagSelector: '.NB-tryfeed-add' }, function ($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-tryfeed-subscribe-banner' }, function ($t, $p) {
                 e.preventDefault();
                 var feed_id = self.active_feed;
                 self.add_recommended_feed(feed_id);
             });
-            $.targetIs(e, { tagSelector: '.NB-tryfeed-follow' }, function ($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-tryfeed-follow-banner' }, function ($t, $p) {
                 e.preventDefault();
                 var feed_id = self.active_feed;
                 self.follow_user_in_tryfeed(feed_id);
             });
-            $.targetIs(e, { tagSelector: '.NB-tryout-signup' }, function ($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-tryfeed-signup-banner' }, function ($t, $p) {
                 e.preventDefault();
                 self.show_splash_page();
                 if (NEWSBLUR.welcome) {

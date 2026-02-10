@@ -80,14 +80,30 @@ def select_briefing_stories(
 
             usf = UserSubscriptionFolders.objects.get(user_id=user_id)
             flat_folders = usf.flatten_folders()
-            folder_feed_ids = set(flat_folders.get(folder_name, []))
-            if folder_feed_ids:
-                feed_ids = [fid for fid in feed_ids if fid in folder_feed_ids]
-                logging.debug(
-                    " ---> Briefing scoring: folder '%s' mode, %s feeds" % (folder_name, len(feed_ids))
-                )
+            # scoring.py: Collect feeds from the folder AND all subfolders.
+            # flatten_folders() keys use "Parent - Child" format for nested folders.
+            # The frontend sends only the leaf folder name (e.g. "Child"), so we
+            # must also match keys that end with " - folder_name" for nested folders.
+            # Two-pass: first find matching keys, then include their subfolders.
+            matching_keys = set()
+            for key in flat_folders:
+                if key == folder_name or key.endswith(" - " + folder_name):
+                    matching_keys.add(key)
+            folder_feed_ids = set()
+            for key, fids in flat_folders.items():
+                for match_key in matching_keys:
+                    if key == match_key or key.startswith(match_key + " - "):
+                        folder_feed_ids.update(fids)
+                        break
+            feed_ids = [fid for fid in feed_ids if fid in folder_feed_ids]
+            logging.debug(
+                " ---> Briefing scoring: folder '%s' mode, %s feeds (from %s total)"
+                % (folder_name, len(feed_ids), len(user_subs))
+            )
         except UserSubscriptionFolders.DoesNotExist:
-            pass
+            logging.debug(
+                " ---> Briefing scoring: no UserSubscriptionFolders for user %s, using all feeds" % user_id
+            )
 
     if not feed_ids:
         return []
