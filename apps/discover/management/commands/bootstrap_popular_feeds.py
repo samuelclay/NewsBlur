@@ -127,7 +127,8 @@ class Command(BaseCommand):
         # Phase 1: Create/update PopularFeed records sequentially
         feeds_to_fetch = []
         feeds_to_force_update = []
-        for entry in all_feeds:
+        for i, entry in enumerate(all_feeds):
+            fixture_index = offset + i
             feed_url = entry["feed_url"]
             entry_type = entry["feed_type"]
             title = entry["title"][:255]
@@ -162,7 +163,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"  {action} [{entry_type}/{entry['category']}] {title}")
 
             if not skip_fetch and not popular_feed.feed:
-                feeds_to_fetch.append((popular_feed, feed_url))
+                feeds_to_fetch.append((popular_feed, feed_url, fixture_index))
             elif force_update and popular_feed.feed:
                 feeds_to_force_update.append(popular_feed)
 
@@ -208,13 +209,17 @@ class Command(BaseCommand):
         failed = 0
         total = len(feeds_to_fetch)
         completed = 0
+        max_index = 0
         with ThreadPoolExecutor(max_workers=workers) as executor:
             futures = {
-                executor.submit(self._fetch_one_feed, pf, url): pf for pf, url in feeds_to_fetch
+                executor.submit(self._fetch_one_feed, pf, url): idx
+                for pf, url, idx in feeds_to_fetch
             }
             for future in as_completed(futures):
+                fixture_index = futures[future]
                 popular_feed, feed, error = future.result()
                 completed += 1
+                max_index = max(max_index, fixture_index)
                 if error:
                     failed += 1
                     if verbose:
@@ -226,7 +231,7 @@ class Command(BaseCommand):
                     if verbose:
                         self.stdout.write(f"    Linked {popular_feed.title} to Feed id={feed.pk}")
                 if completed % 100 == 0 or completed == total:
-                    self.stdout.write(f"  Fetching feeds: {completed}/{total} ({100*completed/total:.1f}%) - {linked} linked, {failed} failed")
+                    self.stdout.write(f"  Fetching feeds: {completed}/{total} ({100*completed/total:.1f}%) - {linked} linked, {failed} failed  [restart with --offset {max_index + 1}]")
         return linked, failed
 
     def _force_update_parallel(self, popular_feeds, workers, verbose):
