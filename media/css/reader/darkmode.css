@@ -4103,6 +4103,11 @@ a.mention, a.mention-group {
     color: #AAA;
 }
 
+.NB-dark .NB-add-site-tab .NB-add-site-tab-icon.NB-mono {
+    filter: invert(1);
+    opacity: 0.6;
+}
+
 .NB-dark .NB-add-site-tab:hover {
     background: #2A2A2A;
     border-color: #555;
@@ -4287,15 +4292,16 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-add-site-source-header {
-    border-bottom-color: #333;
+    background: #2A2D30;
+    border-color: #404346;
 }
 
 .NB-dark .NB-add-site-source-title {
-    color: #E8E8E8;
+    color: #F0F0F0;
 }
 
 .NB-dark .NB-add-site-source-desc {
-    color: #888;
+    color: #A0A4A8;
 }
 
 .NB-dark .NB-add-site-tab-search-input {

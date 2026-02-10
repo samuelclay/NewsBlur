@@ -28076,16 +28076,16 @@ h5.NB-classifier-section-header {
 
 /* Add Site Dark Mode */
 .NB-dark .NB-add-site-source-header {
-    background: #333;
-    border-color: #444;
+    background: #2A2D30;
+    border-color: #404346;
 }
 
 .NB-dark .NB-add-site-source-title {
-    color: #E0E0E0;
+    color: #F0F0F0;
 }
 
 .NB-dark .NB-add-site-source-desc {
-    color: #999;
+    color: #A0A4A8;
 }
 
 .NB-dark .NB-add-site-search-wrapper {
@@ -28352,8 +28352,13 @@ h5.NB-classifier-section-header {
 }
 
 .NB-dark .NB-add-site-section-search {
-    background: #333;
-    border-color: #555;
+    background: #2A2A2A;
+    border-color: #444;
+}
+
+.NB-dark .NB-add-site-section-search-icon {
+    filter: invert(1);
+    opacity: 0.5;
 }
 
 .NB-dark .NB-add-site-section-search-input {
