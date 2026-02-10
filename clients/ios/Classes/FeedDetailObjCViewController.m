@@ -2299,12 +2299,29 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (void)loadStoryAtRow:(NSInteger)row {
+    // Harvest read time for the previous story before switching
+    NSDictionary *previousStory = appDelegate.activeStory;
+    if (previousStory) {
+        NSString *prevHash = previousStory[@"story_hash"];
+        if (prevHash) {
+            NSInteger readTime = [[ReadTimeTracker shared] getAndResetReadTimeWithStoryHash:prevHash];
+            if (readTime > 0) {
+                [[ReadTimeTracker shared] queueReadTimeWithStoryHash:prevHash seconds:readTime];
+            }
+        }
+    }
+
     NSInteger storyIndex = [storiesCollection indexFromLocation:row];
     appDelegate.activeStory = [[storiesCollection activeFeedStories] objectAtIndex:storyIndex];
     [self markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
     [self setTitleForBackButton];
     [appDelegate loadStoryDetailView];
     [self redrawUnreadStory];
+
+    NSString *storyHash = [appDelegate.activeStory objectForKey:@"story_hash"];
+    if (storyHash) {
+        [[ReadTimeTracker shared] startTrackingWithStoryHash:storyHash];
+    }
 }
 
 - (void)setTitleForBackButton {

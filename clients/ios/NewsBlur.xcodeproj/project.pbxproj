@@ -805,6 +805,8 @@
 		17BC56AB2BBF6BC000A30C41 /* Feed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17BC56A92BBF6BC000A30C41 /* Feed.swift */; };
 		17BC56AD2BBF6C0000A30C41 /* StoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17BC56AC2BBF6C0000A30C41 /* StoryCache.swift */; };
 		17BC56AE2BBF6C0000A30C41 /* StoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17BC56AC2BBF6C0000A30C41 /* StoryCache.swift */; };
+		655E2C7DEB50BAE6F36CB575 /* ReadTimeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE21BE0E29B19B59DCEB5BF /* ReadTimeTracker.swift */; };
+		BD59B22BD409064599E854E2 /* ReadTimeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE21BE0E29B19B59DCEB5BF /* ReadTimeTracker.swift */; };
 		17BC56B02BBF6C2200A30C41 /* StorySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17BC56AF2BBF6C2200A30C41 /* StorySettings.swift */; };
 		17BC56B12BBF6C2200A30C41 /* StorySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17BC56AF2BBF6C2200A30C41 /* StorySettings.swift */; };
 		17BD3BA52271102500F615EC /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BD3BA42271102500F615EC /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -1623,6 +1625,7 @@
 		17BC56A92BBF6BC000A30C41 /* Feed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feed.swift; sourceTree = "<group>"; };
 		17BC56AC2BBF6C0000A30C41 /* StoryCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCache.swift; sourceTree = "<group>"; };
 		17BC56AF2BBF6C2200A30C41 /* StorySettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySettings.swift; sourceTree = "<group>"; };
+		9EE21BE0E29B19B59DCEB5BF /* ReadTimeTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadTimeTracker.swift; sourceTree = "<group>"; };
 		17BD3BA42271102500F615EC /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		17BD3BA62271122800F615EC /* CoreSpotlight.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreSpotlight.framework; path = System/Library/Frameworks/CoreSpotlight.framework; sourceTree = SDKROOT; };
 		17BD3BA82271125400F615EC /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
@@ -2481,6 +2484,7 @@
 				A6133546989FF9DBBA772F71 /* CustomIconRenderer.swift */,
 				1C9B3E2F6A4B7C8D9E0F1A2B /* CatalystModalDismissal.swift */,
 				0BA641879DDE49DEE45A226C /* SyncNotifierView.swift */,
+				9EE21BE0E29B19B59DCEB5BF /* ReadTimeTracker.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -5163,6 +5167,7 @@
 				06CB30FD8F4CA002CBB1CBFF /* CustomIconRenderer.swift in Sources */,
 				A1B2C3D4E5F60718293A4B5C /* CatalystModalDismissal.swift in Sources */,
 				FF5E1E05A010F0C272F68B3D /* SyncNotifierView.swift in Sources */,
+				BD59B22BD409064599E854E2 /* ReadTimeTracker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5378,6 +5383,7 @@
 				FED20A379D2BC5FBF9BF711C /* CustomIconRenderer.swift in Sources */,
 				D5E6F708192A3B4C5D6E7F80 /* CatalystModalDismissal.swift in Sources */,
 				95D27D08DCDA57CA45C41955 /* SyncNotifierView.swift in Sources */,
+				655E2C7DEB50BAE6F36CB575 /* ReadTimeTracker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

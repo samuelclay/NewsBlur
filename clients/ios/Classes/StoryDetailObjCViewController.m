@@ -171,7 +171,8 @@
 
 - (void)tap:(UITapGestureRecognizer *)gestureRecognizer {
 //    NSLog(@"Gesture tap: %ld (%ld) - %d", (long)gestureRecognizer.state, (long)UIGestureRecognizerStateEnded, inDoubleTap);
-    
+    [[ReadTimeTracker shared] recordActivity];
+
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && self.presentedViewController == nil) {
         CGPoint pt = [self pointForGesture:gestureRecognizer];
         if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
@@ -1679,6 +1680,7 @@
         if (isUserDragging) {
             if (fabs(deltaY) > 0.1) {
                 self.isUserScrolling = YES;
+                [[ReadTimeTracker shared] recordActivity];
             } else {
                 return;
             }
