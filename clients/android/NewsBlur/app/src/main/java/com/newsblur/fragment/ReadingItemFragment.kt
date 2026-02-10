@@ -1085,7 +1085,7 @@ class ReadingItemFragment :
     /** The webview has finished loading our desired content.  */
     fun onWebLoadFinished() {
         if (!isWebLoadFinished.getAndSet(true)) {
-            binding.readingWebview.evaluateJavascript("loadImages();", null)
+            binding.readingWebview.evaluateJavascript("normalizeMedia();", null)
         }
         checkLoadStatus()
     }

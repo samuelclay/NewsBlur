@@ -13,8 +13,6 @@ body {
 
 .NB-story, .NB-youtube-player {
     max-width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
     margin: 0;
 }
 
@@ -35,7 +33,7 @@ p, div, table {
     line-height: 1.5em;
 }
 
-p, a, table, video, embed, object, iframe, div, figure, dl, dt, center {
+p, a, table, div, figure, dl, dt, center {
     width: auto !important;
     max-width: 100% !important;
     margin: 0px !important;
@@ -51,10 +49,6 @@ img {
 
 p {
     margin-bottom: 0.9em !important;
-}
-
-iframe {
-    width: 100% !important;
 }
 
 a {
@@ -98,9 +92,15 @@ figure iframe,
     display: block;
 }
 
-iframe:not([width]) {
-    width: 100%;
+video {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
 }
-iframe:not([height]) {
-    height: auto;
+
+iframe, embed, object {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }
