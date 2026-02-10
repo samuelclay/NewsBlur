@@ -502,6 +502,15 @@ def embed_briefing_icons(summary_html, scored_stories):
         summary_html,
     )
 
+    # --- Phase 4b: Style <p> tags — consistent spacing for editorial/headlines ---
+
+    p_style = "margin:0 0 12px 0;padding:0;line-height:1.5;"
+    summary_html = re.sub(
+        r"<p(?P<attrs>[^>]*)>",
+        lambda m: '<p%s style="%s">' % (m.group("attrs"), p_style),
+        summary_html,
+    )
+
     # --- Phase 5: Embed favicons BEFORE story links as visual bullets ---
 
     favicon_style = "width:16px;height:16px;border-radius:2px;"
@@ -562,6 +571,35 @@ def embed_briefing_icons(summary_html, scored_stories):
     summary_html = re.sub(
         r"(<li[^>]*>)(.*?)</li>",
         _tablify_li,
+        summary_html,
+        flags=re.DOTALL,
+    )
+
+    # --- Phase 5c: Wrap favicon + text in table layout for <p> tags (editorial/headlines) ---
+
+    def _tablify_p(match):
+        p_tag = match.group(1)
+        content = match.group(2)
+        favicon_match = re.match(
+            r"(\s*<img[^>]*NB-briefing-inline-favicon[^>]*>)\s*(.*)",
+            content,
+            re.DOTALL,
+        )
+        if not favicon_match:
+            return match.group(0)
+        favicon_img = favicon_match.group(1)
+        rest = favicon_match.group(2)
+        return (
+            '%s<table cellpadding="0" cellspacing="0" border="0" style="width:100%%;">'
+            "<tr>"
+            '<td style="width:22px;vertical-align:top;padding-top:0;">%s</td>'
+            '<td style="vertical-align:top;">%s</td>'
+            "</tr></table></p>" % (p_tag, favicon_img, rest)
+        )
+
+    summary_html = re.sub(
+        r"(<p[^>]*>)(.*?)</p>",
+        _tablify_p,
         summary_html,
         flags=re.DOTALL,
     )
