@@ -60,6 +60,18 @@ class Command(BaseCommand):
             help="Number of parallel workers for feed fetching (default: 10)",
         )
         parser.add_argument(
+            "--offset",
+            type=int,
+            default=0,
+            help="Skip the first N entries in the fixture list (for resuming)",
+        )
+        parser.add_argument(
+            "--limit",
+            type=int,
+            default=0,
+            help="Only process N entries (0 = all remaining after offset)",
+        )
+        parser.add_argument(
             "--discover-rss",
             action="store_true",
             help="Discover well-read RSS feeds from the Feed table and output JSON candidates for taxonomy generation",
@@ -94,7 +106,15 @@ class Command(BaseCommand):
         if feed_type != "all":
             all_feeds = [entry for entry in all_feeds if entry["feed_type"] == feed_type]
 
-        self.stdout.write(f"Processing {len(all_feeds)} feed entries...")
+        total_before_slice = len(all_feeds)
+        offset = options["offset"]
+        limit = options["limit"]
+        if offset:
+            all_feeds = all_feeds[offset:]
+        if limit:
+            all_feeds = all_feeds[:limit]
+
+        self.stdout.write(f"Processing {len(all_feeds)} feed entries (of {total_before_slice} total, offset={offset}, limit={limit})...")
 
         created = 0
         updated = 0
