@@ -69,10 +69,7 @@ public class ImageLoader {
         }
     }
 
-    /**
-     * Synchronous background call coming from app widget on home screen
-     */
-    public void displayWidgetImage(String url, int imageViewId, int maxDimPX, RemoteViews remoteViews) {
+    public void displayWidgetImageCachedOnly(String url, int imageViewId, int maxDimPX, RemoteViews remoteViews) {
         if (url == null) {
             remoteViews.setViewVisibility(imageViewId, View.GONE);
             return;
@@ -80,31 +77,45 @@ public class ImageLoader {
 
         url = buildUrlIfNeeded(url);
 
-        // try from memory
-        Bitmap bitmap = memoryCache.get(url);
+        final String key = url + "@" + maxDimPX;
+
+        Bitmap bitmap = memoryCache.get(key);
         if (bitmap != null) {
             remoteViews.setImageViewBitmap(imageViewId, bitmap);
             remoteViews.setViewVisibility(imageViewId, View.VISIBLE);
             return;
         }
 
-        // try from disk
         bitmap = getImageFromDisk(url, maxDimPX);
-        if (bitmap == null) {
-            // try for network
-            bitmap = getImageFromNetwork(url, maxDimPX);
-        }
-
         if (bitmap != null) {
-            memoryCache.put(url, bitmap);
+            memoryCache.put(key, bitmap);
             remoteViews.setImageViewBitmap(imageViewId, bitmap);
             remoteViews.setViewVisibility(imageViewId, View.VISIBLE);
         } else {
-            remoteViews.setViewVisibility(imageViewId, View.GONE);
+            remoteViews.setViewVisibility(imageViewId, View.VISIBLE);
         }
     }
 
-	public PhotoToLoad displayImage(String url, ImageView imageView, int maxDimPX, boolean allowDelay) {
+    public void prefetchToCache(String url, int maxDimPX) {
+        if (url == null) return;
+        if (maxDimPX <= 0) return;
+
+        url = buildUrlIfNeeded(url);
+        final String key = url + "@" + maxDimPX;
+
+        Bitmap bitmap = memoryCache.get(key);
+        if (bitmap != null) return;
+
+        bitmap = getImageFromDisk(url, maxDimPX);
+        if (bitmap == null) {
+            bitmap = getImageFromNetwork(url, maxDimPX);
+        }
+        if (bitmap != null) {
+            memoryCache.put(key, bitmap);
+        }
+    }
+
+    public PhotoToLoad displayImage(String url, ImageView imageView, int maxDimPX, boolean allowDelay) {
         if (url == null) {
 			imageView.setImageResource(emptyRID);
             return null;
