@@ -1222,9 +1222,15 @@
         UINavigationController *shareNav = [[UINavigationController alloc]
                                             initWithRootViewController:self.shareViewController];
         self.shareNavigationController = shareNav;
-        self.shareNavigationController.navigationBar.translucent = NO;
     }
     self.shareNavigationController.navigationBarHidden = YES;
+    self.shareNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+    UISheetPresentationController *sheet = self.shareNavigationController.sheetPresentationController;
+    sheet.detents = @[UISheetPresentationControllerDetent.largeDetent];
+    sheet.prefersGrabberVisible = YES;
+    sheet.preferredCornerRadius = 12.0;
+
     [self.feedsNavigationController presentViewController:self.shareNavigationController animated:YES completion:^{
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
     }];
@@ -1415,8 +1421,27 @@
             self.trainNavigationController = [[UINavigationController alloc]
                                               initWithRootViewController:self.trainerViewController];
         }
-        self.trainNavigationController.navigationBar.translucent = NO;
-        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
+        self.trainNavigationController.navigationBarHidden = YES;
+        self.trainNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+        UISheetPresentationController *sheet = self.trainNavigationController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        sheet.preferredCornerRadius = 12.0;
+
+        [navController presentViewController:self.trainNavigationController animated:YES completion:^{
+            UIView *containerView = self.trainNavigationController.presentationController.containerView;
+            if (containerView && !self.isMac) {
+                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
+                    initWithTarget:self
+                    action:@selector(dismissAskAIOnTap:)];
+                tapToDismiss.cancelsTouchesInView = NO;
+                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
+                [containerView addGestureRecognizer:tapToDismiss];
+            }
+        }];
     }
 }
 
@@ -1425,7 +1450,7 @@
     trainerViewController.isStoryTrainer = YES;
     trainerViewController.isFeedLoaded = YES;
     [trainerViewController reload];
-    
+
     if (!self.isPhone) {
         [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
@@ -1433,8 +1458,27 @@
             self.trainNavigationController = [[UINavigationController alloc]
                                               initWithRootViewController:self.trainerViewController];
         }
-        self.trainNavigationController.navigationBar.translucent = NO;
-        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
+        self.trainNavigationController.navigationBarHidden = YES;
+        self.trainNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+        UISheetPresentationController *sheet = self.trainNavigationController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        sheet.preferredCornerRadius = 12.0;
+
+        [navController presentViewController:self.trainNavigationController animated:YES completion:^{
+            UIView *containerView = self.trainNavigationController.presentationController.containerView;
+            if (containerView && !self.isMac) {
+                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
+                    initWithTarget:self
+                    action:@selector(dismissAskAIOnTap:)];
+                tapToDismiss.cancelsTouchesInView = NO;
+                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
+                [containerView addGestureRecognizer:tapToDismiss];
+            }
+        }];
     }
 }
 
