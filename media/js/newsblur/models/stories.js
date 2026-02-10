@@ -79,7 +79,8 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             var url = this.get('image_urls')[index];
             if (window.location.protocol == 'https:' &&
                 _.str.startsWith(url, "http://")) {
-                var secure_url = this.get('secure_image_urls')[url];
+                var secure_urls = this.get('secure_image_urls');
+                var secure_url = secure_urls && secure_urls[url];
                 if (secure_url) url = secure_url;
             }
             return url;
@@ -432,12 +433,31 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         var story = this.get_by_story_hash(story_hash);
         if (!story) return;
         story.set('read_status', 1);
+        this.sync_briefing_read_status(story_hash, 1);
     },
 
     mark_unread_pubsub: function (story_hash) {
         var story = this.get_by_story_hash(story_hash);
         if (!story) return;
         story.set('read_status', 0);
+        this.sync_briefing_read_status(story_hash, 0);
+    },
+
+    // stories.js: Keep briefing_data in sync with read_status changes so
+    // that any re-render of the briefing view preserves the current state.
+    sync_briefing_read_status: function (story_hash, read_status) {
+        var data = NEWSBLUR.assets.briefing_data;
+        if (!data || !data.briefings) return;
+        _.each(data.briefings, function (briefing) {
+            if (briefing.summary_story && briefing.summary_story.story_hash == story_hash) {
+                briefing.summary_story.read_status = read_status;
+            }
+            _.each(briefing.curated_stories || [], function (s) {
+                if (s.story_hash == story_hash) {
+                    s.read_status = read_status;
+                }
+            });
+        });
     },
 
     mark_unread: function (story, options) {

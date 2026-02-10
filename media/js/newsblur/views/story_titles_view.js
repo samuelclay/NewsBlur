@@ -6,6 +6,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         "click .NB-feed-story-premium-only a": function (e) {
             e.preventDefault();
             NEWSBLUR.reader.open_feedchooser_modal({ premium_only: true });
+        },
+        "click .NB-briefing-generate-btn": function (e) {
+            e.preventDefault();
+            NEWSBLUR.reader.generate_daily_briefing();
         }
     },
 
@@ -27,6 +31,16 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ==========
 
     render: function (options) {
+        if (NEWSBLUR.reader.flags.briefing_view && NEWSBLUR.assets.briefing_data) {
+            // story_titles_view.js: When triggered by a collection reset event
+            // (Backbone passes the collection as first arg), skip re-rendering
+            // briefing to avoid resetting the scroll position while reading.
+            // Only re-render on explicit calls (options is undefined or a plain object).
+            if (options && options.models) {
+                return;
+            }
+            return this.render_briefing(options);
+        }
         // console.log(['render story_titles', this.options.override_layout, this.collection.length, this.$story_titles[0]]);
         this.clear();
         this.$story_titles.scrollTop(0);
@@ -71,6 +85,163 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.scroll_to_selected_story(null, options);
 
         return this;
+    },
+
+    render_briefing: function (options) {
+        this.clear();
+        this.$story_titles.scrollTop(0);
+
+        var data = NEWSBLUR.assets.briefing_data;
+        var briefings = data.briefings || [];
+        var $groups = [];
+
+        // story_titles_view.js: Collect summary + curated stories and load them into the
+        // main stories collection so split view, selection, and story detail all work.
+        // When a section filter is active, only include stories in that section.
+        var active_section = NEWSBLUR.reader.flags.briefing_section;
+        var all_stories = [];
+        _.each(briefings, function (briefing) {
+            if (active_section) {
+                var section_hashes = (briefing.curated_sections || {})[active_section] || [];
+                var section_hash_set = {};
+                _.each(section_hashes, function (h) { section_hash_set[h] = true; });
+                // story_titles_view.js: Include section summary as first story if available
+                var section_html = (briefing.section_summaries || {})[active_section];
+                if (section_html && briefing.summary_story) {
+                    all_stories.push(_.extend({}, briefing.summary_story, {
+                        story_content: section_html
+                    }));
+                }
+                _.each(briefing.curated_stories || [], function (story_data) {
+                    if (section_hash_set[story_data.story_hash]) {
+                        all_stories.push(story_data);
+                    }
+                });
+            } else {
+                if (briefing.summary_story) {
+                    all_stories.push(briefing.summary_story);
+                }
+                _.each(briefing.curated_stories || [], function (story_data) {
+                    all_stories.push(story_data);
+                });
+            }
+        });
+        if (all_stories.length) {
+            this.collection.reset(all_stories, { added: all_stories.length, silent: true });
+            // story_titles_view.js: Manually trigger the story list view to create
+            // StoryDetailView instances for split view. We use silent reset above to
+            // avoid an infinite loop (this view also listens for reset).
+            if (NEWSBLUR.app.story_list) {
+                NEWSBLUR.app.story_list.reset_flags();
+                NEWSBLUR.app.story_list.render();
+                NEWSBLUR.app.story_list.reset_story_positions();
+            }
+        }
+        // story_titles_view.js: Set no_more_stories AFTER reset_flags, because
+        // reset_flags->clear() resets it to false.
+        this.collection.no_more_stories = true;
+
+        _.each(briefings, function (briefing) {
+            briefing.is_preview = data.is_preview;
+            // story_titles_view.js: When filtering by section, pass a modified briefing
+            // with only the matching curated stories to the group view.
+            var display_briefing = briefing;
+            if (active_section) {
+                var section_hashes = (briefing.curated_sections || {})[active_section] || [];
+                var section_hash_set = {};
+                _.each(section_hashes, function (h) { section_hash_set[h] = true; });
+                // story_titles_view.js: Show section-specific summary if available
+                var section_html = (briefing.section_summaries || {})[active_section];
+                var section_summary = null;
+                if (section_html && briefing.summary_story) {
+                    section_summary = _.extend({}, briefing.summary_story, {
+                        story_content: section_html
+                    });
+                }
+                display_briefing = _.extend({}, briefing, {
+                    summary_story: section_summary,
+                    curated_stories: _.filter(briefing.curated_stories || [], function (s) {
+                        return section_hash_set[s.story_hash];
+                    })
+                });
+                if (!display_briefing.curated_stories.length && !section_summary) return;
+            }
+            var group = new NEWSBLUR.Views.BriefingGroupView({
+                briefing: display_briefing,
+                collection: this.collection
+            }).render();
+            $groups.push(group.el);
+        }, this);
+
+        if (!briefings.length) {
+            var $empty = $.make('div', { className: 'NB-briefing-empty' }, [
+                $.make('div', { className: 'NB-briefing-empty-icon' }),
+                $.make('div', { className: 'NB-briefing-empty-text' },
+                    'No briefings yet.'),
+                $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-large' }, 'Generate Briefing')
+            ]);
+            $groups.push($empty);
+        } else {
+            // story_titles_view.js: Regenerate button at the bottom of existing briefings
+            var $regenerate = $.make('div', { className: 'NB-briefing-regenerate' }, [
+                $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-regenerate-btn' }, 'Regenerate Briefing')
+            ]);
+            $groups.push($regenerate);
+        }
+
+        this.$el.html($groups);
+        this.end_loading();
+
+        // story_titles_view.js: If generation is in progress, restore progress UI
+        if (NEWSBLUR.reader.flags.briefing_generating) {
+            this.show_briefing_progress("Generating...");
+        }
+
+        return this;
+    },
+
+    _briefing_target: function () {
+        var $target = this.$el.find('.NB-briefing-empty');
+        if (!$target.length) {
+            $target = this.$el.find('.NB-briefing-regenerate');
+        }
+        return $target;
+    },
+
+    show_briefing_progress: function (message) {
+        this.$el.find('.NB-briefing-generate-btn').hide();
+        this.$el.find('.NB-briefing-progress').remove();
+        this.$el.find('.NB-briefing-error').remove();
+
+        var $progress = $.make('div', { className: 'NB-briefing-progress' }, [
+            $.make('div', { className: 'NB-briefing-progress-spinner' }),
+            $.make('div', { className: 'NB-briefing-progress-message' }, message)
+        ]);
+
+        var $target = this._briefing_target();
+        if ($target.length) {
+            $target.append($progress);
+        }
+    },
+
+    hide_briefing_progress: function () {
+        this.$el.find('.NB-briefing-progress').remove();
+        this.$el.find('.NB-briefing-generate-btn').show();
+    },
+
+    show_briefing_error: function (error_message) {
+        this.$el.find('.NB-briefing-progress').remove();
+        this.$el.find('.NB-briefing-error').remove();
+
+        var $error = $.make('div', { className: 'NB-briefing-error' }, [
+            $.make('div', { className: 'NB-briefing-error-message' }, error_message),
+            $.make('div', { className: 'NB-briefing-generate-btn NB-briefing-generate-btn-small' }, 'Try Again')
+        ]);
+
+        var $target = this._briefing_target();
+        if ($target.length) {
+            $target.append($error);
+        }
     },
 
     add: function (options) {
@@ -217,8 +388,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             _.delay(_.bind(function () {
                 this.scroll();
             }, this), 10);
-        } else {
-            this.show_no_more_stories();
         }
     },
 

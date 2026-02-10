@@ -2,7 +2,10 @@
 
 ## Ask Questions Liberally
 
-**Use the AskUserQuestion tool frequently throughout development - not just during planning.**
+**Codex: Use the `request_user_input` tool frequently throughout development - not just during planning.**
+**Claude: Continue using the AskUserQuestion tool frequently throughout development - not just during planning.**
+
+Actively interview the user at any point (especially during planning). Prefer multiple rounds of short questions.
 
 Asking questions is encouraged and appreciated because it:
 - Helps both of us think through problems more clearly
@@ -19,6 +22,10 @@ Ask about:
 - Anything you're uncertain about
 
 Don't assume - ask. Multiple rounds of questions are better than one large batch. Even mid-implementation, if something feels unclear or you're choosing between options, ask. The interactive back-and-forth is valuable.
+
+## Debugging
+
+For debugging sessions: always take a screenshot first, reproduce the issue, then form a hypothesis before changing code. Do not start editing until the root cause is identified.
 
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
@@ -50,7 +57,7 @@ Don't assume - ask. Multiple rounds of questions are better than one large batch
 
 **IMPORTANT: Do NOT run `make rebuild` or `make nb` during development!**
 - Web and Node servers restart automatically when code changes
-- Task/Celery server must be manually restarted only when working on background tasks
+- Task/Celery server must be manually restarted when modifying **any** code that runs inside a Celery task — this includes the task file itself and any module it calls (e.g., scoring, summary, models). Without a restart, the worker keeps running the old code. Restart with: `docker restart newsblur_celery` (or `newsblur_celery_<worktree-name>` in worktrees)
 - Use `make` to apply migrations after git pull
 - Running `make rebuild` unnecessarily rebuilds everything and wastes time
 
@@ -147,9 +154,10 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 4. Commit the fix
 5. Resolve the issue with `sentry-cli issues resolve -i <issue_id>`
 
-## Browser Testing with Chrome DevTools MCP
-- Local dev: `https://localhost` (when using containers directly)
-- **Screenshots**: Always specify `filePath: "/tmp/newsblur-screenshot.png"` to avoid permission prompts
+## Browser Testing
+- Use the Chrome DevTools MCP server for browser automation and testing
+- Local dev: `https://localhost` (self-signed certs are accepted by default)
+- **Screenshots**: Save to `/tmp/newsblur-screenshot.png`, then use Read tool to view
 
 ### Dev Auto-Login (DEBUG mode only)
 - `https://localhost/reader/dev/autologin/` - Login as default dev user (configured in `DEV_AUTOLOGIN_USERNAME`)
@@ -192,10 +200,12 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 - `NEWSBLUR.reader.open_feed(feed_id)` - Open a specific feed
 - `NEWSBLUR.assets.feeds.find(f => f.get('nt') > 0)` - Get feed with unread stories
 - `NEWSBLUR.assets.feeds` - Backbone.js collection of all feeds
-- Click `.NB-feed-story` - Select first story
-- Click `.NB-feed-story-train` - Open story intelligence trainer
-- Click `.NB-feedbar-options` - Open feed options popover
-- Click `.folder .folder_title` - Open folder
+
+### Element Interactions
+- `.NB-feed-story` - Select first story
+- `.NB-feed-story-train` - Open story intelligence trainer
+- `.NB-feedbar-options` - Open feed options popover
+- `.folder .folder_title` - Open folder
 
 ### User State (via Django shell)
 To test different subscription states, modify user profile in Django shell:
@@ -224,3 +234,8 @@ p.save()
   - Mongo (`hdb-mongo-*`): `mongo`
   - Postgres (`hdb-postgres-*`): `postgres`
   - Nginx (`hwww`): `nginx`, `haproxy`
+
+## Writing Emails
+- Never use em dashes
+- Sign off with just "Sam" (no "Best," "Thanks," or other closings before it)
+- Keep it concise and direct

@@ -22,6 +22,7 @@ loglevel = "info"
 name = "newsblur"
 timeout = 120
 max_requests = 1000
+max_requests_jitter = 500
 x_forwarded_for_header = "X-FORWARDED-FOR"
 forwarded_allow_ips = "*"
 limit_request_line = 16000
@@ -38,9 +39,12 @@ if os.environ.get("DOCKERBUILD", False):
     workers = 2
     reload = True
 
-# If hostname has staging in it, only 2 workers
+# If hostname has staging in it, only 2 workers and higher max_requests
+# since health checks from 3 haproxy backends (every 1s each) burn through
+# max_requests quickly, causing both workers to restart simultaneously
 if app_env and "staging" in getattr(app_env, "SERVER_NAME", ""):
     workers = 2
+    max_requests = 5000
 
 prom_folder = "/srv/newsblur/.prom_cache"
 os.makedirs(prom_folder, exist_ok=True)

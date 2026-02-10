@@ -60,6 +60,7 @@ from apps.analyzer.models import (
     apply_classifier_url_regex,
     apply_classifier_urls,
     get_classifiers_for_user,
+    load_scoped_classifiers,
     sort_classifiers_by_feed,
 )
 from apps.notifications.models import MUserFeedNotification
@@ -1005,6 +1006,7 @@ def load_single_feed(request, feed_id):
 
     # Get intelligence classifier for user
 
+    has_scoped = user.profile.is_archive and user.profile.has_scoped_classifiers
     if usersub and usersub.is_trained:
         classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
         classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
@@ -1012,6 +1014,13 @@ def load_single_feed(request, feed_id):
         classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
         classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id=feed_id))
         classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id=feed_id))
+    elif has_scoped:
+        classifier_feeds = []
+        classifier_authors = []
+        classifier_titles = []
+        classifier_tags = []
+        classifier_texts = []
+        classifier_urls = []
     else:
         classifier_feeds = []
         classifier_authors = []
@@ -1019,6 +1028,24 @@ def load_single_feed(request, feed_id):
         classifier_tags = []
         classifier_texts = []
         classifier_urls = []
+
+    # Load global/folder classifiers for Pro users with scoped classifiers
+    folder_feed_ids = None
+    if has_scoped:
+        scoped = load_scoped_classifiers(user.pk)
+        classifier_titles.extend(scoped["titles"])
+        classifier_texts.extend(scoped["texts"])
+        classifier_urls.extend(scoped["urls"])
+        classifier_authors.extend(scoped["authors"])
+        classifier_tags.extend(scoped["tags"])
+        # Build folder_feed_ids map for folder-scoped classifiers
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+            flat_folders = usf.flatten_folders()
+            folder_feed_ids = {name: set(fids) for name, fids in flat_folders.items()}
+        except UserSubscriptionFolders.DoesNotExist:
+            folder_feed_ids = {}
+
     classifiers = get_classifiers_for_user(
         user,
         feed_id=feed_id,
@@ -1081,22 +1108,35 @@ def load_single_feed(request, feed_id):
         # Calculate intelligence BEFORE deleting story content (text classifier needs it)
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, feed),
-            "author": apply_classifier_authors(classifier_authors, story),
-            "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
-            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
+            "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
+            "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
+            "title_regex": (
+                apply_classifier_title_regex(classifier_titles, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "text": (
-                apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro)
+                apply_classifier_texts(classifier_texts, story, folder_feed_ids=folder_feed_ids)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
             "text_regex": (
-                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro)
-                if user.profile.premium_available_text_classifiers
+                apply_classifier_text_regex(classifier_texts, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro and user.profile.premium_available_text_classifiers
                 else 0
             ),
-            "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
-            "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_is_pro),
+            "url": apply_classifier_urls(
+                classifier_urls,
+                story,
+                user_is_premium=user.profile.is_premium,
+                folder_feed_ids=folder_feed_ids,
+            ),
+            "url_regex": (
+                apply_classifier_url_regex(classifier_urls, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
@@ -1448,6 +1488,19 @@ def load_starred_stories(request):
         ]
     )
 
+    # Look up actual read status for starred stories from Redis
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+    read_stories_key = "RS:%s" % user.pk
+    story_hash_list = [s["story_hash"] for s in stories]
+    if story_hash_list:
+        pipeline = r.pipeline()
+        for sh in story_hash_list:
+            pipeline.sismember(read_stories_key, sh)
+        read_results = pipeline.execute()
+        read_story_hashes = {sh for sh, is_read in zip(story_hash_list, read_results) if is_read}
+    else:
+        read_story_hashes = set()
+
     nowtz = localtime_for_timezone(now, user.profile.timezone)
     for story in stories:
         story_date = localtime_for_timezone(story["story_date"], user.profile.timezone)
@@ -1456,7 +1509,7 @@ def load_starred_stories(request):
         starred_date = localtime_for_timezone(story["starred_date"], user.profile.timezone)
         story["starred_date"] = format_story_link_date__long(starred_date, nowtz)
         story["starred_timestamp"] = int(starred_date.timestamp())
-        story["read_status"] = 1
+        story["read_status"] = 1 if story["story_hash"] in read_story_hashes else 0
         story["starred"] = True
         story["intelligence"] = {
             "feed": 1,
@@ -1643,19 +1696,34 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
     found_feed_ids = list(set([story["story_feed_id"] for story in stories]))
     trained_feed_ids = [sub.feed_id for sub in usersubs if sub.is_trained]
     found_trained_feed_ids = list(set(trained_feed_ids) & set(found_feed_ids))
-    if found_trained_feed_ids:
-        classifier_feeds = list(
-            MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids, social_user_id=0)
-        )
-        classifier_authors = list(
-            MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
-        )
-        classifier_titles = list(
-            MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
-        )
-        classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
-        classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
-        classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+    has_scoped = user.profile.is_archive and user.profile.has_scoped_classifiers
+    if found_trained_feed_ids or has_scoped:
+        if found_trained_feed_ids:
+            classifier_feeds = list(
+                MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids, social_user_id=0)
+            )
+            classifier_authors = list(
+                MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+            classifier_titles = list(
+                MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+            classifier_tags = list(
+                MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+            classifier_texts = list(
+                MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+            classifier_urls = list(
+                MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+        else:
+            classifier_feeds = []
+            classifier_authors = []
+            classifier_titles = []
+            classifier_tags = []
+            classifier_texts = []
+            classifier_urls = []
     else:
         classifier_feeds = []
         classifier_authors = []
@@ -1663,6 +1731,18 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         classifier_tags = []
         classifier_texts = []
         classifier_urls = []
+
+    # Load global/folder classifiers for Pro users
+    folder_feed_ids = None
+    if has_scoped:
+        scoped = load_scoped_classifiers(user.pk)
+        classifier_titles.extend(scoped["titles"])
+        classifier_texts.extend(scoped["texts"])
+        classifier_urls.extend(scoped["urls"])
+        classifier_authors.extend(scoped["authors"])
+        classifier_tags.extend(scoped["tags"])
+        flat_folders = user_sub_folders.flatten_folders()
+        folder_feed_ids = {name: set(fids) for name, fids in flat_folders.items()}
 
     sort_classifiers_by_feed(
         user=user,
@@ -1673,27 +1753,41 @@ def folder_rss_feed(request, user_id, secret_token, unread_filter, folder_slug):
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
         classifier_urls=classifier_urls,
+        folder_feed_ids=folder_feed_ids,
     )
     user_is_pro = user.profile.is_pro
     for story in stories:
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
-            "author": apply_classifier_authors(classifier_authors, story),
-            "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
-            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
+            "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
+            "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
+            "title_regex": (
+                apply_classifier_title_regex(classifier_titles, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "text": (
-                apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro)
+                apply_classifier_texts(classifier_texts, story, folder_feed_ids=folder_feed_ids)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
             "text_regex": (
-                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro)
-                if user.profile.premium_available_text_classifiers
+                apply_classifier_text_regex(classifier_texts, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro and user.profile.premium_available_text_classifiers
                 else 0
             ),
-            "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
-            "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_is_pro),
+            "url": apply_classifier_urls(
+                classifier_urls,
+                story,
+                user_is_premium=user.profile.is_premium,
+                folder_feed_ids=folder_feed_ids,
+            ),
+            "url_regex": (
+                apply_classifier_url_regex(classifier_urls, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
         if unread_filter == "focus" and story["score"] >= 1:
@@ -1993,6 +2087,7 @@ def load_river_stories__redis(request):
             user_search.touch_search_date()
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter="all")
             feed_ids = [sub.feed_id for sub in usersubs]
+            feed_ids = Feed.exclude_briefing_feeds(feed_ids)
             if infrequent:
                 feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
             stories = Feed.find_feed_stories(feed_ids, query, order=order, offset=offset, limit=limit)
@@ -2035,6 +2130,7 @@ def load_river_stories__redis(request):
         else:
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
             feed_ids = [sub.feed_id for sub in usersubs]
+            feed_ids = Feed.exclude_briefing_feeds(feed_ids)
             if infrequent:
                 feed_ids = Feed.low_volume_feeds(feed_ids, stories_per_month=infrequent)
             if feed_ids:
@@ -2096,19 +2192,34 @@ def load_river_stories__redis(request):
         starred_stories = {}
 
     # Intelligence classifiers for all feeds involved
-    if found_trained_feed_ids:
-        classifier_feeds = list(
-            MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids, social_user_id=0)
-        )
-        classifier_authors = list(
-            MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
-        )
-        classifier_titles = list(
-            MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
-        )
-        classifier_tags = list(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
-        classifier_texts = list(MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
-        classifier_urls = list(MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids))
+    has_scoped = user.profile.is_archive and user.profile.has_scoped_classifiers
+    if found_trained_feed_ids or has_scoped:
+        if found_trained_feed_ids:
+            classifier_feeds = list(
+                MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids, social_user_id=0)
+            )
+            classifier_authors = list(
+                MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+            classifier_titles = list(
+                MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+            classifier_tags = list(
+                MClassifierTag.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+            classifier_texts = list(
+                MClassifierText.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+            classifier_urls = list(
+                MClassifierUrl.objects(user_id=user.pk, feed_id__in=found_trained_feed_ids)
+            )
+        else:
+            classifier_feeds = []
+            classifier_authors = []
+            classifier_titles = []
+            classifier_tags = []
+            classifier_texts = []
+            classifier_urls = []
     else:
         classifier_feeds = []
         classifier_authors = []
@@ -2116,6 +2227,23 @@ def load_river_stories__redis(request):
         classifier_tags = []
         classifier_texts = []
         classifier_urls = []
+
+    # Load global/folder classifiers for Pro users
+    folder_feed_ids = None
+    if has_scoped:
+        scoped = load_scoped_classifiers(user.pk)
+        classifier_titles.extend(scoped["titles"])
+        classifier_texts.extend(scoped["texts"])
+        classifier_urls.extend(scoped["urls"])
+        classifier_authors.extend(scoped["authors"])
+        classifier_tags.extend(scoped["tags"])
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=user)
+            flat_folders = usf.flatten_folders()
+            folder_feed_ids = {name: set(fids) for name, fids in flat_folders.items()}
+        except UserSubscriptionFolders.DoesNotExist:
+            folder_feed_ids = {}
+
     classifiers = sort_classifiers_by_feed(
         user=user,
         feed_ids=found_feed_ids,
@@ -2125,6 +2253,7 @@ def load_river_stories__redis(request):
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
         classifier_urls=classifier_urls,
+        folder_feed_ids=folder_feed_ids,
     )
 
     # Just need to format stories
@@ -2136,9 +2265,23 @@ def load_river_stories__redis(request):
 
     user_is_pro = user.profile.is_pro
 
+    # Look up actual read status for starred stories from Redis
+    if read_filter == "starred":
+        r2 = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        read_stories_key = "RS:%s" % user.pk
+        story_hash_list = [s["story_hash"] for s in stories]
+        if story_hash_list:
+            pipeline = r2.pipeline()
+            for sh in story_hash_list:
+                pipeline.sismember(read_stories_key, sh)
+            read_results = pipeline.execute()
+            starred_read_hashes = {sh for sh, is_read in zip(story_hash_list, read_results) if is_read}
+        else:
+            starred_read_hashes = set()
+
     for story in stories:
         if read_filter == "starred":
-            story["read_status"] = 1
+            story["read_status"] = 1 if story["story_hash"] in starred_read_hashes else 0
         else:
             story["read_status"] = 0
         if read_filter == "all" or query:
@@ -2159,22 +2302,35 @@ def load_river_stories__redis(request):
             story["highlights"] = starred_stories[story["story_hash"]]["highlights"]
         story["intelligence"] = {
             "feed": apply_classifier_feeds(classifier_feeds, story["story_feed_id"]),
-            "author": apply_classifier_authors(classifier_authors, story),
-            "tags": apply_classifier_tags(classifier_tags, story),
-            "title": apply_classifier_titles(classifier_titles, story, user_is_pro=user_is_pro),
-            "title_regex": apply_classifier_title_regex(classifier_titles, story, user_is_pro=user_is_pro),
+            "author": apply_classifier_authors(classifier_authors, story, folder_feed_ids=folder_feed_ids),
+            "tags": apply_classifier_tags(classifier_tags, story, folder_feed_ids=folder_feed_ids),
+            "title": apply_classifier_titles(classifier_titles, story, folder_feed_ids=folder_feed_ids),
+            "title_regex": (
+                apply_classifier_title_regex(classifier_titles, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
             "text": (
-                apply_classifier_texts(classifier_texts, story, user_is_pro=user_is_pro)
+                apply_classifier_texts(classifier_texts, story, folder_feed_ids=folder_feed_ids)
                 if user.profile.premium_available_text_classifiers
                 else 0
             ),
             "text_regex": (
-                apply_classifier_text_regex(classifier_texts, story, user_is_pro=user_is_pro)
-                if user.profile.premium_available_text_classifiers
+                apply_classifier_text_regex(classifier_texts, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro and user.profile.premium_available_text_classifiers
                 else 0
             ),
-            "url": apply_classifier_urls(classifier_urls, story, user_is_premium=user.profile.is_premium),
-            "url_regex": apply_classifier_url_regex(classifier_urls, story, user_is_pro=user_is_pro),
+            "url": apply_classifier_urls(
+                classifier_urls,
+                story,
+                user_is_premium=user.profile.is_premium,
+                folder_feed_ids=folder_feed_ids,
+            ),
+            "url_regex": (
+                apply_classifier_url_regex(classifier_urls, story, folder_feed_ids=folder_feed_ids)
+                if user_is_pro
+                else 0
+            ),
         }
         story["score"] = UserSubscription.score_story(story["intelligence"])
 
@@ -3089,6 +3245,11 @@ def rename_folder(request):
         user_sub_folders.rename_folder(folder_to_rename, new_folder_name, in_folder)
         # Update folder icon when folder is renamed
         MFolderIcon.rename_folder_icon(request.user.pk, folder_to_rename, new_folder_name)
+        # Update folder-scoped classifiers when folder is renamed
+        for Cls in [MClassifierTitle, MClassifierText, MClassifierUrl, MClassifierAuthor, MClassifierTag]:
+            Cls.objects(user_id=request.user.pk, scope="folder", folder_name=folder_to_rename).update(
+                folder_name=new_folder_name
+            )
         code = 1
     else:
         code = -1
@@ -3557,24 +3718,74 @@ def all_classifiers(request):
         lambda: {"titles": [], "authors": [], "tags": [], "texts": [], "feeds": [], "urls": []}
     )
 
+    # Separate scoped classifiers (global/folder) from feed-scoped ones
+    scoped_classifiers = {"titles": [], "authors": [], "tags": [], "texts": [], "urls": []}
+
     for c in classifier_titles:
-        classifiers_by_feed[c.feed_id]["titles"].append(
-            {"title": c.title, "score": c.score, "is_regex": getattr(c, "is_regex", False)}
-        )
+        entry = {
+            "title": c.title,
+            "score": c.score,
+            "is_regex": getattr(c, "is_regex", False),
+            "scope": getattr(c, "scope", "feed"),
+            "folder_name": getattr(c, "folder_name", ""),
+        }
+        scope = getattr(c, "scope", "feed")
+        if scope != "feed":
+            scoped_classifiers["titles"].append(entry)
+        else:
+            classifiers_by_feed[c.feed_id]["titles"].append(entry)
     for c in classifier_authors:
-        classifiers_by_feed[c.feed_id]["authors"].append({"author": c.author, "score": c.score})
+        entry = {
+            "author": c.author,
+            "score": c.score,
+            "scope": getattr(c, "scope", "feed"),
+            "folder_name": getattr(c, "folder_name", ""),
+        }
+        scope = getattr(c, "scope", "feed")
+        if scope != "feed":
+            scoped_classifiers["authors"].append(entry)
+        else:
+            classifiers_by_feed[c.feed_id]["authors"].append(entry)
     for c in classifier_tags:
-        classifiers_by_feed[c.feed_id]["tags"].append({"tag": c.tag, "score": c.score})
+        entry = {
+            "tag": c.tag,
+            "score": c.score,
+            "scope": getattr(c, "scope", "feed"),
+            "folder_name": getattr(c, "folder_name", ""),
+        }
+        scope = getattr(c, "scope", "feed")
+        if scope != "feed":
+            scoped_classifiers["tags"].append(entry)
+        else:
+            classifiers_by_feed[c.feed_id]["tags"].append(entry)
     for c in classifier_texts:
-        classifiers_by_feed[c.feed_id]["texts"].append(
-            {"text": c.text, "score": c.score, "is_regex": getattr(c, "is_regex", False)}
-        )
+        entry = {
+            "text": c.text,
+            "score": c.score,
+            "is_regex": getattr(c, "is_regex", False),
+            "scope": getattr(c, "scope", "feed"),
+            "folder_name": getattr(c, "folder_name", ""),
+        }
+        scope = getattr(c, "scope", "feed")
+        if scope != "feed":
+            scoped_classifiers["texts"].append(entry)
+        else:
+            classifiers_by_feed[c.feed_id]["texts"].append(entry)
     for c in classifier_feeds:
         classifiers_by_feed[c.feed_id]["feeds"].append({"feed_id": c.feed_id, "score": c.score})
     for c in classifier_urls:
-        classifiers_by_feed[c.feed_id]["urls"].append(
-            {"url": c.url, "score": c.score, "is_regex": getattr(c, "is_regex", False)}
-        )
+        entry = {
+            "url": c.url,
+            "score": c.score,
+            "is_regex": getattr(c, "is_regex", False),
+            "scope": getattr(c, "scope", "feed"),
+            "folder_name": getattr(c, "folder_name", ""),
+        }
+        scope = getattr(c, "scope", "feed")
+        if scope != "feed":
+            scoped_classifiers["urls"].append(entry)
+        else:
+            classifiers_by_feed[c.feed_id]["urls"].append(entry)
 
     # Batch fetch all feeds with classifiers to avoid N+1 queries
     all_classifier_feed_ids = set(classifiers_by_feed.keys())
@@ -3641,7 +3852,18 @@ def all_classifiers(request):
         % (total_classifiers, len(classifiers_by_feed)),
     )
 
-    return {"folders": folders_with_classifiers, "total_classifiers": total_classifiers}
+    # Count scoped classifiers too
+    total_scoped = sum(len(v) for v in scoped_classifiers.values())
+    total_classifiers += total_scoped
+
+    result = {"folders": folders_with_classifiers, "total_classifiers": total_classifiers}
+
+    # Add scoped classifiers as a separate section
+    has_scoped = any(len(v) > 0 for v in scoped_classifiers.values())
+    if has_scoped:
+        result["scoped_classifiers"] = scoped_classifiers
+
+    return result
 
 
 @ajax_login_required

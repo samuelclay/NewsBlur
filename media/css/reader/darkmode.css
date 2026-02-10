@@ -56,32 +56,6 @@ body.NB-dark {
     background-color: rgba(255, 255, 255, 0.4);
 }
 
-.NB-dark .NB-welcome-pricing,
-.NB-dark .NB-welcome-bottomactions {
-    background-color: #303335;
-    border-top: 1px solid #222425;
-    border-bottom: 1px solid #222425;
-}
-
-.NB-dark .NB-pricing th {
-    border-right: 1px solid #545a5d;
-}
-
-.NB-dark .NB-pricing td {
-    border-top: 1px solid #545a5d;
-    border-right: 1px solid #545a5d;
-}
-
-.NB-dark .NB-welcome-pricing .NB-price {
-    background-color: #3B5370;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
-}
-
-.NB-dark .NB-welcome-bottomactions .NB-welcome-header-action-subtext {
-    color: white;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
-}
-
 /* ============== */
 /* = Scrollbars = */
 /* ============== */
@@ -605,6 +579,42 @@ color: #a85b40;
     box-shadow: none;
 }
 
+/* Classifier delete pills */
+.NB-dark .NB-modal-account .NB-classifier-pill {
+    background: #3a3a3a;
+    border-color: #555;
+    color: #c0c0c0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-modal-account .NB-classifier-pill:hover {
+    background: #454545;
+    border-color: #707070;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-modal-account .NB-classifier-pill.NB-checked {
+    background: #1b3d1b;
+    border-color: #3a8a3a;
+    color: #a0d0a0;
+    box-shadow: 0 1px 3px rgba(56, 142, 60, 0.2);
+}
+
+.NB-dark .NB-modal-account .NB-classifier-pill-count {
+    background: rgba(255, 255, 255, 0.1);
+    color: #999;
+}
+
+.NB-dark .NB-modal-account .NB-classifier-pill.NB-checked .NB-classifier-pill-count {
+    background: #3a8a3a;
+    color: #e8f5e9;
+}
+
+.NB-dark .NB-modal-account .NB-preference-classifiers-count.NB-empty {
+    background: #333;
+    color: #777;
+    border-color: #444;
+}
 
 /* Goodies & Extras: Section "blobs" */
 .NB-dark .NB-goodies-group,
@@ -1034,6 +1044,26 @@ color: #a85b40;
 .NB-dark .NB-classifiers .NB-classifier label span {
     color: #c0c0c0;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2)
+}
+
+/* darkmode.css: Briefing classifier pills */
+.NB-dark .NB-briefing-classifier {
+    background-color: #2a5f28;
+    border-color: #1a3f18;
+    box-shadow: 1px 1px 1px #1f1f21;
+}
+
+.NB-dark .NB-briefing-classifier label b {
+    color: rgba(214, 240, 213, 0.7);
+}
+
+.NB-dark .NB-briefing-classifier label span {
+    color: #d6f0d5;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-briefing-classifier .NB-classifier-icon-like {
+    filter: brightness(1.3);
 }
 
 /* Interactions / Activities text color and thickness */
@@ -1954,6 +1984,34 @@ background: #191b1c;
     background-color: #217412;
 }
 
+.NB-dark .NB-tryfeed-subscribe-banner,
+.NB-dark .NB-tryfeed-follow-banner {
+    background: linear-gradient(135deg, #1a2a1a 0%, #1f2f1f 100%);
+    border-bottom-color: rgba(106, 168, 79, 0.2);
+}
+
+.NB-dark .NB-tryfeed-subscribe-banner:hover,
+.NB-dark .NB-tryfeed-follow-banner:hover {
+    background: linear-gradient(135deg, #1f2f1f 0%, #243524 100%);
+}
+
+.NB-dark .NB-tryfeed-signup-banner {
+    background: linear-gradient(135deg, #1a1f1f 0%, #242b2b 100%);
+    border-bottom-color: rgba(217, 166, 33, 0.2);
+}
+
+.NB-dark .NB-tryfeed-signup-banner:hover {
+    background: linear-gradient(135deg, #1f2626 0%, #2a3232 100%);
+}
+
+.NB-dark .NB-tryfeed-banner-text {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-tryfeed-banner-subtext {
+    color: rgba(255, 255, 255, 0.45);
+}
+
 .NB-dark .NB-story-list-empty {
     color: rgba(255, 255, 255, .6);
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
@@ -2793,6 +2851,57 @@ a.mention, a.mention-group {
     color: #9B88FE;
 }
 
+/* Type badge dark mode */
+.NB-dark .NB-classifier-type-badge {
+    background: rgba(255, 255, 255, 0.08);
+    color: #999;
+}
+
+.NB-dark .NB-scope-toggle-feed.NB-active {
+    color: #aaa;
+}
+
+.NB-dark .NB-scope-toggle-folder.NB-active {
+    color: #60A5FA;
+}
+
+.NB-dark .NB-scope-toggle-global.NB-active {
+    color: #A78BFA;
+}
+
+.NB-dark .NB-scope-tooltip {
+    background: rgba(255, 255, 255, 0.9);
+    color: #222;
+}
+
+.NB-dark .NB-classifier-scope-popover {
+    background: #2d2d2d;
+    border-color: #444;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-scope-option {
+    color: #ccc;
+}
+
+.NB-dark .NB-scope-option:hover {
+    background: #383838;
+}
+
+.NB-dark .NB-scope-option.NB-active {
+    background: #2d2a4a;
+    color: #A78BFA;
+}
+
+.NB-dark .NB-scope-upgrade-nudge {
+    border-top-color: #444;
+    color: #888;
+}
+
+.NB-dark .NB-scope-upgrade-nudge a {
+    color: #A78BFA;
+}
+
 /* ================================== */
 /* = Compact Classifier Dialog      = */
 /* ================================== */
@@ -2971,6 +3080,15 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-classifier-pro-notice a {
+    color: #f59e0b;
+}
+
+/* Scope notice - dark mode */
+.NB-dark .NB-classifier-scope-notice {
+    color: #a89070;
+}
+
+.NB-dark .NB-classifier-scope-notice a {
     color: #f59e0b;
 }
 
@@ -3241,9 +3359,9 @@ a.mention, a.mention-group {
     color: #6b7280;
 }
 
-/* Invert icons for dark mode */
+/* Invert icons for dark mode - brightness(0) normalizes all icons to black first */
 .NB-dark .NB-premium-tier-features .NB-premium-bullet-image {
-    filter: invert(0.85) brightness(1.2) !important;
+    filter: brightness(0) invert(0.85) brightness(1.2) !important;
 }
 
 /* Actions section */
@@ -3590,9 +3708,61 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-manage-types-control li.NB-active .NB-type-count,
-.NB-dark .NB-manage-sentiment-control li.NB-active .NB-type-count {
+.NB-dark .NB-manage-sentiment-control li.NB-active .NB-type-count,
+.NB-dark .NB-manage-scope-control li.NB-active .NB-type-count {
     background: rgba(255, 255, 255, 0.2);
     color: #F0F0F0;
+}
+
+/* Scope filter icons in dark mode */
+.NB-dark .NB-manage-scope-icon-feed {
+    color: #aaa;
+}
+
+.NB-dark .NB-manage-scope-icon-folder {
+    color: #60A5FA;
+}
+
+.NB-dark .NB-manage-scope-icon-global {
+    color: #A78BFA;
+}
+
+.NB-dark .NB-manage-scope-control li.NB-active .NB-manage-scope-icon-feed {
+    color: #ccc;
+}
+
+.NB-dark .NB-manage-scope-control li.NB-active .NB-manage-scope-icon-folder {
+    color: #93C5FD;
+}
+
+.NB-dark .NB-manage-scope-control li.NB-active .NB-manage-scope-icon-global {
+    color: #C4B5FD;
+}
+
+/* Pro banner in dark mode */
+.NB-dark .NB-manage-scope-pro-banner {
+    background: linear-gradient(135deg, #451A03 0%, #78350F 100%);
+    border-color: #D97706;
+    color: #FDE68A;
+}
+
+.NB-dark .NB-manage-scope-pro-banner a {
+    color: #F59E0B;
+}
+
+.NB-dark .NB-manage-scope-pro-banner a:hover {
+    color: #FBBF24;
+}
+
+/* Scoped section title in dark mode */
+.NB-dark .NB-manage-scoped-title {
+    background: linear-gradient(135deg, #2E1065, #1E1B4B) !important;
+    color: #C4B5FD !important;
+}
+
+.NB-dark .NB-manage-scoped-count {
+    background: rgba(167, 139, 250, 0.2);
+    color: #C4B5FD;
 }
 
 /* Feed chooser dropdown in dark mode */
@@ -3619,4 +3789,287 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-manage-search-input::placeholder {
     color: #707070;
+}
+
+/* ====================================== */
+/* = Daily Briefing - Group View (Dark) = */
+/* ====================================== */
+
+/* darkmode.css: Briefing group container */
+.NB-dark .NB-briefing-group {
+    border-bottom-color: #303030;
+}
+
+/* darkmode.css: Briefing group header */
+.NB-dark .NB-briefing-group-header {
+    color: #9A9B9C;
+    background-color: #393b3c;
+    border-bottom-color: #303030;
+}
+
+.NB-dark .NB-briefing-group-header:hover {
+    background-color: #424547;
+}
+
+/* darkmode.css: Briefing collapse icon */
+.NB-dark .NB-briefing-group-collapse-icon {
+    filter: invert(0.8);
+}
+
+/* darkmode.css: Story count */
+.NB-dark .NB-briefing-group-count {
+    color: #707070;
+}
+
+/* darkmode.css: Summary toggle button */
+.NB-dark .NB-briefing-summary-toggle {
+    color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-briefing-summary-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.NB-dark .NB-briefing-summary-toggle.NB-active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* darkmode.css: AI summary panel */
+.NB-dark .NB-briefing-group-summary {
+    color: #C0C0C0;
+    background-color: #2A2C2D;
+    border-bottom-color: #303030;
+}
+
+.NB-dark .NB-briefing-group-summary h3 {
+    color: #E0E0E0;
+}
+
+/* darkmode.css: Story links in summary */
+.NB-dark .NB-briefing-story-link {
+    color: #7B9FD4;
+}
+
+.NB-dark .NB-briefing-story-link:hover {
+    border-bottom-color: #7B9FD4;
+}
+
+/* darkmode.css: Story items */
+.NB-dark .NB-briefing-story-item {
+    border-bottom-color: #303030;
+}
+
+.NB-dark .NB-briefing-story-item:hover {
+    background-color: #2A2C2D;
+}
+
+/* darkmode.css: Story highlight */
+.NB-dark .NB-briefing-story-highlighted {
+    background-color: #3A3520;
+}
+
+/* darkmode.css: Feed title in story item */
+.NB-dark .NB-briefing-story-feed-title {
+    color: #707070;
+}
+
+/* darkmode.css: Story title */
+.NB-dark .NB-briefing-story-title {
+    color: #D0D0D0;
+}
+
+.NB-dark .NB-briefing-story-title:hover {
+    color: #7B9FD4;
+}
+
+/* darkmode.css: Story meta */
+.NB-dark .NB-briefing-story-meta {
+    color: #606060;
+}
+
+/* darkmode.css: Empty state */
+.NB-dark .NB-briefing-empty {
+    color: #606060;
+}
+
+.NB-dark .NB-briefing-empty-title {
+    color: #909090;
+}
+
+/* darkmode.css: Briefing onboarding */
+.NB-dark .NB-briefing-onboarding-view {
+    background-color: #191b1c;
+    background: linear-gradient(180deg, #1e2022 0%, #191b1c 100%);
+}
+
+.NB-dark .NB-briefing-onboarding-icon {
+    filter: invert(0.8);
+}
+
+.NB-dark .NB-briefing-onboarding-title {
+    color: #D0D0D0;
+}
+
+.NB-dark .NB-briefing-onboarding-subtitle {
+    color: #808080;
+}
+
+.NB-dark .NB-briefing-onboarding-settings {
+    border-color: #303030;
+}
+
+/* darkmode.css: Upsell banner */
+.NB-dark .NB-briefing-upsell {
+    background-color: #2A2820;
+    border-top-color: #303030;
+}
+
+.NB-dark .NB-briefing-upsell-text {
+    color: #909090;
+}
+
+.NB-dark .NB-briefing-upsell-link {
+    color: #7B9FD4;
+}
+
+/* darkmode.css: Briefing summary story */
+.NB-dark .NB-briefing-summary-story .NB-story-title {
+    background: linear-gradient(135deg, #1C2233 0%, #212838 40%, #1E2535 100%);
+    border-left-color: #4A73A8;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-briefing-summary-story .NB-story-title:hover {
+    background: linear-gradient(135deg, #222840 0%, #283040 40%, #242A3E 100%);
+}
+
+.NB-dark .NB-briefing-summary-story .NB-story-title.NB-selected {
+    background: linear-gradient(135deg, #283048 0%, #2E3648 40%, #2A3246 100%);
+}
+
+.NB-dark .NB-briefing-summary-story .NB-storytitles-title {
+    color: #D8DEE8;
+}
+
+.NB-dark .NB-briefing-summary-story .NB-story-feed .feed_title {
+    color: #7B9FD4;
+}
+
+/* darkmode.css: Briefing preferences pill — match feedbar-options dark style */
+.NB-dark .NB-feedbar .NB-briefing-preferences-icon {
+    color: #c0c0c0;
+    border: 1px solid rgba(0, 0, 0, .3);
+    background-color: #303739;
+}
+
+.NB-dark .NB-feedbar .NB-briefing-preferences-icon:hover {
+    background-color: #606466;
+}
+
+/* darkmode.css: Regenerate button container */
+.NB-dark .NB-briefing-regenerate {
+    border-top-color: #303030;
+}
+
+/* darkmode.css: Generate briefing button */
+.NB-dark .NB-briefing-generate-btn {
+    background-color: #4A73A8;
+}
+
+.NB-dark .NB-briefing-generate-btn:hover {
+    background-color: #5C89C4;
+}
+
+.NB-dark .NB-briefing-generate-btn:active {
+    background-color: #3D6090;
+}
+
+/* darkmode.css: Progress indicator */
+.NB-dark .NB-briefing-progress {
+    background-color: #2A2C2D;
+    border-bottom-color: #303030;
+}
+
+.NB-dark .NB-briefing-progress-spinner {
+    border-color: #505050;
+    border-top-color: #7B9FD4;
+}
+
+.NB-dark .NB-briefing-progress-message {
+    color: #A0A0A0;
+}
+
+/* darkmode.css: Error state */
+.NB-dark .NB-briefing-error {
+    border-bottom-color: #303030;
+}
+
+.NB-dark .NB-briefing-error-message {
+    color: #D08080;
+}
+
+/* darkmode.css: Briefing sections dark mode */
+.NB-dark .NB-briefing-add-custom-section {
+    color: #7BA3D0;
+}
+
+.NB-dark .NB-briefing-add-custom-section:hover {
+    background: rgba(92, 137, 196, 0.12);
+}
+
+.NB-dark .NB-briefing-remove-custom-section {
+    filter: invert(1);
+}
+
+.NB-dark .NB-briefing-section-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-briefing-section-checkbox {
+    border-color: #555;
+}
+
+.NB-dark .NB-briefing-section-name {
+    color: #ccc;
+}
+
+.NB-dark .NB-briefing-section-subtitle {
+    color: #777;
+}
+
+.NB-dark .NB-briefing-section-custom-input input {
+    background: #2a2a2e;
+    border-color: #444;
+    color: #ccc;
+}
+
+.NB-dark .NB-briefing-section-custom-input input:focus {
+    border-color: #5C89C4;
+    box-shadow: 0 0 0 2px rgba(92, 137, 196, 0.25);
+}
+
+.NB-dark .NB-briefing-section-hint-popover {
+    background: linear-gradient(135deg, #2a2a3a 0%, #252535 100%);
+    border-color: #4a4a6a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.NB-dark .NB-briefing-section-hint-title {
+    color: #7BA3D0;
+}
+
+.NB-dark .NB-briefing-section-hint-text {
+    color: #aaa;
+}
+
+.NB-dark .NB-briefing-section-hint-examples-title {
+    color: #7BA3D0;
+    border-top-color: rgba(92, 137, 196, 0.3);
+}
+
+.NB-dark .NB-briefing-section-hint-examples {
+    color: #888;
 }

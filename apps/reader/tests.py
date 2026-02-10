@@ -1,11 +1,15 @@
 import datetime
+import time
+from unittest.mock import MagicMock, call, patch
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse
 
-from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
+from apps.reader.models import UserSubscription
+from apps.rss_feeds.models import Feed, MStarredStory, MStarredStoryCounts, MStory
 from utils import json_functions as json
 
 
@@ -332,3 +336,183 @@ class Test_DeleteStarredTag(TestCase):
         story2 = MStarredStory.objects.get(user_id=self.user.pk, story_guid="guid2")
         self.assertIsNotNone(story2)
         self.assertEqual(len(story2.user_tags), 0)
+
+
+class Test_ArchiveFetchStaggering(TestCase):
+    """Tests for staggered archive feed fetching (apps/reader/models.py fetch_archive_feeds_for_user)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="staggertest", password="password", email="stagger@test.com"
+        )
+        self.feeds = []
+        for i in range(5):
+            feed = Feed.objects.create(
+                feed_address=f"http://example.com/feed{i}.xml",
+                feed_link=f"http://example.com/{i}",
+                feed_title=f"Test Feed {i}",
+            )
+            self.feeds.append(feed)
+            UserSubscription.objects.create(user=self.user, feed=feed, active=True)
+
+    def tearDown(self):
+        for feed in self.feeds:
+            MStory.objects(story_feed_id=feed.pk).delete()
+
+    @patch("apps.reader.models.celery")
+    @patch("apps.profile.tasks.FinishFetchArchiveFeeds")
+    @patch("apps.profile.tasks.FetchArchiveFeedsChunk")
+    def test_archive_fetch_chunks_have_staggered_countdown(
+        self, mock_chunk_task, mock_finish_task, mock_celery
+    ):
+        """Each FetchArchiveFeedsChunk in the chord should have an increasing countdown delay."""
+        # mock_chunk_task.s() needs to return something chainable
+        mock_signature = MagicMock()
+        mock_signature.set.return_value = mock_signature
+        mock_chunk_task.s.return_value = mock_signature
+
+        mock_callback = MagicMock()
+        mock_callback.set.return_value = mock_callback
+        mock_finish_task.s.return_value = mock_callback
+
+        UserSubscription.fetch_archive_feeds_for_user(self.user.pk)
+
+        # Verify chunk tasks were created (one per feed since chunk size is 1)
+        self.assertEqual(mock_chunk_task.s.call_count, len(self.feeds))
+
+        # Verify each chunk's .set() calls include an increasing countdown
+        countdowns = []
+        for s_call in mock_chunk_task.s.return_value.set.call_args_list:
+            # The second .set() call has countdown, time_limit, soft_time_limit
+            args, kwargs = s_call
+            if "countdown" in kwargs:
+                countdowns.append(kwargs["countdown"])
+
+        # Should have staggered countdowns: 0, 10, 20, 30, 40
+        self.assertEqual(len(countdowns), len(self.feeds))
+        for i, countdown in enumerate(countdowns):
+            self.assertEqual(
+                countdown,
+                i * 10,
+                f"Feed chunk {i} should have countdown={i * 10}, got {countdown}",
+            )
+
+    @patch("apps.reader.models.celery")
+    @patch("apps.profile.tasks.FinishFetchArchiveFeeds")
+    @patch("apps.profile.tasks.FetchArchiveFeedsChunk")
+    def test_archive_fetch_creates_chord_with_callback(self, mock_chunk_task, mock_finish_task, mock_celery):
+        """The archive fetch should create a Celery chord with a FinishFetchArchiveFeeds callback."""
+        mock_signature = MagicMock()
+        mock_signature.set.return_value = mock_signature
+        mock_chunk_task.s.return_value = mock_signature
+
+        mock_callback = MagicMock()
+        mock_callback.set.return_value = mock_callback
+        mock_finish_task.s.return_value = mock_callback
+
+        UserSubscription.fetch_archive_feeds_for_user(self.user.pk)
+
+        # Verify chord was called
+        mock_celery.chord.assert_called_once()
+        # Verify callback was applied
+        mock_celery.chord.return_value.assert_called_once()
+
+    @patch("apps.reader.models.celery")
+    @patch("apps.profile.tasks.FinishFetchArchiveFeeds")
+    @patch("apps.profile.tasks.FetchArchiveFeedsChunk")
+    def test_archive_finish_callback_has_sufficient_time_limit(
+        self, mock_chunk_task, mock_finish_task, mock_celery
+    ):
+        """The FinishFetchArchiveFeeds callback should have a time_limit matching
+        MAX_SECONDS_COMPLETE_ARCHIVE_FETCH so post-fetch sync_redis doesn't get killed."""
+        mock_signature = MagicMock()
+        mock_signature.set.return_value = mock_signature
+        mock_chunk_task.s.return_value = mock_signature
+
+        mock_callback = MagicMock()
+        mock_callback.set.return_value = mock_callback
+        mock_finish_task.s.return_value = mock_callback
+
+        UserSubscription.fetch_archive_feeds_for_user(self.user.pk)
+
+        # Verify the callback's .set() includes a time_limit
+        mock_callback.set.assert_called_once()
+        set_kwargs = mock_callback.set.call_args[1]
+        self.assertEqual(
+            set_kwargs.get("time_limit"),
+            settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
+            "FinishFetchArchiveFeeds callback should have time_limit=MAX_SECONDS_COMPLETE_ARCHIVE_FETCH",
+        )
+
+
+class Test_FinishArchiveFeedsSyncRedis(TestCase):
+    """Tests for sync_redis calls in finish_fetch_archive_feeds (apps/reader/models.py)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="finishtest", password="password", email="finish@test.com"
+        )
+        self.feeds = []
+        for i in range(3):
+            feed = Feed.objects.create(
+                feed_address=f"http://example.com/finish{i}.xml",
+                feed_link=f"http://example.com/finish{i}",
+                feed_title=f"Finish Feed {i}",
+            )
+            self.feeds.append(feed)
+            UserSubscription.objects.create(user=self.user, feed=feed, active=True)
+
+    def tearDown(self):
+        for feed in self.feeds:
+            MStory.objects(story_feed_id=feed.pk).delete()
+
+    @patch("apps.reader.models.time.sleep")
+    @patch("apps.rss_feeds.models.Feed.sync_redis")
+    @patch("apps.reader.models.redis.Redis")
+    def test_finish_fetch_calls_sync_redis_for_each_feed(self, mock_redis_cls, mock_sync_redis, mock_sleep):
+        """finish_fetch_archive_feeds should call sync_redis on each subscribed feed."""
+        mock_redis_cls.return_value = MagicMock()
+
+        start_time = time.time()
+        UserSubscription.finish_fetch_archive_feeds(self.user.pk, start_time, 0)
+
+        # sync_redis should be called once per feed
+        self.assertEqual(
+            mock_sync_redis.call_count,
+            len(self.feeds),
+            f"sync_redis should be called {len(self.feeds)} times, got {mock_sync_redis.call_count}",
+        )
+
+    @patch("apps.reader.models.time.sleep")
+    @patch("apps.rss_feeds.models.Feed.sync_redis")
+    @patch("apps.reader.models.redis.Redis")
+    def test_finish_fetch_staggers_sync_redis_with_sleep(self, mock_redis_cls, mock_sync_redis, mock_sleep):
+        """finish_fetch_archive_feeds should sleep between sync_redis calls to avoid Redis spike."""
+        mock_redis_cls.return_value = MagicMock()
+
+        start_time = time.time()
+        UserSubscription.finish_fetch_archive_feeds(self.user.pk, start_time, 0)
+
+        # sleep(2) should be called between feeds (n-1 times for n feeds)
+        expected_sleeps = len(self.feeds) - 1
+        self.assertEqual(
+            mock_sleep.call_count,
+            expected_sleeps,
+            f"time.sleep should be called {expected_sleeps} times (between feeds), got {mock_sleep.call_count}",
+        )
+        for c in mock_sleep.call_args_list:
+            self.assertEqual(c, call(0.5), "Each sleep should be 0.5 seconds")
+
+    @patch("apps.reader.models.time.sleep")
+    @patch("apps.rss_feeds.models.Feed.sync_redis")
+    @patch("apps.reader.models.redis.Redis")
+    def test_finish_fetch_publishes_done_before_sync(self, mock_redis_cls, mock_sync_redis, mock_sleep):
+        """finish_fetch_archive_feeds should publish fetch_archive:done to Redis pubsub."""
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+
+        start_time = time.time()
+        UserSubscription.finish_fetch_archive_feeds(self.user.pk, start_time, 0)
+
+        # Verify fetch_archive:done was published
+        mock_r.publish.assert_called_with(self.user.username, "fetch_archive:done")

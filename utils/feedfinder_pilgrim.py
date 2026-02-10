@@ -117,7 +117,10 @@ class URLGatekeeper:
         if check and not self.can_fetch(url):
             return ""
         try:
-            return requests.get(url, headers=dict(self.urlopener.addheaders)).text
+            r = requests.get(url, headers=dict(self.urlopener.addheaders))
+            if r.status_code in [403, 204, 202] or not r.text.strip():
+                r = requests.get(url, headers={"User-Agent": None})
+            return r.text
         except:
             return ""
 

@@ -45,6 +45,13 @@ scrape_configs:
       scheme: https
       tls_config:
         insecure_skip_verify: true
+    - job_name: 'discover'
+      static_configs:
+        - targets: ['haproxy']
+      metrics_path: /monitor/discover
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
     - job_name: 'llm_costs'
       static_configs:
         - targets: ['haproxy']

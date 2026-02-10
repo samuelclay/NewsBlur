@@ -15,7 +15,9 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         "click .NB-feeds-header-river-global": "open_river_global_stories",
         "click .NB-feeds-header-river-trending": "open_trending_sites",
         "click .NB-feeds-header-river-dashboard": "show_splash_page",
-        "click .NB-feeds-header-archive": "open_archive"
+        "click .NB-feeds-header-archive": "open_archive",
+        "click .NB-feeds-header-river-briefing .NB-feedlist-collapse-icon": "collapse_daily_briefing",
+        "click .NB-feeds-header-river-briefing": "open_daily_briefing"
     },
 
     initialize: function () { },
@@ -39,6 +41,37 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         options = options || {};
         var $header = NEWSBLUR.reader.$s.$starred_header;
         var $folder = this.$('.NB-starred-folder');
+
+        $header.addClass('NB-folder-collapsed');
+
+        if (!options.skip_animation) {
+            $header.addClass('NB-feedlist-folder-title-recently-collapsed');
+            $header.one('mouseover', function () {
+                $header.removeClass('NB-feedlist-folder-title-recently-collapsed');
+            });
+        } else {
+            $folder.css({
+                display: 'none',
+                opacity: 0
+            });
+        }
+    },
+
+    check_briefing_collapsed: function (options) {
+        options = options || {};
+        var collapsed = _.contains(NEWSBLUR.Preferences.collapsed_folders, 'briefing');
+
+        if (collapsed) {
+            this.show_collapsed_briefing(options);
+        }
+
+        return collapsed;
+    },
+
+    show_collapsed_briefing: function (options) {
+        options = options || {};
+        var $header = NEWSBLUR.reader.$s.$river_briefing_header;
+        var $folder = this.$('.NB-briefing-sections-folder');
 
         $header.addClass('NB-folder-collapsed');
 
@@ -275,6 +308,48 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         return false;
     },
 
+    collapse_daily_briefing: function (e, options) {
+        e.stopPropagation();
+        options = options || {};
+
+        var $header = NEWSBLUR.reader.$s.$river_briefing_header;
+        var $folder = this.$('.NB-briefing-sections-folder');
+
+        // Hiding / Collapsing
+        if (options.force_collapse ||
+            ($folder.length &&
+                $folder.eq(0).is(':visible'))) {
+            NEWSBLUR.assets.collapsed_folders('briefing', true);
+            $header.addClass('NB-folder-collapsed');
+            $folder.animate({ 'opacity': 0 }, {
+                'queue': false,
+                'duration': options.force_collapse ? 0 : 200,
+                'complete': _.bind(function () {
+                    this.show_collapsed_briefing();
+                    $folder.slideUp({
+                        'duration': 270,
+                        'easing': 'easeOutQuart'
+                    });
+                }, this)
+            });
+        }
+        // Showing / Expanding
+        else if ($folder.length &&
+            (!$folder.eq(0).is(':visible'))) {
+            NEWSBLUR.assets.collapsed_folders('briefing', false);
+            $header.removeClass('NB-folder-collapsed');
+            $folder.css({ 'opacity': 0 }).slideDown({
+                'duration': 240,
+                'easing': 'easeInOutCubic',
+                'complete': function () {
+                    $folder.animate({ 'opacity': 1 }, { 'queue': false, 'duration': 200 });
+                }
+            });
+        }
+
+        return false;
+    },
+
     open_river_blurblogs_stories: function () {
         return NEWSBLUR.reader.open_river_blurblogs_stories();
     },
@@ -289,6 +364,10 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
 
     open_archive: function () {
         return NEWSBLUR.reader.open_archive();
+    },
+
+    open_daily_briefing: function () {
+        return NEWSBLUR.reader.open_daily_briefing();
     },
 
     toggle_all_folders: function (e) {

@@ -10,6 +10,7 @@ services:
     environment:
       - DOCKERBUILD=True
       - RUNWITHMAKEBUILD=${RUNWITHMAKEBUILD:-True}
+      - NEWSBLUR_WORKTREE={{ workspace_name }}
     stdin_open: true
     tty: true
     restart: "no"
@@ -73,7 +74,7 @@ services:
   haproxy:
     container_name: newsblur_haproxy_{{ workspace_name }}
     image: haproxy:latest
-    restart: "no"
+    restart: on-failure
     depends_on:
       nginx:
         condition: service_healthy
@@ -96,12 +97,13 @@ services:
     container_name: newsblur_celery_{{ workspace_name }}
     image: newsblur/newsblur_python3
     user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
-    command: "celery worker -A newsblur_web -B --loglevel=INFO"
+    command: "celery worker -A newsblur_web -B -s /srv/newsblur/logs/celerybeat-schedule-{{ workspace_name }}.db -Q {{ workspace_name }}_work_queue,{{ workspace_name }}_new_feeds,{{ workspace_name }}_push_feeds,{{ workspace_name }}_cron_queue,{{ workspace_name }}_beat_feeds_task,{{ workspace_name }}_search_indexer,{{ workspace_name }}_discover_indexer,{{ workspace_name }}_ask_ai --loglevel=INFO"
     restart: "no"
     volumes:
       - ${PWD}:/srv/newsblur
     environment:
       - DOCKERBUILD=True
+      - NEWSBLUR_WORKTREE={{ workspace_name }}
     networks:
       - default
       - newsblur_default
