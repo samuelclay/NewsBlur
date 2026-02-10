@@ -17,7 +17,7 @@ import {
 } from '../shared/utils.js';
 
 // Track active page visits (also persisted to storage for service worker recovery)
-const pageVisits = new Map(); // tabId -> { url, startTime, title, faviconUrl, domain, initialArchived }
+const pageVisits = new Map(); // tabId -> { url, startTime, title, faviconUrl, domain, initialArchived, activeSeconds }
 
 // Track archive timers
 const archiveTimers = new Map(); // tabId -> timeoutId
@@ -46,13 +46,14 @@ async function recoverPageVisits() {
 
     for (const [tabIdStr, visit] of Object.entries(visits)) {
         const tabId = parseInt(tabIdStr, 10);
-        const timeOnPage = Math.round((now - visit.startTime) / 1000);
+        const elapsedTime = Math.round((now - visit.startTime) / 1000);
 
         // If enough time has passed and not yet archived, archive it
-        if (!visit.initialArchived && timeOnPage >= TIME_THRESHOLDS.MIN_TIME_ON_PAGE / 1000) {
-            console.log('NewsBlur Archive: Recovering unarchived visit:', visit.url, timeOnPage + 's');
+        // Use stored activeSeconds (not wall-clock time) for the reading time
+        if (!visit.initialArchived && elapsedTime >= TIME_THRESHOLDS.MIN_TIME_ON_PAGE / 1000) {
+            console.log('NewsBlur Archive: Recovering unarchived visit:', visit.url, (visit.activeSeconds || 0) + 's active');
             visit.initialArchived = true;
-            await archivePage(visit, timeOnPage);
+            await archivePage(visit, visit.activeSeconds || 0);
         }
 
         // Re-add to memory if the tab might still be open
@@ -167,7 +168,8 @@ async function handleTabUpdated(tabId, changeInfo, tab) {
         title: tab.title || '',
         faviconUrl: tab.favIconUrl || '',
         domain: extractDomain(tab.url),
-        initialArchived: false
+        initialArchived: false,
+        activeSeconds: 0
     };
     pageVisits.set(tabId, visit);
 
@@ -177,14 +179,15 @@ async function handleTabUpdated(tabId, changeInfo, tab) {
     console.log('NewsBlur Archive: Started tracking:', normalizedUrl);
 
     // Set timer for initial archive after MIN_TIME_ON_PAGE
+    // Sends timeOnPage=0 because this just registers the URL/content.
+    // The real active reading time is sent on tab close or navigation.
     const timerId = setTimeout(async () => {
         const currentVisit = pageVisits.get(tabId);
         if (currentVisit && currentVisit.url === normalizedUrl && !currentVisit.initialArchived) {
             console.log('NewsBlur Archive: Initial archive after', TIME_THRESHOLDS.MIN_TIME_ON_PAGE / 1000, 'seconds:', normalizedUrl);
             currentVisit.initialArchived = true;
             await persistPageVisits();
-            const timeOnPage = Math.round((Date.now() - currentVisit.startTime) / 1000);
-            await archivePage(currentVisit, timeOnPage);
+            await archivePage(currentVisit, 0);
         }
         archiveTimers.delete(tabId);
     }, TIME_THRESHOLDS.MIN_TIME_ON_PAGE);
@@ -208,23 +211,26 @@ async function handleTabRemoved(tabId) {
     pageVisits.delete(tabId);
     await persistPageVisits();
 
-    const timeOnPage = Math.round((Date.now() - visit.startTime) / 1000);
+    // Use active reading time (last heartbeat value from content script).
+    // We can't query the content script here because the tab is already closing.
+    const activeTime = visit.activeSeconds || 0;
+    const elapsedTime = Math.round((Date.now() - visit.startTime) / 1000);
 
-    // If already archived, send update with final time
+    // If already archived, send update with final active time
     if (visit.initialArchived) {
-        console.log('NewsBlur Archive: Final update on close:', visit.url, timeOnPage + 's');
-        await archivePage(visit, timeOnPage);
+        console.log('NewsBlur Archive: Final update on close:', visit.url, activeTime + 's active (' + elapsedTime + 's elapsed)');
+        await archivePage(visit, activeTime);
         return;
     }
 
-    // Skip if not enough time on page (never got initial archive)
-    if (timeOnPage < TIME_THRESHOLDS.MIN_TIME_ON_PAGE / 1000) {
-        console.log('NewsBlur Archive: Skipped (too short):', visit.url, timeOnPage + 's');
+    // Skip if not enough elapsed time on page (never got initial archive)
+    if (elapsedTime < TIME_THRESHOLDS.MIN_TIME_ON_PAGE / 1000) {
+        console.log('NewsBlur Archive: Skipped (too short):', visit.url, elapsedTime + 's');
         return;
     }
 
     // Archive now (edge case: timer didn't fire but enough time passed)
-    await archivePage(visit, timeOnPage);
+    await archivePage(visit, activeTime);
 }
 
 /**
@@ -243,26 +249,38 @@ async function handleBeforeNavigate(details) {
         archiveTimers.delete(details.tabId);
     }
 
+    // Try to get final active time from content script before navigation completes
+    try {
+        const extApi = getExtensionAPI();
+        const response = await extApi.tabs.sendMessage(details.tabId, { action: 'getActiveTime' });
+        if (response && typeof response.activeSeconds === 'number') {
+            visit.activeSeconds = response.activeSeconds;
+        }
+    } catch (e) {
+        // Content script may already be unloaded, use last heartbeat value
+    }
+
     pageVisits.delete(details.tabId);
     await persistPageVisits();
 
-    const timeOnPage = Math.round((Date.now() - visit.startTime) / 1000);
+    const activeTime = visit.activeSeconds || 0;
+    const elapsedTime = Math.round((Date.now() - visit.startTime) / 1000);
 
-    // If already archived, send update with final time
+    // If already archived, send update with final active time
     if (visit.initialArchived) {
-        console.log('NewsBlur Archive: Final update on navigate:', visit.url, timeOnPage + 's');
-        await archivePage(visit, timeOnPage);
+        console.log('NewsBlur Archive: Final update on navigate:', visit.url, activeTime + 's active (' + elapsedTime + 's elapsed)');
+        await archivePage(visit, activeTime);
         return;
     }
 
-    // Skip if not enough time on page (never got initial archive)
-    if (timeOnPage < TIME_THRESHOLDS.MIN_TIME_ON_PAGE / 1000) {
-        console.log('NewsBlur Archive: Skipped (too short):', visit.url, timeOnPage + 's');
+    // Skip if not enough elapsed time on page (never got initial archive)
+    if (elapsedTime < TIME_THRESHOLDS.MIN_TIME_ON_PAGE / 1000) {
+        console.log('NewsBlur Archive: Skipped (too short):', visit.url, elapsedTime + 's');
         return;
     }
 
     // Archive now (edge case: timer didn't fire but enough time passed)
-    await archivePage(visit, timeOnPage);
+    await archivePage(visit, activeTime);
 }
 
 /**
@@ -433,6 +451,18 @@ async function handleMessage(message, sender, sendResponse) {
     console.log('NewsBlur Archive: Message received:', message.action);
 
     switch (message.action) {
+        case 'updateActiveTime':
+            // Heartbeat from content script with active reading time
+            if (sender.tab) {
+                const visit = pageVisits.get(sender.tab.id);
+                if (visit) {
+                    visit.activeSeconds = message.activeSeconds;
+                    await persistPageVisits();
+                }
+            }
+            sendResponse({ success: true });
+            break;
+
         case 'getStatus':
             sendResponse({
                 authenticated: api.isAuthenticated(),
