@@ -235,6 +235,9 @@ p.save()
   - Postgres (`hdb-postgres-*`): `postgres`
   - Nginx (`hwww`): `nginx`, `haproxy`
 
+## Downtime Investigation
+When the user reports downtime, read `DOWNTIME.md` for the full investigation playbook, then run `./utils/check_health.sh`.
+
 ## Writing Emails
 - Never use em dashes
 - Sign off with just "Sam" (no "Best," "Thanks," or other closings before it)
