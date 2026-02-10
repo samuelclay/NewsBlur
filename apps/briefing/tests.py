@@ -253,11 +253,10 @@ class Test_Summary(TestCase):
         self.assertIn("classifier_match", prompt)
         self.assertIn("follow_up", prompt)
         self.assertIn("trending_global", prompt)
-        # tests.py: Default-False sections should NOT be in the default prompt
-        self.assertNotIn("duplicates", prompt)
-        self.assertNotIn("quick_catchup", prompt)
-        self.assertNotIn("emerging_topics", prompt)
-        self.assertNotIn("contrarian_views", prompt)
+        self.assertIn("duplicates", prompt)
+        self.assertIn("quick_catchup", prompt)
+        self.assertIn("emerging_topics", prompt)
+        self.assertIn("contrarian_views", prompt)
 
     def test_prompt_all_enabled(self):
         all_enabled = {s["key"]: True for s in BRIEFING_SECTION_DEFINITIONS}
@@ -1018,10 +1017,10 @@ class Test_Models(BriefingTestCase):
         self.assertTrue(DEFAULT_SECTIONS["classifier_match"])
         self.assertTrue(DEFAULT_SECTIONS["follow_up"])
         self.assertTrue(DEFAULT_SECTIONS["trending_global"])
-        self.assertFalse(DEFAULT_SECTIONS["duplicates"])
-        self.assertFalse(DEFAULT_SECTIONS["quick_catchup"])
-        self.assertFalse(DEFAULT_SECTIONS["emerging_topics"])
-        self.assertFalse(DEFAULT_SECTIONS["contrarian_views"])
+        self.assertTrue(DEFAULT_SECTIONS["duplicates"])
+        self.assertTrue(DEFAULT_SECTIONS["quick_catchup"])
+        self.assertTrue(DEFAULT_SECTIONS["emerging_topics"])
+        self.assertTrue(DEFAULT_SECTIONS["contrarian_views"])
 
     def test_max_custom_sections(self):
         self.assertEqual(MAX_CUSTOM_SECTIONS, 5)

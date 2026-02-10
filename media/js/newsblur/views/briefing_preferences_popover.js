@@ -268,9 +268,14 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             ]));
         }
 
-        return this.make_section('Sections', 'Choose which sections appear in your briefing', [
+        var $section = this.make_section('Sections', 'Choose which sections appear in your briefing', [
             $.make('div', { className: 'NB-briefing-sections' }, items)
         ]);
+        $section.find('.NB-popover-section-label').append(
+            $.make('div', { className: 'NB-briefing-notification-hint' },
+                'Sections are only included when matching stories are found.')
+        );
+        return $section;
     },
 
     make_section_item: function (def, is_enabled) {

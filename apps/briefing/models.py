@@ -96,25 +96,25 @@ BRIEFING_SECTION_DEFINITIONS = [
         "key": "duplicates",
         "name": "Common stories",
         "subtitle": "Stories covered by multiple feeds",
-        "default": False,
+        "default": True,
     },
     {
         "key": "quick_catchup",
         "name": "Quick catch-up",
         "subtitle": "TL;DR of the most important stories",
-        "default": False,
+        "default": True,
     },
     {
         "key": "emerging_topics",
         "name": "Emerging topics",
         "subtitle": "Topics getting increasing coverage",
-        "default": False,
+        "default": True,
     },
     {
         "key": "contrarian_views",
         "name": "Contrarian views",
         "subtitle": "Different perspectives on the same topic",
-        "default": False,
+        "default": True,
     },
 ]
 

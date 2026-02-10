@@ -95,8 +95,8 @@ SECTION_PROMPTS = {
     "trending_global": '"Trending across NewsBlur" — CATEGORY: trending_global. Widely-read stories from across the platform.',
     "duplicates": '"Common stories" — CATEGORY: duplicates. Stories covered by multiple feeds. For each story, show the shared headline then list each source\'s unique angle or perspective as sub-items.',
     "quick_catchup": '"Quick catch-up" — KEY: quick_catchup. This is a special section. Select the 3-5 most important stories from the entire briefing and write a 1-2 sentence TL;DR for each. Link to each story using the anchor tag format specified below. This section should appear first.',
-    "emerging_topics": '"Emerging topics" — Look across all the stories for topics that appear multiple times or are getting increasing coverage. Group these stories under the topic and explain why it\'s trending.',
-    "contrarian_views": '"Contrarian views" — Look for stories where different feeds have notably different perspectives on the same topic. Highlight the disagreement and present each side.',
+    "emerging_topics": '"Emerging topics" — CATEGORY: emerging_topics. Look across all the stories for topics that appear multiple times or are getting increasing coverage. Group these stories under the topic and explain why it\'s trending.',
+    "contrarian_views": '"Contrarian views" — CATEGORY: contrarian_views. Look for stories where different feeds have notably different perspectives on the same topic. Highlight the disagreement and present each side.',
 }
 
 
