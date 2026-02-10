@@ -120,6 +120,9 @@ class RLLMCosts:
             pipe.sadd(user_key, user_id)
             pipe.expireat(user_key, expiry)
 
+        # Register model name for fast lookup (avoids scan_iter on 150K+ keys)
+        pipe.sadd(f"{cls.KEY_PREFIX}:known_models", model_safe)
+
         pipe.execute()
 
     # Known dimensions for direct key lookups (avoid scan_iter)
@@ -198,26 +201,27 @@ class RLLMCosts:
         if user_count:
             stats["unique_users"] = user_count
 
-        # Only scan for models on daily stats (to get dynamic model names)
+        # Look up model stats using known_models set (avoids slow scan_iter on 150K+ keys)
         if include_models:
-            model_pattern = f"{prefix}:model:*"
-            model_keys = list(r.scan_iter(match=model_pattern))
-            if model_keys:
+            known_models = r.smembers(f"{cls.KEY_PREFIX}:known_models")
+            if known_models:
+                model_keys = []
+                model_meta = []
+                for model_name in known_models:
+                    for metric in cls.METRICS:
+                        model_keys.append(f"{prefix}:model:{model_name}:{metric}")
+                        model_meta.append((f"model:{model_name}", metric))
                 model_values = r.mget(model_keys)
-                for i, key in enumerate(model_keys):
-                    if model_values[i] is not None:
-                        key_str = key.decode() if isinstance(key, bytes) else key
-                        # Extract model:name:metric from key
-                        parts = key_str.replace(f"{prefix}:", "").rsplit(":", 1)
-                        if len(parts) == 2:
-                            category, metric = parts
-                            if category not in stats:
-                                stats[category] = {"tokens": 0, "cost_usd": 0.0, "requests": 0}
-                            val = int(model_values[i])
-                            if metric == "cost":
-                                stats[category]["cost_usd"] = val / 1_000_000
-                            else:
-                                stats[category][metric] = val
+                for i, value in enumerate(model_values):
+                    if value is not None:
+                        category, metric = model_meta[i]
+                        if category not in stats:
+                            stats[category] = {"tokens": 0, "cost_usd": 0.0, "requests": 0}
+                        val = int(value)
+                        if metric == "cost":
+                            stats[category]["cost_usd"] = val / 1_000_000
+                        else:
+                            stats[category][metric] = val
 
         return stats
 
@@ -277,29 +281,155 @@ class RLLMCosts:
                 else:
                     aggregated[category][metric] += val
 
-        # For daily stats only, include models (requires scan)
+        # For daily stats only, include models using known_models set
         if days == 1:
             date_key = cls._date_key()
             prefix = f"{cls.KEY_PREFIX}:{date_key}"
-            model_pattern = f"{prefix}:model:*"
-            model_keys = list(r.scan_iter(match=model_pattern))
-            if model_keys:
+            known_models = r.smembers(f"{cls.KEY_PREFIX}:known_models")
+            if known_models:
+                model_keys = []
+                model_meta = []
+                for model_name in known_models:
+                    for metric in cls.METRICS:
+                        model_keys.append(f"{prefix}:model:{model_name}:{metric}")
+                        model_meta.append((f"model:{model_name}", metric))
                 model_values = r.mget(model_keys)
-                for i, key in enumerate(model_keys):
-                    if model_values[i] is not None:
-                        key_str = key.decode() if isinstance(key, bytes) else key
-                        parts = key_str.replace(f"{prefix}:", "").rsplit(":", 1)
-                        if len(parts) == 2:
-                            category, metric = parts
-                            if category not in aggregated:
-                                aggregated[category] = {"tokens": 0, "cost_usd": 0.0, "requests": 0}
-                            val = int(model_values[i])
-                            if metric == "cost":
-                                aggregated[category]["cost_usd"] += val / 1_000_000
-                            else:
-                                aggregated[category][metric] += val
+                for i, value in enumerate(model_values):
+                    if value is not None:
+                        category, metric = model_meta[i]
+                        if category not in aggregated:
+                            aggregated[category] = {"tokens": 0, "cost_usd": 0.0, "requests": 0}
+                        val = int(value)
+                        if metric == "cost":
+                            aggregated[category]["cost_usd"] += val / 1_000_000
+                        else:
+                            aggregated[category][metric] += val
 
         return aggregated
+
+    @classmethod
+    def get_all_periods_stats(cls):
+        """
+        Get daily, weekly, and monthly stats in minimal Redis round-trips.
+
+        Instead of calling get_period_stats 3 times (3 MGETs with overlapping keys)
+        and get_unique_users_for_period 3 times, this fetches all 30 days once
+        and partitions results. Reduces round-trips from thousands (due to scan_iter
+        on 150K+ keys in db=3) to 2.
+
+        Returns dict with keys: daily, weekly, monthly, daily_users, weekly_users, monthly_users
+        """
+        r = cls._get_redis()
+        today = datetime.date.today()
+
+        # Build all 30 days of keys at once
+        all_keys = []
+        key_metadata = []  # (day_offset, category, metric)
+
+        for day_offset in range(30):
+            date = today - datetime.timedelta(days=day_offset)
+            date_key = cls._date_key(date)
+            prefix = f"{cls.KEY_PREFIX}:{date_key}"
+
+            for metric in cls.METRICS:
+                all_keys.append(f"{prefix}:total:{metric}")
+                key_metadata.append((day_offset, "total", metric))
+
+            for provider in cls.PROVIDERS:
+                for metric in cls.METRICS:
+                    all_keys.append(f"{prefix}:provider:{provider}:{metric}")
+                    key_metadata.append((day_offset, f"provider:{provider}", metric))
+
+            for feature in cls.FEATURES:
+                for metric in cls.METRICS:
+                    all_keys.append(f"{prefix}:feature:{feature}:{metric}")
+                    key_metadata.append((day_offset, f"feature:{feature}", metric))
+
+        # Build user set keys for all 30 days
+        user_keys = []
+        for day_offset in range(30):
+            date = today - datetime.timedelta(days=day_offset)
+            user_keys.append(f"{cls.KEY_PREFIX}:{cls._date_key(date)}:users")
+
+        # Pipeline: 1 MGET + known models set + user operations = 1 round-trip
+        pipe = r.pipeline()
+        pipe.mget(all_keys)
+        pipe.smembers(f"{cls.KEY_PREFIX}:known_models")
+        pipe.scard(user_keys[0])
+        pipe.sunion(*user_keys[:7])
+        pipe.sunion(*user_keys[:30])
+        results = pipe.execute()
+
+        values = results[0]
+        known_models = results[1]
+        daily_users = results[2]
+        weekly_users_set = results[3]
+        monthly_users_set = results[4]
+
+        # Partition metrics into daily/weekly/monthly buckets
+        daily = {}
+        weekly = {}
+        monthly = {}
+
+        for i, value in enumerate(values):
+            if value is not None:
+                day_offset, category, metric = key_metadata[i]
+                val = int(value)
+
+                if category not in monthly:
+                    monthly[category] = {"tokens": 0, "cost_usd": 0.0, "requests": 0}
+                if metric == "cost":
+                    monthly[category]["cost_usd"] += val / 1_000_000
+                else:
+                    monthly[category][metric] += val
+
+                if day_offset < 7:
+                    if category not in weekly:
+                        weekly[category] = {"tokens": 0, "cost_usd": 0.0, "requests": 0}
+                    if metric == "cost":
+                        weekly[category]["cost_usd"] += val / 1_000_000
+                    else:
+                        weekly[category][metric] += val
+
+                if day_offset == 0:
+                    if category not in daily:
+                        daily[category] = {"tokens": 0, "cost_usd": 0.0, "requests": 0}
+                    if metric == "cost":
+                        daily[category]["cost_usd"] += val / 1_000_000
+                    else:
+                        daily[category][metric] += val
+
+        # Fetch model stats for today using known_models set (no scan_iter needed)
+        if known_models:
+            today_prefix = f"{cls.KEY_PREFIX}:{cls._date_key()}"
+            model_keys = []
+            model_meta = []
+            for model_name in known_models:
+                for metric in cls.METRICS:
+                    model_keys.append(f"{today_prefix}:model:{model_name}:{metric}")
+                    model_meta.append((f"model:{model_name}", metric))
+
+            if model_keys:
+                model_values = r.mget(model_keys)
+                for i, value in enumerate(model_values):
+                    if value is not None:
+                        category, metric = model_meta[i]
+                        if category not in daily:
+                            daily[category] = {"tokens": 0, "cost_usd": 0.0, "requests": 0}
+                        val = int(value)
+                        if metric == "cost":
+                            daily[category]["cost_usd"] += val / 1_000_000
+                        else:
+                            daily[category][metric] += val
+
+        return {
+            "daily": daily,
+            "weekly": weekly,
+            "monthly": monthly,
+            "daily_users": daily_users,
+            "weekly_users": len(weekly_users_set) if weekly_users_set else 0,
+            "monthly_users": len(monthly_users_set) if monthly_users_set else 0,
+        }
 
     @classmethod
     def get_unique_users_for_period(cls, days=1):

@@ -6345,9 +6345,11 @@ body {
 }
 
 .NB-taskbar-info {
-    position: absolute;
-    top: 0;
-    left: 0;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
 }
 
 /* ============== */
@@ -6972,10 +6974,107 @@ body {
     align-self: flex-end;
 }
 
-#story_taskbar .NB-tryfeed-add,
-#story_taskbar .NB-tryfeed-follow,
-#story_taskbar .NB-tryfeed-signup {
-    display: none;
+/* ========================== */
+/* = Tryfeed Subscribe Banner = */
+/* ========================== */
+
+.NB-tryfeed-subscribe-banner,
+.NB-tryfeed-follow-banner,
+.NB-tryfeed-signup-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(106, 168, 79, 0.15);
+    cursor: pointer;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.NB-tryfeed-subscribe-banner,
+.NB-tryfeed-follow-banner {
+    background: linear-gradient(135deg, #e8f0e6 0%, #dce8d5 100%);
+}
+
+.NB-tryfeed-subscribe-banner:hover,
+.NB-tryfeed-follow-banner:hover {
+    background: linear-gradient(135deg, #dfe9dc 0%, #d3dfcb 100%);
+}
+
+.NB-tryfeed-signup-banner {
+    background: linear-gradient(135deg, #f5f0e6 0%, #ece5d5 100%);
+    border-bottom-color: rgba(217, 166, 33, 0.15);
+}
+
+.NB-tryfeed-signup-banner:hover {
+    background: linear-gradient(135deg, #efe9d8 0%, #e6dece 100%);
+}
+
+.NB-tryfeed-banner-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 4px;
+}
+
+.NB-tryfeed-banner-logo {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    background: url(/media/img/logo_512.png) no-repeat center center;
+    background-size: 28px;
+    filter: drop-shadow(0 1px 4px rgba(217, 166, 33, 0.3));
+}
+
+.NB-tryfeed-banner-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-tryfeed-banner-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3a3226;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.NB-tryfeed-banner-subtext {
+    font-size: 11px;
+    color: rgba(58, 50, 38, 0.55);
+    margin-top: 2px;
+    line-height: 1.3;
+}
+
+.NB-tryfeed-banner-button {
+    flex-shrink: 0;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+    letter-spacing: 0.3px;
+}
+
+.NB-tryfeed-banner-button-green {
+    background: #6AA84F;
+}
+
+.NB-tryfeed-subscribe-banner:hover .NB-tryfeed-banner-button-green,
+.NB-tryfeed-follow-banner:hover .NB-tryfeed-banner-button-green {
+    background: #5C9441;
+}
+
+.NB-tryfeed-banner-button-gold {
+    background: #D9A621;
+}
+
+.NB-tryfeed-signup-banner:hover .NB-tryfeed-banner-button-gold {
+    background: #C4941B;
 }
 
 .NB-feedbar .NB-taskbar-nav {
@@ -7177,16 +7276,6 @@ body {
 }
 
 
-#story_taskbar .NB-tryfeed-add,
-#story_taskbar .NB-tryfeed-follow,
-#story_taskbar .NB-tryout-signup {
-    margin: 0px auto 0px;
-    width: 80px;
-    height: 14px;
-    text-align: center;
-    cursor: pointer;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
-}
 
 .NB-narrow #story_taskbar .NB-task-title {
     display: none;
@@ -7196,14 +7285,6 @@ body {
     padding: 0;
 }
 
-#story_taskbar .NB-modal-submit {
-    flex-grow: 1;
-    margin: 0 6px;
-    display: flex;
-    align-items: center;
-    /* height: 100%; */
-    place-self: flex-end;
-}
 
 #story_taskbar .NB-taskbar-options-container {
     flex-shrink: 1;
@@ -9557,15 +9638,10 @@ form.opml_import_form input {
     position: relative;
 }
 
+/* reader.css: Classifier icon is now an <img> element with inline styles */
 .NB-briefing-classifier .NB-classifier-icon-like {
     width: 12px;
     height: 12px;
-    background: transparent url('/media/embed/icons/nouns/thumbs-up.svg') no-repeat 0 0;
-    background-size: 12px;
-    position: absolute;
-    left: 5px;
-    top: 50%;
-    transform: translateY(-50%);
     opacity: 1;
 }
 
@@ -13368,8 +13444,6 @@ h5.NB-classifier-section-header {
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     min-width: 230px;
-    max-height: 240px;
-    overflow-y: auto;
     opacity: 0;
     visibility: hidden;
     transform: translateY(4px);
@@ -13481,6 +13555,57 @@ h5.NB-classifier-section-header {
 .NB-menu-ask-ai-option:last-child {
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
+}
+
+/* Thinking Toggle - inside model dropdown */
+.NB-thinking-toggle-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 8px 10px;
+    border-top: 1px solid #E8EAE4;
+    border-radius: 0 0 5px 5px;
+}
+
+.NB-thinking-toggle-segmented {
+    display: inline-flex;
+    background-color: #E8EAE4;
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+    flex: 1;
+}
+
+.NB-thinking-toggle-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #808080;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.NB-thinking-toggle-option:hover {
+    color: #505050;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-thinking-toggle-option.NB-selected {
+    background-color: white;
+    color: #303030;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.NB-thinking-toggle-icon {
+    width: 14px;
+    height: 14px;
 }
 
 /* =================== */
@@ -13764,8 +13889,6 @@ h5.NB-classifier-section-header {
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     min-width: 250px;
-    max-height: 240px;
-    overflow-y: auto;
     opacity: 0;
     visibility: hidden;
     transform: translateY(4px);
@@ -29513,17 +29636,14 @@ span.NB-briefing-inline-favicon {
     line-height: 16px;
 }
 
-/* reader.css: Section icons in briefing summary h3 headers (span with background-image) */
+/* reader.css: Section icons in briefing summary h3 headers (img embedded server-side) */
 .NB-briefing-section-icon {
     display: inline-block;
     width: 1em;
     height: 1em;
     vertical-align: -0.1em;
     margin-right: 0.3em;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
+    filter: grayscale(1);
 }
 
 /* reader.css: Section icons in briefing settings/onboarding */
@@ -29532,7 +29652,7 @@ span.NB-briefing-inline-favicon {
     height: 16px;
     margin-top: 1px;
     flex-shrink: 0;
-    filter: brightness(0) saturate(100%) invert(44%) sepia(12%) saturate(640%) hue-rotate(175deg) brightness(94%) contrast(90%);
+    filter: grayscale(1);
 }
 
 /* reader.css: Briefing curated stories container */
@@ -29744,18 +29864,23 @@ span.NB-briefing-inline-favicon {
 }
 
 .NB-briefing-summary-story .NB-story-title {
-    background: linear-gradient(160deg, #EEF2FA 0%, #F4F0EE 50%, #EEF2FA 100%);
+    background: linear-gradient(135deg, #E8EEF8 0%, #F0F4FA 40%, #EDF0F8 100%);
     border-left: 3px solid #5C89C4;
     padding-left: 9px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 4px rgba(60, 100, 160, 0.1);
 }
 
 .NB-briefing-summary-story .NB-story-title:hover {
-    background: linear-gradient(160deg, #E4EAF4 0%, #EDE8E6 50%, #E4EAF4 100%);
+    background: linear-gradient(135deg, #DEE6F4 0%, #E8EEF8 40%, #E4EAF4 100%);
 }
 
 .NB-briefing-summary-story .NB-story-title.NB-selected {
-    background: linear-gradient(160deg, #D8E2F0 0%, #E6E0DE 50%, #D8E2F0 100%);
+    background: linear-gradient(135deg, #D4DEF0 0%, #DFE6F4 40%, #DAE2F0 100%);
+}
+
+/* reader.css: Hide image preview on briefing summary story — it shows a generic icon */
+.NB-briefing-summary-story .NB-storytitles-story-image-container {
+    display: none;
 }
 
 .NB-briefing-summary-story .NB-storytitles-title {
@@ -30026,6 +30151,24 @@ span.NB-briefing-inline-favicon {
 .NB-dark .NB-briefing-style-option-subtitle {
     color: #777;
 }
+
+/* reader.css: Briefing AI model selector */
+.NB-briefing-model-chooser {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.NB-briefing-model-chooser .NB-provider-pill {
+    flex-shrink: 0;
+    font-size: 10px;
+    padding: 1px 5px;
+}
+
+.NB-briefing-model-chooser .NB-briefing-style-option-label {
+    margin-left: 2px;
+}
+
 
 /* reader.css: Briefing sections — tappable checkbox rows */
 .NB-briefing-sections {

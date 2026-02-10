@@ -3068,6 +3068,33 @@ var classifier_prototype = {
             });
         }
 
+        // Also include feeds from folders that have folder-scoped classifiers
+        if (this.all_classifiers_data && this.all_classifiers_data.scoped_classifiers) {
+            var scoped = this.all_classifiers_data.scoped_classifiers;
+            var folder_names = {};
+            var collect_folder_names = function (items) {
+                _.each(items, function (item) {
+                    if (item.scope === 'folder' && item.folder_name) {
+                        folder_names[item.folder_name] = true;
+                    }
+                });
+            };
+            collect_folder_names(scoped.titles || []);
+            collect_folder_names(scoped.authors || []);
+            collect_folder_names(scoped.tags || []);
+            collect_folder_names(scoped.texts || []);
+            collect_folder_names(scoped.urls || []);
+
+            _.each(folder_names, function (val, folder_name) {
+                var folder = NEWSBLUR.assets.get_folder(folder_name);
+                if (folder) {
+                    _.each(folder.feed_ids_in_folder(), function (feed_id) {
+                        classifier_feed_ids[feed_id] = true;
+                    });
+                }
+            });
+        }
+
         // Create the feed chooser dropdown, filtered to only feeds with classifiers
         var $feed_chooser = NEWSBLUR.utils.make_feed_chooser({
             include_folders: true,

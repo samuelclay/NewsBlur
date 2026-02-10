@@ -14,9 +14,22 @@ def GenerateBriefings():
     Finds users who need a briefing generated and dispatches per-user tasks.
     """
     import pytz
+    import redis
+    from django.conf import settings
 
     from apps.briefing.models import MBriefing, MBriefingPreferences
     from apps.profile.models import Profile
+
+    # tasks.py: Distributed lock — multiple celery beat schedulers (one per htask-work
+    # server) fire this task concurrently. Only one instance should run per 15-min cycle.
+    # TTL of 14 minutes (just under the 15-min schedule) ensures the lock persists for
+    # the entire interval. We intentionally do NOT delete the lock on completion — the
+    # task finishes in ~0.1s, and deleting would let later beat tasks acquire the lock.
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    lock_key = "briefing:generate_all_lock"
+    if not r.set(lock_key, "1", nx=True, ex=840):
+        logging.debug(" ---> GenerateBriefings: another instance is running, skipping")
+        return
 
     DAY_NAME_TO_WEEKDAY = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
     # tasks.py: Fixed delivery times for each slot (user's local timezone)
@@ -155,10 +168,25 @@ def GenerateUserBriefing(user_id, on_demand=False):
     )
     from apps.briefing.scoring import select_briefing_stories
     from apps.briefing.summary import (
+        embed_briefing_icons,
         extract_section_story_hashes,
         extract_section_summaries,
+        filter_disabled_sections,
         generate_briefing_summary,
     )
+
+    # tasks.py: Per-user distributed lock prevents duplicate generation from
+    # concurrent task dispatches (race conditions, retries, multiple beat schedulers).
+    # For scheduled generation, the lock persists via TTL (not deleted on completion)
+    # so that duplicate dispatches arriving after the first completes are still blocked.
+    # For on_demand (user-initiated regeneration), we delete the lock on completion
+    # so the user can regenerate again immediately.
+    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+    lock_key = "briefing:generate_user:%s" % user_id
+    lock_ttl = 120 if on_demand else 840
+    if not r.set(lock_key, "1", nx=True, ex=lock_ttl):
+        logging.debug(" ---> GenerateUserBriefing: already running for user %s, skipping" % user_id)
+        return
 
     try:
         user = User.objects.get(pk=user_id)
@@ -170,11 +198,11 @@ def GenerateUserBriefing(user_id, on_demand=False):
         if not on_demand:
             return
         try:
-            r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+            r2 = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
             payload = {"type": event_type}
             if extra:
                 payload.update(extra)
-            r.publish(user.username, "briefing:%s" % json.dumps(payload))
+            r2.publish(user.username, "briefing:%s" % json.dumps(payload))
         except Exception as e:
             logging.error(" ---> GenerateUserBriefing: publish error: %s" % e)
 
@@ -221,27 +249,79 @@ def GenerateUserBriefing(user_id, on_demand=False):
         )
         return
 
+    # tasks.py: Disable custom sections that have no matching stories so the LLM
+    # doesn't force-fit unrelated stories to a custom prompt (e.g. "Trump news" in a gaming folder).
+    matched_custom_sections = set()
+    for s in scored_stories:
+        cat = s.get("category", "")
+        if cat.startswith("custom_"):
+            matched_custom_sections.add(cat)
+
+    filtered_sections = dict(prefs.sections) if prefs.sections else {}
+    if prefs.custom_section_prompts:
+        for i, prompt in enumerate(prefs.custom_section_prompts):
+            custom_key = "custom_%d" % (i + 1)
+            if custom_key not in matched_custom_sections:
+                filtered_sections[custom_key] = False
+
     publish("progress", {"step": "summary", "message": "Writing your briefing summary..."})
-    summary_html = generate_briefing_summary(
+    import time
+
+    t_summary_start = time.monotonic()
+    summary_html, summary_meta = generate_briefing_summary(
         user_id,
         scored_stories,
         now,
         summary_length=prefs.summary_length or "medium",
         summary_style=prefs.summary_style or "bullets",
-        sections=prefs.sections,
+        sections=filtered_sections or prefs.sections,
         custom_section_prompts=prefs.custom_section_prompts,
+        model=prefs.briefing_model,
     )
+    t_summary_elapsed = time.monotonic() - t_summary_start
 
     if not summary_html:
         logging.error(" ---> GenerateUserBriefing: summary generation failed for user %s" % user_id)
         publish("error", {"error": "Summary generation failed. Please try again."})
         return
 
+    # tasks.py: Strip sections from output that the user has disabled. The LLM may
+    # occasionally create sections it wasn't instructed to because it sees category
+    # annotations in the story data.
+    active_sections = filtered_sections or prefs.sections
+    if active_sections:
+        summary_html = filter_disabled_sections(summary_html, active_sections)
+
+    # tasks.py: Embed feed favicons and section icons directly in the HTML so they
+    # appear in email notifications and don't pop in on the web.
+    summary_html = embed_briefing_icons(summary_html, scored_stories)
+
+    # tasks.py: Append debug footer with model and generation stats
+    if summary_meta:
+        num_candidates = len(scored_stories)
+        footer_parts = [
+            summary_meta.get("display_name", "Unknown model"),
+            "%s stories" % num_candidates,
+            "{:,} in / {:,} out tokens".format(
+                summary_meta.get("input_tokens", 0), summary_meta.get("output_tokens", 0)
+            ),
+            "%.1fs" % t_summary_elapsed,
+        ]
+        summary_html += (
+            '\n<p class="NB-briefing-debug" style="margin-top:2em;font-style:italic;'
+            'color:#999;font-size:12px;">%s</p>' % " · ".join(footer_parts)
+        )
+
     curated_hashes = [s["story_hash"] for s in scored_stories]
     curated_sections = {}
     for s in scored_stories:
         curated_sections.setdefault(s.get("category", "trending_global"), []).append(s["story_hash"])
     section_summaries = extract_section_summaries(summary_html)
+    # tasks.py: Filter section_summaries to remove disabled sections
+    if active_sections:
+        allowed = {k for k, v in active_sections.items() if v}
+        allowed.add("trending_global")
+        section_summaries = {k: v for k, v in section_summaries.items() if k in allowed}
     # tasks.py: Merge story hashes referenced in the AI summary into curated_sections.
     # The AI may organize stories into sections (like "Quick catch-up") that don't
     # correspond to scoring categories, referencing stories via data-story-hash links.
@@ -267,3 +347,6 @@ def GenerateUserBriefing(user_id, on_demand=False):
     )
 
     publish("complete")
+
+    if on_demand:
+        r.delete(lock_key)
