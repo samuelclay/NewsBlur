@@ -532,7 +532,15 @@ class Feed(models.Model):
 
     @classmethod
     def get_feed_from_url(
-        cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None, interactive=False
+        cls,
+        url,
+        create=True,
+        aggressive=False,
+        fetch=True,
+        offset=0,
+        user=None,
+        interactive=False,
+        max_stories=None,
     ):
         feed = None
         without_rss = False
@@ -654,12 +662,12 @@ class Feed(models.Model):
                 if feed and len(feed) > offset:
                     feed = feed[offset]
                     logging.debug(" ---> Feed exists (%s), updating..." % (feed))
-                    feed = feed.update()
+                    feed = feed.update(max_stories=max_stories)
                 elif create:
                     logging.debug(" ---> Feed doesn't exist, creating: %s" % (feed_finder_url))
                     try:
                         feed = cls.objects.create(feed_address=feed_finder_url)
-                        feed = feed.update()
+                        feed = feed.update(max_stories=max_stories)
                     except IntegrityError:
                         feed = by_url(feed_finder_url)
                         feed = feed[offset] if feed and len(feed) > offset else None
@@ -667,7 +675,7 @@ class Feed(models.Model):
                 logging.debug(" ---> Found without_rss feed: %s / %s" % (url, original_url))
                 try:
                     feed = cls.objects.create(feed_address=url, feed_link=original_url)
-                    feed = feed.update(requesting_user_id=user.pk if user else None)
+                    feed = feed.update(requesting_user_id=user.pk if user else None, max_stories=max_stories)
                 except IntegrityError:
                     feed = by_url(url)
                     feed = feed[offset] if feed and len(feed) > offset else None
@@ -681,7 +689,7 @@ class Feed(models.Model):
             if r and "application/json" in r.headers.get("Content-Type"):
                 try:
                     feed = cls.objects.create(feed_address=url)
-                    feed = feed.update()
+                    feed = feed.update(max_stories=max_stories)
                 except IntegrityError:
                     feed = by_url(url)
                     feed = feed[offset] if feed and len(feed) > offset else None
@@ -693,7 +701,7 @@ class Feed(models.Model):
             if not feed and create:
                 try:
                     feed = cls.objects.create(feed_address=feed_finder_url)
-                    feed = feed.update()
+                    feed = feed.update(max_stories=max_stories)
                 except IntegrityError:
                     feed = by_url(feed_finder_url)
                     feed = feed[offset] if feed and len(feed) > offset else None
@@ -1511,6 +1519,7 @@ class Feed(models.Model):
             "feed_xml": kwargs.get("feed_xml"),
             "requesting_user_id": kwargs.get("requesting_user_id", None),
             "archive_page": kwargs.get("archive_page", None),
+            "max_stories": kwargs.get("max_stories"),
         }
 
         if getattr(settings, "TEST_DEBUG", False) and "NEWSBLUR_DIR" in self.feed_address:

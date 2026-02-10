@@ -131,7 +131,7 @@ class Command(BaseCommand):
             # Create/link Feed object unless skipping
             if not skip_fetch and not popular_feed.feed:
                 try:
-                    feed = Feed.get_feed_from_url(feed_url, create=True, fetch=False)
+                    feed = Feed.get_feed_from_url(feed_url, create=True, fetch=False, max_stories=1)
                     if feed:
                         popular_feed.feed = feed
                         popular_feed.save(update_fields=["feed"])
