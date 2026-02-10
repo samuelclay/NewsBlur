@@ -334,8 +334,10 @@ def extract_section_summaries(summary_html):
     if not summary_html:
         return {}
 
-    # summary.py: Split on h3 tags with data-section attributes
-    pattern = r'(<h3\s+data-section="([^"]+)"[^>]*>)'
+    # summary.py: Split on h3 tags with data-section attributes.
+    # Use [^>]*? before data-section so we match even if the LLM adds other
+    # attributes (class, style) before data-section in the opening tag.
+    pattern = r'(<h3\s[^>]*?data-section="([^"]+)"[^>]*>)'
     parts = re.split(pattern, summary_html)
 
     sections = {}
