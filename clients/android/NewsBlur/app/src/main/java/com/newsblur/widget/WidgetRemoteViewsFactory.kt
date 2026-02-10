@@ -86,12 +86,25 @@ class WidgetRemoteViewsFactory(
             val time: CharSequence = StoryUtils.formatShortDate(context, story.timestamp)
             rv.setTextViewText(R.id.story_item_date, time)
 
+            // reset views to avoid stale images
+            rv.setImageViewResource(R.id.story_item_feedicon, R.drawable.logo)
+            rv.setViewVisibility(R.id.story_item_feedicon, View.VISIBLE)
+
+            rv.setImageViewResource(R.id.story_item_thumbnail, R.drawable.logo)
+            rv.setViewVisibility(R.id.story_item_thumbnail, View.VISIBLE)
+
             // image dimensions same as R.layout.view_widget_story_item
-            iconLoader.displayWidgetImage(story.extern_faviconUrl, R.id.story_item_feedicon, UIUtils.dp2px(context, 19), rv)
+            iconLoader.displayWidgetImageCachedOnly(story.extern_faviconUrl, R.id.story_item_feedicon, UIUtils.dp2px(context, 19), rv)
             if (prefsRepo.getThumbnailStyle() != ThumbnailStyle.OFF && !TextUtils.isEmpty(story.thumbnailUrl)) {
-                thumbnailLoader.displayWidgetImage(story.thumbnailUrl, R.id.story_item_thumbnail, UIUtils.dp2px(context, 64), rv)
+                thumbnailLoader.displayWidgetImageCachedOnly(
+                    story.thumbnailUrl,
+                    R.id.story_item_thumbnail,
+                    UIUtils.dp2px(context, 64),
+                    rv,
+                )
             } else {
                 rv.setViewVisibility(R.id.story_item_thumbnail, View.GONE)
+                rv.setImageViewResource(R.id.story_item_thumbnail, R.drawable.logo)
             }
             rv.setViewBackgroundColor(
                 R.id.story_item_favicon_borderbar_1,
@@ -132,7 +145,13 @@ class WidgetRemoteViewsFactory(
      */
     override fun getItemId(position: Int): Long =
         storiesLock.withLock {
-            storyItems[position].hashCode().toLong()
+            val h = storyItems[position].storyHash
+            if (h.isNullOrBlank()) return@withLock position.toLong()
+
+            // Simple 64-bit rolling hash (stable across runs)
+            var x = 1125899906842597L
+            for (c in h) x = 31L * x + c.code
+            x
         }
 
     /**
@@ -179,6 +198,7 @@ class WidgetRemoteViewsFactory(
                             Log.d(this.javaClass.name, "onDataSetChanged - got ${it.size} remote stories")
                             processStories(response.stories)
                             dbHelper.insertStories(response, stateFilter, true)
+                            prefetchStoryImages()
                         }
                             ?: Log.d(this.javaClass.name, "onDataSetChanged - null remote stories")
                     }
@@ -188,6 +208,7 @@ class WidgetRemoteViewsFactory(
                         val cached = loadCachedStoriesForWidget(fs)
                         if (cached.isNotEmpty()) {
                             processStories(cached.toTypedArray())
+                            prefetchStoryImages()
                         }
                     }
                 }
@@ -248,6 +269,18 @@ class WidgetRemoteViewsFactory(
             storyItems.clear()
             storyItems.addAll(filtered)
         }
+
+    private fun prefetchStoryImages() {
+        val limit = min(storyItems.size, WidgetUtils.STORIES_LIMIT)
+        for (i in 0 until limit) {
+            val s = storyItems[i]
+            iconLoader.prefetchToCache(s.extern_faviconUrl, UIUtils.dp2px(context, 19))
+
+            if (prefsRepo.getThumbnailStyle() != ThumbnailStyle.OFF && !TextUtils.isEmpty(s.thumbnailUrl)) {
+                thumbnailLoader.prefetchToCache(s.thumbnailUrl, UIUtils.dp2px(context, 64))
+            }
+        }
+    }
 
     private fun bindStoryValues(
         story: Story,
