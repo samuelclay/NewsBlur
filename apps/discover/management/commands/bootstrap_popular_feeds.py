@@ -178,7 +178,6 @@ class Command(BaseCommand):
                     f"  Phase 1: {i + 1}/{total_phase1} ({100 * (i + 1) / total_phase1:.1f}%)"
                     f" - {created} created, {updated} updated, {len(feeds_to_fetch)} to fetch"
                     f" - {rate:.0f}/s, ~{remaining:.0f}s left"
-                    f"  [restart with --offset {fixture_index + 1}]"
                 )
 
         # Phase 2: Fetch and link Feed objects in parallel
