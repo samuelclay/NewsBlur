@@ -474,7 +474,7 @@ def embed_briefing_icons(summary_html, scored_stories):
     # --- Phase 2: Style wrapper div ---
 
     wrapper_style = (
-        "font-family:'Helvetica Neue',Arial,sans-serif;" "font-size:16px;line-height:1.5;color:#333;"
+        "font-family:'Helvetica Neue',Arial,sans-serif;" "font-size:18px;line-height:1.5;color:#333;"
     )
     summary_html = re.sub(
         r'(<div\s+class="NB-briefing-summary")([^>]*>)',
