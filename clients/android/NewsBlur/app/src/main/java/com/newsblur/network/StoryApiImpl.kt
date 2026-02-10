@@ -14,6 +14,7 @@ import com.newsblur.network.domain.StoryTextResponse
 import com.newsblur.network.domain.UnreadStoryHashesResponse
 import com.newsblur.util.FeedSet
 import com.newsblur.util.ReadFilter
+import com.newsblur.util.ReadTimeTracker
 import com.newsblur.util.StoryOrder
 import com.newsblur.widget.WidgetUtils
 import java.lang.Boolean
@@ -25,6 +26,7 @@ import kotlin.apply
 class StoryApiImpl(
     private val gson: Gson,
     private val networkClient: NetworkClient,
+    private val readTimeTracker: ReadTimeTracker,
 ) : StoryApi {
     override suspend fun getStories(
         fs: FeedSet,
@@ -199,13 +201,21 @@ class StoryApiImpl(
     }
 
     override suspend fun markStoryAsRead(storyHash: String): NewsBlurResponse? {
+        val readTimesJson = readTimeTracker.consumeQueuedReadTimesJSON()
         val values =
             ValueMultimap().apply {
                 put(APIConstants.PARAMETER_STORY_HASH, storyHash)
+                if (readTimesJson != null) {
+                    put(APIConstants.PARAMETER_READ_TIMES, readTimesJson)
+                }
             }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_MARK_STORIES_READ)
         val response: APIResponse = networkClient.post(urlString, values)
-        return response.getResponse(gson, NewsBlurResponse::class.java)
+        val result = response.getResponse<NewsBlurResponse?>(gson, NewsBlurResponse::class.java)
+        if ((result == null || result.isError) && readTimesJson != null) {
+            readTimeTracker.restoreQueuedReadTimes(readTimesJson)
+        }
+        return result
     }
 
     override suspend fun markStoryAsStarred(

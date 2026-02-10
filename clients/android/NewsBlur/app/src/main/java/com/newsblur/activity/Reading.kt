@@ -38,6 +38,7 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.MarkStoryReadBehavior
+import com.newsblur.util.ReadTimeTracker
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.StateFilter
 import com.newsblur.util.UIUtils
@@ -67,6 +68,9 @@ abstract class Reading :
     @Inject
     @IconLoader
     lateinit var iconLoader: ImageLoader
+
+    @Inject
+    lateinit var readTimeTracker: ReadTimeTracker
 
     @JvmField
     var fs: FeedSet? = null
@@ -476,6 +480,12 @@ abstract class Reading :
     override fun onPageSelected(position: Int) {
         lifecycleScope.executeAsyncTask(
             doInBackground = {
+                // Harvest read time for previous story
+                readTimeTracker.currentStoryHash?.let { prevHash ->
+                    val seconds = readTimeTracker.getAndResetReadTime(prevHash)
+                    if (seconds > 0) readTimeTracker.queueReadTime(prevHash, seconds)
+                }
+
                 readingAdapter?.let { readingAdapter ->
                     val story = readingAdapter.getStory(position)
                     if (story != null) {
@@ -491,6 +501,11 @@ abstract class Reading :
                     checkStoryCount(position)
                     updateOverlayText()
                     enableOverlays()
+
+                    // Start tracking new story
+                    readingAdapter.getStory(position)?.storyHash?.let {
+                        readTimeTracker.startTracking(it)
+                    }
                 }
             },
         )
@@ -503,6 +518,8 @@ abstract class Reading :
         currentWidth: Int,
         currentHeight: Int,
     ) {
+        readTimeTracker.recordActivity()
+
         // only update overlay alpha every few pixels. modern screens are so dense that it
         // is way overkill to do it on every pixel
         if (abs(lastVScrollPos - vPos) < 2) return
@@ -995,6 +1012,7 @@ abstract class Reading :
      * passes back the last read item position from the pager
      */
     override fun finish() {
+        readTimeTracker.harvestAndFlush()
         setResult(
             RESULT_OK,
             Intent().apply {
