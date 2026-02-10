@@ -183,12 +183,15 @@ class Command(BaseCommand):
     def _fetch_feeds_parallel(self, feeds_to_fetch, workers, verbose):
         linked = 0
         failed = 0
+        total = len(feeds_to_fetch)
+        completed = 0
         with ThreadPoolExecutor(max_workers=workers) as executor:
             futures = {
                 executor.submit(self._fetch_one_feed, pf, url): pf for pf, url in feeds_to_fetch
             }
             for future in as_completed(futures):
                 popular_feed, feed, error = future.result()
+                completed += 1
                 if error:
                     failed += 1
                     if verbose:
@@ -199,6 +202,8 @@ class Command(BaseCommand):
                     linked += 1
                     if verbose:
                         self.stdout.write(f"    Linked {popular_feed.title} to Feed id={feed.pk}")
+                if completed % 100 == 0 or completed == total:
+                    self.stdout.write(f"  Fetching feeds: {completed}/{total} ({100*completed/total:.1f}%) - {linked} linked, {failed} failed")
         return linked, failed
 
     def _force_update_parallel(self, popular_feeds, workers, verbose):
