@@ -103,6 +103,9 @@ class Command(BaseCommand):
         with open(fixture_path, "r") as f:
             all_feeds = json.load(f)
 
+        # Stable sort so --offset is reliable across restarts
+        all_feeds.sort(key=lambda e: e["feed_url"])
+
         if feed_type != "all":
             all_feeds = [entry for entry in all_feeds if entry["feed_type"] == feed_type]
 
