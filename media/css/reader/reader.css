@@ -9697,6 +9697,7 @@ form.opml_import_form input {
 .NB-add-url.NB-autocomplete-loading {
     background: transparent url('/media/embed/reader/ring_spinner.svg') no-repeat right 8px center !important;
     background-size: 16px !important;
+    padding-right: 32px !important;
 }
 
 .chzn-drop {

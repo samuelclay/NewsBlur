@@ -11,25 +11,20 @@
             <rect x="48" y="24" width="56" height="6" rx="3" fill="#95968E" opacity="0.3"/>
             <rect x="48" y="34" width="38" height="5" rx="2.5" fill="#95968E" opacity="0.2"/>
 
-            <!-- Story row 2 (dimmed - not matching) -->
-            <rect x="20" y="52" width="20" height="20" rx="4" fill="#95968E" opacity="0.3"/>
-            <rect x="48" y="54" width="56" height="6" rx="3" fill="#95968E" opacity="0.3"/>
-            <rect x="48" y="64" width="38" height="5" rx="2.5" fill="#95968E" opacity="0.2"/>
+            <!-- Story row 2 (being searched - blue highlight) -->
+            <rect x="14" y="52" width="98" height="36" rx="6" fill="#5C89C9" opacity="0.15"/>
+            <rect x="20" y="58" width="20" height="20" rx="4" fill="#5C89C9" opacity="0.5"/>
+            <rect x="48" y="60" width="56" height="6" rx="3" fill="#5C89C9" opacity="0.5"/>
+            <rect x="48" y="70" width="38" height="5" rx="2.5" fill="#5C89C9" opacity="0.3"/>
 
             <!-- Story row 3 (dimmed - not matching) -->
-            <rect x="20" y="82" width="20" height="20" rx="4" fill="#95968E" opacity="0.3"/>
-            <rect x="48" y="84" width="56" height="6" rx="3" fill="#95968E" opacity="0.3"/>
-            <rect x="48" y="94" width="38" height="5" rx="2.5" fill="#95968E" opacity="0.2"/>
+            <rect x="20" y="98" width="20" height="20" rx="4" fill="#95968E" opacity="0.3"/>
+            <rect x="48" y="100" width="56" height="6" rx="3" fill="#95968E" opacity="0.3"/>
+            <rect x="48" y="110" width="38" height="5" rx="2.5" fill="#95968E" opacity="0.2"/>
 
-            <!-- Hint input bar at bottom -->
-            <rect x="14" y="110" width="80" height="16" rx="4" fill="#5C89C9" opacity="0.12"/>
-            <rect x="20" y="115" width="40" height="5" rx="2.5" fill="#5C89C9" opacity="0.5"/>
-            <!-- Text cursor -->
-            <rect x="62" y="113" width="2" height="10" rx="1" fill="#5C89C9"/>
-
-            <!-- Refresh arrow (right of input) -->
-            <path d="M108,110 C114,110 118,114 118,120" stroke="#5C89C9" stroke-width="4" fill="none" stroke-linecap="round"/>
-            <path d="M104,116 L108,110 L114,113" stroke="#5C89C9" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Magnifying glass over the highlighted row -->
+            <circle cx="96" cy="64" r="16" fill="none" stroke="#5C89C9" stroke-width="5"/>
+            <path d="M107,76 L120,89" stroke="#5C89C9" stroke-width="5" stroke-linecap="round"/>
         </g>
     </g>
 </svg>
