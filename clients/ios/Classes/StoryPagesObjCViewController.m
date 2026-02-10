@@ -438,7 +438,9 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    
+
+    [[ReadTimeTracker shared] harvestAndFlush];
+
     previousPage.view.hidden = YES;
     UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
     navController.interactivePopGestureRecognizer.enabled = YES;
@@ -657,10 +659,14 @@
     [self.previousPage updateContentInsetForNavigationBarAlpha:clampedAlpha maintainVisualPosition:YES];
     [self.nextPage updateContentInsetForNavigationBarAlpha:clampedAlpha maintainVisualPosition:YES];
 
-    self.isNavigationBarFaded = clampedAlpha < 0.05;
+    if (self.isNavigationBarFaded) {
+        self.isNavigationBarFaded = clampedAlpha < 0.10;  // must rise above 0.10 to unfade
+    } else {
+        self.isNavigationBarFaded = clampedAlpha < 0.03;  // must drop below 0.03 to fade
+    }
 
     if (wasFaded != self.isNavigationBarFaded) {
-        [self.currentPage drawFeedGradient];
+        [self.currentPage updateFeedTitleGradientPosition];
         [self updateStatusBarState];
     }
 
@@ -1563,11 +1569,29 @@
             NSLog(@"invalid story index: %@ for page index: %@", @(storyIndex), @(currentPage.pageIndex));  // log
         }
         
+        // Harvest read time for the previous story before switching
+        NSDictionary *previousStory = appDelegate.activeStory;
+        if (previousStory) {
+            NSString *prevHash = previousStory[@"story_hash"];
+            if (prevHash) {
+                NSInteger readTime = [[ReadTimeTracker shared] getAndResetReadTimeWithStoryHash:prevHash];
+                if (readTime > 0) {
+                    [[ReadTimeTracker shared] queueReadTimeWithStoryHash:prevHash seconds:readTime];
+                }
+            }
+        }
+
         appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex updateFeedDetail:YES];
         [appDelegate.feedDetailViewController markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
         [appDelegate.feedDetailViewController redrawUnreadStory];
         [appDelegate.storyPagesViewController.currentPage refreshHeader];
+
+        // Start tracking read time for the new story
+        NSString *newHash = [appDelegate.activeStory objectForKey:@"story_hash"];
+        if (newHash) {
+            [[ReadTimeTracker shared] startTrackingWithStoryHash:newHash];
+        }
 
         // Sync the new current page's content inset and gradient with current nav bar state
         [currentPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:YES];

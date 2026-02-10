@@ -422,6 +422,9 @@ class DetailViewController: BaseViewController {
         
         view.backgroundColor = navigationController?.navigationBar.barTintColor
         navigationController?.navigationBar.barStyle = manager.isDarkTheme ? .black : .default
+
+        (verticalDividerView as? DividerView)?.updateTheme()
+        (horizontalDividerView as? DividerView)?.updateTheme()
         
         tidyNavigationController()
     }
@@ -524,10 +527,17 @@ class DetailViewController: BaseViewController {
 
         if behavior == .auto {
             let size = splitViewController.view.bounds.size
+            #if targetEnvironment(macCatalyst)
+            // On Mac, only skip auto-collapse if window is wide enough for tiled layout
+            if size.width >= 900 {
+                return
+            }
+            #else
             let isLandscape = size.width > size.height
             if isLandscape {
                 return
             }
+            #endif
         }
 
         UIView.animate(withDuration: 0.2) {
@@ -609,48 +619,67 @@ class DetailViewController: BaseViewController {
     
     private var isDraggingVerticalDivider = false
     private var isDraggingHorizontalDivider = false
-    
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+
+        if touch.view === verticalDividerView {
+            (verticalDividerView as? DividerView)?.isHighlighted = true
+        } else if touch.view === horizontalDividerView {
+            (horizontalDividerView as? DividerView)?.isHighlighted = true
+        }
+    }
+
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first
-        
+
         guard let point = touch?.location(in: view) else {
             return
         }
-        
+
         let isInsideVertical = verticalDividerView.frame.contains(point)
         let isInsideHorizontal = horizontalDividerView.frame.contains(point)
-        
+
         if touch?.view == verticalDividerView || isInsideVertical || isDraggingVerticalDivider {
             isDraggingVerticalDivider = true
-            
+
             let leftContainerOriginX = leftContainerView.frame.origin.x
             let position = point.x - leftContainerOriginX
-            
+
             guard position > 150, position < view.frame.width - leftContainerOriginX - 200 else {
                 return
             }
-            
+
             verticalDividerPosition = position
             verticalDividerViewLeadingConstraint.constant = position
         } else if touch?.view == horizontalDividerView || isInsideHorizontal || isDraggingHorizontalDivider {
             isDraggingHorizontalDivider = true
-            
+
             let position = view.frame.height - point.y
-            
+
             guard position > 150, position < view.frame.height - 200 else {
                 return
             }
-            
+
             horizontalDividerPosition = position
             horizontalDividerViewBottomConstraint.constant = position
         }
-        
+
         view.setNeedsLayout()
     }
-    
+
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         isDraggingVerticalDivider = false
         isDraggingHorizontalDivider = false
+        (verticalDividerView as? DividerView)?.isHighlighted = false
+        (horizontalDividerView as? DividerView)?.isHighlighted = false
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        isDraggingVerticalDivider = false
+        isDraggingHorizontalDivider = false
+        (verticalDividerView as? DividerView)?.isHighlighted = false
+        (horizontalDividerView as? DividerView)?.isHighlighted = false
     }
 }
 

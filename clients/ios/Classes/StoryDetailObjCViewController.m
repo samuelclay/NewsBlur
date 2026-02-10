@@ -171,7 +171,8 @@
 
 - (void)tap:(UITapGestureRecognizer *)gestureRecognizer {
 //    NSLog(@"Gesture tap: %ld (%ld) - %d", (long)gestureRecognizer.state, (long)UIGestureRecognizerStateEnded, inDoubleTap);
-    
+    [[ReadTimeTracker shared] recordActivity];
+
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded && gestureRecognizer.numberOfTouches == 1 && self.presentedViewController == nil) {
         CGPoint pt = [self pointForGesture:gestureRecognizer];
         if (pt.x == CGPointZero.x && pt.y == CGPointZero.y) return;
@@ -836,8 +837,7 @@
     // This prevents jitter and content jumping during scroll gestures
     // The inset will be updated when scrolling ends
     BOOL isActivelyScrolling = scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating;
-    BOOL isSinglePage = scrollView.contentSize.height - 200 <= self.view.frame.size.height;
-    if (!force && isActivelyScrolling && isCurrentPage && !isSinglePage) {
+    if (!force && isActivelyScrolling && isCurrentPage) {
         self.isUpdatingContentInset = NO;
         return;
     }
@@ -856,14 +856,7 @@
         self.webView.scrollView.contentInset = newInset;
         self.webView.scrollView.scrollIndicatorInsets = newInset;
 
-        // Only adjust content offset for the current page when not actively scrolling
-        // For adjacent pages, we just update the inset without shifting their content
-        BOOL shouldMaintainVisualPosition = maintainVisualPosition;
-        if (isSinglePage && isActivelyScrolling && isCurrentPage) {
-            shouldMaintainVisualPosition = NO;
-        }
-
-        if (shouldMaintainVisualPosition) {
+        if (maintainVisualPosition) {
             // Calculate the visual position of content on screen
             // Visual position = contentOffset + contentInset
             // We want to keep this constant when inset changes
@@ -909,6 +902,7 @@
 
 - (void)clearWebView {
     self.hasStory = NO;
+    self.fullStoryHTML = nil;
     self.lastWidthClassKey = nil;
 
     self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
@@ -1686,11 +1680,27 @@
         if (isUserDragging) {
             if (fabs(deltaY) > 0.1) {
                 self.isUserScrolling = YES;
+                [[ReadTimeTracker shared] recordActivity];
             } else {
                 return;
             }
         } else if (!scrollView.isDecelerating) {
-            self.isUserScrolling = NO;
+            if (self.isUserScrolling) {
+                self.isUserScrolling = NO;
+                if (appDelegate.storyPagesViewController.currentPage == self) {
+                    CGFloat currentAlpha = appDelegate.storyPagesViewController.navigationBarFadeAlpha;
+                    CGFloat targetAlpha = currentAlpha > 0.5 ? 1.0 : 0.0;
+                    if (fabs(currentAlpha - targetAlpha) > 0.01) {
+                        [UIView animateWithDuration:0.2 animations:^{
+                            [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:targetAlpha];
+                        }];
+                        [self updateContentInsetForNavigationBarAlpha:targetAlpha
+                                               maintainVisualPosition:YES
+                                                                force:YES];
+                    }
+                }
+            }
+            return;
         }
 
         if (!(isUserDragging || scrollView.isDecelerating) || !self.isUserScrolling) {
@@ -1733,7 +1743,11 @@
         }
         
 #if !TARGET_OS_MACCATALYST
-        if (self.canHideNavigationBar) {
+        if (atTop) {
+            [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:1.0];
+        } else if (atBottom && !isUserDragging) {
+            // Hold current state during bottom bounce - don't recalculate
+        } else if (self.canHideNavigationBar) {
             StoryPagesObjCViewController *pagesViewController = appDelegate.storyPagesViewController;
             CGFloat fadeStart = 0.0;
             CGFloat fadeEnd = 80.0;
@@ -2062,6 +2076,13 @@
             [appDelegate.feedDetailViewController reload];
             decisionHandler(WKNavigationActionPolicyCancel);
             return;
+        } else if ([action isEqualToString:@"share"] && [urlComponents count] > 5) {
+            [self openShareDialog:[[urlComponents objectAtIndex:2] intValue]
+                      yCoordinate:[[urlComponents objectAtIndex:3] intValue]
+                            width:[[urlComponents objectAtIndex:4] intValue]
+                           height:[[urlComponents objectAtIndex:5] intValue]];
+            decisionHandler(WKNavigationActionPolicyCancel);
+            return;
         } else if ([action isEqualToString:@"share"]) {
             [self openShareDialog];
             decisionHandler(WKNavigationActionPolicyCancel);
@@ -2343,8 +2364,15 @@
 - (void)updateStoryTheme {
     self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
 
-    NSString *jsString = [NSString stringWithFormat:@"var theme = document.getElementById('NB-theme-style'); if (theme) { theme.href = 'storyDetailView%@.css'; }",
-                [ThemeManager themeManager].themeCSSSuffix];
+    NSBundle *bundle = [NSBundle mainBundle];
+    NSString *themeSuffix = [ThemeManager themeManager].themeCSSSuffix;
+    NSString *themeCSSPath = [bundle pathForResource:[NSString stringWithFormat:@"storyDetailView%@", themeSuffix] ofType:@"css"];
+    NSString *themeCSS = themeCSSPath ? [NSString stringWithContentsOfFile:themeCSSPath encoding:NSUTF8StringEncoding error:nil] : @"";
+    themeCSS = [self embedResourcesInCSS:themeCSS bundle:bundle];
+    NSString *escapedThemeCSS = [self javaScriptStringFromString:themeCSS];
+
+    NSString *jsString = [NSString stringWithFormat:@"var theme = document.getElementById('NB-theme-style'); if (theme) { theme.textContent = %@; }",
+                escapedThemeCSS];
     [self.webView evaluateJavaScript:jsString completionHandler:nil];
 
     self.webView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
@@ -2354,6 +2382,24 @@
     } else {
         self.webView.scrollView.indicatorStyle = UIScrollViewIndicatorStyleBlack;
     }
+}
+
+- (NSString *)javaScriptStringFromString:(NSString *)string {
+    if (!string) {
+        return @"\"\"";
+    }
+
+    NSData *data = [NSJSONSerialization dataWithJSONObject:@[string] options:0 error:nil];
+    if (!data) {
+        return @"\"\"";
+    }
+
+    NSString *json = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    if (json.length < 2) {
+        return @"\"\"";
+    }
+
+    return [json substringWithRange:NSMakeRange(1, json.length - 2)];
 }
 
 - (BOOL)canHideNavigationBar {
@@ -2465,6 +2511,49 @@
                        setUsername:nil
                         setReplyId:nil];
     }
+}
+
+- (void)openShareDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
+    CGRect frame = CGRectZero;
+    if (!self.isPhoneOrCompact) {
+        // only adjust for the bar if user is scrolling
+        if (appDelegate.storiesCollection.isRiverView ||
+            appDelegate.storiesCollection.isSocialView ||
+            appDelegate.storiesCollection.isSavedView ||
+            appDelegate.storiesCollection.isWidgetView ||
+            appDelegate.storiesCollection.isReadView) {
+            if (self.webView.scrollView.contentOffset.y == -20) {
+                y = y + 20;
+            }
+        } else {
+            if (self.webView.scrollView.contentOffset.y == -9) {
+                y = y + 9;
+            }
+        }
+
+        frame = CGRectMake(x, y, width, height);
+    }
+
+    // Find the active comment (same logic as openShareDialog)
+    NSArray *friendComments = [self.activeStory objectForKey:@"friend_comments"];
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictSocialProfile objectForKey:@"user_id"]];
+    for (int i = 0; i < friendComments.count; i++) {
+        NSString *userId = [NSString stringWithFormat:@"%@",
+                            [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
+        if([userId isEqualToString:currentUserId]){
+            appDelegate.activeComment = [friendComments objectAtIndex:i];
+            break;
+        } else {
+            appDelegate.activeComment = nil;
+        }
+    }
+
+    NSString *type = (appDelegate.activeComment == nil) ? @"share" : @"edit-share";
+    [appDelegate showShareView:type
+                     setUserId:nil
+                   setUsername:nil
+                    setReplyId:nil
+                    sourceRect:[NSValue valueWithCGRect:frame]];
 }
 
 - (void)openTrainingDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {

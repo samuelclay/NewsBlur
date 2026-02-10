@@ -343,6 +343,27 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     leftSpacing.width = 8.0;
     rightSpacing.width = 8.0;
 
+#if TARGET_OS_MACCATALYST
+    UIBarButtonItem *leadingInset = [[UIBarButtonItem alloc]
+                                     initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                     target:nil
+                                     action:nil];
+    leadingInset.width = 16.0;
+    UIBarButtonItem *trailingInset = [[UIBarButtonItem alloc]
+                                      initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                      target:nil
+                                      action:nil];
+    trailingInset.width = 16.0;
+    self.feedViewToolbar.items = @[
+        leadingInset,
+        self.addBarButton,
+        leadingFlexibleSpace,
+        intelligenceItem,
+        trailingFlexibleSpace,
+        self.settingsBarButton,
+        trailingInset
+    ];
+#else
     self.feedViewToolbar.items = @[
         leadingFlexibleSpace,
         self.addBarButton,
@@ -352,6 +373,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         self.settingsBarButton,
         trailingFlexibleSpace
     ];
+#endif
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -929,6 +951,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     
     appDelegate.isPremium = [[appDelegate.dictUserProfile objectForKey:@"is_premium"] integerValue] == 1;
     appDelegate.isPremiumArchive = [[appDelegate.dictUserProfile objectForKey:@"is_archive"] integerValue] == 1;
+    appDelegate.isPremiumPro = [[appDelegate.dictUserProfile objectForKey:@"is_pro"] integerValue] == 1;
     id premiumExpire = [appDelegate.dictUserProfile objectForKey:@"premium_expire"];
     if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]] && premiumExpire != 0) {
         appDelegate.premiumExpire = [premiumExpire integerValue];
@@ -1420,11 +1443,23 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         return;
     }
 
-    CGSize size = CGSizeMake(self.view.frame.size.width - 36,
-                             self.view.frame.size.height - 60);
+    if (!self.appDelegate.isPhone) {
+        CGSize size = CGSizeMake(self.view.frame.size.width - 36,
+                                 self.view.frame.size.height - 60);
 
-    // Use settings button as the popover anchor since activities button was removed from nav bar
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.settingsBarButton];
+        // Use settings button as the popover anchor since activities button was removed from nav bar
+        [self.appDelegate showPopoverWithViewController:self.appDelegate.activitiesViewController contentSize:size barButtonItem:self.settingsBarButton];
+    } else {
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.appDelegate.activitiesViewController];
+        navController.navigationBarHidden = YES;
+        navController.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (navController.sheetPresentationController) {
+            navController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+            navController.sheetPresentationController.prefersGrabberVisible = YES;
+            navController.sheetPresentationController.preferredCornerRadius = 12.0;
+        }
+        [self.appDelegate.feedsNavigationController presentViewController:navController animated:YES completion:nil];
+    }
 
     [appDelegate.activitiesViewController refreshInteractions];
     [appDelegate.activitiesViewController refreshActivity];

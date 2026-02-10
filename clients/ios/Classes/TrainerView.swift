@@ -132,6 +132,7 @@ struct TrainerView: View {
         }
         .onAppear {
             addingTitle = ""
+            cache.reload()
         }
     }
     

@@ -12,6 +12,7 @@
 #import "NSObject+SBJSON.h"
 #import "FMDatabase.h"
 #import "Utilities.h"
+#import "NewsBlur-Swift.h"
 
 @interface StoriesCollection ()
 
@@ -471,11 +472,20 @@
                forKey:@"story_hash"];
     [params setObject:[story objectForKey:@"story_feed_id"]
                forKey:@"story_feed_id"];
-    
+
+    NSString *readTimesJSON = [[ReadTimeTracker shared] consumeQueuedReadTimesJSON];
+    if (readTimesJSON) {
+        [params setObject:readTimesJSON forKey:@"read_times"];
+    }
+
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         self.recentlyReadHashes[hash] = [NSString stringWithFormat:@"SYNCED - %@", title];
         [self finishMarkAsRead:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSString *failedReadTimes = [params objectForKey:@"read_times"];
+        if (failedReadTimes) {
+            [[ReadTimeTracker shared] restoreQueuedReadTimesWithJson:failedReadTimes];
+        }
         self.recentlyReadHashes[hash] = nil;
         [self failedMarkAsRead:params];
     }];

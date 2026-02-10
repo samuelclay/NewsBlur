@@ -143,7 +143,10 @@ struct AskAIView: View {
 
             // Custom Question Section
             customQuestionSection
+
+            Spacer(minLength: 0)
         }
+        .padding(.top, 12)
         .background(NewsBlurColors.background)
     }
 
@@ -163,7 +166,7 @@ struct AskAIView: View {
                 Spacer()
             }
             .padding(.horizontal, 12)
-            .padding(.vertical, 12)
+            .padding(.vertical, 16)
 
             // Segmented control for Brief/Medium/Detailed
             HStack(spacing: 8) {
@@ -175,7 +178,7 @@ struct AskAIView: View {
             .padding(.vertical, 4)
             .padding(.leading, 28) // Align with text after icon
             .padding(.horizontal, 12)
-            .padding(.bottom, 12)
+            .padding(.bottom, 16)
         }
         .background(NewsBlurColors.cardBackground)
     }
@@ -185,23 +188,23 @@ struct AskAIView: View {
             viewModel.selectedSummarizeType = type
             viewModel.sendQuestion(type)
         }) {
-            VStack(spacing: 4) {
+            VStack(spacing: 6) {
                 // Icon with consistent height
                 summarizeIconView(for: type)
                     .frame(height: 20)
 
                 VStack(spacing: 2) {
                     Text(type.displayTitle)
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 13, weight: .semibold))
                         .foregroundColor(NewsBlurColors.textPrimary)
 
                     Text(type.subtitle)
-                        .font(.system(size: 10))
+                        .font(.system(size: 11))
                         .foregroundColor(NewsBlurColors.textSecondary)
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
+            .padding(.vertical, 12)
             .padding(.horizontal, 6)
             .background(NewsBlurColors.cardBackground)
             .cornerRadius(4)
@@ -238,6 +241,23 @@ struct AskAIView: View {
 
     private var understandSection: some View {
         VStack(spacing: 0) {
+            // Header row
+            HStack(spacing: 10) {
+                Image(systemName: "lightbulb")
+                    .font(.system(size: 16))
+                    .foregroundColor(NewsBlurColors.textSecondary)
+                    .frame(width: 18, height: 18)
+
+                Text("Understand")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(NewsBlurColors.textPrimary)
+
+                Spacer()
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 16)
+            .background(NewsBlurColors.background)
+
             ForEach([AskAIQuestionType.context, .people, .arguments, .factcheck], id: \.self) { type in
                 understandButton(type)
             }
@@ -255,14 +275,14 @@ struct AskAIView: View {
                     .frame(width: 18, height: 18)
 
                 Text(type.displayTitle)
-                    .font(.system(size: 13))
+                    .font(.system(size: 14))
                     .foregroundColor(NewsBlurColors.textPrimary)
                     .lineLimit(1)
 
                 Spacer()
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.vertical, 14)
             .background(NewsBlurColors.cardBackground)
         }
         .buttonStyle(PlainButtonStyle())
@@ -313,7 +333,7 @@ struct AskAIView: View {
                 // Ask button with model selector
                 askButtonMenu
             }
-            .padding(10)
+            .padding(12)
             .background(NewsBlurColors.inputBackground)
 
             if viewModel.isRecording || viewModel.isTranscribing {

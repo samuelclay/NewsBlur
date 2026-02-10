@@ -602,17 +602,23 @@
     BOOL isLandscape = size.width > size.height;
     BOOL isAuto = (!behavior || [behavior isEqualToString:@"auto"]);
 
+#if TARGET_OS_MACCATALYST
+    BOOL isTooNarrow = size.width < 900;
+#else
+    BOOL isTooNarrow = NO;
+#endif
+
     BOOL shouldTile = [behavior isEqualToString:@"tile"];
     if (isAuto) {
-        shouldTile = isLandscape;
+        shouldTile = isTooNarrow ? NO : isLandscape;
     }
 
     BOOL shouldOverlay = [behavior isEqualToString:@"overlay"];
     if (isAuto) {
-        shouldOverlay = !isLandscape;
+        shouldOverlay = isTooNarrow ? YES : !isLandscape;
     }
 
-    BOOL forceOverlayInLandscape = isLandscape && (splitViewController.displayMode != UISplitViewControllerDisplayModeTwoBesideSecondary);
+    BOOL forceOverlayInLandscape = isLandscape && !isTooNarrow && (splitViewController.displayMode != UISplitViewControllerDisplayModeTwoBesideSecondary);
     if (forceOverlayInLandscape) {
         shouldOverlay = YES;
         shouldTile = NO;

@@ -43,6 +43,9 @@ private struct PremiumColors {
     static var archivePurple: Color { Color(red: 0.55, green: 0.35, blue: 0.85) }
     static var archivePurpleLight: Color { Color(red: 0.75, green: 0.55, blue: 0.95) }
 
+    static var proOrange: Color { Color(red: 0.96, green: 0.62, blue: 0.04) }
+    static var proOrangeLight: Color { Color(red: 0.85, green: 0.47, blue: 0.04) }
+
     static var newsblurGreen: Color { Color(red: 0.439, green: 0.620, blue: 0.365) }
 
     private static func themedColor(light: Int, sepia: Int, medium: Int, dark: Int) -> Color {
@@ -86,12 +89,14 @@ struct PremiumFeature: Identifiable {
     let icon: String
     let iconColor: Color
     let isCustomImage: Bool
+    let isUpcoming: Bool
 
-    init(title: String, icon: String, iconColor: Color, isCustomImage: Bool = false) {
+    init(title: String, icon: String, iconColor: Color, isCustomImage: Bool = false, isUpcoming: Bool = false) {
         self.title = title
         self.icon = icon
         self.iconColor = iconColor
         self.isCustomImage = isCustomImage
+        self.isUpcoming = isUpcoming
     }
 }
 
@@ -103,6 +108,7 @@ struct PremiumView: View {
     var onDismiss: () -> Void
     var onRestore: () -> Void
     var scrollToArchive: Bool = false
+    var scrollToPro: Bool = false
 
     private let premiumFeatures: [PremiumFeature] = [
         PremiumFeature(title: "Follow up to 1,024 sites", icon: "square.stack.3d.up.fill", iconColor: .blue),
@@ -126,8 +132,39 @@ struct PremiumView: View {
         PremiumFeature(title: "Ask AI questions about stories", icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true)
     ]
 
+    @available(iOS 15.0, *)
+    private var proFeatures: [PremiumFeature] {
+        [
+            PremiumFeature(title: "Everything in the archive subscription, of course", icon: "sparkles", iconColor: .yellow),
+            PremiumFeature(title: "Follow up to 10,000 sites", icon: "square.stack.3d.up.fill", iconColor: .green),
+            PremiumFeature(title: "All feeds fetched every 5-15 minutes", icon: "bolt.fill", iconColor: PremiumColors.proOrange),
+            PremiumFeature(title: "Train stories with regular expressions", icon: "textformat.abc", iconColor: .yellow),
+            PremiumFeature(title: "Priority support", icon: "headphones", iconColor: .yellow),
+            PremiumFeature(title: "Natural language filters", icon: "text.magnifyingglass", iconColor: .gray, isUpcoming: true),
+            PremiumFeature(title: "Natural language search", icon: "magnifyingglass.circle", iconColor: .gray, isUpcoming: true)
+        ]
+    }
+
     var body: some View {
-        NavigationView {
+        VStack(spacing: 0) {
+            HStack {
+                Button("Done") {
+                    onDismiss()
+                }
+                .foregroundColor(PremiumColors.newsblurGreen)
+                Spacer()
+                Text("NewsBlur Premium")
+                    .font(.headline)
+                    .foregroundColor(PremiumColors.textPrimary)
+                Spacer()
+                Button("Restore") {
+                    onRestore()
+                }
+                .foregroundColor(PremiumColors.newsblurGreen)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+
             ScrollViewReader { proxy in
                 ScrollView {
                     VStack(spacing: 24) {
@@ -137,6 +174,10 @@ struct PremiumView: View {
                         // Archive Section
                         archiveSection
                             .id("archiveSection")
+
+                        // Pro Section
+                        proSection
+                            .id("proSection")
 
                         // Footer links
                         footerSection
@@ -151,27 +192,17 @@ struct PremiumView: View {
                                 proxy.scrollTo("archiveSection", anchor: .top)
                             }
                         }
+                    } else if scrollToPro {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            withAnimation {
+                                proxy.scrollTo("proSection", anchor: .top)
+                            }
+                        }
                     }
-                }
-            }
-            .background(PremiumColors.background.ignoresSafeArea())
-            .navigationTitle("NewsBlur Premium")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Done") {
-                        onDismiss()
-                    }
-                    .foregroundColor(PremiumColors.newsblurGreen)
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Restore") {
-                        onRestore()
-                    }
-                    .foregroundColor(PremiumColors.newsblurGreen)
                 }
             }
         }
+        .background(PremiumColors.background.ignoresSafeArea())
     }
 
     // MARK: - Premium Section
@@ -241,6 +272,39 @@ struct PremiumView: View {
         .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 2)
     }
 
+    // MARK: - Pro Section
+
+    private var proSection: some View {
+        VStack(spacing: 0) {
+            // Header with gradient
+            sectionHeader(
+                title: "Premium Pro",
+                gradient: [PremiumColors.proOrange, PremiumColors.proOrangeLight],
+                icon: "crown.fill"
+            )
+
+            // Features list
+            VStack(spacing: 0) {
+                let features = proFeatures
+                ForEach(features) { feature in
+                    featureRow(feature)
+
+                    if feature.id != features.last?.id {
+                        Divider()
+                            .background(PremiumColors.border)
+                            .padding(.leading, 52)
+                    }
+                }
+            }
+            .background(PremiumColors.cardBackground)
+
+            // Subscription status/button
+            proStatusSection
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 2)
+    }
+
     // MARK: - Section Header
 
     private func sectionHeader(title: String, gradient: [Color], icon: String) -> some View {
@@ -272,7 +336,7 @@ struct PremiumView: View {
         HStack(spacing: 14) {
             ZStack {
                 Circle()
-                    .fill(feature.iconColor.opacity(0.15))
+                    .fill(feature.iconColor.opacity(feature.isUpcoming ? 0.08 : 0.15))
                     .frame(width: 36, height: 36)
 
                 if feature.isCustomImage {
@@ -291,16 +355,26 @@ struct PremiumView: View {
                 }
             }
 
-            Text(feature.title)
-                .font(.system(size: 15, weight: .medium))
-                .foregroundColor(PremiumColors.textPrimary)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(feature.title)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(feature.isUpcoming ? PremiumColors.textSecondary : PremiumColors.textPrimary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if feature.isUpcoming {
+                    Text("Coming soon")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(PremiumColors.textSecondary)
+                        .opacity(0.7)
+                }
+            }
 
             Spacer()
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
+        .opacity(feature.isUpcoming ? 0.6 : 1.0)
     }
 
     // MARK: - Dog Image Section
@@ -330,12 +404,19 @@ struct PremiumView: View {
     private var premiumStatusSection: some View {
         Group {
             if viewModel.isPremium {
+                let message: String = {
+                    if viewModel.isPremiumPro {
+                        return "Your premium pro subscription includes everything above"
+                    } else if viewModel.isPremiumArchive {
+                        return "Your premium archive subscription includes everything above"
+                    } else {
+                        return "Your premium subscription is active"
+                    }
+                }()
                 subscribedView(
-                    message: viewModel.isPremiumArchive
-                        ? "Your premium archive subscription includes everything above"
-                        : "Your premium subscription is active",
+                    message: message,
                     gradientColors: [PremiumColors.premiumGold, PremiumColors.premiumGoldLight],
-                    showManage: !viewModel.isPremiumArchive
+                    showManage: !viewModel.isPremiumArchive && !viewModel.isPremiumPro
                 )
             } else {
                 purchaseButton(
@@ -350,7 +431,13 @@ struct PremiumView: View {
 
     private var archiveStatusSection: some View {
         Group {
-            if viewModel.isPremiumArchive {
+            if viewModel.isPremiumPro {
+                subscribedView(
+                    message: "Your premium pro subscription includes everything above",
+                    gradientColors: [PremiumColors.archivePurple, PremiumColors.archivePurpleLight],
+                    showManage: false
+                )
+            } else if viewModel.isPremiumArchive {
                 subscribedView(
                     message: "Your premium archive subscription is active",
                     gradientColors: [PremiumColors.archivePurple, PremiumColors.archivePurpleLight],
@@ -366,6 +453,40 @@ struct PremiumView: View {
                 purchaseButton(
                     product: viewModel.archiveProduct,
                     gradientColors: [PremiumColors.archivePurple, PremiumColors.archivePurpleLight]
+                )
+            }
+        }
+    }
+
+    // MARK: - Pro Status Section
+
+    private var proStatusSection: some View {
+        Group {
+            if viewModel.isPremiumPro {
+                subscribedView(
+                    message: "Your premium pro subscription is active",
+                    gradientColors: [PremiumColors.proOrange, PremiumColors.proOrangeLight],
+                    showManage: true
+                )
+            } else if viewModel.isPremiumArchive {
+                purchaseButton(
+                    product: viewModel.proProduct,
+                    gradientColors: [PremiumColors.proOrange, PremiumColors.proOrangeLight],
+                    subtitle: "Upgrade from Archive",
+                    isMonthly: true
+                )
+            } else if viewModel.isPremium {
+                purchaseButton(
+                    product: viewModel.proProduct,
+                    gradientColors: [PremiumColors.proOrange, PremiumColors.proOrangeLight],
+                    subtitle: "Upgrade from Premium",
+                    isMonthly: true
+                )
+            } else {
+                purchaseButton(
+                    product: viewModel.proProduct,
+                    gradientColors: [PremiumColors.proOrange, PremiumColors.proOrangeLight],
+                    isMonthly: true
                 )
             }
         }
@@ -419,7 +540,7 @@ struct PremiumView: View {
 
     // MARK: - Purchase Button
 
-    private func purchaseButton(product: SKProduct?, gradientColors: [Color], subtitle: String? = nil) -> some View {
+    private func purchaseButton(product: SKProduct?, gradientColors: [Color], subtitle: String? = nil, isMonthly: Bool = false) -> some View {
         VStack(spacing: 12) {
             if let product = product {
                 Button(action: { viewModel.purchase(product) }) {
@@ -427,7 +548,7 @@ struct PremiumView: View {
                         Text(product.localizedTitle.isEmpty ? "NewsBlur Premium" : product.localizedTitle)
                             .font(.system(size: 17, weight: .bold))
 
-                        Text(priceText(for: product))
+                        Text(isMonthly ? priceTextMonthly(for: product) : priceText(for: product))
                             .font(.system(size: 14, weight: .medium))
                             .opacity(0.9)
 
@@ -512,6 +633,16 @@ struct PremiumView: View {
         return "\(yearlyPrice)/year (\(monthlyPrice)/month)"
     }
 
+    private func priceTextMonthly(for product: SKProduct) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = product.priceLocale
+
+        let monthlyPrice = formatter.string(from: product.price) ?? ""
+
+        return "\(monthlyPrice)/month"
+    }
+
     private func openSubscriptionManagement() {
         if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
             UIApplication.shared.open(url)
@@ -525,8 +656,10 @@ struct PremiumView: View {
 class PremiumViewModel: ObservableObject {
     @Published var premiumProduct: SKProduct?
     @Published var archiveProduct: SKProduct?
+    @Published var proProduct: SKProduct?
     @Published var isPremium: Bool = false
     @Published var isPremiumArchive: Bool = false
+    @Published var isPremiumPro: Bool = false
     @Published var premiumExpireDate: Date?
 
     weak var appDelegate: NewsBlurAppDelegate?
@@ -541,6 +674,7 @@ class PremiumViewModel: ObservableObject {
 
         isPremium = appDelegate.isPremium
         isPremiumArchive = appDelegate.isPremiumArchive
+        isPremiumPro = appDelegate.isPremiumPro
 
         if appDelegate.premiumExpire != 0 {
             premiumExpireDate = Date(timeIntervalSince1970: TimeInterval(appDelegate.premiumExpire))
@@ -548,6 +682,7 @@ class PremiumViewModel: ObservableObject {
 
         premiumProduct = appDelegate.premiumManager.premiumProduct
         archiveProduct = appDelegate.premiumManager.premiumArchiveProduct
+        proProduct = appDelegate.premiumManager.premiumProProduct
     }
 
     func loadProducts() {
@@ -570,6 +705,7 @@ class PremiumViewModel: ObservableObject {
     private let viewModel = PremiumViewModel()
     private var hostingController: UIHostingController<PremiumView>?
     @objc var scrollToArchive: Bool = false
+    @objc var scrollToPro: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -582,7 +718,8 @@ class PremiumViewModel: ObservableObject {
             onRestore: { [weak self] in
                 self?.viewModel.restore()
             },
-            scrollToArchive: scrollToArchive
+            scrollToArchive: scrollToArchive,
+            scrollToPro: scrollToPro
         )
 
         let hosting = UIHostingController(rootView: premiumView)

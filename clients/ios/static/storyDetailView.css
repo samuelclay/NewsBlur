@@ -135,6 +135,39 @@
     font-size: 11px;
 }
 
+.NB-mac .NB-button.NB-share-button div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.NB-mac .NB-button.NB-share-button .NB-icon {
+    margin: 0;
+}
+
+.NB-mac .NB-button.NB-train-button .NB-icon {
+    top: 0;
+}
+.NB-mac .NB-button.NB-share-share-button .NB-icon {
+    top: 1px;
+}
+.NB-mac .NB-button.NB-save-button .NB-icon {
+    top: 0;
+}
+.NB-mac .NB-button.NB-ask-ai-button .NB-icon {
+    top: -1px;
+}
+
+.NB-mac .NB-button.NB-share-button .NB-sideoption-text {
+    position: relative;
+    top: -1px;
+}
+
+.NB-mac .NB-share-wrapper {
+    margin-bottom: 60px;
+}
+
 /**
  * iPad Wide Style
  */

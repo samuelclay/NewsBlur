@@ -165,6 +165,7 @@
 @synthesize dictTextFeeds;
 @synthesize isPremium;
 @synthesize isPremiumArchive;
+@synthesize isPremiumPro;
 @synthesize premiumExpire;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
@@ -224,6 +225,7 @@
     cachedUserAvatars.memoryCache.costLimit = 10 * 1024 * 1024; // 10 MB
     isPremium = NO;
     isPremiumArchive = NO;
+    isPremiumPro = NO;
     premiumExpire = 0;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
@@ -267,6 +269,9 @@
     }
     
     [self registerBackgroundTask];
+#if TARGET_OS_MACCATALYST
+    [CatalystModalDismissal install];
+#endif
 
     return YES;
 }
@@ -302,6 +307,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     [self.feedsViewController refreshHeaderCounts];
+    [[ReadTimeTracker shared] harvestAndFlush];
     [self scheduleAppRefresh];
 }
 
@@ -797,13 +803,7 @@
     newUserProfile.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [newUserProfile getUserProfile];
     if (!self.isPhone) {
-        // iPad: show as popover with Close button
-        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                       initWithTitle:@"Close"
-                                       style:UIBarButtonItemStyleDone
-                                       target:self
-                                       action:@selector(hideUserProfileModal)];
-        newUserProfile.navigationItem.rightBarButtonItem = donebutton;
+        // iPad: show as popover, tap outside to dismiss
         [self showPopoverWithViewController:self.userProfileNavigationController contentSize:CGSizeMake(320, 454) sender:sender];
     } else {
         // iPhone: show as sheet with grabber, no Close button needed
@@ -818,16 +818,7 @@
 
 - (void)pushUserProfile {
     UserProfileViewController *userProfileView = [[UserProfileViewController alloc] init];
-    
-    
-    // adding Done button
-    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Close"
-                                   style:UIBarButtonItemStyleDone
-                                   target:self
-                                   action:@selector(hideUserProfileModal)];
-    
-    userProfileView.navigationItem.rightBarButtonItem = donebutton;
+
     userProfileView.navigationItem.title = self.activeUserProfileName;
     userProfileView.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [userProfileView getUserProfile];
@@ -878,25 +869,35 @@
 }
 
 - (void)showPremiumDialog {
-    [self showPremiumDialogScrollToArchive:NO];
+    [self showPremiumDialogScrollTo:nil];
 }
 
 - (void)showPremiumDialogForArchive {
-    [self showPremiumDialogScrollToArchive:YES];
+    [self showPremiumDialogScrollTo:@"archive"];
 }
 
-- (void)showPremiumDialogScrollToArchive:(BOOL)scrollToArchive {
+- (void)showPremiumDialogForPro {
+    [self showPremiumDialogScrollTo:@"pro"];
+}
+
+- (void)showPremiumDialogScrollTo:(NSString *)section {
     if (self.premiumNavigationController == nil) {
         self.premiumNavigationController = [[UINavigationController alloc]
                                             initWithRootViewController:self.premiumViewController];
     }
-    self.premiumNavigationController.navigationBar.translucent = NO;
+    self.premiumNavigationController.navigationBarHidden = YES;
 
-    // Configure the premium view to scroll to archive section if requested
-    [self.premiumViewController configureForArchive:scrollToArchive];
+    BOOL scrollToArchive = [section isEqualToString:@"archive"];
+    BOOL scrollToPro = [section isEqualToString:@"pro"];
+    [self.premiumViewController configureScrollToArchive:scrollToArchive scrollToPro:scrollToPro];
 
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    premiumNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+    if (premiumNavigationController.sheetPresentationController) {
+        premiumNavigationController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+        premiumNavigationController.sheetPresentationController.prefersGrabberVisible = YES;
+        premiumNavigationController.sheetPresentationController.preferredCornerRadius = 12.0;
+    }
     [self.splitViewController presentViewController:premiumNavigationController animated:YES completion:nil];
     [self.premiumViewController.view setNeedsLayout];
 }
@@ -922,7 +923,17 @@
                 screenSize = UIScreen.mainScreen.bounds.size;
             }
             BOOL isLandscape = screenSize.width > screenSize.height;
+#if TARGET_OS_MACCATALYST
+            // On Mac, use a minimum width threshold instead of just aspect ratio.
+            // Below 900pt the sidebar should auto-hide to overlay mode.
+            BOOL isTooNarrow = screenSize.width < 900;
+            if (isTooNarrow) {
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeSecondaryOnly;
+            } else if (isLandscape) {
+#else
             if (isLandscape) {
+#endif
                 self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
                 self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
                 if (!self.splitViewController.isCollapsed) {
@@ -980,8 +991,11 @@
     if (@available(iOS 15.0, *)) {
         PreferencesViewHostingController *swiftUIPrefs = [[PreferencesViewHostingController alloc] init];
 
-        if (!self.isPhone) {
-            swiftUIPrefs.modalPresentationStyle = UIModalPresentationFormSheet;
+        swiftUIPrefs.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (swiftUIPrefs.sheetPresentationController) {
+            swiftUIPrefs.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+            swiftUIPrefs.sheetPresentationController.prefersGrabberVisible = YES;
+            swiftUIPrefs.sheetPresentationController.preferredCornerRadius = 12.0;
         }
 
         [feedsNavigationController presentViewController:swiftUIPrefs animated:YES completion:^{
@@ -1002,7 +1016,14 @@
     
     self.modalNavigationController = nav;
     self.modalNavigationController.navigationBar.translucent = NO;
-    
+
+    nav.modalPresentationStyle = UIModalPresentationPageSheet;
+    if (nav.sheetPresentationController) {
+        nav.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+        nav.sheetPresentationController.prefersGrabberVisible = YES;
+        nav.sheetPresentationController.preferredCornerRadius = 12.0;
+    }
+
     [self.splitViewController presentViewController:modalNavigationController animated:YES completion:nil];
 }
 
@@ -1033,7 +1054,12 @@
     self.modalNavigationController.navigationBar.translucent = NO;
     
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    self.modalNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+    if (self.modalNavigationController.sheetPresentationController) {
+        self.modalNavigationController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+        self.modalNavigationController.sheetPresentationController.prefersGrabberVisible = YES;
+        self.modalNavigationController.sheetPresentationController.preferredCornerRadius = 12.0;
+    }
     [self.splitViewController presentViewController:modalNavigationController animated:YES completion:nil];
     
     [self.friendsListViewController loadSuggestedFriendsList];
@@ -1171,22 +1197,37 @@
             setUserId:(NSString *)userId
           setUsername:(NSString *)username
            setReplyId:(NSString *)replyId {
-    
+    [self showShareView:type setUserId:userId setUsername:username setReplyId:replyId sourceRect:nil];
+}
+
+- (void)showShareView:(NSString *)type
+            setUserId:(NSString *)userId
+          setUsername:(NSString *)username
+           setReplyId:(NSString *)replyId
+           sourceRect:(NSValue *)sourceRectValue {
+
     [self.shareViewController setCommentType:type];
-    //    if (!self.isPhone) {
-    //        [self.masterContainerViewController transitionToShareView];
-    //        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
-    //    } else {
+
+    if (!self.isPhone && sourceRectValue != nil) {
+        CGRect sourceRect = [sourceRectValue CGRectValue];
+        if (!CGRectIsEmpty(sourceRect)) {
+            [self.shareViewController loadViewIfNeeded];
+            [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
+            [self showPopoverWithViewController:self.shareViewController contentSize:CGSizeMake(380, 220) sourceView:self.storyPagesViewController.currentPage.webView sourceRect:sourceRect];
+            return;
+        }
+    }
+
     if (self.shareNavigationController == nil) {
         UINavigationController *shareNav = [[UINavigationController alloc]
                                             initWithRootViewController:self.shareViewController];
         self.shareNavigationController = shareNav;
         self.shareNavigationController.navigationBar.translucent = NO;
     }
+    self.shareNavigationController.navigationBarHidden = YES;
     [self.feedsNavigationController presentViewController:self.shareNavigationController animated:YES completion:^{
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
     }];
-    //    }
 }
 
 - (void)hideShareView:(BOOL)resetComment {
@@ -1194,13 +1235,15 @@
         self.shareViewController.commentField.text = @"";
         self.shareViewController.currentType = nil;
     }
-    
-    //    if (!self.isPhone) {
-    //        [self.masterContainerViewController transitionFromShareView];
-    //        [self.storyPagesViewController becomeFirstResponder];
-    //    } else
+
     if (!self.showingSafariViewController) {
-        [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
+        // Try popover dismissal first (iPad/Mac with sourceRect)
+        if (self.shareViewController.presentingViewController &&
+            self.shareViewController.modalPresentationStyle == UIModalPresentationPopover) {
+            [self hidePopoverAnimated:YES];
+        } else {
+            [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
+        }
         [self.shareViewController.commentField resignFirstResponder];
     }
 }
@@ -1417,9 +1460,9 @@
         sheet.preferredCornerRadius = 12.0;
 
         [navController presentViewController:askAINavController animated:YES completion:^{
-            // Add tap gesture to container view to dismiss on tap outside sheet
+            // Add tap gesture to container view to dismiss on tap outside sheet (iOS only)
             UIView *containerView = askAINavController.presentationController.containerView;
-            if (containerView) {
+            if (containerView && !self.isMac) {
                 UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
                     initWithTarget:self
                     action:@selector(dismissAskAIOnTap:)];
@@ -1442,11 +1485,11 @@
     if (@available(iOS 15.0, *)) {
         CGRect sourceRect = [sourceRectValue CGRectValue];
 
-        // On iPad with valid coordinates, show as popover anchored to the Ask AI button
+        // On iPad/Mac with valid coordinates, show as popover anchored to the Ask AI button
         if (!self.isPhone && !CGRectIsEmpty(sourceRect)) {
             AskAIViewController *askAIVC = [[AskAIViewController alloc] initWithStory:story];
             askAIVC.modalPresentationStyle = UIModalPresentationPopover;
-            askAIVC.preferredContentSize = CGSizeMake(400, 420);
+            askAIVC.preferredContentSize = CGSizeMake(500, 440);
 
             // Set up popover presentation
             UIPopoverPresentationController *popover = askAIVC.popoverPresentationController;
@@ -1454,24 +1497,6 @@
             popover.sourceView = self.storyPagesViewController.currentPage.webView;
             popover.sourceRect = sourceRect;
             popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
-
-            // Store view model for re-presentation as sheet
-            __weak typeof(self) weakSelf = self;
-            __weak AskAIViewController *weakAskAIVC = askAIVC;
-            askAIVC.onQuestionAsked = ^{
-                AskAIViewController *strongAskAIVC = weakAskAIVC;
-                if (!strongAskAIVC) {
-                    return;
-                }
-                // Store the view model before dismissing
-                weakSelf.activeAskAIViewModel = strongAskAIVC.viewModelAsAny;
-                // Break the retain cycle once the question is asked
-                strongAskAIVC.onQuestionAsked = nil;
-                // Dismiss popover and re-present as bottom sheet
-                [strongAskAIVC dismissViewControllerAnimated:YES completion:^{
-                    [weakSelf showAskAIInlineResponse];
-                }];
-            };
 
             [self.navigationControllerForPopover presentViewController:askAIVC animated:YES completion:nil];
         } else {
@@ -1483,46 +1508,11 @@
     }
 }
 
-- (void)showAskAIInlineResponse {
-    if (@available(iOS 15.0, *)) {
-        // Get the active view model that was set when question was asked
-        id viewModel = self.activeAskAIViewModel;
-        if (!viewModel) {
-            return;
-        }
-
-        // Create new view controller with existing view model (already has response streaming)
-        AskAIViewController *askAIVC = [AskAIViewController createWithViewModel:viewModel];
-        if (!askAIVC) {
-            return;
-        }
-
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:askAIVC];
-        navController.navigationBarHidden = YES;
-
-        // Present as a sheet from the bottom
-        navController.modalPresentationStyle = UIModalPresentationPageSheet;
-
-        UISheetPresentationController *sheet = navController.sheetPresentationController;
-        sheet.detents = @[
-            UISheetPresentationControllerDetent.mediumDetent,
-            UISheetPresentationControllerDetent.largeDetent
-        ];
-        sheet.prefersGrabberVisible = YES;
-        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
-        // Allow interaction with story content behind the sheet
-        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
-        sheet.preferredCornerRadius = 12.0;
-
-        [self.splitViewController presentViewController:navController animated:YES completion:nil];
-
-        // Clear the stored view model
-        self.activeAskAIViewModel = nil;
-    }
-}
-
 - (void)dismissAskAIOnTap:(UITapGestureRecognizer *)gesture {
     UIViewController *presentedVC = self.feedsNavigationController.presentedViewController;
+    if (!presentedVC) {
+        presentedVC = self.splitViewController.presentedViewController;
+    }
     if (presentedVC) {
         [presentedVC dismissViewControllerAnimated:YES completion:nil];
     }
@@ -1561,6 +1551,12 @@
                                                       initWithRootViewController:self.notificationsViewController];
         }
         self.notificationsNavigationController.navigationBar.translucent = NO;
+        self.notificationsNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (self.notificationsNavigationController.sheetPresentationController) {
+            self.notificationsNavigationController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+            self.notificationsNavigationController.sheetPresentationController.prefersGrabberVisible = YES;
+            self.notificationsNavigationController.sheetPresentationController.preferredCornerRadius = 12.0;
+        }
         [navController presentViewController:self.notificationsNavigationController animated:YES completion:nil];
     }
 }
