@@ -21,7 +21,6 @@
     UIButton *buttonNext;
     UIButton *buttonText;
     UIBarButtonItem *markReadBarButton;
-    UIBarButtonItem *separatorBarButton2;
     UIActivityIndicatorView *loadingIndicator;
     UIBarButtonItem *buttonBack;
     UIView *traverseView;
@@ -63,10 +62,6 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic) IBOutlet UIView *bottomSize;
 @property (nonatomic) IBOutlet NSLayoutConstraint *bottomSizeHeightConstraint;
-@property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
 @property (nonatomic) IBOutlet UIView *traverseView;
 @property (nonatomic) IBOutlet UIView *progressView;
 @property (nonatomic) IBOutlet UIView *progressViewContainer;
@@ -90,11 +85,14 @@
 @property (nonatomic) NSInteger scrollingToPage;
 @property (nonatomic, readonly) BOOL shouldHideStatusBar;
 @property (nonatomic, readonly) BOOL isNavigationBarHidden;
+@property (nonatomic, readonly) CGFloat navigationBarFadeAlpha;
 @property (nonatomic, readonly) BOOL allowFullscreen;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
 @property (nonatomic) BOOL temporarilyMarkedUnread;
+@property (nonatomic) CGFloat navBarHiddenOffset;
+@property (nonatomic) BOOL hasNavBarHiddenOffset;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
@@ -102,6 +100,8 @@
 - (void)updateStatusBarState;
 - (void)setNavigationBarHidden:(BOOL)hide;
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse;
+- (void)setNavigationBarFadeAlpha:(CGFloat)alpha;
+- (CGFloat)topInsetForNavigationBarAlpha:(CGFloat)alpha;
 
 //- (void)transitionFromFeedDetail;
 - (void)resetPages;

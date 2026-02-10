@@ -6,14 +6,13 @@
 //
 
 #import "NewsBlurAppDelegate.h"
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 #import "MarkReadMenuViewController.h"
 #import "FirstTimeUserViewController.h"
 #import "FriendsListViewController.h"
 #import "LoginViewController.h"
 #import "AddSiteViewController.h"
 #import "MoveSiteViewController.h"
-#import "TrainerViewController.h"
 #import "NotificationsViewController.h"
 #import "UserTagsViewController.h"
 #import "OriginalStoryViewController.h"
@@ -93,9 +92,8 @@
 @synthesize userProfileNavigationController;
 //@synthesize masterContainerViewController;
 @synthesize detailViewController;
-@synthesize dashboardViewController;
+@synthesize activitiesViewController;
 @synthesize feedsViewController;
-@synthesize feedDetailViewController;
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
@@ -120,6 +118,7 @@
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize cachedFavicons;
 @synthesize cachedStoryImages;
+@synthesize cachedUserAvatars;
 @synthesize activeUsername;
 @synthesize activeUserProfileId;
 @synthesize activeUserProfileName;
@@ -166,6 +165,7 @@
 @synthesize dictTextFeeds;
 @synthesize isPremium;
 @synthesize isPremiumArchive;
+@synthesize isPremiumPro;
 @synthesize premiumExpire;
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
@@ -197,6 +197,14 @@
     return (NewsBlurAppDelegate *)[UIApplication sharedApplication].delegate;
 }
 
++ (AppDelegateHelper *)helper {
+    return [AppDelegateHelper shared];
+}
+
+- (AppDelegateHelper *)helper {
+    return [AppDelegateHelper shared];
+}
+
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [self registerDefaultsFromSettingsBundle];
     
@@ -208,10 +216,16 @@
     
     cachedFavicons = [[PINCache alloc] initWithName:@"NBFavicons"];
     cachedFavicons.memoryCache.removeAllObjectsOnEnteringBackground = NO;
+    cachedFavicons.memoryCache.costLimit = 5 * 1024 * 1024; // 5 MB
     cachedStoryImages = [[PINCache alloc] initWithName:@"NBStoryImages"];
     cachedStoryImages.memoryCache.removeAllObjectsOnEnteringBackground = NO;
+    cachedStoryImages.memoryCache.costLimit = 20 * 1024 * 1024; // 20 MB
+    cachedUserAvatars = [[PINCache alloc] initWithName:@"NBUserAvatars"];
+    cachedUserAvatars.memoryCache.removeAllObjectsOnEnteringBackground = NO;
+    cachedUserAvatars.memoryCache.costLimit = 10 * 1024 * 1024; // 10 MB
     isPremium = NO;
     isPremiumArchive = NO;
+    isPremiumPro = NO;
     premiumExpire = 0;
     
     NBURLCache *urlCache = [[NBURLCache alloc] init];
@@ -255,7 +269,10 @@
     }
     
     [self registerBackgroundTask];
-    
+#if TARGET_OS_MACCATALYST
+    [CatalystModalDismissal install];
+#endif
+
     return YES;
 }
 
@@ -290,6 +307,7 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     [self.feedsViewController refreshHeaderCounts];
+    [[ReadTimeTracker shared] harvestAndFlush];
     [self scheduleAppRefresh];
 }
 
@@ -486,7 +504,11 @@
     }
     
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    NSInteger release = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] integerValue];
     [[NSUserDefaults standardUserDefaults] setObject:version forKey:@"version"];
+    [[NSUserDefaults standardUserDefaults] setInteger:release forKey:@"release"];
+    
+    [self.helper upgradeSettingsFrom:release];
 }
 
 - (void)registerDefaultsFromSettingsBundle:(NSString *)settingsPath withPlistName:(NSString *)name {
@@ -650,6 +672,7 @@
         
         self.inFindingStoryMode = YES;
         self.findingStoryStartDate = [NSDate date];
+        self.findingStoryDictionary = nil;
         self.tryFeedStoryId = storyHash;
         self.tryFeedFeedId = nil;
         
@@ -669,10 +692,15 @@
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
+
 #if !TARGET_OS_MACCATALYST
     // Release any cached data, images, etc that aren't in use.
-    [cachedStoryImages removeAllObjects];
+    // Only clear memory caches, not disk caches
+    [cachedStoryImages.memoryCache removeAllObjects];
+    [cachedFavicons.memoryCache removeAllObjects];
+    [cachedUserAvatars.memoryCache removeAllObjects];
+    [activeCachedImages removeAllObjects];
+    [recentlyReadStories removeAllObjects];
 #endif
 }
 
@@ -770,39 +798,27 @@
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
     self.userProfileNavigationController = navController;
     self.userProfileNavigationController.navigationBar.translucent = NO;
-    
-    
-    // adding Done button
-    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Close"
-                                   style:UIBarButtonItemStyleDone
-                                   target:self
-                                   action:@selector(hideUserProfileModal)];
-    
-    newUserProfile.navigationItem.rightBarButtonItem = donebutton;
+
     newUserProfile.navigationItem.title = self.activeUserProfileName;
     newUserProfile.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [newUserProfile getUserProfile];
     if (!self.isPhone) {
+        // iPad: show as popover, tap outside to dismiss
         [self showPopoverWithViewController:self.userProfileNavigationController contentSize:CGSizeMake(320, 454) sender:sender];
     } else {
+        // iPhone: show as sheet with grabber, no Close button needed
+        navController.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (navController.sheetPresentationController) {
+            navController.sheetPresentationController.prefersGrabberVisible = YES;
+        }
         [self.feedsNavigationController presentViewController:navController animated:YES completion:nil];
     }
-    
+
 }
 
 - (void)pushUserProfile {
     UserProfileViewController *userProfileView = [[UserProfileViewController alloc] init];
-    
-    
-    // adding Done button
-    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Close"
-                                   style:UIBarButtonItemStyleDone
-                                   target:self
-                                   action:@selector(hideUserProfileModal)];
-    
-    userProfileView.navigationItem.rightBarButtonItem = donebutton;
+
     userProfileView.navigationItem.title = self.activeUserProfileName;
     userProfileView.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [userProfileView getUserProfile];
@@ -837,45 +853,51 @@
     }
     
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"popToRootWithCompletion"];
+    [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"popToRootWithCompletion" animated:YES];
     
     if (completion) {
         [CATransaction commit];
     }
 }
 
-- (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo {
+- (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo animated:(BOOL)animated {
     NSLog(@"⚠️ show column for %@: split view controller: %@ split nav: %@; split controllers: %@; detail controller: %@; detail nav: %@; detail nav controllers: %@", debugInfo, self.splitViewController, self.splitViewController.navigationController, self.splitViewController.viewControllers, self.detailViewController, self.detailViewController.navigationController, self.detailViewController.navigationController.viewControllers);  // log
     
-    if (self.splitViewController.displayMode != UISplitViewControllerDisplayModeSecondaryOnly && (self.splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoBesideSecondary ||
-        self.splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoDisplaceSecondary ||
-        self.splitViewController.preferredDisplayMode != UISplitViewControllerDisplayModeTwoOverSecondary)) {
-        [self.splitViewController showColumn:column];
-    }
+    [self.detailViewController showColumn:column animated:animated];
     
     NSLog(@"...shown");  // log
 }
 
 - (void)showPremiumDialog {
-    [self showPremiumDialogScrollToArchive:NO];
+    [self showPremiumDialogScrollTo:nil];
 }
 
 - (void)showPremiumDialogForArchive {
-    [self showPremiumDialogScrollToArchive:YES];
+    [self showPremiumDialogScrollTo:@"archive"];
 }
 
-- (void)showPremiumDialogScrollToArchive:(BOOL)scrollToArchive {
+- (void)showPremiumDialogForPro {
+    [self showPremiumDialogScrollTo:@"pro"];
+}
+
+- (void)showPremiumDialogScrollTo:(NSString *)section {
     if (self.premiumNavigationController == nil) {
         self.premiumNavigationController = [[UINavigationController alloc]
                                             initWithRootViewController:self.premiumViewController];
     }
-    self.premiumNavigationController.navigationBar.translucent = NO;
+    self.premiumNavigationController.navigationBarHidden = YES;
 
-    // Configure the premium view to scroll to archive section if requested
-    [self.premiumViewController configureForArchive:scrollToArchive];
+    BOOL scrollToArchive = [section isEqualToString:@"archive"];
+    BOOL scrollToPro = [section isEqualToString:@"pro"];
+    [self.premiumViewController configureScrollToArchive:scrollToArchive scrollToPro:scrollToPro];
 
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    premiumNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    premiumNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+    if (premiumNavigationController.sheetPresentationController) {
+        premiumNavigationController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+        premiumNavigationController.sheetPresentationController.prefersGrabberVisible = YES;
+        premiumNavigationController.sheetPresentationController.preferredCornerRadius = 12.0;
+    }
     [self.splitViewController presentViewController:premiumNavigationController animated:YES completion:nil];
     [self.premiumViewController.view setNeedsLayout];
 }
@@ -887,16 +909,42 @@
     if (self.detailViewController.storyTitlesOnLeft) {
         if ([behavior isEqualToString:@"tile"]) {
             self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
         } else if ([behavior isEqualToString:@"displace"]) {
             self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
         } else if ([behavior isEqualToString:@"overlay"]) {
             self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoOverSecondary;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
         } else {
-            self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorAutomatic;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAutomatic;
+            // Auto: 3 columns (tile) in landscape, 2 columns (displace) in portrait
+            CGSize screenSize = self.splitViewController.view.bounds.size;
+            if (screenSize.width <= 0) {
+                screenSize = UIScreen.mainScreen.bounds.size;
+            }
+            BOOL isLandscape = screenSize.width > screenSize.height;
+#if TARGET_OS_MACCATALYST
+            // On Mac, use a minimum width threshold instead of just aspect ratio.
+            // Below 900pt the sidebar should auto-hide to overlay mode.
+            BOOL isTooNarrow = screenSize.width < 900;
+            if (isTooNarrow) {
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeSecondaryOnly;
+            } else if (isLandscape) {
+#else
+            if (isLandscape) {
+#endif
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
+                if (!self.splitViewController.isCollapsed) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
+                    });
+                }
+            } else {
+                self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
+                self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
+            }
         }
     } else {
         if ([behavior isEqualToString:@"overlay"]) {
@@ -904,7 +952,7 @@
             self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneOverSecondary;
         } else {
             self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorDisplace;
-            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoDisplaceSecondary;
+            self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeOneBesideSecondary;
         }
     }
     
@@ -915,7 +963,11 @@
 
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController {
     NSString *preferenceKey = @"split_behavior";
+#if TARGET_OS_MACCATALYST
+    NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full window"];
+#else
     NSArray *titles = @[@"Auto", @"columns_triple.png", @"columns_double.png", @"Full screen"];
+#endif
     NSArray *values = @[@"auto", @"tile", @"displace", @"overlay"];
     
     [menuViewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
@@ -939,8 +991,11 @@
     if (@available(iOS 15.0, *)) {
         PreferencesViewHostingController *swiftUIPrefs = [[PreferencesViewHostingController alloc] init];
 
-        if (!self.isPhone) {
-            swiftUIPrefs.modalPresentationStyle = UIModalPresentationFormSheet;
+        swiftUIPrefs.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (swiftUIPrefs.sheetPresentationController) {
+            swiftUIPrefs.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+            swiftUIPrefs.sheetPresentationController.prefersGrabberVisible = YES;
+            swiftUIPrefs.sheetPresentationController.preferredCornerRadius = 12.0;
         }
 
         [feedsNavigationController presentViewController:swiftUIPrefs animated:YES completion:^{
@@ -950,30 +1005,42 @@
     }
 }
 
-- (void)showFeedChooserForOperation:(FeedChooserOperation)operation {
+- (void)showFeedChooserForOperation:(FeedChooserOperation)operation dashboardRiverId:(NSString *)dashboardRiverId {
     [self hidePopover];
     
     self.feedChooserViewController = [FeedChooserViewController new];
     self.feedChooserViewController.operation = operation;
+    self.feedChooserViewController.dashboardRiverId = dashboardRiverId;
     
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.feedChooserViewController];
     
     self.modalNavigationController = nav;
     self.modalNavigationController.navigationBar.translucent = NO;
-    
+
+    nav.modalPresentationStyle = UIModalPresentationPageSheet;
+    if (nav.sheetPresentationController) {
+        nav.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+        nav.sheetPresentationController.prefersGrabberVisible = YES;
+        nav.sheetPresentationController.preferredCornerRadius = 12.0;
+    }
+
     [self.splitViewController presentViewController:modalNavigationController animated:YES completion:nil];
 }
 
 - (void)showMuteSites {
-    [self showFeedChooserForOperation:FeedChooserOperationMuteSites];
+    [self showFeedChooserForOperation:FeedChooserOperationMuteSites dashboardRiverId:nil];
 }
 
 - (void)showOrganizeSites {
-    [self showFeedChooserForOperation:FeedChooserOperationOrganizeSites];
+    [self showFeedChooserForOperation:FeedChooserOperationOrganizeSites dashboardRiverId:nil];
 }
 
 - (void)showWidgetSites {
-    [self showFeedChooserForOperation:FeedChooserOperationWidgetSites];
+    [self showFeedChooserForOperation:FeedChooserOperationWidgetSites dashboardRiverId:nil];
+}
+
+- (void)showDashboardSites:(NSString *)selectedRiverId {
+    [self showFeedChooserForOperation:FeedChooserOperationDashboardSites dashboardRiverId:selectedRiverId];
 }
 
 - (void)showFindFriends {
@@ -987,7 +1054,12 @@
     self.modalNavigationController.navigationBar.translucent = NO;
     
     [self.splitViewController dismissViewControllerAnimated:NO completion:nil];
-    self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    self.modalNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+    if (self.modalNavigationController.sheetPresentationController) {
+        self.modalNavigationController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+        self.modalNavigationController.sheetPresentationController.prefersGrabberVisible = YES;
+        self.modalNavigationController.sheetPresentationController.preferredCornerRadius = 12.0;
+    }
     [self.splitViewController presentViewController:modalNavigationController animated:YES completion:nil];
     
     [self.friendsListViewController loadSuggestedFriendsList];
@@ -1111,7 +1183,7 @@
             popPC.sourceView = self.storyPagesViewController.view;
         } else {
             popPC.sourceRect = [sender frame];
-            popPC.sourceView = [sender superview];
+            popPC.sourceView = (UIView *)[sender superview];
             
             //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
@@ -1125,22 +1197,37 @@
             setUserId:(NSString *)userId
           setUsername:(NSString *)username
            setReplyId:(NSString *)replyId {
-    
+    [self showShareView:type setUserId:userId setUsername:username setReplyId:replyId sourceRect:nil];
+}
+
+- (void)showShareView:(NSString *)type
+            setUserId:(NSString *)userId
+          setUsername:(NSString *)username
+           setReplyId:(NSString *)replyId
+           sourceRect:(NSValue *)sourceRectValue {
+
     [self.shareViewController setCommentType:type];
-    //    if (!self.isPhone) {
-    //        [self.masterContainerViewController transitionToShareView];
-    //        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
-    //    } else {
+
+    if (!self.isPhone && sourceRectValue != nil) {
+        CGRect sourceRect = [sourceRectValue CGRectValue];
+        if (!CGRectIsEmpty(sourceRect)) {
+            [self.shareViewController loadViewIfNeeded];
+            [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
+            [self showPopoverWithViewController:self.shareViewController contentSize:CGSizeMake(380, 220) sourceView:self.storyPagesViewController.currentPage.webView sourceRect:sourceRect];
+            return;
+        }
+    }
+
     if (self.shareNavigationController == nil) {
         UINavigationController *shareNav = [[UINavigationController alloc]
                                             initWithRootViewController:self.shareViewController];
         self.shareNavigationController = shareNav;
         self.shareNavigationController.navigationBar.translucent = NO;
     }
+    self.shareNavigationController.navigationBarHidden = YES;
     [self.feedsNavigationController presentViewController:self.shareNavigationController animated:YES completion:^{
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
     }];
-    //    }
 }
 
 - (void)hideShareView:(BOOL)resetComment {
@@ -1148,19 +1235,30 @@
         self.shareViewController.commentField.text = @"";
         self.shareViewController.currentType = nil;
     }
-    
-    //    if (!self.isPhone) {
-    //        [self.masterContainerViewController transitionFromShareView];
-    //        [self.storyPagesViewController becomeFirstResponder];
-    //    } else
+
     if (!self.showingSafariViewController) {
-        [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
+        // Try popover dismissal first (iPad/Mac with sourceRect)
+        if (self.shareViewController.presentingViewController &&
+            self.shareViewController.modalPresentationStyle == UIModalPresentationPopover) {
+            [self hidePopoverAnimated:YES];
+        } else {
+            [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
+        }
         [self.shareViewController.commentField resignFirstResponder];
     }
 }
 
 - (void)resetShareComments {
     [shareViewController clearComments];
+}
+
+#pragma mark -
+#pragma mark Menus
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+    [super buildMenuWithBuilder:builder];
+    
+    [AppMenuHelper.shared buildMenuWithBuilder:builder];
 }
 
 #pragma mark -
@@ -1172,7 +1270,7 @@
     
     NSArray <UIViewController *> *splitChildren = self.splitViewController.viewControllers;
     
-    if (splitChildren.count < 3) {
+    if (splitChildren.count < 2) {
         NSLog(@"Missing split view controllers: %@", splitChildren);  // log
         return;
     }
@@ -1181,12 +1279,9 @@
     
     self.feedsNavigationController = (UINavigationController *)splitChildren[0];
     self.feedsViewController = self.feedsNavigationController.viewControllers.firstObject;
-    self.feedDetailNavigationController = (UINavigationController *)splitChildren[1];
-    self.feedDetailViewController = self.feedDetailNavigationController.viewControllers.firstObject;
-    self.detailNavigationController = (UINavigationController *)splitChildren[2];
+    self.detailNavigationController = (UINavigationController *)splitChildren[1];
     self.detailViewController = self.detailNavigationController.viewControllers.firstObject;
-    
-    self.dashboardViewController = [DashboardViewController new];
+    self.activitiesViewController = [ActivitiesViewController new];
     self.friendsListViewController = [FriendsListViewController new];
     self.storyDetailViewController = [StoryDetailViewController new];
     self.loginViewController = [LoginViewController new];
@@ -1211,6 +1306,14 @@
     
     [feedsViewController view];
     [feedsViewController loadOfflineFeeds:NO];
+    
+    [self.detailViewController view];
+    
+    [[UIMenuSystem mainSystem] setNeedsRebuild];
+}
+
+- (FeedDetailViewController *)feedDetailViewController {
+    return self.detailViewController.feedDetailViewController;
 }
 
 - (StoryPagesViewController *)storyPagesViewController {
@@ -1238,8 +1341,8 @@
         [self.feedsViewController.feedTitlesTable reloadData];
         [self.feedsViewController resetToolbar];
         
-        [self.dashboardViewController.interactionsModule.interactionsTable reloadData];
-        [self.dashboardViewController.activitiesModule.activitiesTable reloadData];
+        [self.activitiesViewController.interactionsModule.interactionsTable reloadData];
+        [self.activitiesViewController.activitiesModule.activitiesTable reloadData];
         
         NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
         [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
@@ -1357,9 +1460,9 @@
         sheet.preferredCornerRadius = 12.0;
 
         [navController presentViewController:askAINavController animated:YES completion:^{
-            // Add tap gesture to container view to dismiss on tap outside sheet
+            // Add tap gesture to container view to dismiss on tap outside sheet (iOS only)
             UIView *containerView = askAINavController.presentationController.containerView;
-            if (containerView) {
+            if (containerView && !self.isMac) {
                 UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
                     initWithTarget:self
                     action:@selector(dismissAskAIOnTap:)];
@@ -1382,11 +1485,11 @@
     if (@available(iOS 15.0, *)) {
         CGRect sourceRect = [sourceRectValue CGRectValue];
 
-        // On iPad with valid coordinates, show as popover anchored to the Ask AI button
+        // On iPad/Mac with valid coordinates, show as popover anchored to the Ask AI button
         if (!self.isPhone && !CGRectIsEmpty(sourceRect)) {
             AskAIViewController *askAIVC = [[AskAIViewController alloc] initWithStory:story];
             askAIVC.modalPresentationStyle = UIModalPresentationPopover;
-            askAIVC.preferredContentSize = CGSizeMake(400, 420);
+            askAIVC.preferredContentSize = CGSizeMake(500, 440);
 
             // Set up popover presentation
             UIPopoverPresentationController *popover = askAIVC.popoverPresentationController;
@@ -1394,17 +1497,6 @@
             popover.sourceView = self.storyPagesViewController.currentPage.webView;
             popover.sourceRect = sourceRect;
             popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
-
-            // Store view model for re-presentation as sheet
-            __weak typeof(self) weakSelf = self;
-            askAIVC.onQuestionAsked = ^{
-                // Store the view model before dismissing
-                weakSelf.activeAskAIViewModel = askAIVC.viewModelAsAny;
-                // Dismiss popover and re-present as bottom sheet
-                [askAIVC dismissViewControllerAnimated:YES completion:^{
-                    [weakSelf showAskAIInlineResponse];
-                }];
-            };
 
             [self.navigationControllerForPopover presentViewController:askAIVC animated:YES completion:nil];
         } else {
@@ -1416,46 +1508,11 @@
     }
 }
 
-- (void)showAskAIInlineResponse {
-    if (@available(iOS 15.0, *)) {
-        // Get the active view model that was set when question was asked
-        id viewModel = self.activeAskAIViewModel;
-        if (!viewModel) {
-            return;
-        }
-
-        // Create new view controller with existing view model (already has response streaming)
-        AskAIViewController *askAIVC = [AskAIViewController createWithViewModel:viewModel];
-        if (!askAIVC) {
-            return;
-        }
-
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:askAIVC];
-        navController.navigationBarHidden = YES;
-
-        // Present as a sheet from the bottom
-        navController.modalPresentationStyle = UIModalPresentationPageSheet;
-
-        UISheetPresentationController *sheet = navController.sheetPresentationController;
-        sheet.detents = @[
-            UISheetPresentationControllerDetent.mediumDetent,
-            UISheetPresentationControllerDetent.largeDetent
-        ];
-        sheet.prefersGrabberVisible = YES;
-        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
-        // Allow interaction with story content behind the sheet
-        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
-        sheet.preferredCornerRadius = 12.0;
-
-        [self.splitViewController presentViewController:navController animated:YES completion:nil];
-
-        // Clear the stored view model
-        self.activeAskAIViewModel = nil;
-    }
-}
-
 - (void)dismissAskAIOnTap:(UITapGestureRecognizer *)gesture {
     UIViewController *presentedVC = self.feedsNavigationController.presentedViewController;
+    if (!presentedVC) {
+        presentedVC = self.splitViewController.presentedViewController;
+    }
     if (presentedVC) {
         [presentedVC dismissViewControllerAnimated:YES completion:nil];
     }
@@ -1494,6 +1551,12 @@
                                                       initWithRootViewController:self.notificationsViewController];
         }
         self.notificationsNavigationController.navigationBar.translucent = NO;
+        self.notificationsNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+        if (self.notificationsNavigationController.sheetPresentationController) {
+            self.notificationsNavigationController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
+            self.notificationsNavigationController.sheetPresentationController.prefersGrabberVisible = YES;
+            self.notificationsNavigationController.sheetPresentationController.preferredCornerRadius = 12.0;
+        }
         [navController presentViewController:self.notificationsNavigationController animated:YES completion:nil];
     }
 }
@@ -1778,8 +1841,8 @@
     self.inFeedDetail = YES;
     popoverHasFeedView = YES;
     
-    [feedDetailViewController resetFeedDetail];
-    feedDetailViewController.storiesCollection = storiesCollection;
+    [self.feedDetailViewController resetFeedDetail];
+    self.feedDetailViewController.storiesCollection = storiesCollection;
     
     if (transition) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc]
@@ -1799,9 +1862,7 @@
         [self adjustStoryDetailWebView];
         [self.feedDetailViewController loadingFeed];
         
-        if (detailViewController.storyTitlesOnLeft || detailViewController.storyTitlesInGrid) {
-            [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadFeedDetailView"];
-        }
+        [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadFeedDetailView" animated:YES];
     }
     
     [self flushQueuedReadStories:NO withCallback:^{
@@ -1833,6 +1894,7 @@
     self.isTryFeedView = YES;
     self.inFindingStoryMode = YES;
     self.findingStoryStartDate = [NSDate date];
+    self.findingStoryDictionary = nil;
     self.tryFeedStoryId = contentId;
     self.tryFeedFeedId = feedId;
     
@@ -1964,7 +2026,7 @@
     self.tryFeedStoryId = contentId;
     storiesCollection.activeFolder = @"saved_stories";
     
-    [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"saved_stories"];
+    [self loadRiverFeedDetailView:self.feedDetailViewController withFolder:@"saved_stories"];
     
     if (showHUD) {
         if (!self.isPhone) {
@@ -2017,7 +2079,7 @@
 }
 
 - (NSArray *)feedIdsForFolderTitle:(NSString *)folderTitle {
-    if ([folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
+    if ([folderTitle isEqualToString:@"dashboard"] || [folderTitle isEqualToString:@"everything"] || [folderTitle isEqualToString:@"infrequent"]) {
         return @[folderTitle];
     } else if ([folderTitle isEqualToString:@"widget_stories"]) {
         NSUserDefaults *groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
@@ -2117,9 +2179,14 @@
         return;
     }
     
+    if ([folder isEqualToString:@"dashboard"]) {
+        NSLog(@"⚠️ Called loadRiverFeedDetailView with dashboard; this should never occur");  // log
+        return;
+    }
+    
     self.inFeedDetail = YES;
     [feedDetailView resetFeedDetail];
-    if (feedDetailView == feedDetailViewController) {
+    if (feedDetailView == self.feedDetailViewController) {
         feedDetailView.storiesCollection = storiesCollection;
     }
     
@@ -2221,7 +2288,7 @@
     
     detailViewController.navigationItem.titleView = [self makeFeedTitle:storiesCollection.activeFeed];
     
-    if (self.isCompactWidth && feedDetailView == feedDetailViewController && feedDetailView.view.window == nil) {
+    if (self.isCompactWidth && feedDetailView == self.feedDetailViewController && feedDetailView.view.window == nil) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All"
                                                                           style: UIBarButtonItemStylePlain
                                                                          target: nil
@@ -2234,7 +2301,7 @@
         }
     }
     
-    [self showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"loadRiverFeedDetailView"];
+    [self showColumn:UISplitViewControllerColumnSecondary debugInfo:@"loadRiverFeedDetailView" animated:YES];
     
     [self flushQueuedReadStories:NO withCallback:^{
         [self flushQueuedSavedStories:NO withCallback:^{
@@ -2243,35 +2310,6 @@
             });
         }];
     }];
-}
-
-- (void)openDashboardRiverForStory:(NSString *)contentId
-                  showFindingStory:(BOOL)showHUD {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        //        [self.feedsNavigationController popToRootViewControllerAnimated:NO];
-        //        [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
-        [self showFeedsListAnimated:NO];
-        [self.feedsNavigationController dismissViewControllerAnimated:YES completion:nil];
-        [self hidePopoverAnimated:NO];
-    }
-    
-    self.inFindingStoryMode = YES;
-    [storiesCollection reset];
-    storiesCollection.isRiverView = YES;
-    
-    self.tryFeedStoryId = contentId;
-    storiesCollection.activeFolder = @"everything";
-    
-    [self loadRiverFeedDetailView:feedDetailViewController withFolder:@"river_dashboard"];
-    
-    if (showHUD) {
-        if (!self.isPhone) {
-            [self.storyPagesViewController showShareHUD:@"Finding story..."];
-        } else {
-            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.feedDetailViewController.view animated:YES];
-            HUD.labelText = @"Finding story...";
-        }
-    }
 }
 
 - (void)adjustStoryDetailWebView {
@@ -2358,7 +2396,7 @@
 }
 
 - (void)changeActiveFeedDetailRow {
-    [feedDetailViewController changeActiveFeedDetailRow];
+    [self.feedDetailViewController changeActiveFeedDetailRow];
 }
 
 - (void)loadStoryDetailView {
@@ -2367,10 +2405,13 @@
     //        feedsNavigationController.navigationItem.hidesBackButton = YES;
     //    }
     
-    self.inFindingStoryMode = NO;
-    self.findingStoryStartDate = nil;
-    self.tryFeedStoryId = nil;
-    self.tryFeedFeedId = nil;
+    if (-appDelegate.findingStoryStartDate.timeIntervalSinceNow > 10) {
+        self.inFindingStoryMode = NO;
+        self.findingStoryStartDate = nil;
+        self.findingStoryDictionary = nil;
+        self.tryFeedStoryId = nil;
+        self.tryFeedFeedId = nil;
+    }
     
     NSInteger activeStoryLocation = [storiesCollection locationOfActiveStory];
     if (activeStoryLocation >= 0) {
@@ -2378,8 +2419,7 @@
             [self.detailViewController checkLayout];
         }
         
-        BOOL animated = (!self.isPhone &&
-                         !self.tryFeedCategory);
+        BOOL animated = !self.tryFeedCategory;
         [self.storyPagesViewController view];
         [self.storyPagesViewController.view setNeedsLayout];
         [self.storyPagesViewController.view layoutIfNeeded];
@@ -2402,6 +2442,7 @@
     [self.storyPagesViewController changePage:[params[@"location"] integerValue] animated:[params[@"animated"] boolValue]];
     [self.storyPagesViewController animateIntoPlace:YES];
     [self showDetailViewController:self.detailViewController sender:self];
+    [self.detailViewController collapseFeedListIfNeededForStory];
 }
 
 - (void)setTitle:(NSString *)title {
@@ -2624,7 +2665,7 @@
     if (self.splitViewController.isCollapsed) {
         [self.feedsNavigationController popToRootViewControllerAnimated:YES];
     } else {
-        [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeedsListAnimated"];
+        [self showColumn:UISplitViewControllerColumnPrimary debugInfo:@"showFeedsListAnimated" animated:YES];
     }
 }
 
@@ -2699,6 +2740,8 @@
         activity.title = @"Read All Shared Stories";
     } else if ([folder isEqualToString:@"river_global"]) {
         activity.title = @"Read Global Shared Stories";
+    } else if ([folder isEqualToString:@"dashboard"]) {
+        activity.title = @"NewsBlur Dashboard";
     } else if ([folder isEqualToString:@"everything"]) {
         activity.title = @"Read All the Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
@@ -2888,9 +2931,11 @@
     } else if ([folderName isEqual:@"river_global"] ||
                (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         total = 0;
-    } else if ([folderName isEqual:@"everything"] ||
+    } else if ([folderName isEqual:@"dashboard"] ||
+               [folderName isEqual:@"everything"] ||
                [folderName isEqual:@"infrequent"] ||
-               (!folderName && ([storiesCollection.activeFolder isEqual:@"everything"] ||
+               (!folderName && ([storiesCollection.activeFolder isEqual:@"dashboard"] ||
+                                [storiesCollection.activeFolder isEqual:@"everything"] ||
                                 [storiesCollection.activeFolder isEqual:@"infrequent"]))) {
         // TODO: Fix race condition where self.dictUnreadCounts can be changed while being updated.
         for (id feedId in self.dictUnreadCounts) {
@@ -2955,9 +3000,11 @@
     } else if ([folderName isEqual:@"river_global"] ||
                (!folderName && [storiesCollection.activeFolder isEqual:@"river_global"])) {
         // Nothing for global
-    } else if ([folderName isEqual:@"everything"] ||
+    } else if ([folderName isEqual:@"dashboard"] ||
+               [folderName isEqual:@"everything"] ||
                [folderName isEqual:@"infrequent"] ||
-               (!folderName && ([storiesCollection.activeFolder isEqual:@"everything"] ||
+               (!folderName && ([storiesCollection.activeFolder isEqual:@"dashboard"] ||
+                                [storiesCollection.activeFolder isEqual:@"everything"] ||
                                 [storiesCollection.activeFolder isEqual:@"infrequent"]))) {
         NSMutableSet *uniqueFeeds = [NSMutableSet new];
         for (NSArray *folder in [self.dictFolders allValues]) {
@@ -3048,7 +3095,7 @@
 #pragma mark Mark as read
 
 - (void)markActiveFolderAllRead {
-    if ([storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
+    if ([storiesCollection.activeFolder isEqual:@"dashboard"] || [storiesCollection.activeFolder isEqual:@"everything"] || [storiesCollection.activeFolder isEqual:@"infrequent"]) {
         for (NSString *folderName in self.dictFoldersArray) {
             for (id feedId in [self.dictFolders objectForKey:folderName]) {
                 [self markFeedAllRead:feedId];
@@ -3272,36 +3319,36 @@
 
 - (void)failedMarkAsUnread:(NSDictionary *)params {
     if (![self.storyPagesViewController failedMarkAsUnread:params]) {
-        [feedDetailViewController failedMarkAsUnread:params];
+        [self.feedDetailViewController failedMarkAsUnread:params];
         [self.storyPagesViewController failedMarkAsUnread:params];
     }
-    [feedDetailViewController reloadWithSizing];
+    [self.feedDetailViewController reloadWithSizing];
 }
 
 - (void)finishMarkAsSaved:(NSDictionary *)params {
     [self.storyPagesViewController finishMarkAsSaved:params];
-    [feedDetailViewController finishMarkAsSaved:params];
+    [self.feedDetailViewController finishMarkAsSaved:params];
 }
 
 - (void)failedMarkAsSaved:(NSDictionary *)params {
     if (![self.storyPagesViewController failedMarkAsSaved:params]) {
-        [feedDetailViewController failedMarkAsSaved:params];
+        [self.feedDetailViewController failedMarkAsSaved:params];
         [self.storyPagesViewController failedMarkAsSaved:params];
     }
-    [feedDetailViewController reloadWithSizing];
+    [self.feedDetailViewController reloadWithSizing];
 }
 
 - (void)finishMarkAsUnsaved:(NSDictionary *)params {
     [self.storyPagesViewController finishMarkAsUnsaved:params];
-    [feedDetailViewController finishMarkAsUnsaved:params];
+    [self.feedDetailViewController finishMarkAsUnsaved:params];
 }
 
 - (void)failedMarkAsUnsaved:(NSDictionary *)params {
     if (![self.storyPagesViewController failedMarkAsUnsaved:params]) {
-        [feedDetailViewController failedMarkAsUnsaved:params];
+        [self.feedDetailViewController failedMarkAsUnsaved:params];
         [self.storyPagesViewController failedMarkAsUnsaved:params];
     }
-    [feedDetailViewController reloadWithSizing];
+    [self.feedDetailViewController reloadWithSizing];
 }
 
 
@@ -3458,16 +3505,20 @@
 - (void)showPopoverWithViewController:(UIViewController *)viewController contentSize:(CGSize)contentSize sender:(id)sender {
     if ([sender isKindOfClass:[UITableViewCell class]]) {
         UITableViewCell *cell = (UITableViewCell *)sender;
-        
+
         [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:cell sourceRect:cell.bounds];
-    } else if ([sender class] == [UIBarButtonItem class] || [sender class] == [UIButton class]) {
+    } else if ([sender isKindOfClass:[UIBarButtonItem class]]) {
         [self showPopoverWithViewController:viewController contentSize:contentSize barButtonItem:sender];
-    } else if ([sender class] == [UIView class]) {
-        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:sender sourceRect:[sender frame]];
-    } else {
+    } else if ([sender isKindOfClass:[UIView class]]) {
+        UIView *view = (UIView *)sender;
+        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:view sourceRect:view.bounds];
+    } else if ([sender isKindOfClass:[NSValue class]]) {
         CGRect frame = [sender CGRectValue];
-        
+
         [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:self.storyPagesViewController.view sourceRect:frame];
+    } else {
+        // Fallback: use the feeds view as source
+        [self showPopoverWithViewController:viewController contentSize:contentSize sourceView:self.feedsViewController.view sourceRect:CGRectMake(0, 0, 1, 1)];
     }
 }
 
@@ -3504,17 +3555,17 @@
     popoverPresentationController.permittedArrowDirections = permittedArrowDirections;
     
 #if TARGET_OS_MACCATALYST
-    if (barButtonItem && barButtonItem == appDelegate.feedDetailViewController.settingsBarButton) {
-        UINavigationController *feedDetailNavController = appDelegate.feedDetailViewController.navigationController;
+    if (barButtonItem && barButtonItem == self.feedDetailViewController.settingsBarButton) {
+        UINavigationController *feedDetailNavController = self.feedDetailViewController.navigationController;
         barButtonItem = nil;
         sourceView = feedDetailNavController.view;
-        if (appDelegate.splitViewController.isFeedListHidden) {
+        if (self.splitViewController.isFeedsListHidden) {
             sourceRect = CGRectMake(224, 0, 20, 20);
         } else {
             sourceRect = CGRectMake(152, 0, 20, 20);
         }
-    } else if (barButtonItem && barButtonItem == appDelegate.storyPagesViewController.fontSettingsButton) {
-        UINavigationController *storiesNavController = appDelegate.storyPagesViewController.navigationController;
+    } else if (barButtonItem && barButtonItem == self.storyPagesViewController.fontSettingsButton) {
+        UINavigationController *storiesNavController = self.storyPagesViewController.navigationController;
         barButtonItem = nil;
         sourceView = storiesNavController.view;
         sourceRect = CGRectMake(storiesNavController.view.frame.size.width - 59, 0, 20, 20);
@@ -3600,6 +3651,7 @@
 
 - (NSString *)extractParentFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
+        [folderName isEqual:@"dashboard"] ||
         [folderName isEqual:@"everything"] ||
         [folderName isEqual:@"infrequent"]) {
         folderName = @"";
@@ -3618,6 +3670,7 @@
 
 - (NSString *)extractFolderName:(NSString *)folderName {
     if ([folderName containsString:@"Top Level"] ||
+        [folderName isEqual:@"dashboard"] ||
         [folderName isEqual:@"everything"] ||
         [folderName isEqual:@"infrequent"]) {
         folderName = @"";
@@ -3872,6 +3925,9 @@
                [storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             titleLabel.text = [NSString stringWithFormat:@"     Global Shared Stories"];
     } else if (storiesCollection.isRiverView &&
+               [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     NewsBlur Dashboard"];
+    } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"everything"]) {
         titleLabel.text = [NSString stringWithFormat:@"     All Site Stories"];
     } else if (storiesCollection.isRiverView &&
@@ -3927,6 +3983,9 @@
                    [storiesCollection.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"all-stories"];
         } else if (storiesCollection.isRiverView &&
+                   [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+            titleImage = [UIImage imageNamed:@"saved-stories"];
+        } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
         } else if (storiesCollection.isSavedView && storiesCollection.activeSavedStoryTag) {
@@ -3938,9 +3997,24 @@
         } else if ([storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
             titleImage = [UIImage imageNamed:@"saved-stories"];
         } else if (storiesCollection.isRiverView) {
-            titleImage = [UIImage imageNamed:@"folder-open"];
+            // Check for custom folder icon
+            NSString *folderName = storiesCollection.activeFolder;
+            NSDictionary *customIcon = self.dictFolderIcons[folderName];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+            }
+            if (!titleImage) {
+                titleImage = [UIImage imageNamed:@"folder-open"];
+            }
         } else {
-            titleImage = [self getFavicon:feedIdStr];
+            // Check for custom feed icon
+            NSDictionary *customIcon = self.dictFeedIcons[feedIdStr];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+            }
+            if (!titleImage) {
+                titleImage = [self getFavicon:feedIdStr];
+            }
         }
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
@@ -3956,7 +4030,9 @@
         return @"All Shared Stories";
     } else if ([folder isEqualToString:@"river_global"]) {
         return @"Global Shared Stories";
-    } else if ([folder isEqualToString:@"everything"]) {
+    } else if ([folder isEqualToString:@"dashboard"]) {
+        return @"NewsBlur Dashboard";
+    } else if ([folder isEqualToString:@"everything"] || [folder isEqualToString:@" "]) {
         return @"All Site Stories";
     } else if ([folder isEqualToString:@"infrequent"]) {
         return @"Infrequent Site Stories";
@@ -3978,6 +4054,8 @@
         return [UIImage imageNamed:@"global-shares"];
     } else if ([folder isEqualToString:@"river_blurblogs"]) {
         return [UIImage imageNamed:@"all-shares"];
+    } else if ([folder isEqualToString:@"dashboard"]) {
+        return [UIImage imageNamed:@"saved-stories"];
     } else if ([folder isEqualToString:@"everything"]) {
         return [UIImage imageNamed:@"all-stories"];
     } else if ([folder isEqualToString:@"infrequent"]) {
@@ -3991,6 +4069,14 @@
     } else if ([folder isEqualToString:@"saved_stories"]) {
         return [UIImage imageNamed:@"saved-stories"];
     } else {
+        // Check for custom folder icon
+        NSDictionary *customIcon = self.dictFolderIcons[folder];
+        if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+            UIImage *customImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(20, 20)];
+            if (customImage) {
+                return customImage;
+            }
+        }
         return [UIImage imageNamed:@"folder-open"];
     }
 }
@@ -3998,7 +4084,10 @@
 - (void)saveFavicon:(UIImage *)image feedId:(NSString *)filename {
     if (image && filename && ![image isKindOfClass:[NSNull class]] &&
         [filename class] != [NSNull class]) {
-        [self.cachedFavicons setObject:image forKey:filename];
+        // Set cost based on image memory size for proper cache eviction
+        NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
+        [self.cachedFavicons.memoryCache setObject:image forKey:filename withCost:cost];
+        [self.cachedFavicons.diskCache setObject:image forKey:filename];
     }
 }
 
@@ -4025,6 +4114,27 @@
             return [UIImage imageNamed:@"world.png"];
         }
     }
+}
+
+- (void)saveUserAvatar:(UIImage *)image forUserId:(NSString *)userId {
+    if (image && userId && ![image isKindOfClass:[NSNull class]] &&
+        [userId class] != [NSNull class]) {
+        // Set cost based on image memory size for proper cache eviction
+        NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
+        [self.cachedUserAvatars.memoryCache setObject:image forKey:userId withCost:cost];
+        [self.cachedUserAvatars.diskCache setObject:image forKey:userId];
+    }
+}
+
+- (UIImage *)getCachedUserAvatar:(NSString *)userId {
+    if (!userId || [userId class] == [NSNull class]) {
+        return nil;
+    }
+    return [self.cachedUserAvatars objectForKey:userId];
+}
+
+- (UIImage *)defaultUserAvatar {
+    return [UIImage imageNamed:@"default_profile_avatar"];
 }
 
 #pragma mark -
@@ -4895,6 +5005,22 @@
 
 - (UIImage *)cachedImageForStoryHash:(NSString *)storyHash {
     return self.cachedStoryImages[storyHash];
+}
+
+- (void)cacheStoryImage:(UIImage *)image forStoryHash:(NSString *)storyHash {
+    if (!image || !storyHash) return;
+
+    // Set cost based on image memory size for proper cache eviction
+    NSUInteger cost = (NSUInteger)(image.size.width * image.size.height * 4);
+    [self.cachedStoryImages.memoryCache setObject:image forKey:storyHash withCost:cost];
+    [self.cachedStoryImages.diskCache setObject:image forKey:storyHash];
+}
+
+- (void)cacheStoryImagePlaceholder:(NSString *)storyHash {
+    if (!storyHash) return;
+
+    // Use NSNull as placeholder with minimal cost
+    [self.cachedStoryImages.memoryCache setObject:[NSNull null] forKey:storyHash withCost:1];
 }
 
 - (void)cleanImageCache {

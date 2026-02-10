@@ -212,6 +212,7 @@
     [self.folders addObject:@"— Top Level —"];
     
     for (NSString *folder in appDelegate.dictFoldersArray) {
+        if ([folder isEqualToString:@"dashboard"]) continue;
         if ([folder isEqualToString:@"everything"]) continue;
         if ([folder isEqualToString:@"infrequent"]) continue;
         if ([folder isEqualToString:@"river_blurblogs"]) continue;

@@ -19,6 +19,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
 
 @interface FeedChooserViewController () <FeedChooserTitleDelegate>
 
+@property (nonatomic, strong) UIBarButtonItem *doneItem;
 @property (nonatomic, strong) UIBarButtonItem *optionsItem;
 @property (nonatomic, strong) UIBarButtonItem *moveItem;
 @property (nonatomic, strong) UIBarButtonItem *deleteItem;
@@ -30,6 +31,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
 @property (nonatomic) FeedChooserSort sort;
 @property (nonatomic) BOOL ascending;
 @property (nonatomic) BOOL flat;
+@property (nonatomic) NSInteger selectedSection;
 @property (nonatomic, strong) NSUserDefaults *groupDefaults;
 @property (nonatomic, readonly) NSArray *widgetFeeds;
 
@@ -48,14 +50,14 @@ static const CGFloat kFolderTitleHeight = 36.0;
         self.groupDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
     }
     
-    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
+    self.doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done)];
     self.optionsItem = [[UIBarButtonItem alloc] initWithImage:[Utilities imageNamed:@"settings" sized:30] style:UIBarButtonItemStylePlain target:self action:@selector(showOptionsMenu)];
     
     if (self.operation == FeedChooserOperationMuteSites) {
         UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel)];
         
         self.navigationItem.leftBarButtonItem = cancelItem;
-        self.navigationItem.rightBarButtonItems = @[doneItem, self.optionsItem];
+        self.navigationItem.rightBarButtonItems = @[self.doneItem, self.optionsItem];
         
         self.tableView.editing = NO;
     } else if (self.operation == FeedChooserOperationOrganizeSites) {
@@ -63,12 +65,19 @@ static const CGFloat kFolderTitleHeight = 36.0;
         self.deleteItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"menu_icn_delete.png"] style:UIBarButtonItemStylePlain target:self action:@selector(deleteFeeds)];
         
         self.navigationItem.leftBarButtonItems = @[self.moveItem, self.deleteItem];
-        self.navigationItem.rightBarButtonItems = @[doneItem, self.optionsItem];
+        self.navigationItem.rightBarButtonItems = @[self.doneItem, self.optionsItem];
+        
+        self.tableView.editing = YES;
+    } else if (self.operation == FeedChooserOperationDashboardSites) {
+        UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel)];
+        
+        self.navigationItem.leftBarButtonItem = cancelItem;
+        self.navigationItem.rightBarButtonItems = @[self.doneItem, self.optionsItem];
         
         self.tableView.editing = YES;
     } else {
         self.navigationItem.leftBarButtonItems = nil;
-        self.navigationItem.rightBarButtonItems = @[doneItem, self.optionsItem];
+        self.navigationItem.rightBarButtonItems = @[self.doneItem, self.optionsItem];
         
         self.tableView.editing = YES;
     }
@@ -82,6 +91,8 @@ static const CGFloat kFolderTitleHeight = 36.0;
         self.tableView.sectionHeaderTopPadding = 0;
     }
     
+    self.selectedSection = -1;
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(finishedLoadingFeedsNotification:) name:@"FinishedLoadingFeedsNotification" object:nil];
     
     [self updateTitle];
@@ -91,6 +102,19 @@ static const CGFloat kFolderTitleHeight = 36.0;
     } else if (self.operation == FeedChooserOperationOrganizeSites) {
         [self updateDictFolders];
         [self rebuildItemsAnimated:NO];
+    } else if (self.operation == FeedChooserOperationDashboardSites) {
+        [self updateDictFolders];
+        [self rebuildItemsAnimated:NO];
+        
+        if (self.dashboardRiverId != nil) {
+            id identifier = self.dashboardRiverId;
+            
+            if ([identifier hasPrefix:@"feed:"]) {
+                identifier = [NSNumber numberWithInteger:[identifier substringFromIndex:@"feed:".length].integerValue];
+            }
+            
+            [self selectItemsWithIdentifiers:@[identifier] animated:NO scrollPosition:UITableViewScrollPositionMiddle];
+        }
     } else {
         [self updateDictFolders];
         [self rebuildItemsAnimated:NO];
@@ -151,50 +175,101 @@ static const CGFloat kFolderTitleHeight = 36.0;
 - (void)rebuildItemsAnimated:(BOOL)animated {
     FeedChooserItem *section = nil;
     
+    BOOL isDashboard = self.operation == FeedChooserOperationDashboardSites;
+    
     NSMutableArray *sections = [NSMutableArray array];
     NSMutableArray *indexTitles = [NSMutableArray array];
     NSMutableArray *folders = [NSMutableArray array];
     
     if (self.flat) {
-        section = [FeedChooserItem makeFolderWithTitle:@""];
-        [sections addObject:section];
+        if (isDashboard) {
+            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:folders" title:@"Folders"]];
+            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:feeds" title:@"Sites"]];
+            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:river_blurblogs" title:@"All Shared Stories"]];
+            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_searches" title:@"Saved Searches"]];
+            [sections addObject:[FeedChooserItem makeFolderWithIdentifier:@"dash:saved_stories" title:@"Saved Stories"]];
+        } else {
+            section = [FeedChooserItem makeFolderWithIdentifier:@"" title:@""];
+            [sections addObject:section];
+        }
     }
     
-    NSArray *folderArray = [self.dictFolders.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    NSMutableDictionary *flatSectionsDict = [NSMutableDictionary new];
+    
+    if (isDashboard && self.flat) {
+        for (FeedChooserItem *item in sections) {
+            flatSectionsDict[item.identifier] = item;
+        }
+    }
+    
+    NSMutableDictionary *allFoldersDict = [self.dictFolders mutableCopy];
+    NSArray *specialFolders = @[@"river_blurblogs", @"saved_searches", @"saved_stories"];
+    
+    [allFoldersDict removeObjectsForKeys:specialFolders];
+    
+    NSMutableArray *folderArray = [[allFoldersDict.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)] mutableCopy];
+    
+    if (isDashboard) {
+        [folderArray addObjectsFromArray:specialFolders];
+    }
     
     for (NSString *folderName in folderArray) {
-        if (![folderName hasPrefix:@"river_"] && ![folderName isEqualToString:@"read_stories"] && ![folderName isEqualToString:@"saved_searches"] && ![folderName isEqualToString:@"saved_stories"]) {
-            FeedChooserItem *folder = [FeedChooserItem makeFolderWithTitle:folderName];
-            [folders addObject:folder];
+        NSString *identifier = [self identifierForFolderName:folderName];
+        NSString *title = [self titleForFolderName:folderName];
+        FeedChooserItem *folder = [FeedChooserItem makeFolderWithIdentifier:identifier title:title];
+        [folders addObject:folder];
+        
+        if (!self.flat) {
+            section = folder;
+        } else if (isDashboard) {
+            section = flatSectionsDict[@"dash:folders"];
+            [section addItem:folder];
+        }
+        
+        for (id feedId in self.dictFolders[folderName]) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+            NSString *searchQuery = [appDelegate searchQueryForFeedId:feedIdStr];
+            feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
+            NSDictionary *info = appDelegate.dictFeeds[feedIdStr];
             
-            if (!self.flat) {
-                section = folder;
+            if (!info) {
+                info = self.inactiveFeeds[feedIdStr];
             }
             
-            for (id feedId in self.dictFolders[folderName]) {
-                NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
-                feedIdStr = [appDelegate feedIdWithoutSearchQuery:feedIdStr];
-                NSDictionary *info = appDelegate.dictFeeds[feedIdStr];
-                
-                if (!info) {
-                    info = self.inactiveFeeds[feedIdStr];
-                }
-                
-                BOOL wantFeed = ![appDelegate isSocialFeed:feedIdStr] && ![appDelegate isSavedFeed:feedIdStr];
-                
-                if (wantFeed && self.operation == FeedChooserOperationWidgetSites && ![info[@"active"] boolValue]) {
-                    wantFeed = NO;
-                }
-                
-                if (wantFeed) {
-                    [section addItemWithInfo:info];
-                }
+            BOOL isSocialFeed = [appDelegate isSocialFeed:feedIdStr];
+            BOOL isSavedFeed = [appDelegate isSavedFeed:feedIdStr];
+            BOOL wantFeed = (!isSocialFeed && !isSavedFeed) || isDashboard;
+            
+            if (wantFeed && isSocialFeed) {
+                info = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
             }
             
-            if (!self.flat && section.contents.count) {
-                [sections addObject:section];
-                [indexTitles addObject:section.title.length ? [section.title substringToIndex:1] : @"-"];
+            if (wantFeed && isSavedFeed) {
+                info = [appDelegate.dictSavedStoryTags objectForKey:feedIdStr];
             }
+            
+            if (wantFeed && self.operation == FeedChooserOperationWidgetSites && ![info[@"active"] boolValue]) {
+                wantFeed = NO;
+            }
+            
+            if (wantFeed) {
+                if (self.flat && isDashboard) {
+                    if (isSocialFeed) {
+                        section = flatSectionsDict[@"dash:river_blurblogs"];
+                    } else if (isSavedFeed) {
+                        section = flatSectionsDict[@"dash:saved_stories"];
+                    } else {
+                        section = flatSectionsDict[@"dash:feeds"];
+                    }
+                }
+                
+                [section addItemWithInfo:info search:searchQuery];
+            }
+        }
+        
+        if (!self.flat && section.contents.count) {
+            [sections addObject:section];
+            [indexTitles addObject:section.title.length ? [section.title substringToIndex:1] : @"-"];
         }
     }
     
@@ -205,6 +280,36 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [self.tableView reloadData];
     [self sortItemsAnimated:animated];
     [self updateControls];
+}
+
+- (NSString *)identifierForFolderName:(NSString *)folderName {
+    NSString *identifier = [[NewsBlurAppDelegate sharedAppDelegate] extractFolderName:folderName];
+    
+    if (self.operation == FeedChooserOperationDashboardSites) {
+        if ([folderName isEqualToString:@" "]) {
+            identifier = @"river:everything";
+        } else if ([folderName isEqualToString:@"river_blurblogs"]) {
+            identifier = @"river:blurblogs";
+        } else if ([folderName isEqualToString:@"river_global"]) {
+            identifier = @"river:global";
+        } else if ([folderName isEqualToString:@"saved_searches"] || [folderName isEqualToString:@"saved_stories"]) {
+            // Already correct.
+        } else {
+            identifier = [NSString stringWithFormat:@"river:%@", folderName];
+        }
+    }
+    
+    return identifier;
+}
+
+- (NSString *)titleForFolderName:(NSString *)folderName {
+    NSString *title = folderName;
+    
+    if (self.operation == FeedChooserOperationDashboardSites) {
+        title = [appDelegate folderTitle:folderName];
+    }
+    
+    return title;
 }
 
 - (void)sortItemsAnimated:(BOOL)animated {
@@ -322,10 +427,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
     return identifiers;
 }
 
-- (void)selectItemsWithIdentifiers:(NSArray *)itemIdentifiers animated:(BOOL)animated {
+- (void)selectItemsWithIdentifiers:(NSArray *)itemIdentifiers animated:(BOOL)animated scrollPosition:(UITableViewScrollPosition)scrollPosition {
     [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
         if ([itemIdentifiers containsObject:item.identifier]) {
-            [self.tableView selectRowAtIndexPath:indexPath animated:animated scrollPosition:UITableViewScrollPositionNone];
+            [self.tableView selectRowAtIndexPath:indexPath animated:animated scrollPosition:scrollPosition];
         } else {
             [self.tableView deselectRowAtIndexPath:indexPath animated:animated];
         }
@@ -334,10 +439,24 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [self updateControls];
 }
 
+- (void)deselectAll {
+    [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
+        [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
+    }];
+}
+
 - (void)deselectRowsOutsideSection:(NSUInteger)section {
     [self enumerateSectionsUsingBlock:^(NSUInteger thisSection, FeedChooserItem *folder) {
         if (thisSection != section) {
             [self select:NO section:thisSection isSelectAll:NO];
+        }
+    }];
+}
+
+- (void)deselectRowsOtherThan:(NSIndexPath *)thisIndexPath animated:(BOOL)animated {
+    [self enumerateAllRowsUsingBlock:^(NSIndexPath *indexPath, FeedChooserItem *item) {
+        if (indexPath != thisIndexPath) {
+            [self.tableView deselectRowAtIndexPath:indexPath animated:animated];
         }
     }];
 }
@@ -375,6 +494,8 @@ static const CGFloat kFolderTitleHeight = 36.0;
         }
     } else if (self.operation == FeedChooserOperationOrganizeSites) {
         self.navigationItem.title = @"Organize Sites";
+    } else if (self.operation == FeedChooserOperationDashboardSites) {
+        self.navigationItem.title = @"Choose Story List";
     } else {
         NSUInteger count = self.tableView.indexPathsForSelectedRows.count;
         
@@ -393,6 +514,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
     
     self.moveItem.enabled = hasSelection;
     self.deleteItem.enabled = hasSelection;
+    
+    if (self.operation == FeedChooserOperationDashboardSites) {
+        self.doneItem.enabled = self.selectedSection >= 0 || hasSelection;
+    }
     
     [self updateTitle];
 }
@@ -457,10 +582,67 @@ static const CGFloat kFolderTitleHeight = 36.0;
     [self setWidgetIncludes:include item:[self itemForIndexPath:indexPath]];
 }
 
+- (NSString *)operationKey {
+    switch (self.operation) {
+        case FeedChooserOperationMuteSites:
+            return @"mute";
+        case FeedChooserOperationOrganizeSites:
+            return @"organize";
+        case FeedChooserOperationWidgetSites:
+            return @"widget";
+        case FeedChooserOperationDashboardSites:
+            return @"dashboard";
+    }
+}
+
+- (NSString *)keyForProperty:(NSString *)property {
+    return [NSString stringWithFormat:@"chooser:%@:%@", self.operationKey, property];
+}
+
+- (FeedChooserSort)sort {
+    return [[NSUserDefaults standardUserDefaults] integerForKey:[self keyForProperty:@"sort"]];
+}
+
+- (void)setSort:(FeedChooserSort)newSort {
+    [[NSUserDefaults standardUserDefaults] setInteger:newSort forKey:[self keyForProperty:@"sort"]];
+}
+
+- (BOOL)ascending {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:[self keyForProperty:@"ascending"]];
+}
+
+- (void)setAscending:(BOOL)newAscending {
+    [[NSUserDefaults standardUserDefaults] setBool:newAscending forKey:[self keyForProperty:@"ascending"]];
+}
+
+- (BOOL)flat {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:[self keyForProperty:@"flat"]];
+}
+
+- (void)setFlat:(BOOL)newFlat {
+    [[NSUserDefaults standardUserDefaults] setBool:newFlat forKey:[self keyForProperty:@"flat"]];
+}
+
 #pragma mark - Title delegate methods
 
 - (void)didSelectTitleView:(UIButton *)sender {
     NSUInteger section = sender.tag;
+    
+    if (self.operation == FeedChooserOperationDashboardSites) {
+        if (self.flat) {
+            return;
+        }
+        
+        [self deselectAll];
+        
+        self.selectedSection = section;
+        
+        [self updateControls];
+        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:section] withRowAnimation:UITableViewRowAnimationNone];
+        
+        return;
+    }
+    
     BOOL select = ![self isSelectionInSection:section];
     
     [self enumerateRowsInSection:section usingBlock:^(NSUInteger row, FeedChooserItem *item) {
@@ -492,7 +674,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     self.sort = sort;
     [self sortItemsAnimated:YES];
     
-    [self selectItemsWithIdentifiers:identifiers animated:NO];
+    [self selectItemsWithIdentifiers:identifiers animated:NO scrollPosition:UITableViewScrollPositionNone];
 }
 
 - (void)showOptionsMenu {
@@ -525,14 +707,14 @@ static const CGFloat kFolderTitleHeight = 36.0;
         NSArray *identifiers = [self selectedItemIdentifiers];
         self.ascending = selectedIndex == 0;
         [self sortItemsAnimated:YES];
-        [self selectItemsWithIdentifiers:identifiers animated:NO];
+        [self selectItemsWithIdentifiers:identifiers animated:NO scrollPosition:UITableViewScrollPositionNone];
     }];
     
     [viewController addSegmentedControlWithTitles:@[@"Nested", @"Flat"] selectIndex:self.flat ? 1 : 0 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
         NSArray *identifiers = [self selectedItemIdentifiers];
         self.flat = selectedIndex == 1;
         [self rebuildItemsAnimated:YES];
-        [self selectItemsWithIdentifiers:identifiers animated:NO];
+        [self selectItemsWithIdentifiers:identifiers animated:NO scrollPosition:UITableViewScrollPositionNone];
     }];
     
     MenuItemHandler selectAllHandler = ^{
@@ -556,11 +738,11 @@ static const CGFloat kFolderTitleHeight = 36.0;
     if (isMute) {
         [viewController addTitle:@"Mute All" iconName:@"mute_feed_off.png" selectionShouldDismiss:YES handler:selectAllHandler];
         [viewController addTitle:@"Unmute All" iconName:@"mute_feed_on.png" selectionShouldDismiss:YES handler:selectNoneHandler];
-    } else {
+    } else if (self.operation != FeedChooserOperationDashboardSites) {
         [viewController addTitle:@"Select All" iconTemplateName:@"barbutton_selection.png" selectionShouldDismiss:YES handler:selectAllHandler];
         [viewController addTitle:@"Select None" iconTemplateName:@"barbutton_selection_off.png" selectionShouldDismiss:YES handler:selectNoneHandler];
     }
-
+    
     [viewController showFromNavigationController:self.navigationController barButtonItem:self.optionsItem];
 }
 
@@ -686,7 +868,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
         }
     }];
     
-    [self selectItemsWithIdentifiers:identifiers animated:NO];
+    [self selectItemsWithIdentifiers:identifiers animated:NO scrollPosition:UITableViewScrollPositionNone];
 }
 
 - (void)performSaveActiveFeeds {
@@ -737,6 +919,32 @@ static const CGFloat kFolderTitleHeight = 36.0;
     } else {
         if (self.operation == FeedChooserOperationWidgetSites) {
             [self.appDelegate.storyPagesViewController reloadWidget];
+        } else if (self.operation == FeedChooserOperationDashboardSites) {
+            NSString *riverId;
+            
+            if (self.selectedSection >= 0) {
+                FeedChooserItem *section = self.sections[self.selectedSection];
+                riverId = section.identifier;
+            } else {
+                riverId = [[self selectedItemIdentifiers] firstObject];
+                
+                if (riverId.integerValue) {
+                    riverId = [NSString stringWithFormat:@"feed:%@", riverId];
+                }
+            }
+            
+            if ([riverId hasPrefix:@"saved:"]) {
+                riverId = [riverId stringByReplacingOccurrencesOfString:@"saved:" withString:@"starred:"];
+            } else if ([riverId containsString:@" ▸ "]) {
+                riverId = [NSString stringWithFormat:@"river:%@", [appDelegate.feedsViewController folderTitleForFullFolderPath:riverId]];
+            }
+            
+            if ([riverId containsString:@"?"]) {
+                riverId = [riverId stringByReplacingOccurrencesOfString:@"?" withString:@":"];
+                riverId = [NSString stringWithFormat:@"search:%@", riverId];
+            }
+            
+            [self.appDelegate.feedDetailViewController doneDashboardChooseSite:riverId];
         }
         
         [self dismissViewControllerAnimated:YES completion:nil];
@@ -769,11 +977,11 @@ static const CGFloat kFolderTitleHeight = 36.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIndentifier = @"FeedChooserCell";
-    FeedChooserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
+    static NSString *CellIdentifier = @"FeedChooserCell";
+    FeedChooserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (!cell) {
-        cell = [[FeedChooserViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIndentifier];
+        cell = [[FeedChooserViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier];
     }
     
     FeedChooserItem *item = [self itemForIndexPath:indexPath];
@@ -781,7 +989,7 @@ static const CGFloat kFolderTitleHeight = 36.0;
     cell.isMuteOperation = self.operation == FeedChooserOperationMuteSites;
     cell.textLabel.text = item.title;
     cell.detailTextLabel.text = [item detailForSort:self.sort];
-    cell.isFaded = [[cell.detailTextLabel.text substringToIndex:2] isEqualToString:@"0 "];
+    cell.isFaded = cell.detailTextLabel.text.length > 2 ? [[cell.detailTextLabel.text substringToIndex:2] isEqualToString:@"0 "] : NO;
     cell.imageView.image = item.icon;
     
     if (self.operation == FeedChooserOperationMuteSites) {
@@ -802,6 +1010,8 @@ static const CGFloat kFolderTitleHeight = 36.0;
     FeedChooserTitleView *titleView = [[FeedChooserTitleView alloc] initWithFrame:rect];
     FeedChooserItem *item = self.sections[section];
     
+    titleView.isFlat = self.operation == FeedChooserOperationDashboardSites ? self.flat : NO;
+    titleView.isSelected = self.selectedSection == section;
     titleView.delegate = self;
     titleView.section = section;
     titleView.title = item.title;
@@ -829,6 +1039,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
 
 #if TARGET_OS_MACCATALYST
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.operation == FeedChooserOperationDashboardSites) {
+        return indexPath;
+    }
+    
     NSArray<NSIndexPath *> *selectedRows = [tableView indexPathsForSelectedRows];
     if ([selectedRows containsObject:indexPath]) {
         [tableView deselectRowAtIndexPath:indexPath animated:false];
@@ -839,6 +1053,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.operation == FeedChooserOperationDashboardSites) {
+        return indexPath;
+    }
+    
     NSArray<NSIndexPath *> *selectedRows = [tableView indexPathsForSelectedRows];
     if ([selectedRows containsObject:indexPath]) {
         return nil;
@@ -848,6 +1066,10 @@ static const CGFloat kFolderTitleHeight = 36.0;
 }
 
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.operation == FeedChooserOperationDashboardSites) {
+        return indexPath;
+    }
+    
     NSArray<NSIndexPath *> *selectedRows = [tableView indexPathsForSelectedRows];
     for (NSIndexPath *index in selectedRows) {
         [[tableView cellForRowAtIndexPath:index] setHighlighted:YES];
@@ -858,30 +1080,38 @@ static const CGFloat kFolderTitleHeight = 36.0;
 #endif
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.operation == FeedChooserOperationWidgetSites) {
+    if (self.operation == FeedChooserOperationMuteSites) {
+        UIImageView *imageView = (UIImageView *)[tableView cellForRowAtIndexPath:indexPath].accessoryView;
+        
+        imageView.highlighted = YES;
+    } else if (self.operation == FeedChooserOperationWidgetSites) {
         [self deselectRowsOutsideSection:indexPath.section];
         [self setWidgetIncludes:YES itemForIndexPath:indexPath];
         
         FeedChooserItem *folderItem = self.sections[indexPath.section];
         
         [self.groupDefaults setObject:folderItem.identifierString forKey:@"widget:show_folder"];
+    } else if (self.operation == FeedChooserOperationDashboardSites) {
+        NSInteger oldSelectedSection = self.selectedSection;
+        self.selectedSection = -1;
+        if (oldSelectedSection >= 0) {
+            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:oldSelectedSection] withRowAnimation:UITableViewRowAnimationNone];
+            [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        }
+        [self deselectRowsOtherThan:indexPath animated:false];
     }
-    
-    UIImageView *imageView = (UIImageView *)[tableView cellForRowAtIndexPath:indexPath].accessoryView;
-    
-    imageView.highlighted = YES;
     
     [self updateControls];
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.operation == FeedChooserOperationWidgetSites) {
+    if (self.operation == FeedChooserOperationMuteSites) {
+        UIImageView *imageView = (UIImageView *)[tableView cellForRowAtIndexPath:indexPath].accessoryView;
+        
+        imageView.highlighted = NO;
+    } else if (self.operation == FeedChooserOperationWidgetSites) {
         [self setWidgetIncludes:NO itemForIndexPath:indexPath];
     }
-    
-    UIImageView *imageView = (UIImageView *)[tableView cellForRowAtIndexPath:indexPath].accessoryView;
-    
-    imageView.highlighted = NO;
     
     [self updateControls];
 }

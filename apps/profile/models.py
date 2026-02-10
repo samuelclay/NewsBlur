@@ -1623,6 +1623,60 @@ class Profile(models.Model):
         logging.user(self.user, "~FG~BBNew iOS premium subscription: $%s~FW" % amount)
         return True
 
+    def activate_ios_archive(self, transaction_identifier=None, amount=99):
+        payments = PaymentHistory.objects.filter(
+            user=self.user,
+            payment_identifier=transaction_identifier,
+            payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
+        )
+        if len(payments):
+            logging.user(
+                self.user,
+                "~FG~BBAlready paid iOS archive subscription: $%s~FW" % transaction_identifier,
+            )
+            return False
+
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now(),
+            payment_amount=amount,
+            payment_provider="ios-archive-subscription",
+            payment_identifier=transaction_identifier,
+        )
+
+        self.setup_premium_history()
+        self.activate_archive()
+
+        logging.user(self.user, "~FG~BBNew iOS archive subscription: $%s~FW" % amount)
+        return True
+
+    def activate_ios_pro(self, transaction_identifier=None, amount=29):
+        payments = PaymentHistory.objects.filter(
+            user=self.user,
+            payment_identifier=transaction_identifier,
+            payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
+        )
+        if len(payments):
+            logging.user(
+                self.user,
+                "~FG~BBAlready paid iOS pro subscription: $%s~FW" % transaction_identifier,
+            )
+            return False
+
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now(),
+            payment_amount=amount,
+            payment_provider="ios-pro-subscription",
+            payment_identifier=transaction_identifier,
+        )
+
+        self.setup_premium_history()
+        self.activate_pro()
+
+        logging.user(self.user, "~FG~BBNew iOS pro subscription: $%s~FW" % amount)
+        return True
+
     def activate_android_premium(self, order_id=None, amount=36):
         payments = PaymentHistory.objects.filter(
             user=self.user,

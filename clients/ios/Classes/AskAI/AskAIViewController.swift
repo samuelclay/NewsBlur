@@ -68,6 +68,8 @@ import Combine
                 if hasAsked {
                     self?.onQuestionAsked?()
                     self?.enableLargeDetent()
+                    // Grow popover for response view
+                    self?.preferredContentSize = CGSize(width: 500, height: 630)
                 }
             }
             .store(in: &cancellables)

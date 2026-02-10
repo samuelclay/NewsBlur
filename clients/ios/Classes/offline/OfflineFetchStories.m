@@ -42,7 +42,6 @@
         ![self.appDelegate isReachableForOffline]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.appDelegate.feedsViewController showDoneNotifier];
-            [self.appDelegate.feedsViewController hideNotifier];
         });
         return NO;
     }
@@ -62,7 +61,6 @@
                 [self.appDelegate startOfflineFetchImages];
             } else {
                 [self.appDelegate.feedsViewController showDoneNotifier];
-                [self.appDelegate.feedsViewController hideNotifier];
                 [self.appDelegate finishBackground];
             }
         });

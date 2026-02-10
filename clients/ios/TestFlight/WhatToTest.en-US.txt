@@ -1,2 +1,0 @@
-- Fixed unexpected blank space at the top of the screen on iPhone SE.
-- Fixed an unnecessary divider after the last story in the widget.

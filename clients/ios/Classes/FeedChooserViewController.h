@@ -14,7 +14,8 @@ typedef NS_ENUM(NSUInteger, FeedChooserOperation)
 {
     FeedChooserOperationMuteSites = 0,
     FeedChooserOperationOrganizeSites = 1,
-    FeedChooserOperationWidgetSites = 2
+    FeedChooserOperationWidgetSites = 2,
+    FeedChooserOperationDashboardSites = 3
 };
 
 
@@ -23,5 +24,7 @@ typedef NS_ENUM(NSUInteger, FeedChooserOperation)
 @property (weak) IBOutlet UITableView *tableView;
 
 @property (nonatomic) FeedChooserOperation operation;
+
+@property (nonatomic, strong) NSString *dashboardRiverId;
 
 @end

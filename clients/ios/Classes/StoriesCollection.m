@@ -12,6 +12,7 @@
 #import "NSObject+SBJSON.h"
 #import "FMDatabase.h"
 #import "Utilities.h"
+#import "NewsBlur-Swift.h"
 
 @interface StoriesCollection ()
 
@@ -43,7 +44,6 @@
 @synthesize isSocialRiverView;
 @synthesize isSavedView;
 @synthesize isReadView;
-@synthesize transferredFromDashboard;
 @synthesize inSearch;
 @synthesize searchQuery;
 
@@ -58,14 +58,6 @@
     return self;
 }
 
-- (id)initForDashboard {
-    if (self = [self init]) {
-        
-    }
-    
-    return self;
-}
-
 - (void)reset {
     [self setStories:nil];
     [self setFeedUserProfiles:nil];
@@ -77,7 +69,6 @@
     self.activeFolderFeeds = nil;
     self.activeClassifiers = [NSMutableDictionary dictionary];
     
-    self.transferredFromDashboard = NO;
     self.isRiverView = NO;
     self.isSocialView = NO;
     self.isSocialRiverView = NO;
@@ -95,6 +86,14 @@
     self.inSearch = fromCollection.inSearch;
     self.searchQuery = fromCollection.searchQuery;
     self.savedSearchQuery = fromCollection.savedSearchQuery;
+}
+
+- (BOOL)isDashboard {
+    return appDelegate.isDashboard;
+}
+
+- (BOOL)isDashboardOrFromDashboardStory {
+    return self.isDashboard || appDelegate.fromDashboardStory;
 }
 
 - (BOOL)isEverything {
@@ -257,9 +256,11 @@
     NSString *orderPrefDefault = [userPreferences stringForKey:@"default_order"];
     NSString *orderPref = [userPreferences stringForKey:[self orderKey]];
     
+    NSLog(@"StoriesCollection activeOrder %@: %@", [self orderKey], orderPref);  // log
+    
     if (orderPref) {
         return orderPref;
-    } else if (orderPrefDefault) {
+    } else if (!self.isDashboardOrFromDashboardStory && orderPrefDefault) {
         return orderPrefDefault;
     } else {
         return @"newest";
@@ -279,14 +280,16 @@
     if (readFilterPref) {
         return readFilterPref;
     } else if (self.activeFolder && (self.isRiverView || self.isSocialRiverView)) {
-        if (readFilterFolderPrefDefault) {
+        if (!self.isDashboardOrFromDashboardStory && readFilterFolderPrefDefault) {
             return readFilterFolderPrefDefault;
         } else {
             return @"unread";
         }
     } else {
-        if (readFilterFeedPrefDefault) {
+        if (!self.isDashboardOrFromDashboardStory && readFilterFeedPrefDefault) {
             return readFilterFeedPrefDefault;
+        } else if (self.isDashboardOrFromDashboardStory) {
+            return @"unread";
         } else {
             return @"all";
         }
@@ -320,35 +323,37 @@
 
 - (NSString *)orderKey {
     if (self.isRiverView) {
-        return [NSString stringWithFormat:@"folder:%@:order", self.activeFolder];
+        return [NSString stringWithFormat:@"%@folder:%@:order", self.isDashboardOrFromDashboardStory ? @"dashboard:" : @"", self.activeFolder];
     } else {
-        return [NSString stringWithFormat:@"%@:order", [self.activeFeed objectForKey:@"id"]];
+        return [NSString stringWithFormat:@"%@%@:order", self.isDashboardOrFromDashboardStory ? @"dashboard:" : @"", [self.activeFeed objectForKey:@"id"]];
     }
 }
 
 - (NSString *)readFilterKey {
     if (self.isRiverView) {
-        return [NSString stringWithFormat:@"folder:%@:read_filter", self.activeFolder];
+        return [NSString stringWithFormat:@"%@folder:%@:read_filter", self.isDashboardOrFromDashboardStory ? @"dashboard:" : @"", self.activeFolder];
     } else {
-        return [NSString stringWithFormat:@"%@:read_filter", [self.activeFeed objectForKey:@"id"]];
+        return [NSString stringWithFormat:@"%@%@:read_filter", self.isDashboardOrFromDashboardStory ? @"dashboard:" : @"", [self.activeFeed objectForKey:@"id"]];
     }
 }
 
-- (NSString *)scrollReadFilterKey {
+- (NSString *)markReadFilterKey {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    BOOL shouldOverride = [userPreferences boolForKey:@"override_scroll_read_filter"];
+    BOOL shouldOverride = [userPreferences boolForKey:@"override_mark_read_filter"];
     
     if (!shouldOverride) {
-        return @"default_scroll_read_filter";
+        return @"default_mark_read_filter";
     } else if (self.isRiverView) {
-        return [NSString stringWithFormat:@"folder:%@:scroll_read_filter", self.activeFolder];
+        return [NSString stringWithFormat:@"folder:%@:mark_read_filter", self.activeFolder];
     } else {
-        return [NSString stringWithFormat:@"%@:scroll_read_filter", [self.activeFeed objectForKey:@"id"]];
+        return [NSString stringWithFormat:@"%@:mark_read_filter", [self.activeFeed objectForKey:@"id"]];
     }
 }
 
 - (NSString *)storyTitlesPositionKey {
-    if (self.isRiverView) {
+    if (self.isDashboard) {
+        return [NSString stringWithFormat:@"dashboard:story_titles_position"];
+    } else if (self.isRiverView) {
         return [NSString stringWithFormat:@"folder:%@:story_titles_position", self.activeFolder];
     } else {
         return [NSString stringWithFormat:@"%@:story_titles_position", [self.activeFeed objectForKey:@"id"]];
@@ -371,6 +376,8 @@
             return @"Global Shared Stories";
         } else if ([activeFolder isEqualToString:@"everything"]) {
             return @"All Site Stories";
+        } else if ([activeFolder isEqualToString:@"dashboard"]) {
+            return @"NewsBlur Dashboard";
         } else if ([activeFolder isEqualToString:@"infrequent"]) {
             return @"Infrequent Site Stories";
         } else if (isSavedView && activeSavedStoryTag) {
@@ -465,11 +472,20 @@
                forKey:@"story_hash"];
     [params setObject:[story objectForKey:@"story_feed_id"]
                forKey:@"story_feed_id"];
-    
+
+    NSString *readTimesJSON = [[ReadTimeTracker shared] consumeQueuedReadTimesJSON];
+    if (readTimesJSON) {
+        [params setObject:readTimesJSON forKey:@"read_times"];
+    }
+
     [appDelegate POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         self.recentlyReadHashes[hash] = [NSString stringWithFormat:@"SYNCED - %@", title];
         [self finishMarkAsRead:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSString *failedReadTimes = [params objectForKey:@"read_times"];
+        if (failedReadTimes) {
+            [[ReadTimeTracker shared] restoreQueuedReadTimesWithJson:failedReadTimes];
+        }
         self.recentlyReadHashes[hash] = nil;
         [self failedMarkAsRead:params];
     }];

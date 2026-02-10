@@ -1,0 +1,19 @@
+These are the changes in NewsBlur Alpha, the development edition, awaiting future public release:
+
+- Added a NewsBlur Dashboard at the top of the feeds list. Selecting it shows lists of stories that are updated every five minutes, so you can watch news arrive throughout the day. The displayed feeds can be added, removed, changed, and rearranged. Select a feed to show all of that feed, or an individual story to jump to that story.
+- Can now pinch an image in a story to zoom to a Quick Look of the full-sized image.
+- Added a List view of stories, similar to the Grid view but with rows of stories.
+- Added a Magazine view of stories, with taller rows of stories and larger image thumbnails.
+- The Mark Story Read preference now has options to mark a story read on scroll or selection, only selection, after an interval, or manually.
+- If not marking read on scroll, a button now appears at the end of the story list to mark all stories as read.
+- The login / sign up screen has a nice redesign.
+- OS 26 support, including:
+    - Modernized menus on Mac and iPad.
+    - Simplified the layout options to show the sites beside or over the stories.
+    - When iPad window is resized smaller, the sites is automatically hidden.
+    - When iPad window is very narrow, it uses the iPhone layout.
+    - Many more changes.
+- Plus some minor improvements, including:
+    - Adjusted grid font sizes to better match the list layout.
+    - Adjusted the position of a couple of popover menus on Mac.
+    - Improvements to the highlighting of section headings in the sites list sidebar.

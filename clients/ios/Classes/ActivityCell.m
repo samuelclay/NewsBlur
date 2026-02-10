@@ -97,9 +97,9 @@
             return 1;
         }
 
-//        UIImage *placeholder = [UIImage imageNamed:@"user_light"];
+        UIImage *placeholder = [[NewsBlurAppDelegate sharedAppDelegate] defaultUserAvatar];
         [self.faviconView setImageWithURL:[NSURL URLWithString:[[activity objectForKey:@"with_user"] objectForKey:@"photo_url"]]
-                         placeholderImage:nil];
+                         placeholderImage:placeholder];
     } else if ([category isEqualToString:@"sharedstory"] ||
                [category isEqualToString:@"feedsub"] ||
                [category isEqualToString:@"star"]) {
