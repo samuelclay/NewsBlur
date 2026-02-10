@@ -26974,20 +26974,76 @@ h5.NB-classifier-section-header {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 48px 16px;
-    gap: 16px;
-    color: #999;
+    padding: 40px 16px 32px;
+    gap: 24px;
+    min-height: 300px;
+}
+.NB-add-site-webfeed-explainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    max-width: 860px;
+    width: 100%;
+}
+.NB-add-site-webfeed-explainer-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    padding: 28px 20px 24px;
+    background: #FFFFFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 12px;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
 }
-.NB-add-site-webfeed-empty-icon img {
-    width: 48px;
-    height: 48px;
-    opacity: 0.4;
+.NB-add-site-webfeed-explainer-card.NB-animate-in {
+    opacity: 1;
+    transform: translateY(0);
 }
-.NB-add-site-webfeed-empty-text {
-    font-size: 14px;
+.NB-add-site-webfeed-explainer-illustration {
+    width: 96px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+.NB-add-site-webfeed-explainer-img {
+    width: 96px;
+    height: 96px;
+    opacity: 0.55;
+}
+.NB-add-site-webfeed-explainer-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+.NB-add-site-webfeed-explainer-desc {
+    font-size: 13px;
+    color: #666;
     line-height: 1.5;
-    max-width: 360px;
+    max-width: 220px;
+    margin-bottom: 8px;
+}
+.NB-add-site-webfeed-explainer-detail {
+    font-size: 11px;
+    color: #999;
+    line-height: 1.4;
+    max-width: 220px;
+}
+.NB-add-site-webfeed-empty-cta {
+    font-size: 14px;
+    color: #999;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.NB-add-site-webfeed-empty-cta.NB-animate-in {
+    opacity: 1;
+    transform: translateY(0);
 }
 .NB-add-site-webfeed-analyzing {
     display: flex;
@@ -28420,11 +28476,25 @@ h5.NB-classifier-section-header {
 }
 
 /* Dark theme: Web Feed Tab */
-.NB-dark .NB-add-site-webfeed-empty-text {
-    color: #888;
+.NB-dark .NB-add-site-webfeed-explainer-card {
+    background: #2A2A2A;
+    border-color: #444;
 }
-.NB-dark .NB-add-site-webfeed-empty-icon img {
-    filter: invert(0.7);
+.NB-dark .NB-add-site-webfeed-explainer-img {
+    filter: brightness(0) invert(0.7);
+    opacity: 0.5;
+}
+.NB-dark .NB-add-site-webfeed-explainer-title {
+    color: #E0E0E0;
+}
+.NB-dark .NB-add-site-webfeed-explainer-desc {
+    color: #999;
+}
+.NB-dark .NB-add-site-webfeed-explainer-detail {
+    color: #777;
+}
+.NB-dark .NB-add-site-webfeed-empty-cta {
+    color: #777;
 }
 .NB-dark .NB-add-site-webfeed-analyzing-spinner {
     border-color: #444;

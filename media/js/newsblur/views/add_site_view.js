@@ -2438,13 +2438,18 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 $content_area.find('.NB-add-site-webfeed-variant-card, .NB-add-site-webfeed-subscribe-section').addClass('NB-animate-in');
             }
         } else {
-            $content_area.html($.make('div', { className: 'NB-add-site-webfeed-empty' }, [
-                $.make('div', { className: 'NB-add-site-webfeed-empty-icon' }, [
-                    $.make('img', { src: '/media/img/icons/nouns/web-feed.svg', className: 'NB-add-site-source-icon-img' })
-                ]),
-                $.make('div', { className: 'NB-add-site-webfeed-empty-text' },
-                    'Paste a URL above to find stories on any page, even without RSS.')
-            ]));
+            $content_area.html(this.render_webfeed_empty());
+            if (!state._empty_animated) {
+                state._empty_animated = true;
+                var $cards = $content_area.find('.NB-add-site-webfeed-explainer-card');
+                $cards.each(function (i) {
+                    var $card = $(this);
+                    setTimeout(function () { $card.addClass('NB-animate-in'); }, i * 200 + 100);
+                });
+            } else {
+                $content_area.find('.NB-add-site-webfeed-explainer-card')
+                    .addClass('NB-animate-in');
+            }
         }
 
         $tab.html($.make('div', { className: 'NB-add-site-tab-with-search' }, [
@@ -2461,6 +2466,55 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $search_bar,
             $content_area
         ]));
+    },
+
+    render_webfeed_empty: function () {
+        var explainer_cards = [
+            {
+                icon: '/media/img/icons/nouns/web-feed-any-site.svg',
+                title: 'Works on any website',
+                desc: 'Paste any URL and NewsBlur creates a feed from the page, even without RSS.',
+                detail: 'The page HTML is fetched and parsed to extract content structure.'
+            },
+            {
+                icon: '/media/img/icons/nouns/web-feed-ai-analyze.svg',
+                title: 'AI finds the stories',
+                desc: 'You\'re presented with multiple story pattern options to choose from.',
+                detail: 'XPath patterns identify story blocks, headlines, links, and images.'
+            },
+            {
+                icon: '/media/img/icons/nouns/web-feed-refine.svg',
+                title: 'Refine with a hint',
+                desc: 'If none of the options match, type a story title you see on the page and we\'ll re-analyze.',
+                detail: 'A second pass uses your hint to find the right pattern on the page.'
+            },
+            {
+                icon: '/media/img/icons/nouns/web-feed-updates.svg',
+                title: 'Updates come to you',
+                desc: 'NewsBlur checks for changes and delivers new stories to your feed.',
+                detail: 'Pages are re-checked on a configurable schedule and diffed for new content.'
+            }
+        ];
+
+        var $cards = $.make('div', { className: 'NB-add-site-webfeed-explainer' },
+            _.map(explainer_cards, function (card) {
+                return $.make('div', { className: 'NB-add-site-webfeed-explainer-card' }, [
+                    $.make('div', { className: 'NB-add-site-webfeed-explainer-illustration' }, [
+                        $.make('img', {
+                            src: card.icon,
+                            className: 'NB-add-site-webfeed-explainer-img'
+                        })
+                    ]),
+                    $.make('div', { className: 'NB-add-site-webfeed-explainer-title' }, card.title),
+                    $.make('div', { className: 'NB-add-site-webfeed-explainer-desc' }, card.desc),
+                    $.make('div', { className: 'NB-add-site-webfeed-explainer-detail' }, card.detail)
+                ]);
+            })
+        );
+
+        return $.make('div', { className: 'NB-add-site-webfeed-empty' }, [
+            $cards
+        ]);
     },
 
     render_webfeed_variants: function () {
@@ -2716,6 +2770,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.webfeed_state.request_id = request_id;
         this.webfeed_state.subscribed_feed = null;
         this.webfeed_state._variants_animated = false;
+        this.webfeed_state._empty_animated = false;
         this.webfeed_state.analyze_stage = null;
 
         this.render_webfeed_tab();
@@ -2818,6 +2873,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.webfeed_state.favicon_url = data.favicon_url || '';
         this.webfeed_state.error = null;
         this.webfeed_state._variants_animated = false;
+        this.webfeed_state._empty_animated = false;
         this.render_webfeed_tab();
     },
 

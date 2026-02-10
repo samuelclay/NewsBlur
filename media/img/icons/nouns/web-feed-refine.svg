@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>web-feed-refine</title>
+    <g id="web-feed-refine" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(12, 8)" fill-rule="nonzero">
+            <!-- Document outline -->
+            <path d="M14,0 C6.268,0 0,6.268 0,14 L0,118 C0,125.732 6.268,132 14,132 L112,132 C119.732,132 126,125.732 126,118 L126,14 C126,6.268 119.732,0 112,0 L14,0 Z M14,8 L112,8 C115.314,8 118,10.686 118,14 L118,118 C118,121.314 115.314,124 112,124 L14,124 C10.686,124 8,121.314 8,118 L8,14 C8,10.686 10.686,8 14,8 Z" fill="#95968E"/>
+
+            <!-- Story row 1 (dimmed - not matching) -->
+            <rect x="20" y="22" width="20" height="20" rx="4" fill="#95968E" opacity="0.3"/>
+            <rect x="48" y="24" width="56" height="6" rx="3" fill="#95968E" opacity="0.3"/>
+            <rect x="48" y="34" width="38" height="5" rx="2.5" fill="#95968E" opacity="0.2"/>
+
+            <!-- Story row 2 (dimmed - not matching) -->
+            <rect x="20" y="52" width="20" height="20" rx="4" fill="#95968E" opacity="0.3"/>
+            <rect x="48" y="54" width="56" height="6" rx="3" fill="#95968E" opacity="0.3"/>
+            <rect x="48" y="64" width="38" height="5" rx="2.5" fill="#95968E" opacity="0.2"/>
+
+            <!-- Story row 3 (dimmed - not matching) -->
+            <rect x="20" y="82" width="20" height="20" rx="4" fill="#95968E" opacity="0.3"/>
+            <rect x="48" y="84" width="56" height="6" rx="3" fill="#95968E" opacity="0.3"/>
+            <rect x="48" y="94" width="38" height="5" rx="2.5" fill="#95968E" opacity="0.2"/>
+
+            <!-- Hint input bar at bottom -->
+            <rect x="14" y="110" width="80" height="16" rx="4" fill="#5C89C9" opacity="0.12"/>
+            <rect x="20" y="115" width="40" height="5" rx="2.5" fill="#5C89C9" opacity="0.5"/>
+            <!-- Text cursor -->
+            <rect x="62" y="113" width="2" height="10" rx="1" fill="#5C89C9"/>
+
+            <!-- Refresh arrow (right of input) -->
+            <path d="M108,110 C114,110 118,114 118,120" stroke="#5C89C9" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M104,116 L108,110 L114,113" stroke="#5C89C9" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+    </g>
+</svg>
