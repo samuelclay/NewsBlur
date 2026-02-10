@@ -1,1 +1,2 @@
 replicaof {{ inventory_hostname|regex_replace('\-?\d+', '')|regex_replace('hdb\-', 'db-') }}.service.nyc1.consul {{ redis_port }}
+save 3600 1
