@@ -11,6 +11,7 @@ Usage:
 
 import json
 import os
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from django.core.management.base import BaseCommand
@@ -125,8 +126,10 @@ class Command(BaseCommand):
         failed = 0
 
         # Phase 1: Create/update PopularFeed records sequentially
+        phase1_start = time.time()
         feeds_to_fetch = []
         feeds_to_force_update = []
+        total_phase1 = len(all_feeds)
         for i, entry in enumerate(all_feeds):
             fixture_index = offset + i
             feed_url = entry["feed_url"]
@@ -166,6 +169,17 @@ class Command(BaseCommand):
                 feeds_to_fetch.append((popular_feed, feed_url, fixture_index))
             elif force_update and popular_feed.feed:
                 feeds_to_force_update.append(popular_feed)
+
+            if (i + 1) % 500 == 0 or i + 1 == total_phase1:
+                elapsed = time.time() - phase1_start
+                rate = (i + 1) / elapsed if elapsed > 0 else 0
+                remaining = (total_phase1 - i - 1) / rate if rate > 0 else 0
+                self.stdout.write(
+                    f"  Phase 1: {i + 1}/{total_phase1} ({100 * (i + 1) / total_phase1:.1f}%)"
+                    f" - {created} created, {updated} updated, {len(feeds_to_fetch)} to fetch"
+                    f" - {rate:.0f}/s, ~{remaining:.0f}s left"
+                    f"  [restart with --offset {fixture_index + 1}]"
+                )
 
         # Phase 2: Fetch and link Feed objects in parallel
         if feeds_to_fetch:
