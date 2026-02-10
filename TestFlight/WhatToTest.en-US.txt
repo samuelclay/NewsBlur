@@ -1,5 +1,3 @@
-🚧 Note: OS 26 support is still a work-in-progress. Don't bother reporting bugs on it yet. 🚧
-
 These are the changes in NewsBlur Alpha, the development edition, awaiting future public release:
 
 - Added a NewsBlur Dashboard at the top of the feeds list. Selecting it shows lists of stories that are updated every five minutes, so you can watch news arrive throughout the day. The displayed feeds can be added, removed, changed, and rearranged. Select a feed to show all of that feed, or an individual story to jump to that story.
@@ -12,7 +10,7 @@ These are the changes in NewsBlur Alpha, the development edition, awaiting futur
 - OS 26 support, including:
     - Modernized menus on Mac and iPad.
     - Simplified the layout options to show the sites beside or over the stories.
-    - When iPad window is resized smaller, the sides is automatically hidden.
+    - When iPad window is resized smaller, the sites is automatically hidden.
     - When iPad window is very narrow, it uses the iPhone layout.
     - Many more changes.
 - Plus some minor improvements, including:
