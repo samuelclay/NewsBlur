@@ -466,12 +466,16 @@ class Test_FinishArchiveFeedsSyncRedis(TestCase):
         for feed in self.feeds:
             MStory.objects(story_feed_id=feed.pk).delete()
 
+    @patch("apps.reader.models.MStory.objects")
     @patch("apps.reader.models.time.sleep")
     @patch("apps.rss_feeds.models.Feed.sync_redis")
     @patch("apps.reader.models.redis.Redis")
-    def test_finish_fetch_calls_sync_redis_for_each_feed(self, mock_redis_cls, mock_sync_redis, mock_sleep):
+    def test_finish_fetch_calls_sync_redis_for_each_feed(
+        self, mock_redis_cls, mock_sync_redis, mock_sleep, mock_mstory_objects
+    ):
         """finish_fetch_archive_feeds should call sync_redis on each subscribed feed."""
         mock_redis_cls.return_value = MagicMock()
+        mock_mstory_objects.return_value.count.return_value = 0
 
         start_time = time.time()
         UserSubscription.finish_fetch_archive_feeds(self.user.pk, start_time, 0)
@@ -483,17 +487,21 @@ class Test_FinishArchiveFeedsSyncRedis(TestCase):
             f"sync_redis should be called {len(self.feeds)} times, got {mock_sync_redis.call_count}",
         )
 
+    @patch("apps.reader.models.MStory.objects")
     @patch("apps.reader.models.time.sleep")
     @patch("apps.rss_feeds.models.Feed.sync_redis")
     @patch("apps.reader.models.redis.Redis")
-    def test_finish_fetch_staggers_sync_redis_with_sleep(self, mock_redis_cls, mock_sync_redis, mock_sleep):
+    def test_finish_fetch_staggers_sync_redis_with_sleep(
+        self, mock_redis_cls, mock_sync_redis, mock_sleep, mock_mstory_objects
+    ):
         """finish_fetch_archive_feeds should sleep between sync_redis calls to avoid Redis spike."""
         mock_redis_cls.return_value = MagicMock()
+        mock_mstory_objects.return_value.count.return_value = 0
 
         start_time = time.time()
         UserSubscription.finish_fetch_archive_feeds(self.user.pk, start_time, 0)
 
-        # sleep(2) should be called between feeds (n-1 times for n feeds)
+        # sleep(0.5) should be called between feeds (n-1 times for n feeds)
         expected_sleeps = len(self.feeds) - 1
         self.assertEqual(
             mock_sleep.call_count,
@@ -503,13 +511,17 @@ class Test_FinishArchiveFeedsSyncRedis(TestCase):
         for c in mock_sleep.call_args_list:
             self.assertEqual(c, call(0.5), "Each sleep should be 0.5 seconds")
 
+    @patch("apps.reader.models.MStory.objects")
     @patch("apps.reader.models.time.sleep")
     @patch("apps.rss_feeds.models.Feed.sync_redis")
     @patch("apps.reader.models.redis.Redis")
-    def test_finish_fetch_publishes_done_before_sync(self, mock_redis_cls, mock_sync_redis, mock_sleep):
+    def test_finish_fetch_publishes_done_before_sync(
+        self, mock_redis_cls, mock_sync_redis, mock_sleep, mock_mstory_objects
+    ):
         """finish_fetch_archive_feeds should publish fetch_archive:done to Redis pubsub."""
         mock_r = MagicMock()
         mock_redis_cls.return_value = mock_r
+        mock_mstory_objects.return_value.count.return_value = 0
 
         start_time = time.time()
         UserSubscription.finish_fetch_archive_feeds(self.user.pk, start_time, 0)

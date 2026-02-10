@@ -367,6 +367,7 @@ INSTALLED_APPS = (
     "apps.webfeed",
     "apps.archive_extension",
     "apps.archive_assistant",
+    "apps.monitor",
     "utils",  # missing models so no migrations
     "vendor",
     "typogrify",

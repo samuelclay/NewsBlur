@@ -683,7 +683,7 @@ class Feed(models.Model):
         # Check for JSON feed
         if not feed and fetch and create:
             try:
-                r = requests.get(url)
+                r = requests.get(url, timeout=10)
             except (requests.ConnectionError, requests.models.InvalidURL):
                 r = None
             if r and "application/json" in r.headers.get("Content-Type"):
@@ -693,6 +693,31 @@ class Feed(models.Model):
                 except IntegrityError:
                     feed = by_url(url)
                     feed = feed[offset] if feed and len(feed) > offset else None
+
+        # ScrapingBee fallback for blocked feeds (manual user add only)
+        if not feed and fetch and create and user:
+            try:
+                from utils.feed_fetcher import fetch_url_with_scrapingbee
+
+                logging.debug(" ---> Trying ScrapingBee fallback for feed discovery: %s" % url)
+                status_code, body = fetch_url_with_scrapingbee(url)
+                if status_code == 200 and body:
+                    import feedparser as fp
+
+                    parsed = fp.parse(body)
+                    if parsed.entries or parsed.feed.get("title") or parsed.version:
+                        logging.debug(" ---> ScrapingBee found valid feed: %s" % url)
+                        try:
+                            feed = cls.objects.create(feed_address=url)
+                            feed.is_forbidden = True
+                            feed.date_forbidden = datetime.datetime.now()
+                            feed = feed.save()
+                            feed = feed.update(fpf=parsed)
+                        except IntegrityError:
+                            feed = by_url(url)
+                            feed = feed[offset] if feed and len(feed) > offset else None
+            except Exception as e:
+                logging.debug(" ---> ScrapingBee feed discovery fallback error: %s" % str(e))
 
         # Still nothing? Maybe the URL has some clues.
         if not feed and fetch and len(found_feed_urls):

@@ -662,7 +662,8 @@ var classifier_prototype = {
         var matching_text_regex = this.make_user_text_regex(story_content);
         var non_matching_texts = this.make_user_texts_non_matching(story_content);
         var non_matching_text_regex = this.make_user_text_regex_non_matching(story_content);
-        var $scoped_groups = this.make_scoped_groups(non_matching_texts.concat(non_matching_text_regex));
+        var current_folder_names = this.feed ? this.feed.in_folders() : [];
+        var $scoped_groups = this.make_scoped_groups(non_matching_texts.concat(non_matching_text_regex), current_folder_names);
 
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
             this.make_classifier('<span class="NB-classifier-text-placeholder">Enter text above</span>', '', 'text'),
@@ -715,7 +716,8 @@ var classifier_prototype = {
         var matching_title_regex = this.make_user_title_regex_matching(story_title);
         var non_matching_titles = this.make_user_titles_non_matching(story_title);
         var non_matching_title_regex = this.make_user_title_regex_non_matching(story_title);
-        var $scoped_groups = this.make_scoped_groups(non_matching_titles.concat(non_matching_title_regex));
+        var current_folder_names = this.feed ? this.feed.in_folders() : [];
+        var $scoped_groups = this.make_scoped_groups(non_matching_titles.concat(non_matching_title_regex), current_folder_names);
 
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
             this.make_classifier('<span class="NB-classifier-title-placeholder">Select title phrase</span>', '', 'title'),
@@ -772,7 +774,8 @@ var classifier_prototype = {
         var matching_url_regex = this.make_user_url_regex_matching(story_url);
         var non_matching_urls = this.make_user_urls_non_matching(story_url);
         var non_matching_url_regex = this.make_user_url_regex_non_matching(story_url);
-        var $scoped_groups = this.make_scoped_groups(non_matching_urls.concat(non_matching_url_regex));
+        var current_folder_names = this.feed ? this.feed.in_folders() : [];
+        var $scoped_groups = this.make_scoped_groups(non_matching_urls.concat(non_matching_url_regex), current_folder_names);
 
         // Always create the "this story" div with the placeholder, plus any matching URLs
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
@@ -882,8 +885,9 @@ var classifier_prototype = {
 
         var $story_authors = has_story_author ?
             $.make('div', { className: 'NB-classifier-this-story' }, this.make_authors([story_author])) : '';
+        var current_folder_names = this.feed ? this.feed.in_folders() : [];
         var $scoped_groups = has_other_authors ?
-            this.make_scoped_groups(this.make_authors(other_authors)) : [];
+            this.make_scoped_groups(this.make_authors(other_authors), current_folder_names) : [];
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
@@ -926,8 +930,9 @@ var classifier_prototype = {
 
         var $story_tags = has_story_tags ?
             $.make('div', { className: 'NB-classifier-this-story' }, this.make_tags(story_tags)) : '';
+        var current_folder_names = this.feed ? this.feed.in_folders() : [];
         var $scoped_groups = has_other_tags ?
-            this.make_scoped_groups(this.make_tags(other_tags)) : [];
+            this.make_scoped_groups(this.make_tags(other_tags), current_folder_names) : [];
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
             $.make('h5', { className: 'NB-classifier-section-header' }, [
@@ -947,8 +952,9 @@ var classifier_prototype = {
 
     make_combined_publisher_section: function (feed) {
         var has_other_publishers = this.feed_publishers && this.feed_publishers.length > 0;
+        var current_folder_names = this.feed ? this.feed.in_folders() : [];
         var $scoped_groups = has_other_publishers ?
-            this.make_scoped_groups(this.make_publishers(this.feed_publishers)) : [];
+            this.make_scoped_groups(this.make_publishers(this.feed_publishers), current_folder_names) : [];
 
         return $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
             $.make('h5', 'Publisher'),
@@ -1310,10 +1316,16 @@ var classifier_prototype = {
         return $publisher;
     },
 
-    group_classifiers_by_scope: function (classifiers) {
+    group_classifiers_by_scope: function (classifiers, current_folder_names) {
         var groups = { feed: [], folder: [], global: [] };
         _.each(classifiers, function ($el) {
             var scope = $('.NB-classifier', $el).data('scope') || 'feed';
+            if (scope === 'folder' && current_folder_names) {
+                var folder_name = $('.NB-classifier', $el).data('folder-name') || '';
+                if (!_.contains(current_folder_names, folder_name)) {
+                    return; // Skip classifiers from other folders
+                }
+            }
             if (groups[scope]) {
                 groups[scope].push($el);
             } else {
@@ -1323,8 +1335,8 @@ var classifier_prototype = {
         return groups;
     },
 
-    make_scoped_groups: function (classifiers) {
-        var groups = this.group_classifiers_by_scope(classifiers);
+    make_scoped_groups: function (classifiers, current_folder_names) {
+        var groups = this.group_classifiers_by_scope(classifiers, current_folder_names);
         var $sections = [];
 
         if (groups.feed.length > 0) {
@@ -2681,8 +2693,22 @@ var classifier_prototype = {
             this.manage_filter_sentiment = 'all';
             this.manage_filter_types = 'all';
             this.manage_filter_scope = 'all';
-            this.manage_filter_feed = null;
             this.manage_filter_search = '';
+
+            // Default feed filter to current folder context
+            var active_folder = NEWSBLUR.reader.active_folder;
+            if (active_folder && active_folder.get && active_folder.get('folder_title')) {
+                this.manage_filter_feed = 'river:' + active_folder.get('folder_title');
+            } else if (this.feed) {
+                var folders = this.feed.in_folders();
+                if (folders && folders.length) {
+                    this.manage_filter_feed = 'river:' + folders[0];
+                } else {
+                    this.manage_filter_feed = null;
+                }
+            } else {
+                this.manage_filter_feed = null;
+            }
 
             // Always refresh data when switching to manage tab
             this.all_classifiers_data = null;
