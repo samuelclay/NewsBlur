@@ -514,9 +514,18 @@
 }
 
 - (void)updateStatusBarState {
-    BOOL isNavBarHidden = self.isNavigationBarHidden;
-    
-    self.statusBarBackgroundView.hidden = self.shouldHideStatusBar || !isNavBarHidden || !appDelegate.isPortrait;
+    BOOL shouldShow = !self.shouldHideStatusBar && self.isNavigationBarHidden && appDelegate.isPortrait;
+    CGFloat targetAlpha = shouldShow ? 1.0 : 0.0;
+    if (shouldShow) {
+        self.statusBarBackgroundView.hidden = NO;
+    }
+    [UIView animateWithDuration:0.15 animations:^{
+        self.statusBarBackgroundView.alpha = targetAlpha;
+    } completion:^(BOOL finished) {
+        if (!shouldShow) {
+            self.statusBarBackgroundView.hidden = YES;
+        }
+    }];
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -556,6 +565,7 @@
     self.currentlyTogglingNavigationBar = YES;
     self.wasNavigationBarHidden = hide;
     self.isNavigationBarFaded = hide;
+    self.navBarFadeAccumulator = hide ? 80.0 : 0.0;
 
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
@@ -651,10 +661,9 @@
     // Update content inset on all pages' web views so swiping between them is seamless
     // Current page: force update when transitioning from hidden to shown so content isn't clipped
     BOOL wasFaded = self.isNavigationBarFaded;
-    BOOL forceCurrentInsetUpdate = wasFaded && clampedAlpha > 0.05;
     [self.currentPage updateContentInsetForNavigationBarAlpha:clampedAlpha
                                        maintainVisualPosition:YES
-                                                        force:forceCurrentInsetUpdate];
+                                                        force:NO];
     // Adjacent pages: always maintain visual position to keep them at correct scroll position
     [self.previousPage updateContentInsetForNavigationBarAlpha:clampedAlpha maintainVisualPosition:YES];
     [self.nextPage updateContentInsetForNavigationBarAlpha:clampedAlpha maintainVisualPosition:YES];
@@ -668,16 +677,6 @@
     if (wasFaded != self.isNavigationBarFaded) {
         [self.currentPage updateFeedTitleGradientPosition];
         [self updateStatusBarState];
-    }
-
-    if (self.isNavigationBarFaded) {
-        [self.currentPage captureNavBarHiddenOffsetIfNeeded];
-        [self.previousPage captureNavBarHiddenOffsetIfNeeded];
-        [self.nextPage captureNavBarHiddenOffsetIfNeeded];
-    } else {
-        [self.currentPage clearNavBarHiddenOffset];
-        [self.previousPage clearNavBarHiddenOffset];
-        [self.nextPage clearNavBarHiddenOffset];
     }
 
     self.isUpdatingNavigationBarFade = NO;
@@ -1596,11 +1595,6 @@
         // Sync the new current page's content inset and gradient with current nav bar state
         [currentPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:YES];
         [currentPage drawFeedGradient];
-        if (self.isNavigationBarHidden) {
-            [currentPage captureNavBarHiddenOffsetIfNeeded];
-        } else {
-            [currentPage clearNavBarHiddenOffset];
-        }
     }
     
     if (!appDelegate.storiesCollection.inSearch) {

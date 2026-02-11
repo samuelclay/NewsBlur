@@ -327,6 +327,7 @@
 body {
     text-rendering: optimizeLegibility;
     margin: 0;
+    overflow-x: hidden;
     -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape while allowing user zoom */
     font-size: 14px;
     line-height: 120%;

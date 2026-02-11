@@ -549,7 +549,7 @@ class DetailViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        updateLayout(reload: false, fetchFeeds: true)
+        updateLayout(reload: false, fetchFeeds: false)
     }
     
     override func viewDidAppear(_ animated: Bool) {
