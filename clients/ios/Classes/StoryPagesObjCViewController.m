@@ -69,7 +69,7 @@
 
 - (CGFloat)traverseBottomGap {
     if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
-        return 0;
+        return 12;
     }
     CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
     return (safeAreaBottom > 0) ? 12.0 : 8.0;
