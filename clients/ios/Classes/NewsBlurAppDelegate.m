@@ -1263,8 +1263,6 @@
 
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
     [super buildMenuWithBuilder:builder];
-    
-    [AppMenuHelper.shared buildMenuWithBuilder:builder];
 }
 
 #pragma mark -

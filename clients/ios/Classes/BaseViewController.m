@@ -269,8 +269,6 @@
 
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
     [super buildMenuWithBuilder:builder];
-    
-    [AppMenuHelper.shared buildMenuWithBuilder:builder];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {

@@ -92,7 +92,7 @@
                             <constraint firstItem="bbc-ur-JbP" firstAttribute="leading" secondItem="rKh-Md-Ci2" secondAttribute="leading" constant="350" id="ehA-e1-po1"/>
                             <constraint firstAttribute="trailing" secondItem="tFd-Uv-aMP" secondAttribute="trailing" id="h2I-ng-gxc"/>
                             <constraint firstAttribute="bottom" secondItem="5M7-bO-MVK" secondAttribute="bottom" id="nSX-TU-ART"/>
-                            <constraint firstItem="5M7-bO-MVK" firstAttribute="top" secondItem="tFd-Uv-aMP" secondAttribute="bottom" constant="-4" id="v7j-Eh-lGD"/>
+                            <constraint firstItem="5M7-bO-MVK" firstAttribute="top" secondItem="tFd-Uv-aMP" secondAttribute="bottom" constant="-4" priority="999" id="v7j-Eh-lGD"/>
                             <constraint firstAttribute="trailing" secondItem="bPa-u1-Aml" secondAttribute="trailing" id="xth-oH-VTF"/>
                             <constraint firstAttribute="bottom" secondItem="bbc-ur-JbP" secondAttribute="bottom" id="yVn-b0-RI1"/>
                         </constraints>
