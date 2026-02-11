@@ -2926,7 +2926,22 @@ trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
                 }
             }
         } else {
-            return height + font.pointSize * 2;
+            // Title only - reduce height since no content preview is shown
+            NSDictionary *story = [self getStoryAtLocation:[self storyLocationForIndexPath:indexPath]];
+            NSString *title = story[@"story_title"];
+            NSInteger titleLen = title.length;
+            CGFloat titleOnlyHeight;
+
+            if (titleLen < 40) {
+                titleOnlyHeight = height;
+            } else if (titleLen < 80) {
+                titleOnlyHeight = height + font.pointSize;
+            } else {
+                titleOnlyHeight = height + font.pointSize * 2;
+            }
+
+            CGFloat minHeight = font.pointSize * 3;
+            return MAX(titleOnlyHeight, minHeight);
         }
     }
 }
