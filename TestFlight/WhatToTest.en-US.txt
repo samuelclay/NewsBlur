@@ -1,21 +1,52 @@
-🚧 Note: OS 26 support is still a work-in-progress. Don't bother reporting bugs on it yet. 🚧
+NewsBlur 14 is a major update with new features, a redesigned interface, and full support for iOS/iPadOS 26 and macOS Tahoe.
 
-These are the changes in NewsBlur Alpha, the development edition, awaiting future public release:
+New features:
+- Dashboard: A new Dashboard at the top of the feeds list shows stories from your favorite feeds, updated every five minutes. Add, remove, rearrange, and select feeds to watch news arrive throughout the day.
+- Ask AI: Ask questions about any story using your choice of AI model. Includes a thinking mode toggle for deeper analysis.
+- Pinch-to-zoom images: Pinch any image in a story to open a full-sized Quick Look preview.
+- List and Magazine views: Two new story layout options alongside the existing Grid view. List shows compact rows; Magazine shows taller rows with larger thumbnails.
+- Mark Story Read options: New preferences to mark stories read on scroll, on selection, after an interval, or manually. A Mark All Read button appears at the end of the story list when not marking on scroll.
+- Premium Pro tier: A new subscription tier with higher limits and additional features, now shown in the iOS upgrade dialog.
+- Custom feed and folder icons: Feeds and folders can now display custom icons.
+- Collapse-all / expand-all button added to All Site Stories.
+- Unmute support for individual feeds.
 
-- Added a NewsBlur Dashboard at the top of the feeds list. Selecting it shows lists of stories that are updated every five minutes, so you can watch news arrive throughout the day. The displayed feeds can be added, removed, changed, and rearranged. Select a feed to show all of that feed, or an individual story to jump to that story.
-- Can now pinch an image in a story to zoom to a Quick Look of the full-sized image.
-- Added a List view of stories, similar to the Grid view but with rows of stories.
-- Added a Magazine view of stories, with taller rows of stories and larger image thumbnails.
-- The Mark Story Read preference now has options to mark a story read on scroll or selection, only selection, after an interval, or manually.
-- If not marking read on scroll, a button now appears at the end of the story list to mark all stories as read.
-- The login / sign up screen has a nice redesign.
-- OS 26 support, including:
-    - Modernized menus on Mac and iPad.
-    - Simplified the layout options to show the sites beside or over the stories.
-    - When iPad window is resized smaller, the sides is automatically hidden.
-    - When iPad window is very narrow, it uses the iPhone layout.
-    - Many more changes.
-- Plus some minor improvements, including:
-    - Adjusted grid font sizes to better match the list layout.
-    - Adjusted the position of a couple of popover menus on Mac.
-    - Improvements to the highlighting of section headings in the sites list sidebar.
+iOS and iPadOS 26 / macOS Tahoe support:
+- Modernized menu bar on Mac and iPad with full keyboard shortcut support.
+- Simplified column layout options: feeds beside or over the story detail.
+- Draggable column divider between feeds and stories on iPad, with a pointer cursor on hover.
+- Auto-collapse sidebar when the story column gets too narrow; uses iPhone layout when very narrow.
+- Sidebar toggle buttons for showing and hiding the feeds list.
+- Transparent toolbar styling and updated Interactions menu.
+- Sheet presentation for Share, Trainer, and Ask AI dialogs on iPhone, with grabber handles.
+- Navigation bar now smoothly fades when scrolling stories, with proper content inset restoration.
+- Default theme changed from Light to Auto (follows system appearance).
+- Dark mode now correctly overrides window interface style to match the selected NewsBlur theme.
+
+Redesigned screens:
+- Login screen redesigned with animated Metal shader waves and frosted glass card.
+- Preferences moved from InAppSettingsKit to a new native PreferencesView.
+- Premium upgrade view redesigned with Ask AI integration and Premium Pro tier.
+- Ask AI and Share popovers redesigned with compact layouts and inline controls.
+- Sync notification moved to a subtle top-right indicator in the navigation bar.
+- Feed list search bar replaced with a compact text field.
+- Warmer Sepia theme with rewritten theme selector on all menus.
+
+Mac Catalyst improvements:
+- Dismiss modals via overlay tap or Escape key.
+- Auto-hide sidebar below 900pt window width.
+- Trackpad swipe gesture support.
+- Adjusted popover menu positioning.
+
+Bug fixes and stability:
+- Fixed WebSocket disconnects caused by EIO4 protocol and session lifecycle issues.
+- Fixed story width and paging issues on first load.
+- Fixed memory issues with PINCache cost limits and improved cleanup.
+- Fixed offline queue priority inversion.
+- Fixed saved stories showing incorrect read/unread status.
+- Fixed YouTube Error 153 by using HTTPS and inlined resources.
+- Fixed trainer popover showing empty content on first open.
+- Fixed crashes with custom feed icons in story detail.
+- Fixed iPhone SE toolbar padding and profile header positioning.
+- Fixed medium theme colors throughout the app.
+- Numerous constraint conflict and layout fixes across iPhone and iPad.
