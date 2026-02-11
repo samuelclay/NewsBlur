@@ -55,6 +55,7 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 @property (nonatomic) IBOutlet NSLayoutConstraint *feedTitlesTopConstraint;
 @property (nonatomic) IBOutlet NSLayoutConstraint *feedTitlesLeadingConstraint;
 @property (nonatomic) IBOutlet NSLayoutConstraint *feedTitlesTrailingConstraint;
+@property (nonatomic) IBOutlet NSLayoutConstraint *toolbarBottomConstraint;
 @property (nonatomic) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic) IBOutlet UIBarButtonItem * homeButton;

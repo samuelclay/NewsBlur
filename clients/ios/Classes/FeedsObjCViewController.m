@@ -457,12 +457,15 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
 
-    // Set content inset so feed list can scroll above the toolbar
-    // Toolbar is positioned 8pt above safe area bottom per storyboard constraint
-    CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
-    CGFloat toolbarBottomGap = 8.0; // From storyboard constraint
+    // Set content inset so feed list can scroll above the toolbar.
+    // Toolbar is pinned to the superview bottom with an adaptive gap:
+    // Face ID devices (safe area > 0): 12pt from screen edge
+    // Non-Face ID devices (iPhone SE): 8pt to match side margins
     CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
-    CGFloat totalBottomInset = toolbarHeight + toolbarBottomGap + safeAreaBottom;
+    CGFloat toolbarBottomGap = (safeAreaBottom > 0) ? 12.0 : 8.0;
+    self.toolbarBottomConstraint.constant = -toolbarBottomGap;
+    CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
+    CGFloat totalBottomInset = MAX(toolbarHeight + toolbarBottomGap, safeAreaBottom);
 
     UIEdgeInsets currentInset = self.feedTitlesTable.contentInset;
     if (currentInset.bottom != totalBottomInset) {
