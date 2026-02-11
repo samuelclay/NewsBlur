@@ -1099,14 +1099,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         var $button = $('.NB-folder-icon-upload-button', this.$modal);
         var $loading = $('.NB-folder-icon-upload-button .NB-loading', this.$modal);
         var $error = $('.NB-folder-icon-upload-error', this.$modal);
-        var $preview = $('.NB-folder-icon-upload-preview', this.$modal);
         var file = $file_input[0].files[0];
 
         if (!file) return;
 
         // Validate file type
-        if (!file.type.match(/^image\/(png|jpeg|gif|webp)$/)) {
-            $error.text('Please select a valid image file (PNG, JPG, GIF)').show();
+        if (!file.type.match(/^image\/(png|jpeg|gif|webp|svg\+xml)$/)) {
+            $error.text('Please select a valid image file (PNG, JPG, GIF, SVG, or WebP)').show();
             return;
         }
 
@@ -1120,6 +1119,49 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         $error.hide();
         $button.addClass('NB-uploading');
         $loading.addClass('NB-active');
+
+        if (file.type === 'image/svg+xml') {
+            // Rasterize SVG to PNG via Canvas before uploading
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = new Image();
+                img.onload = function () {
+                    var canvas = document.createElement('canvas');
+                    canvas.width = 128;
+                    canvas.height = 128;
+                    var ctx = canvas.getContext('2d');
+                    var scale = Math.min(128 / img.width, 128 / img.height);
+                    var w = img.width * scale;
+                    var h = img.height * scale;
+                    var x = (128 - w) / 2;
+                    var y = (128 - h) / 2;
+                    ctx.drawImage(img, x, y, w, h);
+                    canvas.toBlob(function (blob) {
+                        self.upload_icon_file(new File([blob], 'icon.png', { type: 'image/png' }));
+                    }, 'image/png');
+                };
+                img.onerror = function () {
+                    $button.removeClass('NB-uploading');
+                    $loading.removeClass('NB-active');
+                    $error.text('Failed to load SVG image').show();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            this.upload_icon_file(file);
+        }
+
+        // Reset file input so same file can be re-selected
+        $file_input.val('');
+    },
+
+    upload_icon_file: function (file) {
+        var self = this;
+        var $button = $('.NB-folder-icon-upload-button', this.$modal);
+        var $loading = $('.NB-folder-icon-upload-button .NB-loading', this.$modal);
+        var $error = $('.NB-folder-icon-upload-error', this.$modal);
+        var $preview = $('.NB-folder-icon-upload-preview', this.$modal);
 
         var formData = new FormData();
         var upload_url;
@@ -1188,9 +1230,6 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 $error.text('Upload failed. Please check your connection and try again.').show();
             }
         });
-
-        // Reset file input so same file can be re-selected
-        $file_input.val('');
     },
 
     clear_folder_icon: function () {

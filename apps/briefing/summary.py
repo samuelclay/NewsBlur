@@ -502,7 +502,7 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     # --- Phase 4b: Style <p> tags — consistent spacing for editorial/headlines ---
 
-    p_style = "margin:0 0 12px 0;padding:0;line-height:1.5;"
+    p_style = "margin:0 0 12px 0;padding:0 0 0 22px;line-height:1.5;"
     summary_html = re.sub(
         r"<p(?P<attrs>[^>]*)>",
         lambda m: '<p%s style="%s">' % (m.group("attrs"), p_style),
@@ -587,12 +587,16 @@ def embed_briefing_icons(summary_html, scored_stories):
             return match.group(0)
         favicon_img = favicon_match.group(1)
         rest = favicon_match.group(2)
+        # summary.py: Convert <p> to <div> because <table> cannot nest inside <p>.
+        # Browsers auto-close <p> before block elements, causing a blank <p> that
+        # offsets the favicon and breaks font inheritance.
+        div_tag = re.sub(r"^<p\b", "<div", p_tag)
         return (
             '%s<table cellpadding="0" cellspacing="0" border="0" style="width:100%%;">'
             "<tr>"
             '<td style="width:22px;vertical-align:top;padding-top:0;">%s</td>'
             '<td style="vertical-align:top;">%s</td>'
-            "</tr></table></p>" % (p_tag, favicon_img, rest)
+            "</tr></table></div>" % (div_tag, favicon_img, rest)
         )
 
     summary_html = re.sub(
@@ -607,8 +611,8 @@ def embed_briefing_icons(summary_html, scored_stories):
     classifier_pill_style = (
         "display:inline-block;background-color:#34912E;"
         "border:1px solid #202020;border-radius:14px;"
-        "padding:2px 8px;font-size:10px;line-height:16px;"
-        "margin:3px 4px 3px 0;white-space:nowrap;"
+        "padding:1px 8px;font-size:10px;line-height:14px;"
+        "margin:1px 4px 1px 0;white-space:nowrap;vertical-align:middle;"
     )
     classifier_label_style = "color:white;"
     classifier_b_style = "color:rgba(255,255,255,0.7);font-weight:normal;"
