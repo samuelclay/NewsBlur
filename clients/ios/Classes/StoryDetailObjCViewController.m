@@ -488,8 +488,6 @@
     
     NSInteger contentWidth = [self storyContentWidth];
     NSString *contentWidthClass;
-    NSLog(@"📐 drawStory: %@ / viewport=%ld", [self.activeStory objectForKey:@"story_title"], (long)contentWidth);
-    
 #if TARGET_OS_MACCATALYST
     // CATALYST: probably will want to add custom CSS for Macs.
     contentWidthClass = @"NB-mac NB-ipad-pro-12-wide";
@@ -1667,10 +1665,13 @@
                         [UIView animateWithDuration:0.2 animations:^{
                             [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:targetAlpha];
                         }];
-                        [self updateContentInsetForNavigationBarAlpha:targetAlpha
-                                               maintainVisualPosition:YES
-                                                                force:YES];
                     }
+                    // Always force-update content inset when scrolling ends.
+                    // The inset update may have been skipped during deceleration
+                    // (e.g., quick scroll-up that restored alpha while still decelerating).
+                    [self updateContentInsetForNavigationBarAlpha:targetAlpha
+                                           maintainVisualPosition:YES
+                                                            force:YES];
                 }
             }
             return;
@@ -2173,7 +2174,6 @@
     
     self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhoneOrCompact || !self.appDelegate.detailViewController.storyTitlesInGridView;
 
-    NSLog(@"📐 loadStory: resetting lastWidthClassKey (was: %@)", self.lastWidthClassKey ?: @"nil");
     self.lastWidthClassKey = nil; // Force viewport update after full HTML load
     [self loadHTMLString:self.fullStoryHTML];
     self.fullStoryHTML = nil;
@@ -2208,7 +2208,6 @@
 }
 
 - (void)webViewNotifyLoaded {
-    NSLog(@"📐 webViewNotifyLoaded (lastWidthClassKey: %@)", self.lastWidthClassKey ?: @"nil");
     [self changeWebViewWidth];
     [self scrollToLastPosition:YES];
 }
@@ -2323,7 +2322,6 @@
 
 - (BOOL)canHideNavigationBar {
     if (!appDelegate.storyPagesViewController.allowFullscreen) {
-        NSLog(@"[NAV] canHideNavigationBar: NO (allowFullscreen=%d)", appDelegate.storyPagesViewController.allowFullscreen);
         return NO;
     }
 
@@ -2861,10 +2859,8 @@
                                riverClass,
                                (long)contentWidth];
     if ([widthClassKey isEqualToString:self.lastWidthClassKey]) {
-        NSLog(@"📐 changeWebViewWidth SKIPPED (cached): %@", widthClassKey);
         return;
     }
-    NSLog(@"📐 changeWebViewWidth APPLYING: %@ (was: %@)", widthClassKey, self.lastWidthClassKey ?: @"nil");
     self.lastWidthClassKey = widthClassKey;
 
     NSString *jsString = [[NSString alloc] initWithFormat:

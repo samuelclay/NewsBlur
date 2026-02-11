@@ -536,17 +536,12 @@
 
 - (BOOL)allowFullscreen {
     if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
-        NSLog(@"[NAV] allowFullscreen: NO (notPhone=%d presented=%d)",
-              [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone,
-              self.presentedViewController != nil);
         return NO;
     }
 
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
     BOOL storyFullScreen = [preferences boolForKey:@"story_full_screen"];
     BOOL result = (storyFullScreen || self.autoscrollAvailable) && !self.forceNavigationBarShown;
-    NSLog(@"[NAV] allowFullscreen: %d (pref=%d autoscroll=%d forceShown=%d)",
-          result, storyFullScreen, self.autoscrollAvailable, self.forceNavigationBarShown);
     return result;
 }
 
@@ -625,7 +620,6 @@
 
     CGFloat clampedAlpha = MAX(0.0, MIN(1.0, alpha));
     if (self.isUpdatingNavigationBarFade) {
-        NSLog(@"[NAV] SKIP: already updating");
         return;
     }
 
@@ -633,7 +627,6 @@
 
     UIView *loadedView = self.viewIfLoaded;
     if (!loadedView || loadedView.window == nil) {
-        NSLog(@"[NAV] SKIP: no view/window");
         self.navigationBarFadeAlpha = clampedAlpha;
         self.isUpdatingNavigationBarFade = NO;
         return;
@@ -641,7 +634,6 @@
 
     UINavigationController *navController = self.navigationController;
     if (!navController) {
-        NSLog(@"[NAV] SKIP: no navController");
         self.navigationBarFadeAlpha = clampedAlpha;
         self.isUpdatingNavigationBarFade = NO;
         return;
@@ -649,12 +641,10 @@
 
     if (fabs(self.navigationBarFadeAlpha - clampedAlpha) < 0.001 &&
         self.isNavigationBarFaded == (clampedAlpha < 0.05)) {
-        NSLog(@"[NAV] SKIP: no change (stored=%.2f new=%.2f)", self.navigationBarFadeAlpha, clampedAlpha);
         self.isUpdatingNavigationBarFade = NO;
         return;
     }
     self.navigationBarFadeAlpha = clampedAlpha;
-    NSLog(@"[NAV] SET navBar.alpha = %.2f (current=%.2f)", clampedAlpha, navController.navigationBar.alpha);
     navController.navigationBar.alpha = clampedAlpha;
     navController.navigationBar.userInteractionEnabled = clampedAlpha > 0.05;
 
