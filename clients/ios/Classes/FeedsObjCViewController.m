@@ -133,6 +133,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 #endif
     if (!self.defaultFeedToolbarItems) {
         self.defaultFeedToolbarItems = self.feedViewToolbar.items;
+        // Clear storyboard items to prevent constraint conflicts during initial layout.
+        // Items are restored by configureFeedToolbarItemsForOrientation: during layoutForInterfaceOrientation:.
+        self.feedViewToolbar.items = @[];
     }
     
     // Create compact search field with theme colors
@@ -246,8 +249,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.translucent = NO;
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-    [self layoutForInterfaceOrientation:orientation];
-    
+    // Call layout parts individually, deferring toolbar items to viewWillAppear
+    // to avoid constraint conflicts when toolbar has zero width during initial load.
+    self.notifier.offset = CGPointMake(0, 0);
+    [self updateIntelligenceControlForOrientation:orientation];
+    [self layoutHeaderCounts:orientation];
+    [self refreshHeaderCounts];
+
     UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
                                                initWithTarget:self action:@selector(handleLongPress:)];
     longpress.minimumPressDuration = 1.0;
@@ -400,7 +408,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 #endif
 
     [self updateSidebarButton];
-    
+
+    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+    [self configureFeedToolbarItemsForOrientation:orientation];
+
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSInteger intelligenceLevel = [userPreferences integerForKey:@"selectedIntelligence"];
     
@@ -572,10 +583,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             }
             sidebarImage = [sidebarImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
-            UIButton *button = [UIButton systemButtonWithImage:sidebarImage target:self action:@selector(toggleFeeds:)];
-            button.frame = CGRectMake(0, 0, 44, 44);
-            button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-            self.sidebarBarButton = [[UIBarButtonItem alloc] initWithCustomView:button];
+            self.sidebarBarButton = [[UIBarButtonItem alloc] initWithImage:sidebarImage
+                                                                     style:UIBarButtonItemStylePlain
+                                                                    target:self
+                                                                    action:@selector(toggleFeeds:)];
             self.sidebarBarButton.accessibilityLabel = @"Sidebar";
         }
         self.navigationItem.rightBarButtonItem = self.sidebarBarButton;
@@ -1620,7 +1631,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.addBarButton.tintColor = toolbarButtonTint;
     self.settingsBarButton.tintColor = toolbarButtonTint;
     if (self.sidebarBarButton) {
-        self.sidebarBarButton.customView.tintColor = tintColor;
+        self.sidebarBarButton.tintColor = tintColor;
     }
 #if TARGET_OS_MACCATALYST
     if (ThemeManager.themeManager.isLikeSystem) {

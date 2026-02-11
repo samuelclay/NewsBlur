@@ -1627,23 +1627,28 @@
 
 - (void)checkForFeedNotifications {
     NSMutableArray *foundNotificationFeedIds = [NSMutableArray array];
-    
+    BOOL hasIOSNotifications = NO;
+
     for (NSDictionary *feed in self.dictFeeds.allValues) {
         if (![feed isKindOfClass:[NSDictionary class]]) {
             continue;
         }
-        
+
         NSArray *types = [feed objectForKey:@"notification_types"];
         if (types) {
             for (NSString *notificationType in types) {
                 if ([notificationType isEqualToString:@"ios"]) {
-                    [self registerForRemoteNotifications];
+                    hasIOSNotifications = YES;
                 }
             }
             if ([types count]) {
                 [foundNotificationFeedIds addObject:[feed objectForKey:@"id"]];
             }
         }
+    }
+
+    if (hasIOSNotifications) {
+        [self registerForRemoteNotifications];
     }
     
     self.notificationFeedIds = [foundNotificationFeedIds sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {

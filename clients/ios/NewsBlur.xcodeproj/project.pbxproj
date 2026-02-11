@@ -104,6 +104,9 @@
 		175790672930605500490924 /* icons8-stack-of-paper-100.png in Resources */ = {isa = PBXBuildFile; fileRef = 17E2AEBA286556CB000FAB5B /* icons8-stack-of-paper-100.png */; };
 		175790682930605500490924 /* WhitneySSm-MediumItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E061BFBBAC600ADC01A /* WhitneySSm-MediumItalic-Bas.otf */; };
 		175790692930605500490924 /* WhitneySSm-BookItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E021BFBBAC600ADC01A /* WhitneySSm-BookItalic-Bas.otf */; };
+		048FD42520F0B0F1B288BD85 /* WhitneySSm-Bold-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFF1BFBBAC600ADC01A /* WhitneySSm-Bold-Bas.otf */; };
+		42F2D056842954E165AF11D4 /* WhitneySSm-Light-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E031BFBBAC600ADC01A /* WhitneySSm-Light-Bas.otf */; };
+		CA8D6B709B589FA0FBBE99EC /* WhitneySSm-Semibold-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E071BFBBAC600ADC01A /* WhitneySSm-Semibold-Bas.otf */; };
 		1757906A2930605500490924 /* barbutton_sort_desc@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 17BE5A711C5DDA8C0075F92C /* barbutton_sort_desc@3x.png */; };
 		1757906B2930605500490924 /* ChronicleSSm-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DF31BFBBAC600ADC01A /* ChronicleSSm-Medium.otf */; };
 		1757906C2930605500490924 /* GothamNarrow-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFC1BFBBAC600ADC01A /* GothamNarrow-MediumItalic.otf */; };
@@ -1140,6 +1143,9 @@
 		FF3A3E121BFBBB6D00ADC01A /* WhitneySSm-BookItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E021BFBBAC600ADC01A /* WhitneySSm-BookItalic-Bas.otf */; };
 		FF3A3E131BFBBB6F00ADC01A /* WhitneySSm-Medium-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E051BFBBAC600ADC01A /* WhitneySSm-Medium-Bas.otf */; };
 		FF3A3E141BFBBB7100ADC01A /* WhitneySSm-MediumItalic-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E061BFBBAC600ADC01A /* WhitneySSm-MediumItalic-Bas.otf */; };
+		0847BD1B7E062D26904F8A1A /* WhitneySSm-Bold-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFF1BFBBAC600ADC01A /* WhitneySSm-Bold-Bas.otf */; };
+		92C064451744C0BBB0A61C76 /* WhitneySSm-Light-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E031BFBBAC600ADC01A /* WhitneySSm-Light-Bas.otf */; };
+		6C436EAD88A4329C4C43FB23 /* WhitneySSm-Semibold-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E071BFBBAC600ADC01A /* WhitneySSm-Semibold-Bas.otf */; };
 		FF3A3E171BFC3F1300ADC01A /* NSNull+JSON.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3A3E161BFC3F1300ADC01A /* NSNull+JSON.m */; };
 		FF3FA88D1BB2677C001F7C32 /* NBCopyLinkActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = FF3FA88C1BB2677C001F7C32 /* NBCopyLinkActivity.m */; };
 		FF3FA8951BB26B6A001F7C32 /* copy_link@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF3FA8941BB26B6A001F7C32 /* copy_link@2x.png */; };
@@ -4007,6 +4013,9 @@
 				17EE11C92B27FA0C00E7C0CC /* Settings.bundle in Resources */,
 				175790682930605500490924 /* WhitneySSm-MediumItalic-Bas.otf in Resources */,
 				175790692930605500490924 /* WhitneySSm-BookItalic-Bas.otf in Resources */,
+				048FD42520F0B0F1B288BD85 /* WhitneySSm-Bold-Bas.otf in Resources */,
+				42F2D056842954E165AF11D4 /* WhitneySSm-Light-Bas.otf in Resources */,
+				CA8D6B709B589FA0FBBE99EC /* WhitneySSm-Semibold-Bas.otf in Resources */,
 				1757906A2930605500490924 /* barbutton_sort_desc@3x.png in Resources */,
 				1757906B2930605500490924 /* ChronicleSSm-Medium.otf in Resources */,
 				1757906C2930605500490924 /* GothamNarrow-MediumItalic.otf in Resources */,
@@ -4492,6 +4501,9 @@
 				17E2AECC286556CC000FAB5B /* icons8-stack-of-paper-100.png in Resources */,
 				FF3A3E141BFBBB7100ADC01A /* WhitneySSm-MediumItalic-Bas.otf in Resources */,
 				FF3A3E121BFBBB6D00ADC01A /* WhitneySSm-BookItalic-Bas.otf in Resources */,
+				0847BD1B7E062D26904F8A1A /* WhitneySSm-Bold-Bas.otf in Resources */,
+				92C064451744C0BBB0A61C76 /* WhitneySSm-Light-Bas.otf in Resources */,
+				6C436EAD88A4329C4C43FB23 /* WhitneySSm-Semibold-Bas.otf in Resources */,
 				17BE5A771C5DDA8C0075F92C /* barbutton_sort_desc@3x.png in Resources */,
 				FF3A3E0B1BFBBB5900ADC01A /* ChronicleSSm-Medium.otf in Resources */,
 				FF3A3E101BFBBB6600ADC01A /* GothamNarrow-MediumItalic.otf in Resources */,
