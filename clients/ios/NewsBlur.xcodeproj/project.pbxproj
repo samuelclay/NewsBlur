@@ -1041,6 +1041,14 @@
 		79CC8421D9932228A65FAF02 /* AskAIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 408612AC60C1A227BEA502A6 /* AskAIViewModel.swift */; };
 		7BED42F2556D90C4F19AE089 /* NewsBlurSocketClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B435C6C1F2F7C7B905BC328 /* NewsBlurSocketClient.swift */; };
 		8C320B571990C014A5EEC65B /* AskAIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DDBE8E96775790F4059438A /* AskAIViewController.swift */; };
+		A387B305A16381FA9C41F886 /* DiscoverFeedsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED9DC149A632195E96A73EF /* DiscoverFeedsModels.swift */; };
+		FE95F705A4438AE3BCF91760 /* DiscoverFeedsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED9DC149A632195E96A73EF /* DiscoverFeedsModels.swift */; };
+		2E3396F1F15DBA12C7141E45 /* DiscoverFeedsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D134C02BCBF7407396F02B /* DiscoverFeedsViewModel.swift */; };
+		8C5EBDC062EED545534FF0DD /* DiscoverFeedsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23D134C02BCBF7407396F02B /* DiscoverFeedsViewModel.swift */; };
+		13DB7118073751BD9F617C25 /* DiscoverFeedsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EFFC3F55CA0CC6BD81CBFE1 /* DiscoverFeedsView.swift */; };
+		96A7B60C053444BD990A5A3C /* DiscoverFeedsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EFFC3F55CA0CC6BD81CBFE1 /* DiscoverFeedsView.swift */; };
+		5C325D54A81ED657B7137B6E /* DiscoverFeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB68C1377D83EDF9BA86A2A /* DiscoverFeedsViewController.swift */; };
+		58EE12AF7C78A34873A6A6CB /* DiscoverFeedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB68C1377D83EDF9BA86A2A /* DiscoverFeedsViewController.swift */; };
 		92C064451744C0BBB0A61C76 /* WhitneySSm-Light-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E031BFBBAC600ADC01A /* WhitneySSm-Light-Bas.otf */; };
 		9448849E19C4D612FEA6B1E8 /* VoiceRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7133C239903D45605B3603DF /* VoiceRecorder.swift */; };
 		95D27D08DCDA57CA45C41955 /* SyncNotifierView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA641879DDE49DEE45A226C /* SyncNotifierView.swift */; };
@@ -1898,6 +1906,10 @@
 		A388F989D14990BF30BBDBFF /* AskAIView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AskAIView.swift; sourceTree = "<group>"; };
 		A6133546989FF9DBBA772F71 /* CustomIconRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomIconRenderer.swift; sourceTree = "<group>"; };
 		A97CCFF043172D5AEAC5EABF /* AskAIModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AskAIModels.swift; sourceTree = "<group>"; };
+		EED9DC149A632195E96A73EF /* DiscoverFeedsModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverFeedsModels.swift; sourceTree = "<group>"; };
+		23D134C02BCBF7407396F02B /* DiscoverFeedsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverFeedsViewModel.swift; sourceTree = "<group>"; };
+		9EFFC3F55CA0CC6BD81CBFE1 /* DiscoverFeedsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverFeedsView.swift; sourceTree = "<group>"; };
+		6FB68C1377D83EDF9BA86A2A /* DiscoverFeedsViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DiscoverFeedsViewController.swift; sourceTree = "<group>"; };
 		DA5B929B2C1F40819E9A88CE /* icons8-prompt-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icons8-prompt-100.png"; sourceTree = "<group>"; };
 		E160F0551C9DAC2C00CB96DF /* UIViewController+HidePopover.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+HidePopover.h"; path = "Other Sources/UIViewController+HidePopover.h"; sourceTree = "<group>"; };
 		E160F0561C9DAC2C00CB96DF /* UIViewController+HidePopover.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+HidePopover.m"; path = "Other Sources/UIViewController+HidePopover.m"; sourceTree = "<group>"; };
@@ -2486,6 +2498,7 @@
 				431B857015A1315F00DCE497 /* Social */,
 				FF3FA8871BB26595001F7C32 /* Activities */,
 				85E04F189E2E16709A8F3703 /* AskAI */,
+				43B9EE58B25854C29BD2A8F2 /* DiscoverFeeds */,
 				8CB4A9B8E48F436D53F119DB /* Network */,
 				A6133546989FF9DBBA772F71 /* CustomIconRenderer.swift */,
 				1C9B3E2F6A4B7C8D9E0F1A2B /* CatalystModalDismissal.swift */,
@@ -3382,6 +3395,17 @@
 				7133C239903D45605B3603DF /* VoiceRecorder.swift */,
 			);
 			path = AskAI;
+			sourceTree = "<group>";
+		};
+		43B9EE58B25854C29BD2A8F2 /* DiscoverFeeds */ = {
+			isa = PBXGroup;
+			children = (
+				EED9DC149A632195E96A73EF /* DiscoverFeedsModels.swift */,
+				23D134C02BCBF7407396F02B /* DiscoverFeedsViewModel.swift */,
+				9EFFC3F55CA0CC6BD81CBFE1 /* DiscoverFeedsView.swift */,
+				6FB68C1377D83EDF9BA86A2A /* DiscoverFeedsViewController.swift */,
+			);
+			path = DiscoverFeeds;
 			sourceTree = "<group>";
 		};
 		8CB4A9B8E48F436D53F119DB /* Network */ = {
@@ -5174,6 +5198,10 @@
 				C0C15ADF4471C3F68691B131 /* AskAIViewModel.swift in Sources */,
 				9F2E4183FEBE9EC681638BD3 /* AskAIView.swift in Sources */,
 				9EEE72D38AB35EFF46723493 /* AskAIViewController.swift in Sources */,
+				A387B305A16381FA9C41F886 /* DiscoverFeedsModels.swift in Sources */,
+				2E3396F1F15DBA12C7141E45 /* DiscoverFeedsViewModel.swift in Sources */,
+				13DB7118073751BD9F617C25 /* DiscoverFeedsView.swift in Sources */,
+				5C325D54A81ED657B7137B6E /* DiscoverFeedsViewController.swift in Sources */,
 				9448849E19C4D612FEA6B1E8 /* VoiceRecorder.swift in Sources */,
 				07B1415392C062FCBFD79577 /* NewsBlurSocketClient.swift in Sources */,
 				06CB30FD8F4CA002CBB1CBFF /* CustomIconRenderer.swift in Sources */,
@@ -5390,6 +5418,10 @@
 				79CC8421D9932228A65FAF02 /* AskAIViewModel.swift in Sources */,
 				3F6DB3629BCF25A262C0DDD3 /* AskAIView.swift in Sources */,
 				8C320B571990C014A5EEC65B /* AskAIViewController.swift in Sources */,
+				FE95F705A4438AE3BCF91760 /* DiscoverFeedsModels.swift in Sources */,
+				8C5EBDC062EED545534FF0DD /* DiscoverFeedsViewModel.swift in Sources */,
+				96A7B60C053444BD990A5A3C /* DiscoverFeedsView.swift in Sources */,
+				58EE12AF7C78A34873A6A6CB /* DiscoverFeedsViewController.swift in Sources */,
 				70FF70BB9A71026A0ACC8B2B /* VoiceRecorder.swift in Sources */,
 				7BED42F2556D90C4F19AE089 /* NewsBlurSocketClient.swift in Sources */,
 				FED20A379D2BC5FBF9BF711C /* CustomIconRenderer.swift in Sources */,

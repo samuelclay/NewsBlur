@@ -55,6 +55,8 @@
 @property (nonatomic) NSIndexPath *swipingIndexPath;
 @property (nonatomic, strong) NSString *swipingStoryHash;
 
+@property (nonatomic, strong) UIView *tryFeedBannerView;
+
 @property (nonatomic, readonly) BOOL canPullToRefresh;
 @property (nonatomic, readonly) BOOL isMarkReadOnScroll;
 @property (nonatomic, readonly) BOOL isMarkReadOnScrollOrSelection;
@@ -143,6 +145,9 @@
 - (void)finishMarkAsUnsaved:(NSDictionary *)params;
 - (void)failedMarkAsUnsaved:(NSDictionary *)params;
 - (void)failedMarkAsUnread:(NSDictionary *)params;
+
+- (void)showTryFeedSubscribeBanner;
+- (void)hideTryFeedSubscribeBanner;
 
 - (void)confirmDeleteSite:(UINavigationController *)menuNavigationController;
 - (void)openMoveView:(UINavigationController *)menuNavigationController;

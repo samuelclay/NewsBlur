@@ -67,7 +67,7 @@ class SplitViewController: UISplitViewController {
         // Add draggable divider between feeds and detail columns.
         // Hide the drawn line since UISplitViewController already draws a column separator.
         feedsDividerView.showsLine = false
-        feedsDividerView.handleOffset = 6
+        feedsDividerView.handleOffset = 8
         view.addSubview(feedsDividerView)
     }
 

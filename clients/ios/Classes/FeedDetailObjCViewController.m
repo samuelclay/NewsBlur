@@ -17,6 +17,7 @@
 #import "NSObject+SBJSON.h"
 #import "StringHelper.h"
 #import "Utilities.h"
+#import "AddSiteViewController.h"
 #import "UIBarButtonItem+Image.h"
 #import "MarkReadMenuViewController.h"
 #import "NBNotifier.h"
@@ -655,8 +656,14 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
     
     [self.notifier setNeedsLayout];
-    
+
     [self testForTryFeed];
+
+    if (appDelegate.isTryFeedView && !self.tryFeedBannerView) {
+        [self showTryFeedSubscribeBanner];
+    } else if (!appDelegate.isTryFeedView && self.tryFeedBannerView) {
+        [self hideTryFeedSubscribeBanner];
+    }
 }
 
 - (void)configureInteractivePopGesture {
@@ -960,8 +967,9 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    
+
     [self.searchBar resignFirstResponder];
+    [self hideTryFeedSubscribeBanner];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -1094,6 +1102,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 #pragma mark Initialization
 
 - (void)resetFeedDetail {
+    [self hideTryFeedSubscribeBanner];
     appDelegate.hasLoadedFeedDetail = NO;
     self.navigationItem.titleView = nil;
     self.pageFetching = NO;
@@ -1978,6 +1987,143 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             self.deferredLoadStoryCount = 0;
         }
     });
+}
+
+// MARK: - Try Feed Subscribe Banner
+
+- (void)showTryFeedSubscribeBanner {
+    if (self.tryFeedBannerView) return;
+    if (!appDelegate.isTryFeedView) return;
+
+    UIView *banner = [[UIView alloc] init];
+    banner.translatesAutoresizingMaskIntoConstraints = NO;
+    banner.clipsToBounds = YES;
+    banner.layer.cornerRadius = 0;
+
+    // Green gradient-like background
+    banner.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE8F0E6, 0xE8DED0, 0x3A4A38, 0x2A3A28);
+
+    // Feed favicon
+    UIImageView *faviconView = [[UIImageView alloc] init];
+    faviconView.translatesAutoresizingMaskIntoConstraints = NO;
+    faviconView.contentMode = UIViewContentModeScaleAspectFit;
+    faviconView.layer.cornerRadius = 3;
+    faviconView.clipsToBounds = YES;
+    faviconView.tag = 1001;
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", storiesCollection.activeFeed[@"id"]];
+    UIImage *favicon = [appDelegate getFavicon:feedIdStr];
+    if (favicon) {
+        faviconView.image = [Utilities roundCorneredImage:favicon radius:4 convertToSize:CGSizeMake(20, 20)];
+    }
+
+    // Feed title
+    UILabel *titleLabel = [[UILabel alloc] init];
+    titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    titleLabel.text = storiesCollection.activeFeed[@"feed_title"];
+    titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightSemibold];
+    titleLabel.textColor = UIColorFromLightSepiaMediumDarkRGB(0x3D5C2E, 0x5C4A3D, 0xD0E0C8, 0xC0D8B8);
+    titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+
+    // Subtitle
+    UILabel *subtitleLabel = [[UILabel alloc] init];
+    subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    subtitleLabel.text = @"Preview — not yet subscribed";
+    subtitleLabel.font = [UIFont systemFontOfSize:12];
+    subtitleLabel.textColor = UIColorFromLightSepiaMediumDarkRGB(0x6A8A5C, 0x8B7B6B, 0xA0B898, 0x90B088);
+
+    // Subscribe button
+    UIButton *subscribeButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    subscribeButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [subscribeButton setTitle:@"Subscribe" forState:UIControlStateNormal];
+    subscribeButton.titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightSemibold];
+    [subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    subscribeButton.backgroundColor = [UIColor colorWithRed:0.416 green:0.659 blue:0.310 alpha:1.0]; // #6AA84F
+    subscribeButton.layer.cornerRadius = 6;
+    subscribeButton.contentEdgeInsets = UIEdgeInsetsMake(6, 16, 6, 16);
+    [subscribeButton addTarget:self action:@selector(subscribeTryFeed) forControlEvents:UIControlEventTouchUpInside];
+
+    // Text stack (title + subtitle)
+    UIStackView *textStack = [[UIStackView alloc] initWithArrangedSubviews:@[titleLabel, subtitleLabel]];
+    textStack.translatesAutoresizingMaskIntoConstraints = NO;
+    textStack.axis = UILayoutConstraintAxisVertical;
+    textStack.spacing = 2;
+
+    // Main stack
+    UIStackView *mainStack = [[UIStackView alloc] initWithArrangedSubviews:@[faviconView, textStack, subscribeButton]];
+    mainStack.translatesAutoresizingMaskIntoConstraints = NO;
+    mainStack.axis = UILayoutConstraintAxisHorizontal;
+    mainStack.spacing = 10;
+    mainStack.alignment = UIStackViewAlignmentCenter;
+
+    [banner addSubview:mainStack];
+
+    // Bottom border
+    UIView *bottomBorder = [[UIView alloc] init];
+    bottomBorder.translatesAutoresizingMaskIntoConstraints = NO;
+    bottomBorder.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xC8D8C0, 0xD4C8B8, 0x4A5A48, 0x3A4A38);
+    [banner addSubview:bottomBorder];
+
+    [self.view addSubview:banner];
+    self.tryFeedBannerView = banner;
+
+    [NSLayoutConstraint activateConstraints:@[
+        [faviconView.widthAnchor constraintEqualToConstant:20],
+        [faviconView.heightAnchor constraintEqualToConstant:20],
+
+        [mainStack.topAnchor constraintEqualToAnchor:banner.topAnchor constant:10],
+        [mainStack.bottomAnchor constraintEqualToAnchor:banner.bottomAnchor constant:-10],
+        [mainStack.leadingAnchor constraintEqualToAnchor:banner.leadingAnchor constant:12],
+        [mainStack.trailingAnchor constraintEqualToAnchor:banner.trailingAnchor constant:-12],
+
+        [bottomBorder.leadingAnchor constraintEqualToAnchor:banner.leadingAnchor],
+        [bottomBorder.trailingAnchor constraintEqualToAnchor:banner.trailingAnchor],
+        [bottomBorder.bottomAnchor constraintEqualToAnchor:banner.bottomAnchor],
+        [bottomBorder.heightAnchor constraintEqualToConstant:1],
+
+        [banner.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+        [banner.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+        [banner.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    ]];
+
+    // Push story titles table down so the first row isn't hidden under the banner
+    [banner layoutIfNeeded];
+    CGFloat bannerHeight = banner.frame.size.height;
+    if (bannerHeight == 0) bannerHeight = 44;
+    UIEdgeInsets inset = self.storyTitlesTable.contentInset;
+    inset.top = bannerHeight;
+    self.storyTitlesTable.contentInset = inset;
+    self.storyTitlesTable.scrollIndicatorInsets = inset;
+    [self.storyTitlesTable setContentOffset:CGPointMake(0, -bannerHeight) animated:NO];
+
+    // Animate in
+    banner.alpha = 0;
+    [UIView animateWithDuration:0.3 animations:^{
+        banner.alpha = 1;
+    }];
+}
+
+- (void)hideTryFeedSubscribeBanner {
+    if (!self.tryFeedBannerView) return;
+
+    UIView *banner = self.tryFeedBannerView;
+    [UIView animateWithDuration:0.25 animations:^{
+        banner.alpha = 0;
+        UIEdgeInsets inset = self.storyTitlesTable.contentInset;
+        inset.top = 0;
+        self.storyTitlesTable.contentInset = inset;
+        self.storyTitlesTable.scrollIndicatorInsets = inset;
+    } completion:^(BOOL finished) {
+        [banner removeFromSuperview];
+    }];
+    self.tryFeedBannerView = nil;
+}
+
+- (void)subscribeTryFeed {
+    NSString *feedAddress = storiesCollection.activeFeed[@"feed_address"];
+    if (!feedAddress) return;
+
+    [self hideTryFeedSubscribeBanner];
+    [appDelegate openAddSiteWithFeedAddress:feedAddress];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
@@ -3176,8 +3322,23 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         [viewController addTitle:@"Insta-fetch stories" iconName:@"menu_icn_fetch.png" selectionShouldDismiss:YES handler:^{
             [self instafetchFeed];
         }];
+
+        [viewController addTitle:@"Discover related sites" iconName:@"discover" selectionShouldDismiss:YES handler:^{
+            NSString *feedId = [NSString stringWithFormat:@"%@",
+                [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
+            [self.appDelegate openDiscoverFeedsDialogFromSettingsButton:feedId];
+        }];
     }
-    
+
+    if (appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read && !social && !widget && !dashboard) {
+        NSArray *folderFeedIds = appDelegate.storiesCollection.activeFolderFeeds;
+        if (folderFeedIds.count > 0) {
+            [viewController addTitle:@"Discover related sites" iconName:@"discover" selectionShouldDismiss:YES handler:^{
+                [self.appDelegate openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:folderFeedIds];
+            }];
+        }
+    }
+
     if (!dashboard) {
         NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
         NSArray *titles = @[@"On scroll or selection", @"Only on selection", @"After 1 second", @"After 2 seconds", @"After 3 seconds", @"After 4 seconds", @"After 5 seconds", @"After 10 seconds", @"After 15 seconds", @"After 30 seconds", @"After 45 seconds", @"After 60 seconds", @"Manually"];

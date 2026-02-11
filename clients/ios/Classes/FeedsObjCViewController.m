@@ -2291,7 +2291,8 @@ heightForHeaderInSection:(NSInteger)section {
         ![folderName isEqualToString:@"saved_searches"] &&
         ![folderName isEqualToString:@"saved_stories"] &&
         ![folderName isEqualToString:@"read_stories"] &&
-        ![folderName isEqualToString:@"widget_stories"]) {
+        ![folderName isEqualToString:@"widget_stories"] &&
+        ![folderName isEqualToString:@"try_feed"]) {
         return 0;
     }
     
@@ -2876,6 +2877,12 @@ heightForHeaderInSection:(NSInteger)section {
     if (![feedId isKindOfClass:[NSString class]]) {
         feedId = [NSString stringWithFormat:@"%@",feedId];
     }
+
+    // Try feeds are always visible
+    if ([feedId isEqualToString:self.appDelegate.tryFeedFeedId]) {
+        return YES;
+    }
+
     NSDictionary *unreadCounts = self.appDelegate.dictUnreadCounts[feedId];
     NSIndexPath *stillVisible = self.stillVisibleFeeds[feedId];
     if (!stillVisible && self.appDelegate.isSavedStoriesIntelligenceMode) {

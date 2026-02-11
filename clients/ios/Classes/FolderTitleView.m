@@ -125,6 +125,8 @@
         folderTitle = @"Saved Stories";
     } else if ([folderName isEqual:@"saved_searches"]) {
         folderTitle = @"Saved Searches";
+    } else if ([folderName isEqual:@"try_feed"]) {
+        folderTitle = @"Trying Feed";
     } else {
         folderTitle = folderDisplayName;
         backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xF0F2ED, 0xF3E2CB, 0x414143, 0x323234);
@@ -202,7 +204,7 @@
             }
             [disclosureBorder drawInRect:CGRectMake(rect.origin.x + customView.frame.size.width - 32, CGRectGetMidY(rect)-disclosureHeight/2 - 1, disclosureHeight, disclosureHeight)];
         // Add collapse button to regular folders
-        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"]) {
+        } else if (section != NewsBlurTopSectionDashboard && section != NewsBlurTopSectionInfrequentSiteStories && ![folderName isEqual:@"read_stories"] && ![folderName isEqual:@"interactions"] && ![folderName isEqual:@"river_global"] && ![folderName isEqual:@"widget_stories"] && ![folderName isEqual:@"try_feed"]) {
             if (!isFolderCollapsed) {
                 UIImage *disclosureImage = [UIImage imageNamed:@"disclosure_down.png"];
                 [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
@@ -295,6 +297,13 @@
         }
     } else if ([folderName isEqual:@"widget_stories"]) {
         folderImage = [UIImage imageNamed:@"g_icn_folder_widget.png"];
+        if (!appDelegate.isPhone) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 7;
+        }
+    } else if ([folderName isEqual:@"try_feed"]) {
+        folderImage = [UIImage imageNamed:@"discover"];
         if (!appDelegate.isPhone) {
             folderImageViewX = 10;
         } else {

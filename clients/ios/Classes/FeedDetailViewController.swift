@@ -132,23 +132,29 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     @objc override func loadingFeed() {
         // Make sure the view has loaded.
         _ = view
-        
+
         if appDelegate.detailViewController.isPhoneOrCompact {
             changedLayout()
-            
+
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
                 self.reload()
             }
         } else {
             let wasGridView = wasGridView
-            
+
             self.appDelegate.detailViewController.updateLayout(reload: false, fetchFeeds: false)
-            
+
             if wasGridView != isGridView {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                     self.appDelegate.detailViewController.updateLayout(reload: true, fetchFeeds: false)
                 }
             }
+        }
+
+        if appDelegate.isTryFeedView && tryFeedBannerView == nil {
+            showTryFeedSubscribeBanner()
+        } else if !appDelegate.isTryFeedView && tryFeedBannerView != nil {
+            hideTryFeedSubscribeBanner()
         }
     }
     
