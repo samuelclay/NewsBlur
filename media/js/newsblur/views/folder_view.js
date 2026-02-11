@@ -207,6 +207,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                     <% if (show_discover) { %>\
                         <div class="NB-feedbar-discover-container">\
                             <div class="NB-feedbar-discover-icon"></div>\
+                            <span class="NB-feedbar-discover-text">Related Sites</span>\
                             <div class="NB-icon"></div>\
                         </div>\
                     <% } %>\

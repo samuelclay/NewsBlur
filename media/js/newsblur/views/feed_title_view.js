@@ -145,7 +145,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
                             <%= $.favicon_html(feed_id) %>\
                         <% }); %>\
                     <% } else { %>\
-                        <span class="NB-feedbar-discover-text">Related</span>\
+                        <span class="NB-feedbar-discover-text">Related Sites</span>\
                     <% } %>\
                     <div class="NB-icon"></div>\
                 </div>\
