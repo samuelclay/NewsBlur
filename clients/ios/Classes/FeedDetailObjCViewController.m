@@ -3473,17 +3473,17 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
             [self instafetchFeed];
         }];
 
-        [viewController addTitle:@"Discover related sites" iconName:@"discover" selectionShouldDismiss:YES handler:^{
+        [viewController addTitle:@"Discover related sites" iconName:@"discover" iconColor:UIColorFromRGB(0x95968F) selectionShouldDismiss:YES handler:^{
             NSString *feedId = [NSString stringWithFormat:@"%@",
                 [self.appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
             [self.appDelegate openDiscoverFeedsDialogFromSettingsButton:feedId];
         }];
     }
 
-    if (appDelegate.storiesCollection.isRiverView && !infrequent && !saved && !read && !social && !widget && !dashboard) {
+    if (appDelegate.storiesCollection.isRiverView && !everything && !infrequent && !saved && !read && !social && !widget && !dashboard) {
         NSArray *folderFeedIds = appDelegate.storiesCollection.activeFolderFeeds;
         if (folderFeedIds.count > 0) {
-            [viewController addTitle:@"Discover related sites" iconName:@"discover" selectionShouldDismiss:YES handler:^{
+            [viewController addTitle:@"Discover related sites" iconName:@"discover" iconColor:UIColorFromRGB(0x95968F) selectionShouldDismiss:YES handler:^{
                 [self.appDelegate openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:folderFeedIds];
             }];
         }
