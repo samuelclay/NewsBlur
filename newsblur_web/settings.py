@@ -365,6 +365,7 @@ INSTALLED_APPS = (
     "apps.ask_ai",
     "apps.archive_extension",
     "apps.archive_assistant",
+    "apps.monitor",
     "utils",  # missing models so no migrations
     "vendor",
     "typogrify",

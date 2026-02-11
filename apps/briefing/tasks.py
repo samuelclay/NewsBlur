@@ -316,6 +316,20 @@ def GenerateUserBriefing(user_id, on_demand=False):
     curated_sections = {}
     for s in scored_stories:
         curated_sections.setdefault(s.get("category", "trending_global"), []).append(s["story_hash"])
+
+    # tasks.py: Filter curated_sections to remove disabled section keys, remapping their
+    # stories to trending_global so the sidebar doesn't show pills for disabled categories.
+    if active_sections:
+        allowed_curated = {k for k, v in active_sections.items() if v}
+        allowed_curated.add("trending_global")
+        filtered_curated = {}
+        for key, hashes in curated_sections.items():
+            if key in allowed_curated:
+                filtered_curated.setdefault(key, []).extend(hashes)
+            else:
+                filtered_curated.setdefault("trending_global", []).extend(hashes)
+        curated_sections = filtered_curated
+
     section_summaries = extract_section_summaries(summary_html)
     # tasks.py: Filter section_summaries to remove disabled sections
     if active_sections:

@@ -160,12 +160,19 @@ def load_briefing_stories(request):
 
     section_definitions = {s["key"]: s["name"] for s in BRIEFING_SECTION_DEFINITIONS}
 
-    # views.py: Add display names for AI-generated sections not in BRIEFING_SECTION_DEFINITIONS
-    # (e.g. custom sections like "claude_code"). Extract the name from the <h3> tag text.
+    # views.py: Add display names for custom sections from user prompts
+    custom_prompts = prefs.custom_section_prompts or []
+    for i, prompt in enumerate(custom_prompts):
+        custom_key = "custom_%d" % (i + 1)
+        if prompt:
+            section_definitions[custom_key] = prompt
+
+    # views.py: Add display names for AI-generated sections not in BRIEFING_SECTION_DEFINITIONS.
+    # Extract the name from the <h3> tag text, skipping any embedded <img> icons.
     for briefing in briefings:
         for key, html in (briefing.section_summaries or {}).items():
             if key not in section_definitions and html:
-                match = re.search(r"<h3[^>]*>([^<]+)</h3>", html)
+                match = re.search(r"<h3[^>]*>(?:<img[^>]*>)?\s*([^<]+)</h3>", html)
                 if match:
                     section_definitions[key] = match.group(1).strip()
 
@@ -180,7 +187,10 @@ def load_briefing_stories(request):
     # views.py: Include full preferences when not enabled so the onboarding view
     # can render settings immediately without a separate AJAX call.
     if not prefs.enabled and not briefing_list:
-        from apps.ask_ai.providers import DEFAULT_BRIEFING_MODEL, get_briefing_models_for_frontend
+        from apps.ask_ai.providers import (
+            DEFAULT_BRIEFING_MODEL,
+            get_briefing_models_for_frontend,
+        )
 
         TIME_DISPLAY_MAP = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
         preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
@@ -321,7 +331,10 @@ def briefing_preferences(request):
     TIME_DISPLAY_MAP = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
     preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
 
-    from apps.ask_ai.providers import DEFAULT_BRIEFING_MODEL, get_briefing_models_for_frontend
+    from apps.ask_ai.providers import (
+        DEFAULT_BRIEFING_MODEL,
+        get_briefing_models_for_frontend,
+    )
 
     folders = []
     try:

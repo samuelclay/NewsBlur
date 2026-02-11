@@ -29,18 +29,18 @@ class Discover(View):
             monthly = monthly_stats[discover_type]["requests"]
             alltime = alltime_stats[discover_type]
 
-            formatted_data[f"requests_{discover_type}_daily"] = (
-                f'{chart_name}{{metric="requests",type="{discover_type}",period="daily"}} {daily}'
-            )
-            formatted_data[f"requests_{discover_type}_weekly"] = (
-                f'{chart_name}{{metric="requests",type="{discover_type}",period="weekly"}} {weekly}'
-            )
-            formatted_data[f"requests_{discover_type}_monthly"] = (
-                f'{chart_name}{{metric="requests",type="{discover_type}",period="monthly"}} {monthly}'
-            )
-            formatted_data[f"requests_{discover_type}_alltime"] = (
-                f'{chart_name}{{metric="requests",type="{discover_type}",period="alltime"}} {alltime}'
-            )
+            formatted_data[
+                f"requests_{discover_type}_daily"
+            ] = f'{chart_name}{{metric="requests",type="{discover_type}",period="daily"}} {daily}'
+            formatted_data[
+                f"requests_{discover_type}_weekly"
+            ] = f'{chart_name}{{metric="requests",type="{discover_type}",period="weekly"}} {weekly}'
+            formatted_data[
+                f"requests_{discover_type}_monthly"
+            ] = f'{chart_name}{{metric="requests",type="{discover_type}",period="monthly"}} {monthly}'
+            formatted_data[
+                f"requests_{discover_type}_alltime"
+            ] = f'{chart_name}{{metric="requests",type="{discover_type}",period="alltime"}} {alltime}'
 
         # Unique users by type and period
         for discover_type in ["feeds", "stories"]:
@@ -49,18 +49,18 @@ class Discover(View):
             monthly_users = RDiscoverUsage.get_unique_users_for_period(discover_type, days=30)
             alltime_users = RDiscoverUsage.get_alltime_unique_users(discover_type)
 
-            formatted_data[f"unique_users_{discover_type}_daily"] = (
-                f'{chart_name}{{metric="unique_users",type="{discover_type}",period="daily"}} {daily_users}'
-            )
-            formatted_data[f"unique_users_{discover_type}_weekly"] = (
-                f'{chart_name}{{metric="unique_users",type="{discover_type}",period="weekly"}} {weekly_users}'
-            )
-            formatted_data[f"unique_users_{discover_type}_monthly"] = (
-                f'{chart_name}{{metric="unique_users",type="{discover_type}",period="monthly"}} {monthly_users}'
-            )
-            formatted_data[f"unique_users_{discover_type}_alltime"] = (
-                f'{chart_name}{{metric="unique_users",type="{discover_type}",period="alltime"}} {alltime_users}'
-            )
+            formatted_data[
+                f"unique_users_{discover_type}_daily"
+            ] = f'{chart_name}{{metric="unique_users",type="{discover_type}",period="daily"}} {daily_users}'
+            formatted_data[
+                f"unique_users_{discover_type}_weekly"
+            ] = f'{chart_name}{{metric="unique_users",type="{discover_type}",period="weekly"}} {weekly_users}'
+            formatted_data[
+                f"unique_users_{discover_type}_monthly"
+            ] = f'{chart_name}{{metric="unique_users",type="{discover_type}",period="monthly"}} {monthly_users}'
+            formatted_data[
+                f"unique_users_{discover_type}_alltime"
+            ] = f'{chart_name}{{metric="unique_users",type="{discover_type}",period="alltime"}} {alltime_users}'
 
         context = {
             "data": formatted_data,

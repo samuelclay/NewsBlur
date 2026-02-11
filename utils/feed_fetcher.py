@@ -154,6 +154,31 @@ FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = list(range(5))
 NO_UNDERSCORE_ADDRESSES = ["jwz"]
 
 
+def fetch_url_with_scrapingbee(url):
+    """Fetch a URL using ScrapingBee without requiring a Feed object.
+    Used for feed discovery when direct requests are blocked.
+    Returns (status_code, body) tuple."""
+    api_key = getattr(settings, "SCRAPINGBEE_API_KEY", None)
+    if not api_key:
+        return None, None
+
+    params = {
+        "api_key": api_key,
+        "url": url,
+        "render_js": "false",
+        "return_page_source": "true",
+    }
+
+    try:
+        response = requests.get("https://app.scrapingbee.com/api/v1", params=params, timeout=15)
+        if response.status_code == 200 and response.content:
+            return response.status_code, smart_str(response.content)
+        return response.status_code, None
+    except Exception as e:
+        logging.debug("   ***> ScrapingBee standalone fetch error for %s: %s" % (url, e))
+        return None, None
+
+
 class FetchFeed:
     def __init__(self, feed_id, options):
         self.feed = Feed.get_by_id(feed_id)
@@ -473,7 +498,30 @@ class FetchFeed:
                 ConnectionResetError,
             ) as e:
                 logging.debug("   ***> [%-30s] ~FRFetch failed: %s." % (self.feed.log_title[:30], e))
-                return FEED_ERRHTTP, None
+
+        # ScrapingBee fallback: all normal fetch methods exhausted
+        if not self.fpf:
+            logging.debug(
+                "   ***> [%-30s] ~FYAll fetch methods failed, trying ScrapingBee fallback"
+                % (self.feed.log_title[:30])
+            )
+            sb_status, sb_body = self.fetch_scrapingbee()
+            if sb_status == 200 and sb_body:
+                processed_body = preprocess_feed_encoding(sb_body)
+                self.fpf = feedparser.parse(processed_body)
+                if self.fpf and (
+                    self.fpf.entries or getattr(self.fpf.feed, "title", None) or self.fpf.version
+                ):
+                    if not self.feed.is_forbidden:
+                        self.feed = self.feed.set_is_forbidden()
+                    logging.debug(
+                        "   ---> [%-30s] ~FGScrapingBee fallback succeeded" % (self.feed.log_title[:30])
+                    )
+                else:
+                    self.fpf = None
+
+        if not self.fpf:
+            return FEED_ERRHTTP, None
 
         logging.debug(
             "   ---> [%-30s] ~FYFeed fetch in ~FM%.4ss" % (self.feed.log_title[:30], time.time() - start)
