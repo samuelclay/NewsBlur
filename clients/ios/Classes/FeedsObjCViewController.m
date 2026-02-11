@@ -409,8 +409,12 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
     [self updateSidebarButton];
 
-    UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-    [self configureFeedToolbarItemsForOrientation:orientation];
+    // Defer toolbar item configuration to the next run loop iteration so the toolbar
+    // has been laid out with a non-zero width, avoiding constraint conflicts.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+        [self configureFeedToolbarItemsForOrientation:orientation];
+    });
 
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSInteger intelligenceLevel = [userPreferences integerForKey:@"selectedIntelligence"];

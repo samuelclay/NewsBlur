@@ -24,11 +24,7 @@
 }
 
 - (BOOL)becomeFirstResponder {
-    BOOL success = [super becomeFirstResponder];
-    
-    NSLog(@"%@ becomeFirstResponder: %@", self, success ? @"yes" : @"no");  // log
-    
-    return success;
+    return [super becomeFirstResponder];
 }
 
 #pragma mark -

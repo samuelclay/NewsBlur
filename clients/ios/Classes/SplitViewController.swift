@@ -21,8 +21,6 @@ class SplitViewController: UISplitViewController {
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        print("preferredStatusBarStyle: \(ThemeManager.shared.isDarkTheme ? "light" : "dark")")
-        
         return ThemeManager.shared.isDarkTheme ? .lightContent : .darkContent
     }
     
