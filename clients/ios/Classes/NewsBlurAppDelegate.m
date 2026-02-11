@@ -124,6 +124,7 @@
 @synthesize activeUserProfileName;
 @synthesize hasNoSites;
 @synthesize isTryFeedView;
+@synthesize skipTryFeedCleanup;
 
 @synthesize inFindingStoryMode;
 @synthesize hasLoadedFeedDetail;
@@ -2007,10 +2008,10 @@
 }
 
 - (void)loadFeedDetailView:(BOOL)transition {
-    // Clean up any temporary try feed from sidebar when loading a regular feed
-    if (!self.isTryFeedView && self.tryFeedFeedId) {
-        [self removeTryFeedFromSidebar];
+    if (!self.skipTryFeedCleanup) {
+        [self cleanUpTryFeed];
     }
+    self.skipTryFeedCleanup = NO;
 
     self.inFeedDetail = YES;
     popoverHasFeedView = YES;
@@ -2105,12 +2106,15 @@
                      isSocial:(BOOL)social
                      withUser:(NSDictionary *)user
              showFindingStory:(BOOL)showHUD {
+    // Clean up any previous try feed before loading a new one
+    [self cleanUpTryFeed];
+
     NSDictionary *feed = [self getFeed:feedId];
-    
+
     if (social) {
         storiesCollection.isSocialView = YES;
         self.inFindingStoryMode = YES;
-        
+
         if (feed == nil) {
             feed = user;
             self.isTryFeedView = YES;
@@ -2163,6 +2167,7 @@
         }
     }
 
+    self.skipTryFeedCleanup = YES;
     if (!self.isPhone) {
         [self loadFeedDetailView];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
@@ -2232,6 +2237,14 @@
     }
 
     [self.feedsViewController reloadFeedTitlesTable];
+}
+
+- (void)cleanUpTryFeed {
+    [self.feedDetailViewController hideTryFeedSubscribeBanner];
+    if (self.tryFeedFeedId) {
+        [self removeTryFeedFromSidebar];
+    }
+    self.isTryFeedView = NO;
 }
 
 - (void)backgroundLoadNotificationStory {
@@ -2433,9 +2446,11 @@
 }
 
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
+    [self cleanUpTryFeed];
+
     self.readStories = [NSMutableArray array];
     NSMutableArray *feeds = [NSMutableArray array];
-    
+
     if (self.loginViewController.view.window != nil) {
         return;
     }

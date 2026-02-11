@@ -95,6 +95,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     NSString * activeUserProfileName;
     BOOL hasNoSites;
     BOOL isTryFeedView;
+    BOOL skipTryFeedCleanup;
     BOOL popoverHasFeedView;
     BOOL inFeedDetail;
     BOOL inStoryDetail;
@@ -214,6 +215,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (readwrite) NSString * activeUserProfileName;
 @property (nonatomic, readwrite) BOOL hasNoSites;
 @property (nonatomic, readwrite) BOOL isTryFeedView;
+@property (nonatomic, readwrite) BOOL skipTryFeedCleanup;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
 @property (nonatomic, readwrite) BOOL hasLoadedFeedDetail;
 @property (nonatomic, readwrite) NSDate *findingStoryStartDate;
@@ -353,6 +355,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)openDiscoverFeedsDialogWithFeedIds:(NSArray *)feedIds;
 - (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds;
 - (void)openAddSiteWithFeedAddress:(NSString *)feedAddress;
+- (void)cleanUpTryFeed;
 - (void)openUserTagsStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadFeedDetailView:(BOOL)transition;
