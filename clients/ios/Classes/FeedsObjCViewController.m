@@ -332,54 +332,41 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         intelligenceItem = [[UIBarButtonItem alloc] initWithCustomView:self.intelligenceControl];
     }
 
-    UIBarButtonItem *leadingFlexibleSpace = [[UIBarButtonItem alloc]
-                                             initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                             target:nil
-                                             action:nil];
-    UIBarButtonItem *trailingFlexibleSpace = [[UIBarButtonItem alloc]
-                                              initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                              target:nil
-                                              action:nil];
-    UIBarButtonItem *leftSpacing = [[UIBarButtonItem alloc]
-                                    initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                    target:nil
-                                    action:nil];
-    UIBarButtonItem *rightSpacing = [[UIBarButtonItem alloc]
-                                     initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                     target:nil
-                                     action:nil];
-    leftSpacing.width = 8.0;
-    rightSpacing.width = 8.0;
+    UIBarButtonItem * (^makeFlexSpace)(void) = ^{
+        return [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                             target:nil
+                                                             action:nil];
+    };
+    UIBarButtonItem * (^makeFixedSpace)(CGFloat) = ^(CGFloat width) {
+        UIBarButtonItem *space = [[UIBarButtonItem alloc]
+                                  initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                  target:nil
+                                  action:nil];
+        space.width = width;
+        return space;
+    };
 
 #if TARGET_OS_MACCATALYST
-    UIBarButtonItem *leadingInset = [[UIBarButtonItem alloc]
-                                     initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                     target:nil
-                                     action:nil];
-    leadingInset.width = 16.0;
-    UIBarButtonItem *trailingInset = [[UIBarButtonItem alloc]
-                                      initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                      target:nil
-                                      action:nil];
-    trailingInset.width = 16.0;
     self.feedViewToolbar.items = @[
-        leadingInset,
+        makeFixedSpace(16),
         self.addBarButton,
-        leadingFlexibleSpace,
+        makeFlexSpace(),
         intelligenceItem,
-        trailingFlexibleSpace,
+        makeFlexSpace(),
         self.settingsBarButton,
-        trailingInset
+        makeFixedSpace(16)
     ];
 #else
     self.feedViewToolbar.items = @[
-        leadingFlexibleSpace,
+        makeFlexSpace(),
+        makeFlexSpace(),
         self.addBarButton,
-        leftSpacing,
+        makeFlexSpace(),
         intelligenceItem,
-        rightSpacing,
+        makeFlexSpace(),
         self.settingsBarButton,
-        trailingFlexibleSpace
+        makeFlexSpace(),
+        makeFlexSpace()
     ];
 #endif
 }
@@ -481,6 +468,11 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (currentInset.bottom != totalBottomInset) {
         self.feedTitlesTable.contentInset = UIEdgeInsetsMake(currentInset.top, currentInset.left, totalBottomInset, currentInset.right);
         self.feedTitlesTable.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, totalBottomInset, 0);
+    }
+
+    // Update intelligence control when column width changes (e.g., dragging the feeds divider).
+    if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
+        [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
     }
 }
 
@@ -654,8 +646,19 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (orientation == UIInterfaceOrientationUnknown) {
         orientation = self.view.window.windowScene.interfaceOrientation;
     }
-    
-    if (!self.appDelegate.detailViewController.isPhoneOrCompact && !UIInterfaceOrientationIsLandscape(orientation)) {
+
+    BOOL useCompactIcons = NO;
+    if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
+        CGFloat feedsWidth = self.view.bounds.size.width;
+        if (feedsWidth > 0) {
+            useCompactIcons = feedsWidth < 340;
+        } else {
+            // Width not yet available, fall back to orientation.
+            useCompactIcons = !UIInterfaceOrientationIsLandscape(orientation);
+        }
+    }
+
+    if (useCompactIcons) {
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow_icn.png"] forSegmentAtIndex:1];
         [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" sized:14] forSegmentAtIndex:2];
         [self.intelligenceControl setImage:[Utilities imageNamed:@"unread_blue_icn.png" sized:14] forSegmentAtIndex:3];

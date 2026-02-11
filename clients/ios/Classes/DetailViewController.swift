@@ -548,7 +548,9 @@ class DetailViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        (verticalDividerView as? DividerView)?.handleOffset = -4
+
         updateLayout(reload: false, fetchFeeds: false)
     }
     
