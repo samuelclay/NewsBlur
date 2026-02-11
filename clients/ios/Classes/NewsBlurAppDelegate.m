@@ -1898,6 +1898,29 @@
     }];
 }
 
+- (NSURLSessionDataTask *)GETreturningTask:(NSString *)urlString
+ parameters:(id)parameters
+    success:(void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable))success
+    failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure {
+    NSString *networkOperationIdentifier = [self beginNetworkOperation];
+
+    NSURLSessionDataTask *dataTask = [networkManager GET:urlString parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (success) {
+            success(task, responseObject);
+        }
+
+        [self endNetworkOperation:networkOperationIdentifier];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (failure) {
+            failure(task, error);
+        }
+
+        [self endNetworkOperation:networkOperationIdentifier];
+    }];
+
+    return dataTask;
+}
+
 - (void)GET:(NSString *)urlString
  parameters:(id)parameters
      target:(id)target

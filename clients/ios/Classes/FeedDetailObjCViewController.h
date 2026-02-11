@@ -72,6 +72,7 @@
 @property (nonatomic, readwrite) BOOL showImagePreview;
 @property (nonatomic, readwrite) BOOL invalidateFontCache;
 @property (nonatomic, readwrite) BOOL cameFromFeedsList;
+@property (nonatomic, readwrite) NSUInteger fetchRequestId;
 @property (nonatomic, readwrite) NSInteger dashboardIndex;
 @property (nonatomic, readwrite) BOOL dashboardSingleMode;
 

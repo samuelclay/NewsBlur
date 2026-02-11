@@ -68,6 +68,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic) BOOL feedListRevealBouncing;
 @property (nonatomic, strong) UIView *feedListRevealContainer;
 @property (nonatomic, strong) UIBarButtonItem *sidebarBarButton;
+@property (nonatomic, strong) NSURLSessionDataTask *currentFetchTask;
 
 @end
 
@@ -1095,6 +1096,9 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.isShowingFetching = NO;
     self.cameFromFeedsList = YES;
     self.scrollingMarkReadRow = NSNotFound;
+    [self.currentFetchTask cancel];
+    self.currentFetchTask = nil;
+    self.fetchRequestId++;
     appDelegate.activeStory = nil;
     [storiesCollection setStories:nil];
     [storiesCollection setFeedUserProfiles:nil];
@@ -1133,7 +1137,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.dashboardAwaitingFinish = YES;
     self.isOnline = YES;
     self.isShowingFetching = NO;
-    
+    [self.currentFetchTask cancel];
+    self.currentFetchTask = nil;
+    self.fetchRequestId++;
+
     if (storiesCollection.isRiverView) {
         [self fetchRiverPage:1 withCallback:nil];
     } else {
@@ -1352,15 +1359,22 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     
     NSString *feedId = [NSString stringWithFormat:@"%@", [[storiesCollection activeFeed] objectForKey:@"id"]];
     NSInteger feedPage = storiesCollection.feedPage;
+    NSUInteger requestId = self.fetchRequestId;
     NSLog(@" ---> Loading feed url: %@", theFeedDetailURL);
-    [appDelegate GET:theFeedDetailURL parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
-        NSLog(@"success");  // log
+    self.currentFetchTask = [appDelegate GETreturningTask:theFeedDetailURL parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
+        if (requestId != self.fetchRequestId) {
+            NSLog(@"Discarding stale feed response (request %lu, current %lu)",
+                  (unsigned long)requestId, (unsigned long)self.fetchRequestId);
+            return;
+        }
         if (!self.storiesCollection.activeFeed) return;
         [self finishedLoadingFeed:responseObject feedPage:feedPage feedId:feedId];
         if (callback) {
             callback();
         }
     } failure:^(NSURLSessionTask *operation, NSError *error) {
+        if (error.code == NSURLErrorCancelled) return;
+        if (requestId != self.fetchRequestId) return;
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)operation.response;
         NSLog(@"in failed block %@", operation);
         self.isOnline = NO;
@@ -1569,12 +1583,20 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                             [storiesCollection.searchQuery stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]]];
     }
     
-    [appDelegate GET:theFeedDetailURL parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
+    NSUInteger requestId = self.fetchRequestId;
+    self.currentFetchTask = [appDelegate GETreturningTask:theFeedDetailURL parameters:nil success:^(NSURLSessionTask *task, id responseObject) {
+        if (requestId != self.fetchRequestId) {
+            NSLog(@"Discarding stale river response (request %lu, current %lu)",
+                  (unsigned long)requestId, (unsigned long)self.fetchRequestId);
+            return;
+        }
         [self finishedLoadingFeed:responseObject feedPage:self.storiesCollection.feedPage feedId:nil];
         if (callback) {
             callback();
         }
     } failure:^(NSURLSessionTask *operation, NSError *error) {
+        if (error.code == NSURLErrorCancelled) return;
+        if (requestId != self.fetchRequestId) return;
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)operation.response;
         self.isOnline = NO;
         self.isShowingFetching = NO;
