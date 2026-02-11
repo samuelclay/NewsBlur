@@ -2170,8 +2170,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)reloadFeedTitlesTable {
     [self resetRowHeights];
+    [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
     [self highlightSelection];
+}
+
+- (void)refreshFolderCounts {
+    [appDelegate.folderCountCache removeAllObjects];
+
+    for (NSNumber *section in self.folderTitleViews) {
+        [self.folderTitleViews[section] setNeedsDisplay];
+    }
 }
 
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {

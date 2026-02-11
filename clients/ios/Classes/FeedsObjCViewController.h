@@ -148,6 +148,7 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 - (IBAction)tapAddSite:(id)sender;
 
 - (void)reloadFeedTitlesTable;
+- (void)refreshFolderCounts;
 - (void)resetToolbar;
 - (void)layoutHeaderCounts:(UIInterfaceOrientation)orientation;
 - (void)refreshHeaderCounts;

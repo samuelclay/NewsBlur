@@ -295,21 +295,31 @@ class FeedsViewController: FeedsObjCViewController {
     }
     
     var reloadWorkItem: DispatchWorkItem?
-    
+    var lastFeedTitlesReloadTime: Date = .distantPast
+
     @objc func deferredReloadFeedTitlesTable() {
         reloadWorkItem?.cancel()
-        
+
+        let throttleInterval: TimeInterval = 0.5
+        let timeSinceLastReload = Date().timeIntervalSince(lastFeedTitlesReloadTime)
+        let delay: TimeInterval = timeSinceLastReload >= throttleInterval ? 0 : throttleInterval - timeSinceLastReload
+
         let workItem = DispatchWorkItem { [weak self] in
             guard let self else {
                 return
             }
-            
-            self.reloadFeedTitlesTable()
-            self.refreshHeaderCounts()
+
+            self.lastFeedTitlesReloadTime = Date()
+            self.refreshFeedCounts()
         }
-        
+
         reloadWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
+    }
+
+    @objc func refreshFeedCounts() {
+        refreshFolderCounts()
+        refreshHeaderCounts()
     }
     
     override func viewDidAppear(_ animated: Bool) {
