@@ -784,6 +784,11 @@
         targetY = naturalPositionWhenScrolled;
     }
 
+    // When overscrolling at top (pulling down), feed bar follows content down
+    if (scrolledAmount < 0) {
+        targetY -= scrolledAmount;
+    }
+
     // Pixel-align and clamp to safe area top
     CGFloat scale = [UIScreen mainScreen].scale;
     CGFloat pixelAdjust = 1.0 / scale;
@@ -1692,6 +1697,7 @@
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
         BOOL atTop = topPosition < 50;
+        BOOL atTopForFade = topPosition < 2;
 
         if (!hasScrolled && topPosition != 0) {
             hasScrolled = YES;
@@ -1705,13 +1711,14 @@
         }
 
 #if !TARGET_OS_MACCATALYST
-        if (!atTop) {
+        if (!atTopForFade) {
             self.hasScrolledAwayFromTop = YES;
         }
-        if (atTop && self.hasScrolledAwayFromTop) {
+        if (atTopForFade && self.hasScrolledAwayFromTop) {
             appDelegate.storyPagesViewController.navBarFadeAccumulator = 0.0;
+            appDelegate.storyPagesViewController.traverseFadeAccumulator = 0.0;
             [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:1.0];
-        } else if (atTop || atBottom) {
+        } else if (atTopForFade || atBottom) {
             // At top (first load) or at bottom: hold current nav bar state
         } else if (self.canHideNavigationBar) {
             StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
@@ -1724,22 +1731,20 @@
         }
 #endif
         
-        if (!atTop && !atBottom && !singlePage) {
-            BOOL traversalVisible = appDelegate.storyPagesViewController.traverseView.alpha > 0;
-            
-            // Hide
-            [UIView animateWithDuration:.3 delay:0
-                                options:UIViewAnimationOptionCurveEaseInOut
-            animations:^{
-                self.appDelegate.storyPagesViewController.traverseView.alpha = 0;
-                
-                if (traversalVisible) {
-                    [self.appDelegate.storyPagesViewController hideAutoscrollImmediately];
-                }
-            } completion:^(BOOL finished) {
-                
-            }];
+        if (!atTopForFade && !atBottom && !singlePage) {
+            StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+            CGFloat traverseFadeDistance = 80.0;
+            CGFloat newAccum = pagesVC.traverseFadeAccumulator + deltaY;
+            newAccum = MAX(0.0, MIN(traverseFadeDistance, newAccum));
+            pagesVC.traverseFadeAccumulator = newAccum;
+            CGFloat traverseAlpha = 1.0 - (newAccum / traverseFadeDistance);
+            pagesVC.traverseView.alpha = traverseAlpha;
+
+            if (traverseAlpha == 0) {
+                [pagesVC hideAutoscrollImmediately];
+            }
         } else if (singlePage || !isHorizontal) {
+            appDelegate.storyPagesViewController.traverseFadeAccumulator = 0.0;
             appDelegate.storyPagesViewController.traverseView.alpha = 1;
 //            NSLog(@" ---> Bottom position: %d", bottomPosition);
             CGFloat gap = appDelegate.storyPagesViewController.traverseBottomGap;
@@ -1752,10 +1757,11 @@
                     appDelegate.storyPagesViewController.traverseBottomConstraint.constant = gap;
                 }
             }
-        } else if ((!singlePage && (atTop && !atBottom)) || [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        } else if ((!singlePage && (atTopForFade && !atBottom)) || [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
             // Pin to bottom of viewport, regardless of scrollview
             appDelegate.storyPagesViewController.traversePinned = YES;
             appDelegate.storyPagesViewController.traverseFloating = NO;
+            appDelegate.storyPagesViewController.traverseFadeAccumulator = 0.0;
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
 
             appDelegate.storyPagesViewController.traverseBottomConstraint.constant = appDelegate.storyPagesViewController.traverseBottomGap;
@@ -1785,6 +1791,7 @@
             // Scroll with bottom of scrollview
             appDelegate.storyPagesViewController.traversePinned = NO;
             appDelegate.storyPagesViewController.traverseFloating = YES;
+            appDelegate.storyPagesViewController.traverseFadeAccumulator = 0.0;
             appDelegate.storyPagesViewController.traverseView.alpha = 1;
             appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + appDelegate.storyPagesViewController.traverseBottomGap;
         }

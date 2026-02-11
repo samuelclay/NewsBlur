@@ -139,34 +139,30 @@
     
     self.statusBarHeight = self.view.window.windowScene.statusBarManager.statusBarFrame.size.height;
     
-    // adding HUD for progress bar
-    CGFloat radius = 8;
-    circularProgressView = [[THCircularProgressView alloc]
-                            initWithCenter:CGPointMake(self.buttonNext.frame.origin.x + 2*radius,
-                                                       self.traverseView.frame.size.height / 2)
-                            radius:radius
-                            lineWidth:radius / 4.0f
-                            progressMode:THProgressModeFill
-                            progressColor:[UIColor colorWithRed:0.612f green:0.62f blue:0.596f alpha:0.4f]
-                            progressBackgroundMode:THProgressBackgroundModeCircumference
-                            progressBackgroundColor:[UIColor colorWithRed:0.312f green:0.32f blue:0.296f alpha:.04f]
-                            percentage:20];
-    circularProgressView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-    [self.traverseView addSubview:circularProgressView];
-    UIView *tapIndicator = [[UIView alloc]
-                            initWithFrame:CGRectMake(circularProgressView.frame.origin.x -
-                                                     circularProgressView.frame.size.width / 2,
-                                                     circularProgressView.frame.origin.y -
-                                                     circularProgressView.frame.size.height / 2,
-                                                     circularProgressView.frame.size.width*2,
-                                                     circularProgressView.frame.size.height*2)];
+    // Build the new native traverse bar, replacing old XIB-based buttons
+    StoryTraverseBar *bar = [[StoryTraverseBar alloc] init];
+    [bar setupIn:self.traverseView];
+    self.traverseBar = bar;
+
+    // Reassign outlets to the new bar's views
+    circularProgressView = bar.circularProgressView;
+    self.loadingIndicator = bar.loadingIndicator;
+    buttonPrevious = bar.previousButton;
+    buttonNext = bar.nextButton;
+    buttonText = bar.textButton;
+    buttonSend = bar.sendButton;
+
+    // Wire up button actions
+    [bar.textButton addTarget:self action:@selector(toggleTextView:) forControlEvents:UIControlEventTouchUpInside];
+    [bar.sendButton addTarget:self action:@selector(openSendToDialog:) forControlEvents:UIControlEventTouchUpInside];
+    [bar.previousButton addTarget:self action:@selector(doPreviousStory:) forControlEvents:UIControlEventTouchUpInside];
+    [bar.nextButton addTarget:self action:@selector(doNextUnreadStory:) forControlEvents:UIControlEventTouchUpInside];
+
+    // Progress tap gesture
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
                                    initWithTarget:self
                                    action:@selector(tapProgressBar:)];
-    [tapIndicator addGestureRecognizer:tap];
-    tapIndicator.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-    [self.traverseView insertSubview:tapIndicator aboveSubview:circularProgressView];
-    self.loadingIndicator.frame = self.circularProgressView.frame;
+    [bar.progressTapArea addGestureRecognizer:tap];
 
     UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:self.isMac ? 24 : 30];
     settingsImage = [settingsImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -902,8 +898,7 @@
 }
 
 - (void)updateTraverseBackground {
-    self.textStorySendBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
-    self.prevNextBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
+    [self.traverseBar updateTheme];
     self.bottomSize.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
 }
 
@@ -1668,44 +1663,26 @@
 }
 
 - (void)setNextPreviousButtons {
-    // setting up the PREV BUTTON
+    // Previous button enabled state
     NSInteger readStoryCount = [appDelegate.readStories count];
-    if (readStoryCount == 0 ||
+    BOOL prevEnabled = !(readStoryCount == 0 ||
         (readStoryCount == 1 &&
-         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"story_hash"])) {
-        [buttonPrevious setEnabled:NO];
-    } else {
-        [buttonPrevious setEnabled:YES];
-    }
-    
-    NSString *previousName = self.isHorizontal ? @"traverse_previous.png" : @"traverse_previous_vert.png";
-    NSString *previousNameOff = self.isHorizontal ? @"traverse_previous_off.png" : @"traverse_previous_off_vert.png";
-    [buttonPrevious setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:previousName]]
-                              forState:UIControlStateNormal];
-    [buttonPrevious setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:previousNameOff]]
-                              forState:UIControlStateDisabled];
-    
-    // setting up the NEXT UNREAD STORY BUTTON
+         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"story_hash"]));
+    [self.traverseBar updatePreviousEnabled:prevEnabled];
+
+    // Next/Done button state
     buttonNext.enabled = YES;
     NSInteger nextIndex = [appDelegate.storiesCollection indexOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
     BOOL pageFinished = appDelegate.feedDetailViewController.pageFinished;
-    if ((nextIndex == -1 && unreadCount > 0 && !pageFinished) ||
-        nextIndex != -1) {
-        NSString *nextName = self.isHorizontal ? @"traverse_next.png" : @"traverse_next_vert.png";
-        [buttonNext setTitle:@"Next" forState:UIControlStateNormal];
-        [buttonNext setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:nextName]]
-                              forState:UIControlStateNormal];
-    } else {
-        [buttonNext setTitle:@"Done" forState:UIControlStateNormal];
-        [buttonNext setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_done.png"]]
-                              forState:UIControlStateNormal];
-    }
-    
+    BOOL hasMoreUnread = (nextIndex == -1 && unreadCount > 0 && !pageFinished) || nextIndex != -1;
+    [self.traverseBar updateNextShowDone:!hasMoreUnread];
+
+    // Progress indicator
     float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
-    circularProgressView.percentage = progress;
+    [self.traverseBar updateProgress:progress];
 }
 
 - (void)setTextButton {
@@ -1714,52 +1691,20 @@
 
 - (void)setTextButton:(StoryDetailViewController *)storyViewController {
     if (storyViewController != currentPage) return;
-    if (storyViewController.pageIndex >= 0) {
-        [buttonText setEnabled:YES];
-        [buttonText setAlpha:1];
-        [buttonSend setEnabled:YES];
-        [buttonSend setAlpha:1];
-        
-        fontSettingsButton.enabled = YES;
-        originalStoryButton.enabled = YES;
-        
+
+    BOOL enabled = storyViewController.pageIndex >= 0;
+    [self.traverseBar updateTextInTextView:storyViewController.inTextView enabled:enabled];
+    [self.traverseBar updateSendEnabled:enabled];
+
+    fontSettingsButton.enabled = enabled;
+    originalStoryButton.enabled = enabled;
+
 #if TARGET_OS_MACCATALYST
-        if (@available(macCatalyst 16.0, *)) {
-            fontSettingsButton.hidden = NO;
-            originalStoryButton.hidden = NO;
-        }
-#endif
-    } else {
-        [buttonText setEnabled:NO];
-        [buttonText setAlpha:.4];
-        [buttonSend setEnabled:NO];
-        [buttonSend setAlpha:.4];
-        
-        fontSettingsButton.enabled = NO;
-        originalStoryButton.enabled = NO;
-        
-#if TARGET_OS_MACCATALYST
-        if (@available(macCatalyst 16.0, *)) {
-            fontSettingsButton.hidden = YES;
-            originalStoryButton.hidden = YES;
-        }
-#endif
+    if (@available(macCatalyst 16.0, *)) {
+        fontSettingsButton.hidden = !enabled;
+        originalStoryButton.hidden = !enabled;
     }
-    
-    [buttonSend setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_send.png"]]
-                          forState:UIControlStateNormal];
-    
-    if (storyViewController.inTextView) {
-        [buttonText setTitle:@"Story" forState:UIControlStateNormal];
-        [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text_on.png"]]
-                              forState:0];
-        self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 26, 0, 0);
-    } else {
-        [buttonText setTitle:@"Text" forState:UIControlStateNormal];
-        [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text.png"]]
-                              forState:0];
-        self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 22, 0, 0);
-    }
+#endif
 }
 
 - (IBAction)openSendToDialog:(id)sender {
