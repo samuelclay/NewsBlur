@@ -79,7 +79,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize finishedAnimatingIn;
-@synthesize searchBar;
+@synthesize searchField;
 @synthesize isOnline;
 @synthesize isShowingFetching;
 @synthesize storiesCollection;
@@ -125,16 +125,40 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
 #endif
     
-    self.searchBar = [[UISearchBar alloc]
-                 initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.storyTitlesTable.frame), 44.)];
-    self.searchBar.delegate = self;
-    [self.searchBar setReturnKeyType:UIReturnKeySearch];
-    self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
-    self.searchBar.tintColor = UIColorFromRGB(0x0);
-    self.searchBar.nb_searchField.textColor = UIColorFromRGB(0x0);
-    [self.searchBar setSearchBarStyle:UISearchBarStyleMinimal];
-    [self.searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-    self.storyTitlesTable.tableHeaderView = self.searchBar;
+    UIView *searchContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.storyTitlesTable.frame), 28.)];
+    searchContainerView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xf4f4f4, 0xF3E2CB, 0x333333, 0x222222);
+    searchContainerView.tag = 100;
+
+    self.searchField = [[UITextField alloc] initWithFrame:CGRectMake(8, 2, CGRectGetWidth(self.storyTitlesTable.frame) - 16, 24.)];
+    self.searchField.delegate = self;
+    self.searchField.returnKeyType = UIReturnKeySearch;
+    self.searchField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x444444, 0x333333);
+    self.searchField.textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
+    self.searchField.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
+    self.searchField.font = [UIFont systemFontOfSize:13];
+    self.searchField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.searchField.autocorrectionType = UITextAutocorrectionTypeNo;
+    self.searchField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.searchField.placeholder = @"Search stories";
+    self.searchField.layer.cornerRadius = 6;
+    self.searchField.layer.masksToBounds = YES;
+    self.searchField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+
+    UIImageView *searchIcon = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"magnifyingglass"]];
+    searchIcon.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
+    searchIcon.contentMode = UIViewContentModeScaleAspectFit;
+    searchIcon.frame = CGRectMake(0, 0, 24, 16);
+    searchIcon.tag = 101;
+    UIView *leftPaddingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 24)];
+    searchIcon.center = CGPointMake(16, 12);
+    [leftPaddingView addSubview:searchIcon];
+    self.searchField.leftView = leftPaddingView;
+    self.searchField.leftViewMode = UITextFieldViewModeAlways;
+
+    [self.searchField addTarget:self action:@selector(searchFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+
+    [searchContainerView addSubview:self.searchField];
+    self.storyTitlesTable.tableHeaderView = searchContainerView;
     self.storyTitlesTable.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     self.storyTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.messageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -305,47 +329,38 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     return NO;
 }
 
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     [self updateTheme];
-    
     return YES;
 }
 
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-    [self.searchBar setShowsCancelButton:YES animated:YES];
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+    [self.searchField resignFirstResponder];
 }
 
-- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
-    if ([self.searchBar.text length]) {
-        [self.searchBar setShowsCancelButton:YES animated:YES];
-    } else {
-        [self.searchBar setShowsCancelButton:NO animated:YES];
-    }
-    [self.searchBar resignFirstResponder];
-}
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-    [self.searchBar setText:@""];
-    [self.searchBar resignFirstResponder];
+- (BOOL)textFieldShouldClear:(UITextField *)textField {
     storiesCollection.inSearch = NO;
     storiesCollection.searchQuery = nil;
     storiesCollection.savedSearchQuery = nil;
     [self reloadStories];
+    return YES;
 }
 
-- (void)searchBarSearchButtonClicked:(UISearchBar*) theSearchBar {
-    [self.searchBar resignFirstResponder];
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [self.searchField resignFirstResponder];
+    return YES;
 }
 
 - (BOOL)disablesAutomaticKeyboardDismissal {
     return NO;
 }
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+- (void)searchFieldDidChange:(UITextField *)textField {
+    NSString *searchText = textField.text;
     if ([searchText length]) {
         storiesCollection.inSearch = YES;
         storiesCollection.searchQuery = searchText;
-        
+
         if (![searchText isEqualToString:storiesCollection.savedSearchQuery]) {
             storiesCollection.savedSearchQuery = nil;
         }
@@ -354,7 +369,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         storiesCollection.searchQuery = nil;
         storiesCollection.savedSearchQuery = nil;
     }
-    
+
     [FeedDetailViewController cancelPreviousPerformRequestsWithTarget:self selector:@selector(reloadStories) object:nil];
     [self performSelector:@selector(reloadStories) withObject:nil afterDelay:1.0];
 }
@@ -568,18 +583,13 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [self cancelMarkStoryReadTimer];
 
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
-        [self.searchBar setText:storiesCollection.searchQuery];
+        [self.searchField setText:storiesCollection.searchQuery];
         [self.storyTitlesTable setContentOffset:CGPointMake(0, 0)];
         if (storiesCollection.savedSearchQuery == nil) {
-            [self.searchBar becomeFirstResponder];
+            [self.searchField becomeFirstResponder];
         }
     } else {
-        [self.searchBar setText:@""];
-    }
-    if ([self.searchBar.text length]) {
-        [self.searchBar setShowsCancelButton:YES animated:YES];
-    } else {
-        [self.searchBar setShowsCancelButton:NO animated:YES];
+        [self.searchField setText:@""];
     }
     
 #if !TARGET_OS_MACCATALYST
@@ -941,14 +951,14 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 
-    [self.searchBar resignFirstResponder];
+    [self.searchField resignFirstResponder];
     [self hideTryFeedSubscribeBanner];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    [self.searchBar resignFirstResponder];
+    [self.searchField resignFirstResponder];
     [self.appDelegate hidePopoverAnimated:YES];
     
     if (self.isMovingToParentViewController) {
@@ -1096,12 +1106,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         storiesCollection.inSearch = appDelegate.storiesCollection.inSearch;
         storiesCollection.searchQuery = appDelegate.storiesCollection.searchQuery;
         storiesCollection.savedSearchQuery = appDelegate.storiesCollection.savedSearchQuery;
-        [self.searchBar setText:storiesCollection.searchQuery ?: @""];
+        [self.searchField setText:storiesCollection.searchQuery ?: @""];
     } else {
         storiesCollection.inSearch = NO;
         storiesCollection.searchQuery = nil;
         storiesCollection.savedSearchQuery = nil;
-        [self.searchBar setText:@""];
+        [self.searchField setText:@""];
     }
     [self hideFetchingBanner];
     [self beginOfflineTimer];
@@ -1133,7 +1143,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [self reload];
     
     if (self.isLegacyTable) {
-        [storyTitlesTable scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.searchBar.frame), 1, 1) animated:YES];
+        [storyTitlesTable scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.storyTitlesTable.tableHeaderView.frame), 1, 1) animated:YES];
     }
 }
 
@@ -1292,7 +1302,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         });
     }
     if (self.isLegacyTable && !storiesCollection.inSearch && storiesCollection.feedPage == 1) {
-        [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+        [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.storyTitlesTable.tableHeaderView.frame))];
     }
     
     if (!self.isOnline) {
@@ -1476,12 +1486,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         self.messageView.hidden = YES;
         [self reload];
         if (self.isLegacyTable) {
-            [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, CGRectGetHeight(self.searchBar.frame), 1) animated:YES];
+            [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, CGRectGetHeight(self.storyTitlesTable.tableHeaderView.frame), 1) animated:YES];
         }
     }
     
     if (self.isLegacyTable && !storiesCollection.inSearch && storiesCollection.feedPage == 1) {
-        [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.searchBar.frame))];
+        [self.storyTitlesTable setContentOffset:CGPointMake(0, CGRectGetHeight(self.storyTitlesTable.tableHeaderView.frame))];
     }
     
     if (storiesCollection.feedPage == 1) {
@@ -2096,11 +2106,17 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 // MARK: - Fetching Banner
 
 - (void)showFetchingBanner:(NSString *)title isOffline:(BOOL)isOffline {
+    NSInteger styleTag = isOffline ? 1 : 2;
     if (self.fetchingBannerView) {
-        // Update existing banner text and style
-        UILabel *label = [self.fetchingBannerView viewWithTag:2001];
-        label.text = title;
-        return;
+        if (self.fetchingBannerView.tag == styleTag) {
+            // Same style, just update text
+            UILabel *label = [self.fetchingBannerView viewWithTag:2001];
+            label.text = title;
+            return;
+        }
+        // Style changed (e.g. fetching → offline), tear down and recreate
+        [self.fetchingBannerView removeFromSuperview];
+        self.fetchingBannerView = nil;
     }
 
     UIView *banner = [[UIView alloc] init];
@@ -2108,7 +2124,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     banner.clipsToBounds = YES;
 
     if (isOffline) {
-        banner.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFF0E0, 0xF0E0C8, 0x3A3020, 0x2A2418);
+        banner.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFE0E0, 0xF0D8C8, 0x3A2020, 0x2A1818);
     } else {
         banner.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE1EBFF, 0xF0E8D8, 0x2A3340, 0x1E2830);
     }
@@ -2116,8 +2132,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     UIColor *textColor;
     UIColor *borderColor;
     if (isOffline) {
-        textColor = UIColorFromLightSepiaMediumDarkRGB(0x8A6A30, 0x7B5A30, 0xD0B880, 0xC0A870);
-        borderColor = UIColorFromLightSepiaMediumDarkRGB(0xE0D0A0, 0xD8C8A0, 0x4A4030, 0x3A3028);
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0xA03030, 0x8B4030, 0xE0A0A0, 0xD08080);
+        borderColor = UIColorFromLightSepiaMediumDarkRGB(0xE0B0B0, 0xD8B8A0, 0x4A3030, 0x3A2828);
     } else {
         textColor = UIColorFromLightSepiaMediumDarkRGB(0x4A6A8A, 0x6B5A45, 0xB0C8E0, 0x90B0D0);
         borderColor = UIColorFromLightSepiaMediumDarkRGB(0xC0D0E8, 0xD8C8B0, 0x3A4A58, 0x2A3A48);
@@ -2163,6 +2179,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [banner addSubview:bottomBorder];
 
     [self.view addSubview:banner];
+    banner.tag = styleTag;
     self.fetchingBannerView = banner;
 
     // Position below try-feed banner if it exists, otherwise at safe area top
@@ -2204,12 +2221,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     UIView *banner = self.fetchingBannerView;
     self.fetchingBannerView = nil;
 
-    [UIView animateWithDuration:0.25 animations:^{
-        banner.alpha = 0;
-        [self updateTopBannerInsets];
-    } completion:^(BOOL finished) {
-        [banner removeFromSuperview];
-    }];
+    // Cancel any in-flight animations on the banner
+    [banner.layer removeAllAnimations];
+    [banner removeFromSuperview];
+    [self updateTopBannerInsets];
 }
 
 - (void)updateTopBannerInsets {
@@ -2227,11 +2242,14 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         totalHeight += h;
     }
 
+    CGFloat previousTop = self.storyTitlesTable.contentInset.top;
     UIEdgeInsets inset = self.storyTitlesTable.contentInset;
     inset.top = totalHeight;
     self.storyTitlesTable.contentInset = inset;
     self.storyTitlesTable.scrollIndicatorInsets = inset;
-    if (totalHeight > 0) {
+
+    // Only force scroll position when a banner first appears (inset going from 0 to non-zero)
+    if (totalHeight > 0 && previousTop == 0) {
         [self.storyTitlesTable setContentOffset:CGPointMake(0, -totalHeight) animated:NO];
     }
 }
@@ -4125,19 +4143,22 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
 #endif
     
-    self.searchBar.backgroundColor = UIColorFromRGB(0xE3E6E0);
-    self.searchBar.tintColor = UIColorFromRGB(0xffffff);
-    self.searchBar.nb_searchField.textColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
-    self.searchBar.nb_searchField.tintColor = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
-    
+    UIView *searchContainer = [self.storyTitlesTable.tableHeaderView viewWithTag:100] ?: self.storyTitlesTable.tableHeaderView;
+    searchContainer.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xf4f4f4, 0xF3E2CB, 0x333333, 0x222222);
+    self.searchField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x444444, 0x333333);
+    self.searchField.textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
+    self.searchField.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
+    UIImageView *searchIcon = [self.searchField.leftView viewWithTag:101];
+    searchIcon.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
+
     self.appDelegate.detailViewController.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
-    
+
     if ([ThemeManager themeManager].isDarkTheme) {
         self.storyTitlesTable.indicatorStyle = UIScrollViewIndicatorStyleWhite;
-        self.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+        self.searchField.keyboardAppearance = UIKeyboardAppearanceDark;
     } else {
         self.storyTitlesTable.indicatorStyle = UIScrollViewIndicatorStyleBlack;
-        self.searchBar.keyboardAppearance = UIKeyboardAppearanceDefault;
+        self.searchField.keyboardAppearance = UIKeyboardAppearanceDefault;
     }
     
     self.view.backgroundColor = UIColorFromRGB(0xf4f4f4);
@@ -4236,7 +4257,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [self reload];
     
     if (self.isLegacyTable) {
-        [storyTitlesTable scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.searchBar.frame), 1, 1) animated:YES];
+        [storyTitlesTable scrollRectToVisible:CGRectMake(0, CGRectGetHeight(self.storyTitlesTable.tableHeaderView.frame), 1, 1) animated:YES];
     }
 }
 

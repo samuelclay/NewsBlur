@@ -19,7 +19,7 @@
 <UITableViewDelegate, UITableViewDataSource,
  UIPopoverControllerDelegate,
  MCSwipeTableViewCellDelegate,
- UIGestureRecognizerDelegate, UISearchBarDelegate,
+ UIGestureRecognizerDelegate, UITextFieldDelegate,
  UITableViewDragDelegate> {
     BOOL pageFetching;
     BOOL pageFinished;
@@ -43,7 +43,7 @@
 #if !TARGET_OS_MACCATALYST
 @property (nonatomic) UIRefreshControl *refreshControl;
 #endif
-@property (nonatomic) UISearchBar *searchBar;
+@property (nonatomic) UITextField *searchField;
 @property (nonatomic) IBOutlet UIView *messageView;
 @property (nonatomic) IBOutlet UILabel *messageLabel;
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;

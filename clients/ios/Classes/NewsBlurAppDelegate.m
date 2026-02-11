@@ -428,7 +428,7 @@
             self.feedDetailViewController.storiesCollection.savedSearchQuery = nil;
             self.feedDetailViewController.storiesCollection.inSearch = YES;
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [self.feedDetailViewController.searchBar becomeFirstResponder];
+                [self.feedDetailViewController.searchField becomeFirstResponder];
             });
         } else {
             handled = NO;
