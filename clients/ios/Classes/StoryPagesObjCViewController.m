@@ -67,6 +67,14 @@
 @synthesize traverseBottomConstraint;
 @synthesize scrollBottomConstraint;
 
+- (CGFloat)traverseBottomGap {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        return 0;
+    }
+    CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
+    return (safeAreaBottom > 0) ? 12.0 : 8.0;
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
@@ -201,9 +209,9 @@
     self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
     [self.view addConstraint:self.notifier.topOffsetConstraint];
     [self.notifier hideNow];
-    
-    self.traverseBottomConstraint.constant = 0;
-    
+
+    self.traverseBottomConstraint.constant = self.traverseBottomGap;
+
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                    originalStoryButton,
@@ -576,11 +584,11 @@
         self.traverseFloating = NO;
         
         if (!hide) {
-            self.traverseBottomConstraint.constant = 0;
+            self.traverseBottomConstraint.constant = self.traverseBottomGap;
             [self.view layoutIfNeeded];
         }
     }
-    
+
     [self.appDelegate.detailViewController adjustForAutoscroll];
     [self.currentPage drawFeedGradient];
     
@@ -1200,8 +1208,8 @@
     
     // Stick to bottom
     traversePinned = YES;
-    
-    self.traverseBottomConstraint.constant = 0;
+
+    self.traverseBottomConstraint.constant = self.traverseBottomGap;
     
     if (self.traverseView.alpha == 0) {
         [UIView animateWithDuration:.24 delay:0

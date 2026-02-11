@@ -76,6 +76,7 @@
 @property (nonatomic) NSTimeInterval autoscrollSpeed;
 @property (readwrite) BOOL traversePinned;
 @property (readwrite) BOOL traverseFloating;
+@property (nonatomic, readonly) CGFloat traverseBottomGap;
 @property (readwrite) CGFloat inTouchMove;
 @property (assign) BOOL isDraggingScrollview;
 @property (assign) BOOL isAnimatedIntoPlace;

@@ -525,12 +525,13 @@ extension FeedDetailViewController: FeedDetailInteraction {
         
         // NSLog("🪿🎛️ Scrolled story \(story.debugTitle) to offset \(offset ?? 0), story height: \(storyHeight), feed detail height: \(feedDetailHeight)")
         
+        let gap = appDelegate.storyPagesViewController.traverseBottomGap
         if offset == nil {
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = storyHeight - feedDetailHeight
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = storyHeight - feedDetailHeight + gap
         } else if let offset, offset - storyHeight + skipHeader < feedDetailHeight, offset > feedDetailHeight {
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = offset - feedDetailHeight
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = offset - feedDetailHeight + gap
         } else {
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = 0
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = gap
         }
     }
 
