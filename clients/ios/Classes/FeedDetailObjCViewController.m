@@ -20,7 +20,6 @@
 #import "AddSiteViewController.h"
 #import "UIBarButtonItem+Image.h"
 #import "MarkReadMenuViewController.h"
-#import "NBNotifier.h"
 #import "NBLoadingCell.h"
 #import "FMDatabase.h"
 #import "NBBarButtonItem.h"
@@ -62,7 +61,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @property (nonatomic, strong) NSString *restoringFeedID;
 @property (nonatomic) NSUInteger deferredLoadStoryCount;
 @property (nonatomic, strong) NSTimer *markStoryReadTimer;
-@property (nonatomic, strong) UIView *notifierContainer;
 @property (nonatomic, strong) UIPanGestureRecognizer *feedListSwipeGesture;
 @property (nonatomic, strong) UIPanGestureRecognizer *fullScreenPopGesture;
 @property (nonatomic) CGFloat feedListRevealWidth;
@@ -81,7 +79,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize finishedAnimatingIn;
-@synthesize notifier;
 @synthesize searchBar;
 @synthesize isOnline;
 @synthesize isShowingFetching;
@@ -187,25 +184,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 #endif
     
     [[ThemeManager themeManager] addThemeGestureRecognizerToView:self.storyTitlesTable];
-    
-    self.notifierContainer = [[UIView alloc] init];
-    self.notifierContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    self.notifierContainer.clipsToBounds = YES;
-    self.notifierContainer.backgroundColor = UIColor.clearColor;
-    [self.view addSubview:self.notifierContainer];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifierContainer attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view.safeAreaLayoutGuide attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifierContainer attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.notifierContainer attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0]];
-    [self.notifierContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.notifierContainer attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:NOTIFIER_HEIGHT]];
-
-    self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching stories..."];
-    [self.notifierContainer addSubview:self.notifier];
-    [self.notifierContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.notifierContainer attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self.notifierContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeLeading relatedBy:NSLayoutRelationEqual toItem:self.notifierContainer attribute:NSLayoutAttributeLeading multiplier:1.0 constant:0]];
-    [self.notifierContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:NOTIFIER_HEIGHT]];
-    self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.notifierContainer attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
-    [self.notifierContainer addConstraint:self.notifier.topOffsetConstraint];
-    [self.view bringSubviewToFront:self.notifierContainer];
     
     [self addKeyCommandWithInput:@"a" modifierFlags:UIKeyModifierShift action:@selector(doMarkAllRead:) discoverabilityTitle:@"Mark All as Read"];
 }
@@ -473,7 +451,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
         [self setUserAvatarLayout:orientation];
-        [self.notifier setNeedsLayout];
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
         [self checkScroll];
         NSLog(@"Feed detail did re-orient.");
@@ -589,9 +566,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
     
     [self cancelMarkStoryReadTimer];
-    
-    [self.notifier setNeedsLayout];
-    
+
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         [self.searchBar setText:storiesCollection.searchQuery];
         [self.storyTitlesTable setContentOffset:CGPointMake(0, 0)];
@@ -654,8 +629,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (self.isPhoneOrCompact) {
         [self fadeSelectedCell:YES];
     }
-    
-    [self.notifier setNeedsLayout];
 
     [self testForTryFeed];
 
@@ -1130,7 +1103,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         storiesCollection.savedSearchQuery = nil;
         [self.searchBar setText:@""];
     }
-    [self.notifier hideIn:0];
+    [self hideFetchingBanner];
     [self beginOfflineTimer];
     [appDelegate.cacheImagesOperationQueue cancelAllOperations];
 //    [self reload];
@@ -1174,7 +1147,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             self.storiesCollection.feedPage == 1 && self.isOnline) {
             self.isShowingFetching = YES;
             self.isOnline = NO;
-            [self showLoadingNotifier];
+            [self showFetchingBanner:@"Fetching recent stories..." isOffline:NO];
             [self loadOfflineStories];
         }
     });
@@ -1325,13 +1298,13 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (!self.isOnline) {
         [self loadOfflineStories];
         if (!self.isShowingFetching) {
-            [self showOfflineNotifier];
+            [self showFetchingBanner:@"Offline" isOffline:YES];
         }
         return;
     } else {
-        [self.notifier hide];
+        [self hideFetchingBanner];
     }
-    
+
     if (storiesCollection.isSocialView) {
         theFeedDetailURL = [NSString stringWithFormat:@"%@/social/stories/%@/?page=%d",
                             self.appDelegate.url,
@@ -1384,14 +1357,14 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         self.isShowingFetching = NO;
         //            storiesCollection.feedPage = 1;
         [self loadOfflineStories];
-        [self showOfflineNotifier];
+        [self showFetchingBanner:@"Offline" isOffline:YES];
         if (httpResponse.statusCode == 503) {
             [self informError:@"In maintenance mode"];
             self.pageFinished = YES;
         } else if (httpResponse.statusCode >= 500) {
             [self informError:@"The server barfed."];
         }
-        
+
         [self reload];
     }];
 }
@@ -1470,24 +1443,13 @@ typedef NS_ENUM(NSUInteger, FeedSection)
                     [self renderStories:offlineStories];
                 }
                 if (!self.isShowingFetching) {
-                    [self showOfflineNotifier];
+                    [self showFetchingBanner:@"Offline" isOffline:YES];
                 }
             });
         }];
     });
 }
 
-- (void)showOfflineNotifier {
-    self.notifier.style = NBOfflineStyle;
-    self.notifier.title = @"Offline";
-    [self.notifier show];
-}
-
-- (void)showLoadingNotifier {
-    self.notifier.style = NBLoadingStyle;
-    self.notifier.title = @"Fetching recent stories...";
-    [self.notifier show];
-}
 
 #pragma mark -
 #pragma mark River of News
@@ -1532,15 +1494,15 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
     
     if (!self.isOnline) {
-        [self.notifier hide];
+        [self hideFetchingBanner];
         [self loadOfflineStories];
         return;
     } else {
-        [self.notifier hide];
+        [self hideFetchingBanner];
     }
-    
+
     NSString *theFeedDetailURL;
-    
+
     if (storiesCollection.isSocialRiverView) {
         if ([storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             theFeedDetailURL = [NSString stringWithFormat:
@@ -1615,7 +1577,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         self.appDelegate.findingStoryDictionary = nil;
         //            storiesCollection.feedPage = 1;
         [self loadOfflineStories];
-        [self showOfflineNotifier];
+        [self showFetchingBanner:@"Offline" isOffline:YES];
         if (httpResponse.statusCode == 503) {
             [self informError:@"In maintenance mode"];
             self.pageFinished = YES;
@@ -1814,8 +1776,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         }];
     });
     
-    [self.notifier hide];
-    
+    [self hideFetchingBanner];
+
 }
 
 - (IBAction)openPremiumDialog:(id)sender {
@@ -2085,15 +2047,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         [banner.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
     ]];
 
-    // Push story titles table down so the first row isn't hidden under the banner
-    [banner layoutIfNeeded];
-    CGFloat bannerHeight = banner.frame.size.height;
-    if (bannerHeight == 0) bannerHeight = 44;
-    UIEdgeInsets inset = self.storyTitlesTable.contentInset;
-    inset.top = bannerHeight;
-    self.storyTitlesTable.contentInset = inset;
-    self.storyTitlesTable.scrollIndicatorInsets = inset;
-    [self.storyTitlesTable setContentOffset:CGPointMake(0, -bannerHeight) animated:NO];
+    [self updateTopBannerInsets];
 
     // Animate in
     banner.alpha = 0;
@@ -2106,16 +2060,29 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     if (!self.tryFeedBannerView) return;
 
     UIView *banner = self.tryFeedBannerView;
+    self.tryFeedBannerView = nil;
+
+    // Reposition fetching banner if it exists (it was anchored below try-feed banner)
+    if (self.fetchingBannerView) {
+        NSMutableArray *toRemove = [NSMutableArray array];
+        for (NSLayoutConstraint *c in self.view.constraints) {
+            if ((c.firstItem == self.fetchingBannerView && c.firstAttribute == NSLayoutAttributeTop) ||
+                (c.secondItem == self.fetchingBannerView && c.secondAttribute == NSLayoutAttributeTop)) {
+                [toRemove addObject:c];
+            }
+        }
+        [NSLayoutConstraint deactivateConstraints:toRemove];
+        [NSLayoutConstraint activateConstraints:@[
+            [self.fetchingBannerView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor]
+        ]];
+    }
+
     [UIView animateWithDuration:0.25 animations:^{
         banner.alpha = 0;
-        UIEdgeInsets inset = self.storyTitlesTable.contentInset;
-        inset.top = 0;
-        self.storyTitlesTable.contentInset = inset;
-        self.storyTitlesTable.scrollIndicatorInsets = inset;
+        [self updateTopBannerInsets];
     } completion:^(BOOL finished) {
         [banner removeFromSuperview];
     }];
-    self.tryFeedBannerView = nil;
 }
 
 - (void)subscribeTryFeed {
@@ -2124,6 +2091,149 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
     [self hideTryFeedSubscribeBanner];
     [appDelegate openAddSiteWithFeedAddress:feedAddress];
+}
+
+// MARK: - Fetching Banner
+
+- (void)showFetchingBanner:(NSString *)title isOffline:(BOOL)isOffline {
+    if (self.fetchingBannerView) {
+        // Update existing banner text and style
+        UILabel *label = [self.fetchingBannerView viewWithTag:2001];
+        label.text = title;
+        return;
+    }
+
+    UIView *banner = [[UIView alloc] init];
+    banner.translatesAutoresizingMaskIntoConstraints = NO;
+    banner.clipsToBounds = YES;
+
+    if (isOffline) {
+        banner.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFF0E0, 0xF0E0C8, 0x3A3020, 0x2A2418);
+    } else {
+        banner.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE1EBFF, 0xF0E8D8, 0x2A3340, 0x1E2830);
+    }
+
+    UIColor *textColor;
+    UIColor *borderColor;
+    if (isOffline) {
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0x8A6A30, 0x7B5A30, 0xD0B880, 0xC0A870);
+        borderColor = UIColorFromLightSepiaMediumDarkRGB(0xE0D0A0, 0xD8C8A0, 0x4A4030, 0x3A3028);
+    } else {
+        textColor = UIColorFromLightSepiaMediumDarkRGB(0x4A6A8A, 0x6B5A45, 0xB0C8E0, 0x90B0D0);
+        borderColor = UIColorFromLightSepiaMediumDarkRGB(0xC0D0E8, 0xD8C8B0, 0x3A4A58, 0x2A3A48);
+    }
+
+    // Accessory view: spinner for loading, icon for offline
+    UIView *accessoryView;
+    if (isOffline) {
+        UIImageView *offlineIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"g_icn_offline.png"]];
+        offlineIcon.translatesAutoresizingMaskIntoConstraints = NO;
+        offlineIcon.contentMode = UIViewContentModeScaleAspectFit;
+        offlineIcon.tintColor = textColor;
+        accessoryView = offlineIcon;
+    } else {
+        UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+        spinner.translatesAutoresizingMaskIntoConstraints = NO;
+        spinner.color = textColor;
+        [spinner startAnimating];
+        accessoryView = spinner;
+    }
+
+    // Title label
+    UILabel *titleLabel = [[UILabel alloc] init];
+    titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    titleLabel.text = title;
+    titleLabel.font = [UIFont systemFontOfSize:13 weight:UIFontWeightMedium];
+    titleLabel.textColor = textColor;
+    titleLabel.tag = 2001;
+
+    // Main stack
+    UIStackView *mainStack = [[UIStackView alloc] initWithArrangedSubviews:@[accessoryView, titleLabel]];
+    mainStack.translatesAutoresizingMaskIntoConstraints = NO;
+    mainStack.axis = UILayoutConstraintAxisHorizontal;
+    mainStack.spacing = 8;
+    mainStack.alignment = UIStackViewAlignmentCenter;
+
+    [banner addSubview:mainStack];
+
+    // Bottom border
+    UIView *bottomBorder = [[UIView alloc] init];
+    bottomBorder.translatesAutoresizingMaskIntoConstraints = NO;
+    bottomBorder.backgroundColor = borderColor;
+    [banner addSubview:bottomBorder];
+
+    [self.view addSubview:banner];
+    self.fetchingBannerView = banner;
+
+    // Position below try-feed banner if it exists, otherwise at safe area top
+    NSLayoutAnchor *topAnchor = self.tryFeedBannerView
+        ? self.tryFeedBannerView.bottomAnchor
+        : self.view.safeAreaLayoutGuide.topAnchor;
+
+    [NSLayoutConstraint activateConstraints:@[
+        [accessoryView.widthAnchor constraintEqualToConstant:16],
+        [accessoryView.heightAnchor constraintEqualToConstant:16],
+
+        [mainStack.topAnchor constraintEqualToAnchor:banner.topAnchor constant:8],
+        [mainStack.bottomAnchor constraintEqualToAnchor:banner.bottomAnchor constant:-8],
+        [mainStack.leadingAnchor constraintEqualToAnchor:banner.leadingAnchor constant:12],
+        [mainStack.trailingAnchor constraintEqualToAnchor:banner.trailingAnchor constant:-12],
+
+        [bottomBorder.leadingAnchor constraintEqualToAnchor:banner.leadingAnchor],
+        [bottomBorder.trailingAnchor constraintEqualToAnchor:banner.trailingAnchor],
+        [bottomBorder.bottomAnchor constraintEqualToAnchor:banner.bottomAnchor],
+        [bottomBorder.heightAnchor constraintEqualToConstant:1],
+
+        [banner.topAnchor constraintEqualToAnchor:topAnchor],
+        [banner.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+        [banner.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    ]];
+
+    [self updateTopBannerInsets];
+
+    // Animate in
+    banner.alpha = 0;
+    [UIView animateWithDuration:0.3 animations:^{
+        banner.alpha = 1;
+    }];
+}
+
+- (void)hideFetchingBanner {
+    if (!self.fetchingBannerView) return;
+
+    UIView *banner = self.fetchingBannerView;
+    self.fetchingBannerView = nil;
+
+    [UIView animateWithDuration:0.25 animations:^{
+        banner.alpha = 0;
+        [self updateTopBannerInsets];
+    } completion:^(BOOL finished) {
+        [banner removeFromSuperview];
+    }];
+}
+
+- (void)updateTopBannerInsets {
+    [self.view layoutIfNeeded];
+
+    CGFloat totalHeight = 0;
+    if (self.tryFeedBannerView) {
+        CGFloat h = self.tryFeedBannerView.frame.size.height;
+        if (h == 0) h = 44;
+        totalHeight += h;
+    }
+    if (self.fetchingBannerView) {
+        CGFloat h = self.fetchingBannerView.frame.size.height;
+        if (h == 0) h = 32;
+        totalHeight += h;
+    }
+
+    UIEdgeInsets inset = self.storyTitlesTable.contentInset;
+    inset.top = totalHeight;
+    self.storyTitlesTable.contentInset = inset;
+    self.storyTitlesTable.scrollIndicatorInsets = inset;
+    if (totalHeight > 0) {
+        [self.storyTitlesTable setContentOffset:CGPointMake(0, -totalHeight) animated:NO];
+    }
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

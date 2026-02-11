@@ -10,7 +10,6 @@
 #import "NewsBlurAppDelegate.h"
 #import "BaseViewController.h"
 #import "Utilities.h"
-#import "NBNotifier.h"
 #import "MCSwipeTableViewCell.h"
 #import "FeedDetailTableCell.h"
 
@@ -33,7 +32,6 @@
     UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;
     Class popoverClass;
-    NBNotifier *notifier;
 }
 
 @property (nonatomic, strong) IBOutlet UITableView *storyTitlesTable;
@@ -41,7 +39,6 @@
 @property (nonatomic) IBOutlet UIBarButtonItem * feedsBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * titleImageBarButton;
-@property (nonatomic, retain) NBNotifier *notifier;
 @property (nonatomic, retain) StoriesCollection *storiesCollection;
 #if !TARGET_OS_MACCATALYST
 @property (nonatomic) UIRefreshControl *refreshControl;
@@ -56,6 +53,7 @@
 @property (nonatomic, strong) NSString *swipingStoryHash;
 
 @property (nonatomic, strong) UIView *tryFeedBannerView;
+@property (nonatomic, strong) UIView *fetchingBannerView;
 
 @property (nonatomic, readonly) BOOL canPullToRefresh;
 @property (nonatomic, readonly) BOOL isMarkReadOnScroll;
@@ -148,6 +146,9 @@
 
 - (void)showTryFeedSubscribeBanner;
 - (void)hideTryFeedSubscribeBanner;
+- (void)showFetchingBanner:(NSString *)title isOffline:(BOOL)isOffline;
+- (void)hideFetchingBanner;
+- (void)updateTopBannerInsets;
 
 - (void)confirmDeleteSite:(UINavigationController *)menuNavigationController;
 - (void)openMoveView:(UINavigationController *)menuNavigationController;
