@@ -56,7 +56,7 @@ High-volume document storage with flexible schemas.
 - **Stories** (`MStory` — title, content, images, compressed with zlib)
 - **Starred stories** (`MStarredStory`)
 - **Read state** (`RUserStory` — per-user story read/starred tracking)
-- **Classifiers** (`MClassifierTitle`, `MClassifierAuthor`, `MClassifierTag`, `MClassifierFeed`)
+- **Classifiers** (`MClassifierTitle`, `MClassifierAuthor`, `MClassifierTag`, `MClassifierFeed`, `MClassifierUrl`, `MClassifierText`, `MClassifierPrompt`)
 - **Social data** (`MSharedStory`, `MSocialProfile`, `MActivity`)
 - **AI responses** (`MAskAIResponse` — cached, zlib-compressed)
 - **Briefings** (`MBriefing`)
@@ -64,15 +64,22 @@ High-volume document storage with flexible schemas.
 - **Statistics** (`MStatistics`)
 
 ### Redis
-In-memory cache, message broker, and session store across multiple databases:
-- **DB 0** — User data cache
-- **DB 1** — Story hashes
-- **DB 2** — Analytics
-- **DB 3** — Statistics
-- **DB 4** — Celery broker and feed scheduling
-- **DB 5** — Sessions
-- **DB 6** — Django cache
-- **DB 10** — Temporary story hashes
+In-memory cache, message broker, and session store. Production runs four separate
+Redis instances; Docker development shares a single instance with numbered databases:
+
+| Instance | DB | Purpose |
+|----------|----|---------|
+| `redis-user` | 0 | User data cache |
+| `redis-user` | 2 | Analytics |
+| `redis-user` | 3 | Statistics |
+| `redis-user` | 4 | Celery broker and feed scheduling |
+| `redis-user` | 6 | Django cache |
+| `redis-user` | 10 | Temporary story hashes |
+| `redis-story` | 1 | Story hashes |
+| `redis-session` | 1 | Feed read state |
+| `redis-session` | 2 | Feed subscription state |
+| `redis-session` | 5 | Sessions |
+| `redis-pubsub` | 0 | Pub/sub messaging |
 
 ### Elasticsearch
 Full-text search and vector-based discovery.
@@ -86,7 +93,7 @@ All apps live under `apps/`. Each app is a self-contained Django module.
 
 | App | Purpose |
 |-----|---------|
-| `analyzer` | Intelligence trainer — classifiers that score stories by title, author, tag, feed, and AI prompts |
+| `analyzer` | Intelligence trainer — classifiers that score stories by title, author, tag, feed, URL, text, and AI prompts |
 | `api` | External REST API for third-party clients |
 | `archive_assistant` | AI chatbot for querying archived browsing history (Claude SDK + RAG) |
 | `archive_extension` | Browser extension backend for automatic browsing history capture |
@@ -94,11 +101,11 @@ All apps live under `apps/`. Each app is a self-contained Django module.
 | `briefing` | AI-generated personalized news briefings with curated sections |
 | `categories` | Curated feed categories for bulk subscription and discovery |
 | `feed_import` | OPML import/export and external service import (Google Reader, etc.) |
-| `mobile` | Mobile-specific API endpoints for iOS and Android apps |
-| `monitor` | System health monitoring and dashboards |
+| `mobile` | Mobile web workspace served at `/mobile/` and `/m/` for iOS and Android clients |
+| `monitor` | System health monitoring dashboards and Prometheus metrics endpoints |
 | `newsletters` | Email-to-RSS — converts email newsletters into subscribable feeds |
-| `notifications` | Push notifications (iOS APNS, Android, email) for new stories |
-| `oauth` | OAuth2 provider for third-party authentication |
+| `notifications` | Push notifications (iOS APNS, web push, email) for new stories |
+| `oauth` | OAuth integration for extensions, IFTTT, and social account connections (Twitter, Facebook) |
 | `profile` | User profiles, premium subscription tiers (Stripe/PayPal), preferences |
 | `push` | PubSubHubbub subscriber for real-time feed updates |
 | `reader` | Core feed reader — subscriptions, folders, unread tracking, story display |
@@ -106,7 +113,7 @@ All apps live under `apps/`. Each app is a self-contained Django module.
 | `rss_feeds` | Feed fetching, parsing, story storage, and feed health management |
 | `search` | Elasticsearch integration for full-text story and feed search |
 | `social` | Social features — sharing stories, following users, comments, blurblogs |
-| `static` | Static pages (about, FAQ, privacy, TOS) and health check endpoints |
+| `static` | Static pages (about, FAQ, privacy, press), app manifests, and health check endpoints |
 | `statistics` | Analytics collection — user activity, feed fetches, performance metrics |
 
 ## Request Flows
@@ -193,8 +200,8 @@ media/js/newsblur/
 |------|-------|---------------|------------------|
 | Free | 64 | 14 days | Basic reading |
 | Premium | 1,024 | 30 days | Search, notifications, AI |
-| Archive | 4,096 | Unlimited | Full history retention |
-| Pro | 10,000 | Unlimited | 5-min fetch, regex classifiers |
+| Archive | 4,096 | Unlimited | Full history retention, text classifiers |
+| Pro | 10,000 | Unlimited | 5-min fetch, text classifiers |
 
 ## Development
 

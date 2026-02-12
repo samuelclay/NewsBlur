@@ -1,1 +1,1 @@
-"""Static pages (about, FAQ, privacy, TOS) and health check endpoints."""
+"""Static pages (about, FAQ, privacy, press), app manifests, and health check endpoints."""

@@ -1,1 +1,1 @@
-"""Mobile-specific API endpoints for iOS and Android NewsBlur apps."""
+"""Mobile web workspace served at /mobile/ and /m/ for iOS and Android clients."""
