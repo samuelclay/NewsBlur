@@ -10,54 +10,60 @@
             $("input[name=username]").focus();
         });
     </script>
-    
+
   {% include_stylesheets "common" %}
-  
-  <meta name="viewport" content="width=320, initial-scale=.85">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 {% endblock %}
 
 {% block title %}Create an Account{% endblock %}
 
 {% block content %}
 
-<div class="NB-static-title">
-    Create an Account
-</div>
-
 <script src='https://www.google.com/recaptcha/api.js'></script>
 
-<div class="NB-static-form-wrapper" style="overflow:hidden">
-    <form method="post" class="NB-static-form" action="{% url "signup" %}">
-        {% if form.errors %}
-            {% if form.errors.username %}
-                <p class="NB-error error">{{ form.errors.username.as_text }}</p>
-            {% else %}{% if form.errors.email %}
-                <p class="NB-error error">{{ form.errors.email.as_text }}</p>
-            {% else %}
-                <p class="NB-error error">{{ form.non_field_errors.as_text }}</p>
-            {% endif %}{% endif %}
-        {% else %}{% if next %}
-        <p class="NB-error error">Please create an account to continue.</p>
-        {% else %}{% if recaptcha_error %}
-        <p class="NB-error error">{{ recaptcha_error }}</p>        
-        {% endif %}{% endif %}{% endif %}
+<div class="NB-static-card-wrapper">
+    <div class="NB-static-card">
+        <a href="{% url "index" %}" class="NB-static-card-logo">
+            <img src="{{ MEDIA_URL }}img/logo_512.png" />
+        </a>
+        <h1 class="NB-static-card-title">Create an Account</h1>
+        <p class="NB-static-card-tagline">A personal news reader bringing people together to talk about the world</p>
 
-        {% csrf_token %}
-        <div class="NB-static-form-label">{{ form.username.label_tag }}</div>
-        <div class="NB-static-form-input">{{ form.username }}</div>
-        <div class="NB-static-form-label">{{ form.password.label_tag }}</div>
-        <div class="NB-static-form-input">{{ form.password }}</div>
-        <div class="NB-static-form-label">{{ form.email.label_tag }}</div>
-        <div class="NB-static-form-input">{{ form.email }}</div>
+        <form method="post" action="{% url "signup" %}">
+            {% if form.errors %}
+                {% if form.errors.username %}
+                    <div class="NB-static-card-error">{{ form.errors.username.as_text }}</div>
+                {% else %}{% if form.errors.email %}
+                    <div class="NB-static-card-error">{{ form.errors.email.as_text }}</div>
+                {% else %}
+                    <div class="NB-static-card-error">{{ form.non_field_errors.as_text }}</div>
+                {% endif %}{% endif %}
+            {% else %}{% if next %}
+                <div class="NB-static-card-error">Please create an account to continue.</div>
+            {% else %}{% if recaptcha_error %}
+                <div class="NB-static-card-error">{{ recaptcha_error }}</div>
+            {% endif %}{% endif %}{% endif %}
 
-        <div class="g-recaptcha" data-sitekey="6LchVzcUAAAAAJH4uoEEhvoqgseZnEZC7LToC92E"></div>
+            {% csrf_token %}
+            <div class="NB-static-card-field">
+                {{ form.username }}
+            </div>
+            <div class="NB-static-card-field">
+                {{ form.password }}
+            </div>
+            <div class="NB-static-card-field">
+                {{ form.email }}
+            </div>
 
-        <input type="submit" value="Sign Up" class="NB-modal-submit-button NB-modal-submit-green NB-static-form-submit" />
-        <input type="hidden" name="next" value="{{ next }}" />
-        <p class="NB-static-form-alttext"><a href="{% url "login" %}?next={{ next|urlencode }}">Login to your account</a></a>
+            <div class="g-recaptcha" data-sitekey="6LchVzcUAAAAAJH4uoEEhvoqgseZnEZC7LToC92E" data-theme="dark"></div>
 
-    </form>
+            <button type="submit" class="NB-static-card-submit">Sign Up</button>
+            <input type="hidden" name="next" value="{{ next }}" />
+        </form>
 
+        <a href="{% url "login" %}?next={{ next|urlencode }}" class="NB-static-card-altlink">Login to your account</a>
+    </div>
 </div>
 
 {% endblock %}

@@ -40,14 +40,10 @@
 
 .NB-static-form-wrapper {
     margin: 48px 0 18px;
-    background-color: #D3E7BA;
-    border-top: 1px solid #A0A0A0;
-    border-bottom: 1px solid #A0A0A0;
+    background: rgba(255, 255, 255, 0.06);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     padding: 24px 0;
-    background-image: linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
-    background-image: -moz-linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
-    background-image: -webkit-linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
-    background-image: -ms-linear-gradient(bottom, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
 }
 
 .NB-static-form {
@@ -64,10 +60,11 @@
     font-size: 14px;
     padding: 2px;
     margin: 6px 4px;
-    border: 1px solid rgba(0, 0, 0, .2);
-    border-radius: 1px;
-    -moz-box-shadow: inset 0 2px 2px rgba(50, 50, 50, 0.15);
-    box-shadow: inset 0 2px 2px rgba(50, 50, 50, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
 
     width: 200px;
     -webkit-box-sizing: border-box;
@@ -96,10 +93,7 @@
 .NB-static-form button {
     width: 200px;
     margin: 12px 0 4px 150px;
-
-    -moz-box-shadow: 2px 2px 0 #A0B998;
-    -webkit-box-shadow: 2px 2px 0 #A0B998;
-    box-shadow: 2px 2px 0 #A0B998;
+    box-shadow: none;
 }
 
 .NB-static-form .helptext {
@@ -121,10 +115,11 @@
     clear: both;
     margin: 6px 0 0;
     padding: 2px 0 0;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    text-shadow: none;
     text-transform: uppercase;
     font-size: 12px;
     font-weight: bold;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .NB-static-form .NB-creditcards {
