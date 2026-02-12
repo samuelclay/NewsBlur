@@ -601,21 +601,21 @@
     } else {
         feedIdStr = @"0";
     }
-    
+
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
-    
+
     if ([[appDelegate.activeStory objectForKey:@"story_hash"]
          isEqualToString:[newStory objectForKey:@"story_hash"]]) {
         appDelegate.activeStory = newStory;
     }
-    
+
     // make the story as read in self.activeFeedStories
     NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"story_hash"]];
     [self replaceStory:newStory withId:newStoryIdStr];
-    
+
     id storyFeedId = [newStory objectForKey:@"story_feed_id"];
-    
+
     // If not a feed, then don't bother updating local feed
     if (!feed || !storyFeedId) return;
     

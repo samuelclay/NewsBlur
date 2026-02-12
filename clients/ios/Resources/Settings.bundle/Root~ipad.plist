@@ -271,7 +271,7 @@
 				<string>Full screen</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>displace</string>
+			<string>auto</string>
 			<key>Values</key>
 			<array>
 				<string>auto</string>

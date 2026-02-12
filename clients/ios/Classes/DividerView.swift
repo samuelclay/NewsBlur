@@ -19,7 +19,7 @@ class DividerView: UIView, UIPointerInteractionDelegate {
 #endif
 
     /// The amount to expand the touch area on each side of the divider for easier finger targeting.
-    private let touchExpansion: CGFloat = 20
+    private let touchExpansion: CGFloat = 6
 
     /// The grab handle pill view centered on the divider.
     private let grabHandle = UIView()
@@ -160,9 +160,19 @@ class DividerView: UIView, UIPointerInteractionDelegate {
 
         let isVerticalDivider = bounds.height >= bounds.width
         let expanded: CGRect
+        // Only expand the touch area near the grab handle, not along the full length.
+        let handleZone: CGFloat = 100
         if isVerticalDivider {
+            let handleCenterY = bounds.midY
+            let zoneMinY = handleCenterY - handleZone / 2
+            let zoneMaxY = handleCenterY + handleZone / 2
+            guard point.y >= zoneMinY && point.y <= zoneMaxY else { return false }
             expanded = bounds.insetBy(dx: -touchExpansion, dy: 0)
         } else {
+            let handleCenterX = bounds.midX
+            let zoneMinX = handleCenterX - handleZone / 2
+            let zoneMaxX = handleCenterX + handleZone / 2
+            guard point.x >= zoneMinX && point.x <= zoneMaxX else { return false }
             expanded = bounds.insetBy(dx: 0, dy: -touchExpansion)
         }
         return expanded.contains(point)

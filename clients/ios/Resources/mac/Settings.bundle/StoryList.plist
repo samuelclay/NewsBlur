@@ -265,7 +265,7 @@
 				<string>One column</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>tile</string>
+			<string>auto</string>
 			<key>Values</key>
 			<array>
 				<string>auto</string>

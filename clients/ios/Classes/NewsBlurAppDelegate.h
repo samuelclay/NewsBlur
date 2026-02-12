@@ -95,6 +95,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
     NSString * activeUserProfileName;
     BOOL hasNoSites;
     BOOL isTryFeedView;
+    BOOL skipTryFeedCleanup;
     BOOL popoverHasFeedView;
     BOOL inFeedDetail;
     BOOL inStoryDetail;
@@ -214,6 +215,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (readwrite) NSString * activeUserProfileName;
 @property (nonatomic, readwrite) BOOL hasNoSites;
 @property (nonatomic, readwrite) BOOL isTryFeedView;
+@property (nonatomic, readwrite) BOOL skipTryFeedCleanup;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
 @property (nonatomic, readwrite) BOOL hasLoadedFeedDetail;
 @property (nonatomic, readwrite) NSDate *findingStoryStartDate;
@@ -348,11 +350,19 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)openTrainStory:(id)sender;
 - (void)openAskAIDialog:(NSDictionary *)story;
 - (void)openAskAIDialog:(NSDictionary *)story sourceRect:(NSValue *)sourceRectValue;
+- (void)openDiscoverFeedsDialog:(NSString *)feedId;
+- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId;
+- (void)openDiscoverFeedsDialogWithFeedIds:(NSArray *)feedIds;
+- (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds;
+- (void)openAddSiteWithFeedAddress:(NSString *)feedAddress;
+- (void)cleanUpTryFeed;
 - (void)openUserTagsStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadFeedDetailView:(BOOL)transition;
 - (void)loadFeed:(NSString *)feedId withStory:(NSString *)contentId animated:(BOOL)animated;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
+- (void)addTryFeedToSidebar:(NSDictionary *)feed;
+- (void)removeTryFeedFromSidebar;
 - (void)backgroundLoadNotificationStory;
 - (void)loadStarredDetailViewWithStory:(NSString *)contentId showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder;
@@ -367,6 +377,9 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)endNetworkOperation:(NSString *)networkOperationIdentifier;
 
 - (void)GET:(NSString *)urlString parameters:(id)parameters
+    success:(void (^)(NSURLSessionDataTask *, id))success
+    failure:(void (^)(NSURLSessionDataTask *, NSError *))failure;
+- (NSURLSessionDataTask *)GETreturningTask:(NSString *)urlString parameters:(id)parameters
     success:(void (^)(NSURLSessionDataTask *, id))success
     failure:(void (^)(NSURLSessionDataTask *, NSError *))failure;
 - (void)GET:(NSString *)urlString parameters:(id)parameters target:(id)target
