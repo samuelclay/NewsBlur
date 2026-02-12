@@ -1242,8 +1242,8 @@ def load_single_feed(request, feed_id):
                 hidden_stories_removed += 1
         stories = new_stories
 
-    # Apply story clustering for premium users
-    if user.profile.is_premium:
+    # Apply story clustering for archive users
+    if user.profile.is_archive:
         from apps.clustering.models import apply_clustering_to_stories
 
         stories = apply_clustering_to_stories(stories, user)
@@ -2365,8 +2365,8 @@ def load_river_stories__redis(request):
                 hidden_stories_removed += 1
         stories = new_stories
 
-    # Apply story clustering for premium users
-    if user.profile.is_premium:
+    # Apply story clustering for archive users
+    if user.profile.is_archive:
         from apps.clustering.models import apply_clustering_to_stories
 
         stories = apply_clustering_to_stories(stories, user)
@@ -4770,8 +4770,8 @@ def load_cluster_stories(request):
     user = get_user(request)
     cluster_id = request.GET.get("cluster_id") or request.POST.get("cluster_id")
 
-    if not user.profile.is_premium:
-        return {"code": 0, "message": "Story clustering is a premium feature.", "stories": []}
+    if not user.profile.is_archive:
+        return {"code": 0, "message": "Story clustering is an archive feature.", "stories": []}
 
     if not cluster_id:
         return {"code": -1, "message": "Missing cluster_id parameter.", "stories": []}
