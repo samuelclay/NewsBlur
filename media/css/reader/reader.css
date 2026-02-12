@@ -23721,6 +23721,91 @@ h5.NB-classifier-section-header {
     color: #6366f1;
 }
 
+/* Story Clustering Popover Section */
+.NB-filter-popover .NB-clustering-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.NB-filter-popover .NB-clustering-title-row .NB-popover-section-title {
+    margin: 0;
+    margin-right: auto;
+}
+
+.NB-filter-popover .NB-clustering-description {
+    font-size: 11px;
+    color: #808080;
+    margin-bottom: 10px;
+}
+
+.NB-filter-popover .NB-popover-icon-control-clustering,
+.NB-filter-popover .NB-popover-icon-control-clustering-read {
+    margin: 4px 0 0;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.NB-filter-popover .NB-clustering-label {
+    font-size: 11px;
+    color: #585A55;
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.NB-filter-popover .NB-menu-manage-clustering-enabled,
+.NB-filter-popover .NB-menu-manage-clustering-read {
+    flex-grow: 1;
+}
+
+.NB-filter-popover .NB-menu-manage-clustering-enabled li,
+.NB-filter-popover .NB-menu-manage-clustering-read li {
+    padding: 2px 12px 2px;
+    font-size: 11px;
+}
+
+.NB-filter-popover .NB-clustering-read-explanation {
+    font-size: 10px;
+    color: #999;
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+/* Clustering upgrade notice */
+.NB-filter-popover .NB-clustering-upgrade-notice {
+    font-size: 11px;
+    text-decoration: none;
+    color: #707070;
+    padding: 3px 8px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.NB-filter-popover .NB-clustering-upgrade-notice:hover {
+    background-color: rgba(74, 144, 217, 0.1);
+    color: #4a90d9;
+}
+
+.NB-filter-popover .NB-clustering-upgrade-notice .NB-archive-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.NB-filter-popover .NB-clustering-upgrade-notice.NB-flash {
+    animation: flash-upgrade 0.6s ease;
+    background-color: rgba(99, 102, 241, 0.15);
+    color: #6366f1;
+}
+
 /* =========== */
 /* = Popover = */
 /* =========== */
@@ -24307,6 +24392,33 @@ h5.NB-classifier-section-header {
 
 .NB-dark .NB-feature-check {
     color: #7ac47a;
+}
+
+/* Clustering preference upgrade notice */
+.NB-clustering-pref-upgrade-notice {
+    font-size: 12px;
+    color: #707070;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #fafafa;
+    border-radius: 4px;
+    border: 1px solid #e8e8e8;
+}
+
+.NB-clustering-pref-upgrade-notice .NB-premium-link {
+    color: #5c89c9;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.NB-clustering-pref-upgrade-notice .NB-premium-link:hover {
+    text-decoration: underline;
+}
+
+.NB-dark .NB-clustering-pref-upgrade-notice {
+    color: #909090;
+    background: #2a2a2a;
+    border-color: #444;
 }
 
 /* =================== */
