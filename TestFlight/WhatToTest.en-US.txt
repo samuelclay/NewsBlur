@@ -1,3 +1,19 @@
+Latest improvements (Feb 11):
+- Related Sites: Discover related sites from any feed or folder using the new Related Sites button. Browse and try feeds before subscribing with a new try-feed banner.
+- Scroll-based fading: The story traverse bar and feed bar now fade in and out gradually as you scroll.
+- Compact story titles: Story title cells in list view are more compact with equalized vertical spacing.
+- Fetching/offline banner moved from a bottom overlay to the top of story titles.
+- Story titles search bar replaced with a compact search field matching the feed list style.
+- Feed list bottom toolbar sits closer to the screen edge; story traversal buttons on iPad have proper bottom spacing.
+- Default column layout changed to auto on iPad and Mac Catalyst.
+- Dashboard briefing: Fixed favicon offset, indentation, and pill sizing for editorial and headlines.
+- SVG upload support and taller settings modals.
+- Fixed mark-read preference using wrong UserDefaults keys.
+- Fixed stale collapsed folder unread counts on iPad.
+- Fixed story toolbar position jump when scrolling.
+- Fixed stale story responses when switching folders quickly on iPad.
+- Fixed try-feed cleanup when navigating away from a previewed feed.
+
 NewsBlur 14 is a major update with new features, a redesigned interface, and full support for iOS/iPadOS 26 and macOS Tahoe.
 
 New features:
