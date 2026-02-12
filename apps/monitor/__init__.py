@@ -1,1 +1,1 @@
-"""System health monitoring, dashboards, and alerting."""
+"""System health monitoring dashboards and Prometheus metrics endpoints."""
