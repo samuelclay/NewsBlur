@@ -1242,11 +1242,13 @@ def load_single_feed(request, feed_id):
                 hidden_stories_removed += 1
         stories = new_stories
 
-    # Apply story clustering for archive users
+    # Apply story clustering for archive users who have it enabled
     if user.profile.is_archive:
-        from apps.clustering.models import apply_clustering_to_stories
+        user_prefs = json.decode(user.profile.preferences)
+        if user_prefs.get("story_clustering", True):
+            from apps.clustering.models import apply_clustering_to_stories
 
-        stories = apply_clustering_to_stories(stories, user)
+            stories = apply_clustering_to_stories(stories, user)
 
     data = dict(
         stories=stories,
@@ -2365,11 +2367,12 @@ def load_river_stories__redis(request):
                 hidden_stories_removed += 1
         stories = new_stories
 
-    # Apply story clustering for archive users
+    # Apply story clustering for archive users who have it enabled
     if user.profile.is_archive:
-        from apps.clustering.models import apply_clustering_to_stories
+        if user_preferences.get("story_clustering", True):
+            from apps.clustering.models import apply_clustering_to_stories
 
-        stories = apply_clustering_to_stories(stories, user)
+            stories = apply_clustering_to_stories(stories, user)
 
     diff = time.time() - start
     timediff = round(float(diff), 2)

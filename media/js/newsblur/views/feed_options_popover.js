@@ -37,7 +37,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-auto-mark-read-option": "change_auto_mark_read_setting",
         "input .NB-auto-mark-read-slider": "on_auto_mark_read_slider_input",
         "click .NB-auto-mark-read-upgrade-notice": "open_premium_modal",
-        "click .NB-date-filter-upgrade-notice": "open_premium_modal"
+        "click .NB-date-filter-upgrade-notice": "open_premium_modal",
+        "click .NB-clustering-upgrade-notice": "open_premium_modal",
+        "click .NB-clustering-option": "change_clustering_setting"
     },
 
     initialize: function (options) {
@@ -304,6 +306,30 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     new NEWSBLUR.Views.FeedNotificationView({ model: feed, popover: true }).render().$el
                 ])
             ])),
+            ((is_feed || is_river) && $.make('div', { className: 'NB-popover-section NB-popover-section-clustering' }, [
+                $.make('div', { className: 'NB-clustering-title-row' }, [
+                    $.make('div', { className: 'NB-popover-section-title' }, 'Story Clustering'),
+                    (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-clustering-upgrade-notice NB-premium-link', href: '#' }, [
+                        $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                    ]))
+                ]),
+                $.make('div', { className: 'NB-clustering-description' }, 'Group duplicate stories across feeds'),
+                $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-clustering' }, [
+                    $.make('div', { className: 'NB-clustering-label' }, 'Clustering'),
+                    $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-enabled' }, [
+                        $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-on', 'data-setting': 'story_clustering', 'data-value': 'true', role: 'button' }, 'On'),
+                        $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-off', 'data-setting': 'story_clustering', 'data-value': 'false', role: 'button' }, 'Off')
+                    ])
+                ]),
+                $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-clustering-read' }, [
+                    $.make('div', { className: 'NB-clustering-label' }, 'Mark duplicates read'),
+                    $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-read' }, [
+                        $.make('li', { className: 'NB-clustering-option NB-clustering-read-on', 'data-setting': 'cluster_mark_read', 'data-value': 'true', role: 'button' }, 'On'),
+                        $.make('li', { className: 'NB-clustering-option NB-clustering-read-off', 'data-setting': 'cluster_mark_read', 'data-value': 'false', role: 'button' }, 'Off')
+                    ])
+                ]),
+                $.make('div', { className: 'NB-clustering-read-explanation' }, 'When you read a story, its duplicates in other feeds are also marked as read')
+            ])),
             ((is_feed || is_river) && $.make('div', { className: 'NB-popover-section NB-popover-section-auto-mark-read' }, [
                 $.make('div', { className: 'NB-auto-mark-read-title-row' }, [
                     $.make('div', { className: 'NB-popover-section-title' }, 'Auto Mark as Read'),
@@ -458,6 +484,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         } else {
             NEWSBLUR.app.story_titles_header.$(".NB-feedbar-options").addClass('NB-active');
         }
+
+        // Update clustering UI
+        this.update_clustering_ui();
 
         // Update date filter UI based on actual input values
         this.update_date_ui();
@@ -912,6 +941,57 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                 this.save_auto_mark_read(feed, days);
             }
         }, this), 300);
+    },
+
+    update_clustering_ui: function () {
+        var clustering_enabled = NEWSBLUR.assets.preference('story_clustering');
+        var cluster_mark_read = NEWSBLUR.assets.preference('cluster_mark_read');
+
+        // Default to true for archive users, false for non-archive
+        if (clustering_enabled === undefined || clustering_enabled === null) {
+            clustering_enabled = NEWSBLUR.Globals.is_archive;
+        }
+        if (cluster_mark_read === undefined || cluster_mark_read === null) {
+            cluster_mark_read = false;
+        }
+
+        this.$('.NB-clustering-enabled-on').toggleClass('NB-active', !!clustering_enabled);
+        this.$('.NB-clustering-enabled-off').toggleClass('NB-active', !clustering_enabled);
+        this.$('.NB-clustering-read-on').toggleClass('NB-active', !!cluster_mark_read);
+        this.$('.NB-clustering-read-off').toggleClass('NB-active', !cluster_mark_read);
+    },
+
+    change_clustering_setting: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $target = $(e.currentTarget);
+        var setting = $target.data('setting');
+        var value = $target.data('value');
+
+        if (!NEWSBLUR.Globals.is_archive) {
+            this.flash_clustering_upgrade_notice();
+            return;
+        }
+
+        var bool_value = value === 'true' || value === true;
+        NEWSBLUR.assets.preference(setting, bool_value);
+
+        // Update UI
+        this.update_clustering_ui();
+
+        // Reload feed to apply clustering changes
+        if (setting === 'story_clustering') {
+            this.reload_feed();
+        }
+    },
+
+    flash_clustering_upgrade_notice: function () {
+        var $notice = this.$('.NB-clustering-upgrade-notice');
+        $notice.addClass('NB-flash');
+        setTimeout(function () {
+            $notice.removeClass('NB-flash');
+        }, 600);
     },
 
     flash_upgrade_notice: function () {
