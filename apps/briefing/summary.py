@@ -93,7 +93,7 @@ SECTION_PROMPTS = {
     ),
     "follow_up": '"Follow-ups" — CATEGORY: follow_up. New posts from feeds where the reader recently read other stories.',
     "trending_global": '"Trending across NewsBlur" — CATEGORY: trending_global. Widely-read stories from across the platform.',
-    "duplicates": '"Common stories" — CATEGORY: duplicates. Stories covered by multiple feeds. For each story, show the shared headline then list each source\'s unique angle or perspective as sub-items.',
+    "duplicates": '"Common stories" — CATEGORY: duplicates. Stories covered by multiple feeds. Check the CLUSTER annotation for pre-identified groupings. For each story, show the shared headline then list each source\'s unique angle or perspective as sub-items.',
     "quick_catchup": '"Quick catch-up" — KEY: quick_catchup. This is a special section. Select the 3-5 most important stories from the entire briefing and write a 1-2 sentence TL;DR for each. Link to each story using the anchor tag format specified below. This section should appear first.',
     "emerging_topics": '"Emerging topics" — CATEGORY: emerging_topics. Look across all the stories for topics that appear multiple times or are getting increasing coverage. Group these stories under the topic and explain why it\'s trending.',
     "contrarian_views": '"Contrarian views" — CATEGORY: contrarian_views. Look for stories where different feeds have notably different perspectives on the same topic. Highlight the disagreement and present each side.',
@@ -241,6 +241,23 @@ def generate_briefing_summary(
 
         if scored.get("classifier_matches"):
             line += "\n  MATCHES: %s" % ", ".join(scored["classifier_matches"])
+
+        # Add cluster info if this story is part of a pre-computed cluster
+        from apps.clustering.models import get_cluster_for_story, get_cluster_members
+
+        cluster_id = get_cluster_for_story(story_hash)
+        if cluster_id:
+            cluster_members = get_cluster_members(cluster_id)
+            other_feeds = []
+            for member_hash in cluster_members:
+                if member_hash != story_hash:
+                    member_story = stories_by_hash.get(member_hash)
+                    if member_story:
+                        member_feed = feeds_by_id.get(member_story.story_feed_id, "")
+                        if member_feed:
+                            other_feeds.append(member_feed)
+            if other_feeds:
+                line += "\n  CLUSTER: Also covered by: %s" % ", ".join(other_feeds[:5])
 
         story_lines.append(line)
 

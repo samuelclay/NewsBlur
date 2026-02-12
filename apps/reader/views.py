@@ -1242,6 +1242,12 @@ def load_single_feed(request, feed_id):
                 hidden_stories_removed += 1
         stories = new_stories
 
+    # Apply story clustering for premium users
+    if user.profile.is_premium:
+        from apps.clustering.models import apply_clustering_to_stories
+
+        stories = apply_clustering_to_stories(stories, user)
+
     data = dict(
         stories=stories,
         user_profiles=user_profiles,
@@ -2359,9 +2365,11 @@ def load_river_stories__redis(request):
                 hidden_stories_removed += 1
         stories = new_stories
 
-    # if page > 1:
-    #     import random
-    #     time.sleep(random.randint(10, 16))
+    # Apply story clustering for premium users
+    if user.profile.is_premium:
+        from apps.clustering.models import apply_clustering_to_stories
+
+        stories = apply_clustering_to_stories(stories, user)
 
     diff = time.time() - start
     timediff = round(float(diff), 2)
@@ -4750,3 +4758,40 @@ def get_auto_mark_read_settings(request):
         "site_wide_days": site_wide_days,
         "is_archive": user.profile.is_archive,
     }
+
+
+@json.json_view
+def load_cluster_stories(request):
+    """Load full story data for all members of a story cluster.
+
+    Parameters:
+        cluster_id: The story_hash of the representative story
+    """
+    user = get_user(request)
+    cluster_id = request.GET.get("cluster_id") or request.POST.get("cluster_id")
+
+    if not user.profile.is_premium:
+        return {"code": 0, "message": "Story clustering is a premium feature.", "stories": []}
+
+    if not cluster_id:
+        return {"code": -1, "message": "Missing cluster_id parameter.", "stories": []}
+
+    from apps.clustering.models import get_cluster_members
+
+    member_hashes = get_cluster_members(cluster_id)
+    if not member_hashes:
+        return {"code": 1, "stories": []}
+
+    stories = []
+    mstories = MStory.objects(story_hash__in=member_hashes)
+    for story in mstories:
+        feed = Feed.get_by_id(story.story_feed_id)
+        if not feed:
+            continue
+        story_dict = Feed.format_story(story)
+        story_dict["feed_title"] = feed.feed_title
+        stories.append(story_dict)
+
+    stories.sort(key=lambda s: s.get("story_date", ""), reverse=True)
+
+    return {"code": 1, "stories": stories}

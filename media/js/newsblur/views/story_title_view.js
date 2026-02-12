@@ -9,6 +9,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         "click .NB-story-manage-icon": "show_manage_menu",
         "click .NB-storytitles-sentiment": "show_manage_menu",
         "click .NB-storytitles-shares": "select_story_shared",
+        "click .NB-story-cluster-source": "select_cluster_story",
         "mouseenter .NB-story-title": "mouseenter_manage_icon",
         "mouseleave .NB-story-title": "mouseleave_manage_icon"
     },
@@ -51,6 +52,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             pane_anchor: this.options.pane_anchor || (this.options.override_layout ? "west" : NEWSBLUR.assets.preference('story_pane_anchor'))
         }));
         this.$st = this.$(".NB-story-title");
+        this.render_cluster_sources();
         this.toggle_classes();
         this.toggle_read_status();
         this.color_feedbar();
@@ -170,6 +172,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                         <span class="feed_title"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
+\
                 <a href="<%= story.get("story_permalink") %>" class="story_title NB-hidden-fade">\
                     <div class="NB-storytitles-star"></div>\
                     <div class="NB-storytitles-share"></div>\
@@ -213,6 +216,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                         <span class="feed_title"><%= feed.get("feed_title") %></span>\
                     </div>\
                 <% } %>\
+\
                 <a href="<%= story.get("story_permalink") %>" class="story_title NB-hidden-fade">\
                     <div class="NB-storytitles-star"></div>\
                     <div class="NB-storytitles-share"></div>\
@@ -679,6 +683,54 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             scroll_to_comments: true,
             scroll_offset: -50
         });
+    },
+
+    render_cluster_sources: function () {
+        var cluster_stories = this.model.get('cluster_stories');
+        if (!cluster_stories || !cluster_stories.length) return;
+
+        var $container = $('<div class="NB-story-cluster-sources"></div>');
+        _.each(cluster_stories, function (cs) {
+            var feed = NEWSBLUR.assets.get_feed(cs.story_feed_id);
+            var favicon = feed ? $.favicon_html(feed) : '';
+            var feed_title = cs.feed_title || (feed ? feed.get('feed_title') : '');
+            var title = cs.story_title || '';
+            var date = '';
+            if (cs.story_timestamp) {
+                var d = new Date(parseInt(cs.story_timestamp, 10) * 1000);
+                var now = new Date();
+                var diff_hours = Math.round((now - d) / (1000 * 60 * 60));
+                date = diff_hours < 24 ? diff_hours + 'h ago' : Math.round(diff_hours / 24) + 'd ago';
+            }
+            var $source = $('<div class="NB-story-cluster-source" data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '">' +
+                favicon +
+                '<span class="NB-cluster-feed-title">' + feed_title + '</span>' +
+                '<span class="NB-cluster-story-title">' + title + '</span>' +
+                '<span class="NB-cluster-date">' + date + '</span>' +
+                '</div>');
+            $container.append($source);
+        });
+        this.$('.NB-story-title').after($container);
+    },
+
+    select_cluster_story: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        var story_hash = $(e.currentTarget).data('story-hash');
+        if (!story_hash) return;
+
+        // Check if this story is in the current collection
+        var story = NEWSBLUR.assets.stories.get(story_hash);
+        if (story) {
+            story.set('selected', true, { 'click_on_story_title': true });
+        } else {
+            // Open the feed containing this story
+            var feed_id = $(e.currentTarget).data('feed-id');
+            if (feed_id) {
+                NEWSBLUR.reader.open_feed(feed_id, { 'story_id': story_hash });
+            }
+        }
     },
 
     show_manage_menu_rightclick: function (e) {
