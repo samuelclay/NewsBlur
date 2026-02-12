@@ -46,6 +46,9 @@ NEWSBLUR.Router = Backbone.Router.extend({
             NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = query;
         }
+        if (NEWSBLUR.welcome && NEWSBLUR.welcome.is_mobile()) {
+            NEWSBLUR.welcome.activate_mobile_layout();
+        }
         if (feed) {
             NEWSBLUR.reader.open_feed(site_id, { router: true, force: true, search: query });
         } else {
@@ -129,6 +132,9 @@ NEWSBLUR.Router = Backbone.Router.extend({
             NEWSBLUR.reader.flags.searching = true;
             NEWSBLUR.reader.flags.search = query;
             options['search'] = query;
+        }
+        if (NEWSBLUR.welcome && NEWSBLUR.welcome.is_mobile()) {
+            NEWSBLUR.welcome.activate_mobile_layout();
         }
 
         if (folder_name == "everything") {
