@@ -17,7 +17,7 @@ def ComputeStoryClusters(feed_id):
     2. Elasticsearch more_like_this (semantic similarity)
 
     Results are stored in Redis for fast lookup during river loads.
-    Gated to feeds with premium subscribers. Rate-limited to once per 6h per feed.
+    Gated to feeds with archive subscribers.
     """
     from apps.clustering.models import (
         CLUSTER_LOOKBACK_HOURS,
@@ -28,20 +28,13 @@ def ComputeStoryClusters(feed_id):
 
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
 
-    # Rate limit: once per 6-hour window per feed
-    window = datetime.datetime.now().hour // 6
-    rate_key = "cCL:%s:%s:%s" % (feed_id, datetime.datetime.now().strftime("%Y-%m-%d"), window)
-    if r.get(rate_key):
-        return
-    r.set(rate_key, 1, ex=6 * 60 * 60)
-
     try:
         feed = Feed.objects.get(pk=feed_id)
     except Feed.DoesNotExist:
         return
 
-    # Only cluster for feeds with premium subscribers
-    if not feed.premium_subscribers or feed.premium_subscribers <= 0:
+    # Only cluster for feeds with archive subscribers
+    if not feed.archive_subscribers or feed.archive_subscribers <= 0:
         return
 
     # Get recent stories from this feed
@@ -64,24 +57,21 @@ def ComputeStoryClusters(feed_id):
     if not unclustered:
         return
 
-    # Get candidate stories from other feeds that share subscribers.
-    # Use feeds with overlapping subscribers by checking the feed's similar_feeds
-    # or just check feeds subscribed by the same premium users.
-    # For efficiency, get all feeds from the same folders as this feed.
+    # Get candidate stories from other feeds that share archive subscribers.
     from apps.reader.models import UserSubscription
 
-    # Find premium users subscribed to this feed
-    premium_user_ids = list(
-        UserSubscription.objects.filter(feed_id=feed_id, active=True, user__profile__is_premium=True).values_list(
+    # Find archive users subscribed to this feed
+    archive_user_ids = list(
+        UserSubscription.objects.filter(feed_id=feed_id, active=True, user__profile__is_archive=True).values_list(
             "user_id", flat=True
         )[:50]
     )
-    if not premium_user_ids:
+    if not archive_user_ids:
         return
 
     # Get all feed IDs these users are subscribed to
     related_feed_ids = set(
-        UserSubscription.objects.filter(user_id__in=premium_user_ids, active=True).values_list(
+        UserSubscription.objects.filter(user_id__in=archive_user_ids, active=True).values_list(
             "feed_id", flat=True
         )
     )

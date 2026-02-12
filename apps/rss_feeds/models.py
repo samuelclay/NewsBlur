@@ -1788,8 +1788,8 @@ class Feed(models.Model):
                     f" ---> ~FBNo premium archive subscribers, skipping discover indexing for {discover_story_ids} for {self}"
                 )
 
-        # Schedule story clustering for feeds with premium subscribers
-        if discover_story_ids and self.premium_subscribers and self.premium_subscribers > 0:
+        # Schedule story clustering for feeds with archive subscribers
+        if discover_story_ids and self.archive_subscribers and self.archive_subscribers > 0:
             from apps.clustering.tasks import ComputeStoryClusters
 
             ComputeStoryClusters.apply_async(
