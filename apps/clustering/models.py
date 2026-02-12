@@ -163,29 +163,36 @@ def find_title_clusters(stories):
     return clusters
 
 
-def find_semantic_clusters(stories, feed_ids):
+def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30):
     """Find semantically similar stories using Elasticsearch more_like_this.
 
-    For each story, queries SearchStory.more_like_this() to find similar stories
-    from different feeds. Groups results using union-find.
+    For each story, sends its title + content as text to ES MLT to find
+    similar stories across different feeds. Groups results using union-find.
+
+    Only run this on the new/unclustered stories (not all candidates) to
+    keep ES query count low (~1-20 queries per feed update).
 
     Args:
-        stories: list of dicts with 'story_hash', 'story_feed_id', 'story_date'
+        stories: list of dicts with 'story_hash', 'story_feed_id', 'story_title',
+                 and optionally 'story_content' (plaintext, truncated)
         feed_ids: list of all feed IDs to search across
+        lookback_date: datetime for the oldest stories to match (limits ES results)
+        min_score: minimum ES relevance score to consider a match
 
     Returns:
         dict of {cluster_id: [story_hash, ...]}
     """
+    import elasticsearch
+
     from apps.search.models import SearchStory
 
     if not stories or not feed_ids:
         return {}
 
     story_feed_map = {s["story_hash"]: s["story_feed_id"] for s in stories}
-    story_hashes = [s["story_hash"] for s in stories]
 
     # clustering/models.py: Union-find for grouping similar stories
-    parent = {h: h for h in story_hashes}
+    parent = {s["story_hash"]: s["story_hash"] for s in stories}
 
     def find(x):
         while parent[x] != x:
@@ -198,29 +205,81 @@ def find_semantic_clusters(stories, feed_ids):
         if ra != rb:
             parent[ra] = rb
 
+    try:
+        es = SearchStory.ES()
+        index_name = SearchStory.index_name()
+    except Exception as e:
+        logging.debug(" ---> ~FRClustering: ES not available: %s" % e)
+        return {}
+
     for story in stories:
         story_hash = story["story_hash"]
+        # Use only title as query text (not content) to avoid topical noise.
+        # ES still searches both title and content fields in the index, so
+        # matching works when title terms appear in another article's body.
+        query_text = story.get("story_title") or ""
+
+        if not query_text or len(query_text.strip()) < 10:
+            continue
+
+        # Search across related feeds, excluding this story's own feed
+        search_feed_ids = [fid for fid in feed_ids if fid != story["story_feed_id"]]
+        if not search_feed_ids:
+            continue
+
+        body = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {
+                            "more_like_this": {
+                                "fields": ["title", "content"],
+                                "like": query_text[:2000],
+                                "min_term_freq": 1,
+                                "min_doc_freq": 2,
+                                "min_word_length": 3,
+                                "max_query_terms": 25,
+                            }
+                        }
+                    ],
+                    "filter": [
+                        {"terms": {"feed_id": search_feed_ids[:2000]}},
+                    ]
+                    + (
+                        [{"range": {"date": {"gte": lookback_date.strftime("%Y-%m-%d")}}}]
+                        if lookback_date
+                        else []
+                    ),
+                }
+            },
+            "min_score": min_score,
+            "size": 5,
+            "_source": False,
+            "docvalue_fields": ["feed_id"],
+        }
+
         try:
-            similar_hashes = SearchStory.more_like_this(
-                feed_ids=feed_ids,
-                story_hash=story_hash,
-                order="newest",
-                offset=0,
-                limit=5,
-            )
+            results = es.search(body=body, index=index_name)
+            hits = results.get("hits", {}).get("hits", [])
+        except elasticsearch.exceptions.NotFoundError:
+            continue
+        except elasticsearch.exceptions.ConnectionError as e:
+            logging.debug(" ---> ~FRClustering: ES connection error: %s" % e)
+            return {}
         except Exception as e:
             logging.debug(" ---> ~FRClustering semantic search error for %s: %s" % (story_hash, e))
             continue
 
-        for sim_hash in similar_hashes:
+        for hit in hits:
+            sim_hash = hit["_id"]
             if sim_hash == story_hash:
                 continue
-            # Only cluster if from a different feed
-            sim_feed = story_feed_map.get(sim_hash)
-            if sim_feed and sim_feed != story["story_feed_id"]:
-                if sim_hash not in parent:
-                    parent[sim_hash] = sim_hash
-                union(story_hash, sim_hash)
+            sim_feed = (hit.get("fields", {}).get("feed_id") or [None])[0]
+            if sim_feed:
+                story_feed_map[sim_hash] = sim_feed
+            if sim_hash not in parent:
+                parent[sim_hash] = sim_hash
+            union(story_hash, sim_hash)
 
     # Collect clusters
     groups = {}
@@ -241,11 +300,16 @@ def find_semantic_clusters(stories, feed_ids):
     return clusters
 
 
-def merge_clusters(title_clusters, semantic_clusters):
+def merge_clusters(title_clusters, semantic_clusters, story_feed_map=None):
     """Merge title-based and semantic clusters using union-find.
 
     If any story appears in both a title cluster and a semantic cluster,
     the two clusters are merged into one.
+
+    Args:
+        title_clusters: dict of {cluster_id: [story_hash, ...]}
+        semantic_clusters: dict of {cluster_id: [story_hash, ...]}
+        story_feed_map: dict of {story_hash: feed_id} for multi-feed validation
 
     Returns:
         dict of {cluster_id: [story_hash, ...]}
@@ -287,6 +351,28 @@ def merge_clusters(title_clusters, semantic_clusters):
     for h in all_hashes:
         root = find(h)
         groups.setdefault(root, []).append(h)
+
+    # If we have feed info, enforce multi-feed requirement after merge
+    if story_feed_map:
+        # Look up any unknown feed_ids from MongoDB
+        unknown = [h for h in all_hashes if h not in story_feed_map]
+        if unknown:
+            from apps.rss_feeds.models import MStory
+
+            for batch_start in range(0, len(unknown), 100):
+                batch = unknown[batch_start : batch_start + 100]
+                for s in MStory.objects(story_hash__in=batch).only("story_hash", "story_feed_id"):
+                    story_feed_map[s.story_hash] = s.story_feed_id
+
+        clusters = {}
+        for root, members in groups.items():
+            if len(members) < 2:
+                continue
+            member_feeds = set(story_feed_map.get(h) for h in members if story_feed_map.get(h))
+            if len(member_feeds) < 2:
+                continue
+            clusters[root] = members[:CLUSTER_MAX_SIZE]
+        return clusters
 
     return {root: members[:CLUSTER_MAX_SIZE] for root, members in groups.items() if len(members) >= 2}
 

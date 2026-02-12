@@ -21,7 +21,9 @@ def ComputeStoryClusters(feed_id):
     """
     from apps.clustering.models import (
         CLUSTER_LOOKBACK_HOURS,
+        find_semantic_clusters,
         find_title_clusters,
+        merge_clusters,
         store_clusters_to_redis,
     )
     from apps.rss_feeds.models import Feed, MStory
@@ -124,12 +126,22 @@ def ComputeStoryClusters(feed_id):
     # Tier 1: Title-based clustering
     title_clusters = find_title_clusters(stories)
 
-    # TODO: Tier 2 semantic clustering (Elasticsearch MLT) is disabled until
-    # similarity thresholds are tuned. The current more_like_this results are
-    # too loose, grouping unrelated stories together.
+    # Tier 2: Semantic clustering via Elasticsearch MLT on new stories only.
+    # Use story titles as query text, searching both title and content fields
+    # in the ES index to find similar stories across related feeds.
+    unclustered_stories = [s for s in stories if s["story_hash"] in set(unclustered)]
 
-    if title_clusters:
-        store_clusters_to_redis(title_clusters)
+    all_feed_ids = [feed_id] + related_feed_ids
+    semantic_clusters = {}
+    if unclustered_stories:
+        semantic_clusters = find_semantic_clusters(unclustered_stories, all_feed_ids, lookback_date=lookback)
+
+    # Merge title and semantic clusters
+    if title_clusters or semantic_clusters:
+        story_feed_map = {s["story_hash"]: s["story_feed_id"] for s in stories}
+        combined = merge_clusters(title_clusters, semantic_clusters, story_feed_map=story_feed_map)
+        store_clusters_to_redis(combined)
         logging.debug(
-            " ---> ~FBClustering: found %s title clusters for feed %s" % (len(title_clusters), feed_id)
+            " ---> ~FBClustering: found %s title + %s semantic = %s combined clusters for feed %s"
+            % (len(title_clusters), len(semantic_clusters), len(combined), feed_id)
         )
