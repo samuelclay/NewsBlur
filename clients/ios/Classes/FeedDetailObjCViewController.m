@@ -539,7 +539,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     self.showImagePreview = ![[userPreferences stringForKey:@"story_list_preview_images_size"] isEqualToString:@"none"];
     
-    if (storiesCollection == nil) {
+    if (storiesCollection.activeFeed == nil) {
         NSString *appOpening = [userPreferences stringForKey:@"app_opening"];
         
         if ([appOpening isEqualToString:@"feeds"] && !self.isPhone) {
