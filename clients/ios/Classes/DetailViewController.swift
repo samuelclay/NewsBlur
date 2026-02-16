@@ -339,7 +339,7 @@ class DetailViewController: BaseViewController {
     
     /// The navigation item to use for the feed detail view controller.
     @objc var feedDetailNavigationItem: UINavigationItem {
-        if isPhone {
+        if isPhoneOrCompact {
             return feedDetailViewController?.navigationItem ?? navigationItem
         } else {
             return navigationItem
@@ -348,7 +348,7 @@ class DetailViewController: BaseViewController {
     
     /// The navigation item to use for the story pages view controller.
     @objc var storiesNavigationItem: UINavigationItem {
-        if isPhone {
+        if isPhoneOrCompact {
             return storyPagesViewController?.navigationItem ?? navigationItem
         } else {
             return navigationItem
@@ -431,7 +431,7 @@ class DetailViewController: BaseViewController {
     
     /// Moves the story pages controller to a Grid layout cell content (automatically removing it from the previous parent).
     func prepareStoriesForGridView() {
-        guard !isPhone, let storyPagesViewController else {
+        guard !isPhoneOrCompact, let storyPagesViewController else {
             return
         }
         
@@ -603,7 +603,7 @@ class DetailViewController: BaseViewController {
             return
         }
         
-        if !isPhone {
+        if !isPhoneOrCompact {
             if scene.traitCollection.horizontalSizeClass == .compact {
                 topContainerTopConstraint.constant = -50
             } else {
@@ -745,7 +745,7 @@ private extension DetailViewController {
                 add(viewController: feedDetailViewController, to: leftContainerView, compactPush: isFeedShown)
             }
             
-            if wasGridView && !isPhone {
+            if wasGridView && !isPhoneOrCompact {
                 DispatchQueue.main.async {
                     self.appDelegate.loadStoryDetailView()
                 }
