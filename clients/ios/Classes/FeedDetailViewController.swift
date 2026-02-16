@@ -132,23 +132,29 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     @objc override func loadingFeed() {
         // Make sure the view has loaded.
         _ = view
-        
+
         if appDelegate.detailViewController.isPhoneOrCompact {
             changedLayout()
-            
+
             DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(2)) {
                 self.reload()
             }
         } else {
             let wasGridView = wasGridView
-            
+
             self.appDelegate.detailViewController.updateLayout(reload: false, fetchFeeds: false)
-            
+
             if wasGridView != isGridView {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
                     self.appDelegate.detailViewController.updateLayout(reload: true, fetchFeeds: false)
                 }
             }
+        }
+
+        if appDelegate.isTryFeedView && tryFeedBannerView == nil {
+            showTryFeedSubscribeBanner()
+        } else if !appDelegate.isTryFeedView && tryFeedBannerView != nil {
+            hideTryFeedSubscribeBanner()
         }
     }
     
@@ -519,12 +525,13 @@ extension FeedDetailViewController: FeedDetailInteraction {
         
         // NSLog("🪿🎛️ Scrolled story \(story.debugTitle) to offset \(offset ?? 0), story height: \(storyHeight), feed detail height: \(feedDetailHeight)")
         
+        let gap = appDelegate.storyPagesViewController.traverseBottomGap
         if offset == nil {
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = storyHeight - feedDetailHeight
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = storyHeight - feedDetailHeight + gap
         } else if let offset, offset - storyHeight + skipHeader < feedDetailHeight, offset > feedDetailHeight {
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = offset - feedDetailHeight
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = offset - feedDetailHeight + gap
         } else {
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = 0
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = gap
         }
     }
 

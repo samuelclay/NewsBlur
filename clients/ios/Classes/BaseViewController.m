@@ -464,7 +464,7 @@
 
 - (IBAction)findInFeedDetail:(id)sender {
     [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"findInFeedDetail" animated:YES];
-    [self.appDelegate.feedDetailViewController.searchBar becomeFirstResponder];
+    [self.appDelegate.feedDetailViewController.searchField becomeFirstResponder];
 }
 
 #pragma mark -
