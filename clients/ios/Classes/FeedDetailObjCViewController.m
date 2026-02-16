@@ -4148,8 +4148,7 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 
     [self applyToolbarButtonTint];
     
-    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
-    UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);    UINavigationBarAppearance *appearance = [[UINavigationBarAppearance alloc] initWithIdiom:[[UIDevice currentDevice] userInterfaceIdiom]];
     appearance.backgroundColor = [UINavigationBar appearance].barTintColor;
     appearance.titleTextAttributes = [UINavigationBar appearance].titleTextAttributes;
     if (@available(iOS 13.0, *)) {
@@ -4209,8 +4208,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 }
 
 - (void)applyToolbarButtonTint {
-    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x404040, 0x6F6F75);
-
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);
+    
     self.feedsBarButton.tintColor = toolbarButtonTint;
     if (self.sidebarBarButton) {
         self.sidebarBarButton.tintColor = toolbarButtonTint;
