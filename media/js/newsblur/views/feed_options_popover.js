@@ -313,22 +313,17 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
                     ]))
                 ]),
-                $.make('div', { className: 'NB-clustering-description' }, 'Group duplicate stories across feeds'),
-                $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-clustering' }, [
-                    $.make('div', { className: 'NB-clustering-label' }, 'Clustering'),
-                    $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-enabled' }, [
-                        $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-on', 'data-setting': 'story_clustering', 'data-value': 'true', role: 'button' }, 'On'),
-                        $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-off', 'data-setting': 'story_clustering', 'data-value': 'false', role: 'button' }, 'Off')
-                    ])
+                $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-enabled' }, [
+                    $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-on', 'data-setting': 'story_clustering', 'data-value': 'true', role: 'button' }, 'Cluster related stories'),
+                    $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-off', 'data-setting': 'story_clustering', 'data-value': 'false', role: 'button' }, 'Keep stories separate')
                 ]),
-                $.make('div', { className: 'NB-popover-icon-control NB-popover-icon-control-clustering-read' }, [
-                    $.make('div', { className: 'NB-clustering-label' }, 'Mark duplicates read'),
+                $.make('div', { className: 'NB-clustering-read-section' }, [
+                    $.make('div', { className: 'NB-clustering-read-label' }, 'When reading a clustered story:'),
                     $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-read' }, [
-                        $.make('li', { className: 'NB-clustering-option NB-clustering-read-on', 'data-setting': 'cluster_mark_read', 'data-value': 'true', role: 'button' }, 'On'),
-                        $.make('li', { className: 'NB-clustering-option NB-clustering-read-off', 'data-setting': 'cluster_mark_read', 'data-value': 'false', role: 'button' }, 'Off')
+                        $.make('li', { className: 'NB-clustering-option NB-clustering-read-on', 'data-setting': 'cluster_mark_read', 'data-value': 'true', role: 'button' }, 'Mark all as read'),
+                        $.make('li', { className: 'NB-clustering-option NB-clustering-read-off', 'data-setting': 'cluster_mark_read', 'data-value': 'false', role: 'button' }, 'Keep others unread')
                     ])
-                ]),
-                $.make('div', { className: 'NB-clustering-read-explanation' }, 'When you read a story, its duplicates in other feeds are also marked as read')
+                ])
             ])),
             ((is_feed || is_river) && $.make('div', { className: 'NB-popover-section NB-popover-section-auto-mark-read' }, [
                 $.make('div', { className: 'NB-auto-mark-read-title-row' }, [
@@ -959,6 +954,9 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$('.NB-clustering-enabled-off').toggleClass('NB-active', !clustering_enabled);
         this.$('.NB-clustering-read-on').toggleClass('NB-active', !!cluster_mark_read);
         this.$('.NB-clustering-read-off').toggleClass('NB-active', !cluster_mark_read);
+
+        // Fade the mark-read section when clustering is disabled
+        this.$('.NB-clustering-read-section').toggleClass('NB-disabled', !clustering_enabled);
     },
 
     change_clustering_setting: function (e) {

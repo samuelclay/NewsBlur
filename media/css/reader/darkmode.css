@@ -3629,16 +3629,8 @@ a.mention, a.mention-group {
 }
 
 /* Story Clustering dark mode */
-.NB-dark .NB-filter-popover .NB-clustering-description {
+.NB-dark .NB-filter-popover .NB-clustering-read-label {
     color: #909090;
-}
-
-.NB-dark .NB-filter-popover .NB-clustering-label {
-    color: #a0a0a0;
-}
-
-.NB-dark .NB-filter-popover .NB-clustering-read-explanation {
-    color: #707070;
 }
 
 .NB-dark .NB-filter-popover .NB-clustering-upgrade-notice {

@@ -6092,6 +6092,12 @@
                 if (this.flags.social_view) return;
                 if (_.string.startsWith(message, 'feed:')) {
                     feed_id = parseInt(message.replace('feed:', ''), 10);
+                    // reader.js: Suppress count refresh for feeds that were just
+                    // cluster-read to preserve the optimistic local decrement
+                    if (NEWSBLUR.assets.cluster_read_feed_ids &&
+                        _.contains(NEWSBLUR.assets.cluster_read_feed_ids, feed_id)) {
+                        return;
+                    }
                     var active_feed_ids = [];
                     if (this.active_folder && this.active_folder.length) {
                         active_feed_ids = this.active_folder.feed_ids_in_folder();

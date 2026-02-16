@@ -2727,6 +2727,29 @@ def mark_story_hashes_as_read(request):
     except (json.JSONDecodeError, AttributeError):
         pass
 
+    # Expand story_hashes with cluster members if cluster_mark_read is enabled
+    cluster_hashes = []
+    if request.user.profile.is_archive:
+        user_prefs = json.decode(request.user.profile.preferences or "{}")
+        if user_prefs.get("cluster_mark_read", False):
+            from apps.clustering.models import get_cluster_for_story, get_cluster_members
+
+            seen = set(story_hashes)
+            for story_hash in list(story_hashes):
+                cluster_id = get_cluster_for_story(story_hash)
+                if cluster_id:
+                    for member_hash in get_cluster_members(cluster_id):
+                        if member_hash not in seen:
+                            cluster_hashes.append(member_hash)
+                            seen.add(member_hash)
+            if cluster_hashes:
+                story_hashes = list(seen)
+                logging.user(
+                    request,
+                    "~FBCluster mark read: added %s duplicate%s"
+                    % (len(cluster_hashes), "s" if len(cluster_hashes) != 1 else ""),
+                )
+
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(
         request.user.pk, story_hashes, username=request.user.username
     )
