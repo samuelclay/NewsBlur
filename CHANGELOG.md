@@ -15,7 +15,7 @@ A new AI-powered editorial briefing feature that delivers personalized daily sum
 - Add configurable briefing sections with toggleable UI and custom prompts (`7b945b9`)
 - Redesign briefing preferences UI with radio-style writing picker, section icons, and better defaults (`a2ab7b2`)
 - Move briefing settings into two-column popover with read filter and weekly scheduling (`f1adeda`)
-- Add notification controls to briefing preferences and onboarding UI (`bf23ddf`)
+- Add notification controls to briefing preferences and onboarding UI (`bf23fdd`)
 - Move briefing onboarding into full-pane view covering story titles and detail areas (`efdd37a`)
 - Add configurable AI model selection for daily briefing (`4aa0a99`)
 
@@ -43,7 +43,7 @@ A new AI-powered editorial briefing feature that delivers personalized daily sum
 - Revert SVG source colors, use CSS grayscale filter for briefing icons (`76f7d11`)
 - Normalize briefing section icon colors to consistent #95968E gray (`362fdba`)
 - Fix OpenAI reasoning model token limits, add gray briefing icons (`fcaae19`)
-- Add classifier badge pills to briefing "Based on your interests" section (`7973870`)
+- Add classifier badge pills to briefing "Based on your interests" section (`7973db7`)
 
 ### Bug Fixes
 - Fix briefing crash by calling secure_image_urls on Feed instead of MStory (`9cdf3cc`)
@@ -58,10 +58,9 @@ A new AI-powered editorial briefing feature that delivers personalized daily sum
 - Fix missing ensure_briefing_feed import in briefing views (`132e93b`)
 - Fix briefing popover layout, story count labels, and null folder crash (`167bab6`)
 - Exclude daily briefing stories from all dashboard modules (`9403759`)
-- Normalize and validate briefing section keys from AI output (`2f73553`)
+- Normalize and validate briefing section keys from AI output (`58e4be2`)
 - Rename custom sections to keyword sections and separate from section checklist (`e611505`)
 - Enable all briefing sections by default and fix custom section names in sidebar (`3f17f12`)
-- Add Ask AI thinking mode toggle and fix briefing lock TTL (`d9a63f1`)
 - Add comprehensive test suite for Daily Briefing feature (145 tests) (`b5a410c`)
 
 ## Intelligence Trainer Overhaul
@@ -74,16 +73,16 @@ A major redesign of the Intelligence Trainer with global/folder scope, URL class
 - Split folder-scoped classifiers out of global section in Manage Training (`133e03c`)
 - Separate story trainer classifiers into scope groups (site/folder/global) (`44ca627`)
 - Move scoped classifiers to Archive tier with manage training scope filters (`5bdb69c`)
-- Fix global scope propagation bug in classifier save (`d5c292b`)
-- Fix scope change persistence, deferred saves, and duplicate text classifiers (`07b8d17`)
+- Fix global scope propagation bug in classifier save (`7d2ee1c`)
+- Fix scope change persistence, deferred saves, and duplicate text classifiers (`07b8d16`)
 - Fix scoped classifier edge cases: scope changes, legacy queries, manage tab saves (`7679d73`)
 - Fix folder-scoped classifiers showing from wrong folders in Train dialog (`53458e7`)
 - Fix folder-scoped classifier scoring: JS folder lookup, missing folder_feed_ids, and archive gating (`c9db40e`)
 - Include global and folder-scoped classifiers in unread count recalculation (`80223b8`)
 - Move user_is_pro check to callers, remove from classifier function signatures (`cd47fad`)
 - Remove redundant (user_id, scope) indexes from classifier models (`dfdbc67`)
-- Add scope-based classifier metrics to Prometheus and Grafana (`c788882`)
-- Fix classifier removal bug where score=0 classifiers persist in database (`a61ebcc`)
+- Add scope-based classifier metrics to Prometheus and Grafana (`2f73553`)
+- Fix classifier removal bug where score=0 classifiers persist in database (`ad1e4b8`)
 - Add strict=False to MClassifier models for forward-compatible field handling (`053a7058`)
 
 ### URL & Regex Classifiers
@@ -106,22 +105,22 @@ A major redesign of the Intelligence Trainer with global/folder scope, URL class
 - Improve Manage Training tab filter controls and layout (`968ad98`)
 - Fix dark mode contrast for filter count badges in Manage Training tab (`b86fe54`)
 - Fix filter toggle bug and icon colors in Manage Training tab (`7a784af`)
-- Move Saved message to left of button in Manage Training tab (`3eca097`)
+- Move Saved message to left of button in Manage Training tab (`3eca090`)
 - Fix classifier cross-contamination between trainer tabs (`fe78a97`)
-- Fix tag classifier click not updating UI due to HTML entity mismatch (`f9f1044`)
+- Fix tag classifier click not updating UI due to HTML entity mismatch (`f9f1410`)
 - Swap filter row order: folder/search on top, show/types on bottom (`d92d6e7`)
 
 ### UI & UX
 - Compact Intelligence Trainer dialog with combined sections (`be4fc88`)
-- Improve Intelligence Trainer UX with tooltips, popovers, and validation (`d80748d`)
+- Improve Intelligence Trainer UX with tooltips, popovers, and validation (`d807489`)
 - Show classifier count on save button in Intelligence Trainer (`0e009f8`)
-- Fix Intelligence Trainer header layout with favicon, title, and subscriber count (`2c8da3a`)
+- Fix Intelligence Trainer header layout with favicon, title, and subscriber count (`ef98e01`)
 - Add delete intelligence training classifiers section to Account dialog (`5c6f341`)
 
 ### Blog Posts
 - Intelligence Trainer Overhaul blog post (`9ec2c95`, `2c8da3a`, `466b520`)
 - Add blog post for Manage All Your Training feature (`e62c2f0`)
-- Add blog post for global and folder-scoped intelligence training (`f6233651`)
+- Add blog post for global and folder-scoped intelligence training (`6f33385`)
 
 ## Archive Extension
 
@@ -130,36 +129,34 @@ A browser extension for capturing browsing history and AI-powered search across 
 ### Core Feature
 - Add Archive Extension for browsing history capture and AI-powered search (`eef00157`)
 - Add OAuth authentication and Elasticsearch search to Archive Extension (`e8fb669`)
-- Add comprehensive test suite for Archive Extension (`54e84ef`)
 - Launching archive extension for staff (`5683c3e`)
-- Make Reading Archive staff-only and use main MongoDB (`a19a0d4`)
+- Make Reading Archive staff-only and use main MongoDB (`49b0ae9`)
 
 ### Archive Assistant
-- Add Archive Assistant with AI-powered chat for searching your archive (`156f049`)
 - Enable true streaming for Archive Assistant with UI fixes (`156f049`)
 - Improve Archive Assistant chat scroll pinning and multi-segment rendering (`23aa70f`)
 - Add conversation history sidebar to Archive Assistant (`651f114`)
 - Add RSS story tools and tool result streaming to Archive Assistant (`e87cb68`)
-- Add current date context and shared story tools to Archive Assistant (`0cbe499`)
+- Add current date context and shared story tools to Archive Assistant (`1fac415`)
 - Parallelize Archive Assistant tool execution for faster responses (`2700e18`)
-- Add voice input to Archive Assistant with live audio feedback (`53e63858`)
+- Add voice input to Archive Assistant with live audio feedback (`e1e49ce`)
 - Add browser extension download links to Archive Assistant (`e32ed6a`)
 - Migrate Archive Assistant from polling to WebSocket streaming (`0dd9a4a`)
 - Fix Archive Assistant search bug and improve UI styling (`7489da2`)
 
 ### Archive UI
 - Redesign archive date picker with inline relative dates and custom range popover (`d72d59b`)
-- Add filter intersection for archive sidebar with timezone-aware date buckets (`fb6e735`)
+- Add filter intersection for archive sidebar with timezone-aware date buckets (`fb6e7fc`)
 - Improve Archive view with animations, author field, and real-time categories (`f7d4dc7`)
-- Fix archive animation bounce and add WebSocket handler for categories (`0dc3ae0`)
+- Fix archive animation bounce and add WebSocket handler for categories (`90d940a`)
 - Improve animations, add content preview, and filter sidebar on search (`0dc3ae0`)
-- Fix Archive view to take full width using jQuery UI Layout API (`07923df`)
-- Make Archive view take full width of content area (`3fa8ae2`)
+- Fix Archive view to take full width using jQuery UI Layout API (`e5e45f4`)
+- Make Archive view take full width of content area (`07923df`)
 - Remove archive layout animations and add dismissible extension promo (`459ac21`)
 
 ### Archive Backend
 - Add idle detection to archive extension for accurate reading time (`a28d0603`)
-- Add real-time WebSocket updates for Archive Extension (`7489da2`)
+- Add real-time WebSocket updates for Archive Extension (`53e6385`)
 - Refactor category manager to use standard NewsBlur modal pattern (`0cbe499`)
 - Add tabbed category manager with drag-drop merge and AI split (`f3286a8`)
 - Use semantic field names in category/domain aggregation (`a3a4ee9`)
@@ -171,7 +168,7 @@ A browser extension for capturing browsing history and AI-powered search across 
 - Move archive task routes from archive_queue to push_feeds (`2d87733`)
 
 ### Archive OAuth
-- Auto-setup Archive extension OAuth via migration (`dd10bb1`)
+- Auto-setup Archive extension OAuth via migration (`d6f1197`)
 - Fix Archive extension OAuth to use authorization code flow (`4694612`)
 - Add debugging and better error handling for Archive OAuth flow (`af3e9671`)
 - Fix Firefox OAuth token save and improve error handling (`a7ab195`)
@@ -195,7 +192,7 @@ Improvements to the Ask AI feature including new models, cost tracking, and bett
 - Track historical models in Ask AI metrics after model retirement (`27e5ef2`)
 - Add llm_costs job to production Prometheus config (`8b3e2bd`)
 - Fix AttributeError in Ask AI monitor by using unified WEEKLY_LIMIT (`4a038767`)
-- Improve Ask AI error messages for invalid/missing API keys (`a690140`)
+- Improve Ask AI error messages for invalid/missing API keys (`a698490`)
 - Update Ask AI blog post with current models and opt-out section (`1276a1e`)
 
 ## Custom Icons
@@ -203,7 +200,7 @@ Improvements to the Ask AI feature including new models, cost tracking, and bett
 New feature allowing custom icons for feeds and folders with upload, preset icons, emoji, and color picker.
 
 - Add custom folder icons with upload, preset icons, emoji, and color picker (`ad15989`)
-- Add custom feed icons with same features as folder icons (`7836399`)
+- Add custom feed icons with same features as folder icons (`7364636`)
 - Add expanded icon picker with 200+ new icons and CSS fixes (`1bc6f4f`)
 - Fix folder icon upload and improve upload UI styling (`78903b9`)
 - Add custom folder and feed icon support for Android (`f9224745`)
@@ -211,14 +208,14 @@ New feature allowing custom icons for feeds and folders with upload, preset icon
 - Add SVG upload support, format hints, taller settings modals, and fix tab border (`82b0a49`)
 - Refactor icon handling and validation (`5d7b4e8`)
 - Fix filled icons color consistency and misbehaving site dialog order (`c1ec194`)
-- Fix upload preview showing empty on Feed Icon tab load (`c244f61`)
+- Fix upload preview showing empty on Feed Icon tab load (`b5fd452`)
 - Hide Feed Icon tab for shared/social feeds (`aa3ff07`)
 - Hide Feed Icon tab for saved story tags (`a204e07`)
 - Move custom folder icon dark mode CSS to darkmode.css (`045c569`)
 - Remove unused load_folder_icons endpoint (`d100289`)
 - Hide subscriber count for saved tags and social feeds (`c244f61`)
 - Prevent subscriber count and reset link from wrapping in modal header (`eec55be`)
-- Remove folder icon section from feed options popover (`5f02247`)
+- Remove folder icon section from feed options popover (`5f0a51a`)
 
 ## Welcome Page & Login Redesign
 
@@ -226,7 +223,7 @@ Complete redesign of the welcome page and login/signup experience.
 
 - Redesign welcome page with dark theme, liquid glass controls, and animated transitions (`de71fc2`)
 - Add WebGL animated background for welcome page (`60c9f86`)
-- Redesign welcome page hero and platform sections (`fcaae19`)
+- Redesign welcome page hero and platform sections (`a4ffeb0`)
 - Add light theme, responsive layout, and smooth theme transitions for welcome page (`51f0395`)
 - Add tryout signup banner with light/dark theme and smooth close transition (`088b320`)
 - Add /welcome route for direct access to the welcome page (`3c4f0a3`)
@@ -248,8 +245,8 @@ New Premium Archive feature for automatic mark-as-read settings per feed and fol
 - Fix per-feed auto mark read filtering for cached stories and subfolders (`28d94cf`)
 - Fix auto mark read cutoff and folder inheritance issues (`7c8a4a7`)
 - Fix ceaeac96: N+1 query in get_auto_mark_read_cutoff for river stories (`ceaeac9`)
-- Redesign days of unread preference with segmented control and slider (`55e23091`)
-- Redesign feed settings dialog auto-mark-read to match popover style (`34a4fd`)
+- Redesign days of unread preference with segmented control and slider (`252eb50`)
+- Redesign feed settings dialog auto-mark-read to match popover style (`34a4f0f`)
 - Gray out days of unread preference for non-archive users with upgrade link (`faf1a43`)
 - Add blog post for per-feed auto-mark-as-read feature (`55e23091`)
 
@@ -303,8 +300,8 @@ Improvements to feed discovery and subscription flow.
 
 ## Social Features
 
-- Remove Twitter and Facebook crosspost buttons from share dialog (`c788822`)
-- Add disable social preference to hide all social features in the UI (`be4fc88`)
+- Remove Twitter and Facebook crosspost buttons from share dialog (`c788882`)
+- Adding disable social preference to hide all social features in the UI (`b3a009f`)
 - Redesign disable social preference with card-based UI (`c03f1cd`)
 - Hide additional social elements when social features disabled (`162bc3a`)
 - Add delete shared stories feature with inline story counts (`0873d82`)
@@ -342,16 +339,16 @@ Improvements to feed discovery and subscription flow.
 - Add Postgres replication slot to prevent WAL gaps on secondary (`448bd83`)
 - Add deleted user tracking with Prometheus and Grafana dashboard (`f08e39b`)
 - Add premium trial tracking and duration to deleted users dashboard (`c6e9013`)
-- Simplify Deleted Users dashboard and add individual user table (`01bcebad`)
+- Simplify Deleted Users dashboard and add individual user table (`79590ab`)
 - Redesign LLM Costs Grafana dashboard for clarity (`6dd0c97`)
 - Add Today's Cost by Model chart to LLM Costs dashboard (`09452bd`)
-- Move LLM Costs from separate dashboard to NewsBlur dashboard section (`ceb99d5`)
+- Move LLM Costs from separate dashboard to NewsBlur dashboard section (`01d0d8d`)
 - Add descriptive labels to LLM Stat panels in Grafana (`d3836d1`)
 - Fix LLM costs Prometheus scrape timeout by eliminating scan_iter on 150K keys (`5369acd`)
 - Fix LLM Costs panels overlapping Discover Usage in Grafana dashboard (`d3ce662`)
 - Add discover usage tracking to Prometheus/Grafana (`36f3d92`)
 - Fix Grafana consul alert timing to require continuous 15min downtime (`7fc4f7a`)
-- Add Consul service health alert and stack app server graphs (`968ad98`)
+- Add Consul service health alert and stack app server graphs (`ad5ab7b`)
 - Link Consul health alert to dashboard panel for status indicator (`0c9a1dc`)
 - Add legacy alert block to Consul service health panel (`1949bf8`)
 - Fix datasource UIDs in alert rules and add Sentry alerts (`5ed17dc`)
@@ -363,7 +360,6 @@ Improvements to feed discovery and subscription flow.
 - Remove stacking from all Grafana time series charts (`01bcebad`)
 - Fix Grafana panel layout and classifier query for scope-based panels (`8c70dd0`)
 - Make ES section panels full-width to prevent Grafana auto-compaction (`f5d559f`)
-- Fix Grafana dashboard layout and classifier query for scope-based panels (`7bfd477`)
 - Preserve historical classifier data in Grafana Feeds panel (`b0e41ec`)
 - Fix doubled classifier series in Grafana Feeds panel (`f5641ff`)
 - Increase trending charts limit from 5/10 to 20 items (`fde681f`)
@@ -383,17 +379,16 @@ Improvements to feed discovery and subscription flow.
 - Fix duplicate key error race condition in archive batch ingest (`f601a0e`)
 - Fix imageproxy OOM crashes with tiered cache and memory limit (`15c233a`, `870b1f0`)
 - Add Ansible swap role to fix Grafana flapping on metrics server (`c1acb8b`)
-- Fix UFW DOCKER-USER rules not being loaded after Ansible runs (`acf7a56`)
-- Add 1Password association by serving AASA as JSON and adding Alpha bundle ID (`db14868`)
+- Fix UFW DOCKER-USER rules not being loaded after Ansible runs (`acf7a55`)
+- Fix 1Password association by serving AASA as JSON and adding Alpha bundle ID (`db1486c`)
 - Add Android Digital Asset Links for autofill credential sharing (`7955eb2`)
-- Add Postgres replication slot to prevent WAL gaps on secondary (`448bd83`)
 
 ### CI & Dev Tools
 - Fix CI teardown failure by using --keepdb in test runner (`201e0e5`)
 - Add retry logic to CI workflow for transient network failures (`58db2cc`)
 - Add /commit, /commit-push, and /commit-all slash commands (`fea8efb`)
 - Add /commit-update-pr slash command for Claude Code (`b5e9fc8`)
-- Add /worktree slash command for Claude Code (`c4d1ea4`)
+- Add /worktree slash command for Claude Code (`ad2d4da`)
 - Add dev autologin endpoint and Chrome SSL bypass for local development (`3f1fc4a`)
 - Add MCP response size limit hook to save large responses to temp files (`21d3592`)
 - Configure Chrome DevTools MCP with --isolated flag for worktrees (`b0e8af0`)
@@ -405,8 +400,8 @@ Improvements to feed discovery and subscription flow.
 Standalone bug fixes not associated with a specific feature area.
 
 - Fix saved stories to show actual read/unread status instead of always read (`5a97d05`)
-- Fix SVG self-closing tags being mangled in feed content (`1de010a`)
-- Fix 'Read the whole story' expander positioning in center/right layouts (`d3354c2`)
+- Fix SVG self-closing tags being mangled in feed content (`2a8b85a`)
+- Fix 'Read the whole story' expander positioning in center/right layouts (`3fa8ae2`)
 - Fix loading bar persisting after stories load, stop premature fleuron flicker (`25c85c6`)
 - Keep loading bar visible during fill_out loop to prevent flicker in Focus mode (`ed86f90`)
 - Show "Untitled" for stories with no title, content, or permalink (`08323cb`)
@@ -430,7 +425,7 @@ Standalone bug fixes not associated with a specific feature area.
 - Fix AttributeError for non-existent DAILY_LIMIT_PREMIUM constant (`c28f93e`)
 - Fix feed merge bugs causing muted feeds and data loss (`51ce1f5`)
 - Improve feed merge and unmute handling (`60ae42e`)
-- Add safe single-feed mute/unmute endpoint (`8cb3bfb`)
+- Add safe single-feed mute/unmute endpoint (`a5e3871`)
 - Remove briefing feed folder cleanup since only one user had them (`f81bd18`)
 - Enable briefing notifications before first generation (`d0b2bf3`)
 - Make server indicator dot always green when connected (`f7a52e8`)
