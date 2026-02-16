@@ -400,6 +400,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                                         $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Group duplicate stories across your feeds']),
                                         $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'See which feeds cover the same story']),
                                         $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), 'Reduce clutter in your river of stories'])
+                                    ]),
+                                    $.make('div', { className: 'NB-clustering-mark-read-option' }, [
+                                        $.make('input', { id: 'NB-preference-cluster-mark-read', type: 'checkbox', name: 'cluster_mark_read', value: 'true' }),
+                                        $.make('label', { 'for': 'NB-preference-cluster-mark-read' }, 'Mark duplicates as read')
                                     ])
                                 ])
                             ]),
@@ -419,28 +423,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label' }, [
                             'Story Clustering',
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Groups similar stories from different feeds')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-clustering-read' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', { className: 'NB-social-card NB-social-card-enable' }, [
-                                $.make('input', { id: 'NB-preference-clustering-read-1', type: 'radio', name: 'cluster_mark_read', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-clustering-read-1', className: 'NB-social-card-content' }, [
-                                    $.make('span', { className: 'NB-social-card-title' }, 'Mark duplicates as read'),
-                                    $.make('span', { className: 'NB-social-card-desc' }, 'When you read a story, its duplicates in other feeds are automatically marked as read')
-                                ])
-                            ]),
-                            $.make('div', { className: 'NB-social-card NB-social-card-disable' }, [
-                                $.make('input', { id: 'NB-preference-clustering-read-2', type: 'radio', name: 'cluster_mark_read', value: 'false' }),
-                                $.make('label', { 'for': 'NB-preference-clustering-read-2', className: 'NB-social-card-content' }, [
-                                    $.make('span', { className: 'NB-social-card-title' }, 'Keep duplicates unread'),
-                                    $.make('span', { className: 'NB-social-card-desc' }, 'Each story is marked as read independently, even if clustered')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            'Cluster Read Status',
-                            $.make('div', { className: 'NB-preference-sublabel' }, 'What happens when you read a clustered story')
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-opml' }, [
@@ -1405,10 +1387,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         $('input[name=story_clustering][value=' + !!clustering_enabled + ']', $modal).prop('checked', true);
 
         var cluster_mark_read = NEWSBLUR.Preferences.cluster_mark_read;
-        if (cluster_mark_read === undefined || cluster_mark_read === null) {
-            cluster_mark_read = false;
-        }
-        $('input[name=cluster_mark_read][value=' + !!cluster_mark_read + ']', $modal).prop('checked', true);
+        $('input[name=cluster_mark_read]', $modal).prop('checked', !!cluster_mark_read);
 
         // reader_preferences.js: Load briefing preferences from API
         this.load_briefing_preferences();

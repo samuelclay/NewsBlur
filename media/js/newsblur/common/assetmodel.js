@@ -273,7 +273,59 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     data.read_times = JSON.stringify(this.queued_read_stories['read_times']);
                 }
 
-                this.make_request('/reader/mark_story_hashes_as_read', data, callback, error_callback, {
+                var original_hash = story.get('story_hash');
+                var original_hashes = data.story_hash;
+                this.make_request('/reader/mark_story_hashes_as_read', data, function (resp) {
+                    // assetmodel.js: Mark cluster member stories as read on the client
+                    if (resp && resp.story_hashes) {
+                        var extra_hashes = _.difference(resp.story_hashes, original_hashes);
+                        if (!self._cluster_read_hashes) self._cluster_read_hashes = {};
+                        var cluster_feed_decrements = {};
+                        _.each(extra_hashes, function (hash) {
+                            var cluster_story = self.stories.get_by_story_hash(hash);
+                            if (cluster_story && !cluster_story.get('read_status')) {
+                                cluster_story.set('read_status', 1);
+                                self.stories.sync_briefing_read_status(hash, 1);
+                                self.stories.update_read_count(cluster_story, {});
+                            }
+                            // assetmodel.js: Track cluster feed_ids for count
+                            // adjustment and pubsub suppression
+                            var feed_id = parseInt(hash.split(':')[0], 10);
+                            if (!cluster_feed_decrements[feed_id]) {
+                                cluster_feed_decrements[feed_id] = 0;
+                            }
+                            if (!cluster_story && !self._cluster_read_hashes[hash]) {
+                                cluster_feed_decrements[feed_id] += 1;
+                                self._cluster_read_hashes[hash] = true;
+                            }
+                        });
+                        // assetmodel.js: For cluster stories not in the collection,
+                        // directly decrement the feed's neutral count
+                        _.each(cluster_feed_decrements, function (count, feed_id) {
+                            if (count <= 0) return;
+                            var feed = self.feeds.get(parseInt(feed_id, 10));
+                            if (feed) {
+                                feed.set('nt', Math.max(0, feed.get('nt') - count), {instant: true});
+                            }
+                        });
+                        // assetmodel.js: Suppress pubsub-triggered feed_unread_count
+                        // for cluster feeds to prevent overriding the local decrement
+                        var cluster_feed_ids = _.map(_.keys(cluster_feed_decrements), function (id) {
+                            return parseInt(id, 10);
+                        });
+                        if (cluster_feed_ids.length) {
+                            self.cluster_read_feed_ids = _.union(
+                                self.cluster_read_feed_ids || [], cluster_feed_ids
+                            );
+                            clearTimeout(self.cluster_read_timeout);
+                            self.cluster_read_timeout = setTimeout(function () {
+                                self.cluster_read_feed_ids = [];
+                                self._cluster_read_hashes = {};
+                            }, 5000);
+                        }
+                    }
+                    if (callback) callback(resp);
+                }, error_callback, {
                     'ajax_group': 'queue_clear',
                     'beforeSend': function () {
                         self.queued_read_stories = {};

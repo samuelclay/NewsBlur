@@ -23726,7 +23726,7 @@ h5.NB-classifier-section-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 }
 
 .NB-filter-popover .NB-clustering-title-row .NB-popover-section-title {
@@ -23734,43 +23734,27 @@ h5.NB-classifier-section-header {
     margin-right: auto;
 }
 
-.NB-filter-popover .NB-clustering-description {
+.NB-filter-popover .segmented-control.NB-menu-manage-clustering-enabled {
+    margin-left: 0;
+}
+
+.NB-filter-popover .NB-clustering-read-section {
+    margin-top: 8px;
+}
+
+.NB-filter-popover .NB-clustering-read-label {
     font-size: 11px;
     color: #808080;
-    margin-bottom: 10px;
+    margin-bottom: 4px;
 }
 
-.NB-filter-popover .NB-popover-icon-control-clustering,
-.NB-filter-popover .NB-popover-icon-control-clustering-read {
-    margin: 4px 0 0;
-    display: flex;
-    gap: 8px;
-    align-items: center;
+.NB-filter-popover .segmented-control.NB-menu-manage-clustering-read {
+    margin-left: 0;
 }
 
-.NB-filter-popover .NB-clustering-label {
-    font-size: 11px;
-    color: #585A55;
-    width: 120px;
-    flex-shrink: 0;
-}
-
-.NB-filter-popover .NB-menu-manage-clustering-enabled,
-.NB-filter-popover .NB-menu-manage-clustering-read {
-    flex-grow: 1;
-}
-
-.NB-filter-popover .NB-menu-manage-clustering-enabled li,
-.NB-filter-popover .NB-menu-manage-clustering-read li {
-    padding: 2px 12px 2px;
-    font-size: 11px;
-}
-
-.NB-filter-popover .NB-clustering-read-explanation {
-    font-size: 10px;
-    color: #999;
-    margin-top: 6px;
-    line-height: 1.4;
+.NB-filter-popover .NB-clustering-read-section.NB-disabled {
+    opacity: 0.35;
+    pointer-events: none;
 }
 
 /* Clustering upgrade notice */
@@ -24419,6 +24403,26 @@ h5.NB-classifier-section-header {
     color: #909090;
     background: #2a2a2a;
     border-color: #444;
+}
+
+.NB-clustering-mark-read-option {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #555;
+}
+
+.NB-clustering-mark-read-option label {
+    cursor: pointer;
+}
+
+.NB-dark .NB-clustering-mark-read-option {
+    border-top-color: #444;
+    color: #999;
 }
 
 /* =================== */
