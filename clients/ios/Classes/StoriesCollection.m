@@ -256,8 +256,6 @@
     NSString *orderPrefDefault = [userPreferences stringForKey:@"default_order"];
     NSString *orderPref = [userPreferences stringForKey:[self orderKey]];
     
-    NSLog(@"StoriesCollection activeOrder %@: %@", [self orderKey], orderPref);  // log
-    
     if (orderPref) {
         return orderPref;
     } else if (!self.isDashboardOrFromDashboardStory && orderPrefDefault) {

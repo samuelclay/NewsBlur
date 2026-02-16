@@ -92,7 +92,7 @@
                             <constraint firstItem="bbc-ur-JbP" firstAttribute="leading" secondItem="rKh-Md-Ci2" secondAttribute="leading" constant="350" id="ehA-e1-po1"/>
                             <constraint firstAttribute="trailing" secondItem="tFd-Uv-aMP" secondAttribute="trailing" id="h2I-ng-gxc"/>
                             <constraint firstAttribute="bottom" secondItem="5M7-bO-MVK" secondAttribute="bottom" id="nSX-TU-ART"/>
-                            <constraint firstItem="5M7-bO-MVK" firstAttribute="top" secondItem="tFd-Uv-aMP" secondAttribute="bottom" constant="-4" id="v7j-Eh-lGD"/>
+                            <constraint firstItem="5M7-bO-MVK" firstAttribute="top" secondItem="tFd-Uv-aMP" secondAttribute="bottom" constant="-4" priority="999" id="v7j-Eh-lGD"/>
                             <constraint firstAttribute="trailing" secondItem="bPa-u1-Aml" secondAttribute="trailing" id="xth-oH-VTF"/>
                             <constraint firstAttribute="bottom" secondItem="bbc-ur-JbP" secondAttribute="bottom" id="yVn-b0-RI1"/>
                         </constraints>
@@ -188,7 +188,7 @@
                             <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pWr-U1-GMQ">
                                 <rect key="frame" x="-4" y="731" width="338" height="44"/>
                                 <items>
-                                    <barButtonItem image="nav_icn_add.png" width="34" style="plain" id="Wu8-MQ-nN6">
+                                    <barButtonItem image="nav_icn_add.png" style="plain" id="Wu8-MQ-nN6">
                                         <connections>
                                             <action selector="tapAddSite:" destination="c70-P4-4n6" id="RXh-I4-uCY"/>
                                         </connections>
@@ -210,7 +210,7 @@
                                         </segmentedControl>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="HDw-jk-a8P"/>
-                                    <barButtonItem image="nav_icn_settings.png" width="34" style="plain" id="0wM-AE-Px0">
+                                    <barButtonItem image="nav_icn_settings.png" style="plain" id="0wM-AE-Px0">
                                         <connections>
                                             <action selector="showSettingsPopover:" destination="c70-P4-4n6" id="Uxj-FH-8hp"/>
                                         </connections>

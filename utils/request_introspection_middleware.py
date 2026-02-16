@@ -42,7 +42,12 @@ class DumpRequestMiddleware:
             counts = getattr(request, "sql_call_counts", {})
             times = request.sql_times_elapsed
             redis_parts = []
-            for key, label in [("redis_user", "user"), ("redis_story", "story"), ("redis_session", "session"), ("redis_pubsub", "pubsub")]:
+            for key, label in [
+                ("redis_user", "user"),
+                ("redis_story", "story"),
+                ("redis_session", "session"),
+                ("redis_pubsub", "pubsub"),
+            ]:
                 c = counts.get(key, 0)
                 t = times[key]
                 color = self.color_db(t, "~FC")

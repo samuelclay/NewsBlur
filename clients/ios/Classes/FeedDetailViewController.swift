@@ -174,8 +174,6 @@ class FeedDetailViewController: FeedDetailObjCViewController {
             dashboardViewController = viewController
         }
         
-        NSLog("🪿🎛️ changedLayout for \(isLegacyTable ? "legacy table" : "SwiftUI grid layout")")
-        
         deferredReload()
     }
     
@@ -190,12 +188,6 @@ class FeedDetailViewController: FeedDetailObjCViewController {
 //    var findingStory: Story?
     
     func deferredReload(story: Story? = nil) {
-        if let story {
-            NSLog("🪿🎛️ queuing deferred reload for \(story)")
-        } else {
-            NSLog("🪿🎛️ queuing deferred reload")
-        }
-        
         reloadWorkItem?.cancel()
         
         if let story {
@@ -210,12 +202,9 @@ class FeedDetailViewController: FeedDetailObjCViewController {
             }
             
             if pendingStories.isEmpty {
-                NSLog("🪿🎛️ starting deferred reload")
-                
                 let secondsSinceScroll = -scrollingDate.timeIntervalSinceNow
-                
+
                 if secondsSinceScroll < 0.5 {
-                    NSLog("🪿🎛️ too soon to reload; \(secondsSinceScroll) seconds since scroll")
                     deferredReload(story: story)
                     return
                 }
@@ -528,7 +517,7 @@ extension FeedDetailViewController: FeedDetailInteraction {
         let storyHeight = appDelegate.storyPagesViewController.currentPage.view.frame.size.height
         let skipHeader: CGFloat = 200
         
-        NSLog("🪿🎛️ Scrolled story \(story.debugTitle) to offset \(offset ?? 0), story height: \(storyHeight), feed detail height: \(feedDetailHeight)")
+        // NSLog("🪿🎛️ Scrolled story \(story.debugTitle) to offset \(offset ?? 0), story height: \(storyHeight), feed detail height: \(feedDetailHeight)")
         
         if offset == nil {
             appDelegate.storyPagesViewController.traverseBottomConstraint.constant = storyHeight - feedDetailHeight

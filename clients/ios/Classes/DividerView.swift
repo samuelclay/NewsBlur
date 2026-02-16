@@ -24,6 +24,13 @@ class DividerView: UIView, UIPointerInteractionDelegate {
     /// The grab handle pill view centered on the divider.
     private let grabHandle = UIView()
 
+    /// Whether to draw the separator line. Defaults to `true`.
+    /// Set to `false` when the system already provides a column separator (e.g., UISplitViewController).
+    var showsLine = true
+
+    /// Offset for the grab handle position. Positive shifts right (vertical) or down (horizontal).
+    var handleOffset: CGFloat = 0
+
     /// Whether the grab handle is highlighted during a drag.
     var isHighlighted = false {
         didSet {
@@ -89,7 +96,7 @@ class DividerView: UIView, UIPointerInteractionDelegate {
 
         if isVerticalDivider {
             grabHandle.frame = CGRect(
-                x: (bounds.width - handleThickness) / 2,
+                x: (bounds.width - handleThickness) / 2 + handleOffset,
                 y: (bounds.height - handleLength) / 2,
                 width: handleThickness,
                 height: handleLength
@@ -97,7 +104,7 @@ class DividerView: UIView, UIPointerInteractionDelegate {
         } else {
             grabHandle.frame = CGRect(
                 x: (bounds.width - handleLength) / 2,
-                y: (bounds.height - handleThickness) / 2,
+                y: (bounds.height - handleThickness) / 2 + handleOffset,
                 width: handleLength,
                 height: handleThickness
             )
@@ -107,6 +114,8 @@ class DividerView: UIView, UIPointerInteractionDelegate {
 
     override func draw(_ rect: CGRect) {
         super.draw(rect)
+
+        guard showsLine else { return }
 
         let isVerticalDivider = bounds.height >= bounds.width
 

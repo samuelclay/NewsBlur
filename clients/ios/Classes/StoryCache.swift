@@ -93,8 +93,6 @@ import Foundation
     var currentFeed: Feed?
     
     func reload() {
-        NSLog("🪿🎛️ StoryCache reload")
-        
         guard let storiesCollection = appDelegate.storiesCollection else {
             return
         }
@@ -139,7 +137,7 @@ import Foundation
         selected = selectedIndex >= 0 ? Story(index: selectedIndex) : nil
         after = afterSelection.map { Story(index: $0) }
         
-        NSLog("🪿🎛️ ...reload: \(before.count) before, \(selected == nil ? "none" : selected!.debugTitle) selected, \(after.count) after, took \(-debug.timeIntervalSinceNow) seconds")
+        // NSLog("🪿🎛️ ...reload: \(before.count) before, \(selected == nil ? "none" : selected!.debugTitle) selected, \(after.count) after, took \(-debug.timeIntervalSinceNow) seconds")
         
         
         //

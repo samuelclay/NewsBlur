@@ -1236,7 +1236,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     }
     
     if (self.view.window == nil) {
-        NSLog(@"showImageForStoryHash when not in a window: %@", storyHash);  // log
         return;
     }
     
@@ -1245,8 +1244,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         if ([cell.storyHash isEqualToString:storyHash]) {
             NSIndexPath *indexPath = [self.storyTitlesTable indexPathForCell:cell];
             NSInteger numberOfRows = [self.storyTitlesTable numberOfRowsInSection:0];
-            
-            NSLog(@"showImageForStoryHash for row %@ of %@", @(indexPath.row), @(numberOfRows));  // log
             
             if (indexPath.row >= numberOfRows) {
                 NSLog(@"⚠️ row %@ is greater than the number of rows: %@", @(indexPath.row), @(numberOfRows));  // log
@@ -1722,20 +1719,18 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         }
     }
     
-    NSLog(@"finishedLoadingFeed: %@", receivedFeedId);  // log
-    
+    NSLog(@"finishedLoadingFeed: %@", receivedFeedId);
+
 #if TARGET_OS_MACCATALYST
     if (@available(macCatalyst 16.0, *)) {
         settingsBarButton.hidden = NO;
         feedMarkReadButton.hidden = NO;
     }
 #endif
-    
+
     self.pageFinished = NO;
     [self renderStories:confirmedNewStories];
-    
-    NSLog(@"...rendered");  // log
-    
+
     if (self.dashboardIndex >= 0) {
         self.pageFinished = YES;
         [appDelegate.feedsViewController loadDashboard];
@@ -1747,9 +1742,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         [appDelegate.storyPagesViewController setStoryFromScroll:YES];
     }
     [appDelegate.storyPagesViewController advanceToNextUnread];
-    
-    NSLog(@"...advanced to next unread");  // log
-    
+
     if (!storiesCollection.storyCount) {
         if ([results objectForKey:@"message"] && ![[results objectForKey:@"message"] isKindOfClass:[NSNull class]]) {
             if (!appDelegate.isPremium && storiesCollection.searchQuery != nil) {

@@ -30279,8 +30279,8 @@ span.NB-briefing-inline-favicon {
     opacity: 1;
 }
 
-/* reader.css: Add custom section button */
-.NB-briefing-add-custom-section {
+/* reader.css: Add keyword section button */
+.NB-briefing-add-keyword-section {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -30292,7 +30292,7 @@ span.NB-briefing-inline-favicon {
     transition: background 0.15s;
 }
 
-.NB-briefing-add-custom-section:hover {
+.NB-briefing-add-keyword-section:hover {
     background: rgba(92, 137, 196, 0.08);
 }
 
@@ -30414,11 +30414,11 @@ span.NB-briefing-inline-favicon {
 }
 
 /* reader.css: Dark mode overrides for briefing sections */
-.NB-dark .NB-briefing-add-custom-section {
+.NB-dark .NB-briefing-add-keyword-section {
     color: #7BA3D0;
 }
 
-.NB-dark .NB-briefing-add-custom-section:hover {
+.NB-dark .NB-briefing-add-keyword-section:hover {
     background: rgba(92, 137, 196, 0.12);
 }
 

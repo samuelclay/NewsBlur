@@ -861,11 +861,11 @@
 }
 
 - (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo animated:(BOOL)animated {
-    NSLog(@"⚠️ show column for %@: split view controller: %@ split nav: %@; split controllers: %@; detail controller: %@; detail nav: %@; detail nav controllers: %@", debugInfo, self.splitViewController, self.splitViewController.navigationController, self.splitViewController.viewControllers, self.detailViewController, self.detailViewController.navigationController, self.detailViewController.navigationController.viewControllers);  // log
-    
+    NSLog(@"⚠️ show column for %@: split view controller: %@ split nav: %@; split controllers: %@; detail controller: %@; detail nav: %@; detail nav controllers: %@", debugInfo, self.splitViewController, self.splitViewController.navigationController, self.splitViewController.viewControllers, self.detailViewController, self.detailViewController.navigationController, self.detailViewController.navigationController.viewControllers);
+
     [self.detailViewController showColumn:column animated:animated];
-    
-    NSLog(@"...shown");  // log
+
+    NSLog(@"...shown");
 }
 
 - (void)showPremiumDialog {
@@ -1222,9 +1222,15 @@
         UINavigationController *shareNav = [[UINavigationController alloc]
                                             initWithRootViewController:self.shareViewController];
         self.shareNavigationController = shareNav;
-        self.shareNavigationController.navigationBar.translucent = NO;
     }
     self.shareNavigationController.navigationBarHidden = YES;
+    self.shareNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+    UISheetPresentationController *sheet = self.shareNavigationController.sheetPresentationController;
+    sheet.detents = @[UISheetPresentationControllerDetent.largeDetent];
+    sheet.prefersGrabberVisible = YES;
+    sheet.preferredCornerRadius = 12.0;
+
     [self.feedsNavigationController presentViewController:self.shareNavigationController animated:YES completion:^{
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
     }];
@@ -1257,8 +1263,6 @@
 
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
     [super buildMenuWithBuilder:builder];
-    
-    [AppMenuHelper.shared buildMenuWithBuilder:builder];
 }
 
 #pragma mark -
@@ -1415,8 +1419,27 @@
             self.trainNavigationController = [[UINavigationController alloc]
                                               initWithRootViewController:self.trainerViewController];
         }
-        self.trainNavigationController.navigationBar.translucent = NO;
-        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
+        self.trainNavigationController.navigationBarHidden = YES;
+        self.trainNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+        UISheetPresentationController *sheet = self.trainNavigationController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        sheet.preferredCornerRadius = 12.0;
+
+        [navController presentViewController:self.trainNavigationController animated:YES completion:^{
+            UIView *containerView = self.trainNavigationController.presentationController.containerView;
+            if (containerView && !self.isMac) {
+                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
+                    initWithTarget:self
+                    action:@selector(dismissAskAIOnTap:)];
+                tapToDismiss.cancelsTouchesInView = NO;
+                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
+                [containerView addGestureRecognizer:tapToDismiss];
+            }
+        }];
     }
 }
 
@@ -1425,7 +1448,7 @@
     trainerViewController.isStoryTrainer = YES;
     trainerViewController.isFeedLoaded = YES;
     [trainerViewController reload];
-    
+
     if (!self.isPhone) {
         [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
@@ -1433,8 +1456,27 @@
             self.trainNavigationController = [[UINavigationController alloc]
                                               initWithRootViewController:self.trainerViewController];
         }
-        self.trainNavigationController.navigationBar.translucent = NO;
-        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
+        self.trainNavigationController.navigationBarHidden = YES;
+        self.trainNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+        UISheetPresentationController *sheet = self.trainNavigationController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        sheet.preferredCornerRadius = 12.0;
+
+        [navController presentViewController:self.trainNavigationController animated:YES completion:^{
+            UIView *containerView = self.trainNavigationController.presentationController.containerView;
+            if (containerView && !self.isMac) {
+                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
+                    initWithTarget:self
+                    action:@selector(dismissAskAIOnTap:)];
+                tapToDismiss.cancelsTouchesInView = NO;
+                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
+                [containerView addGestureRecognizer:tapToDismiss];
+            }
+        }];
     }
 }
 
@@ -1451,7 +1493,7 @@
 
         UISheetPresentationController *sheet = askAINavController.sheetPresentationController;
         // Start with only medium detent - AskAIViewController will add large when answer mode
-        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent];
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
         sheet.prefersGrabberVisible = YES;
         sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
         // Allow interaction with story content behind the sheet when at medium height
@@ -1583,23 +1625,28 @@
 
 - (void)checkForFeedNotifications {
     NSMutableArray *foundNotificationFeedIds = [NSMutableArray array];
-    
+    BOOL hasIOSNotifications = NO;
+
     for (NSDictionary *feed in self.dictFeeds.allValues) {
         if (![feed isKindOfClass:[NSDictionary class]]) {
             continue;
         }
-        
+
         NSArray *types = [feed objectForKey:@"notification_types"];
         if (types) {
             for (NSString *notificationType in types) {
                 if ([notificationType isEqualToString:@"ios"]) {
-                    [self registerForRemoteNotifications];
+                    hasIOSNotifications = YES;
                 }
             }
             if ([types count]) {
                 [foundNotificationFeedIds addObject:[feed objectForKey:@"id"]];
             }
         }
+    }
+
+    if (hasIOSNotifications) {
+        [self registerForRemoteNotifications];
     }
     
     self.notificationFeedIds = [foundNotificationFeedIds sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
@@ -4656,7 +4703,6 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                              (unsigned long)NULL), ^(void) {
         [self.database inDatabase:^(FMDatabase *db) {
-            NSLog(@"Saving scroll %ld in %@-%@", (long)[positionNum integerValue], [storyDict objectForKey:@"story_hash"], [storyDict objectForKey:@"story_title"]);
             [db executeUpdate:@"INSERT INTO story_scrolls (story_feed_id, story_hash, story_timestamp, scroll) VALUES (?, ?, ?, ?)",
              [storyDict objectForKey:@"story_feed_id"],
              [storyDict objectForKey:@"story_hash"],

@@ -93,14 +93,11 @@
 - (void)keyboardWasShown:(NSNotification*)aNotification
 {
     NSDictionary* info = [aNotification userInfo];
-
-    // Get the size of the keyboard.
-    NSValue* keyboardFrameValue     = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
-    CGRect keyboardRectWrtScreen    = [keyboardFrameValue CGRectValue];
-
-    CGFloat keyboardWidth = keyboardRectWrtScreen.size.width;
-    CGFloat keyboardHeight = [[[self view] window] frame].size.height - keyboardRectWrtScreen.origin.y;
-    CGSize kbSize = CGSizeMake(keyboardWidth, keyboardHeight);
+    CGRect keyboardFrame = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGRect keyboardInView = [self.view convertRect:keyboardFrame fromView:nil];
+    CGFloat overlap = CGRectGetMaxY(self.view.bounds) - keyboardInView.origin.y;
+    if (overlap < 0) overlap = 0;
+    CGSize kbSize = CGSizeMake(keyboardInView.size.width, overlap);
 
     self.lastKeyboardSize = kbSize;
     [UIView animateWithDuration:0.2f animations:^{
@@ -112,14 +109,11 @@
 - (void)keyboardWillBeHidden:(NSNotification*)aNotification
 {
     NSDictionary* info = [aNotification userInfo];
-
-    // Get the size of the keyboard.
-    NSValue* keyboardFrameValue     = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
-    CGRect keyboardRectWrtScreen    = [keyboardFrameValue CGRectValue];
-
-    CGFloat keyboardWidth = keyboardRectWrtScreen.size.width;
-    CGFloat keyboardHeight = [[[self view] window] frame].size.height - keyboardRectWrtScreen.origin.y;
-    CGSize kbSize = CGSizeMake(keyboardWidth, keyboardHeight);
+    CGRect keyboardFrame = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGRect keyboardInView = [self.view convertRect:keyboardFrame fromView:nil];
+    CGFloat overlap = CGRectGetMaxY(self.view.bounds) - keyboardInView.origin.y;
+    if (overlap < 0) overlap = 0;
+    CGSize kbSize = CGSizeMake(keyboardInView.size.width, overlap);
 
     self.lastKeyboardSize = kbSize;
     [UIView animateWithDuration:0.2f animations:^{
@@ -199,7 +193,7 @@
 
     // Comment field below header
     CGFloat fieldTop = CGRectGetMaxY(self.headerLabel.frame) + 8;
-    CGFloat fieldHeight = v.height - k - fieldTop - btnHeight - btnPadding*2 - stHeight;
+    CGFloat fieldHeight = v.height - k - fieldTop - btnHeight - btnPadding*2;
     if (fieldHeight < 40) fieldHeight = 40;
     self.commentField.frame = CGRectMake(margin, fieldTop, v.width - margin*2, fieldHeight);
 
