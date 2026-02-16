@@ -32,11 +32,21 @@ class AppMenuHelper: NSObject {
     
     // MARK: - Build Menus
     
+    private static let siteMenuIdentifier = UIMenu.Identifier("com.newsblur.site")
+    private static let storyMenuIdentifier = UIMenu.Identifier("com.newsblur.story")
+
     @objc(buildMenuWithBuilder:)
     func buildMenu(with builder: UIMenuBuilder) {
+        guard builder.system == .main else { return }
+
+        // Remove existing custom menus to prevent duplicates on rebuild
+        builder.remove(menu: Self.siteMenuIdentifier)
+        builder.remove(menu: Self.storyMenuIdentifier)
+
         // Remove/adjust system menus first
         if #available(iOS 16.0, *) {
             builder.remove(menu: .format)
+            builder.remove(menu: .find)
         }
         
         // ===== FILE =====
@@ -302,7 +312,7 @@ class AppMenuHelper: NSObject {
         ]}
         
         // ===== SITE (custom) =====
-        let site = UIMenu(title: "Site",identifier: UIMenu.Identifier("com.newsblur.site"), children: [
+        let site = UIMenu(title: "Site", identifier: Self.siteMenuIdentifier, children: [
             UIMenu(title: "Manage", children: [
                 UICommand(title: "Rename Site…",
                           action: #selector(BaseViewController.openRenameSite(_:))),
@@ -401,7 +411,7 @@ class AppMenuHelper: NSObject {
         }
         
         // ===== STORY (custom) =====
-        let story = UIMenu(title: "Story", identifier: UIMenu.Identifier("com.newsblur.story"), children: [
+        let story = UIMenu(title: "Story", identifier: Self.storyMenuIdentifier, children: [
             UIMenu(title: "", options: .displayInline, children: [
                 UIKeyCommand(title: "Save This Story",
                              action: #selector(StoriesCollection.toggleStorySaved(_:)),

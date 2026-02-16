@@ -24,11 +24,7 @@
 }
 
 - (BOOL)becomeFirstResponder {
-    BOOL success = [super becomeFirstResponder];
-    
-    NSLog(@"%@ becomeFirstResponder: %@", self, success ? @"yes" : @"no");  // log
-    
-    return success;
+    return [super becomeFirstResponder];
 }
 
 #pragma mark -
@@ -273,8 +269,6 @@
 
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
     [super buildMenuWithBuilder:builder];
-    
-    [AppMenuHelper.shared buildMenuWithBuilder:builder];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
@@ -470,7 +464,7 @@
 
 - (IBAction)findInFeedDetail:(id)sender {
     [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"findInFeedDetail" animated:YES];
-    [self.appDelegate.feedDetailViewController.searchBar becomeFirstResponder];
+    [self.appDelegate.feedDetailViewController.searchField becomeFirstResponder];
 }
 
 #pragma mark -

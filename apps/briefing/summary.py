@@ -95,8 +95,8 @@ SECTION_PROMPTS = {
     "trending_global": '"Trending across NewsBlur" — CATEGORY: trending_global. Widely-read stories from across the platform.',
     "duplicates": '"Common stories" — CATEGORY: duplicates. Stories covered by multiple feeds. For each story, show the shared headline then list each source\'s unique angle or perspective as sub-items.',
     "quick_catchup": '"Quick catch-up" — KEY: quick_catchup. This is a special section. Select the 3-5 most important stories from the entire briefing and write a 1-2 sentence TL;DR for each. Link to each story using the anchor tag format specified below. This section should appear first.',
-    "emerging_topics": '"Emerging topics" — Look across all the stories for topics that appear multiple times or are getting increasing coverage. Group these stories under the topic and explain why it\'s trending.',
-    "contrarian_views": '"Contrarian views" — Look for stories where different feeds have notably different perspectives on the same topic. Highlight the disagreement and present each side.',
+    "emerging_topics": '"Emerging topics" — CATEGORY: emerging_topics. Look across all the stories for topics that appear multiple times or are getting increasing coverage. Group these stories under the topic and explain why it\'s trending.',
+    "contrarian_views": '"Contrarian views" — CATEGORY: contrarian_views. Look for stories where different feeds have notably different perspectives on the same topic. Highlight the disagreement and present each side.',
 }
 
 
@@ -123,12 +123,10 @@ def _build_system_prompt(
         custom_key = "custom_%d" % (i + 1)
         if active_sections.get(custom_key, False) and prompt:
             section_lines.append(
-                '%d. Custom section (KEY: %s) — The reader has requested a custom section with this prompt: "%s". '
-                "Generate an appropriate section header for this content. "
-                "ONLY include stories that are genuinely and directly about this topic. "
-                "If no stories clearly match this prompt, do NOT include this section at all — "
-                "do not stretch or loosely interpret the prompt to fit unrelated stories."
-                % (num, custom_key, prompt)
+                '%d. Keyword section (KEY: %s) — The reader has a keyword section that matches stories '
+                'with these keywords: "%s". Generate a section header based on the keywords. '
+                "ONLY include stories whose CATEGORY field is set to %s."
+                % (num, custom_key, prompt, custom_key)
             )
             num += 1
 
@@ -334,8 +332,10 @@ def extract_section_summaries(summary_html):
     if not summary_html:
         return {}
 
-    # summary.py: Split on h3 tags with data-section attributes
-    pattern = r'(<h3\s+data-section="([^"]+)"[^>]*>)'
+    # summary.py: Split on h3 tags with data-section attributes.
+    # Use [^>]*? before data-section so we match even if the LLM adds other
+    # attributes (class, style) before data-section in the opening tag.
+    pattern = r'(<h3\s[^>]*?data-section="([^"]+)"[^>]*>)'
     parts = re.split(pattern, summary_html)
 
     sections = {}
@@ -500,6 +500,15 @@ def embed_briefing_icons(summary_html, scored_stories):
         summary_html,
     )
 
+    # --- Phase 4b: Style <p> tags — consistent spacing for editorial/headlines ---
+
+    p_style = "margin:0 0 12px 0;padding:0 0 0 22px;line-height:1.5;"
+    summary_html = re.sub(
+        r"<p(?P<attrs>[^>]*)>",
+        lambda m: '<p%s style="%s">' % (m.group("attrs"), p_style),
+        summary_html,
+    )
+
     # --- Phase 5: Embed favicons BEFORE story links as visual bullets ---
 
     favicon_style = "width:16px;height:16px;border-radius:2px;"
@@ -564,13 +573,46 @@ def embed_briefing_icons(summary_html, scored_stories):
         flags=re.DOTALL,
     )
 
+    # --- Phase 5c: Wrap favicon + text in table layout for <p> tags (editorial/headlines) ---
+
+    def _tablify_p(match):
+        p_tag = match.group(1)
+        content = match.group(2)
+        favicon_match = re.match(
+            r"(\s*<img[^>]*NB-briefing-inline-favicon[^>]*>)\s*(.*)",
+            content,
+            re.DOTALL,
+        )
+        if not favicon_match:
+            return match.group(0)
+        favicon_img = favicon_match.group(1)
+        rest = favicon_match.group(2)
+        # summary.py: Convert <p> to <div> because <table> cannot nest inside <p>.
+        # Browsers auto-close <p> before block elements, causing a blank <p> that
+        # offsets the favicon and breaks font inheritance.
+        div_tag = re.sub(r"^<p\b", "<div", p_tag)
+        return (
+            '%s<table cellpadding="0" cellspacing="0" border="0" style="width:100%%;">'
+            "<tr>"
+            '<td style="width:22px;vertical-align:top;padding-top:0;">%s</td>'
+            '<td style="vertical-align:top;">%s</td>'
+            "</tr></table></div>" % (div_tag, favicon_img, rest)
+        )
+
+    summary_html = re.sub(
+        r"(<p[^>]*>)(.*?)</p>",
+        _tablify_p,
+        summary_html,
+        flags=re.DOTALL,
+    )
+
     # --- Phase 6: Style classifier pills with inline CSS ---
 
     classifier_pill_style = (
         "display:inline-block;background-color:#34912E;"
         "border:1px solid #202020;border-radius:14px;"
-        "padding:2px 8px;font-size:10px;line-height:16px;"
-        "margin:3px 4px 3px 0;white-space:nowrap;"
+        "padding:1px 8px;font-size:10px;line-height:14px;"
+        "margin:1px 4px 1px 0;white-space:nowrap;vertical-align:middle;"
     )
     classifier_label_style = "color:white;"
     classifier_b_style = "color:rgba(255,255,255,0.7);font-weight:normal;"

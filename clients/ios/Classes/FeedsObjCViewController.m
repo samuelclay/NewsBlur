@@ -133,6 +133,9 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 #endif
     if (!self.defaultFeedToolbarItems) {
         self.defaultFeedToolbarItems = self.feedViewToolbar.items;
+        // Clear storyboard items to prevent constraint conflicts during initial layout.
+        // Items are restored by configureFeedToolbarItemsForOrientation: during layoutForInterfaceOrientation:.
+        self.feedViewToolbar.items = @[];
     }
     
     // Create compact search field with theme colors
@@ -246,8 +249,13 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.navigationController.navigationBar.tintColor = UIColorFromRGB(0x8F918B);
     self.navigationController.navigationBar.translucent = NO;
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
-    [self layoutForInterfaceOrientation:orientation];
-    
+    // Call layout parts individually, deferring toolbar items to viewWillAppear
+    // to avoid constraint conflicts when toolbar has zero width during initial load.
+    self.notifier.offset = CGPointMake(0, 0);
+    [self updateIntelligenceControlForOrientation:orientation];
+    [self layoutHeaderCounts:orientation];
+    [self refreshHeaderCounts];
+
     UILongPressGestureRecognizer *longpress = [[UILongPressGestureRecognizer alloc]
                                                initWithTarget:self action:@selector(handleLongPress:)];
     longpress.minimumPressDuration = 1.0;
@@ -324,54 +332,41 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
         intelligenceItem = [[UIBarButtonItem alloc] initWithCustomView:self.intelligenceControl];
     }
 
-    UIBarButtonItem *leadingFlexibleSpace = [[UIBarButtonItem alloc]
-                                             initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                             target:nil
-                                             action:nil];
-    UIBarButtonItem *trailingFlexibleSpace = [[UIBarButtonItem alloc]
-                                              initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                              target:nil
-                                              action:nil];
-    UIBarButtonItem *leftSpacing = [[UIBarButtonItem alloc]
-                                    initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                    target:nil
-                                    action:nil];
-    UIBarButtonItem *rightSpacing = [[UIBarButtonItem alloc]
-                                     initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                     target:nil
-                                     action:nil];
-    leftSpacing.width = 8.0;
-    rightSpacing.width = 8.0;
+    UIBarButtonItem * (^makeFlexSpace)(void) = ^{
+        return [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                             target:nil
+                                                             action:nil];
+    };
+    UIBarButtonItem * (^makeFixedSpace)(CGFloat) = ^(CGFloat width) {
+        UIBarButtonItem *space = [[UIBarButtonItem alloc]
+                                  initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                  target:nil
+                                  action:nil];
+        space.width = width;
+        return space;
+    };
 
 #if TARGET_OS_MACCATALYST
-    UIBarButtonItem *leadingInset = [[UIBarButtonItem alloc]
-                                     initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                     target:nil
-                                     action:nil];
-    leadingInset.width = 16.0;
-    UIBarButtonItem *trailingInset = [[UIBarButtonItem alloc]
-                                      initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                      target:nil
-                                      action:nil];
-    trailingInset.width = 16.0;
     self.feedViewToolbar.items = @[
-        leadingInset,
+        makeFixedSpace(16),
         self.addBarButton,
-        leadingFlexibleSpace,
+        makeFlexSpace(),
         intelligenceItem,
-        trailingFlexibleSpace,
+        makeFlexSpace(),
         self.settingsBarButton,
-        trailingInset
+        makeFixedSpace(16)
     ];
 #else
     self.feedViewToolbar.items = @[
-        leadingFlexibleSpace,
+        makeFlexSpace(),
+        makeFlexSpace(),
         self.addBarButton,
-        leftSpacing,
+        makeFlexSpace(),
         intelligenceItem,
-        rightSpacing,
+        makeFlexSpace(),
         self.settingsBarButton,
-        trailingFlexibleSpace
+        makeFlexSpace(),
+        makeFlexSpace()
     ];
 #endif
 }
@@ -400,7 +395,14 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 #endif
 
     [self updateSidebarButton];
-    
+
+    // Defer toolbar item configuration to the next run loop iteration so the toolbar
+    // has been laid out with a non-zero width, avoiding constraint conflicts.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
+        [self configureFeedToolbarItemsForOrientation:orientation];
+    });
+
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     NSInteger intelligenceLevel = [userPreferences integerForKey:@"selectedIntelligence"];
     
@@ -455,17 +457,25 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
 
-    // Set content inset so feed list can scroll above the toolbar
-    // Toolbar is positioned 8pt above safe area bottom per storyboard constraint
-    CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
-    CGFloat toolbarBottomGap = 8.0; // From storyboard constraint
+    // Set content inset so feed list can scroll above the toolbar.
+    // Toolbar is pinned to the superview bottom with an adaptive gap:
+    // Face ID devices (safe area > 0): 12pt from screen edge
+    // Non-Face ID devices (iPhone SE): 8pt to match side margins
     CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
-    CGFloat totalBottomInset = toolbarHeight + toolbarBottomGap + safeAreaBottom;
+    CGFloat toolbarBottomGap = (safeAreaBottom > 0) ? 12.0 : 8.0;
+    self.toolbarBottomConstraint.constant = -toolbarBottomGap;
+    CGFloat toolbarHeight = CGRectGetHeight(self.feedViewToolbar.frame);
+    CGFloat totalBottomInset = MAX(toolbarHeight + toolbarBottomGap, safeAreaBottom);
 
     UIEdgeInsets currentInset = self.feedTitlesTable.contentInset;
     if (currentInset.bottom != totalBottomInset) {
         self.feedTitlesTable.contentInset = UIEdgeInsetsMake(currentInset.top, currentInset.left, totalBottomInset, currentInset.right);
         self.feedTitlesTable.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, totalBottomInset, 0);
+    }
+
+    // Update intelligence control when column width changes (e.g., dragging the feeds divider).
+    if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
+        [self updateIntelligenceControlForOrientation:UIInterfaceOrientationUnknown];
     }
 }
 
@@ -572,10 +582,10 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
             }
             sidebarImage = [sidebarImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
-            UIButton *button = [UIButton systemButtonWithImage:sidebarImage target:self action:@selector(toggleFeeds:)];
-            button.frame = CGRectMake(0, 0, 44, 44);
-            button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-            self.sidebarBarButton = [[UIBarButtonItem alloc] initWithCustomView:button];
+            self.sidebarBarButton = [[UIBarButtonItem alloc] initWithImage:sidebarImage
+                                                                     style:UIBarButtonItemStylePlain
+                                                                    target:self
+                                                                    action:@selector(toggleFeeds:)];
             self.sidebarBarButton.accessibilityLabel = @"Sidebar";
         }
         self.navigationItem.rightBarButtonItem = self.sidebarBarButton;
@@ -639,8 +649,19 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     if (orientation == UIInterfaceOrientationUnknown) {
         orientation = self.view.window.windowScene.interfaceOrientation;
     }
-    
-    if (!self.appDelegate.detailViewController.isPhoneOrCompact && !UIInterfaceOrientationIsLandscape(orientation)) {
+
+    BOOL useCompactIcons = NO;
+    if (!self.appDelegate.detailViewController.isPhoneOrCompact) {
+        CGFloat feedsWidth = self.view.bounds.size.width;
+        if (feedsWidth > 0) {
+            useCompactIcons = feedsWidth < 340;
+        } else {
+            // Width not yet available, fall back to orientation.
+            useCompactIcons = !UIInterfaceOrientationIsLandscape(orientation);
+        }
+    }
+
+    if (useCompactIcons) {
         [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_yellow_icn.png"] forSegmentAtIndex:1];
         [self.intelligenceControl setImage:[Utilities imageNamed:@"indicator-focus" sized:14] forSegmentAtIndex:2];
         [self.intelligenceControl setImage:[Utilities imageNamed:@"unread_blue_icn.png" sized:14] forSegmentAtIndex:3];
@@ -1620,7 +1641,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
     self.addBarButton.tintColor = toolbarButtonTint;
     self.settingsBarButton.tintColor = toolbarButtonTint;
     if (self.sidebarBarButton) {
-        self.sidebarBarButton.customView.tintColor = tintColor;
+        self.sidebarBarButton.tintColor = tintColor;
     }
 #if TARGET_OS_MACCATALYST
     if (ThemeManager.themeManager.isLikeSystem) {
@@ -2149,8 +2170,17 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 
 - (void)reloadFeedTitlesTable {
     [self resetRowHeights];
+    [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
     [self highlightSelection];
+}
+
+- (void)refreshFolderCounts {
+    [appDelegate.folderCountCache removeAllObjects];
+
+    for (NSNumber *section in self.folderTitleViews) {
+        [self.folderTitleViews[section] setNeedsDisplay];
+    }
 }
 
 - (UIFontDescriptor *)fontDescriptorUsingPreferredSize:(NSString *)textStyle {
@@ -2273,7 +2303,8 @@ heightForHeaderInSection:(NSInteger)section {
         ![folderName isEqualToString:@"saved_searches"] &&
         ![folderName isEqualToString:@"saved_stories"] &&
         ![folderName isEqualToString:@"read_stories"] &&
-        ![folderName isEqualToString:@"widget_stories"]) {
+        ![folderName isEqualToString:@"widget_stories"] &&
+        ![folderName isEqualToString:@"try_feed"]) {
         return 0;
     }
     
@@ -2858,6 +2889,12 @@ heightForHeaderInSection:(NSInteger)section {
     if (![feedId isKindOfClass:[NSString class]]) {
         feedId = [NSString stringWithFormat:@"%@",feedId];
     }
+
+    // Try feeds are always visible
+    if ([feedId isEqualToString:self.appDelegate.tryFeedFeedId]) {
+        return YES;
+    }
+
     NSDictionary *unreadCounts = self.appDelegate.dictUnreadCounts[feedId];
     NSIndexPath *stillVisible = self.stillVisibleFeeds[feedId];
     if (!stillVisible && self.appDelegate.isSavedStoriesIntelligenceMode) {

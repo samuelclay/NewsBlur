@@ -19,10 +19,17 @@ class DividerView: UIView, UIPointerInteractionDelegate {
 #endif
 
     /// The amount to expand the touch area on each side of the divider for easier finger targeting.
-    private let touchExpansion: CGFloat = 20
+    private let touchExpansion: CGFloat = 6
 
     /// The grab handle pill view centered on the divider.
     private let grabHandle = UIView()
+
+    /// Whether to draw the separator line. Defaults to `true`.
+    /// Set to `false` when the system already provides a column separator (e.g., UISplitViewController).
+    var showsLine = true
+
+    /// Offset for the grab handle position. Positive shifts right (vertical) or down (horizontal).
+    var handleOffset: CGFloat = 0
 
     /// Whether the grab handle is highlighted during a drag.
     var isHighlighted = false {
@@ -89,7 +96,7 @@ class DividerView: UIView, UIPointerInteractionDelegate {
 
         if isVerticalDivider {
             grabHandle.frame = CGRect(
-                x: (bounds.width - handleThickness) / 2,
+                x: (bounds.width - handleThickness) / 2 + handleOffset,
                 y: (bounds.height - handleLength) / 2,
                 width: handleThickness,
                 height: handleLength
@@ -97,7 +104,7 @@ class DividerView: UIView, UIPointerInteractionDelegate {
         } else {
             grabHandle.frame = CGRect(
                 x: (bounds.width - handleLength) / 2,
-                y: (bounds.height - handleThickness) / 2,
+                y: (bounds.height - handleThickness) / 2 + handleOffset,
                 width: handleLength,
                 height: handleThickness
             )
@@ -107,6 +114,8 @@ class DividerView: UIView, UIPointerInteractionDelegate {
 
     override func draw(_ rect: CGRect) {
         super.draw(rect)
+
+        guard showsLine else { return }
 
         let isVerticalDivider = bounds.height >= bounds.width
 
@@ -151,9 +160,19 @@ class DividerView: UIView, UIPointerInteractionDelegate {
 
         let isVerticalDivider = bounds.height >= bounds.width
         let expanded: CGRect
+        // Only expand the touch area near the grab handle, not along the full length.
+        let handleZone: CGFloat = 100
         if isVerticalDivider {
+            let handleCenterY = bounds.midY
+            let zoneMinY = handleCenterY - handleZone / 2
+            let zoneMaxY = handleCenterY + handleZone / 2
+            guard point.y >= zoneMinY && point.y <= zoneMaxY else { return false }
             expanded = bounds.insetBy(dx: -touchExpansion, dy: 0)
         } else {
+            let handleCenterX = bounds.midX
+            let zoneMinX = handleCenterX - handleZone / 2
+            let zoneMaxX = handleCenterX + handleZone / 2
+            guard point.x >= zoneMinX && point.x <= zoneMaxX else { return false }
             expanded = bounds.insetBy(dx: 0, dy: -touchExpansion)
         }
         return expanded.contains(point)

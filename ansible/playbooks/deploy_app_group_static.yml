@@ -128,6 +128,16 @@
   when: backend_name is defined and disable_consul_services_ie_staging is not defined
   tags: always
 
+- name: Wait for server to pass HAProxy health checks
+  delegate_to: "{{ haproxy_host }}"
+  shell: docker exec haproxy sh -c 'echo "show servers state {{ backend_name }}" | socat stdio /var/run/haproxy.sock' | grep '{{ inventory_hostname }}' | awk '{print $6}'
+  register: server_health
+  until: server_health.stdout == "2"
+  retries: 10
+  delay: 2
+  when: backend_name is defined and disable_consul_services_ie_staging is not defined
+  tags: always
+
 - name: Start Consul
   become: yes
   service:

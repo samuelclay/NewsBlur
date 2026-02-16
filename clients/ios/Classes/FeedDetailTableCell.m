@@ -326,9 +326,39 @@ static UIFont *indicatorFont = nil;
                       attributes:@{NSFontAttributeName: font,
                                    NSParagraphStyleAttributeName: paragraphStyle}
                       context:nil].size;
+
+    // Pre-calculate content size for equal vertical spacing
+    CGFloat contentGap = 0;
+    if (cell.storyContent && cell.storyContent.length > 0) {
+        UIFont *preContentFont = [UIFont fontWithName:@"WhitneySSm-Book" size:fontDescriptor.pointSize - 1];
+        CGFloat preBoundingRows = cell.isShort ? 1.5 : 3;
+        if (!cell.isShort && (self.cell.textSize == FeedDetailTextSizeMedium || self.cell.textSize == FeedDetailTextSizeLong)) {
+            CGFloat defaultTitleBottom = (14 + riverPadding) + theSize.height;
+            preBoundingRows = MAX(3, (r.size.height - 30 - comfortMargin - defaultTitleBottom) / preContentFont.pointSize);
+        }
+        CGSize preContentSize = [cell.storyContent
+                                 boundingRectWithSize:CGSizeMake(rect.size.width, preContentFont.pointSize * preBoundingRows)
+                                 options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
+                                 attributes:@{NSFontAttributeName: preContentFont,
+                                              NSParagraphStyleAttributeName: paragraphStyle}
+                                 context:nil].size;
+        CGFloat dateY = r.size.height - 18 - comfortMargin;
+        CGFloat topEdge = cell.isRiverOrSocial ? riverPadding : 0;
+        contentGap = (dateY - topEdge - theSize.height - preContentSize.height) / 3.0;
+        contentGap = MAX(contentGap, 2);
+    }
+
     int storyTitleY = 14 + riverPadding;
     if (cell.isShort) {
         storyTitleY = 14 + riverPadding - (theSize.height/font.pointSize*2);
+    }
+    if (cell.storyContent && cell.storyContent.length > 0) {
+        CGFloat topEdge = cell.isRiverOrSocial ? riverPadding : 0;
+        storyTitleY = (int)(topEdge + contentGap);
+    } else if (!cell.storyContent && cell.isRiverOrSocial) {
+        CGFloat dateY = r.size.height - 18 - comfortMargin;
+        CGFloat centeredY = riverPadding + (dateY - riverPadding - theSize.height) / 2;
+        storyTitleY = (int)MAX(centeredY, riverPadding);
     }
     int storyTitleX = leftMargin;
     if (cell.isSaved) {
@@ -368,31 +398,25 @@ static UIFont *indicatorFont = nil;
     }
     
     if (cell.storyContent) {
-        CGFloat bottomOfTitle = storyTitleY + theSize.height;
         int storyContentWidth = rect.size.width;
         CGFloat boundingRows = cell.isShort ? 1.5 : 3;
-        
+
         if (!cell.isShort && (self.cell.textSize == FeedDetailTextSizeMedium || self.cell.textSize == FeedDetailTextSizeLong)) {
             boundingRows = (r.size.height - 30 - comfortMargin - CGRectGetMaxY(storyTitleFrame)) / font.pointSize;
         }
-        
+
         CGSize contentSize = [cell.storyContent
                               boundingRectWithSize:CGSizeMake(storyContentWidth, font.pointSize * boundingRows)
                               options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin
                               attributes:@{NSFontAttributeName: font,
                                            NSParagraphStyleAttributeName: paragraphStyle}
                               context:nil].size;
-        CGFloat textRows = contentSize.height / font.pointSize;
-        int storyContentY = r.size.height - 16 - comfortMargin - 4 - ((font.pointSize * textRows + font.lineHeight) + contentSize.height) / 2;
-        if (cell.isShort) {
-            storyContentY = r.size.height - 10 - comfortMargin - 4 - ((font.pointSize + font.lineHeight) + contentSize.height)/2;
-        }
-        
-        if (storyContentY - bottomOfTitle > 20) {
-            storyContentY -= font.pointSize;
-            contentSize.height += font.lineHeight;
-        }
-        
+
+        // Equal spacing: center content between title bottom and date
+        CGFloat bottomOfTitle = storyTitleY + theSize.height;
+        CGFloat dateY = r.size.height - 18 - comfortMargin;
+        int storyContentY = (int)(bottomOfTitle + (dateY - bottomOfTitle - contentSize.height) / 2);
+
         [cell.storyContent
          drawWithRect:CGRectMake(storyTitleX, storyContentY,
                                  rect.size.width - storyTitleX + leftMargin, contentSize.height)

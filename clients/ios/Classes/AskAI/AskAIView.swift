@@ -134,17 +134,17 @@ struct AskAIView: View {
     // MARK: - Question Selector View
 
     private var questionSelectorView: some View {
-        VStack(spacing: 0) {
-            // Summarize Section
-            summarizeSection
+        ScrollView {
+            VStack(spacing: 0) {
+                // Summarize Section
+                summarizeSection
 
-            // Understand Section
-            understandSection
+                // Understand Section
+                understandSection
 
-            // Custom Question Section
-            customQuestionSection
-
-            Spacer(minLength: 0)
+                // Custom Question Section
+                customQuestionSection
+            }
         }
         .padding(.top, 12)
         .background(NewsBlurColors.background)

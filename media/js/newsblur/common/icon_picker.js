@@ -177,7 +177,7 @@ NEWSBLUR.IconPicker = {
                     $.make('div', { className: 'NB-folder-icon-upload-icon' }),
                     $.make('div', { className: 'NB-folder-icon-upload-text' }, [
                         $.make('span', { className: 'NB-folder-icon-upload-label' }, 'Upload Custom Image'),
-                        $.make('span', { className: 'NB-folder-icon-upload-hint' }, 'PNG, JPG, or GIF')
+                        $.make('span', { className: 'NB-folder-icon-upload-hint' }, 'PNG, JPG, GIF, SVG, or WebP \u2014 max 5 MB, any size')
                     ]),
                     $.make('div', { className: 'NB-loading' })
                 ]),

@@ -124,6 +124,7 @@
 @synthesize activeUserProfileName;
 @synthesize hasNoSites;
 @synthesize isTryFeedView;
+@synthesize skipTryFeedCleanup;
 
 @synthesize inFindingStoryMode;
 @synthesize hasLoadedFeedDetail;
@@ -427,7 +428,7 @@
             self.feedDetailViewController.storiesCollection.savedSearchQuery = nil;
             self.feedDetailViewController.storiesCollection.inSearch = YES;
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [self.feedDetailViewController.searchBar becomeFirstResponder];
+                [self.feedDetailViewController.searchField becomeFirstResponder];
             });
         } else {
             handled = NO;
@@ -861,11 +862,11 @@
 }
 
 - (void)showColumn:(UISplitViewControllerColumn)column debugInfo:(NSString *)debugInfo animated:(BOOL)animated {
-    NSLog(@"⚠️ show column for %@: split view controller: %@ split nav: %@; split controllers: %@; detail controller: %@; detail nav: %@; detail nav controllers: %@", debugInfo, self.splitViewController, self.splitViewController.navigationController, self.splitViewController.viewControllers, self.detailViewController, self.detailViewController.navigationController, self.detailViewController.navigationController.viewControllers);  // log
-    
+    NSLog(@"⚠️ show column for %@: split view controller: %@ split nav: %@; split controllers: %@; detail controller: %@; detail nav: %@; detail nav controllers: %@", debugInfo, self.splitViewController, self.splitViewController.navigationController, self.splitViewController.viewControllers, self.detailViewController, self.detailViewController.navigationController, self.detailViewController.navigationController.viewControllers);
+
     [self.detailViewController showColumn:column animated:animated];
-    
-    NSLog(@"...shown");  // log
+
+    NSLog(@"...shown");
 }
 
 - (void)showPremiumDialog {
@@ -1222,9 +1223,15 @@
         UINavigationController *shareNav = [[UINavigationController alloc]
                                             initWithRootViewController:self.shareViewController];
         self.shareNavigationController = shareNav;
-        self.shareNavigationController.navigationBar.translucent = NO;
     }
     self.shareNavigationController.navigationBarHidden = YES;
+    self.shareNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+    UISheetPresentationController *sheet = self.shareNavigationController.sheetPresentationController;
+    sheet.detents = @[UISheetPresentationControllerDetent.largeDetent];
+    sheet.prefersGrabberVisible = YES;
+    sheet.preferredCornerRadius = 12.0;
+
     [self.feedsNavigationController presentViewController:self.shareNavigationController animated:YES completion:^{
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
     }];
@@ -1257,8 +1264,6 @@
 
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
     [super buildMenuWithBuilder:builder];
-    
-    [AppMenuHelper.shared buildMenuWithBuilder:builder];
 }
 
 #pragma mark -
@@ -1415,8 +1420,27 @@
             self.trainNavigationController = [[UINavigationController alloc]
                                               initWithRootViewController:self.trainerViewController];
         }
-        self.trainNavigationController.navigationBar.translucent = NO;
-        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
+        self.trainNavigationController.navigationBarHidden = YES;
+        self.trainNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+        UISheetPresentationController *sheet = self.trainNavigationController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        sheet.preferredCornerRadius = 12.0;
+
+        [navController presentViewController:self.trainNavigationController animated:YES completion:^{
+            UIView *containerView = self.trainNavigationController.presentationController.containerView;
+            if (containerView && !self.isMac) {
+                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
+                    initWithTarget:self
+                    action:@selector(dismissAskAIOnTap:)];
+                tapToDismiss.cancelsTouchesInView = NO;
+                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
+                [containerView addGestureRecognizer:tapToDismiss];
+            }
+        }];
     }
 }
 
@@ -1425,7 +1449,7 @@
     trainerViewController.isStoryTrainer = YES;
     trainerViewController.isFeedLoaded = YES;
     [trainerViewController reload];
-    
+
     if (!self.isPhone) {
         [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
@@ -1433,8 +1457,27 @@
             self.trainNavigationController = [[UINavigationController alloc]
                                               initWithRootViewController:self.trainerViewController];
         }
-        self.trainNavigationController.navigationBar.translucent = NO;
-        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
+        self.trainNavigationController.navigationBarHidden = YES;
+        self.trainNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+        UISheetPresentationController *sheet = self.trainNavigationController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        sheet.preferredCornerRadius = 12.0;
+
+        [navController presentViewController:self.trainNavigationController animated:YES completion:^{
+            UIView *containerView = self.trainNavigationController.presentationController.containerView;
+            if (containerView && !self.isMac) {
+                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
+                    initWithTarget:self
+                    action:@selector(dismissAskAIOnTap:)];
+                tapToDismiss.cancelsTouchesInView = NO;
+                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
+                [containerView addGestureRecognizer:tapToDismiss];
+            }
+        }];
     }
 }
 
@@ -1451,7 +1494,7 @@
 
         UISheetPresentationController *sheet = askAINavController.sheetPresentationController;
         // Start with only medium detent - AskAIViewController will add large when answer mode
-        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent];
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
         sheet.prefersGrabberVisible = YES;
         sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
         // Allow interaction with story content behind the sheet when at medium height
@@ -1506,6 +1549,128 @@
     } else {
         [self openAskAIDialog:story];
     }
+}
+
+- (void)openDiscoverFeedsDialog:(NSString *)feedId {
+    if (@available(iOS 15.0, *)) {
+        UINavigationController *navController = self.feedsNavigationController;
+        DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
+        UINavigationController *discoverNavController = [[UINavigationController alloc] initWithRootViewController:discoverVC];
+
+        discoverNavController.modalPresentationStyle = UIModalPresentationPageSheet;
+        discoverNavController.navigationBarHidden = YES;
+
+        UISheetPresentationController *sheet = discoverNavController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        sheet.preferredCornerRadius = 12.0;
+
+        [navController presentViewController:discoverNavController animated:YES completion:^{
+            UIView *containerView = discoverNavController.presentationController.containerView;
+            if (containerView && !self.isMac) {
+                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
+                    initWithTarget:self
+                    action:@selector(dismissAskAIOnTap:)];
+                tapToDismiss.cancelsTouchesInView = NO;
+                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
+                [containerView addGestureRecognizer:tapToDismiss];
+            }
+        }];
+    }
+}
+
+- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId {
+    if (@available(iOS 15.0, *)) {
+        if (!self.isPhone) {
+            DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
+            discoverVC.modalPresentationStyle = UIModalPresentationPopover;
+            discoverVC.preferredContentSize = CGSizeMake(500, 550);
+
+            UIPopoverPresentationController *popover = discoverVC.popoverPresentationController;
+            popover.delegate = self;
+            popover.barButtonItem = self.feedDetailViewController.settingsBarButton;
+            popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
+
+            [self.navigationControllerForPopover presentViewController:discoverVC animated:YES completion:nil];
+        } else {
+            [self openDiscoverFeedsDialog:feedId];
+        }
+    }
+}
+
+- (void)openDiscoverFeedsDialogWithFeedIds:(NSArray *)feedIds {
+    if (@available(iOS 15.0, *)) {
+        NSMutableArray *feedIdStrings = [NSMutableArray array];
+        for (id feedId in feedIds) {
+            [feedIdStrings addObject:[NSString stringWithFormat:@"%@", feedId]];
+        }
+
+        UINavigationController *navController = self.feedsNavigationController;
+        DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIdStrings];
+        UINavigationController *discoverNavController = [[UINavigationController alloc] initWithRootViewController:discoverVC];
+
+        discoverNavController.modalPresentationStyle = UIModalPresentationPageSheet;
+        discoverNavController.navigationBarHidden = YES;
+
+        UISheetPresentationController *sheet = discoverNavController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        sheet.preferredCornerRadius = 12.0;
+
+        [navController presentViewController:discoverNavController animated:YES completion:^{
+            UIView *containerView = discoverNavController.presentationController.containerView;
+            if (containerView && !self.isMac) {
+                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
+                    initWithTarget:self
+                    action:@selector(dismissAskAIOnTap:)];
+                tapToDismiss.cancelsTouchesInView = NO;
+                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
+                [containerView addGestureRecognizer:tapToDismiss];
+            }
+        }];
+    }
+}
+
+- (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds {
+    if (@available(iOS 15.0, *)) {
+        NSMutableArray *feedIdStrings = [NSMutableArray array];
+        for (id feedId in feedIds) {
+            [feedIdStrings addObject:[NSString stringWithFormat:@"%@", feedId]];
+        }
+
+        if (!self.isPhone) {
+            DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIdStrings];
+            discoverVC.modalPresentationStyle = UIModalPresentationPopover;
+            discoverVC.preferredContentSize = CGSizeMake(500, 550);
+
+            UIPopoverPresentationController *popover = discoverVC.popoverPresentationController;
+            popover.delegate = self;
+            popover.barButtonItem = self.feedDetailViewController.settingsBarButton;
+            popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
+
+            [self.navigationControllerForPopover presentViewController:discoverVC animated:YES completion:nil];
+        } else {
+            [self openDiscoverFeedsDialogWithFeedIds:feedIds];
+        }
+    }
+}
+
+- (void)openAddSiteWithFeedAddress:(NSString *)feedAddress {
+    [self.addSiteViewController.view layoutIfNeeded];
+    self.addSiteViewController.siteAddressInput.text = feedAddress;
+    [self.addSiteViewController checkSiteAddress];
+
+    UINavigationController *addSiteNav = self.addSiteNavigationController;
+    if (!addSiteNav) {
+        addSiteNav = [[UINavigationController alloc] initWithRootViewController:self.addSiteViewController];
+        self.addSiteNavigationController = addSiteNav;
+    }
+    addSiteNav.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self.feedsNavigationController presentViewController:addSiteNav animated:YES completion:nil];
 }
 
 - (void)dismissAskAIOnTap:(UITapGestureRecognizer *)gesture {
@@ -1583,23 +1748,28 @@
 
 - (void)checkForFeedNotifications {
     NSMutableArray *foundNotificationFeedIds = [NSMutableArray array];
-    
+    BOOL hasIOSNotifications = NO;
+
     for (NSDictionary *feed in self.dictFeeds.allValues) {
         if (![feed isKindOfClass:[NSDictionary class]]) {
             continue;
         }
-        
+
         NSArray *types = [feed objectForKey:@"notification_types"];
         if (types) {
             for (NSString *notificationType in types) {
                 if ([notificationType isEqualToString:@"ios"]) {
-                    [self registerForRemoteNotifications];
+                    hasIOSNotifications = YES;
                 }
             }
             if ([types count]) {
                 [foundNotificationFeedIds addObject:[feed objectForKey:@"id"]];
             }
         }
+    }
+
+    if (hasIOSNotifications) {
+        [self registerForRemoteNotifications];
     }
     
     self.notificationFeedIds = [foundNotificationFeedIds sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
@@ -1728,6 +1898,29 @@
     }];
 }
 
+- (NSURLSessionDataTask *)GETreturningTask:(NSString *)urlString
+ parameters:(id)parameters
+    success:(void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable))success
+    failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure {
+    NSString *networkOperationIdentifier = [self beginNetworkOperation];
+
+    NSURLSessionDataTask *dataTask = [networkManager GET:urlString parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        if (success) {
+            success(task, responseObject);
+        }
+
+        [self endNetworkOperation:networkOperationIdentifier];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (failure) {
+            failure(task, error);
+        }
+
+        [self endNetworkOperation:networkOperationIdentifier];
+    }];
+
+    return dataTask;
+}
+
 - (void)GET:(NSString *)urlString
  parameters:(id)parameters
      target:(id)target
@@ -1838,9 +2031,14 @@
 }
 
 - (void)loadFeedDetailView:(BOOL)transition {
+    if (!self.skipTryFeedCleanup) {
+        [self cleanUpTryFeed];
+    }
+    self.skipTryFeedCleanup = NO;
+
     self.inFeedDetail = YES;
     popoverHasFeedView = YES;
-    
+
     [self.feedDetailViewController resetFeedDetail];
     self.feedDetailViewController.storiesCollection = storiesCollection;
     
@@ -1931,12 +2129,15 @@
                      isSocial:(BOOL)social
                      withUser:(NSDictionary *)user
              showFindingStory:(BOOL)showHUD {
+    // Clean up any previous try feed before loading a new one
+    [self cleanUpTryFeed];
+
     NSDictionary *feed = [self getFeed:feedId];
-    
+
     if (social) {
         storiesCollection.isSocialView = YES;
         self.inFindingStoryMode = YES;
-        
+
         if (feed == nil) {
             feed = user;
             self.isTryFeedView = YES;
@@ -1954,7 +2155,42 @@
     self.tryFeedStoryId = contentId;
     storiesCollection.activeFeed = feed;
     storiesCollection.activeFolder = nil;
-    
+    storiesCollection.isRiverView = NO;
+
+    // Add try feed temporarily to sidebar
+    if (self.isTryFeedView) {
+        [self addTryFeedToSidebar:feed];
+    }
+
+    // Download favicon for try feed from favicon_url
+    NSString *faviconUrlStr = feed[@"favicon_url"];
+    if (self.isTryFeedView && faviconUrlStr.length > 0) {
+        NSURL *faviconURL = [NSURL URLWithString:faviconUrlStr];
+        if (faviconURL) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed[@"id"]];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                NSData *data = [NSData dataWithContentsOfURL:faviconURL];
+                if (data) {
+                    UIImage *favicon = [UIImage imageWithData:data];
+                    if (favicon) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self saveFavicon:favicon feedId:feedIdStr];
+                            self.feedDetailViewController.navigationItem.titleView =
+                                [self makeFeedTitle:self.storiesCollection.activeFeed];
+                            [self.feedsViewController reloadFeedTitlesTable];
+                            // Update the try-feed subscribe banner favicon
+                            UIImageView *bannerFavicon = [self.feedDetailViewController.tryFeedBannerView viewWithTag:1001];
+                            if (bannerFavicon) {
+                                bannerFavicon.image = [Utilities roundCorneredImage:favicon radius:4 convertToSize:CGSizeMake(20, 20)];
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    self.skipTryFeedCleanup = YES;
     if (!self.isPhone) {
         [self loadFeedDetailView];
     } else if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
@@ -1971,6 +2207,67 @@
             }
         }];
     }
+}
+
+- (void)addTryFeedToSidebar:(NSDictionary *)feed {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed[@"id"]];
+
+    // Clean up any existing try feed first
+    [self removeTryFeedFromSidebar];
+
+    // Store the try feed ID for cleanup
+    self.tryFeedFeedId = feedIdStr;
+
+    // Add feed data to dictFeeds so the cell can render it
+    if (self.dictFeeds && !self.dictFeeds[feedIdStr]) {
+        NSMutableDictionary *mutableFeed = [feed mutableCopy];
+        mutableFeed[@"temp"] = @YES;
+        self.dictFeeds[feedIdStr] = mutableFeed;
+    }
+
+    // Add a "try_feed" section at position 0
+    if (self.dictFoldersArray) {
+        [self.dictFoldersArray removeObject:@"try_feed"];
+        [self.dictFoldersArray insertObject:@"try_feed" atIndex:0];
+    }
+
+    NSMutableDictionary *mutableFolders = [self.dictFolders mutableCopy];
+    mutableFolders[@"try_feed"] = @[feedIdStr];
+    self.dictFolders = mutableFolders;
+
+    // Select the try feed cell in the sidebar
+    self.feedsViewController.currentRowAtIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    self.feedsViewController.currentSection = -1;
+    [self.feedsViewController reloadFeedTitlesTable];
+}
+
+- (void)removeTryFeedFromSidebar {
+    NSString *feedIdStr = self.tryFeedFeedId;
+
+    // Remove "try_feed" section
+    [self.dictFoldersArray removeObject:@"try_feed"];
+
+    NSMutableDictionary *mutableFolders = [self.dictFolders mutableCopy];
+    [mutableFolders removeObjectForKey:@"try_feed"];
+    self.dictFolders = mutableFolders;
+
+    // Remove temp feed from dictFeeds (only if it was temporary)
+    if (feedIdStr) {
+        NSDictionary *feed = self.dictFeeds[feedIdStr];
+        if ([feed[@"temp"] boolValue]) {
+            [self.dictFeeds removeObjectForKey:feedIdStr];
+        }
+    }
+
+    [self.feedsViewController reloadFeedTitlesTable];
+}
+
+- (void)cleanUpTryFeed {
+    [self.feedDetailViewController hideTryFeedSubscribeBanner];
+    if (self.tryFeedFeedId) {
+        [self removeTryFeedFromSidebar];
+    }
+    self.isTryFeedView = NO;
 }
 
 - (void)backgroundLoadNotificationStory {
@@ -2172,9 +2469,11 @@
 }
 
 - (void)loadRiverFeedDetailView:(FeedDetailViewController *)feedDetailView withFolder:(NSString *)folder {
+    [self cleanUpTryFeed];
+
     self.readStories = [NSMutableArray array];
     NSMutableArray *feeds = [NSMutableArray array];
-    
+
     if (self.loginViewController.view.window != nil) {
         return;
     }
@@ -4656,7 +4955,6 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW,
                                              (unsigned long)NULL), ^(void) {
         [self.database inDatabase:^(FMDatabase *db) {
-            NSLog(@"Saving scroll %ld in %@-%@", (long)[positionNum integerValue], [storyDict objectForKey:@"story_hash"], [storyDict objectForKey:@"story_title"]);
             [db executeUpdate:@"INSERT INTO story_scrolls (story_feed_id, story_hash, story_timestamp, scroll) VALUES (?, ?, ?, ?)",
              [storyDict objectForKey:@"story_feed_id"],
              [storyDict objectForKey:@"story_hash"],

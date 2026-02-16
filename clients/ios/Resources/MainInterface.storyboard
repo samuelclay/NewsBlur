@@ -92,7 +92,7 @@
                             <constraint firstItem="bbc-ur-JbP" firstAttribute="leading" secondItem="rKh-Md-Ci2" secondAttribute="leading" constant="350" id="ehA-e1-po1"/>
                             <constraint firstAttribute="trailing" secondItem="tFd-Uv-aMP" secondAttribute="trailing" id="h2I-ng-gxc"/>
                             <constraint firstAttribute="bottom" secondItem="5M7-bO-MVK" secondAttribute="bottom" id="nSX-TU-ART"/>
-                            <constraint firstItem="5M7-bO-MVK" firstAttribute="top" secondItem="tFd-Uv-aMP" secondAttribute="bottom" constant="-4" id="v7j-Eh-lGD"/>
+                            <constraint firstItem="5M7-bO-MVK" firstAttribute="top" secondItem="tFd-Uv-aMP" secondAttribute="bottom" constant="-4" priority="999" id="v7j-Eh-lGD"/>
                             <constraint firstAttribute="trailing" secondItem="bPa-u1-Aml" secondAttribute="trailing" id="xth-oH-VTF"/>
                             <constraint firstAttribute="bottom" secondItem="bbc-ur-JbP" secondAttribute="bottom" id="yVn-b0-RI1"/>
                         </constraints>
@@ -188,7 +188,7 @@
                             <toolbar clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pWr-U1-GMQ">
                                 <rect key="frame" x="-4" y="731" width="338" height="44"/>
                                 <items>
-                                    <barButtonItem image="nav_icn_add.png" width="34" style="plain" id="Wu8-MQ-nN6">
+                                    <barButtonItem image="nav_icn_add.png" style="plain" id="Wu8-MQ-nN6">
                                         <connections>
                                             <action selector="tapAddSite:" destination="c70-P4-4n6" id="RXh-I4-uCY"/>
                                         </connections>
@@ -210,7 +210,7 @@
                                         </segmentedControl>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="HDw-jk-a8P"/>
-                                    <barButtonItem image="nav_icn_settings.png" width="34" style="plain" id="0wM-AE-Px0">
+                                    <barButtonItem image="nav_icn_settings.png" style="plain" id="0wM-AE-Px0">
                                         <connections>
                                             <action selector="showSettingsPopover:" destination="c70-P4-4n6" id="Uxj-FH-8hp"/>
                                         </connections>
@@ -227,7 +227,7 @@
                             <constraint firstItem="hRx-bd-6Da" firstAttribute="bottom" secondItem="B68-yP-FpJ" secondAttribute="bottom" id="tbl-bot-saf"/>
                             <constraint firstItem="hRx-bd-6Da" firstAttribute="trailing" secondItem="zHe-OK-YwO" secondAttribute="trailing" id="uwt-28-3hy"/>
                             <constraint firstItem="hRx-bd-6Da" firstAttribute="leading" secondItem="zHe-OK-YwO" secondAttribute="leading" id="vxe-gN-94P"/>
-                            <constraint firstItem="pWr-U1-GMQ" firstAttribute="bottom" secondItem="zHe-OK-YwO" secondAttribute="bottom" constant="-8" id="znm-Mg-YTQ"/>
+                            <constraint firstItem="pWr-U1-GMQ" firstAttribute="bottom" secondItem="B68-yP-FpJ" secondAttribute="bottom" constant="-12" id="znm-Mg-YTQ"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="ejU-V5-SiF"/>
@@ -237,6 +237,7 @@
                         <outlet property="feedTitlesTable" destination="Gil-Jz-die" id="Jby-a1-If4"/>
                         <outlet property="feedTitlesTopConstraint" destination="YMn-QK-fCb" id="Bjn-sa-Qdx"/>
                         <outlet property="feedTitlesTrailingConstraint" destination="YOq-sh-lXt" id="nLy-3P-sgq"/>
+                        <outlet property="toolbarBottomConstraint" destination="znm-Mg-YTQ" id="tlb-bot-out"/>
                         <outlet property="feedViewToolbar" destination="pWr-U1-GMQ" id="FFI-k8-5iO"/>
                         <outlet property="innerView" destination="hRx-bd-6Da" id="vd8-hw-hZT"/>
                         <outlet property="intelligenceControl" destination="ADC-ot-Aao" id="8EU-ja-Dan"/>

@@ -7,16 +7,16 @@
 //
 
 #import "NewsBlurApplication.h"
-#import "NewsBlurAppDelegate.h"
+#import "NewsBlur-Swift.h"
 
 @implementation NewsBlurApplication
 
-- (void)buildMenuWithBuilder:(id)builder {
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
     [super buildMenuWithBuilder:builder];
-    
-    NewsBlurAppDelegate *delegate = (NewsBlurAppDelegate *)self.delegate;
-    
-    [delegate buildMenuWithBuilder:builder];
+
+    if (builder.system == UIMenuSystem.mainSystem) {
+        [AppMenuHelper.shared buildMenuWithBuilder:builder];
+    }
 }
 
 @end

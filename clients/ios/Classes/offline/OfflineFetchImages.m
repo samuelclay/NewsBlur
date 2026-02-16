@@ -61,7 +61,7 @@
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
     [manager.requestSerializer setTimeoutInterval:10];
     manager.responseSerializer = [AFImageResponseSerializer serializer];
-    manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+    manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 
     dispatch_group_t group = dispatch_group_create();
     

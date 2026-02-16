@@ -33,6 +33,7 @@
 @property (nonatomic, strong) NSString *lastWidthClassKey;
 @property (nonatomic) BOOL isUpdatingContentInset;
 @property (nonatomic) BOOL isUserScrolling;
+@property (nonatomic) BOOL hasScrolledAwayFromTop;
 
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
 - (NSInteger)storyContentWidth;
@@ -438,6 +439,7 @@
     self.lastWidthClassKey = nil;
     scrollPct = 0;
     hasScrolled = NO;
+    self.hasScrolledAwayFromTop = NO;
     
     if (appDelegate.storyPagesViewController.currentPage == self) {
         self.appDelegate.feedDetailViewController.storyHeight = 200;
@@ -486,8 +488,6 @@
     
     NSInteger contentWidth = [self storyContentWidth];
     NSString *contentWidthClass;
-//    NSLog(@"Drawing story: %@ / %d", [self.activeStory objectForKey:@"story_title"], contentWidth);
-    
 #if TARGET_OS_MACCATALYST
     // CATALYST: probably will want to add custom CSS for Macs.
     contentWidthClass = @"NB-mac NB-ipad-pro-12-wide";
@@ -769,35 +769,30 @@
     // Base position: where gradient should be to appear just below nav bar
     CGFloat basePositionInWebView = navBarBottom - webViewOriginInWindow.y;
 
-    // As nav bar fades, we want gradient to move up toward the status bar
-    // When alpha=1, gradient is at basePosition (below nav bar)
-    // When alpha=0, gradient should be at top of visible area (below status bar)
     // Use threshold check to handle floating point imprecision in layout
     BOOL isEdgeToEdge = webViewOriginInWindow.y < 1;
     CGFloat statusBarHeight = isEdgeToEdge ? self.view.window.safeAreaInsets.top : 0;
 
-    // Interpolate between basePosition (nav visible) and statusBarHeight (nav hidden)
+    // Feedbar position tracks nav bar state:
+    // When nav bar is hidden (alpha=0): feedbar at top of screen (below status bar)
+    // When nav bar is visible (alpha=1): feedbar below the nav bar
     CGFloat targetY = statusBarHeight + (basePositionInWebView - statusBarHeight) * navBarAlpha;
 
-    // Additionally, if user scrolls past where gradient would naturally be, keep it at the visible top
-    // When scrolling, the "natural" position moves up (basePosition - scrolledAmount)
+    // If user scrolls past where gradient would naturally be, let it scroll away
     CGFloat naturalPositionWhenScrolled = basePositionInWebView - scrolledAmount;
     if (naturalPositionWhenScrolled < targetY) {
-        // Don't let gradient go below its natural scroll position
         targetY = naturalPositionWhenScrolled;
     }
 
-    // Clamp to safe area top (below status bar/notch) so gradient is always visible
-    // If webView starts at 0 (edge-to-edge), we need to account for safe area
+    // When overscrolling at top (pulling down), feed bar follows content down
+    if (scrolledAmount < 0) {
+        targetY -= scrolledAmount;
+    }
+
+    // Pixel-align and clamp to safe area top
     CGFloat scale = [UIScreen mainScreen].scale;
     CGFloat pixelAdjust = 1.0 / scale;
-    CGFloat gapAdjust = navBarAlpha < 0.05 ? (2.0 / scale) : pixelAdjust;
-    CGFloat minY = (isEdgeToEdge ? self.view.window.safeAreaInsets.top : 0) - gapAdjust;
-
-    // When nav bar is hidden, shift the bar up slightly more to fully close the gap
-    if (navBarAlpha < 0.05) {
-        targetY = MIN(targetY, statusBarHeight - gapAdjust);
-    }
+    CGFloat minY = (isEdgeToEdge ? self.view.window.safeAreaInsets.top : 0) - pixelAdjust;
 
     targetY = MAX(minY, targetY);
     targetY = floor(targetY * scale) / scale;
@@ -1641,26 +1636,6 @@
     return repliesString;
 }
 
-#pragma mark - Nav bar fade helpers
-
-- (CGFloat)currentFadePosition {
-    UIScrollView *scrollView = self.webView.scrollView;
-    return scrollView.contentOffset.y + scrollView.contentInset.top;
-}
-
-- (void)captureNavBarHiddenOffsetIfNeeded {
-    StoryPagesObjCViewController *pagesViewController = appDelegate.storyPagesViewController;
-    if (pagesViewController.hasNavBarHiddenOffset) {
-        return;
-    }
-    pagesViewController.navBarHiddenOffset = [self currentFadePosition];
-    pagesViewController.hasNavBarHiddenOffset = YES;
-}
-
-- (void)clearNavBarHiddenOffset {
-    appDelegate.storyPagesViewController.hasNavBarHiddenOffset = NO;
-}
-
 #pragma mark - Scrolling
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -1690,14 +1665,18 @@
                 if (appDelegate.storyPagesViewController.currentPage == self) {
                     CGFloat currentAlpha = appDelegate.storyPagesViewController.navigationBarFadeAlpha;
                     CGFloat targetAlpha = currentAlpha > 0.5 ? 1.0 : 0.0;
+                    appDelegate.storyPagesViewController.navBarFadeAccumulator = (targetAlpha < 0.5) ? 80.0 : 0.0;
                     if (fabs(currentAlpha - targetAlpha) > 0.01) {
                         [UIView animateWithDuration:0.2 animations:^{
                             [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:targetAlpha];
                         }];
-                        [self updateContentInsetForNavigationBarAlpha:targetAlpha
-                                               maintainVisualPosition:YES
-                                                                force:YES];
                     }
+                    // Always force-update content inset when scrolling ends.
+                    // The inset update may have been skipped during deceleration
+                    // (e.g., quick scroll-up that restored alpha while still decelerating).
+                    [self updateContentInsetForNavigationBarAlpha:targetAlpha
+                                           maintainVisualPosition:YES
+                                                            force:YES];
                 }
             }
             return;
@@ -1710,137 +1689,82 @@
         CGFloat webpageHeight = scrollView.contentSize.height;
         CGFloat viewportHeight = self.view.frame.size.height;
         CGFloat topPosition = newOffset.y;
-        CGFloat fadePosition = topPosition + self.webView.scrollView.contentInset.top;
-        BOOL isUserPullingDown = isUserDragging && panTranslationY > 1.0;
-        BOOL isUserPushingUp = isUserDragging && panTranslationY < -1.0;
-        BOOL isScrollingUp = deltaY < -0.1;
-        BOOL isScrollingDown = deltaY > 0.1;
-        if (isUserPullingDown) {
-            isScrollingUp = YES;
-            isScrollingDown = NO;
-        } else if (isUserPushingUp) {
-            isScrollingDown = YES;
-            isScrollingUp = NO;
-        }
-        
+
         CGFloat bottomInset = appDelegate.detailViewController.view.safeAreaInsets.bottom;
-        
+
         CGFloat safeBottomMargin = bottomInset;
         CGFloat bottomPosition = webpageHeight - topPosition - viewportHeight;
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
         BOOL atTop = topPosition < 50;
-        
+        BOOL atTopForFade = topPosition < 2;
+
         if (!hasScrolled && topPosition != 0) {
             hasScrolled = YES;
         }
-        
+
         if (hasScrolled && !atTop && [appDelegate.feedDetailViewController markStoryReadIfNeeded:activeStory isScrolling:YES]) {
             NSIndexPath *reloadIndexPath = appDelegate.feedDetailViewController.storyTitlesTable.indexPathForSelectedRow;
             if (reloadIndexPath != nil) {
                 [appDelegate.feedDetailViewController reloadIndexPath:reloadIndexPath withRowAnimation:UITableViewRowAnimationNone];
             }
         }
-        
+
 #if !TARGET_OS_MACCATALYST
-        if (atTop) {
+        if (!atTopForFade) {
+            self.hasScrolledAwayFromTop = YES;
+        }
+        if (atTopForFade && self.hasScrolledAwayFromTop) {
+            appDelegate.storyPagesViewController.navBarFadeAccumulator = 0.0;
+            appDelegate.storyPagesViewController.traverseFadeAccumulator = 0.0;
             [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:1.0];
-        } else if (atBottom && !isUserDragging) {
-            // Hold current state during bottom bounce - don't recalculate
+        } else if (atTopForFade || atBottom) {
+            // At top (first load) or at bottom: hold current nav bar state
         } else if (self.canHideNavigationBar) {
-            StoryPagesObjCViewController *pagesViewController = appDelegate.storyPagesViewController;
-            CGFloat fadeStart = 0.0;
-            CGFloat fadeEnd = 80.0;
-            CGFloat windowStart = fadeStart;
-            CGFloat windowEnd = fadeEnd;
-            BOOL navHidden = pagesViewController.isNavigationBarHidden;
-
-            CGFloat revealThreshold = 12.0;
-            BOOL shouldRevealNav = isUserPullingDown && panTranslationY >= revealThreshold;
-
-            if (navHidden && !isUserDragging) {
-                NSLog(@"[NAV] HOLD hidden (no drag) topPos=%.2f fadePos=%.2f", topPosition, fadePosition);
-                [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:0.0];
-            } else if (navHidden && isScrollingDown) {
-                if (!pagesViewController.hasNavBarHiddenOffset) {
-                    pagesViewController.navBarHiddenOffset = fadePosition;
-                    pagesViewController.hasNavBarHiddenOffset = YES;
-                } else if (fadePosition > pagesViewController.navBarHiddenOffset) {
-                    pagesViewController.navBarHiddenOffset = fadePosition;
-                }
-
-                NSLog(@"[NAV] HOLD hidden (scrollDown) topPos=%.2f fadePos=%.2f", topPosition, fadePosition);
-                [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:0.0];
-            } else if (navHidden && isUserPullingDown && !shouldRevealNav) {
-                NSLog(@"[NAV] HOLD hidden (pullDown<%.0f) topPos=%.2f fadePos=%.2f", revealThreshold, topPosition, fadePosition);
-                [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:0.0];
-            } else if (navHidden && shouldRevealNav && singlePage) {
-                NSLog(@"[NAV] SHOW immediate (singlePage) topPos=%.2f fadePos=%.2f", topPosition, fadePosition);
-                [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:1.0];
-            } else {
-                if (navHidden) {
-                    if (!pagesViewController.hasNavBarHiddenOffset) {
-                        pagesViewController.navBarHiddenOffset = fadePosition;
-                        pagesViewController.hasNavBarHiddenOffset = YES;
-                    } else if (fadePosition > pagesViewController.navBarHiddenOffset) {
-                        pagesViewController.navBarHiddenOffset = fadePosition;
-                    }
-                    windowEnd = pagesViewController.navBarHiddenOffset;
-                    windowStart = windowEnd - fadeEnd;
-                }
-
-                CGFloat clampedOffset = MAX(windowStart, MIN(windowEnd, fadePosition));
-                CGFloat progress = (windowEnd - windowStart) > 0 ? (clampedOffset - windowStart) / (windowEnd - windowStart) : 0.0;
-                CGFloat alpha = 1.0 - progress;
-                CGFloat snapDistance = 6.0;
-                if (fadePosition >= (windowEnd - snapDistance)) {
-                    alpha = 0.0;
-                }
-
-                if (fadePosition < 0 && isScrollingUp) {
-                    alpha = 1.0;
-                }
-
-                NSLog(@"[NAV] FADE topPos=%.2f fadePos=%.2f alpha=%.2f", topPosition, fadePosition, alpha);
-                [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:alpha];
-            }
+            StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+            CGFloat fadeDistance = 80.0;
+            CGFloat newAccum = pagesVC.navBarFadeAccumulator + deltaY;
+            newAccum = MAX(0.0, MIN(fadeDistance, newAccum));
+            pagesVC.navBarFadeAccumulator = newAccum;
+            CGFloat alpha = 1.0 - (newAccum / fadeDistance);
+            [pagesVC setNavigationBarFadeAlpha:alpha];
         }
 #endif
         
-        if (!atTop && !atBottom && !singlePage) {
-            BOOL traversalVisible = appDelegate.storyPagesViewController.traverseView.alpha > 0;
-            
-            // Hide
-            [UIView animateWithDuration:.3 delay:0
-                                options:UIViewAnimationOptionCurveEaseInOut
-            animations:^{
-                self.appDelegate.storyPagesViewController.traverseView.alpha = 0;
-                
-                if (traversalVisible) {
-                    [self.appDelegate.storyPagesViewController hideAutoscrollImmediately];
-                }
-            } completion:^(BOOL finished) {
-                
-            }];
+        if (!atTopForFade && !atBottom && !singlePage) {
+            StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+            CGFloat traverseFadeDistance = 80.0;
+            CGFloat newAccum = pagesVC.traverseFadeAccumulator + deltaY;
+            newAccum = MAX(0.0, MIN(traverseFadeDistance, newAccum));
+            pagesVC.traverseFadeAccumulator = newAccum;
+            CGFloat traverseAlpha = 1.0 - (newAccum / traverseFadeDistance);
+            pagesVC.traverseView.alpha = traverseAlpha;
+
+            if (traverseAlpha == 0) {
+                [pagesVC hideAutoscrollImmediately];
+            }
         } else if (singlePage || !isHorizontal) {
+            appDelegate.storyPagesViewController.traverseFadeAccumulator = 0.0;
             appDelegate.storyPagesViewController.traverseView.alpha = 1;
 //            NSLog(@" ---> Bottom position: %d", bottomPosition);
+            CGFloat gap = appDelegate.storyPagesViewController.traverseBottomGap;
             if (bottomPosition >= 0 || !isHorizontal) {
-                appDelegate.storyPagesViewController.traverseBottomConstraint.constant = 0;
+                appDelegate.storyPagesViewController.traverseBottomConstraint.constant = gap;
             } else {
                 if (webpageHeight > 0 && [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) - safeBottomMargin;
+                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + gap;
                 } else {
-                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = 0;
+                    appDelegate.storyPagesViewController.traverseBottomConstraint.constant = gap;
                 }
             }
-        } else if ((!singlePage && (atTop && !atBottom)) || [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        } else if ((!singlePage && (atTopForFade && !atBottom)) || [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
             // Pin to bottom of viewport, regardless of scrollview
             appDelegate.storyPagesViewController.traversePinned = YES;
             appDelegate.storyPagesViewController.traverseFloating = NO;
+            appDelegate.storyPagesViewController.traverseFadeAccumulator = 0.0;
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
 
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = 0;
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = appDelegate.storyPagesViewController.traverseBottomGap;
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
@@ -1854,7 +1778,7 @@
             appDelegate.storyPagesViewController.traverseFloating = YES;
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
 
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = 0;
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = appDelegate.storyPagesViewController.traverseBottomGap;
             [appDelegate.storyPagesViewController.view layoutIfNeeded];
             [UIView animateWithDuration:.3 delay:0
                                 options:UIViewAnimationOptionCurveEaseInOut
@@ -1867,8 +1791,9 @@
             // Scroll with bottom of scrollview
             appDelegate.storyPagesViewController.traversePinned = NO;
             appDelegate.storyPagesViewController.traverseFloating = YES;
+            appDelegate.storyPagesViewController.traverseFadeAccumulator = 0.0;
             appDelegate.storyPagesViewController.traverseView.alpha = 1;
-            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) - safeBottomMargin;
+            appDelegate.storyPagesViewController.traverseBottomConstraint.constant = viewportHeight - (webpageHeight - topPosition) + appDelegate.storyPagesViewController.traverseBottomGap;
         }
         
         [appDelegate.storyPagesViewController resizeScrollView];
@@ -2256,7 +2181,8 @@
     [self.activityIndicator stopAnimating];
     
     self.webView.scrollView.scrollEnabled = self.appDelegate.detailViewController.isPhoneOrCompact || !self.appDelegate.detailViewController.storyTitlesInGridView;
-    
+
+    self.lastWidthClassKey = nil; // Force viewport update after full HTML load
     [self loadHTMLString:self.fullStoryHTML];
     self.fullStoryHTML = nil;
     self.hasStory = YES;
@@ -2404,7 +2330,6 @@
 
 - (BOOL)canHideNavigationBar {
     if (!appDelegate.storyPagesViewController.allowFullscreen) {
-        NSLog(@"[NAV] canHideNavigationBar: NO (allowFullscreen=%d)", appDelegate.storyPagesViewController.allowFullscreen);
         return NO;
     }
 
@@ -2945,7 +2870,7 @@
         return;
     }
     self.lastWidthClassKey = widthClassKey;
-    
+
     NSString *jsString = [[NSString alloc] initWithFormat:
                           @"var w = Math.floor(window.innerWidth || document.documentElement.clientWidth || %li);"
                           "if (document.body) { document.body.className = '%@ %@ %@ NB-width-' + w; }"

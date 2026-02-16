@@ -13,6 +13,7 @@
 #import "NBNotifier.h"
 
 @class StoryDetailViewController;
+@class StoryTraverseBar;
 
 @interface StoryPagesObjCViewController : BaseViewController
 <UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate> {
@@ -76,6 +77,8 @@
 @property (nonatomic) NSTimeInterval autoscrollSpeed;
 @property (readwrite) BOOL traversePinned;
 @property (readwrite) BOOL traverseFloating;
+@property (nonatomic, readonly) CGFloat traverseBottomGap;
+@property (nonatomic, strong) StoryTraverseBar *traverseBar;
 @property (readwrite) CGFloat inTouchMove;
 @property (assign) BOOL isDraggingScrollview;
 @property (assign) BOOL isAnimatedIntoPlace;
@@ -91,8 +94,8 @@
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
 @property (nonatomic) BOOL temporarilyMarkedUnread;
-@property (nonatomic) CGFloat navBarHiddenOffset;
-@property (nonatomic) BOOL hasNavBarHiddenOffset;
+@property (nonatomic) CGFloat navBarFadeAccumulator;
+@property (nonatomic) CGFloat traverseFadeAccumulator;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;

@@ -91,9 +91,6 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 
 - (CGPoint)pointForGesture:(UIGestureRecognizer *)gestureRecognizer;
 
-- (void)captureNavBarHiddenOffsetIfNeeded;
-- (void)clearNavBarHiddenOffset;
-
 - (void)showTextOrStoryView;
 - (void)showStoryView;
 - (void)fetchTextView;
