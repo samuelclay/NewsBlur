@@ -1,9 +1,11 @@
 html {
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: visible;
 }
 
 body {
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: visible;
     line-height: 1.5em;
     width: auto;
     max-width: 100%;
@@ -57,9 +59,10 @@ a {
 
 code {
     word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
 }
 
-pre, blockquote {
+blockquote {
     border-left: 1px solid #C2C5BE;
     padding: 0.6em;
     margin: 0.6em;
@@ -67,6 +70,23 @@ pre, blockquote {
     overflow-wrap: break-word !important;
     white-space: normal !important;
     text-wrap: pretty;
+}
+
+pre {
+    border-left: 1px solid #C2C5BE;
+    padding: 0.6em;
+    margin: 0.6em;
+
+    white-space: pre-wrap !important;
+    overflow-x: hidden !important;
+    word-wrap: break-word !important;
+    overflow-wrap: anywhere !important;
+}
+
+pre code {
+    white-space: inherit !important;
+    word-wrap: inherit !important;
+    overflow-wrap: inherit !important;
 }
 
 figure.wp-block-embed,
