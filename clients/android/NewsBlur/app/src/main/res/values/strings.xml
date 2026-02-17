@@ -807,5 +807,7 @@
     <string name="registering">Registering...</string>
     <string name="renaming_feed_message">Renaming feed %s</string>
     <string name="renaming_folder_message">Renaming folder %s</string>
+    <string name="story_thumbnail">Story thumbnail</string>
+    <string name="feed_favicon">Feed favicon</string>
 
 </resources>

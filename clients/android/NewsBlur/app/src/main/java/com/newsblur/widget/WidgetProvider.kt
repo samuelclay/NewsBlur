@@ -7,9 +7,11 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import com.newsblur.R
 import com.newsblur.activity.AllStoriesItemsList
 import com.newsblur.activity.ItemsList
@@ -21,6 +23,9 @@ import com.newsblur.util.PendingIntentUtils.getMutableBroadcast
 import com.newsblur.util.WidgetBackground
 import com.newsblur.widget.WidgetUtils.checkWidgetUpdateAlarm
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -76,9 +81,54 @@ class WidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray,
     ) {
-        // update each of the app widgets with the remote adapter
         Log.d(this.javaClass.name, "onUpdate")
         checkWidgetUpdateAlarm(context)
+
+        if (Build.VERSION.SDK_INT >= 31) {
+            updateApi31Plus(context, appWidgetManager, appWidgetIds)
+        } else {
+            updateBeforeApi31(context, appWidgetManager, appWidgetIds)
+        }
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+    }
+
+    override fun onDeleted(
+        context: Context,
+        appWidgetIds: IntArray,
+    ) {
+        super.onDeleted(context, appWidgetIds)
+
+        val manager = AppWidgetManager.getInstance(context)
+        val remaining =
+            manager.getAppWidgetIds(ComponentName(context, WidgetProvider::class.java))
+        if (remaining.isEmpty()) prefsRepo.removeWidgetData()
+    }
+
+    @RequiresApi(31)
+    private fun updateApi31Plus(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray,
+    ) {
+        val feedIds = prefsRepo.getWidgetFeedIds()
+        val showSetupEmptyText = (feedIds != null && feedIds.isEmpty())
+        WidgetUpdater.updateEmpty(context, appWidgetManager, appWidgetIds, showSetupEmptyText)
+
+        val pending = goAsync()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                WidgetUpdater.update(context, appWidgetManager, appWidgetIds)
+            } finally {
+                pending.finish()
+            }
+        }
+    }
+
+    private fun updateBeforeApi31(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray,
+    ) {
         val widgetBackground = prefsRepo.getWidgetBackground()
         val feedIds = prefsRepo.getWidgetFeedIds()
         for (appWidgetId in appWidgetIds) {
@@ -88,7 +138,12 @@ class WidgetProvider : AppWidgetProvider() {
                 Intent(context, WidgetRemoteViewsService::class.java).apply {
                     // Add the app widget ID to the intent extras.
                     putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                    data = toUri(Intent.URI_INTENT_SCHEME).toUri()
+                    data =
+                        Uri
+                            .parse(toUri(Intent.URI_INTENT_SCHEME))
+                            .buildUpon()
+                            .appendQueryParameter("ts", System.currentTimeMillis().toString())
+                            .build()
                 }
 
             // Instantiate the RemoteViews object for the app widget layout.
@@ -141,20 +196,9 @@ class WidgetProvider : AppWidgetProvider() {
                 )
             rv.setPendingIntentTemplate(R.id.widget_list, touchIntentTemplate)
             appWidgetManager.updateAppWidget(appWidgetId, rv)
+
+            @Suppress("DEPRECATION")
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list)
         }
-        super.onUpdate(context, appWidgetManager, appWidgetIds)
-    }
-
-    override fun onDeleted(
-        context: Context,
-        appWidgetIds: IntArray,
-    ) {
-        super.onDeleted(context, appWidgetIds)
-
-        val manager = AppWidgetManager.getInstance(context)
-        val remaining =
-            manager.getAppWidgetIds(ComponentName(context, WidgetProvider::class.java))
-        if (remaining.isEmpty()) prefsRepo.removeWidgetData()
     }
 }

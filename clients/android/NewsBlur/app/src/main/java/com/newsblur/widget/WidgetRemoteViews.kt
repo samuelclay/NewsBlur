@@ -3,7 +3,7 @@ package com.newsblur.widget
 import android.widget.RemoteViews
 import androidx.annotation.ColorInt
 
-internal class WidgetRemoteViews(
+class WidgetRemoteViews(
     packageName: String,
     layoutId: Int,
 ) : RemoteViews(packageName, layoutId) {

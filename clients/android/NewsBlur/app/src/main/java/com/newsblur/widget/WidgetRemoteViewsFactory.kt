@@ -3,31 +3,17 @@ package com.newsblur.widget
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.os.Bundle
-import android.os.CancellationSignal
-import android.text.TextUtils
-import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService.RemoteViewsFactory
 import com.newsblur.R
 import com.newsblur.database.BlurDatabaseHelper
-import com.newsblur.domain.Feed
 import com.newsblur.domain.Story
 import com.newsblur.network.StoryApi
 import com.newsblur.preference.PrefsRepo
-import com.newsblur.util.CursorFilters
-import com.newsblur.util.FeedSet
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.Log
-import com.newsblur.util.ReadFilter
-import com.newsblur.util.StoryOrder
-import com.newsblur.util.StoryUtils
-import com.newsblur.util.ThumbnailStyle
-import com.newsblur.util.UIUtils
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.math.min
@@ -45,7 +31,6 @@ class WidgetRemoteViewsFactory(
     private val appWidgetId: Int
 
     private val storyItems: MutableList<Story> = mutableListOf()
-    private var cancellationSignal: CancellationSignal? = null
 
     private val storiesLock = ReentrantLock()
 
@@ -77,52 +62,19 @@ class WidgetRemoteViewsFactory(
     override fun getViewAt(position: Int): RemoteViews =
         storiesLock.withLock {
             Log.d(this.javaClass.name, "getViewAt $position")
-            val story = storyItems[position]
-            val rv = WidgetRemoteViews(context.packageName, R.layout.view_widget_story_item)
-            rv.setTextViewText(R.id.story_item_title, story.title)
-            rv.setTextViewText(R.id.story_item_content, story.shortContent)
-            rv.setTextViewText(R.id.story_item_author, story.authors)
-            rv.setTextViewText(R.id.story_item_feedtitle, story.extern_feedTitle)
-            val time: CharSequence = StoryUtils.formatShortDate(context, story.timestamp)
-            rv.setTextViewText(R.id.story_item_date, time)
-
-            // reset views to avoid stale images
-            rv.setImageViewResource(R.id.story_item_feedicon, R.drawable.logo)
-            rv.setViewVisibility(R.id.story_item_feedicon, View.VISIBLE)
-
-            rv.setImageViewResource(R.id.story_item_thumbnail, R.drawable.logo)
-            rv.setViewVisibility(R.id.story_item_thumbnail, View.VISIBLE)
-
-            // image dimensions same as R.layout.view_widget_story_item
-            iconLoader.displayWidgetImageCachedOnly(story.extern_faviconUrl, R.id.story_item_feedicon, UIUtils.dp2px(context, 19), rv)
-            if (prefsRepo.getThumbnailStyle() != ThumbnailStyle.OFF && !TextUtils.isEmpty(story.thumbnailUrl)) {
-                thumbnailLoader.displayWidgetImageCachedOnly(
-                    story.thumbnailUrl,
-                    R.id.story_item_thumbnail,
-                    UIUtils.dp2px(context, 64),
-                    rv,
-                )
-            } else {
-                rv.setViewVisibility(R.id.story_item_thumbnail, View.GONE)
-                rv.setImageViewResource(R.id.story_item_thumbnail, R.drawable.logo)
+            if (position < 0 || position >= storyItems.size) {
+                Log.d(this.javaClass.name, "getViewAt $position not in story collection range")
+                return WidgetRemoteViews(context.packageName, R.layout.view_widget_story_item)
             }
-            rv.setViewBackgroundColor(
-                R.id.story_item_favicon_borderbar_1,
-                UIUtils.decodeColourValue(story.extern_feedColor, Color.GRAY),
-            )
-            rv.setViewBackgroundColor(
-                R.id.story_item_favicon_borderbar_2,
-                UIUtils.decodeColourValue(story.extern_feedFade, Color.LTGRAY),
-            )
 
-            // set fill-intent which is used to fill in the pending intent template
-            // set on the collection view in WidgetProvider
-            val extras = Bundle()
-            extras.putString(WidgetUtils.EXTRA_ITEM_ID, story.storyHash)
-            val fillInIntent = Intent()
-            fillInIntent.putExtras(extras)
-            rv.setOnClickFillInIntent(R.id.view_widget_item, fillInIntent)
-            return rv
+            val story = storyItems[position]
+            return WidgetRow.create(
+                context = context,
+                prefsRepo = prefsRepo,
+                iconLoader = iconLoader,
+                thumbnailLoader = thumbnailLoader,
+                story = story,
+            )
         }
 
     /**
@@ -145,13 +97,11 @@ class WidgetRemoteViewsFactory(
      */
     override fun getItemId(position: Int): Long =
         storiesLock.withLock {
-            val h = storyItems[position].storyHash
-            if (h.isNullOrBlank()) return@withLock position.toLong()
-
-            // Simple 64-bit rolling hash (stable across runs)
-            var x = 1125899906842597L
-            for (c in h) x = 31L * x + c.code
-            x
+            storyItems
+                .getOrNull(position)
+                ?.storyHash
+                ?.let(WidgetRow::id64)
+                ?: position.toLong()
         }
 
     /**
@@ -164,54 +114,23 @@ class WidgetRemoteViewsFactory(
      */
     override fun onDataSetChanged() =
         storiesLock.withLock {
-            Log.d(this.javaClass.name, "onDataSetChanged")
-            // if user logged out don't try to update widget
-            if (!WidgetUtils.isLoggedIn(prefsRepo)) {
-                Log.d(this.javaClass.name, "onDataSetChanged - not logged in")
-                return@withLock
-            }
-
-            // get fs based on pref widget feed ids
-            val feedIds = prefsRepo.getWidgetFeedIds()
-            val fs =
-                if (feedIds == null || feedIds.isNotEmpty()) {
-                    // null feed ids get all feeds
-                    FeedSet.widgetFeeds(feedIds)
-                } else {
-                    null // intentionally no feeds selected.
-                }
-
-            if (fs == null) {
-                Log.d(this.javaClass.name, "onDataSetChanged - null fs cleared stories")
-                storyItems.clear()
-                return@withLock
-            }
-
             runBlocking {
-                try {
-                    // Taking more than 20 seconds in this method will result in an ANR.
-                    withTimeout(18000) {
-                        Log.d(this.javaClass.name, "onDataSetChanged - get remote stories")
-                        val response = storyApi.getStories(fs, 1, StoryOrder.NEWEST, ReadFilter.ALL, prefsRepo.getInfrequentCutoff())
-                        response?.stories?.let {
-                            val stateFilter = prefsRepo.getStateFilter()
-                            Log.d(this.javaClass.name, "onDataSetChanged - got ${it.size} remote stories")
-                            processStories(response.stories)
-                            dbHelper.insertStories(response, stateFilter, true)
-                            prefetchStoryImages()
-                        }
-                            ?: Log.d(this.javaClass.name, "onDataSetChanged - null remote stories")
-                    }
-                } catch (e: Exception) {
-                    Log.e(this.javaClass.name, "onDataSetChanged - remote fetch failed", e)
-                    if (storyItems.isEmpty()) {
-                        val cached = loadCachedStoriesForWidget(fs)
-                        if (cached.isNotEmpty()) {
-                            processStories(cached.toTypedArray())
-                            prefetchStoryImages()
-                        }
-                    }
-                }
+                val result =
+                    WidgetRepository.loadForWidget(
+                        prefsRepo = prefsRepo,
+                        storyApi = storyApi,
+                        dbHelper = dbHelper,
+                    )
+                storyItems.clear()
+                storyItems.addAll(result.stories)
+
+                WidgetImage.prefetch(
+                    context = context,
+                    prefsRepo = prefsRepo,
+                    iconLoader = iconLoader,
+                    thumbnailLoader = thumbnailLoader,
+                    stories = storyItems,
+                )
             }
         }
 
@@ -221,8 +140,6 @@ class WidgetRemoteViewsFactory(
      */
     override fun onDestroy() {
         Log.d(this.javaClass.name, "onDestroy")
-        cancellationSignal?.cancel()
-        cancellationSignal = null
     }
 
     /**
@@ -232,90 +149,4 @@ class WidgetRemoteViewsFactory(
         storiesLock.withLock {
             min(storyItems.size, WidgetUtils.STORIES_LIMIT)
         }
-
-    /**
-     * Widget will show tap to config view when
-     * empty stories and feeds maps are used
-     */
-    private fun processStories(stories: Array<Story>) =
-        storiesLock.withLock {
-            Log.d(this.javaClass.name, "processStories")
-            val signal = CancellationSignal()
-            cancellationSignal = signal
-            val feedMap = mutableMapOf<String, Feed>()
-            dbHelper.getFeedsCursor(signal).use { cursor ->
-                while (cursor.moveToNext()) {
-                    val feed = Feed.fromCursor(cursor)
-                    if (feed.active) {
-                        feedMap[feed.feedId] = feed
-                    }
-                }
-            }
-
-            val filtered =
-                if (feedMap.isEmpty()) {
-                    Log.d(this.javaClass.name, "processStories - feedMap empty, skipping active filter")
-                    stories.toList()
-                } else {
-                    stories.filter { feedMap.containsKey(it.feedId) }
-                }
-
-            for (story in filtered) {
-                val feed = feedMap[story.feedId]
-                if (feed != null) {
-                    bindStoryValues(story, feed)
-                }
-            }
-            storyItems.clear()
-            storyItems.addAll(filtered)
-        }
-
-    private fun prefetchStoryImages() {
-        val limit = min(storyItems.size, WidgetUtils.STORIES_LIMIT)
-        for (i in 0 until limit) {
-            val s = storyItems[i]
-            iconLoader.prefetchToCache(s.extern_faviconUrl, UIUtils.dp2px(context, 19))
-
-            if (prefsRepo.getThumbnailStyle() != ThumbnailStyle.OFF && !TextUtils.isEmpty(s.thumbnailUrl)) {
-                thumbnailLoader.prefetchToCache(s.thumbnailUrl, UIUtils.dp2px(context, 64))
-            }
-        }
-    }
-
-    private fun bindStoryValues(
-        story: Story,
-        feed: Feed,
-    ) = story.apply {
-        thumbnailUrl = Story.guessStoryThumbnailURL(story)
-        extern_faviconBorderColor = feed.faviconBorder
-        extern_faviconUrl = feed.faviconUrl
-        extern_feedTitle = feed.title
-        extern_feedFade = feed.faviconFade
-        extern_feedColor = feed.faviconColor
-    }
-
-    private fun loadCachedStoriesForWidget(fs: FeedSet): List<Story> {
-        val signal = CancellationSignal()
-        val filters =
-            CursorFilters(
-                stateFilter = prefsRepo.getStateFilter(),
-                readFilter = ReadFilter.ALL,
-                storyOrder = StoryOrder.NEWEST,
-            )
-
-        return try {
-            dbHelper.getActiveStoriesCursor(fs, filters, signal).use { c ->
-                val out = ArrayList<Story>(WidgetUtils.STORIES_LIMIT)
-                if (c.moveToFirst()) {
-                    do {
-                        out.add(Story.fromCursor(c))
-                    } while (out.size < WidgetUtils.STORIES_LIMIT && c.moveToNext())
-                }
-                out
-            }
-        } catch (e: Exception) {
-            Log.e(this.javaClass.name, "loadCachedStoriesForWidget failed", e)
-            emptyList()
-        }
-    }
 }

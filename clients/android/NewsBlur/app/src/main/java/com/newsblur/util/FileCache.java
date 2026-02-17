@@ -9,6 +9,9 @@ import com.newsblur.di.ImageOkHttpClient;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -130,11 +133,22 @@ public class FileCache {
 
     private String getFileName(String url) {
         Matcher m = POSTFIX_PATTERN.matcher(url);
-        if (!m.find()) {
-            return null;
+        if (!m.find()) return null;
+
+        String ext = m.group(1);
+        return md5Hex(url) + ext;
+    }
+
+    private static String md5Hex(String s) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] d = md.digest(s.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder(d.length * 2);
+            for (byte b : d) sb.append(String.format("%02x", b));
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            return Integer.toHexString(s.hashCode());
         }
-        String fileName = Integer.toString(Math.abs(url.hashCode())) + m.group(1);
-        return fileName;
     }
 
     public void cleanupOld(long maxFileAgeMillis) {
@@ -162,7 +176,7 @@ public class FileCache {
     public void cleanupUnusedAndOld(Set<String> currentUrls, long maxFileAgeMillis) {
         // if there appear to be zero images in the system, a DB rebuild probably just
         // occured, so don't trust that data for cleanup
-        if (currentUrls.size() == 0) return;
+        if (currentUrls.isEmpty()) return;
 
         Set<String> currentFiles = new HashSet<String>(currentUrls.size());
         for (String url : currentUrls) currentFiles.add(getFileName(url));
@@ -187,42 +201,5 @@ public class FileCache {
 
     public File getCacheDir() {
         return cacheDir;
-    }
-
-    /**
-     * Looks for and cleans up any remains of the old, mis-located legacy cache directory.
-     */
-    public static void cleanUpOldCache1(Context context) {
-        try {
-            File dir = new File(android.os.Environment.getExternalStorageDirectory(), "NewsblurCache");
-            if (!dir.exists()) return;
-            File[] files = dir.listFiles();
-            if (files == null) return;
-            for (File f : files) {
-                f.delete();
-            }
-            dir.delete();
-        } catch (Exception e) {
-            android.util.Log.e(FileCache.class.getName(), "exception cleaning up legacy cache", e);
-        }
-    }
-
-    /**
-     * Looks for and cleans up any remains of the old caching system that used poor filenames.
-     */
-    public static void cleanUpOldCache2(Context context) {
-        try {
-            File dir = context.getCacheDir();
-            File[] files = dir.listFiles();
-            if (files == null) return;
-            Pattern oldCachePattern = Pattern.compile("^[0-9-]+$");
-            for (File f : files) {
-                if ((!f.isDirectory()) && (oldCachePattern.matcher(f.getName()).matches())) {
-                    f.delete();
-                }
-            }
-        } catch (Exception e) {
-            android.util.Log.e(FileCache.class.getName(), "exception cleaning up legacy cache", e);
-        }
     }
 }
