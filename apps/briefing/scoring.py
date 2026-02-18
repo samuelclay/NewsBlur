@@ -334,8 +334,7 @@ def select_briefing_stories(
             if not keywords:
                 continue
             logging.debug(
-                " ---> Briefing scoring: %s keywords=%s (from prompt: %s)"
-                % (custom_key, keywords, prompt)
+                " ---> Briefing scoring: %s keywords=%s (from prompt: %s)" % (custom_key, keywords, prompt)
             )
             reserved = 0
             for s in remaining:
@@ -360,9 +359,7 @@ def select_briefing_stories(
                     " ---> Briefing scoring: reserved %s stories for %s (%s)" % (reserved, custom_key, prompt)
                 )
             else:
-                logging.debug(
-                    " ---> Briefing scoring: no stories matched %s (%s)" % (custom_key, prompt)
-                )
+                logging.debug(" ---> Briefing scoring: no stories matched %s (%s)" % (custom_key, prompt))
 
     return result
 
@@ -407,7 +404,12 @@ def _find_duplicate_stories(candidates, stories_by_hash):
 
 
 def _get_classifier_matches(
-    story, classifier_feeds, classifier_authors, classifier_tags, classifier_titles, feed_title_map
+    story,
+    classifier_feeds,
+    classifier_authors,
+    classifier_tags,
+    classifier_titles,
+    feed_title_map,
 ):
     """Identify which classifiers matched positively for a story."""
     matches = []

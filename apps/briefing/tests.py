@@ -136,7 +136,12 @@ class BriefingTestCase(TestCase):
             story_content=content,
             story_author_name=author or "TestAuthor",
             story_permalink="http://test.com/%s" % title.replace(" ", "-").lower(),
-            story_guid="guid-%s-%s-%s" % (feed.pk, title.replace(" ", "-").lower(), BriefingTestCase._story_counter),
+            story_guid="guid-%s-%s-%s"
+            % (
+                feed.pk,
+                title.replace(" ", "-").lower(),
+                BriefingTestCase._story_counter,
+            ),
             story_tags=tags or [],
         )
         story.save()
@@ -416,7 +421,11 @@ class Test_Summary(TestCase):
                 "trending_global": [("h3", "S3")],
             }
         )
-        active = {"trending_unread": False, "long_read": False, "trending_global": False}
+        active = {
+            "trending_unread": False,
+            "long_read": False,
+            "trending_global": False,
+        }
         result = filter_disabled_sections(html, active)
         # tests.py: trending_global is always kept
         self.assertIn("trending_global", result)
@@ -748,7 +757,13 @@ class Test_Scoring(BriefingTestCase):
     def test_classifier_matches_multiple(self):
         cf = MClassifierFeed(user_id=self.user.pk, feed_id=self.feed.pk, social_user_id=0, score=1)
         cf.save()
-        ca = MClassifierAuthor(user_id=self.user.pk, author="Alice", feed_id=self.feed.pk, social_user_id=0, score=1)
+        ca = MClassifierAuthor(
+            user_id=self.user.pk,
+            author="Alice",
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            score=1,
+        )
         ca.save()
         feed_title_map = {self.feed.pk: "Test Feed 1"}
         matches = _get_classifier_matches(self.stories[0], [cf], [ca], [], [], feed_title_map)
@@ -1703,7 +1718,10 @@ class Test_Tasks(BriefingTestCase):
                     with patch("apps.briefing.summary.embed_briefing_icons") as mock_ei:
                         mock_ei.return_value = "<div>S</div>"
                         with patch("apps.briefing.models.create_briefing_story") as mock_cs:
-                            mock_cs.return_value = (MagicMock(), MagicMock(story_hash="t:h"))
+                            mock_cs.return_value = (
+                                MagicMock(),
+                                MagicMock(story_hash="t:h"),
+                            )
                             GenerateUserBriefing(self.user.pk)
                             mock_summary.assert_called_once()
 
