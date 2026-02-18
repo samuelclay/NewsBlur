@@ -40,15 +40,6 @@ object WidgetUpdater {
 
             if (!WidgetUtils.isLoggedIn(prefsRepo)) return@withContext
 
-            val feedIds = prefsRepo.getWidgetFeedIds()
-            val showSetupEmptyText = (feedIds != null && feedIds.isEmpty())
-
-            for (id in appWidgetIds) {
-                val root = WidgetRoot.create(context, prefsRepo, id, showSetupEmptyText)
-                root.setRemoteAdapter(R.id.widget_list, emptyItems())
-                awm.updateAppWidget(id, root)
-            }
-
             val data =
                 WidgetRepository.loadForWidget(
                     prefsRepo = prefsRepo,
@@ -93,14 +84,6 @@ object WidgetUpdater {
 
         return b.build()
     }
-
-    @RequiresApi(31)
-    private fun emptyItems(): RemoteViews.RemoteCollectionItems =
-        RemoteViews.RemoteCollectionItems
-            .Builder()
-            .setViewTypeCount(1)
-            .setHasStableIds(true)
-            .build()
 
     @RequiresApi(31)
     fun updateEmpty(
