@@ -705,7 +705,11 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 var diff_hours = Math.round((now - d) / (1000 * 60 * 60));
                 date = diff_hours < 24 ? diff_hours + 'h ago' : Math.round(diff_hours / 24) + 'd ago';
             }
+            var favicon_color = feed ? '#' + feed.get('favicon_color') : '#505050';
+            var favicon_fade = feed ? '#' + feed.get('favicon_fade') : '#707070';
             var $source = $('<div class="NB-story-cluster-source" data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '">' +
+                '<div class="NB-storytitles-feed-border-outer" style="background-color: ' + favicon_color + ';"></div>' +
+                '<div class="NB-storytitles-feed-border-inner" style="background-color: ' + favicon_fade + ';"></div>' +
                 favicon +
                 '<span class="NB-cluster-feed-title">' + _.escape(feed_title) + '</span>' +
                 '<span class="NB-cluster-story-title">' + _.escape(title) + '</span>' +
