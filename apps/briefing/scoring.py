@@ -333,6 +333,10 @@ def select_briefing_stories(
             keywords = [w.lower() for w in prompt.split() if len(w) >= 3]
             if not keywords:
                 continue
+            logging.debug(
+                " ---> Briefing scoring: %s keywords=%s (from prompt: %s)"
+                % (custom_key, keywords, prompt)
+            )
             reserved = 0
             for s in remaining:
                 if reserved >= 2:
@@ -341,7 +345,12 @@ def select_briefing_stories(
                 if not story or not story.story_title:
                     continue
                 title_lower = story.story_title.lower()
-                if any(kw in title_lower for kw in keywords):
+                if all(kw in title_lower for kw in keywords):
+                    matched_kws = [kw for kw in keywords if kw in title_lower]
+                    logging.debug(
+                        " ---> Briefing scoring: %s matched '%s' (keywords: %s)"
+                        % (custom_key, story.story_title, matched_kws)
+                    )
                     s["category"] = custom_key
                     result.append(s)
                     selected_hashes.add(s["story_hash"])
@@ -349,6 +358,10 @@ def select_briefing_stories(
             if reserved > 0:
                 logging.debug(
                     " ---> Briefing scoring: reserved %s stories for %s (%s)" % (reserved, custom_key, prompt)
+                )
+            else:
+                logging.debug(
+                    " ---> Briefing scoring: no stories matched %s (%s)" % (custom_key, prompt)
                 )
 
     return result

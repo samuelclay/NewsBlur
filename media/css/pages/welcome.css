@@ -176,6 +176,393 @@
     color: rgba(255, 255, 255, 0.45);
 }
 
+/* ================================ */
+/* = Back to Login Banner          = */
+/* ================================ */
+
+/* If both tryfeed and tryout signup banners exist, hide the duplicate */
+.NB-tryfeed-signup-banner ~ .NB-tryout-signup-banner {
+    display: none !important;
+}
+
+/* Hide the feed list login banner on desktop - signup link lives in story titles instead */
+@media (min-width: 769px) {
+    .NB-tryout-back-banner {
+        display: none !important;
+    }
+}
+
+/* Full-bleed images in tryout/anonymous story view.
+   Must beat reader.css specificity (0,4,1) for .NB-table-image.NB-large-image
+   and .NB-large-image.NB-large-image-widen rules, so target .NB-large-image
+   to reach specificity (0,4,2). */
+body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
+    max-width: calc(100% + 56px) !important;
+    width: calc(100% + 56px) !important;
+    margin-left: -28px !important;
+    margin-right: -28px !important;
+    border-radius: 0 !important;
+}
+
+.NB-tryout-back-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #3d5a52 0%, #2d4a42 100%);
+    border-bottom: 1px solid rgba(217, 166, 33, 0.2);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease;
+}
+
+.NB-tryout-back-banner:hover {
+    background: linear-gradient(135deg, #4a6a60 0%, #3a5a50 100%);
+}
+
+.NB-tryout-back-banner:active {
+    background: linear-gradient(135deg, #345048 0%, #264038 100%);
+}
+
+.NB-tryout-back-banner-arrow {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.NB-tryout-back-banner-arrow::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 3px;
+    width: 8px;
+    height: 8px;
+    border-left: 2px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+    transform: rotate(45deg);
+}
+
+.NB-tryout-back-banner-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-tryout-back-banner-text {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.3;
+}
+
+.NB-tryout-back-banner-cta {
+    flex-shrink: 0;
+    background: #D9A621;
+    color: white;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 7px;
+    transition: background 0.2s ease;
+    letter-spacing: 0.2px;
+}
+
+.NB-tryout-back-banner:hover .NB-tryout-back-banner-cta {
+    background: #C4941B;
+}
+
+/* Dark mode */
+.NB-dark .NB-tryout-back-banner {
+    background: linear-gradient(135deg, #1a2525 0%, #141e1e 100%);
+    border-bottom-color: rgba(217, 166, 33, 0.15);
+}
+
+.NB-dark .NB-tryout-back-banner:hover {
+    background: linear-gradient(135deg, #1f2e2e 0%, #192626 100%);
+}
+
+/* ============================================= */
+/* = Mobile Single-Pane Layout (Reusable)       = */
+/* = Applied via body.NB-mobile-single-pane      = */
+/* = Used by: tryout (unauth), mobile (auth)     = */
+/* ============================================= */
+
+@media (max-width: 768px) {
+    /* Feed list: full-width overlay */
+    body.NB-mobile-single-pane .NB-layout .left-pane {
+        position: absolute !important;
+        width: 100% !important;
+        z-index: 10;
+        top: 0;
+        left: 0;
+        bottom: 0;
+    }
+
+    /* Story titles: full-width overlay on top of feed list */
+    body.NB-mobile-single-pane.NB-show-reader .NB-layout .right-pane {
+        position: absolute !important;
+        width: 100% !important;
+        z-index: 20 !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        right: 0 !important;
+    }
+
+    /* Story titles: full-width, always on top */
+    body.NB-mobile-single-pane.NB-show-reader .right-pane #story_titles {
+        display: block !important;
+        width: 100% !important;
+        right: 0 !important;
+        height: auto !important;
+        bottom: 0 !important;
+    }
+
+    /* Sticky toolbar and signup banner at top of story titles */
+    body.NB-mobile-single-pane.NB-show-reader #story_titles > .NB-mobile-back-toolbar {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10 !important;
+    }
+
+    /* Re-show tryfeed signup banner on mobile (hidden on desktop above) */
+    body.NB-mobile-single-pane.NB-show-reader #story_titles > .NB-tryfeed-signup-banner {
+        display: flex !important;
+        position: sticky !important;
+        top: 38px !important;
+        z-index: 9 !important;
+    }
+
+    /* Story detail pane: hidden by default, shown as third overlay when story is open */
+    body.NB-mobile-single-pane.NB-show-reader .right-pane #story_pane {
+        display: none !important;
+    }
+
+    body.NB-mobile-single-pane.NB-mobile-story-open .right-pane #story_pane {
+        display: block !important;
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 30 !important;
+        background: #f4f4f4;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* Sticky toolbar at top of scrolling story pane */
+    body.NB-mobile-single-pane.NB-mobile-story-open #story_pane > .NB-mobile-back-toolbar {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 40 !important;
+    }
+
+    /* Sticky signup banner below toolbar */
+    body.NB-mobile-single-pane.NB-mobile-story-open #story_pane > .NB-tryout-signup-banner {
+        display: flex !important;
+        position: sticky !important;
+        top: 38px !important;
+        z-index: 39 !important;
+    }
+
+    /* Story pane container flows naturally (not absolute) */
+    body.NB-mobile-single-pane.NB-mobile-story-open .NB-story-pane-container {
+        position: relative !important;
+        left: 0 !important;
+        right: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Hide iframe (page view) - mobile uses feed/text views only */
+    body.NB-mobile-single-pane.NB-mobile-story-open .NB-feed-iframe {
+        display: none !important;
+    }
+
+    /* Only show the feed story view, hide text/page views
+       (needs #story_pane ID to beat reader.css specificity) */
+    body.NB-mobile-single-pane.NB-mobile-story-open #story_pane .NB-feed-story-view {
+        position: relative !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    body.NB-mobile-single-pane.NB-mobile-story-open #story_pane .NB-text-view,
+    body.NB-mobile-single-pane.NB-mobile-story-open #story_pane .NB-story-view {
+        display: none !important;
+    }
+
+    /* Stories container flows naturally for scrolling */
+    body.NB-mobile-single-pane.NB-mobile-story-open .NB-feed-stories-container {
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Full-bleed story content on mobile */
+    body.NB-mobile-single-pane.NB-mobile-story-open .NB-feed-story .NB-story-content-wrapper {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    body.NB-mobile-single-pane.NB-mobile-story-open .NB-feed-story .NB-story-content-positioning-wrapper {
+        max-width: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    body.NB-mobile-single-pane.NB-mobile-story-open .NB-feed-story .NB-feed-story-content {
+        margin-right: 0 !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    body.NB-mobile-single-pane.NB-mobile-story-open .NB-feed-story .NB-feed-story-content img {
+        max-width: calc(100% + 24px) !important;
+        width: calc(100% + 24px) !important;
+        margin-left: -12px !important;
+        margin-right: -12px !important;
+    }
+
+    body.NB-dark.NB-mobile-single-pane.NB-mobile-story-open .right-pane #story_pane {
+        background: #303030;
+    }
+
+    /* Hide layout divider borders that leak through on mobile */
+    body.NB-mobile-single-pane .ui-layout-resizer,
+    body.NB-mobile-single-pane .ui-layout-toggler {
+        display: none !important;
+    }
+
+    /* Hide desktop feedbar nav and bottom taskbar */
+    body.NB-mobile-single-pane.NB-show-reader .right-pane .content-north {
+        display: none !important;
+    }
+
+    body.NB-mobile-single-pane.NB-show-reader .right-pane #story_taskbar {
+        display: none !important;
+    }
+
+    /* Override layout plugin offsets so content-pane fills the right-pane */
+    body.NB-mobile-single-pane.NB-show-reader .right-pane .content-pane {
+        top: 0 !important;
+        bottom: 0 !important;
+        height: auto !important;
+    }
+}
+
+/* ============================================= */
+/* = Welcome Tryout Overrides (Unauth-only)     = */
+/* ============================================= */
+
+@media (max-width: 768px) {
+    /* Keep splash/welcome hidden while tryout is active */
+    body.NB-welcome-tryout-active .NB-splash,
+    body.NB-welcome-tryout-active #NB-splash,
+    body.NB-welcome-tryout-active #NB-splash-overlay,
+    body.NB-welcome-tryout-active .NB-welcome-footer {
+        display: none !important;
+    }
+
+    /* Hide the welcome.js signup banner when story view is showing (reader.js has its own) */
+    body.NB-welcome-tryout-active.NB-show-reader .NB-tryout-signup-banner {
+        display: none !important;
+    }
+}
+
+/* ============================================= */
+/* = Back to Feeds Toolbar (Mobile)             = */
+/* ============================================= */
+
+.NB-mobile-back-toolbar {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    body.NB-mobile-single-pane.NB-show-reader .NB-mobile-back-toolbar {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        gap: 10px;
+        padding: 10px 14px;
+        background: linear-gradient(135deg, #3d5a52 0%, #2d4a42 100%);
+        border-bottom: 1px solid rgba(217, 166, 33, 0.2);
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.2s ease;
+    }
+
+    body.NB-mobile-single-pane.NB-show-reader .NB-mobile-back-toolbar:hover {
+        background: linear-gradient(135deg, #4a6a60 0%, #3a5a50 100%);
+    }
+
+    body.NB-mobile-single-pane.NB-show-reader .NB-mobile-back-toolbar:active {
+        background: linear-gradient(135deg, #345048 0%, #264038 100%);
+    }
+}
+
+.NB-mobile-back-toolbar-arrow {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.NB-mobile-back-toolbar-arrow::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 2px;
+    width: 7px;
+    height: 7px;
+    border-left: 2px solid rgba(255, 255, 255, 0.8);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.8);
+    transform: rotate(45deg);
+}
+
+.NB-mobile-back-toolbar-text {
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    flex: 1;
+}
+
+.NB-mobile-back-toolbar-action {
+    flex-shrink: 0;
+    background: #D9A621;
+    color: white;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+    letter-spacing: 0.2px;
+}
+
+.NB-mobile-back-toolbar:hover .NB-mobile-back-toolbar-action {
+    background: #C4941B;
+}
+
+/* Dark mode */
+@media (max-width: 768px) {
+    body.NB-dark.NB-mobile-single-pane.NB-show-reader .NB-mobile-back-toolbar {
+        background: linear-gradient(135deg, #1a2525 0%, #141e1e 100%);
+        border-bottom-color: rgba(217, 166, 33, 0.15);
+    }
+
+    body.NB-dark.NB-mobile-single-pane.NB-show-reader .NB-mobile-back-toolbar:hover {
+        background: linear-gradient(135deg, #1f2e2e 0%, #192626 100%);
+    }
+}
+
 /* ========== */
 /* = Header = */
 /* ========== */
@@ -760,6 +1147,12 @@
     }
     .NB-welcome-header .NB-welcome-header-actions {
         text-align: center;
+    }
+}
+
+@media (max-width: 430px) {
+    .NB-welcome-header-formcard {
+        width: calc(100% - 24px);
     }
 }
 
