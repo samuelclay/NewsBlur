@@ -3633,8 +3633,8 @@ a.mention, a.mention-group {
     color: #909090;
 }
 
-.NB-dark .NB-filter-popover .NB-clustering-upgrade-notice {
-    color: #909090;
+.NB-dark .NB-staff-only-badge {
+    background: #c03800;
 }
 
 /* ============================== */

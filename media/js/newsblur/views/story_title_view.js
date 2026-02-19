@@ -689,7 +689,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         var cluster_stories = this.model.get('cluster_stories');
         if (!cluster_stories || !cluster_stories.length) return;
 
+        if (!NEWSBLUR.Globals.is_staff) return;
+
         var $container = $('<div class="NB-story-cluster-sources"></div>');
+        $container.append('<span class="NB-staff-only-badge">STAFF ONLY</span>');
         _.each(cluster_stories, function (cs) {
             var feed = NEWSBLUR.assets.get_feed(cs.story_feed_id);
             var favicon = feed ? $.favicon_html(feed) : '';

@@ -38,6 +38,13 @@ scrape_configs:
       scheme: https
       tls_config:
         insecure_skip_verify: true
+    - job_name: 'clustering'
+      static_configs:
+        - targets: ['haproxy']
+      metrics_path: /monitor/clustering
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
     - job_name: 'ask_ai'
       static_configs:
         - targets: ['haproxy']

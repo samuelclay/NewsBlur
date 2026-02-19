@@ -400,10 +400,17 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS):
         pipe.expire("zCL:%s" % cluster_id, ttl)
 
     pipe.execute()
+
+    total_stories = sum(len(m) for m in clusters.values())
     logging.debug(
         " ---> ~FBClustering: stored %s clusters with %s total stories"
-        % (len(clusters), sum(len(m) for m in clusters.values()))
+        % (len(clusters), total_stories)
     )
+
+    # clustering/models.py: Record metrics for Grafana
+    from apps.statistics.rclustering_usage import RClusteringUsage
+
+    RClusteringUsage.record_clusters(len(clusters), total_stories)
 
 
 def get_cluster_for_story(story_hash):

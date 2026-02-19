@@ -306,12 +306,10 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                     new NEWSBLUR.Views.FeedNotificationView({ model: feed, popover: true }).render().$el
                 ])
             ])),
-            ((is_feed || is_river) && $.make('div', { className: 'NB-popover-section NB-popover-section-clustering' }, [
+            ((is_feed || is_river) && NEWSBLUR.Globals.is_staff && $.make('div', { className: 'NB-popover-section NB-popover-section-clustering' }, [
                 $.make('div', { className: 'NB-clustering-title-row' }, [
                     $.make('div', { className: 'NB-popover-section-title' }, 'Story Clustering'),
-                    (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-clustering-upgrade-notice NB-premium-link', href: '#' }, [
-                        $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
-                    ]))
+                    $.make('span', { className: 'NB-staff-only-badge' }, 'STAFF ONLY')
                 ]),
                 $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-enabled' }, [
                     $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-on', 'data-setting': 'story_clustering', 'data-value': 'true', role: 'button' }, 'Cluster related stories'),

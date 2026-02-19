@@ -2749,6 +2749,10 @@ def mark_story_hashes_as_read(request):
                     "~FBCluster mark read: added %s duplicate%s"
                     % (len(cluster_hashes), "s" if len(cluster_hashes) != 1 else ""),
                 )
+                # reader/views.py: Record cluster mark-read metrics for Grafana
+                from apps.statistics.rclustering_usage import RClusteringUsage
+
+                RClusteringUsage.record_mark_read(len(cluster_hashes))
 
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(
         request.user.pk, story_hashes, username=request.user.username
