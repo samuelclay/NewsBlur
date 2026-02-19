@@ -2197,7 +2197,7 @@ class Profile(models.Model):
         msg = EmailMultiAlternatives(
             subject,
             text,
-            from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
+            from_email="NewsBlur <%s>" % settings.SERVER_EMAIL,
             to=["%s <%s>" % (name, email) for name, email in settings.ADMINS],
         )
         msg.attach_alternative(html, "text/html")
