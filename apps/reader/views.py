@@ -4824,4 +4824,12 @@ def load_cluster_stories(request):
 
     stories.sort(key=lambda s: s.get("story_date", ""), reverse=True)
 
-    return {"code": 1, "stories": stories}
+    feeds = {}
+    for story_dict in stories:
+        fid = story_dict.get("story_feed_id")
+        if fid and fid not in feeds:
+            f = Feed.get_by_id(fid)
+            if f:
+                feeds[fid] = f.canonical(include_favicon=True)
+
+    return {"code": 1, "stories": stories, "feeds": feeds}
