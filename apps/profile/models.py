@@ -14,7 +14,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.core.mail import EmailMultiAlternatives, mail_admins
+from django.core.mail import EmailMultiAlternatives
 from django.db import IntegrityError, models, transaction
 from django.db.models import Avg, Count, Q, Sum
 from django.db.models.signals import post_save
@@ -519,7 +519,7 @@ class Profile(models.Model):
         return True
 
     def activate_premium(self, never_expire=False):
-        from apps.profile.tasks import EmailNewPremium
+        from apps.profile.tasks import EmailNewPremium, EmailStaffPremiumUpgrade
 
         logging.user(
             self.user,
@@ -543,12 +543,19 @@ class Profile(models.Model):
             )
             return True
 
+        # Capture trial status before clearing it
+        was_trial = self.is_premium_trial
+
         # Clear trial status when converting to paid premium
         if self.is_premium_trial:
             self.is_premium_trial = False
             logging.user(self.user, "~FMClearing trial status - converting to paid premium")
 
         EmailNewPremium.delay(user_id=self.user.pk)
+        staff_previous_tier = "trial" if was_trial else ("premium" if self.is_premium else "free")
+        EmailStaffPremiumUpgrade.delay(
+            user_id=self.user.pk, tier="premium", previous_tier=staff_previous_tier
+        )
 
         subs = UserSubscription.objects.filter(user=self.user)
 
@@ -627,14 +634,11 @@ class Profile(models.Model):
         subs = UserSubscription.objects.filter(user=self.user)
 
         if not was_archive:
-            active_subs = subs.filter(active=True).count()
-            mail_admins(
-                f"New Archive upgrade: {self.user.username} ({subs.count()} subscriptions, {active_subs} active)",
-                f"{self.user.username} upgraded to archive.\n"
-                f"Subscriptions: {subs.count()} total, {active_subs} active\n"
-                f"PayPal: {self.user.profile.paypal_sub_id}\n"
-                f"Stripe: {self.user.profile.stripe_id}\n"
-                f"Email: {self.user.email}",
+            from apps.profile.tasks import EmailStaffPremiumUpgrade
+
+            staff_previous_tier = "premium" if was_premium else "free"
+            EmailStaffPremiumUpgrade.delay(
+                user_id=self.user.pk, tier="archive", previous_tier=staff_previous_tier
             )
         self.is_premium = True
         self.is_archive = True
@@ -721,14 +725,11 @@ class Profile(models.Model):
 
         if not was_pro:
             EmailNewPremiumPro.delay(user_id=self.user.pk)
-            active_subs = subs.filter(active=True).count()
-            mail_admins(
-                f"New Pro upgrade: {self.user.username} ({subs.count()} subscriptions, {active_subs} active)",
-                f"{self.user.username} upgraded to pro.\n"
-                f"Subscriptions: {subs.count()} total, {active_subs} active\n"
-                f"PayPal: {self.user.profile.paypal_sub_id}\n"
-                f"Stripe: {self.user.profile.stripe_id}\n"
-                f"Email: {self.user.email}",
+            from apps.profile.tasks import EmailStaffPremiumUpgrade
+
+            staff_previous_tier = "archive" if was_archive else ("premium" if was_premium else "free")
+            EmailStaffPremiumUpgrade.delay(
+                user_id=self.user.pk, tier="pro", previous_tier=staff_previous_tier
             )
         self.is_premium = True
         self.is_archive = True
@@ -2038,6 +2039,120 @@ class Profile(models.Model):
         msg.send()
 
         logging.user(self.user, "~BB~FM~SBSending email for new premium pro: %s" % self.user.email)
+
+    def send_staff_premium_upgrade_email(self, tier, previous_tier):
+        from apps.social.models import MSharedStory, MSocialProfile
+
+        user = self.user
+
+        # Account age
+        date_joined_naive = (
+            user.date_joined.replace(tzinfo=None) if user.date_joined.tzinfo else user.date_joined
+        )
+        account_age_days = (datetime.datetime.now() - date_joined_naive).days
+        if account_age_days >= 365:
+            years = account_age_days // 365
+            months = (account_age_days % 365) // 30
+            account_age = (
+                f"{years} year{'s' if years != 1 else ''}, {months} month{'s' if months != 1 else ''}"
+            )
+        elif account_age_days >= 30:
+            months = account_age_days // 30
+            account_age = f"{months} month{'s' if months != 1 else ''}"
+        else:
+            account_age = f"{account_age_days} day{'s' if account_age_days != 1 else ''}"
+
+        # Feed stats
+        subs = UserSubscription.objects.filter(user=user)
+        feed_count = subs.count()
+        active_feed_count = subs.filter(active=True).count()
+        feed_opens = subs.aggregate(sum=Sum("feed_opens"))["sum"] or 0
+
+        # Story stats
+        stories_read = RUserStory.read_story_count(user.pk)
+        starred_count = MStarredStory.objects.filter(user_id=user.pk).count()
+        shared_count = MSharedStory.objects.filter(user_id=user.pk).count()
+
+        # Social stats
+        following_count = 0
+        follower_count = 0
+        try:
+            social_profile = MSocialProfile.objects.get(user_id=user.pk)
+            following_count = social_profile.following_count
+            follower_count = social_profile.follower_count
+        except MSocialProfile.DoesNotExist:
+            pass
+
+        # Payment history
+        payments = PaymentHistory.objects.filter(user=user)
+        payment_count = payments.count()
+        total_paid = sum(p.payment_amount for p in payments if not p.refunded)
+        first_payment = payments.order_by("payment_date").first()
+        first_payment_date = first_payment.payment_date if first_payment else None
+        latest_payments = list(payments[:5])
+
+        # Tier display
+        tier_names = {"premium": "Premium", "archive": "Premium Archive", "pro": "Premium Pro"}
+        previous_tier_names = {
+            "free": "Free",
+            "trial": "Trial",
+            "premium": "Premium",
+            "archive": "Premium Archive",
+        }
+        tier_display = tier_names.get(tier, tier)
+        previous_tier_display = previous_tier_names.get(previous_tier, previous_tier)
+        transition_label = f"{previous_tier_display} \u2192 {tier_display}"
+
+        # Tier header colors
+        tier_colors = {"premium": "#5ba4e5", "archive": "#2d5273", "pro": "#912d8d"}
+        header_color = tier_colors.get(tier, "#5ba4e5")
+
+        data = {
+            "user": user,
+            "tier": tier,
+            "tier_display": tier_display,
+            "previous_tier": previous_tier,
+            "previous_tier_display": previous_tier_display,
+            "transition_label": transition_label,
+            "header_color": header_color,
+            "account_age": account_age,
+            "date_joined": user.date_joined,
+            "feed_count": feed_count,
+            "active_feed_count": active_feed_count,
+            "feed_opens": feed_opens,
+            "stories_read": stories_read,
+            "starred_count": starred_count,
+            "shared_count": shared_count,
+            "following_count": following_count,
+            "follower_count": follower_count,
+            "payment_count": payment_count,
+            "total_paid": total_paid,
+            "first_payment_date": first_payment_date,
+            "latest_payments": latest_payments,
+            "stripe_id": self.stripe_id,
+            "paypal_sub_id": self.paypal_sub_id,
+            "email": user.email,
+            "last_seen": self.last_seen_on,
+            "premium_expire": self.premium_expire,
+            "premium_renewal": self.premium_renewal,
+        }
+
+        text = render_to_string("mail/email_staff_premium_upgrade.txt", data)
+        html = render_to_string("mail/email_staff_premium_upgrade.xhtml", data)
+        subject = f"[Staff] {transition_label}: {user.username} ({feed_count:,} feeds, ${total_paid} paid)"
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            from_email="NewsBlur <%s>" % settings.SERVER_EMAIL,
+            to=["%s <%s>" % (name, email) for name, email in settings.ADMINS],
+        )
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+
+        logging.user(
+            self.user,
+            "~BB~FM~SBSending staff premium upgrade email: %s (%s)" % (transition_label, self.user.email),
+        )
 
     def send_forgot_password_email(self, email=None):
         if not self.user.email and not email:
