@@ -8,7 +8,7 @@ from utils import log as logging
 
 # clustering/models.py: Cluster ID TTL (14 days)
 CLUSTER_TTL_SECONDS = 14 * 24 * 60 * 60
-CLUSTER_LOOKBACK_HOURS = 48
+CLUSTER_LOOKBACK_HOURS = 120
 CLUSTER_MAX_SIZE = 10
 TITLE_MIN_LENGTH = 10
 FUZZY_MIN_WORDS = 5

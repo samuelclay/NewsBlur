@@ -39,6 +39,8 @@ def ComputeStoryClusters(feed_id):
     if not feed.archive_subscribers or feed.archive_subscribers <= 0:
         return
 
+    cluster_start = time.time()
+
     # Get recent stories from this feed
     lookback = datetime.datetime.utcnow() - datetime.timedelta(hours=CLUSTER_LOOKBACK_HOURS)
     lookback_ts = time.mktime(lookback.timetuple())
@@ -145,3 +147,9 @@ def ComputeStoryClusters(feed_id):
             " ---> ~FBClustering: found %s title + %s semantic = %s combined clusters for feed %s"
             % (len(title_clusters), len(semantic_clusters), len(combined), feed_id)
         )
+
+    # clustering/tasks.py: Record timing for Grafana
+    from apps.statistics.rclustering_usage import RClusteringUsage
+
+    cluster_duration_ms = (time.time() - cluster_start) * 1000
+    RClusteringUsage.record_timing(cluster_duration_ms)

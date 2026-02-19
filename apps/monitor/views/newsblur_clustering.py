@@ -13,6 +13,7 @@ class Clustering(View):
         - Clusters found (daily/weekly/monthly/alltime)
         - Stories clustered (daily/weekly/monthly/alltime)
         - Cluster mark-read expanded stories (daily/weekly/monthly/alltime)
+        - Average clustering time in ms (daily/weekly/monthly/alltime)
         """
         daily_stats = RClusteringUsage.get_period_stats(days=1)
         weekly_stats = RClusteringUsage.get_period_stats(days=7)
@@ -36,6 +37,12 @@ class Clustering(View):
             )
             formatted_data[f"{metric}_alltime"] = (
                 f'{chart_name}{{metric="{metric}",period="alltime"}} {alltime_stats[metric]}'
+            )
+
+        timing_metric = "cluster_time_avg_ms"
+        for period, stats in [("daily", daily_stats), ("weekly", weekly_stats), ("monthly", monthly_stats), ("alltime", alltime_stats)]:
+            formatted_data[f"{timing_metric}_{period}"] = (
+                f'{chart_name}{{metric="{timing_metric}",period="{period}"}} {stats[timing_metric]}'
             )
 
         context = {
