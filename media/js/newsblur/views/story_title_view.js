@@ -707,8 +707,8 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             }
             var $source = $('<div class="NB-story-cluster-source" data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '">' +
                 favicon +
-                '<span class="NB-cluster-feed-title">' + feed_title + '</span>' +
-                '<span class="NB-cluster-story-title">' + title + '</span>' +
+                '<span class="NB-cluster-feed-title">' + _.escape(feed_title) + '</span>' +
+                '<span class="NB-cluster-story-title">' + _.escape(title) + '</span>' +
                 '<span class="NB-cluster-date">' + date + '</span>' +
                 '</div>');
             $container.append($source);
@@ -724,7 +724,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         if (!story_hash) return;
 
         // Check if this story is in the current collection
-        var story = NEWSBLUR.assets.stories.get(story_hash);
+        var story = NEWSBLUR.assets.stories.get_by_story_hash(story_hash);
         if (story) {
             story.set('selected', true, { 'click_on_story_title': true });
         } else {

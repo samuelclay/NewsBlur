@@ -393,8 +393,8 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS):
     for cluster_id, members in clusters.items():
         for story_hash in members:
             pipe.set("sCL:%s" % story_hash, cluster_id, ex=ttl)
-        # Store cluster members (sorted set scored by timestamp 0 for now,
-        # will be overwritten with real dates if available)
+        # Clear stale members then store current cluster members
+        pipe.delete("zCL:%s" % cluster_id)
         for story_hash in members:
             pipe.zadd("zCL:%s" % cluster_id, {story_hash: 0})
         pipe.expire("zCL:%s" % cluster_id, ttl)
