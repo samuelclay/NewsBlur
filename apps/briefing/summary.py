@@ -63,14 +63,18 @@ LENGTH_INSTRUCTIONS = {
 }
 
 STYLE_INSTRUCTIONS = {
-    "editorial": "Write in a narrative editorial style with flowing prose that connects stories thematically.",
+    "editorial": (
+        "Write in a narrative editorial style with flowing prose that connects stories thematically. "
+        "Wrap each story paragraph in a <p> tag. Do NOT use <ul> or <li> tags."
+    ),
     "bullets": (
-        "Use bullet points for each story. Group by the section headers below. "
-        "Each bullet should be one sentence."
+        "Write each story as a concise one-sentence summary. Group by the section headers below. "
+        "Wrap each story in its own <p> tag. Do NOT use <ul> or <li> tags."
     ),
     "headlines": (
         "List each story as a headline with a single explanatory sentence beneath it. "
-        "Group by the section headers below."
+        "Group by the section headers below. "
+        "Wrap each story in its own <p> tag. Do NOT use <ul> or <li> tags."
     ),
 }
 
@@ -511,7 +515,7 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     # --- Phase 5: Embed favicons BEFORE story links as visual bullets ---
 
-    favicon_style = "width:16px;height:16px;border-radius:2px;"
+    favicon_style = "width:16px;height:16px;border-radius:2px;margin:0;vertical-align:top;"
 
     def _replace_story_link(match):
         tag = match.group(0)
@@ -611,12 +615,13 @@ def embed_briefing_icons(summary_html, scored_stories):
     classifier_pill_style = (
         "display:inline-block;background-color:#34912E;"
         "border:1px solid #202020;border-radius:14px;"
-        "padding:1px 8px;font-size:10px;line-height:14px;"
-        "margin:1px 4px 1px 0;white-space:nowrap;vertical-align:middle;"
+        "padding:1px 8px;font-size:11px;line-height:16px;"
+        "margin:0 4px 0 0;white-space:nowrap;vertical-align:text-bottom;"
+        "text-decoration:none;"
     )
-    classifier_label_style = "color:white;"
-    classifier_b_style = "color:rgba(255,255,255,0.7);font-weight:normal;"
-    classifier_value_style = "color:white;text-shadow:1px 1px 0 rgba(0,0,0,0.5);"
+    classifier_label_style = "color:white;text-decoration:none;"
+    classifier_b_style = "color:rgba(255,255,255,0.7);font-weight:normal;text-decoration:none;"
+    classifier_value_style = "color:white;text-shadow:1px 1px 0 rgba(0,0,0,0.5);text-decoration:none;"
 
     def _style_classifier_block(match):
         block = match.group(0)
@@ -655,7 +660,8 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     if thumbs_up_data_uri:
         thumbs_up_style = (
-            "display:inline-block;width:12px;height:12px;" "vertical-align:middle;margin-right:3px;"
+            "display:inline-block;width:12px;height:12px;"
+            "vertical-align:middle;margin:0 3px 0 0;"
         )
         thumbs_up_img = '<img src="%s" class="NB-classifier-icon-like" style="%s" alt="">' % (
             thumbs_up_data_uri,
@@ -667,6 +673,28 @@ def embed_briefing_icons(summary_html, scored_stories):
             summary_html,
         )
 
+    # --- Phase 7b: Override auto-linked text inside classifier pills ---
+    # Mail.app auto-links domain names (e.g. "kottke.org") inside classifier
+    # pills, turning them blue/underlined. Style any <a> tags inside pills to
+    # keep white text with no underline.
+    auto_link_style = "color:white;text-decoration:none;"
+
+    def _fix_autolinked_classifiers(match):
+        block = match.group(0)
+        block = re.sub(
+            r"<a\b([^>]*)>",
+            lambda m: '<a%s style="%s">' % (m.group(1), auto_link_style),
+            block,
+        )
+        return block
+
+    summary_html = re.sub(
+        r'<span\s[^>]*NB-briefing-classifier[^>]*>.*?</span>',
+        _fix_autolinked_classifiers,
+        summary_html,
+        flags=re.DOTALL,
+    )
+
     # --- Phase 8: Style <h3> section headers and embed section icons ---
 
     h3_style = (
@@ -675,7 +703,8 @@ def embed_briefing_icons(summary_html, scored_stories):
         "border-bottom:2px solid #e8e8e8;"
     )
     section_icon_style = (
-        "display:inline-block;width:1em;height:1em;" "vertical-align:-0.1em;margin-right:0.3em;"
+        "display:inline-block;width:1em;height:1em;"
+        "vertical-align:-0.1em;margin:0 0.3em 0 0;"
     )
 
     def _replace_section_header(match):
