@@ -13338,7 +13338,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "clustering{metric=\"clusters_found\",period=\"daily\"}",
+          "expr": "clustering{metric=\"unique_clusters\",period=\"daily\"}",
           "interval": "",
           "legendFormat": "Daily",
           "queryType": "randomWalk",
@@ -13350,7 +13350,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "clustering{metric=\"clusters_found\",period=\"weekly\"}",
+          "expr": "clustering{metric=\"unique_clusters\",period=\"weekly\"}",
           "interval": "",
           "legendFormat": "Weekly",
           "queryType": "randomWalk",
@@ -13362,7 +13362,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "clustering{metric=\"clusters_found\",period=\"monthly\"}",
+          "expr": "clustering{metric=\"unique_clusters\",period=\"monthly\"}",
           "interval": "",
           "legendFormat": "Monthly",
           "queryType": "randomWalk",
@@ -13374,14 +13374,14 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "clustering{metric=\"clusters_found\",period=\"alltime\"}",
+          "expr": "clustering{metric=\"unique_clusters\",period=\"alltime\"}",
           "interval": "",
           "legendFormat": "All Time",
           "queryType": "randomWalk",
           "refId": "D"
         }
       ],
-      "title": "Clusters Found",
+      "title": "Unique Clusters",
       "type": "timeseries"
     },
     {
@@ -13467,7 +13467,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "clustering{metric=\"stories_clustered\",period=\"daily\"}",
+          "expr": "clustering{metric=\"unique_stories\",period=\"daily\"}",
           "interval": "",
           "legendFormat": "Daily",
           "queryType": "randomWalk",
@@ -13479,7 +13479,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "clustering{metric=\"stories_clustered\",period=\"weekly\"}",
+          "expr": "clustering{metric=\"unique_stories\",period=\"weekly\"}",
           "interval": "",
           "legendFormat": "Weekly",
           "queryType": "randomWalk",
@@ -13491,7 +13491,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "clustering{metric=\"stories_clustered\",period=\"monthly\"}",
+          "expr": "clustering{metric=\"unique_stories\",period=\"monthly\"}",
           "interval": "",
           "legendFormat": "Monthly",
           "queryType": "randomWalk",
@@ -13503,14 +13503,14 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "clustering{metric=\"stories_clustered\",period=\"alltime\"}",
+          "expr": "clustering{metric=\"unique_stories\",period=\"alltime\"}",
           "interval": "",
           "legendFormat": "All Time",
           "queryType": "randomWalk",
           "refId": "D"
         }
       ],
-      "title": "Stories Clustered",
+      "title": "Unique Stories Clustered",
       "type": "timeseries"
     },
     {

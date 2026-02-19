@@ -10,8 +10,8 @@ class Clustering(View):
         Prometheus metrics endpoint for story clustering usage.
 
         Tracks:
-        - Clusters found (daily/weekly/monthly/alltime)
-        - Stories clustered (daily/weekly/monthly/alltime)
+        - Unique clusters (daily/weekly/monthly/alltime) - deduplicated via Redis SETs
+        - Unique stories clustered (daily/weekly/monthly/alltime) - deduplicated via Redis SETs
         - Cluster mark-read expanded stories (daily/weekly/monthly/alltime)
         - Average clustering time in ms (daily/weekly/monthly/alltime)
         """
