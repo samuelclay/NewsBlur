@@ -127,7 +127,7 @@ def _build_system_prompt(
         custom_key = "custom_%d" % (i + 1)
         if active_sections.get(custom_key, False) and prompt:
             section_lines.append(
-                '%d. Keyword section (KEY: %s) — The reader has a keyword section that matches stories '
+                "%d. Keyword section (KEY: %s) — The reader has a keyword section that matches stories "
                 'with these keywords: "%s". Generate a section header based on the keywords. '
                 "ONLY include stories whose CATEGORY field is set to %s."
                 % (num, custom_key, prompt, custom_key)
@@ -660,8 +660,7 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     if thumbs_up_data_uri:
         thumbs_up_style = (
-            "display:inline-block;width:12px;height:12px;"
-            "vertical-align:middle;margin:0 3px 0 0;"
+            "display:inline-block;width:12px;height:12px;" "vertical-align:middle;margin:0 3px 0 0;"
         )
         thumbs_up_img = '<img src="%s" class="NB-classifier-icon-like" style="%s" alt="">' % (
             thumbs_up_data_uri,
@@ -689,7 +688,7 @@ def embed_briefing_icons(summary_html, scored_stories):
         return block
 
     summary_html = re.sub(
-        r'<span\s[^>]*NB-briefing-classifier[^>]*>.*?</span>',
+        r"<span\s[^>]*NB-briefing-classifier[^>]*>.*?</span>",
         _fix_autolinked_classifiers,
         summary_html,
         flags=re.DOTALL,
@@ -703,8 +702,7 @@ def embed_briefing_icons(summary_html, scored_stories):
         "border-bottom:2px solid #e8e8e8;"
     )
     section_icon_style = (
-        "display:inline-block;width:1em;height:1em;"
-        "vertical-align:-0.1em;margin:0 0.3em 0 0;"
+        "display:inline-block;width:1em;height:1em;" "vertical-align:-0.1em;margin:0 0.3em 0 0;"
     )
 
     def _replace_section_header(match):
