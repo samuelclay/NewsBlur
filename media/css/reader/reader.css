@@ -23757,37 +23757,24 @@ h5.NB-classifier-section-header {
     pointer-events: none;
 }
 
-/* Clustering upgrade notice */
-.NB-filter-popover .NB-clustering-upgrade-notice {
-    font-size: 11px;
-    text-decoration: none;
-    color: #707070;
-    padding: 3px 8px;
-    border-radius: 4px;
-    transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.NB-filter-popover .NB-clustering-upgrade-notice:hover {
-    background-color: rgba(74, 144, 217, 0.1);
-    color: #4a90d9;
-}
-
-.NB-filter-popover .NB-clustering-upgrade-notice .NB-archive-badge {
+/* Staff Only badge */
+.NB-staff-only-badge {
     display: inline-block;
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    background: #d64000;
     color: white;
     font-size: 9px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     padding: 2px 6px;
     border-radius: 3px;
+    line-height: 1.2;
+    vertical-align: middle;
 }
 
-.NB-filter-popover .NB-clustering-upgrade-notice.NB-flash {
-    animation: flash-upgrade 0.6s ease;
-    background-color: rgba(99, 102, 241, 0.15);
-    color: #6366f1;
+.NB-story-cluster-sources .NB-staff-only-badge {
+    margin-right: 6px;
+    margin-bottom: 2px;
 }
 
 /* =========== */

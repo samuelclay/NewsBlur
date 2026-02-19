@@ -390,7 +390,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Daily Briefing'
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-clustering-enabled' }, [
+                    (NEWSBLUR.Globals.is_staff && $.make('div', { className: 'NB-preference NB-preference-clustering-enabled' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', { className: 'NB-social-card NB-social-card-enable' }, [
                                 $.make('input', { id: 'NB-preference-clustering-enabled-1', type: 'radio', name: 'story_clustering', value: 'true' }),
@@ -424,7 +424,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Story Clustering',
                             $.make('div', { className: 'NB-preference-sublabel' }, 'Groups similar stories from different feeds')
                         ])
-                    ]),
+                    ])),
                     $.make('div', { className: 'NB-preference NB-preference-opml' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Download OPML')
