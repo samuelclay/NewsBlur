@@ -407,10 +407,11 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS):
         % (len(clusters), total_stories)
     )
 
-    # clustering/models.py: Record metrics for Grafana
+    # clustering/models.py: Record unique cluster IDs and story hashes for Grafana
     from apps.statistics.rclustering_usage import RClusteringUsage
 
-    RClusteringUsage.record_clusters(len(clusters), total_stories)
+    all_story_hashes = [h for members in clusters.values() for h in members]
+    RClusteringUsage.record_cluster_ids(list(clusters.keys()), all_story_hashes)
 
 
 def get_cluster_for_story(story_hash):
