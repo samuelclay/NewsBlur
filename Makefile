@@ -486,6 +486,11 @@ perf-docker:
 clean:
 	find . -name \*.pyc -delete
 
+# Git hooks - run once to enable commit message normalization
+hooks:
+	git config core.hooksPath .githooks
+	@$(call log,~SB~FG✓ Git hooks enabled~ST (~FC.githooks/commit-msg~ST normalizes commit messages))
+
 # API testing with authenticated curl
 # Usage: make api URL=/reader/feeds
 # Usage: make api URL=/reader/feeds CURL_ARGS="-X POST -d 'foo=bar'"

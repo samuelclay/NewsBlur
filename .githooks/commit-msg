@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+#
+# .githooks/commit-msg - Normalize and validate commit messages
+#
+# Auto-fixes:
+#   - Capitalizes first letter of subject line
+#   - Strips trailing period from subject line
+#
+# Rejects:
+#   - Subject line exceeding 80 characters
+#   - Missing blank line between subject and body
+#
+# Warns (non-blocking):
+#   - Past-tense verb prefixes with suggested imperative rewrites
+#
+# Skips: merge, fixup, squash, and amend commits
+#
+
+set -euo pipefail
+
+COMMIT_MSG_FILE="$1"
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Strip comment lines (lines starting with #) for validation
+CLEAN_MSG=$(echo "$COMMIT_MSG" | grep -v '^#' || true)
+
+# Skip empty messages (git will abort these anyway)
+if [ -z "$(echo "$CLEAN_MSG" | tr -d '[:space:]')" ]; then
+    exit 0
+fi
+
+# Skip merge commits
+if echo "$CLEAN_MSG" | head -1 | grep -qiE '^Merge (branch|pull request|remote-tracking|tag) '; then
+    exit 0
+fi
+
+# Skip fixup/squash commits
+if echo "$CLEAN_MSG" | head -1 | grep -qE '^(fixup|squash)! '; then
+    exit 0
+fi
+
+# Skip amend commits (detected by the presence of the amend marker)
+if [ -f "$(git rev-parse --git-dir)/MERGE_MSG" ] 2>/dev/null; then
+    exit 0
+fi
+
+SUBJECT=$(echo "$CLEAN_MSG" | head -1)
+ERRORS=()
+
+# --- Auto-fix: Capitalize first letter of subject ---
+FIRST_CHAR=$(echo "$SUBJECT" | cut -c1)
+if echo "$FIRST_CHAR" | grep -q '^[a-z]$'; then
+    SUBJECT="$(echo "$FIRST_CHAR" | tr '[:lower:]' '[:upper:]')$(echo "$SUBJECT" | cut -c2-)"
+    # Apply fix back to the file
+    {
+        echo "$SUBJECT"
+        echo "$COMMIT_MSG" | tail -n +2
+    } > "$COMMIT_MSG_FILE"
+    COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+    echo "commit-msg hook: Auto-capitalized subject line."
+fi
+
+# --- Auto-fix: Strip trailing period from subject ---
+if echo "$SUBJECT" | grep -qE '\.$'; then
+    SUBJECT="${SUBJECT%.}"
+    # Apply fix back to the file
+    {
+        echo "$SUBJECT"
+        echo "$COMMIT_MSG" | tail -n +2
+    } > "$COMMIT_MSG_FILE"
+    COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+    echo "commit-msg hook: Removed trailing period from subject."
+fi
+
+# --- Reject: Subject line over 80 characters ---
+SUBJECT_LEN=${#SUBJECT}
+if [ "$SUBJECT_LEN" -gt 80 ]; then
+    ERRORS+=("Subject line is $SUBJECT_LEN characters (max 80).")
+fi
+
+# --- Reject: Missing blank line between subject and body ---
+TOTAL_LINES=$(echo "$CLEAN_MSG" | wc -l | tr -d ' ')
+if [ "$TOTAL_LINES" -gt 1 ]; then
+    SECOND_LINE=$(echo "$CLEAN_MSG" | sed -n '2p')
+    if [ -n "$SECOND_LINE" ]; then
+        ERRORS+=("Missing blank line between subject and body.")
+    fi
+fi
+
+# --- Warn: Past-tense verb prefixes ---
+FIRST_WORD=$(echo "$SUBJECT" | awk '{print $1}')
+IMPERATIVE=""
+case "$FIRST_WORD" in
+    Added)       IMPERATIVE="Add" ;;
+    Fixed)       IMPERATIVE="Fix" ;;
+    Changed)     IMPERATIVE="Change" ;;
+    Removed)     IMPERATIVE="Remove" ;;
+    Updated)     IMPERATIVE="Update" ;;
+    Deleted)     IMPERATIVE="Delete" ;;
+    Created)     IMPERATIVE="Create" ;;
+    Implemented) IMPERATIVE="Implement" ;;
+    Moved)       IMPERATIVE="Move" ;;
+    Renamed)     IMPERATIVE="Rename" ;;
+    Refactored)  IMPERATIVE="Refactor" ;;
+    Resolved)    IMPERATIVE="Resolve" ;;
+    Enabled)     IMPERATIVE="Enable" ;;
+    Disabled)    IMPERATIVE="Disable" ;;
+    Improved)    IMPERATIVE="Improve" ;;
+    Replaced)    IMPERATIVE="Replace" ;;
+esac
+if [ -n "$IMPERATIVE" ]; then
+    SUGGESTED="$IMPERATIVE${SUBJECT#"$FIRST_WORD"}"
+    echo "commit-msg hook: Consider imperative mood: \"$SUGGESTED\""
+fi
+
+# --- Report errors and exit ---
+if [ ${#ERRORS[@]} -gt 0 ]; then
+    echo ""
+    echo "commit-msg hook: Commit message rejected:"
+    for ERR in "${ERRORS[@]}"; do
+        echo "  - $ERR"
+    done
+    echo ""
+    echo "Subject: \"$SUBJECT\""
+    exit 1
+fi
+
+exit 0
