@@ -923,9 +923,9 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     animation: chevron-wave-left 2.4s ease-in-out infinite;
 }
 
-.NB-tryout-chevrons-left .NB-tryout-chevron:nth-child(1) { animation-delay: 0s; }
+.NB-tryout-chevrons-left .NB-tryout-chevron:nth-child(1) { animation-delay: 0.3s; }
 .NB-tryout-chevrons-left .NB-tryout-chevron:nth-child(2) { animation-delay: 0.15s; }
-.NB-tryout-chevrons-left .NB-tryout-chevron:nth-child(3) { animation-delay: 0.3s; }
+.NB-tryout-chevrons-left .NB-tryout-chevron:nth-child(3) { animation-delay: 0s; }
 
 @keyframes chevron-wave-left {
     0%, 100% { opacity: 0.15; transform: rotate(45deg) translateX(0); }
@@ -971,9 +971,9 @@ body.NB-is-anonymous .NB-feed-story .NB-feed-story-content img.NB-large-image {
     animation: chevron-wave-right 2.4s ease-in-out infinite;
 }
 
-.NB-welcome-tryout .NB-tryout-chevrons-right .NB-tryout-chevron:nth-child(1) { animation-delay: 0s; }
+.NB-welcome-tryout .NB-tryout-chevrons-right .NB-tryout-chevron:nth-child(1) { animation-delay: 0.3s; }
 .NB-welcome-tryout .NB-tryout-chevrons-right .NB-tryout-chevron:nth-child(2) { animation-delay: 0.15s; }
-.NB-welcome-tryout .NB-tryout-chevrons-right .NB-tryout-chevron:nth-child(3) { animation-delay: 0.3s; }
+.NB-welcome-tryout .NB-tryout-chevrons-right .NB-tryout-chevron:nth-child(3) { animation-delay: 0s; }
 
 @keyframes chevron-wave-right {
     0%, 100% { opacity: 0.15; transform: rotate(-45deg) translateX(0); }
