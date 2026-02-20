@@ -409,6 +409,7 @@ CELERY_TASK_ROUTES = {
     "archive-process-batch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-cleanup-old": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "generate-user-briefing": {"queue": "work_queue", "binding_key": "work_queue"},
+    "compute-story-clusters": {"queue": "work_queue", "binding_key": "work_queue"},
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {
@@ -493,6 +494,7 @@ CELERY_IMPORTS = (
     "apps.archive_extension.tasks",
     "apps.archive_assistant.tasks",
     "apps.briefing.tasks",
+    "apps.clustering.tasks",
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails

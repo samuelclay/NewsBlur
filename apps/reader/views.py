@@ -1242,6 +1242,14 @@ def load_single_feed(request, feed_id):
                 hidden_stories_removed += 1
         stories = new_stories
 
+    # Apply story clustering for archive users who have it enabled
+    if user.profile.is_archive:
+        user_prefs = json.decode(user.profile.preferences)
+        if user_prefs.get("story_clustering", True):
+            from apps.clustering.models import apply_clustering_to_stories
+
+            stories = apply_clustering_to_stories(stories, user)
+
     data = dict(
         stories=stories,
         user_profiles=user_profiles,
@@ -2362,9 +2370,12 @@ def load_river_stories__redis(request):
                 hidden_stories_removed += 1
         stories = new_stories
 
-    # if page > 1:
-    #     import random
-    #     time.sleep(random.randint(10, 16))
+    # Apply story clustering for archive users who have it enabled
+    if user.profile.is_archive:
+        if user_preferences.get("story_clustering", True):
+            from apps.clustering.models import apply_clustering_to_stories
+
+            stories = apply_clustering_to_stories(stories, user)
 
     diff = time.time() - start
     timediff = round(float(diff), 2)
@@ -2718,6 +2729,33 @@ def mark_story_hashes_as_read(request):
                 pass
     except (json.JSONDecodeError, AttributeError):
         pass
+
+    # Expand story_hashes with cluster members if cluster_mark_read is enabled
+    cluster_hashes = []
+    if request.user.profile.is_archive:
+        user_prefs = json.decode(request.user.profile.preferences or "{}")
+        if user_prefs.get("cluster_mark_read", False):
+            from apps.clustering.models import get_cluster_for_story, get_cluster_members
+
+            seen = set(story_hashes)
+            for story_hash in list(story_hashes):
+                cluster_id = get_cluster_for_story(story_hash)
+                if cluster_id:
+                    for member_hash in get_cluster_members(cluster_id):
+                        if member_hash not in seen:
+                            cluster_hashes.append(member_hash)
+                            seen.add(member_hash)
+            if cluster_hashes:
+                story_hashes = list(seen)
+                logging.user(
+                    request,
+                    "~FBCluster mark read: added %s duplicate%s"
+                    % (len(cluster_hashes), "s" if len(cluster_hashes) != 1 else ""),
+                )
+                # reader/views.py: Record cluster mark-read metrics for Grafana
+                from apps.statistics.rclustering_usage import RClusteringUsage
+
+                RClusteringUsage.record_mark_read(len(cluster_hashes))
 
     feed_ids, friend_ids = RUserStory.mark_story_hashes_read(
         request.user.pk, story_hashes, username=request.user.username
@@ -4753,3 +4791,48 @@ def get_auto_mark_read_settings(request):
         "site_wide_days": site_wide_days,
         "is_archive": user.profile.is_archive,
     }
+
+
+@json.json_view
+def load_cluster_stories(request):
+    """Load full story data for all members of a story cluster.
+
+    Parameters:
+        cluster_id: The story_hash of the representative story
+    """
+    user = get_user(request)
+    cluster_id = request.GET.get("cluster_id") or request.POST.get("cluster_id")
+
+    if not user.profile.is_archive:
+        return {"code": 0, "message": "Story clustering is an archive feature.", "stories": []}
+
+    if not cluster_id:
+        return {"code": -1, "message": "Missing cluster_id parameter.", "stories": []}
+
+    from apps.clustering.models import get_cluster_members
+
+    member_hashes = get_cluster_members(cluster_id)
+    if not member_hashes:
+        return {"code": 1, "stories": []}
+
+    stories = []
+    mstories = MStory.objects(story_hash__in=member_hashes)
+    for story in mstories:
+        feed = Feed.get_by_id(story.story_feed_id)
+        if not feed:
+            continue
+        story_dict = Feed.format_story(story)
+        story_dict["feed_title"] = feed.feed_title
+        stories.append(story_dict)
+
+    stories.sort(key=lambda s: s.get("story_date", ""), reverse=True)
+
+    feeds = {}
+    for story_dict in stories:
+        fid = story_dict.get("story_feed_id")
+        if fid and fid not in feeds:
+            f = Feed.get_by_id(fid)
+            if f:
+                feeds[fid] = f.canonical(include_favicon=True)
+
+    return {"code": 1, "stories": stories, "feeds": feeds}

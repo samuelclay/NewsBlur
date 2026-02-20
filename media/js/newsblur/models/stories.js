@@ -357,6 +357,16 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         }, [])));
 
         return all_tags;
+    },
+
+    has_cluster: function () {
+        var cluster = this.get('cluster_stories');
+        return cluster && cluster.length > 0;
+    },
+
+    cluster_count: function () {
+        var cluster = this.get('cluster_stories');
+        return cluster ? cluster.length + 1 : 1;
     }
 
 });

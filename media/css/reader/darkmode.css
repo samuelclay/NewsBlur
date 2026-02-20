@@ -4446,6 +4446,15 @@ a.mention, a.mention-group {
     color: #909090;
 }
 
+/* Story Clustering dark mode */
+.NB-dark .NB-filter-popover .NB-clustering-read-label {
+    color: #909090;
+}
+
+.NB-dark .NB-staff-only-badge {
+    background: #c03800;
+}
+
 /* ============================== */
 /* = Manage Training Tab Styles = */
 /* ============================== */

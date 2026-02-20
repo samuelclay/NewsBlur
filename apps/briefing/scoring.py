@@ -334,8 +334,7 @@ def select_briefing_stories(
             if not keywords:
                 continue
             logging.debug(
-                " ---> Briefing scoring: %s keywords=%s (from prompt: %s)"
-                % (custom_key, keywords, prompt)
+                " ---> Briefing scoring: %s keywords=%s (from prompt: %s)" % (custom_key, keywords, prompt)
             )
             reserved = 0
             for s in remaining:
@@ -360,39 +359,61 @@ def select_briefing_stories(
                     " ---> Briefing scoring: reserved %s stories for %s (%s)" % (reserved, custom_key, prompt)
                 )
             else:
-                logging.debug(
-                    " ---> Briefing scoring: no stories matched %s (%s)" % (custom_key, prompt)
-                )
+                logging.debug(" ---> Briefing scoring: no stories matched %s (%s)" % (custom_key, prompt))
 
     return result
 
 
 def _normalize_title(title):
-    """Normalize a story title for duplicate detection."""
-    if not title:
-        return ""
-    title = title.lower().strip()
-    title = re.sub(r"[^\w\s]", "", title)
-    title = re.sub(r"\s+", " ", title)
-    return title
+    """Normalize a story title for duplicate detection.
+
+    Delegates to apps.clustering.models.normalize_title for shared logic.
+    """
+    from apps.clustering.models import normalize_title
+
+    return normalize_title(title)
 
 
 def _find_duplicate_stories(candidates, stories_by_hash):
-    """
-    Find stories that appear in multiple feeds by comparing normalized titles.
+    """Find stories that appear in multiple feeds by comparing normalized titles.
+
+    Uses the shared clustering normalize_title logic. Also checks pre-computed
+    clusters from Redis when available.
     Returns a set of story_hashes that are duplicates.
     """
+    from apps.clustering.models import get_cluster_for_story, normalize_title
+
+    # Check pre-computed clusters first
+    duplicate_hashes = set()
+    cluster_groups = {}
+    for s in candidates:
+        cluster_id = get_cluster_for_story(s["story_hash"])
+        if cluster_id:
+            cluster_groups.setdefault(cluster_id, []).append(s["story_hash"])
+
+    for cluster_id, hashes in cluster_groups.items():
+        if len(hashes) >= 2:
+            feed_ids = set()
+            for h in hashes:
+                story = stories_by_hash.get(h)
+                if story:
+                    feed_ids.add(story.story_feed_id)
+            if len(feed_ids) >= 2:
+                duplicate_hashes.update(hashes)
+
+    # Also do title-based matching for stories not yet in clusters
     title_groups = {}
     for s in candidates:
+        if s["story_hash"] in duplicate_hashes:
+            continue
         story = stories_by_hash.get(s["story_hash"])
         if not story or not story.story_title:
             continue
-        norm_title = _normalize_title(story.story_title)
+        norm_title = normalize_title(story.story_title)
         if not norm_title or len(norm_title) < 10:
             continue
         title_groups.setdefault(norm_title, []).append(s["story_hash"])
 
-    duplicate_hashes = set()
     for norm_title, hashes in title_groups.items():
         feed_ids = set()
         for h in hashes:

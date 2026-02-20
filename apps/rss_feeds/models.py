@@ -1829,6 +1829,15 @@ class Feed(models.Model):
                     f" ---> ~FBNo premium archive subscribers, skipping discover indexing for {discover_story_ids} for {self}"
                 )
 
+        # Schedule story clustering for feeds with archive subscribers
+        if discover_story_ids and self.archive_subscribers and self.archive_subscribers > 0:
+            from apps.clustering.tasks import ComputeStoryClusters
+
+            ComputeStoryClusters.apply_async(
+                kwargs=dict(feed_id=self.pk),
+                queue="work_queue",
+            )
+
         return ret_values
 
     def update_story_with_new_guid(self, existing_story, new_story_guid):

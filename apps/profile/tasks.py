@@ -63,6 +63,12 @@ def EmailNewPremiumTrial(user_id):
     user_profile.send_premium_trial_welcome_email()
 
 
+@app.task(name="email-staff-premium-upgrade")
+def EmailStaffPremiumUpgrade(user_id, tier, previous_tier):
+    user_profile = Profile.objects.get(user__pk=user_id)
+    user_profile.send_staff_premium_upgrade_email(tier=tier, previous_tier=previous_tier)
+
+
 @app.task(name="premium-expire")
 def PremiumExpire(**kwargs):
     now = datetime.datetime.now()
