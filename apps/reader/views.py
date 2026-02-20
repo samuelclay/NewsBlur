@@ -2732,7 +2732,10 @@ def mark_story_hashes_as_read(request):
     if request.user.profile.is_archive:
         user_prefs = json.decode(request.user.profile.preferences or "{}")
         if user_prefs.get("cluster_mark_read", False):
-            from apps.clustering.models import get_cluster_for_story, get_cluster_members
+            from apps.clustering.models import (
+                get_cluster_for_story,
+                get_cluster_members,
+            )
 
             seen = set(story_hashes)
             for story_hash in list(story_hashes):
@@ -4809,6 +4812,14 @@ def load_cluster_stories(request):
     from apps.clustering.models import get_cluster_members
 
     member_hashes = get_cluster_members(cluster_id)
+    if not member_hashes:
+        return {"code": 1, "stories": []}
+
+    # Only include cluster members from feeds the user is subscribed to
+    user_feed_ids = set(
+        UserSubscription.objects.filter(user=user, active=True).values_list("feed_id", flat=True)
+    )
+    member_hashes = [h for h in member_hashes if int(h.split(":", 1)[0]) in user_feed_ids]
     if not member_hashes:
         return {"code": 1, "stories": []}
 
