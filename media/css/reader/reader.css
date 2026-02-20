@@ -7303,6 +7303,67 @@ body {
     background: #C4941B;
 }
 
+/* ========================== */
+/* = Search Indexing Banner = */
+/* ========================== */
+
+.NB-search-indexing-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(74, 144, 217, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: linear-gradient(135deg, #e6eef5 0%, #d5e3f0 100%);
+    cursor: default;
+}
+
+.NB-search-indexing-banner-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    background: url(/media/img/icons/nouns/search.svg) no-repeat center center;
+    background-size: 18px;
+    opacity: 0.5;
+}
+
+.NB-search-indexing-banner-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-search-indexing-banner-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2a3a4a;
+    line-height: 1.2;
+}
+
+.NB-search-indexing-banner-subtext {
+    font-size: 11px;
+    color: rgba(42, 58, 74, 0.55);
+    margin-top: 2px;
+    line-height: 1.3;
+}
+
+.NB-search-indexing-progress {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(74, 144, 217, 0.15);
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.NB-search-indexing-progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: #4A90D9;
+    transition: width 0.4s ease;
+    width: 0%;
+}
+
 .NB-feedbar .NB-taskbar-nav {
     float: right;
     margin: 6px 18px 0 0;
