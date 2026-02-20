@@ -1699,6 +1699,7 @@
                 this.show_tryfeed_add_button();
                 this.correct_tryfeed_title();
             }
+            this.check_search_indexing(data);
         },
 
         load_next_after_load: function () {
@@ -2561,6 +2562,7 @@
                     }
 
                 }
+                this.check_search_indexing(data);
             }
         },
 
@@ -6998,6 +7000,7 @@
             $('.NB-tryfeed-subscribe-banner').remove();
             $('.NB-tryfeed-follow-banner').remove();
             $('.NB-tryfeed-signup-banner').remove();
+            $('.NB-search-indexing-banner').remove();
             this.flags['showing_feed_in_tryfeed_view'] = false;
             this.flags['showing_social_feed_in_tryfeed_view'] = false;
         },
@@ -7095,6 +7098,18 @@
 
         hide_tryout_signup_button: function () {
             $('.NB-tryfeed-signup-banner').remove();
+        },
+
+        check_search_indexing: function (data) {
+            if (!data || !data.user_search || !NEWSBLUR.reader.flags.search || !NEWSBLUR.app.active_search) return;
+
+            var user_search = (typeof data.user_search === 'string') ? JSON.parse(data.user_search) : data.user_search;
+            if (user_search.subscriptions_indexing && !user_search.subscriptions_indexed) {
+                var indexed = NEWSBLUR.assets.feeds.search_indexed();
+                var total = NEWSBLUR.assets.feeds.length;
+                var progress = total ? Math.ceil(indexed / total * 100) : 0;
+                NEWSBLUR.app.active_search.show_search_indexing_banner(progress);
+            }
         },
 
         add_recommended_feed: function (feed_id) {

@@ -2012,6 +2012,32 @@ background: #191b1c;
     color: rgba(255, 255, 255, 0.45);
 }
 
+.NB-dark .NB-search-indexing-banner {
+    background: linear-gradient(135deg, #1a2030 0%, #1f2840 100%);
+    border-bottom-color: rgba(74, 144, 217, 0.2);
+}
+
+.NB-dark .NB-search-indexing-banner-icon {
+    filter: invert(1);
+    opacity: 0.5;
+}
+
+.NB-dark .NB-search-indexing-banner-text {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-search-indexing-banner-subtext {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.NB-dark .NB-search-indexing-progress {
+    background: rgba(74, 144, 217, 0.2);
+}
+
+.NB-dark .NB-search-indexing-progress-fill {
+    background: #5A9FE6;
+}
+
 .NB-dark .NB-story-list-empty {
     color: rgba(255, 255, 255, .6);
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
