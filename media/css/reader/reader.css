@@ -28223,7 +28223,8 @@ h5.NB-classifier-section-header {
     font-size: 16px;
     opacity: 0.5;
     margin-left: 2px;
-    line-height: 1;
+    display: flex;
+    align-items: center;
 }
 
 .NB-add-site-section-filter-badge-close:hover {
