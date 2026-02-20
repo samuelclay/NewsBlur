@@ -9,19 +9,24 @@
 import SwiftUI
 
 /// A protocol of interaction between a card in the grid, and the enclosing feed detail view controller.
-protocol FeedDetailInteraction {
-    var storyHeight: CGFloat { get }
+@MainActor protocol FeedDetailInteraction {
     var hasNoMoreStories: Bool { get }
     var isPremiumRestriction: Bool { get }
     var isMarkReadOnScroll: Bool { get }
 
     func pullToRefresh()
+    func tapped(dash: DashList)
     func visible(story: Story)
-    func tapped(story: Story)
+    func tapped(story: Story, in dash: DashList?)
+    func changeDashboard(dash: DashList)
+    func addFirstDashboard()
+    func addDashboard(before: Bool, dash: DashList)
+    func reloadOneDash(with dash: DashList)
     func reading(story: Story)
     func read(story: Story)
     func unread(story: Story)
     func hid(story: Story)
+    func scrolled(story: Story, offset: CGFloat?)
     func openPremiumDialog()
 }
 
@@ -43,22 +48,8 @@ struct FeedDetailGridView: View {
         }
     }
     
-    var isOS15OrLater: Bool {
-        if #available(iOS 15.0, *) {
-            return true
-        } else {
-            return false
-        }
-    }
-    
     var cardHeight: CGFloat {
         return cache.settings.gridHeight
-    }
-    
-    var storyHeight: CGFloat {
-        print("🐓 Story height: \(feedDetailInteraction.storyHeight + 20)")
-        
-        return feedDetailInteraction.storyHeight + 20
     }
     
     var body: some View {
@@ -66,7 +57,7 @@ struct FeedDetailGridView: View {
             ScrollView {
                 ScrollViewReader { scroller in
                     LazyVGrid(columns: columns, spacing: cache.isGrid ? 20 : 0) {
-                        if cache.isPhone {
+                        if cache.isPhoneOrCompact {
                             Section(footer: makeLoadingView()) {
                                 ForEach(cache.before, id: \.id) { story in
                                     makeCardView(for: story, reader: reader)
@@ -88,7 +79,7 @@ struct FeedDetailGridView: View {
                                 }
                             }
                             
-                            if cache.isGrid && !cache.isPhone {
+                            if cache.isGridView && !cache.isPhoneOrCompact {
                                 EmptyView()
                                     .id(storyViewID)
                             } else if let story = cache.selected {
@@ -96,7 +87,7 @@ struct FeedDetailGridView: View {
                                     .id(story.id)
                             }
                             
-                            Section(header: makeStoryView(), footer: makeLoadingView()) {
+                            Section(header: makeStoryView(reader: reader), footer: makeLoadingView()) {
                                 ForEach(cache.after, id: \.id) { story in
                                     makeCardView(for: story, reader: reader)
                                 }
@@ -108,26 +99,37 @@ struct FeedDetailGridView: View {
                             return
                         }
                         
-                        print("🪿 Selection: '\(oldSelected?.title ?? "none")' -> '\(newSelected?.title ?? "none")'")
+                        NSLog("🪿 Selection: '\(oldSelected?.title ?? "none")' -> '\(newSelected?.title ?? "none")'")
                         
-                        Task {
-                            if newSelected == nil, !cache.isPhone, let oldSelected, let story = cache.story(with: oldSelected.index) {
-                                scroller.scrollTo(story.id, anchor: .top)
-                            } else if let newSelected, !cache.isGrid {
+                        if newSelected == nil, !cache.isPhoneOrCompact, let oldSelected, let story = cache.story(with: oldSelected.index) {
+                            scroller.scrollTo(story.id, anchor: .top)
+                        } else if let newSelected, !cache.isGridView {
+                            Task {
                                 withAnimation(Animation.spring().delay(0.5)) {
                                     scroller.scrollTo(newSelected.id)
                                 }
-                            } else if !cache.isPhone {
-                                withAnimation(Animation.spring().delay(0.5)) {
+                            }
+                        } else if !cache.isPhoneOrCompact {
+                            if cache.isGrid {
+                                Task {
+                                    withAnimation(Animation.spring().delay(0.5)) {
+                                        scroller.scrollTo(storyViewID, anchor: .top)
+                                    }
+                                }
+                            } else {
+                                scroller.scrollTo(storyViewID, anchor: .top)
+                                Task {
                                     scroller.scrollTo(storyViewID, anchor: .top)
                                 }
-                            } else if let newSelected {
+                            }
+                        } else if let newSelected {
+                            Task {
                                 scroller.scrollTo(newSelected.id, anchor: .top)
                             }
                         }
                     }
                     .onAppear() {
-                        if cache.isGrid {
+                        if cache.isGridView {
                             scroller.scrollTo(storyViewID, anchor: .top)
                         }
                     }
@@ -149,20 +151,20 @@ struct FeedDetailGridView: View {
             })
         }
         .background(Color.themed([0xE0E0E0, 0xF3E2CB, 0x363636, 0x101010]))
-        .if(cache.isGrid) { view in
+        .if(cache.isGridView && !cache.isCompact) { view in
             view.lazyPop()
         }
     }
     
     @ViewBuilder
     func makeCardView(for story: Story, reader: GeometryProxy) -> some View {
-        CardView(feedDetailInteraction: feedDetailInteraction, cache: cache, story: story)
+        CardView(feedDetailInteraction: feedDetailInteraction, cache: cache, dash: nil, story: story)
             .transformAnchorPreference(key: CardKey.self, value: .bounds) {
                 $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
             }
             .onPreferenceChange(CardKey.self) {
                 if feedDetailInteraction.isMarkReadOnScroll, let value = $0.first, value.frame.minY < -(value.frame.size.height / 2) {
-                    print("🐓 Scrolled off the top: \(story.debugTitle): \($0)")
+                    NSLog("🐓 Scrolled off the top: \(story.debugTitle): \($0)")
                     
 //                    withAnimation(Animation.spring().delay(2)) {
                         feedDetailInteraction.read(story: story)
@@ -175,25 +177,25 @@ struct FeedDetailGridView: View {
             .if(cache.isGrid) { view in
                 view.frame(height: cardHeight)
             }
-            .gesture(DragGesture(minimumDistance: 50.0, coordinateSpace: .local)
-                .onEnded { value in
-                    switch(value.translation.width, value.translation.height) {
-                        case (...0, -30...30):
-                            feedDetailInteraction.read(story: story)
-                        case (0..., -30...30):
-                            feedDetailInteraction.unread(story: story)
-//                        case (-100...100, ...0):  print("up swipe")
-//                        case (-100...100, 0...):  print("down swipe")
-                        default:  break
-                    }
-                }
-            )
     }
     
     @ViewBuilder
-    func makeStoryView() -> some View {
-        if cache.isGrid, !cache.isPhone, let story = cache.selected {
+    func makeStoryView(reader: GeometryProxy) -> some View {
+        if cache.isGridView, !cache.isPhoneOrCompact, let story = cache.selected {
             StoryView(cache: cache, story: story, interaction: feedDetailInteraction)
+                .transformAnchorPreference(key: CardKey.self, value: .bounds) {
+                    $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
+                }
+                .onPreferenceChange(CardKey.self) {
+                    if cache.isMagazine, let value = $0.first {
+                        NSLog("🐓 Magazine story scrolled: \(story.debugTitle): \($0), minY \(value.frame.minY), maxY: \(value.frame.maxY), height: \(value.frame.size.height)")
+                        
+                        feedDetailInteraction.scrolled(story: story, offset: value.frame.maxY)
+                    }
+                }
+                .onAppear {
+                    feedDetailInteraction.scrolled(story: story, offset: nil)
+                }
         }
     }
     
@@ -213,10 +215,10 @@ struct CardFrame : Equatable {
     }
 }
 
-struct CardKey : PreferenceKey {
+struct CardKey : @preconcurrency PreferenceKey {
     typealias Value = [CardFrame]
     
-    static var defaultValue: [CardFrame] = []
+    @MainActor static var defaultValue: [CardFrame] = []
     
     static func reduce(value: inout [CardFrame], nextValue: () -> [CardFrame]) {
         value.append(contentsOf: nextValue())

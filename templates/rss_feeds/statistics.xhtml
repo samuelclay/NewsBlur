@@ -13,7 +13,19 @@
     NEWSBLUR.Globals = {
       'is_authenticated'        : {{ user.is_authenticated|yesno:"true,false" }},
       'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},
-      'is_premium'              : {{ user.profile.is_premium|yesno:"true,false" }}
+      'is_premium'              : {{ user.profile.is_premium|yesno:"true,false" }},
+      'MEDIA_URL'               : "{{ MEDIA_URL }}"
+    };
+    NEWSBLUR.URLs = {
+      'favicon'                 : "/rss_feeds/icon/{id}"
+    };
+    NEWSBLUR.assets = {
+      theme: function() {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      }
     };
     NEWSBLUR.stats = {{ stats|safe }};
   </script>

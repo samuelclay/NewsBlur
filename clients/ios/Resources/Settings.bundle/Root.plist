@@ -184,23 +184,55 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>Mark stories read on scroll</string>
+			<string>Mark stories read</string>
+			<key>Titles</key>
+			<array>
+				<string>On scroll or selection</string>
+				<string>Only on selection</string>
+				<string>After 1 second</string>
+				<string>After 2 seconds</string>
+				<string>After 3 seconds</string>
+				<string>After 4 seconds</string>
+				<string>After 5 seconds</string>
+				<string>After 10 seconds</string>
+				<string>After 15 seconds</string>
+				<string>After 30 seconds</string>
+				<string>After 45 seconds</string>
+				<string>After 60 seconds</string>
+				<string>Manually</string>
+			</array>
+			<key>Values</key>
+			<array>
+				<string>scroll</string>
+				<string>selection</string>
+				<string>after1</string>
+				<string>after2</string>
+				<string>after3</string>
+				<string>after4</string>
+				<string>after5</string>
+				<string>after10</string>
+				<string>after15</string>
+				<string>after30</string>
+				<string>after45</string>
+				<string>after60</string>
+				<string>manually</string>
+			</array>
 			<key>DefaultValue</key>
-			<string>YES</string>
+			<string>scroll</string>
 			<key>Key</key>
-			<string>default_scroll_read_filter</string>
+			<string>default_mark_read_filter</string>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Show override mark read on scroll</string>
+			<string>Site-specific mark story read</string>
 			<key>DefaultValue</key>
 			<string>YES</string>
 			<key>Key</key>
-			<string>override_scroll_read_filter</string>
+			<string>override_mark_read_filter</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -331,8 +363,6 @@
 		<dict>
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
-			<key>WantUpdate</key>
-			<true/>
 			<key>Title</key>
 			<string>When opening app</string>
 			<key>Titles</key>
@@ -466,7 +496,7 @@
 				<string>Dark</string>
 			</array>
 			<key>DefaultValue</key>
-			<string>light</string>
+			<string>auto</string>
 			<key>Values</key>
 			<array>
 				<string>auto</string>

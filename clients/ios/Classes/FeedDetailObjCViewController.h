@@ -10,7 +10,6 @@
 #import "NewsBlurAppDelegate.h"
 #import "BaseViewController.h"
 #import "Utilities.h"
-#import "NBNotifier.h"
 #import "MCSwipeTableViewCell.h"
 #import "FeedDetailTableCell.h"
 
@@ -20,7 +19,7 @@
 <UITableViewDelegate, UITableViewDataSource,
  UIPopoverControllerDelegate,
  MCSwipeTableViewCellDelegate,
- UIGestureRecognizerDelegate, UISearchBarDelegate,
+ UIGestureRecognizerDelegate, UITextFieldDelegate,
  UITableViewDragDelegate> {
     BOOL pageFetching;
     BOOL pageFinished;
@@ -33,23 +32,18 @@
     UITableView * storyTitlesTable;
     UIBarButtonItem * feedMarkReadButton;
     Class popoverClass;
-    NBNotifier *notifier;
 }
 
 @property (nonatomic, strong) IBOutlet UITableView *storyTitlesTable;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedMarkReadButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedsBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsBarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * titleImageBarButton;
-@property (nonatomic, retain) NBNotifier *notifier;
 @property (nonatomic, retain) StoriesCollection *storiesCollection;
 #if !TARGET_OS_MACCATALYST
 @property (nonatomic) UIRefreshControl *refreshControl;
 #endif
-@property (nonatomic) UISearchBar *searchBar;
+@property (nonatomic) UITextField *searchField;
 @property (nonatomic) IBOutlet UIView *messageView;
 @property (nonatomic) IBOutlet UILabel *messageLabel;
 @property (nonatomic, strong) id standardInteractivePopGestureDelegate;
@@ -58,12 +52,19 @@
 @property (nonatomic) NSIndexPath *swipingIndexPath;
 @property (nonatomic, strong) NSString *swipingStoryHash;
 
+@property (nonatomic, strong) UIView *tryFeedBannerView;
+@property (nonatomic, strong) UIView *fetchingBannerView;
+
 @property (nonatomic, readonly) BOOL canPullToRefresh;
 @property (nonatomic, readonly) BOOL isMarkReadOnScroll;
+@property (nonatomic, readonly) BOOL isMarkReadOnScrollOrSelection;
+@property (nonatomic, readonly) NSTimeInterval markReadAfterInterval;
+@property (nonatomic, readonly) BOOL isMarkReadManually;
 @property (nonatomic, readonly) BOOL isLegacyTable;
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
+@property (nonatomic, readwrite) BOOL dashboardAwaitingFinish;
 @property (nonatomic, readwrite) BOOL finishedAnimatingIn;
 @property (nonatomic, readwrite) BOOL isOnline;
 @property (nonatomic, readwrite) BOOL isShowingFetching;
@@ -71,6 +72,9 @@
 @property (nonatomic, readwrite) BOOL showImagePreview;
 @property (nonatomic, readwrite) BOOL invalidateFontCache;
 @property (nonatomic, readwrite) BOOL cameFromFeedsList;
+@property (nonatomic, readwrite) NSUInteger fetchRequestId;
+@property (nonatomic, readwrite) NSInteger dashboardIndex;
+@property (nonatomic, readwrite) BOOL dashboardSingleMode;
 
 //- (void)changedStoryHeight:(CGFloat)storyHeight;
 - (void)loadingFeed;
@@ -80,8 +84,10 @@
 - (void)reloadTable;
 - (void)reloadIndexPath:(NSIndexPath *)indexPath withRowAnimation:(UITableViewRowAnimation)rowAnimation;
 - (void)reloadWithSizing;
+- (void)doneDashboardChooseSite:(NSString *)riverId;
 - (void)resetFeedDetail;
 - (void)reloadStories;
+- (void)updateSidebarButtonForDisplayMode:(UISplitViewControllerDisplayMode)displayMode;
 - (void)fetchNextPage:(void(^)(void))callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)(void))callback;
 - (void)loadOfflineStories;
@@ -131,11 +137,19 @@
 - (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 - (void)loadFaviconsFromActiveFeed;
 - (void)markFeedsReadFromTimestamp:(NSInteger)cutoffTimestamp andOlder:(BOOL)older;
+- (void)cancelMarkStoryReadTimer;
+- (BOOL)markStoryReadIfNeeded:(NSDictionary *)story isScrolling:(BOOL)isScrolling;
 - (void)finishMarkAsSaved:(NSDictionary *)params;
 - (void)failedMarkAsSaved:(NSDictionary *)params;
 - (void)finishMarkAsUnsaved:(NSDictionary *)params;
 - (void)failedMarkAsUnsaved:(NSDictionary *)params;
 - (void)failedMarkAsUnread:(NSDictionary *)params;
+
+- (void)showTryFeedSubscribeBanner;
+- (void)hideTryFeedSubscribeBanner;
+- (void)showFetchingBanner:(NSString *)title isOffline:(BOOL)isOffline;
+- (void)hideFetchingBanner;
+- (void)updateTopBannerInsets;
 
 - (void)confirmDeleteSite:(UINavigationController *)menuNavigationController;
 - (void)openMoveView:(UINavigationController *)menuNavigationController;

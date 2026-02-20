@@ -648,7 +648,12 @@ def save_ios_receipt(request):
 
     logging.user(request, "~BM~FBSaving iOS Receipt: %s %s" % (product_identifier, transaction_identifier))
 
-    paid = request.user.profile.activate_ios_premium(transaction_identifier)
+    if product_identifier == "newsblur_premium_pro":
+        paid = request.user.profile.activate_ios_pro(transaction_identifier)
+    elif product_identifier == "newsblur_premium_archive":
+        paid = request.user.profile.activate_ios_archive(transaction_identifier)
+    else:
+        paid = request.user.profile.activate_ios_premium(transaction_identifier)
     if paid:
         logging.user(
             request, "~BM~FBSending iOS Receipt email: %s %s" % (product_identifier, transaction_identifier)

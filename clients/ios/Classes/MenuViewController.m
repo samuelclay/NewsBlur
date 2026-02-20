@@ -112,6 +112,35 @@ NSString * const MenuHandler = @"handler";
     [self addTitle:title iconImage:[[UIImage imageNamed:iconTemplateName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] destructive:NO selectionShouldDismiss:selectionShouldDismiss handler:handler];
 }
 
+- (void)addTitle:(NSString *)title iconName:(NSString *)iconName iconColor:(UIColor *)iconColor submenuTitles:(NSArray *)titles values:(NSArray *)values overrideSelectedValue:(id)overrideSelectedValue defaultValue:(id)defaultValue preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSubmenuHandler)handler {
+    __weak MenuViewController *weakParentController = self;
+    UIImage *image = [Utilities imageWithImage:[UIImage imageNamed:iconName] convertToSize:CGSizeMake(20.0, 20.0)];
+    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    
+    [self addTitle:title iconImage:image iconColor:iconColor destructive:NO selectionShouldDismiss:NO handler:^{
+        MenuViewController *viewController = [MenuViewController new];
+        viewController.title = title;
+        id selectedValue = overrideSelectedValue ?: [[NSUserDefaults standardUserDefaults] objectForKey:preferenceKey] ?: defaultValue;
+        
+        for (NSUInteger idx = 0; idx < titles.count; idx++) {
+            NSString *submenuTitle = titles[idx];
+            id submenuValue = values[idx];
+            BOOL selected = [submenuValue isEqual:selectedValue];
+            
+            [viewController addTitle:submenuTitle iconName:nil iconColor:iconColor selectionShouldDismiss:selectionShouldDismiss handler:^{
+                [[NSUserDefaults standardUserDefaults] setObject:submenuValue forKey:preferenceKey];
+                handler(submenuValue);
+            }];
+            
+            if (selected) {
+                viewController.checkedRow = idx;
+            }
+        }
+        
+        [weakParentController.navigationController showViewController:viewController sender:weakParentController];
+    }];
+}
+
 - (void)addSegmentedControlWithTitles:(NSArray *)titles selectIndex:(NSUInteger)selectIndex selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler {
     [self.items addObject:@{MenuSegmentTitles : titles, MenuSegmentIndex : @(selectIndex), MenuSelectionShouldDismiss : @(selectionShouldDismiss), MenuHandler : handler}];
 }
@@ -286,6 +315,10 @@ NSString * const MenuHandler = @"handler";
         if ([title hasSuffix:@".png"]) {
             UIImage *image = [UIImage imageNamed:title];
             
+            if (image.size.width > 50) {
+                image = [Utilities imageWithImage:image convertToSize:CGSizeMake(16, 16)];
+            }
+            
             [segmentedControl insertSegmentWithImage:image atIndex:idx animated:NO];
         } else {
             [segmentedControl insertSegmentWithTitle:title atIndex:idx animated:NO];
@@ -391,7 +424,7 @@ NSString * const MenuHandler = @"handler";
         
         cell.indentationLevel = indent;
         cell.destructive = [item[MenuDestructive] boolValue];
-        cell.tintColor = UIColorFromFixedRGB(0x303030);
+        cell.tintColor = UIColorFromRGB(0x303030);
         cell.textLabel.text = title;
         cell.imageView.image = item[MenuIcon];
         

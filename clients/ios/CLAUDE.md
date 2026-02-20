@@ -29,6 +29,11 @@ xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -
 ### Language Mix
 The app uses **Objective-C** as the primary language with **Swift** for newer components. Swift-ObjC bridging is done through `Other Sources/BridgingHeader.h`.
 
+**IMPORTANT: All new files must be written in Swift, not Objective-C.** When creating new classes:
+- Use Swift with `@objc` and `@objcMembers` annotations if the class needs to be called from ObjC code
+- Swift classes are automatically available to ObjC via the generated `NewsBlur-Swift.h` header
+- Only modify existing ObjC files; never create new `.h`/`.m` files
+
 ### Key Classes
 
 - **NewsBlurAppDelegate** (`Classes/NewsBlurAppDelegate.h/m`): Central singleton managing app state, navigation, feeds data, offline storage, and network operations. Access via `NewsBlurAppDelegate.shared`.
@@ -36,6 +41,22 @@ The app uses **Objective-C** as the primary language with **Swift** for newer co
 - **StoriesCollection** (`Classes/StoriesCollection.h/m`): Manages the current collection of stories being displayed (feed, folder, river view). Handles story state (read/unread/saved) and navigation.
 
 - **ThemeManager** (`Classes/ThemeManager.h/m`): Handles app theming (Light/Sepia/Medium/Dark). Uses macros like `UIColorFromRGB()` and `UIColorFromLightDarkRGB()`.
+
+### Theme Colors
+
+The app supports 4 themes: Light, Warm (Sepia), Medium (Gray), and Dark (Black). Use `UIColorFromLightSepiaMediumDarkRGB()` macro to specify colors for all themes.
+
+| Purpose | Light | Warm/Sepia | Medium | Dark |
+|---------|-------|------------|--------|------|
+| Navigation bar | `0xE3E6E0` | `0xF3E2CB` | `0x333333` | `0x222222` |
+| View background (gray) | `0xd7dadf` | `0xE8DED0` | `0x333333` | `0x111111` |
+| Content background (white) | `0xFFFFFF` | `0xFAF5ED` | `0x333333` | `0x111111` |
+| Section header background | `0xf4f4f4` | `0xF3E2CB` | `0x333333` | `0x222222` |
+| Section header text | `0x8F918B` | `0x8B7B6B` | `0x8F918B` | `0x8F918B` |
+| Grid/card background | `0xECEEEA` | `0xF3E2CB` | `0x333333` | `0x222222` |
+| Separator | `0xE9E8E4` | `0xD4C8B8` | `0x333333` | `0x222222` |
+
+**Important:** When adding colors to modals/popovers, always use `UIColorFromLightSepiaMediumDarkRGB()` instead of `UIColorFromRGB()` to ensure correct colors in Warm theme. The generic `UIColorFromRGB()` applies a matrix transformation that can produce unintended yellow tints for gray colors.
 
 ### View Controller Hierarchy
 
@@ -119,18 +140,23 @@ Story content is rendered in WKWebView with:
 
 Use `run_ios.py` for common simulator interactions. It handles idb PATH setup automatically.
 
+**IMPORTANT: You must specify a simulator UDID.** First run `list` to find available simulators, then pass the UDID via `--udid`:
+
 ```bash
-# Basic actions
-python3 run_ios.py tap:<x>,<y>              # Tap at coordinates
-python3 run_ios.py sleep:<seconds>          # Wait
-python3 run_ios.py swipe:<x1>,<y1>,<x2>,<y2> # Swipe
-python3 run_ios.py screenshot:/tmp/shot.png  # Take screenshot
-python3 run_ios.py launch                    # Launch NewsBlur
-python3 run_ios.py terminate                 # Kill NewsBlur
-python3 run_ios.py install                   # Install from DerivedData
+# Step 1: Find available simulators and their UDIDs
+python3 run_ios.py list
+
+# Step 2: Use --udid with any action
+python3 run_ios.py --udid <UDID> tap:<x>,<y>              # Tap at coordinates
+python3 run_ios.py --udid <UDID> sleep:<seconds>          # Wait
+python3 run_ios.py --udid <UDID> swipe:<x1>,<y1>,<x2>,<y2> # Swipe
+python3 run_ios.py --udid <UDID> screenshot:/tmp/shot.png  # Take screenshot
+python3 run_ios.py --udid <UDID> launch                    # Launch NewsBlur
+python3 run_ios.py --udid <UDID> terminate                 # Kill NewsBlur
+python3 run_ios.py --udid <UDID> install                   # Install from DerivedData
 
 # Chain multiple actions
-python3 run_ios.py launch sleep:2 tap:175,600 sleep:1 screenshot:/tmp/result.png
+python3 run_ios.py --udid <UDID> launch sleep:2 tap:175,600 sleep:1 screenshot:/tmp/result.png
 ```
 
 ### Screenshot Coordinate Mapping (iPhone 16e)

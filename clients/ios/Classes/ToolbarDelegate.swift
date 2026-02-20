@@ -79,7 +79,7 @@ extension ToolbarDelegate: NSToolbarDelegate {
         }
     }
     
-    func makeToolbarItem(_ identifier: NSToolbarItem.Identifier,
+    @MainActor func makeToolbarItem(_ identifier: NSToolbarItem.Identifier,
                          image: UIImage?,
                          label: String,
                          action: Selector,

@@ -12,9 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ShareViewController">
             <connections>
                 <outlet property="commentField" destination="10" id="13"/>
-                <outlet property="facebookButton" destination="43" id="45"/>
                 <outlet property="storyTitle" destination="514" id="515"/>
-                <outlet property="twitterButton" destination="11" id="25"/>
                 <outlet property="view" destination="1" id="22"/>
             </connections>
         </placeholder>
@@ -22,10 +20,6 @@
         <view contentMode="scaleToFill" id="1">
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-            <userGuides>
-                <userLayoutGuide location="118" affinity="minY"/>
-                <userLayoutGuide location="264" affinity="minY"/>
-            </userGuides>
             <subviews>
                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" horizontalHuggingPriority="248" verticalHuggingPriority="247" showsHorizontalScrollIndicator="NO" id="10">
                     <rect key="frame" x="20" y="47" width="280" height="110"/>
@@ -34,40 +28,6 @@
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                 </textView>
-                <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="11">
-                    <rect key="frame" x="196" y="165" width="48" height="36"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                    <inset key="imageEdgeInsets" minX="4" minY="2" maxX="4" maxY="2"/>
-                    <state key="normal" image="story_share_twitter.png">
-                        <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </state>
-                    <state key="selected" image="story_share_twitter_active.png" backgroundImage="white_spacer.png"/>
-                    <state key="highlighted">
-                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </state>
-                    <connections>
-                        <action selector="doToggleButton:" destination="-1" eventType="touchUpInside" id="23"/>
-                    </connections>
-                </button>
-                <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="43">
-                    <rect key="frame" x="252" y="165" width="48" height="36"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                    <inset key="imageEdgeInsets" minX="4" minY="2" maxX="4" maxY="2"/>
-                    <state key="normal" image="story_share_facebook.png">
-                        <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </state>
-                    <state key="selected" image="story_share_facebook_active.png" backgroundImage="white_spacer.png"/>
-                    <state key="highlighted">
-                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                    </state>
-                    <connections>
-                        <action selector="doToggleButton:" destination="-1" eventType="touchUpInside" id="44"/>
-                    </connections>
-                </button>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Story title that spans the width of the view" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="514">
                     <rect key="frame" x="20" y="18" width="280" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -83,11 +43,4 @@
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
         </view>
     </objects>
-    <resources>
-        <image name="story_share_facebook.png" width="12" height="12"/>
-        <image name="story_share_facebook_active.png" width="12" height="12"/>
-        <image name="story_share_twitter.png" width="12" height="12"/>
-        <image name="story_share_twitter_active.png" width="12" height="12"/>
-        <image name="white_spacer.png" width="1" height="1"/>
-    </resources>
 </document>
