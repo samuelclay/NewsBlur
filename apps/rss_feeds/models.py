@@ -1,3 +1,10 @@
+"""RSS feed and story models: Feed (PostgreSQL), MStory (MongoDB), and feed page/icon storage.
+
+Feed stores feed metadata and scheduling in PostgreSQL. MStory stores story
+content in MongoDB. Additional models handle feed pages, favicons, fetch
+history, and duplicate feed detection.
+"""
+
 import base64
 import csv
 import datetime

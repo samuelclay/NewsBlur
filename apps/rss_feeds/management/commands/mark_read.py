@@ -7,6 +7,8 @@ from apps.reader.models import UserSubscription
 
 
 class Command(BaseCommand):
+    help = "Mark all feed stories as read for a user, optionally keeping the last N days unread."
+
     def add_arguments(self, parser):
         parser.add_argument("-d", "--days", dest="days", nargs=1, default=1, help="Days of unread")
         parser.add_argument("-u", "--username", dest="username", nargs=1, help="Specify user id or username")

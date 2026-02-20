@@ -1,3 +1,9 @@
+"""Django view helpers: request deduplication, JSON responses, and rendering utilities.
+
+Includes RequestDeduplicator for collapsing concurrent identical API requests
+into a single execution, plus helpers for JSON/HTML responses and 404 handling.
+"""
+
 import functools
 import json as json_lib
 import time

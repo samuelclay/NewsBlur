@@ -1,3 +1,11 @@
+"""Intelligence classifier models stored in MongoDB.
+
+Per-user classifiers (MClassifierTitle, MClassifierAuthor, MClassifierTag,
+MClassifierFeed, MClassifierPrompt) that score stories as liked (+1),
+neutral (0), or disliked (-1). Supports both keyword-based and AI prompt
+classifiers.
+"""
+
 import datetime
 import re
 import threading
