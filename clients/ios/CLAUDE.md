@@ -140,18 +140,23 @@ Story content is rendered in WKWebView with:
 
 Use `run_ios.py` for common simulator interactions. It handles idb PATH setup automatically.
 
+**IMPORTANT: You must specify a simulator UDID.** First run `list` to find available simulators, then pass the UDID via `--udid`:
+
 ```bash
-# Basic actions
-python3 run_ios.py tap:<x>,<y>              # Tap at coordinates
-python3 run_ios.py sleep:<seconds>          # Wait
-python3 run_ios.py swipe:<x1>,<y1>,<x2>,<y2> # Swipe
-python3 run_ios.py screenshot:/tmp/shot.png  # Take screenshot
-python3 run_ios.py launch                    # Launch NewsBlur
-python3 run_ios.py terminate                 # Kill NewsBlur
-python3 run_ios.py install                   # Install from DerivedData
+# Step 1: Find available simulators and their UDIDs
+python3 run_ios.py list
+
+# Step 2: Use --udid with any action
+python3 run_ios.py --udid <UDID> tap:<x>,<y>              # Tap at coordinates
+python3 run_ios.py --udid <UDID> sleep:<seconds>          # Wait
+python3 run_ios.py --udid <UDID> swipe:<x1>,<y1>,<x2>,<y2> # Swipe
+python3 run_ios.py --udid <UDID> screenshot:/tmp/shot.png  # Take screenshot
+python3 run_ios.py --udid <UDID> launch                    # Launch NewsBlur
+python3 run_ios.py --udid <UDID> terminate                 # Kill NewsBlur
+python3 run_ios.py --udid <UDID> install                   # Install from DerivedData
 
 # Chain multiple actions
-python3 run_ios.py launch sleep:2 tap:175,600 sleep:1 screenshot:/tmp/result.png
+python3 run_ios.py --udid <UDID> launch sleep:2 tap:175,600 sleep:1 screenshot:/tmp/result.png
 ```
 
 ### Screenshot Coordinate Mapping (iPhone 16e)
