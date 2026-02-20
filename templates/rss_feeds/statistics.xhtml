@@ -4,7 +4,7 @@
 <head>
   <title>{% block title %}NewsBlur{% endblock %}</title>
   {% include_stylesheets "common" %}
-  <meta name="viewport" content="width=625, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
   <script>
     window.NEWSBLUR = {};
@@ -27,9 +27,14 @@
 </head>
 
 <body class="NB-embedded-statistics {% if user.profile.is_premium %}NB-premium{% endif %}">
-  
+
   <div class="NB-embedded-stats"></div>
 
+  <script>
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.classList.add('NB-dark');
+    }
+  </script>
   <script>
     NEWSBLUR.stats_feed = new NEWSBLUR.Models.Feed({{ feed_js|safe }});
     NEWSBLUR.stats_dialog = new NEWSBLUR.ReaderStatistics({{ feed.pk }}, {embedded: true});
