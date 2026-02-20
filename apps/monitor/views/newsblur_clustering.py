@@ -26,24 +26,29 @@ class Clustering(View):
         formatted_data = {}
 
         for metric in RClusteringUsage.METRICS:
-            formatted_data[f"{metric}_daily"] = (
-                f'{chart_name}{{metric="{metric}",period="daily"}} {daily_stats[metric]}'
-            )
-            formatted_data[f"{metric}_weekly"] = (
-                f'{chart_name}{{metric="{metric}",period="weekly"}} {weekly_stats[metric]}'
-            )
-            formatted_data[f"{metric}_monthly"] = (
-                f'{chart_name}{{metric="{metric}",period="monthly"}} {monthly_stats[metric]}'
-            )
-            formatted_data[f"{metric}_alltime"] = (
-                f'{chart_name}{{metric="{metric}",period="alltime"}} {alltime_stats[metric]}'
-            )
+            formatted_data[
+                f"{metric}_daily"
+            ] = f'{chart_name}{{metric="{metric}",period="daily"}} {daily_stats[metric]}'
+            formatted_data[
+                f"{metric}_weekly"
+            ] = f'{chart_name}{{metric="{metric}",period="weekly"}} {weekly_stats[metric]}'
+            formatted_data[
+                f"{metric}_monthly"
+            ] = f'{chart_name}{{metric="{metric}",period="monthly"}} {monthly_stats[metric]}'
+            formatted_data[
+                f"{metric}_alltime"
+            ] = f'{chart_name}{{metric="{metric}",period="alltime"}} {alltime_stats[metric]}'
 
         timing_metric = "cluster_time_avg_ms"
-        for period, stats in [("daily", daily_stats), ("weekly", weekly_stats), ("monthly", monthly_stats), ("alltime", alltime_stats)]:
-            formatted_data[f"{timing_metric}_{period}"] = (
-                f'{chart_name}{{metric="{timing_metric}",period="{period}"}} {stats[timing_metric]}'
-            )
+        for period, stats in [
+            ("daily", daily_stats),
+            ("weekly", weekly_stats),
+            ("monthly", monthly_stats),
+            ("alltime", alltime_stats),
+        ]:
+            formatted_data[
+                f"{timing_metric}_{period}"
+            ] = f'{chart_name}{{metric="{timing_metric}",period="{period}"}} {stats[timing_metric]}'
 
         context = {
             "data": formatted_data,
