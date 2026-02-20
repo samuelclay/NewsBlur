@@ -134,13 +134,17 @@ Story content is rendered in WKWebView with:
 
 ## iOS Simulator Testing
 
-**IMPORTANT**: Do NOT use Chrome DevTools MCP server for iOS testing. Always use `run_ios.py` for screenshots and simulator interactions.
+**IMPORTANT**: Always use `run_ios.py` for ALL simulator interactions (screenshots, taps, builds, installs). Do NOT use Chrome DevTools MCP server, `xcrun simctl`, or `idb` directly — `run_ios.py` wraps these and handles PATH setup automatically.
+
+### Choosing a Simulator
+
+1. Run `python3 run_ios.py list` to see available simulators
+2. Use whichever device is already **Booted** (marked with `<-- BOOTED` in the list)
+3. If no device is booted, boot an **iPhone 16e** on the latest available iOS version: `xcrun simctl boot <UDID>`
 
 ### run_ios.py - Simulator Control Script
 
-Use `run_ios.py` for common simulator interactions. It handles idb PATH setup automatically.
-
-**IMPORTANT: You must specify a simulator UDID.** First run `list` to find available simulators, then pass the UDID via `--udid`:
+**IMPORTANT: You must specify a simulator UDID.** First run `list` to find the booted device, then pass the UDID via `--udid`:
 
 ```bash
 # Step 1: Find available simulators and their UDIDs
@@ -184,17 +188,8 @@ tap_y = screenshot_y / 3.073
 - Settings cog at screenshot position (1100, 2420) → tap coordinates (361, 788)
 - List item 8 rows down at screenshot position (400, 1190) → tap coordinates (131, 387)
 
-### Manual Simulator Commands
+### Manual Simulator Commands (reference only — prefer run_ios.py)
 
-- **idb (iOS Development Bridge)**: Use `idb` for UI interactions like tapping coordinates
-  - Install: `brew install idb-companion` and `pip3 install --user fb-idb`
-  - Add to PATH: `export PATH="$PATH:~/Library/Python/3.13/bin"`
-  - Tap: `idb ui tap --udid <UDID> <x> <y>`
-- **xcrun simctl commands**:
-  - List devices: `xcrun simctl list devices`
-  - Install app: `xcrun simctl install booted <path/to/App.app>`
-  - Launch app: `xcrun simctl launch booted <bundle.id>`
-  - Terminate app: `xcrun simctl terminate booted <bundle.id>`
-  - Screenshot: `xcrun simctl io booted screenshot /tmp/screenshot.png`
-  - Stream logs: `xcrun simctl spawn booted log stream --predicate 'process == "NewsBlur"'`
-- **Build for simulator**: `xcodebuild -project NewsBlur.xcodeproj -scheme NewsBlur -destination 'id=<UDID>' -configuration Debug build`
+- **Boot a simulator**: `xcrun simctl boot <UDID>`
+- **Stream logs**: `xcrun simctl spawn booted log stream --predicate 'process == "NewsBlur"'`
+- **Build for simulator**: `xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur Alpha" -destination 'id=<UDID>' -configuration Debug build`
