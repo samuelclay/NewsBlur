@@ -1,3 +1,10 @@
+"""Elasticsearch integration models for story and feed indexing.
+
+SearchStory manages the Elasticsearch index lifecycle (create, drop, reindex)
+and provides story search by keyword with feed-scoped queries. SearchFeed
+indexes feed metadata for feed discovery search.
+"""
+
 import datetime
 import html
 import re

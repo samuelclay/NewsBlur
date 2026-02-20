@@ -1,3 +1,10 @@
+"""Story content processing: HTML sanitization, text diffing, date formatting, and hashing.
+
+Core utilities for preparing story content for display -- strips unsafe HTML,
+generates content diffs between story versions, formats relative dates, and
+produces story content hashes for deduplication.
+"""
+
 import base64
 import datetime
 import hashlib

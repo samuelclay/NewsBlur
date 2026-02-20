@@ -1,3 +1,10 @@
+"""User profile and subscription models: Profile, PaymentHistory, premium tiers, and billing.
+
+Profile extends Django's User with subscription tier (Free/Premium/Archive/Pro),
+payment integration (Stripe, PayPal), notification preferences, and usage limits.
+PaymentHistory tracks all billing events.
+"""
+
 import datetime
 import hashlib
 import re

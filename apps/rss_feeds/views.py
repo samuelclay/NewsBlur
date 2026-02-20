@@ -1,3 +1,10 @@
+"""RSS feed views: feed CRUD, story detail, feed statistics, and exception handling.
+
+API endpoints for adding/removing/moving feeds, loading individual stories,
+fetching original page content, viewing feed statistics, and managing feed
+exceptions (address changes, duplicate detection).
+"""
+
 import base64
 import datetime
 import re

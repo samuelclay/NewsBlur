@@ -1,3 +1,9 @@
+"""User authentication helpers: AJAX login decorators, OAuth, and user-agent extraction.
+
+Provides ajax_login_required and admin_only decorators for views,
+OAuth token verification, and request user-agent/platform detection.
+"""
+
 import hashlib
 
 from django.conf import settings

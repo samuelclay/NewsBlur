@@ -1,3 +1,10 @@
+"""Core feed reader views: subscriptions, story loading, folder management, and mark-read.
+
+Handles the primary API endpoints for the NewsBlur reader -- loading feeds and
+stories, managing folders and subscriptions, marking stories as read/unread/saved,
+and river (multi-feed) story views.
+"""
+
 import base64
 import concurrent
 import datetime

@@ -3,6 +3,8 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
+    help = "Send a forgot-password email to a user, looked up by username or email."
+
     def add_arguments(self, parser):
         parser.add_argument("-u", "--username", dest="username", nargs=1, help="Specify user id or username")
         parser.add_argument("-e", "--email", dest="email", nargs=1, help="Specify email if it doesn't exist")
