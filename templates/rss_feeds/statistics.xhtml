@@ -5,7 +5,12 @@
   <title>{% block title %}NewsBlur{% endblock %}</title>
   {% include_stylesheets "common" %}
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  
+  <style>
+    @media (prefers-color-scheme: dark) {
+      html, body { background-color: #191b1c; color: #c0c0c0; }
+    }
+  </style>
+
   <script>
     window.NEWSBLUR = {};
     NEWSBLUR.Models = {};
