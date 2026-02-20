@@ -41,7 +41,27 @@ def title_significant_words(title):
     return frozenset(w for w in norm.split() if w not in STOPWORDS and len(w) > 2)
 
 
-def find_title_clusters(stories):
+def story_guid_hash(story_hash):
+    """Extract the GUID hash suffix from a story_hash (format: feed_id:guid_hash).
+
+    Stories from duplicate/branched feeds share the same GUID hash, so
+    matching on this detects the same underlying content regardless of feed.
+    """
+    return story_hash.split(":", 1)[1] if ":" in story_hash else story_hash
+
+
+def resolve_feed_id(feed_id, original_feed_map):
+    """Resolve a feed_id to its original (non-branched) feed_id.
+
+    Branched feeds share the same original_feed_id, so clustering treats
+    them as the same source to avoid false clusters.
+    """
+    if original_feed_map:
+        return original_feed_map.get(feed_id, feed_id)
+    return feed_id
+
+
+def find_title_clusters(stories, original_feed_map=None):
     """Group stories by title similarity across different feeds.
 
     Uses two tiers:
@@ -49,8 +69,12 @@ def find_title_clusters(stories):
     2. Significant-word overlap with Jaccard similarity >= threshold (catches
        rephrased headlines about the same event)
 
+    Skips pairs that share the same GUID hash (duplicate/branched feed copies)
+    or resolve to the same original feed via branch_from_feed.
+
     Args:
         stories: list of dicts with at minimum 'story_hash', 'story_title', 'story_feed_id'
+        original_feed_map: dict of {feed_id: original_feed_id} for branched feed resolution
 
     Returns:
         dict of {cluster_key: [story_hash, ...]} where cluster_key is the
@@ -88,13 +112,23 @@ def find_title_clusters(stories):
         if norm and len(norm) >= TITLE_MIN_LENGTH:
             parent[s["story_hash"]] = s["story_hash"]
 
-    # Union exact matches
+    # Union exact matches: GUID-dedup the group first so we compare all
+    # genuinely different stories, not just pairs anchored on group[0].
     for norm_title, group in title_groups.items():
-        feed_ids = set(s["story_feed_id"] for s in group)
-        if len(feed_ids) < 2:
+        # Keep one representative per unique GUID to avoid unioning duplicates
+        guid_reps = {}
+        for s in group:
+            guid = story_guid_hash(s["story_hash"])
+            if guid not in guid_reps:
+                guid_reps[guid] = s
+        deduped_group = list(guid_reps.values())
+        # Need 2+ different resolved feeds among GUID-unique stories
+        rfids = set(resolve_feed_id(s["story_feed_id"], original_feed_map) for s in deduped_group)
+        if len(rfids) < 2:
             continue
-        for i in range(1, len(group)):
-            union(group[0]["story_hash"], group[i]["story_hash"])
+        # Union all GUID-unique stories together
+        for i in range(1, len(deduped_group)):
+            union(deduped_group[0]["story_hash"], deduped_group[i]["story_hash"])
 
     # Tier 2: Fuzzy matching via significant-word Jaccard similarity
     # Build word-set index for stories not yet in a multi-feed cluster
@@ -131,7 +165,9 @@ def find_title_clusters(stories):
 
                 h_a, fid_a, words_a = word_index[idx_a]
                 h_b, fid_b, words_b = word_index[idx_b]
-                if fid_a == fid_b:
+                if resolve_feed_id(fid_a, original_feed_map) == resolve_feed_id(fid_b, original_feed_map):
+                    continue
+                if story_guid_hash(h_a) == story_guid_hash(h_b):
                     continue
 
                 intersection = len(words_a & words_b)
@@ -148,13 +184,22 @@ def find_title_clusters(stories):
         root = find(h)
         groups.setdefault(root, []).append(h)
 
-    # Only return clusters with 2+ stories from different feeds
+    # Only return clusters with 2+ GUID-unique stories from different resolved feeds.
+    # Keep ALL members (including GUID duplicates) so every story_hash gets an sCL:
+    # key in Redis — otherwise the dropped copy can't resolve its cluster.
     clusters = {}
     for root, members in groups.items():
         if len(members) < 2:
             continue
-        member_feeds = set(story_by_hash[h]["story_feed_id"] for h in members)
-        if len(member_feeds) < 2:
+        # Validate using GUID-unique members: need 2+ unique stories from 2+ feeds
+        guid_to_feed = {}
+        for h in members:
+            guid = story_guid_hash(h)
+            if guid not in guid_to_feed:
+                guid_to_feed[guid] = resolve_feed_id(story_by_hash[h]["story_feed_id"], original_feed_map)
+        if len(guid_to_feed) < 2:
+            continue
+        if len(set(guid_to_feed.values())) < 2:
             continue
         members.sort(key=lambda h: story_by_hash[h].get("story_date") or 0)
         cluster_id = members[0]
@@ -163,7 +208,7 @@ def find_title_clusters(stories):
     return clusters
 
 
-def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30):
+def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30, original_feed_map=None):
     """Find semantically similar stories using Elasticsearch more_like_this.
 
     For each story, sends its title + content as text to ES MLT to find
@@ -222,8 +267,9 @@ def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30):
         if not query_text or len(query_text.strip()) < 10:
             continue
 
-        # Search across related feeds, excluding this story's own feed
-        search_feed_ids = [fid for fid in feed_ids if fid != story["story_feed_id"]]
+        # Search across related feeds, excluding this story's own feed and its branches
+        story_rfid = resolve_feed_id(story["story_feed_id"], original_feed_map)
+        search_feed_ids = [fid for fid in feed_ids if resolve_feed_id(fid, original_feed_map) != story_rfid]
         if not search_feed_ids:
             continue
 
@@ -274,6 +320,9 @@ def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30):
             sim_hash = hit["_id"]
             if sim_hash == story_hash:
                 continue
+            # Skip duplicate/branched feed copies of the same story
+            if story_guid_hash(sim_hash) == story_guid_hash(story_hash):
+                continue
             sim_feed = (hit.get("fields", {}).get("feed_id") or [None])[0]
             if sim_feed:
                 story_feed_map[sim_hash] = sim_feed
@@ -287,20 +336,27 @@ def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30):
         root = find(h)
         groups.setdefault(root, []).append(h)
 
-    # Only return clusters with 2+ stories from different feeds
+    # Only return clusters with 2+ GUID-unique stories from different resolved feeds.
+    # Keep ALL members so every story_hash gets an sCL: key in Redis.
     clusters = {}
     for root, members in groups.items():
         if len(members) < 2:
             continue
-        member_feeds = set(story_feed_map.get(h) for h in members if story_feed_map.get(h))
-        if len(member_feeds) < 2:
+        guid_to_feed = {}
+        for h in members:
+            guid = story_guid_hash(h)
+            if guid not in guid_to_feed and story_feed_map.get(h):
+                guid_to_feed[guid] = resolve_feed_id(story_feed_map[h], original_feed_map)
+        if len(guid_to_feed) < 2:
+            continue
+        if len(set(guid_to_feed.values())) < 2:
             continue
         clusters[root] = members[:CLUSTER_MAX_SIZE]
 
     return clusters
 
 
-def merge_clusters(title_clusters, semantic_clusters, story_feed_map=None):
+def merge_clusters(title_clusters, semantic_clusters, story_feed_map=None, original_feed_map=None):
     """Merge title-based and semantic clusters using union-find.
 
     If any story appears in both a title cluster and a semantic cluster,
@@ -368,8 +424,14 @@ def merge_clusters(title_clusters, semantic_clusters, story_feed_map=None):
         for root, members in groups.items():
             if len(members) < 2:
                 continue
-            member_feeds = set(story_feed_map.get(h) for h in members if story_feed_map.get(h))
-            if len(member_feeds) < 2:
+            guid_to_feed = {}
+            for h in members:
+                guid = story_guid_hash(h)
+                if guid not in guid_to_feed and story_feed_map.get(h):
+                    guid_to_feed[guid] = resolve_feed_id(story_feed_map[h], original_feed_map)
+            if len(guid_to_feed) < 2:
+                continue
+            if len(set(guid_to_feed.values())) < 2:
                 continue
             clusters[root] = members[:CLUSTER_MAX_SIZE]
         return clusters
@@ -403,8 +465,7 @@ def store_clusters_to_redis(clusters, ttl=CLUSTER_TTL_SECONDS):
 
     total_stories = sum(len(m) for m in clusters.values())
     logging.debug(
-        " ---> ~FBClustering: stored %s clusters with %s total stories"
-        % (len(clusters), total_stories)
+        " ---> ~FBClustering: stored %s clusters with %s total stories" % (len(clusters), total_stories)
     )
 
     # clustering/models.py: Record unique cluster IDs and story hashes for Grafana
@@ -450,6 +511,14 @@ def apply_clustering_to_stories(stories, user):
     if not stories:
         return stories
 
+    # Get the user's subscribed feed IDs so we only show cluster members
+    # from feeds the user actually subscribes to.
+    from apps.reader.models import UserSubscription
+
+    user_feed_ids = set(
+        UserSubscription.objects.filter(user=user, active=True).values_list("feed_id", flat=True)
+    )
+
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
 
     # Batch lookup cluster memberships for stories on this page
@@ -485,12 +554,16 @@ def apply_clustering_to_stories(stories, user):
     page_hashes = set(story_hashes)
     page_stories_by_hash = {s["story_hash"]: s for s in stories}
 
-    # For each cluster, fetch metadata for members NOT on this page from MongoDB
+    # For each cluster, fetch metadata for members NOT on this page from MongoDB.
+    # Only include members from feeds the user is subscribed to.
     off_page_hashes = set()
     for cid, members in cluster_all_members.items():
         for h in members:
             if h not in page_hashes:
-                off_page_hashes.add(h)
+                # Extract feed_id from story_hash (format: feed_id:guid_hash)
+                member_feed_id = int(h.split(":", 1)[0]) if ":" in h else None
+                if member_feed_id and member_feed_id in user_feed_ids:
+                    off_page_hashes.add(h)
 
     from apps.rss_feeds.models import Feed, MStory
 
@@ -526,7 +599,9 @@ def apply_clustering_to_stories(stories, user):
 
     for cid, page_group in cluster_page_stories.items():
         all_members = cluster_all_members.get(cid, [])
-        if len(all_members) < 2:
+        # Need 2+ GUID-unique members (clusters may include GUID duplicates)
+        unique_guids = set(story_guid_hash(h) for h in all_members)
+        if len(unique_guids) < 2:
             continue
 
         # The representative is the highest-scoring story on this page
@@ -538,11 +613,18 @@ def apply_clustering_to_stories(stories, user):
         for s in page_group[1:]:
             clustered_hashes.add(s["story_hash"])
 
-        # Build cluster_stories from ALL other members (on-page and off-page)
+        # Build cluster_stories from ALL other members (on-page and off-page).
+        # Dedup by GUID: show one story per unique GUID, skipping the
+        # representative's GUID and any duplicate GUIDs already seen.
+        seen_guids = {story_guid_hash(representative["story_hash"])}
         cluster_stories = []
         for member_hash in all_members:
             if member_hash == representative["story_hash"]:
                 continue
+            guid = story_guid_hash(member_hash)
+            if guid in seen_guids:
+                continue
+            seen_guids.add(guid)
 
             if member_hash in page_stories_by_hash:
                 # On-page member

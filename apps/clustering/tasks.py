@@ -3,8 +3,8 @@ import time
 
 import redis
 from django.conf import settings
-from newsblur_web.celeryapp import app
 
+from newsblur_web.celeryapp import app
 from utils import log as logging
 
 
@@ -66,9 +66,9 @@ def ComputeStoryClusters(feed_id):
 
     # Find archive users subscribed to this feed
     archive_user_ids = list(
-        UserSubscription.objects.filter(feed_id=feed_id, active=True, user__profile__is_archive=True).values_list(
-            "user_id", flat=True
-        )[:50]
+        UserSubscription.objects.filter(
+            feed_id=feed_id, active=True, user__profile__is_archive=True
+        ).values_list("user_id", flat=True)[:50]
     )
     if not archive_user_ids:
         return
@@ -125,23 +125,40 @@ def ComputeStoryClusters(feed_id):
         % (feed_id, len(unclustered), len(candidate_hashes))
     )
 
+    # Build original_feed_map for branched feed resolution.
+    # Maps each feed_id to its original (non-branched) feed_id so that
+    # stories from branched/duplicate feeds are treated as the same source.
+    all_feed_ids = [feed_id] + related_feed_ids
+    original_feed_map = {}
+    for f in Feed.objects.filter(pk__in=all_feed_ids).only("pk", "branch_from_feed"):
+        if f.branch_from_feed_id:
+            original_feed_map[f.pk] = f.branch_from_feed_id
+        else:
+            original_feed_map[f.pk] = f.pk
+
     # Tier 1: Title-based clustering
-    title_clusters = find_title_clusters(stories)
+    title_clusters = find_title_clusters(stories, original_feed_map=original_feed_map)
 
     # Tier 2: Semantic clustering via Elasticsearch MLT on new stories only.
     # Use story titles as query text, searching both title and content fields
     # in the ES index to find similar stories across related feeds.
     unclustered_stories = [s for s in stories if s["story_hash"] in set(unclustered)]
 
-    all_feed_ids = [feed_id] + related_feed_ids
     semantic_clusters = {}
     if unclustered_stories:
-        semantic_clusters = find_semantic_clusters(unclustered_stories, all_feed_ids, lookback_date=lookback)
+        semantic_clusters = find_semantic_clusters(
+            unclustered_stories, all_feed_ids, lookback_date=lookback, original_feed_map=original_feed_map
+        )
 
     # Merge title and semantic clusters
     if title_clusters or semantic_clusters:
         story_feed_map = {s["story_hash"]: s["story_feed_id"] for s in stories}
-        combined = merge_clusters(title_clusters, semantic_clusters, story_feed_map=story_feed_map)
+        combined = merge_clusters(
+            title_clusters,
+            semantic_clusters,
+            story_feed_map=story_feed_map,
+            original_feed_map=original_feed_map,
+        )
         store_clusters_to_redis(combined)
         logging.debug(
             " ---> ~FBClustering: found %s title + %s semantic = %s combined clusters for feed %s"
