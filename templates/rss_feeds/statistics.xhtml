@@ -19,14 +19,6 @@
     NEWSBLUR.URLs = {
       'favicon'                 : "/rss_feeds/icon/{id}"
     };
-    NEWSBLUR.assets = {
-      theme: function() {
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
-        }
-        return 'light';
-      }
-    };
     NEWSBLUR.stats = {{ stats|safe }};
   </script>
 
