@@ -106,6 +106,8 @@ abstract class Reading :
     private lateinit var binding: ActivityReadingBinding
     private lateinit var readingViewModel: ReadingViewModel
 
+    private lateinit var readingBackCallback: OnBackPressedCallback
+
     private var lastBatchFirstUnreadIndex: Int = -1
     private var storyCounts: Int? = null
 
@@ -250,14 +252,16 @@ abstract class Reading :
      * Overrides on back pressed to use overridden [Reading.finish] method
      */
     private fun setupOnBackPressed() {
-        onBackPressedDispatcher.addCallback(
-            this,
-            object : OnBackPressedCallback(enabled = true) {
+        readingBackCallback =
+            object : OnBackPressedCallback(enabled = false) {
                 override fun handleOnBackPressed() {
+                    val current = readingAdapter?.getExistingItem(pager?.currentItem ?: 0)
+                    if (current?.handleBackPressed() == true) return
+
                     finish()
                 }
-            },
-        )
+            }
+        onBackPressedDispatcher.addCallback(this, readingBackCallback)
     }
 
     private fun loadActiveStories(finishOnInvalidFs: Boolean = false) {
@@ -368,8 +372,14 @@ abstract class Reading :
         pager.pageMargin = UIUtils.dp2px(this, 1)
 
         when (prefsRepo.getSelectedTheme()) {
-            ThemeValue.LIGHT -> pager.setPageMarginDrawable(R.drawable.divider_light)
-            ThemeValue.DARK, ThemeValue.BLACK -> pager.setPageMarginDrawable(R.drawable.divider_dark)
+            ThemeValue.LIGHT -> {
+                pager.setPageMarginDrawable(R.drawable.divider_light)
+            }
+
+            ThemeValue.DARK, ThemeValue.BLACK -> {
+                pager.setPageMarginDrawable(R.drawable.divider_dark)
+            }
+
             ThemeValue.AUTO -> {
                 when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
                     Configuration.UI_MODE_NIGHT_YES -> pager.setPageMarginDrawable(R.drawable.divider_dark)
@@ -916,24 +926,65 @@ abstract class Reading :
             if (isActive) feedUtils.markStoryAsRead(story, this@Reading)
         }
 
+    fun setReadingBackCallbackEnabled(enabled: Boolean) {
+        if (::readingBackCallback.isInitialized) {
+            readingBackCallback.isEnabled = enabled
+        }
+    }
+
     override fun onKeyboardEvent(event: KeyboardEvent) {
         when (event) {
-            KeyboardEvent.NextStory -> nextStory()
-            KeyboardEvent.PreviousStory -> previousStory()
-            KeyboardEvent.NextUnreadStory -> nextUnread()
-            KeyboardEvent.OpenInBrowser -> readingFragment?.openBrowser()
-            KeyboardEvent.OpenStoryTrainer -> readingFragment?.openStoryTrainer()
-            KeyboardEvent.SaveUnsaveStory -> readingFragment?.switchStorySavedState(true)
-            KeyboardEvent.ScrollToComments -> readingFragment?.scrollToComments()
-            KeyboardEvent.ShareStory -> readingFragment?.openShareDialog()
-            KeyboardEvent.ToggleReadUnread -> readingFragment?.switchMarkStoryReadState(true)
-            KeyboardEvent.ToggleTextView -> readingFragment?.switchSelectedViewMode()
-            KeyboardEvent.Tutorial -> readingFragment?.showStoryShortcuts()
-            KeyboardEvent.PageDown ->
-                readingFragment?.scrollVerticallyBy(UIUtils.dp2px(this, VERTICAL_SCROLL_DISTANCE_DP))
+            KeyboardEvent.NextStory -> {
+                nextStory()
+            }
 
-            KeyboardEvent.PageUp ->
+            KeyboardEvent.PreviousStory -> {
+                previousStory()
+            }
+
+            KeyboardEvent.NextUnreadStory -> {
+                nextUnread()
+            }
+
+            KeyboardEvent.OpenInBrowser -> {
+                readingFragment?.openBrowser()
+            }
+
+            KeyboardEvent.OpenStoryTrainer -> {
+                readingFragment?.openStoryTrainer()
+            }
+
+            KeyboardEvent.SaveUnsaveStory -> {
+                readingFragment?.switchStorySavedState(true)
+            }
+
+            KeyboardEvent.ScrollToComments -> {
+                readingFragment?.scrollToComments()
+            }
+
+            KeyboardEvent.ShareStory -> {
+                readingFragment?.openShareDialog()
+            }
+
+            KeyboardEvent.ToggleReadUnread -> {
+                readingFragment?.switchMarkStoryReadState(true)
+            }
+
+            KeyboardEvent.ToggleTextView -> {
+                readingFragment?.switchSelectedViewMode()
+            }
+
+            KeyboardEvent.Tutorial -> {
+                readingFragment?.showStoryShortcuts()
+            }
+
+            KeyboardEvent.PageDown -> {
+                readingFragment?.scrollVerticallyBy(UIUtils.dp2px(this, VERTICAL_SCROLL_DISTANCE_DP))
+            }
+
+            KeyboardEvent.PageUp -> {
                 readingFragment?.scrollVerticallyBy(UIUtils.dp2px(this, -VERTICAL_SCROLL_DISTANCE_DP))
+            }
 
             else -> {}
         }

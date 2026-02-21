@@ -348,6 +348,7 @@ class ReadingItemFragment :
     private fun handleReadingItemState(readingPayload: ReadingItemViewModel.ReadingPayload) {
         when (readingPayload) {
             ReadingItemViewModel.Idle -> {}
+
             ReadingItemViewModel.NoStoryContent -> {
                 com.newsblur.util.Log
                     .w(this, "Couldn't find story content for existing story.")
@@ -781,16 +782,21 @@ class ReadingItemFragment :
             binding.readingItemAuthors.text = "•   " + story!!.authors
             if (classifier != null && classifier!!.authors.containsKey(story!!.authors)) {
                 when (classifier!!.authors[story!!.authors]) {
-                    Classifier.LIKE -> binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.positive))
-                    Classifier.DISLIKE ->
+                    Classifier.LIKE -> {
+                        binding.readingItemAuthors.setTextColor(ContextCompat.getColor(requireContext(), R.color.positive))
+                    }
+
+                    Classifier.DISLIKE -> {
                         binding.readingItemAuthors.setTextColor(
                             ContextCompat.getColor(requireContext(), R.color.negative),
                         )
+                    }
 
-                    else ->
+                    else -> {
                         binding.readingItemAuthors.setTextColor(
                             UIUtils.getThemedColor(requireContext(), R.attr.readingItemMetadata, android.R.attr.textColor),
                         )
+                    }
                 }
             }
         }
@@ -1213,6 +1219,8 @@ class ReadingItemFragment :
             }
         }
     }
+
+    fun handleBackPressed(): Boolean = if (::binding.isInitialized) binding.readingWebview.handleBackPressed() else false
 
     companion object {
         private const val BUNDLE_SCROLL_POS_REL = "scrollStateRel"

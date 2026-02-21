@@ -12,8 +12,8 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnKeyListener;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -82,6 +82,21 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             new ActivityResultContracts.StartActivityForResult(), this::handleReadingActivityResult
     );
 
+    private final OnBackPressedCallback searchBackCallback =
+            new OnBackPressedCallback(false) {
+                @Override
+                public void handleOnBackPressed() {
+                    if (binding.itemlistSearchQuery.getVisibility() == View.VISIBLE) {
+                        binding.itemlistSearchQuery.setVisibility(View.GONE);
+                        binding.itemlistSearchQuery.setText("");
+                        checkSearchQuery();
+
+                        // allow system to own back again
+                        setEnabled(false);
+                    }
+                }
+            };
+
     @Override
     protected void onCreate(Bundle bundle) {
         Trace.beginSection("ItemsListOnCreate");
@@ -117,10 +132,10 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         itemSetFragment = (ItemSetFragment) fragmentManager.findFragmentByTag(ItemSetFragment.class.getName());
         if (itemSetFragment == null) {
             itemSetFragment = ItemSetFragment.newInstance();
-			FragmentTransaction transaction = fragmentManager.beginTransaction();
-			transaction.add(R.id.activity_itemlist_container, itemSetFragment, ItemSetFragment.class.getName());
-			transaction.commitNow();
-		}
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.add(R.id.activity_itemlist_container, itemSetFragment, ItemSetFragment.class.getName());
+            transaction.commitNow();
+        }
 
         String activeSearchQuery;
         if (bundle != null) {
@@ -131,26 +146,22 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
         if (activeSearchQuery != null) {
             binding.itemlistSearchQuery.setText(activeSearchQuery);
             binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
+            searchBackCallback.setEnabled(true);
         } else if (getIntent().getBooleanExtra(EXTRA_VISIBLE_SEARCH, false)) {
             binding.itemlistSearchQuery.setVisibility(View.VISIBLE);
+            searchBackCallback.setEnabled(true);
             binding.itemlistSearchQuery.requestFocus();
         }
 
-        binding.itemlistSearchQuery.setOnKeyListener(new OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((keyCode == KeyEvent.KEYCODE_BACK) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    binding.itemlistSearchQuery.setVisibility(View.GONE);
-                    binding.itemlistSearchQuery.setText("");
-                    checkSearchQuery();
-                    return true;
-                }
-                if ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
-                    checkSearchQuery();
-                    return true;
-                }
-                return false;
+        binding.itemlistSearchQuery.setOnKeyListener((v, keyCode, event) -> {
+            if ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.getAction() == KeyEvent.ACTION_DOWN)) {
+                checkSearchQuery();
+                return true;
             }
+            return false;
         });
+
+        getOnBackPressedDispatcher().addCallback(this, searchBackCallback);
         Trace.endSection();
     }
 
@@ -290,7 +301,7 @@ public abstract class ItemsList extends NbActivity implements ReadingActionListe
             binding.footerFleuron.getRoot().setVisibility(View.GONE);
             binding.footerFleuron.containerSubscribe.setOnClickListener(null);
         }
-	    transaction.commitNow();
+        transaction.commitNow();
     }
 
     protected void restartReadingSession() {
