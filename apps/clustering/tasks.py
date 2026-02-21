@@ -28,6 +28,10 @@ def ComputeStoryClusters(feed_id):
     )
     from apps.rss_feeds.models import Feed, MStory
 
+    # Clear dedup key so this feed can be re-enqueued after we finish
+    r_update = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+    r_update.delete("cluster_queued:%s" % feed_id)
+
     r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
 
     try:

@@ -1799,10 +1799,12 @@ class Feed(models.Model):
         if discover_story_ids and self.archive_subscribers and self.archive_subscribers > 0:
             from apps.clustering.tasks import ComputeStoryClusters
 
-            ComputeStoryClusters.apply_async(
-                kwargs=dict(feed_id=self.pk),
-                queue="work_queue",
-            )
+            r_update = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+            if r_update.set("cluster_queued:%s" % self.pk, 1, nx=True, ex=60 * 60 * 6):
+                ComputeStoryClusters.apply_async(
+                    kwargs=dict(feed_id=self.pk),
+                    queue="work_queue",
+                )
 
         return ret_values
 
