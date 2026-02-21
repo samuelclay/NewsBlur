@@ -1,3 +1,5 @@
+"""Feed import views: OPML feed import/export and OAuth-based feed synchronization."""
+
 import base64
 import datetime
 import pickle

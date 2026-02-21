@@ -1,3 +1,5 @@
+"""Ask AI views: API endpoint for asking AI questions about stories."""
+
 import re
 import uuid
 
