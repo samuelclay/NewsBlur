@@ -582,6 +582,8 @@ class Feed(models.Model):
             without_rss = True
         if url and "youtube.com/playlist" in url:
             without_rss = True
+        if url and "reddit.com/r/" in url and url.endswith(".rss"):
+            without_rss = True
 
         def criteria(key, value):
             if aggressive:
