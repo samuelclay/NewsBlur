@@ -73,6 +73,11 @@ class Command(BaseCommand):
             help="Only process N entries (0 = all remaining after offset)",
         )
         parser.add_argument(
+            "--retry-unlinked",
+            action="store_true",
+            help="Retry linking unlinked PopularFeed records by directly creating Feed objects (bypasses feedfinder)",
+        )
+        parser.add_argument(
             "--discover-rss",
             action="store_true",
             help="Discover well-read RSS feeds from the Feed table and output JSON candidates for taxonomy generation",
@@ -87,6 +92,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options["discover_rss"]:
             self._discover_rss_feeds(options)
+            return
+
+        if options["retry_unlinked"]:
+            self._retry_unlinked(options)
             return
 
         dry_run = options["dry_run"]
@@ -246,6 +255,130 @@ class Command(BaseCommand):
                 if completed % 100 == 0 or completed == total:
                     self.stdout.write(f"  Fetching feeds: {completed}/{total} ({100*completed/total:.1f}%) - {linked} linked, {failed} failed  [restart with --offset {max_index + 1}]")
         return linked, failed
+
+    def _retry_unlinked(self, options):
+        """Retry linking unlinked PopularFeed records by directly creating Feed objects.
+
+        Groups URLs by domain and rate-limits to avoid hammering any single host.
+        """
+        import threading
+        from collections import defaultdict
+        from urllib.parse import urlparse
+
+        workers = options["workers"]
+        verbose = options["verbose"]
+        dry_run = options["dry_run"]
+        offset = options["offset"]
+        limit = options["limit"]
+
+        unlinked = PopularFeed.objects.filter(feed__isnull=True, is_active=True).order_by("feed_url")
+        total_count = unlinked.count()
+        if offset:
+            unlinked = unlinked[offset:]
+        if limit:
+            unlinked = unlinked[:limit]
+
+        unlinked = list(unlinked)
+        self.stdout.write(
+            f"Found {len(unlinked)} unlinked PopularFeeds"
+            f" (of {total_count} total, offset={offset}, limit={limit})"
+        )
+
+        # Show domain breakdown
+        domain_counts = defaultdict(int)
+        for pf in unlinked:
+            domain_counts[urlparse(pf.feed_url).netloc] += 1
+        self.stdout.write("By domain:")
+        for domain, count in sorted(domain_counts.items(), key=lambda x: -x[1])[:15]:
+            self.stdout.write(f"  {domain}: {count}")
+
+        if dry_run:
+            for pf in unlinked[:20]:
+                self.stdout.write(f"  [{pf.feed_type}] {pf.title[:50]} - {pf.feed_url[:80]}")
+            if len(unlinked) > 20:
+                self.stdout.write(f"  ... and {len(unlinked) - 20} more")
+            return
+
+        linked = 0
+        failed = 0
+        already_exists = 0
+
+        # Per-domain rate limiting: track last request time per domain
+        domain_locks = defaultdict(threading.Lock)
+        domain_last_request = {}
+        rate_limit_delay = 1.0  # seconds between requests to the same domain
+
+        def create_one(popular_feed):
+            """Directly create a Feed object, bypassing feedfinder discovery."""
+            import django.db
+
+            try:
+                from django.db import IntegrityError
+
+                url = popular_feed.feed_url
+                domain = urlparse(url).netloc
+
+                # First check if feed already exists by address (no HTTP request needed)
+                existing = Feed.objects.filter(feed_address=url).first()
+                if existing:
+                    return (popular_feed, existing, None, "existing")
+
+                # Per-domain rate limit before making HTTP requests
+                with domain_locks[domain]:
+                    now = time.time()
+                    last = domain_last_request.get(domain, 0)
+                    wait = rate_limit_delay - (now - last)
+                    if wait > 0:
+                        time.sleep(wait)
+                    domain_last_request[domain] = time.time()
+
+                # Directly create the Feed object - feed.update() fetches the URL
+                feed = Feed.objects.create(feed_address=url)
+                feed = feed.update(max_stories=1)
+                return (popular_feed, feed, None, "created")
+            except IntegrityError:
+                existing = Feed.objects.filter(feed_address=url).first()
+                return (popular_feed, existing, None, "existing")
+            except Exception as e:
+                return (popular_feed, None, e, "error")
+            finally:
+                django.db.connection.close()
+
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        self.stdout.write(f"Creating feeds with {workers} workers (1 req/sec/domain rate limit)...")
+        completed = 0
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = {executor.submit(create_one, pf): pf for pf in unlinked}
+            for future in as_completed(futures):
+                popular_feed, feed, error, status = future.result()
+                completed += 1
+                if error:
+                    failed += 1
+                    if verbose:
+                        self.stdout.write(
+                            self.style.WARNING(f"  Failed: {popular_feed.feed_url[:80]} - {error}")
+                        )
+                elif feed:
+                    if status == "existing":
+                        already_exists += 1
+                    popular_feed.feed = feed
+                    popular_feed.save(update_fields=["feed"])
+                    linked += 1
+                else:
+                    failed += 1
+
+                if completed % 100 == 0 or completed == len(unlinked):
+                    self.stdout.write(
+                        f"  Progress: {completed}/{len(unlinked)} ({100*completed/len(unlinked):.1f}%)"
+                        f" - {linked} linked ({already_exists} existing), {failed} failed"
+                    )
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"\nDone: {linked} linked ({already_exists} existing), {failed} failed"
+            )
+        )
 
     def _force_update_parallel(self, popular_feeds, workers, verbose):
         import django.db
