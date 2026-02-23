@@ -1083,8 +1083,8 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
 
             // Trigger feed view update if this is the active feed
             if (NEWSBLUR.reader.active_feed && NEWSBLUR.reader.active_feed == this.feed_id) {
-                // Update feedbar favicon
-                var $feedbar_icon = $('.NB-feedbar .feed_favicon').first();
+                // Update feedbar favicon (direct child selector avoids matching discover feed favicons)
+                var $feedbar_icon = $('.NB-feedbar .feed[data-id="' + this.feed_id + '"] > .feed_favicon').first();
                 var $icon = make_icon();
                 if ($icon && $feedbar_icon.length) {
                     $feedbar_icon.replaceWith($icon);
