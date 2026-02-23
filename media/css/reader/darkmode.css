@@ -4122,3 +4122,22 @@ a.mention, a.mention-group {
 .NB-dark .NB-briefing-section-hint-examples {
     color: #888;
 }
+
+/* darkmode.css: Briefing summary in story detail — override inline styles from email formatting */
+.NB-dark .NB-feed-story-content .NB-briefing-summary {
+    color: #C8CDD0 !important;
+}
+
+.NB-dark .NB-feed-story-content h3[data-section] {
+    color: #7B9FD4 !important;
+    border-bottom-color: #404548 !important;
+}
+
+.NB-dark .NB-feed-story-content .NB-briefing-summary hr {
+    background-color: #404548 !important;
+    border-color: #404548 !important;
+}
+
+.NB-dark .NB-feed-story-content .NB-briefing-section-icon {
+    filter: grayscale(1) invert(1);
+}

@@ -30301,6 +30301,12 @@ img.NB-briefing-inline-favicon {
     max-height: 16px;
 }
 
+/* reader.css: Align favicon with first line of text in story detail (web only).
+   The inline style has margin:0 for email; this override only applies in the web view. */
+.NB-feed-story-content img.NB-briefing-inline-favicon {
+    margin-top: 5px !important;
+}
+
 span.NB-briefing-inline-favicon {
     font-size: 14px;
     line-height: 16px;
