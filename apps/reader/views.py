@@ -1062,6 +1062,7 @@ def load_single_feed(request, feed_id):
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
         classifier_urls=classifier_urls,
+        folder_feed_ids=folder_feed_ids,
     )
     checkpoint3 = time.time()
 
