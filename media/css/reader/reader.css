@@ -21601,6 +21601,10 @@ h5.NB-classifier-section-header {
     min-height: 550px;
 }
 
+.NB-modal-exception.NB-modal-folder-settings .NB-tab-settings {
+    padding: 12px 8px 0 0;
+}
+
 /* Feed settings modal - match folder layout */
 .NB-modal-exception.NB-modal-feed-settings .NB-modal-subtitle {
     display: inline-flex;
@@ -21631,11 +21635,61 @@ h5.NB-classifier-section-header {
     min-height: 550px;
 }
 
+.NB-modal-exception.NB-modal-feed-settings .NB-tab-settings {
+    padding: 12px 8px 0 0;
+}
+
 /* Icon editor tab overflow - allow x overflow for hover effects, no inner scroll */
 .NB-tab-folder-icon,
 .NB-tab-feed-icon {
     overflow-x: visible !important;
     overflow-y: hidden;
+}
+
+/* Feed icon reset banner */
+.NB-feed-icon-reset-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    margin: 12px 0 12px;
+    background: #f0f4f8;
+    border: 1px solid #d8dde3;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.NB-feed-icon-reset-banner:hover {
+    background: #e4eaf0;
+    border-color: #c0c8d0;
+}
+
+.NB-feed-icon-reset-favicon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.NB-feed-icon-reset-text {
+    flex: 1;
+    font-size: 12px;
+    color: #606060;
+}
+
+.NB-feed-icon-reset-action {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6060c0;
+    padding: 3px 10px;
+    border: 1px solid #c0c0e0;
+    border-radius: 4px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.NB-feed-icon-reset-banner:hover .NB-feed-icon-reset-action {
+    background: #6060c0;
+    color: white;
 }
 
 /* Icon editor container min-height for better screenshots */
