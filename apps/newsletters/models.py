@@ -1,3 +1,5 @@
+"""Newsletter models: process incoming email newsletters and manage newsletter feeds."""
+
 import datetime
 import re
 

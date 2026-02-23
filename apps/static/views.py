@@ -1,3 +1,5 @@
+"""Static views: render static content pages and application manifests."""
+
 import os
 
 import redis

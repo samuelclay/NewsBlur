@@ -1,3 +1,5 @@
+"""Briefing tasks: generate and deliver personalized email briefings on schedule."""
+
 import datetime
 
 from django.contrib.auth.models import User

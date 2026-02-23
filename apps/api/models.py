@@ -1,3 +1,3 @@
-from django.db import models
+"""API models: placeholder for the external REST API app."""
 
-# Create your models here.
+from django.db import models
