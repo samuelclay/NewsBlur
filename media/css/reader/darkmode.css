@@ -3629,6 +3629,30 @@ a.mention, a.mention-group {
     color: #EF9A9A;
 }
 
+.NB-dark .NB-feed-icon-reset-banner {
+    background: #2a2e33;
+    border-color: #3a3f45;
+}
+
+.NB-dark .NB-feed-icon-reset-banner:hover {
+    background: #333840;
+    border-color: #4a5058;
+}
+
+.NB-dark .NB-feed-icon-reset-text {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-feed-icon-reset-action {
+    color: #8888cc;
+    border-color: #4a4a6a;
+}
+
+.NB-dark .NB-feed-icon-reset-banner:hover .NB-feed-icon-reset-action {
+    background: #5555aa;
+    color: white;
+}
+
 .NB-dark .NB-popover-section-folder-icon {
     border-bottom-color: #444;
 }
