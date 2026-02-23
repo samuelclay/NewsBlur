@@ -2203,6 +2203,54 @@ img.feed_favicon {
     text-align: right;
 }
 
+/* Discover popover index banner (archive users) */
+.NB-discover-popover .NB-discover-index-banner {
+    margin: 0 0 4px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.07) 0%, rgba(139, 92, 246, 0.07) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 8px;
+}
+
+.NB-discover-popover .NB-discover-index-banner-content {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.NB-discover-popover .NB-discover-index-button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.NB-discover-popover .NB-discover-index-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.NB-discover-popover .NB-discover-index-button:active {
+    transform: translateY(0);
+}
+
+.NB-discover-popover .NB-discover-index-button.NB-disabled {
+    opacity: 0.6;
+    cursor: default;
+    transform: none;
+}
+
+.NB-discover-popover .NB-discover-index-button.NB-disabled:hover {
+    opacity: 0.6;
+    transform: none;
+}
+
 /* ============================= */
 /* = Story Titles Hidden Count = */
 /* ============================= */
