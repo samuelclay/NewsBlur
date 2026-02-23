@@ -909,7 +909,7 @@
     
     UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);
     self.navigationController.navigationBar.tintColor = toolbarButtonTint;
-    self.navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x222222, 0x111111);
+    self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
     self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
     if (@available(iOS 13.0, *)) {
