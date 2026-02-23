@@ -24042,6 +24042,32 @@ h5.NB-classifier-section-header {
     /* padding-bottom: 8px; */
 }
 
+/* Global settings wrapper */
+.NB-popover-section-global {
+    background: rgba(0, 0, 0, 0.04);
+    margin: 12px 10px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.NB-popover-section-global .NB-popover-section {
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+    padding: 16px 14px;
+}
+
+.NB-popover-section-global .NB-popover-section:last-child {
+    border-bottom: none;
+}
+
+.NB-popover-section-global-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #999;
+    padding: 8px 14px 0;
+}
+
 .NB-section-icon {
     float: right;
     width: 18px;
