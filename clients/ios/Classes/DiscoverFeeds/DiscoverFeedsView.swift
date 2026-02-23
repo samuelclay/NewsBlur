@@ -42,6 +42,22 @@ private struct DiscoverColors {
         themedColor(light: 0x5E6267, sepia: 0x5C4A3D, medium: 0xD0D0D0, dark: 0xD8D8D8)
     }
 
+    static var bannerBackground: Color {
+        themedColor(light: 0xF0F0FA, sepia: 0xF0EAFA, medium: 0x3A3A4A, dark: 0x242430)
+    }
+
+    static var bannerBorder: Color {
+        themedColor(light: 0xD8D8F0, sepia: 0xD0C8E0, medium: 0x4A4A60, dark: 0x3A3A50)
+    }
+
+    static var bannerProgressBackground: Color {
+        themedColor(light: 0xE0E0F0, sepia: 0xE0D8EE, medium: 0x404055, dark: 0x303040)
+    }
+
+    static var bannerProgressLabel: Color {
+        themedColor(light: 0x8B8B8B, sepia: 0x8B7B6B, medium: 0x707070, dark: 0x707070)
+    }
+
     private static func themedColor(light: Int, sepia: Int, medium: Int, dark: Int) -> Color {
         guard let themeManager = ThemeManager.shared else {
             return colorFromHex(light)
@@ -80,10 +96,12 @@ struct DiscoverFeedsView: View {
     var onDismiss: () -> Void
     var onTryFeed: ((DiscoverFeed) -> Void)?
     var onAddFeed: ((DiscoverFeed) -> Void)?
+    var onUpgrade: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 0) {
             headerView
+            archiveUpgradeBanner
             contentView
         }
         .background(DiscoverColors.background)
@@ -124,6 +142,143 @@ struct DiscoverFeedsView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .background(DiscoverColors.cardBackground)
+    }
+
+    // MARK: - Archive Upgrade Banner
+
+    @ViewBuilder
+    private var archiveUpgradeBanner: some View {
+        if let appDelegate = NewsBlurAppDelegate.shared(), !appDelegate.isPremiumArchive {
+            let counts = discoverIndexedCounts
+            let feedCount = counts.total
+            let indexedCount = counts.indexed
+            let progressPct = feedCount > 0 ? Double(indexedCount) / Double(feedCount) : 0
+
+            Button(action: { onUpgrade?() }) {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(alignment: .top, spacing: 12) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(.white)
+                            .frame(width: 32, height: 32)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color(red: 0.39, green: 0.40, blue: 0.95),
+                                             Color(red: 0.55, green: 0.36, blue: 0.96)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .cornerRadius(8)
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack(spacing: 8) {
+                                Text("Unlock full discovery")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundColor(DiscoverColors.textPrimary)
+
+                                Text("Premium Archive")
+                                    .font(.system(size: 9, weight: .semibold))
+                                    .textCase(.uppercase)
+                                    .tracking(0.5)
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(
+                                        LinearGradient(
+                                            colors: [Color(red: 0.39, green: 0.40, blue: 0.95),
+                                                     Color(red: 0.55, green: 0.36, blue: 0.96)],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                    .cornerRadius(3)
+                            }
+
+                            Text("Only \(indexedCount) of your \(feedCount) sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations.")
+                                .font(.system(size: 12))
+                                .foregroundColor(DiscoverColors.textSecondary)
+                                .lineSpacing(2)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+
+                    // Progress bar
+                    VStack(alignment: .trailing, spacing: 4) {
+                        GeometryReader { geometry in
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 3)
+                                    .fill(DiscoverColors.bannerProgressBackground)
+                                    .frame(height: 6)
+
+                                RoundedRectangle(cornerRadius: 3)
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [Color(red: 0.39, green: 0.40, blue: 0.95),
+                                                     Color(red: 0.55, green: 0.36, blue: 0.96)],
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .frame(width: geometry.size.width * progressPct, height: 6)
+                            }
+                        }
+                        .frame(height: 6)
+
+                        Text("\(indexedCount) of \(feedCount) sites indexed")
+                            .font(.system(size: 11))
+                            .foregroundColor(DiscoverColors.bannerProgressLabel)
+                    }
+
+                    // CTA button
+                    Text("Upgrade to Premium Archive")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(
+                            LinearGradient(
+                                colors: [Color(red: 0.39, green: 0.40, blue: 0.95),
+                                         Color(red: 0.55, green: 0.36, blue: 0.96)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .cornerRadius(6)
+                }
+                .padding(14)
+                .background(DiscoverColors.bannerBackground)
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(DiscoverColors.bannerBorder, lineWidth: 1)
+                )
+                .padding(.horizontal, 12)
+                .padding(.top, 8)
+                .padding(.bottom, 4)
+            }
+            .buttonStyle(PlainButtonStyle())
+        }
+    }
+
+    private var discoverIndexedCounts: (total: Int, indexed: Int) {
+        guard let appDelegate = NewsBlurAppDelegate.shared(),
+              let dictFeeds = appDelegate.dictFeeds as? [String: Any] else {
+            return (0, 0)
+        }
+
+        var total = 0
+        var indexed = 0
+        for (_, value) in dictFeeds {
+            guard let feedDict = value as? [String: Any] else { continue }
+            total += 1
+            if let discoverIndexed = feedDict["discover_indexed"] as? Bool, discoverIndexed {
+                indexed += 1
+            } else if let discoverIndexed = feedDict["discover_indexed"] as? NSNumber, discoverIndexed.boolValue {
+                indexed += 1
+            }
+        }
+        return (total, indexed)
     }
 
     // MARK: - Content
@@ -238,6 +393,7 @@ struct DiscoverFeedsView: View {
                         }
                         .foregroundColor(DiscoverColors.textSecondary)
                     }
+                    .fixedSize()
                 }
 
                 Spacer()
@@ -249,12 +405,12 @@ struct DiscoverFeedsView: View {
                         .padding(.horizontal, 14)
                         .padding(.vertical, 6)
                 } else {
-                    HStack(spacing: 8) {
+                    HStack(spacing: 6) {
                         Button(action: { onTryFeed?(feed) }) {
                             Text("Try")
                                 .font(.system(size: 13, weight: .medium))
                                 .foregroundColor(DiscoverColors.tryButtonText)
-                                .padding(.horizontal, 14)
+                                .padding(.horizontal, 10)
                                 .padding(.vertical, 6)
                                 .background(DiscoverColors.tryButtonBackground)
                                 .cornerRadius(6)
@@ -269,7 +425,7 @@ struct DiscoverFeedsView: View {
                             Text("Add")
                                 .font(.system(size: 13, weight: .semibold))
                                 .foregroundColor(.white)
-                                .padding(.horizontal, 14)
+                                .padding(.horizontal, 10)
                                 .padding(.vertical, 6)
                                 .background(DiscoverColors.accent)
                                 .cornerRadius(6)
