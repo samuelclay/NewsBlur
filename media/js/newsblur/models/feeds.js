@@ -115,6 +115,20 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         return in_folders;
     },
 
+    flat_folder_paths: function () {
+        // Returns full folder paths like "Blogs - Tumblrs" matching the backend's
+        // flatten_folders() format, used for folder-scoped classifier matching.
+        return _.uniq(_.compact(_.map(this.folders, function (folder_collection) {
+            var parts = [];
+            var current = folder_collection;
+            while (current && current.options && current.options.title) {
+                parts.unshift(current.options.title);
+                current = current.parent_folder;
+            }
+            return parts.join(' - ');
+        })));
+    },
+
     rename: function (new_title) {
         this.set('feed_title', new_title);
         NEWSBLUR.assets.rename_feed(this.id, new_title);
