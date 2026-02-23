@@ -21483,7 +21483,7 @@ h5.NB-classifier-section-header {
 /* Clear floats before tab content */
 .NB-modal-exception.NB-modal-folder-settings .NB-tab {
     clear: both;
-    height: 550px;
+    min-height: 550px;
 }
 
 /* Feed settings modal - match folder layout */
@@ -21513,14 +21513,14 @@ h5.NB-classifier-section-header {
 /* Clear floats before tab content */
 .NB-modal-exception.NB-modal-feed-settings .NB-tab {
     clear: both;
-    height: 550px;
+    min-height: 550px;
 }
 
-/* Icon editor tab overflow - allow x overflow for hover effects */
+/* Icon editor tab overflow - allow x overflow for hover effects, no inner scroll */
 .NB-tab-folder-icon,
 .NB-tab-feed-icon {
     overflow-x: visible !important;
-    overflow-y: auto;
+    overflow-y: hidden;
 }
 
 /* Icon editor container min-height for better screenshots */
