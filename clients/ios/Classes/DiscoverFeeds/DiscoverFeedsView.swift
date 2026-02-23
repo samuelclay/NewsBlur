@@ -101,7 +101,6 @@ struct DiscoverFeedsView: View {
     var body: some View {
         VStack(spacing: 0) {
             headerView
-            archiveUpgradeBanner
             contentView
         }
         .background(DiscoverColors.background)
@@ -327,6 +326,8 @@ struct DiscoverFeedsView: View {
     private var feedListView: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
+                archiveUpgradeBanner
+
                 ForEach(viewModel.feeds) { feed in
                     feedCardView(feed)
                 }
@@ -395,8 +396,7 @@ struct DiscoverFeedsView: View {
                     }
                     .fixedSize()
                 }
-
-                Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
 
                 if isSubscribed(feed) {
                     Label("Subscribed", systemImage: "checkmark")
@@ -432,6 +432,7 @@ struct DiscoverFeedsView: View {
                         }
                         .buttonStyle(PlainButtonStyle())
                     }
+                    .fixedSize()
                 }
             }
             .padding(12)
