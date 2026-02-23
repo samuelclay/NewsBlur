@@ -1,3 +1,5 @@
+"""Clustering tasks: compute duplicate story clusters using title matching and similarity."""
+
 import datetime
 import time
 

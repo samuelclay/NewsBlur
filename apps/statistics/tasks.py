@@ -1,3 +1,5 @@
+"""Statistics tasks: collect system statistics and user feedback."""
+
 from apps.statistics.models import MFeedback, MStatistics
 from newsblur_web.celeryapp import app
 from utils import log as logging

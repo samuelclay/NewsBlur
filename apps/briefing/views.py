@@ -1,3 +1,5 @@
+"""Briefing views: manage user briefing feeds with customizable sections and notifications."""
+
 import datetime
 import re
 import zlib
