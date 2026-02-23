@@ -2088,6 +2088,121 @@ img.feed_favicon {
     font-weight: bold;
 }
 
+/* Discover popover archive upgrade banner */
+.NB-discover-popover .NB-discover-archive-banner {
+    margin: 0 0 4px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.07) 0%, rgba(139, 92, 246, 0.07) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.NB-discover-popover .NB-discover-archive-banner:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+.NB-discover-popover .NB-discover-archive-banner-content {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.NB-discover-popover .NB-discover-archive-banner-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border-radius: 8px;
+    -webkit-mask: url('/media/embed/icons/heroicons-solid/sparkles.svg') no-repeat center;
+    mask: url('/media/embed/icons/heroicons-solid/sparkles.svg') no-repeat center;
+    -webkit-mask-size: 20px;
+    mask-size: 20px;
+}
+
+.NB-discover-popover .NB-discover-archive-banner-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-discover-popover .NB-discover-archive-banner-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #3b3d38;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.NB-discover-popover .NB-discover-archive-banner-title .NB-archive-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.NB-discover-popover .NB-discover-archive-banner-body {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #707070;
+}
+
+.NB-discover-popover .NB-discover-archive-banner-cta {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.NB-discover-popover .NB-discover-archive-banner-cta:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.NB-discover-popover .NB-discover-archive-banner-cta:active {
+    transform: translateY(0);
+}
+
+.NB-discover-popover .NB-discover-archive-banner-progress {
+    margin-top: 10px;
+}
+
+.NB-discover-popover .NB-discover-archive-banner-progress-bar {
+    height: 6px;
+    background: rgba(99, 102, 241, 0.12);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.NB-discover-popover .NB-discover-archive-banner-progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.NB-discover-popover .NB-discover-archive-banner-progress-label {
+    font-size: 11px;
+    color: #8b8b8b;
+    margin-top: 4px;
+    text-align: right;
+}
+
 /* ============================= */
 /* = Story Titles Hidden Count = */
 /* ============================= */

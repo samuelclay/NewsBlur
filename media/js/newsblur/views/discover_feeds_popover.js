@@ -16,7 +16,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     events: {
-
+        "click .NB-discover-archive-banner": "open_premium_modal"
     },
 
     initialize: function (options) {
@@ -93,6 +93,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-icon' }),
                     'Discover sites'
                 ]),
+                this.make_archive_upgrade_banner(),
                 $.make('div', { className: 'NB-discover-loading' }, [
                     $.make('div', { className: 'NB-loading NB-active' })
                 ])
@@ -118,6 +119,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
                     $.make('div', { className: 'NB-icon' }),
                     'Discover sites'
                 ]),
+                this.make_archive_upgrade_banner(),
                 $.make('div', { className: 'NB-discover-feed-badges NB-story-pane-west' }, _.flatten(this.discover_feeds_model.map(function (discover_feed) {
                     var $story_titles = $.make('div', { className: 'NB-story-titles' });
                     var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
@@ -273,6 +275,60 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
     // = Events =
     // ==========
 
+    open_premium_modal: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.close(_.bind(function () {
+            NEWSBLUR.reader.open_premium_upgrade_modal();
+        }, this));
+    },
 
+    make_archive_upgrade_banner: function () {
+        if (NEWSBLUR.Globals.is_archive) return false;
+
+        var feed_count, discover_indexed_count;
+        if (this.options.feed_ids) {
+            var feed_ids = this.options.feed_ids;
+            feed_count = feed_ids.length;
+            discover_indexed_count = NEWSBLUR.assets.feeds.filter(function (feed) {
+                return _.contains(feed_ids, feed.get('id'));
+            }).reduce(function (sum, feed) {
+                return sum + (feed.get('discover_indexed') ? 1 : 0);
+            }, 0);
+        } else {
+            feed_count = NEWSBLUR.assets.feeds.length;
+            discover_indexed_count = NEWSBLUR.assets.feeds.discover_indexed();
+        }
+
+        var progress_pct = feed_count > 0 ? Math.round((discover_indexed_count / feed_count) * 100) : 0;
+
+        return $.make('div', { className: 'NB-discover-archive-banner' }, [
+            $.make('div', { className: 'NB-discover-archive-banner-content' }, [
+                $.make('div', { className: 'NB-discover-archive-banner-icon' }),
+                $.make('div', { className: 'NB-discover-archive-banner-text' }, [
+                    $.make('div', { className: 'NB-discover-archive-banner-title' }, [
+                        'Unlock full discovery',
+                        $.make('span', { className: 'NB-archive-badge' }, 'Premium Archive')
+                    ]),
+                    $.make('div', { className: 'NB-discover-archive-banner-body' },
+                        'Only ' + discover_indexed_count + ' of your ' + feed_count +
+                        ' sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations.'
+                    )
+                ])
+            ]),
+            $.make('div', { className: 'NB-discover-archive-banner-progress' }, [
+                $.make('div', { className: 'NB-discover-archive-banner-progress-bar' }, [
+                    $.make('div', {
+                        className: 'NB-discover-archive-banner-progress-fill',
+                        style: 'width: ' + progress_pct + '%'
+                    })
+                ]),
+                $.make('div', { className: 'NB-discover-archive-banner-progress-label' },
+                    discover_indexed_count + ' of ' + feed_count + ' sites indexed'
+                )
+            ]),
+            $.make('div', { className: 'NB-discover-archive-banner-cta' }, 'Upgrade to Premium Archive')
+        ]);
+    }
 
 });
