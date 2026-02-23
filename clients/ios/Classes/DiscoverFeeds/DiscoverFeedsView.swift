@@ -101,6 +101,7 @@ struct DiscoverFeedsView: View {
     var body: some View {
         VStack(spacing: 0) {
             headerView
+            archiveUpgradeBanner
             contentView
         }
         .background(DiscoverColors.background)
@@ -396,6 +397,7 @@ struct DiscoverFeedsView: View {
                         }
                         .foregroundColor(DiscoverColors.textSecondary)
                     }
+                    .fixedSize()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
