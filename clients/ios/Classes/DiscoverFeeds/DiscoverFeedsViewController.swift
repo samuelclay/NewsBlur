@@ -62,6 +62,9 @@ import SwiftUI
             },
             onAddFeed: { [weak self] feed in
                 self?.handleAddFeed(feed)
+            },
+            onUpgrade: { [weak self] in
+                self?.handleUpgrade()
             }
         )
 
@@ -117,6 +120,12 @@ import SwiftUI
         dismiss(animated: true) { [weak self] in
             guard let appDelegate = self?.appDelegate else { return }
             appDelegate.openAddSite(withFeedAddress: feedAddress)
+        }
+    }
+
+    private func handleUpgrade() {
+        dismiss(animated: true) { [weak self] in
+            self?.appDelegate?.showPremiumDialogForArchive()
         }
     }
 }
