@@ -90,6 +90,7 @@
     configuration.allowsInlineMediaPlayback = ![videoPlayback isEqualToString:@"fullscreen"];
 
     self.webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
+    self.webView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
 
     [self.view addSubview:self.webView];
 
@@ -901,6 +902,7 @@
     self.lastWidthClassKey = nil;
 
     self.view.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
+    self.webView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(NEWSBLUR_WHITE_COLOR, 0xF3E2CB, 0x222222, 0x111111);
     self.webView.hidden = YES;
     self.activityIndicator.color = UIColorFromRGB(NEWSBLUR_BLACK_COLOR);
     [self.activityIndicator startAnimating];
