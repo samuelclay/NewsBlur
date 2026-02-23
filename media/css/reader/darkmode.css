@@ -3663,6 +3663,20 @@ a.mention, a.mention-group {
     background: #c03800;
 }
 
+/* Global settings wrapper dark mode */
+.NB-dark .NB-popover-section-global {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-popover-section-global .NB-popover-section {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-popover-section-global-label {
+    color: #707070;
+}
+
 /* ============================== */
 /* = Manage Training Tab Styles = */
 /* ============================== */
