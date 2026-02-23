@@ -3659,6 +3659,33 @@ a.mention, a.mention-group {
     color: #909090;
 }
 
+/* Discover archive upgrade banner dark mode */
+.NB-dark .NB-discover-popover .NB-discover-archive-banner {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+.NB-dark .NB-discover-popover .NB-discover-archive-banner:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(139, 92, 246, 0.18) 100%);
+    border-color: rgba(99, 102, 241, 0.35);
+}
+
+.NB-dark .NB-discover-popover .NB-discover-archive-banner-title {
+    color: #d0d0d0;
+}
+
+.NB-dark .NB-discover-popover .NB-discover-archive-banner-body {
+    color: #909090;
+}
+
+.NB-dark .NB-discover-popover .NB-discover-archive-banner-progress-bar {
+    background: rgba(99, 102, 241, 0.20);
+}
+
+.NB-dark .NB-discover-popover .NB-discover-archive-banner-progress-label {
+    color: #707070;
+}
+
 .NB-dark .NB-staff-only-badge {
     background: #c03800;
 }
