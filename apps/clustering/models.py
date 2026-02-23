@@ -13,12 +13,14 @@ CLUSTER_MAX_SIZE = 10
 TITLE_MIN_LENGTH = 10
 FUZZY_MIN_WORDS = 5
 FUZZY_SIMILARITY_THRESHOLD = 0.6
+FUZZY_MIN_INTERSECTION = 3
 
 # clustering/models.py: Common English stopwords for fuzzy title matching
 STOPWORDS = frozenset(
     "a an the and or but in on at to for of is it by with from as be was were are this that"
     " have has had do does did will would could should may might can shall not no its his her"
-    " their our your my its been being".split()
+    " their our your my its been being"
+    " he she so up if me we am us go oh ok".split()
 )
 
 
@@ -30,15 +32,31 @@ def normalize_title(title):
     if not title:
         return ""
     title = title.lower().strip()
+    # clustering/models.py: Replace hyphens and slashes with spaces before
+    # stripping punctuation so "Anthropic-backed" becomes "anthropic backed"
+    # (two tokens) rather than "anthropicbacked" (one merged token).
+    title = re.sub(r"[-/]", " ", title)
     title = re.sub(r"[^\w\s]", "", title)
     title = re.sub(r"\s+", " ", title)
     return title
 
 
+def _simple_stem(word):
+    """Strip trailing 's' for basic plural normalization.
+
+    Only applies to words longer than 3 characters to avoid
+    mangling short words like 'bus', 'gas', 'ios'.
+    Does not strip 'ss' endings (e.g. 'press', 'class').
+    """
+    if len(word) > 3 and word.endswith("s") and not word.endswith("ss"):
+        return word[:-1]
+    return word
+
+
 def title_significant_words(title):
     """Extract significant (non-stopword) words from a normalized title."""
     norm = normalize_title(title)
-    return frozenset(w for w in norm.split() if w not in STOPWORDS and len(w) > 2)
+    return frozenset(_simple_stem(w) for w in norm.split() if w not in STOPWORDS and len(w) > 1)
 
 
 def story_guid_hash(story_hash):
@@ -171,11 +189,21 @@ def find_title_clusters(stories, original_feed_map=None):
                     continue
 
                 intersection = len(words_a & words_b)
-                union_size = len(words_a | words_b)
-                if union_size == 0:
+                if intersection < FUZZY_MIN_INTERSECTION:
                     continue
-                jaccard = intersection / union_size
-                if jaccard >= FUZZY_SIMILARITY_THRESHOLD:
+                # clustering/models.py: Use overlap coefficient (intersection / min set size)
+                # instead of Jaccard to handle asymmetric title lengths.
+                # Aggregator titles (Techmeme, Google News) include source attribution
+                # and extra detail, making them 2-3x longer than the original title.
+                # Jaccard penalizes these because the union is dominated by the
+                # longer title's unique words. Overlap coefficient normalizes by the
+                # smaller set, so a short title sharing most words with a long title
+                # scores high.
+                smaller = min(len(words_a), len(words_b))
+                if smaller == 0:
+                    continue
+                similarity = intersection / smaller
+                if similarity >= FUZZY_SIMILARITY_THRESHOLD:
                     union(h_a, h_b)
 
     # Collect groups from union-find
