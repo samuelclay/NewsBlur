@@ -732,6 +732,17 @@ def discover_stories(request, story_hash):
     return {"discover_stories": stories, "feeds": feeds}
 
 
+@ajax_login_required
+@json.json_view
+def discover_index(request):
+    from apps.search.models import MUserSearch
+
+    user_search = MUserSearch.get_user(request.user.pk)
+    user_search.touch_discover_date()
+
+    return {"code": 1, "indexing": True}
+
+
 @json.json_view
 def trending_sites(request):
     """
