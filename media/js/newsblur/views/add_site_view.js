@@ -85,11 +85,11 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         { id: 'search', label: 'Search', icon: '/media/img/icons/nouns/search.svg', mono: true },
         { id: 'web-feed', label: 'Web Feed', icon: '/media/img/icons/nouns/web-feed.svg', mono: true },
         { id: 'popular', label: 'Popular', icon: '/media/img/icons/heroicons-solid/fire.svg', mono: true },
-        { id: 'youtube', label: 'YouTube', icon: '/media/img/reader/youtube_play.png' },
-        { id: 'reddit', label: 'Reddit', icon: '/media/img/reader/reddit.png' },
-        { id: 'newsletters', label: 'Newsletters', icon: '/media/img/reader/newsletters_folder.png' },
-        { id: 'podcasts', label: 'Podcasts', icon: '/media/img/icons/nouns/activity.svg', mono: true },
-        { id: 'google-news', label: 'Google News', icon: '/media/img/icons/nouns/world.svg', mono: true }
+        { id: 'youtube', label: 'YouTube', icon: '/media/img/icons/lucide/youtube.svg', mono: true },
+        { id: 'reddit', label: 'Reddit', icon: '/media/img/icons/phosphor-fill/reddit-logo-fill.svg', mono: true },
+        { id: 'newsletters', label: 'Newsletters', icon: '/media/img/icons/lucide/mail.svg', mono: true },
+        { id: 'podcasts', label: 'Podcasts', icon: '/media/img/icons/lucide/podcast.svg', mono: true },
+        { id: 'google-news', label: 'Google News', icon: '/media/img/icons/lucide/newspaper.svg', mono: true }
     ],
 
     GOOGLE_NEWS_TOPICS: [
@@ -455,6 +455,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
     sort_feeds: function (feeds) {
         var sort_order = NEWSBLUR.assets.preference('add_site_sort_order') || 'subscribers';
+        if (!_.contains(['subscribers', 'stories', 'name'], sort_order)) sort_order = 'subscribers';
 
         return _.sortBy(feeds, function(feed) {
             if (sort_order === 'subscribers') {
@@ -1606,7 +1607,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         $tab.html($.make('div', { className: 'NB-add-site-tab-with-search' }, [
             $.make('div', { className: 'NB-add-site-source-header' }, [
                 $.make('div', { className: 'NB-add-site-source-icon NB-youtube' }, [
-                    $.make('img', { src: '/media/img/reader/youtube_play.png' })
+                    $.make('img', { src: '/media/img/icons/lucide/youtube.svg' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
                     $.make('div', { className: 'NB-add-site-source-title' }, 'YouTube Channels'),
@@ -1762,7 +1763,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         $tab.html($.make('div', { className: 'NB-add-site-tab-with-search' }, [
             $.make('div', { className: 'NB-add-site-source-header' }, [
                 $.make('div', { className: 'NB-add-site-source-icon NB-reddit' }, [
-                    $.make('img', { src: '/media/img/reader/reddit.png' })
+                    $.make('img', { src: '/media/img/icons/phosphor-fill/reddit-logo-fill.svg' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
                     $.make('div', { className: 'NB-add-site-source-title' }, 'Reddit Subreddits'),
@@ -1989,7 +1990,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         $tab.html($.make('div', { className: 'NB-add-site-tab-with-search' }, [
             $.make('div', { className: 'NB-add-site-source-header' }, [
                 $.make('div', { className: 'NB-add-site-source-icon NB-newsletters' }, [
-                    $.make('img', { src: '/media/img/reader/newsletters_folder.png' })
+                    $.make('img', { src: '/media/img/icons/lucide/mail.svg' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
                     $.make('div', { className: 'NB-add-site-source-title' }, 'Newsletters & Substack'),
@@ -2168,7 +2169,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         $tab.html($.make('div', { className: 'NB-add-site-tab-with-search' }, [
             $.make('div', { className: 'NB-add-site-source-header' }, [
                 $.make('div', { className: 'NB-add-site-source-icon NB-podcasts' }, [
-                    $.make('img', { src: '/media/img/icons/nouns/activity.svg' })
+                    $.make('img', { src: '/media/img/icons/lucide/podcast.svg' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
                     $.make('div', { className: 'NB-add-site-source-title' }, 'Podcasts'),
@@ -2313,7 +2314,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         $tab.html($.make('div', { className: 'NB-add-site-tab-with-search' }, [
             $.make('div', { className: 'NB-add-site-source-header' }, [
                 $.make('div', { className: 'NB-add-site-source-icon NB-google-news' }, [
-                    $.make('img', { src: '/media/img/icons/nouns/world.svg' })
+                    $.make('img', { src: '/media/img/icons/lucide/newspaper.svg' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
                     $.make('div', { className: 'NB-add-site-source-title' }, 'Google News'),

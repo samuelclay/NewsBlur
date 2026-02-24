@@ -97,7 +97,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                             $.make('span', 'YouTube')
                         ]),
                         $.make('div', { className: 'NB-add-discover-source', 'data-tab': 'reddit' }, [
-                            $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/reader/reddit.png' }),
+                            $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/phosphor-fill/reddit-logo-fill.svg', className: 'NB-mono' }),
                             $.make('span', 'Reddit')
                         ]),
                         $.make('div', { className: 'NB-add-discover-source', 'data-tab': 'newsletters' }, [
