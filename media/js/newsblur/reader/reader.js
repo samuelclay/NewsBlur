@@ -1446,7 +1446,9 @@
             this.$s.$river_trending_header.removeClass('NB-selected');
             this.$s.$river_briefing_header.removeClass('NB-selected');
             this.$s.$archive_header.removeClass('NB-selected');
-            this.$s.$tryfeed_header.removeClass('NB-selected');
+            if (!options.preserve_tryfeed) {
+                this.$s.$tryfeed_header.removeClass('NB-selected');
+            }
             this.$s.$add_site_header.removeClass('NB-selected');
             this.$s.$layout.removeClass('NB-view-river');
             this.$s.$layout.removeClass('NB-archive-active');
@@ -1455,8 +1457,9 @@
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-task-return');
             clearTimeout(this.flags['next_fetch']);
 
-            if (this.flags['showing_feed_in_tryfeed_view'] ||
-                this.flags['showing_social_feed_in_tryfeed_view']) {
+            if (!options.preserve_tryfeed &&
+                (this.flags['showing_feed_in_tryfeed_view'] ||
+                this.flags['showing_social_feed_in_tryfeed_view'])) {
                 this.hide_tryfeed_view();
             }
             if (NEWSBLUR.Globals.is_anonymous) {
@@ -1587,6 +1590,13 @@
             var feed = this.model.get_feed(feed_id) || options.feed;
             var temp = feed && feed.get('temp') && !feed.get('subscribed');
 
+            // If already showing this feed in tryfeed view, preserve state on refresh
+            if (temp && !options.try_feed &&
+                this.flags['showing_feed_in_tryfeed_view'] && this.active_feed == feed_id) {
+                options.try_feed = true;
+                options.preserve_tryfeed = true;
+            }
+
             if (!feed || (temp && !options.try_feed)) {
                 // Setup tryfeed views first, then come back here.
                 console.log(["Temp open feed", feed_id, feed, options, temp]);
@@ -1597,6 +1607,12 @@
             this.flags['opening_feed'] = true;
 
             if (options.try_feed || feed) {
+                // Preserve tryfeed state when refreshing the same feed (non-temp case)
+                if (!options.preserve_tryfeed &&
+                    this.flags['showing_feed_in_tryfeed_view'] && this.active_feed == feed_id) {
+                    options.preserve_tryfeed = true;
+                }
+
                 this.reset_feed(options);
                 this.hide_splash_page();
                 if (options.story_id) {
@@ -7123,12 +7139,13 @@
 
         load_feed_in_tryfeed_view: function (feed_id, options) {
             options = options || {};
+            var feed_data = options.feed && (options.feed.attributes || options.feed);
             var feed = _.extend({
                 id: feed_id,
                 feed_id: feed_id,
                 feed_title: options.feed && options.feed.feed_title,
                 temp: true
-            }, options.feed && options.feed.attributes);
+            }, feed_data);
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
 
             this.flags['tryfeed_discover_origin'] = options.discover_origin || null;
@@ -7288,6 +7305,27 @@
         correct_tryfeed_title: function () {
             var feed = this.model.get_feed(this.active_feed);
             $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(feed.get('feed_title'));
+
+            // Update favicon in tryfeed header
+            var $header_icon = $.favicon_el(feed, {
+                image_class: 'NB-feeds-header-icon',
+                emoji_class: 'NB-feeds-header-icon NB-feed-emoji',
+                colored_class: 'NB-feeds-header-icon NB-feed-icon-colored'
+            });
+            if ($header_icon) {
+                $('.NB-feeds-header-icon', this.$s.$tryfeed_header).replaceWith($header_icon);
+            }
+
+            // Update favicon in subscribe banner
+            var $banner_icon = $.favicon_el(feed, {
+                image_class: 'NB-tryfeed-banner-icon',
+                emoji_class: 'NB-tryfeed-banner-icon NB-feed-emoji',
+                colored_class: 'NB-tryfeed-banner-icon NB-feed-icon-colored'
+            });
+            if ($banner_icon) {
+                $('.NB-tryfeed-subscribe-banner .NB-tryfeed-banner-icon').replaceWith($banner_icon);
+            }
+
             this.make_feed_title_in_stories();
         },
 
