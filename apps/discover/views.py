@@ -2,6 +2,9 @@
 Discovery and search endpoints for finding and adding feeds.
 Includes trending sites, YouTube/Reddit/Podcast search, newsletter conversion, etc.
 """
+import datetime
+import hashlib
+import random
 import re
 from collections import defaultdict
 from urllib.parse import urlparse, quote_plus
@@ -16,10 +19,73 @@ from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MFeedIcon, MStory
 from apps.search.models import MUserSearch, SearchFeed
+from apps.statistics.rtrending import RTrendingStory
 from apps.statistics.rtrending_subscriptions import RTrendingSubscription
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import ajax_login_required
+
+
+def _get_daily_seed():
+    """Return a deterministic seed that changes daily, for stable pagination of shuffled feeds."""
+    return int(hashlib.md5(datetime.date.today().isoformat().encode()).hexdigest()[:8], 16)
+
+
+def _compute_trending_scores(popular_feeds_list):
+    """
+    Compute composite trending scores for PopularFeed entries on-the-fly.
+
+    Combines three signals (normalized to 0.0-1.0):
+    - Subscription velocity (40%) from RTrendingSubscription
+    - Read engagement (30%) from RTrendingStory
+    - External subscriber_count (30%) from PopularFeed
+
+    Returns (scores, has_signal) dicts keyed by PopularFeed.pk.
+    """
+    # Build mapping from feed_id -> PopularFeed pks, and collect subscriber counts
+    pf_feed_id_map = {}  # feed_id -> list of PopularFeed.pk
+    pf_subscriber_counts = {}  # PopularFeed.pk -> subscriber_count
+    for pf in popular_feeds_list:
+        pf_subscriber_counts[pf.pk] = pf.subscriber_count or 0
+        if pf.feed_id:
+            pf_feed_id_map.setdefault(pf.feed_id, []).append(pf.pk)
+
+    # Fetch trending signals (both use 60-second Redis caches)
+    min_subs = 1 if settings.DEBUG else RTrendingSubscription.MIN_SUBSCRIBERS_THRESHOLD
+    sub_trending = RTrendingSubscription.get_trending_feeds(days=7, limit=500, min_subscribers=min_subs)
+    read_trending = RTrendingStory.get_trending_feeds(days=7, limit=500)
+
+    sub_scores = {feed_id: score for feed_id, score in sub_trending}
+    read_scores = {feed_id: score for feed_id, score in read_trending}
+
+    max_sub = max(sub_scores.values()) if sub_scores else 1.0
+    max_read = max(read_scores.values()) if read_scores else 1.0
+    max_external = max(pf_subscriber_counts.values()) if pf_subscriber_counts else 1.0
+    max_sub = max(max_sub, 1.0)
+    max_read = max(max_read, 1.0)
+    max_external = max(max_external, 1.0)
+
+    scores = {}
+    has_signal = {}
+
+    for pf in popular_feeds_list:
+        norm_external = (pf.subscriber_count or 0) / max_external
+        norm_sub = 0.0
+        norm_read = 0.0
+        feed_has_signal = False
+
+        if pf.feed_id:
+            if pf.feed_id in sub_scores:
+                norm_sub = sub_scores[pf.feed_id] / max_sub
+                feed_has_signal = True
+            if pf.feed_id in read_scores:
+                norm_read = read_scores[pf.feed_id] / max_read
+                feed_has_signal = True
+
+        scores[pf.pk] = (0.4 * norm_sub) + (0.3 * norm_read) + (0.3 * norm_external)
+        has_signal[pf.pk] = feed_has_signal
+
+    return scores, has_signal
 
 
 IGNORE_AUTOCOMPLETE = [
@@ -964,18 +1030,55 @@ def popular_feeds(request):
         platform_base_qs.values("platform").annotate(count=Count("id")).values_list("platform", "count")
     )
 
-    # For type=all, sort by subscriber_count desc to surface the best feeds first
-    if feed_type == "all":
-        qs = qs.order_by("-subscriber_count")
+    # When showing the default "all categories" view (no category filter, no search query),
+    # compute trending scores on-the-fly and sort by a hybrid of subscription velocity,
+    # read engagement, and external subscriber count. Feeds with no trending signal get
+    # mixed in randomly for discovery (deterministic daily shuffle for stable pagination).
+    is_default_view = (not category or category == "all") and not query
 
-    total = qs.count() + len(extra_semantic_feeds)
-    popular_feeds_list = list(qs[offset : offset + limit + 1])
+    if is_default_view:
+        all_popular = list(qs)
+        if all_popular:
+            scores, has_signal = _compute_trending_scores(all_popular)
+            daily_seed = _get_daily_seed()
+
+            with_signal = [(pf, scores.get(pf.pk, 0)) for pf in all_popular if has_signal.get(pf.pk)]
+            without_signal = [pf for pf in all_popular if not has_signal.get(pf.pk)]
+
+            with_signal.sort(key=lambda x: x[1], reverse=True)
+
+            rng = random.Random(daily_seed)
+            rng.shuffle(without_signal)
+
+            # Interleave: 3 trending feeds, then 1 discovery feed
+            merged = []
+            si, ni = 0, 0
+            while si < len(with_signal) or ni < len(without_signal):
+                for _ in range(3):
+                    if si < len(with_signal):
+                        merged.append(with_signal[si][0])
+                        si += 1
+                if ni < len(without_signal):
+                    merged.append(without_signal[ni])
+                    ni += 1
+
+            total = len(merged) + len(extra_semantic_feeds)
+            popular_feeds_list = merged[offset : offset + limit + 1]
+        else:
+            total = len(extra_semantic_feeds)
+            popular_feeds_list = []
+    else:
+        if feed_type == "all":
+            qs = qs.order_by("-subscriber_count")
+        total = qs.count() + len(extra_semantic_feeds)
+        popular_feeds_list = list(qs[offset : offset + limit + 1])
 
     # Append semantic Feed objects if PopularFeed results don't fill the page
     remaining_slots = limit + 1 - len(popular_feeds_list)
     semantic_feeds_page = []
     if remaining_slots > 0 and extra_semantic_feeds:
-        semantic_offset = max(0, offset - qs.count())
+        pf_count = total - len(extra_semantic_feeds)
+        semantic_offset = max(0, offset - pf_count)
         semantic_feeds_page = extra_semantic_feeds[semantic_offset : semantic_offset + remaining_slots]
         popular_feeds_list.extend(semantic_feeds_page)
 
