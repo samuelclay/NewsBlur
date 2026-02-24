@@ -21,13 +21,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.navigationItem.title = @"Notifications";
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done"
-                                                                     style: UIBarButtonItemStylePlain
-                                                                    target: self
-                                                                    action: @selector(doCancelButton)];
-    [self.navigationItem setRightBarButtonItem:cancelButton];
-    
     notificationsTable = [[UITableView alloc] init];
     notificationsTable.delegate = self;
     notificationsTable.dataSource = self;

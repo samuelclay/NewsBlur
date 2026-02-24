@@ -1426,21 +1426,10 @@
         UISheetPresentationController *sheet = self.trainNavigationController.sheetPresentationController;
         sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
         sheet.prefersGrabberVisible = YES;
-        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
-        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
         sheet.preferredCornerRadius = 12.0;
 
-        [navController presentViewController:self.trainNavigationController animated:YES completion:^{
-            UIView *containerView = self.trainNavigationController.presentationController.containerView;
-            if (containerView && !self.isMac) {
-                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
-                    initWithTarget:self
-                    action:@selector(dismissAskAIOnTap:)];
-                tapToDismiss.cancelsTouchesInView = NO;
-                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
-                [containerView addGestureRecognizer:tapToDismiss];
-            }
-        }];
+        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
     }
 }
 
@@ -1463,21 +1452,10 @@
         UISheetPresentationController *sheet = self.trainNavigationController.sheetPresentationController;
         sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
         sheet.prefersGrabberVisible = YES;
-        sheet.prefersScrollingExpandsWhenScrolledToEdge = NO;
-        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
         sheet.preferredCornerRadius = 12.0;
 
-        [navController presentViewController:self.trainNavigationController animated:YES completion:^{
-            UIView *containerView = self.trainNavigationController.presentationController.containerView;
-            if (containerView && !self.isMac) {
-                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
-                    initWithTarget:self
-                    action:@selector(dismissAskAIOnTap:)];
-                tapToDismiss.cancelsTouchesInView = NO;
-                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
-                [containerView addGestureRecognizer:tapToDismiss];
-            }
-        }];
+        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
     }
 }
 
@@ -1706,13 +1684,15 @@
             self.notificationsNavigationController = [[UINavigationController alloc]
                                                       initWithRootViewController:self.notificationsViewController];
         }
-        self.notificationsNavigationController.navigationBar.translucent = NO;
+        self.notificationsNavigationController.navigationBarHidden = YES;
         self.notificationsNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
-        if (self.notificationsNavigationController.sheetPresentationController) {
-            self.notificationsNavigationController.sheetPresentationController.detents = @[UISheetPresentationControllerDetent.largeDetent];
-            self.notificationsNavigationController.sheetPresentationController.prefersGrabberVisible = YES;
-            self.notificationsNavigationController.sheetPresentationController.preferredCornerRadius = 12.0;
-        }
+
+        UISheetPresentationController *sheet = self.notificationsNavigationController.sheetPresentationController;
+        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
+        sheet.preferredCornerRadius = 12.0;
+
         [navController presentViewController:self.notificationsNavigationController animated:YES completion:nil];
     }
 }

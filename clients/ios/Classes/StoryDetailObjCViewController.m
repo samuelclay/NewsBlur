@@ -34,6 +34,7 @@
 @property (nonatomic) BOOL isUpdatingContentInset;
 @property (nonatomic) BOOL isUserScrolling;
 @property (nonatomic) BOOL hasScrolledAwayFromTop;
+@property (nonatomic) BOOL lastDragDirectionDown;
 
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
 - (NSInteger)storyContentWidth;
@@ -741,6 +742,12 @@
 }
 
 - (CGFloat)feedTitleGradientBaseYOffset {
+    StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+    if (pagesVC.isCustomToolbarActive) {
+        CGFloat safeAreaTop = self.view.window.safeAreaInsets.top;
+        if (safeAreaTop <= 0) safeAreaTop = self.view.safeAreaInsets.top;
+        return safeAreaTop + StoryToolbar.toolbarHeight;
+    }
     // With content inset, gradient should be at the top of visible content
     CGFloat contentInsetTop = self.webView.scrollView.contentInset.top;
     return contentInsetTop > 0 ? contentInsetTop : -1;
@@ -751,38 +758,45 @@
         return;
     }
 
-    // The gradient is a direct subview of webView (not scrollView), so it's in fixed coordinates.
-    // It doesn't scroll with content - we manually position it to create the sticky effect.
-
-    UINavigationBar *navBar = appDelegate.storyPagesViewController.navigationController.navigationBar;
-    CGFloat navBarAlpha = navBar.alpha;
+    StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
 
     // Get current scroll state
     CGFloat contentInsetTop = self.webView.scrollView.contentInset.top;
     CGFloat contentOffset = self.webView.scrollView.contentOffset.y;
     CGFloat scrolledAmount = contentOffset + contentInsetTop;
 
-    // Calculate where the nav bar ends in window coordinates
-    CGFloat navBarBottom = navBar.frame.origin.y + navBar.frame.size.height;
-    // Convert webView origin to window coordinates
     CGPoint webViewOriginInWindow = [self.webView convertPoint:CGPointZero toView:nil];
-
-    // Base position: where gradient should be to appear just below nav bar
-    CGFloat basePositionInWebView = navBarBottom - webViewOriginInWindow.y;
-
-    // Use threshold check to handle floating point imprecision in layout
     BOOL isEdgeToEdge = webViewOriginInWindow.y < 1;
-    CGFloat statusBarHeight = isEdgeToEdge ? self.view.window.safeAreaInsets.top : 0;
+    CGFloat safeAreaTop = isEdgeToEdge ? self.view.window.safeAreaInsets.top : 0;
 
-    // Feedbar position tracks nav bar state:
-    // When nav bar is hidden (alpha=0): feedbar at top of screen (below status bar)
-    // When nav bar is visible (alpha=1): feedbar below the nav bar
-    CGFloat targetY = statusBarHeight + (basePositionInWebView - statusBarHeight) * navBarAlpha;
+    CGFloat targetY;
 
-    // If user scrolls past where gradient would naturally be, let it scroll away
-    CGFloat naturalPositionWhenScrolled = basePositionInWebView - scrolledAmount;
-    if (naturalPositionWhenScrolled < targetY) {
-        targetY = naturalPositionWhenScrolled;
+    if (pagesVC.isCustomToolbarActive) {
+        // Custom toolbar: gradient follows the toolbar's bottom edge
+        CGFloat toolbarHeight = pagesVC.toolbarScrollHandler.toolbarHeight;
+        CGFloat toolbarOffset = pagesVC.toolbarScrollHandler.toolbarOffset;
+        CGFloat toolbarBottom = safeAreaTop + (toolbarHeight - toolbarOffset);
+        targetY = toolbarBottom;
+
+        // If scrolled past the gradient's natural position, let it scroll away
+        CGFloat basePosition = safeAreaTop + toolbarHeight;
+        CGFloat naturalPositionWhenScrolled = basePosition - scrolledAmount;
+        if (naturalPositionWhenScrolled < targetY) {
+            targetY = naturalPositionWhenScrolled;
+        }
+    } else {
+        // Legacy alpha-fade path
+        UINavigationBar *navBar = pagesVC.navigationController.navigationBar;
+        CGFloat navBarAlpha = navBar.alpha;
+        CGFloat navBarBottom = navBar.frame.origin.y + navBar.frame.size.height;
+        CGFloat basePositionInWebView = navBarBottom - webViewOriginInWindow.y;
+
+        targetY = safeAreaTop + (basePositionInWebView - safeAreaTop) * navBarAlpha;
+
+        CGFloat naturalPositionWhenScrolled = basePositionInWebView - scrolledAmount;
+        if (naturalPositionWhenScrolled < targetY) {
+            targetY = naturalPositionWhenScrolled;
+        }
     }
 
     // When overscrolling at top (pulling down), feed bar follows content down
@@ -793,7 +807,7 @@
     // Pixel-align and clamp to safe area top
     CGFloat scale = [UIScreen mainScreen].scale;
     CGFloat pixelAdjust = 1.0 / scale;
-    CGFloat minY = (isEdgeToEdge ? self.view.window.safeAreaInsets.top : 0) - pixelAdjust;
+    CGFloat minY = safeAreaTop - pixelAdjust;
 
     targetY = MAX(minY, targetY);
     targetY = floor(targetY * scale) / scale;
@@ -826,12 +840,27 @@
     }
     self.isUpdatingContentInset = YES;
 
+    StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+
+    // When custom toolbar is active, content insets are fixed (toolbar overlays content)
+    if (pagesVC.isCustomToolbarActive) {
+        UIScrollView *scrollView = self.webView.scrollView;
+        CGFloat topInset = [pagesVC topInsetForNavigationBarAlpha:1.0];
+        UIEdgeInsets currentInset = scrollView.contentInset;
+        if (fabs(currentInset.top - topInset) > 0.5) {
+            UIEdgeInsets newInset = UIEdgeInsetsMake(topInset, 0, currentInset.bottom, 0);
+            scrollView.contentInset = newInset;
+            scrollView.scrollIndicatorInsets = newInset;
+        }
+        [self updateFeedTitleGradientPosition];
+        self.isUpdatingContentInset = NO;
+        return;
+    }
+
     UIScrollView *scrollView = self.webView.scrollView;
-    BOOL isCurrentPage = self == appDelegate.storyPagesViewController.currentPage;
+    BOOL isCurrentPage = self == pagesVC.currentPage;
 
     // Don't update inset while this page is actively scrolling
-    // This prevents jitter and content jumping during scroll gestures
-    // The inset will be updated when scrolling ends
     BOOL isActivelyScrolling = scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating;
     if (!force && isActivelyScrolling && isCurrentPage) {
         self.isUpdatingContentInset = NO;
@@ -841,26 +870,17 @@
     UIEdgeInsets currentInset = scrollView.contentInset;
     CGFloat currentOffset = scrollView.contentOffset.y;
 
-    // Use actual nav bar alpha, not the passed value which may be stale
-    UINavigationBar *navBar = appDelegate.storyPagesViewController.navigationController.navigationBar;
+    UINavigationBar *navBar = pagesVC.navigationController.navigationBar;
     CGFloat actualAlpha = navBar.alpha;
-    CGFloat topInset = [appDelegate.storyPagesViewController topInsetForNavigationBarAlpha:actualAlpha];
+    CGFloat topInset = [pagesVC topInsetForNavigationBarAlpha:actualAlpha];
 
     if (fabs(currentInset.top - topInset) > 0.5) {
-        // Set new inset
         UIEdgeInsets newInset = UIEdgeInsetsMake(topInset, 0, currentInset.bottom, 0);
         self.webView.scrollView.contentInset = newInset;
         self.webView.scrollView.scrollIndicatorInsets = newInset;
 
         if (maintainVisualPosition) {
-            // Calculate the visual position of content on screen
-            // Visual position = contentOffset + contentInset
-            // We want to keep this constant when inset changes
             CGFloat visualPosition = currentOffset + currentInset.top;
-
-            // Calculate new offset to maintain the same visual position
-            // newOffset + newInset = visualPosition
-            // newOffset = visualPosition - newInset
             CGFloat newOffset = visualPosition - topInset;
             self.webView.scrollView.contentOffset = CGPointMake(0, newOffset);
         }
@@ -1657,6 +1677,16 @@
         if (isUserDragging) {
             if (fabs(deltaY) > 0.1) {
                 self.isUserScrolling = YES;
+                // Track direction only during actual finger movement, not during
+                // deceleration (isDragging can stay YES with momentum scrolling)
+                UIGestureRecognizerState panState = scrollView.panGestureRecognizer.state;
+                if (panState == UIGestureRecognizerStateChanged) {
+                    if (deltaY > 0.5) {
+                        self.lastDragDirectionDown = YES;
+                    } else if (deltaY < -0.5) {
+                        self.lastDragDirectionDown = NO;
+                    }
+                }
                 [[ReadTimeTracker shared] recordActivity];
             } else {
                 return;
@@ -1665,20 +1695,26 @@
             if (self.isUserScrolling) {
                 self.isUserScrolling = NO;
                 if (appDelegate.storyPagesViewController.currentPage == self) {
-                    CGFloat currentAlpha = appDelegate.storyPagesViewController.navigationBarFadeAlpha;
-                    CGFloat targetAlpha = currentAlpha > 0.5 ? 1.0 : 0.0;
-                    appDelegate.storyPagesViewController.navBarFadeAccumulator = (targetAlpha < 0.5) ? 80.0 : 0.0;
-                    if (fabs(currentAlpha - targetAlpha) > 0.01) {
+                    StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+                    if (pagesVC.isCustomToolbarActive) {
+                        // Snap toolbar to fully shown or fully hidden
+                        CGFloat target = [pagesVC.toolbarScrollHandler snapTarget];
                         [UIView animateWithDuration:0.2 animations:^{
-                            [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:targetAlpha];
+                            [pagesVC setToolbarOffset:target];
                         }];
+                    } else {
+                        CGFloat currentAlpha = pagesVC.navigationBarFadeAlpha;
+                        CGFloat targetAlpha = currentAlpha > 0.5 ? 1.0 : 0.0;
+                        pagesVC.navBarFadeAccumulator = (targetAlpha < 0.5) ? 80.0 : 0.0;
+                        if (fabs(currentAlpha - targetAlpha) > 0.01) {
+                            [UIView animateWithDuration:0.2 animations:^{
+                                [pagesVC setNavigationBarFadeAlpha:targetAlpha];
+                            }];
+                        }
+                        [self updateContentInsetForNavigationBarAlpha:targetAlpha
+                                               maintainVisualPosition:YES
+                                                                force:YES];
                     }
-                    // Always force-update content inset when scrolling ends.
-                    // The inset update may have been skipped during deceleration
-                    // (e.g., quick scroll-up that restored alpha while still decelerating).
-                    [self updateContentInsetForNavigationBarAlpha:targetAlpha
-                                           maintainVisualPosition:YES
-                                                            force:YES];
                 }
             }
             return;
@@ -1699,7 +1735,9 @@
         BOOL singlePage = webpageHeight - 200 <= viewportHeight;
         BOOL atBottom = bottomPosition < 150;
         BOOL atTop = topPosition < 50;
-        BOOL atTopForFade = topPosition < 2;
+        // Adjust for content inset so toolbar starts hiding from the very first scroll
+        CGFloat insetAdjustedTop = topPosition + scrollView.contentInset.top;
+        BOOL atTopForFade = insetAdjustedTop < 2;
 
         if (!hasScrolled && topPosition != 0) {
             hasScrolled = YES;
@@ -1716,20 +1754,46 @@
         if (!atTopForFade) {
             self.hasScrolledAwayFromTop = YES;
         }
-        if (atTopForFade && self.hasScrolledAwayFromTop) {
-            appDelegate.storyPagesViewController.navBarFadeAccumulator = 0.0;
-            appDelegate.storyPagesViewController.traverseFadeAccumulator = 0.0;
-            [appDelegate.storyPagesViewController setNavigationBarFadeAlpha:1.0];
-        } else if (atTopForFade || atBottom) {
-            // At top (first load) or at bottom: hold current nav bar state
-        } else if (self.canHideNavigationBar) {
-            StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
-            CGFloat fadeDistance = 80.0;
-            CGFloat newAccum = pagesVC.navBarFadeAccumulator + deltaY;
-            newAccum = MAX(0.0, MIN(fadeDistance, newAccum));
-            pagesVC.navBarFadeAccumulator = newAccum;
-            CGFloat alpha = 1.0 - (newAccum / fadeDistance);
-            [pagesVC setNavigationBarFadeAlpha:alpha];
+
+        StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+        if (pagesVC.isCustomToolbarActive) {
+            // Scroll-based toolbar: translate toolbar with scroll deltas
+            // Only reset toolbar when user actively scrolls to top (not on programmatic/bounce scrolls)
+            if (atTopForFade && self.hasScrolledAwayFromTop && isUserDragging) {
+                [pagesVC.toolbarScrollHandler reset];
+                [pagesVC setToolbarOffset:0];
+                pagesVC.traverseFadeAccumulator = 0.0;
+            } else if (atTopForFade) {
+                // At very top: hold current state
+            } else if (self.canHideNavigationBar) {
+                // Only apply upward (show toolbar) deltas when user is actively scrolling up,
+                // not during bottom bounce from momentum or interactive scroll
+                CGFloat effectiveDelta = deltaY;
+                if (effectiveDelta < 0 && self.lastDragDirectionDown) {
+                    effectiveDelta = 0;
+                }
+                if (effectiveDelta != 0) {
+                    BOOL nearTop = insetAdjustedTop < 50;
+                    [pagesVC.toolbarScrollHandler handleScrollDelta:effectiveDelta atTop:NO atBottom:NO nearTop:nearTop];
+                    [pagesVC setToolbarOffset:pagesVC.toolbarScrollHandler.toolbarOffset];
+                }
+            }
+        } else {
+            // Legacy alpha-fade path (iPad, non-fullscreen)
+            if (atTopForFade && self.hasScrolledAwayFromTop) {
+                pagesVC.navBarFadeAccumulator = 0.0;
+                pagesVC.traverseFadeAccumulator = 0.0;
+                [pagesVC setNavigationBarFadeAlpha:1.0];
+            } else if (atTopForFade || atBottom) {
+                // At top (first load) or at bottom: hold current nav bar state
+            } else if (self.canHideNavigationBar) {
+                CGFloat fadeDistance = 80.0;
+                CGFloat newAccum = pagesVC.navBarFadeAccumulator + deltaY;
+                newAccum = MAX(0.0, MIN(fadeDistance, newAccum));
+                pagesVC.navBarFadeAccumulator = newAccum;
+                CGFloat alpha = 1.0 - (newAccum / fadeDistance);
+                [pagesVC setNavigationBarFadeAlpha:alpha];
+            }
         }
 #endif
         
@@ -2331,7 +2395,8 @@
 }
 
 - (BOOL)canHideNavigationBar {
-    if (!appDelegate.storyPagesViewController.allowFullscreen) {
+    StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+    if (!pagesVC.useCustomToolbar && !pagesVC.allowFullscreen) {
         return NO;
     }
 

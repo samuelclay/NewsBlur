@@ -574,7 +574,14 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.finishedAnimatingIn = NO;
     [MBProgressHUD hideHUDForView:self.view animated:NO];
     self.messageView.hidden = YES;
-    
+
+    // Force header pill bar layout immediately so pending constraints resolve
+    // before any animated calls (e.g. setSearchActive:) that would cause
+    // the header to fly in from the origin.
+    [UIView performWithoutAnimation:^{
+        [self.storyTitlesHeaderBar.headerContainer.superview layoutIfNeeded];
+    }];
+
     [self updateTextSize];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -3570,8 +3577,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
 
-    [appDelegate addSplitControlToMenuController:viewController];
-    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        [appDelegate addSplitControlToMenuController:viewController];
+    }
+
     if (dashboard) {
         NSString *preferenceKey = @"dashboard_layout";
         NSArray *titles = @[@"Single", @"Columns", @"Rows"];
