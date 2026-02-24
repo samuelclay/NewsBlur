@@ -23,6 +23,7 @@
 
     self.swiftUIController = [[PremiumViewHostingController alloc] init];
     self.swiftUIController.scrollToArchive = self.scrollToArchive;
+    self.swiftUIController.scrollToPro = self.scrollToPro;
 
     [self addChildViewController:self.swiftUIController];
     self.swiftUIController.view.frame = self.view.bounds;
@@ -46,8 +47,9 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)configureForArchive:(BOOL)scrollToArchive {
+- (void)configureScrollToArchive:(BOOL)scrollToArchive scrollToPro:(BOOL)scrollToPro {
     self.scrollToArchive = scrollToArchive;
+    self.scrollToPro = scrollToPro;
 
     // Remove existing SwiftUI controller if present
     if (self.swiftUIController) {
@@ -57,9 +59,10 @@
         self.swiftUIController = nil;
     }
 
-    // Create new SwiftUI controller with updated scrollToArchive
+    // Create new SwiftUI controller with updated scroll target
     self.swiftUIController = [[PremiumViewHostingController alloc] init];
     self.swiftUIController.scrollToArchive = scrollToArchive;
+    self.swiftUIController.scrollToPro = scrollToPro;
 
     [self addChildViewController:self.swiftUIController];
     self.swiftUIController.view.frame = self.view.bounds;

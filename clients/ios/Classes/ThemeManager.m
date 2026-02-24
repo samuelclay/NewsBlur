@@ -8,7 +8,7 @@
 
 #import "ThemeManager.h"
 #import "NewsBlurAppDelegate.h"
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 #import "OriginalStoryViewController.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import "NewsBlur-Swift.h"
@@ -414,14 +414,16 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 - (void)updateSegmentedControl:(UISegmentedControl *)segmentedControl {
-    segmentedControl.tintColor = UIColorFromRGB(0x8F918B);
+    segmentedControl.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x505050, 0x8F918B);
 #if !TARGET_OS_MACCATALYST
-    segmentedControl.backgroundColor = UIColorFromLightDarkRGB(0xe7e6e7, 0x303030);
+    segmentedControl.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xe7e6e7, 0xE8DED0, 0x707070, 0x303030);
 #endif
-    segmentedControl.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
-    
-    [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightDarkRGB(0x909090, 0xaaaaaa)];
-    [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateSelected foregroundColor:UIColorFromLightDarkRGB(0x0, 0xffffff)];
+    segmentedControl.selectedSegmentTintColor = UIColorFromLightSepiaMediumDarkRGB(0xffffff, 0xFAF5ED, 0x555555, 0x6f6f75);
+
+    [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateNormal foregroundColor:UIColorFromLightSepiaMediumDarkRGB(0x909090, 0x8B7B6B, 0xcccccc, 0xaaaaaa)];
+    [self updateTextAttributesForSegmentedControl:segmentedControl forState:UIControlStateSelected foregroundColor:UIColorFromLightSepiaMediumDarkRGB(0x0, 0x3C3226, 0xffffff, 0xffffff)];
+    segmentedControl.layer.borderWidth = 1.0 / UIScreen.mainScreen.scale;
+    segmentedControl.layer.borderColor = UIColorFromLightSepiaMediumDarkRGB(0xc0c0c0, 0xC8B8A8, 0x555555, 0x444444).CGColor;
 }
 
 - (void)updateThemeSegmentedControl:(UISegmentedControl *)segmentedControl {
@@ -467,16 +469,41 @@ NSString * const ThemeStyleDark = @"dark";
     [UINavigationBar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
     [UINavigationBar appearance].backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
     [UINavigationBar appearance].titleTextAttributes = @{NSForegroundColorAttributeName : UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B)};
-    [UIToolbar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x4A4A4A, 0x222222);
+    [UIToolbar appearance].barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
     [UISegmentedControl appearance].tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
-    
+
     UIBarStyle style = self.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
-    
+
     [UINavigationBar appearance].barStyle = style;
     [UINavigationBar appearance].translucent = YES;
     self.appDelegate.feedsNavigationController.navigationBar.barStyle = style;
-    
+    if (self.appDelegate.detailNavigationController) {
+        self.appDelegate.detailNavigationController.navigationBar.barStyle = style;
+    }
+
+    // Set window background color for status bar area (match toolbar colors)
+    self.appDelegate.window.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
+
+    // Override the system interface style so UIKit-managed views (split view column
+    // backgrounds, navigation controller views, etc.) match the app's theme even when
+    // the system appearance differs.
+    if (self.isDarkTheme) {
+        self.appDelegate.window.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    } else {
+        self.appDelegate.window.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+    }
+
+    UIViewController *topViewController = self.appDelegate.window.rootViewController;
+    while (topViewController.presentedViewController) {
+        topViewController = topViewController.presentedViewController;
+    }
+    [topViewController setNeedsStatusBarAppearanceUpdate];
     [self.appDelegate.feedsNavigationController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.detailNavigationController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.feedDetailNavigationController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.detailViewController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.feedDetailViewController setNeedsStatusBarAppearanceUpdate];
+    [self.appDelegate.storyPagesViewController setNeedsStatusBarAppearanceUpdate];
     [self.appDelegate.splitViewController setNeedsStatusBarAppearanceUpdate];
 }
 
@@ -500,7 +527,7 @@ NSString * const ThemeStyleDark = @"dark";
     
     [appDelegate.splitViewController updateTheme];
     [appDelegate.feedsViewController updateTheme];
-    [appDelegate.dashboardViewController updateTheme];
+    [appDelegate.activitiesViewController updateTheme];
     [appDelegate.feedDetailViewController updateTheme];
     [appDelegate.detailViewController updateTheme];
     [appDelegate.storyPagesViewController updateTheme];
@@ -659,4 +686,3 @@ NSString * const ThemeStyleDark = @"dark";
 }
 
 @end
-

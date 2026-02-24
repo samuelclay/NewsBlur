@@ -1,3 +1,9 @@
+"""Django middleware that prints full exception tracebacks to the console.
+
+Useful during development to see detailed exception information directly
+in the terminal without relying on Django's HTML error pages.
+"""
+
 import inspect
 import sys
 import traceback

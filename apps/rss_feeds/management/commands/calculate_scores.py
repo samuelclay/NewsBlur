@@ -11,6 +11,8 @@ from apps.reader.models import UserSubscription
 
 
 class Command(BaseCommand):
+    help = "Recalculate intelligence feed scores for users active in the past N days."
+
     def add_arguments(self, parser):
         parser.add_argument(
             "-a",

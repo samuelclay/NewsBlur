@@ -17,6 +17,7 @@ from simplejson.decoder import JSONDecodeError
 
 from utils import log as logging
 from utils.feed_functions import TimeoutError, timelimit
+from utils.story_functions import _normalize_image_url_for_dedup
 from vendor import readability
 from vendor.readability.readability import Unparseable
 
@@ -261,14 +262,12 @@ class TextImporter:
 
         content_imgs = content_soup.findAll("img")
         for img in content_imgs:
-            # Since NewsBlur proxies all http images over https, the url can change, so acknowledge urls
-            # that are https on the original text but http on the feed
             if not img.get("src"):
                 continue
-            if img.get("src") in image_urls:
-                image_urls.remove(img.get("src"))
-            elif img.get("src").replace("https:", "http:") in image_urls:
-                image_urls.remove(img.get("src").replace("https:", "http:"))
+            img_normalized = _normalize_image_url_for_dedup(img.get("src"))
+            if not img_normalized:
+                continue
+            image_urls = [u for u in image_urls if _normalize_image_url_for_dedup(u) != img_normalized]
 
         if len(image_urls):
             image_content = f'<img src="{image_urls[0]}">'

@@ -2222,6 +2222,32 @@ background: #191b1c;
     color: rgba(255, 255, 255, 0.3);
 }
 
+.NB-dark .NB-search-indexing-banner {
+    background: linear-gradient(135deg, #1a2030 0%, #1f2840 100%);
+    border-bottom-color: rgba(74, 144, 217, 0.2);
+}
+
+.NB-dark .NB-search-indexing-banner-icon {
+    filter: invert(1);
+    opacity: 0.5;
+}
+
+.NB-dark .NB-search-indexing-banner-text {
+    color: #e0e0e0;
+}
+
+.NB-dark .NB-search-indexing-banner-subtext {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.NB-dark .NB-search-indexing-progress {
+    background: rgba(74, 144, 217, 0.2);
+}
+
+.NB-dark .NB-search-indexing-progress-fill {
+    background: #5A9FE6;
+}
+
 .NB-dark .NB-story-list-empty {
     color: rgba(255, 255, 255, .6);
     text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
@@ -3841,6 +3867,30 @@ a.mention, a.mention-group {
     color: #EF9A9A;
 }
 
+.NB-dark .NB-feed-icon-reset-banner {
+    background: #2a2e33;
+    border-color: #3a3f45;
+}
+
+.NB-dark .NB-feed-icon-reset-banner:hover {
+    background: #333840;
+    border-color: #4a5058;
+}
+
+.NB-dark .NB-feed-icon-reset-text {
+    color: #a0a0a0;
+}
+
+.NB-dark .NB-feed-icon-reset-action {
+    color: #8888cc;
+    border-color: #4a4a6a;
+}
+
+.NB-dark .NB-feed-icon-reset-banner:hover .NB-feed-icon-reset-action {
+    background: #5555aa;
+    color: white;
+}
+
 .NB-dark .NB-popover-section-folder-icon {
     border-bottom-color: #444;
 }
@@ -4451,8 +4501,55 @@ a.mention, a.mention-group {
     color: #909090;
 }
 
+/* Discover archive upgrade banner dark mode */
+.NB-dark .NB-discover-popover .NB-discover-archive-banner {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+.NB-dark .NB-discover-popover .NB-discover-archive-banner:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.18) 0%, rgba(139, 92, 246, 0.18) 100%);
+    border-color: rgba(99, 102, 241, 0.35);
+}
+
+.NB-dark .NB-discover-popover .NB-discover-archive-banner-title {
+    color: #d0d0d0;
+}
+
+.NB-dark .NB-discover-popover .NB-discover-archive-banner-body {
+    color: #909090;
+}
+
+.NB-dark .NB-discover-popover .NB-discover-archive-banner-progress-bar {
+    background: rgba(99, 102, 241, 0.20);
+}
+
+.NB-dark .NB-discover-popover .NB-discover-archive-banner-progress-label {
+    color: #707070;
+}
+
+/* Discover index banner dark mode (archive users) */
+.NB-dark .NB-discover-popover .NB-discover-index-banner {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
 .NB-dark .NB-staff-only-badge {
     background: #c03800;
+}
+
+/* Global settings wrapper dark mode */
+.NB-dark .NB-popover-section-global {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-popover-section-global .NB-popover-section {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-popover-section-global-label {
+    color: #707070;
 }
 
 /* ============================== */
@@ -4899,4 +4996,23 @@ a.mention, a.mention-group {
 
 .NB-dark .NB-briefing-section-hint-examples {
     color: #888;
+}
+
+/* darkmode.css: Briefing summary in story detail — override inline styles from email formatting */
+.NB-dark .NB-feed-story-content .NB-briefing-summary {
+    color: #C8CDD0 !important;
+}
+
+.NB-dark .NB-feed-story-content h3[data-section] {
+    color: #7B9FD4 !important;
+    border-bottom-color: #404548 !important;
+}
+
+.NB-dark .NB-feed-story-content .NB-briefing-summary hr {
+    background-color: #404548 !important;
+    border-color: #404548 !important;
+}
+
+.NB-dark .NB-feed-story-content .NB-briefing-section-icon {
+    filter: grayscale(1) invert(1);
 }

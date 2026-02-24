@@ -1,1 +1,1 @@
-# No models for OAuth. Use MSocialServices model in social.
+"""OAuth models: no models defined; uses MSocialServices from the social app."""

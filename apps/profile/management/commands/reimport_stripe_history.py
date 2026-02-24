@@ -10,6 +10,8 @@ from utils import log as logging
 
 
 class Command(BaseCommand):
+    help = "Reimport Stripe charge history and update user premium status in batches."
+
     def add_arguments(self, parser):
         parser.add_argument(
             "-d", "--days", dest="days", nargs=1, type="int", default=365, help="Number of days to go back"

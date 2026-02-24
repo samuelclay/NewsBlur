@@ -29,6 +29,11 @@ xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -
 ### Language Mix
 The app uses **Objective-C** as the primary language with **Swift** for newer components. Swift-ObjC bridging is done through `Other Sources/BridgingHeader.h`.
 
+**IMPORTANT: All new files must be written in Swift, not Objective-C.** When creating new classes:
+- Use Swift with `@objc` and `@objcMembers` annotations if the class needs to be called from ObjC code
+- Swift classes are automatically available to ObjC via the generated `NewsBlur-Swift.h` header
+- Only modify existing ObjC files; never create new `.h`/`.m` files
+
 ### Key Classes
 
 - **NewsBlurAppDelegate** (`Classes/NewsBlurAppDelegate.h/m`): Central singleton managing app state, navigation, feeds data, offline storage, and network operations. Access via `NewsBlurAppDelegate.shared`.
@@ -36,6 +41,22 @@ The app uses **Objective-C** as the primary language with **Swift** for newer co
 - **StoriesCollection** (`Classes/StoriesCollection.h/m`): Manages the current collection of stories being displayed (feed, folder, river view). Handles story state (read/unread/saved) and navigation.
 
 - **ThemeManager** (`Classes/ThemeManager.h/m`): Handles app theming (Light/Sepia/Medium/Dark). Uses macros like `UIColorFromRGB()` and `UIColorFromLightDarkRGB()`.
+
+### Theme Colors
+
+The app supports 4 themes: Light, Warm (Sepia), Medium (Gray), and Dark (Black). Use `UIColorFromLightSepiaMediumDarkRGB()` macro to specify colors for all themes.
+
+| Purpose | Light | Warm/Sepia | Medium | Dark |
+|---------|-------|------------|--------|------|
+| Navigation bar | `0xE3E6E0` | `0xF3E2CB` | `0x333333` | `0x222222` |
+| View background (gray) | `0xd7dadf` | `0xE8DED0` | `0x333333` | `0x111111` |
+| Content background (white) | `0xFFFFFF` | `0xFAF5ED` | `0x333333` | `0x111111` |
+| Section header background | `0xf4f4f4` | `0xF3E2CB` | `0x333333` | `0x222222` |
+| Section header text | `0x8F918B` | `0x8B7B6B` | `0x8F918B` | `0x8F918B` |
+| Grid/card background | `0xECEEEA` | `0xF3E2CB` | `0x333333` | `0x222222` |
+| Separator | `0xE9E8E4` | `0xD4C8B8` | `0x333333` | `0x222222` |
+
+**Important:** When adding colors to modals/popovers, always use `UIColorFromLightSepiaMediumDarkRGB()` instead of `UIColorFromRGB()` to ensure correct colors in Warm theme. The generic `UIColorFromRGB()` applies a matrix transformation that can produce unintended yellow tints for gray colors.
 
 ### View Controller Hierarchy
 
@@ -113,24 +134,33 @@ Story content is rendered in WKWebView with:
 
 ## iOS Simulator Testing
 
-**IMPORTANT**: Do NOT use Chrome DevTools MCP server for iOS testing. Always use `run_ios.py` for screenshots and simulator interactions.
+**IMPORTANT**: Always use `run_ios.py` for ALL simulator interactions (screenshots, taps, builds, installs). Do NOT use Chrome DevTools MCP server, `xcrun simctl`, or `idb` directly — `run_ios.py` wraps these and handles PATH setup automatically.
+
+### Choosing a Simulator
+
+1. Run `python3 run_ios.py list` to see available simulators
+2. Use whichever device is already **Booted** (marked with `<-- BOOTED` in the list)
+3. If no device is booted, boot an **iPhone 16e** on the latest available iOS version: `xcrun simctl boot <UDID>`
 
 ### run_ios.py - Simulator Control Script
 
-Use `run_ios.py` for common simulator interactions. It handles idb PATH setup automatically.
+**IMPORTANT: You must specify a simulator UDID.** First run `list` to find the booted device, then pass the UDID via `--udid`:
 
 ```bash
-# Basic actions
-python3 run_ios.py tap:<x>,<y>              # Tap at coordinates
-python3 run_ios.py sleep:<seconds>          # Wait
-python3 run_ios.py swipe:<x1>,<y1>,<x2>,<y2> # Swipe
-python3 run_ios.py screenshot:/tmp/shot.png  # Take screenshot
-python3 run_ios.py launch                    # Launch NewsBlur
-python3 run_ios.py terminate                 # Kill NewsBlur
-python3 run_ios.py install                   # Install from DerivedData
+# Step 1: Find available simulators and their UDIDs
+python3 run_ios.py list
+
+# Step 2: Use --udid with any action
+python3 run_ios.py --udid <UDID> tap:<x>,<y>              # Tap at coordinates
+python3 run_ios.py --udid <UDID> sleep:<seconds>          # Wait
+python3 run_ios.py --udid <UDID> swipe:<x1>,<y1>,<x2>,<y2> # Swipe
+python3 run_ios.py --udid <UDID> screenshot:/tmp/shot.png  # Take screenshot
+python3 run_ios.py --udid <UDID> launch                    # Launch NewsBlur
+python3 run_ios.py --udid <UDID> terminate                 # Kill NewsBlur
+python3 run_ios.py --udid <UDID> install                   # Install from DerivedData
 
 # Chain multiple actions
-python3 run_ios.py launch sleep:2 tap:175,600 sleep:1 screenshot:/tmp/result.png
+python3 run_ios.py --udid <UDID> launch sleep:2 tap:175,600 sleep:1 screenshot:/tmp/result.png
 ```
 
 ### Screenshot Coordinate Mapping (iPhone 16e)
@@ -158,17 +188,8 @@ tap_y = screenshot_y / 3.073
 - Settings cog at screenshot position (1100, 2420) → tap coordinates (361, 788)
 - List item 8 rows down at screenshot position (400, 1190) → tap coordinates (131, 387)
 
-### Manual Simulator Commands
+### Manual Simulator Commands (reference only — prefer run_ios.py)
 
-- **idb (iOS Development Bridge)**: Use `idb` for UI interactions like tapping coordinates
-  - Install: `brew install idb-companion` and `pip3 install --user fb-idb`
-  - Add to PATH: `export PATH="$PATH:~/Library/Python/3.13/bin"`
-  - Tap: `idb ui tap --udid <UDID> <x> <y>`
-- **xcrun simctl commands**:
-  - List devices: `xcrun simctl list devices`
-  - Install app: `xcrun simctl install booted <path/to/App.app>`
-  - Launch app: `xcrun simctl launch booted <bundle.id>`
-  - Terminate app: `xcrun simctl terminate booted <bundle.id>`
-  - Screenshot: `xcrun simctl io booted screenshot /tmp/screenshot.png`
-  - Stream logs: `xcrun simctl spawn booted log stream --predicate 'process == "NewsBlur"'`
-- **Build for simulator**: `xcodebuild -project NewsBlur.xcodeproj -scheme NewsBlur -destination 'id=<UDID>' -configuration Debug build`
+- **Boot a simulator**: `xcrun simctl boot <UDID>`
+- **Stream logs**: `xcrun simctl spawn booted log stream --predicate 'process == "NewsBlur"'`
+- **Build for simulator**: `xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur Alpha" -destination 'id=<UDID>' -configuration Debug build`

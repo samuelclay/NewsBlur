@@ -1,3 +1,5 @@
+"""Notification tasks: queue push notifications for new feed stories."""
+
 from django.contrib.auth.models import User
 
 from apps.notifications.models import MUserFeedNotification

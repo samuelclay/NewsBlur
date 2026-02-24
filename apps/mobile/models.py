@@ -1,3 +1,3 @@
-from django.db import models
+"""Mobile models: placeholder for mobile app data."""
 
-# Create your models here.
+from django.db import models

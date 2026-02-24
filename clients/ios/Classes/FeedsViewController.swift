@@ -105,6 +105,178 @@ class FeedsViewController: FeedsObjCViewController {
         return parentTitles
     }
     
+    @objc(folderTitleForFullFolderPath:) func folderTitle(for fullFolderPath: String) -> String? {
+        return fullFolderPath.components(separatedBy: " ▸ ").last
+    }
+    
+    @objc(fullFolderPathForFolderTitle:) func fullFolderPath(for folderTitle: String) -> String? {
+        let path = appDelegate.dictFoldersArray.first { folder in
+            guard let folder = folder as? String else {
+                return false
+            }
+            
+            return folder.components(separatedBy: " ▸ ").last == folderTitle
+        }
+        
+        return path as? String
+    }
+    
+    var dashboardTimer: Timer?
+    
+    @objc func clearDashboard() {
+        NSLog("🎛️ clearDashboard")
+        
+        appDelegate.feedDetailViewController.dashboardIndex = -1
+        appDelegate.feedDetailViewController.dashboardSingleMode = false
+        appDelegate.detailViewController.storyTitlesInDashboard = false
+        
+        dashboardTimer?.invalidate()
+        dashboardTimer = nil
+    }
+    
+    @objc func reloadDashboard() {
+        NSLog("🎛️ feeds reloadDashboard")
+        
+        appDelegate.feedDetailViewController.dashboardIndex = -1
+        appDelegate.feedDetailViewController.dashboardSingleMode = false
+        
+        immediatelyLoadNextDash(prepare: false, finishingSingleMode: false)
+    }
+    
+    @objc func reloadOneDash(with dashIndex: Int) {
+        NSLog("🎛️ feeds reloadOneDash(with: \(dashIndex))")
+        
+        let previousIndex = appDelegate.feedDetailViewController.dashboardIndex
+        
+        if previousIndex >= 0, previousIndex < StoryCache.cachedDashboard.count {
+            reloadDashboard()
+        } else {
+            appDelegate.feedDetailViewController.dashboardIndex = dashIndex
+            appDelegate.feedDetailViewController.dashboardSingleMode = true
+            
+            immediatelyLoadNextDash(prepare: false, finishingSingleMode: false)
+        }
+    }
+    
+    @objc func loadDashboard() {
+        NSLog("🎛️ loadDashboard")
+        
+        if !appDelegate.detailViewController.storyTitlesInDashboard {
+            NSLog("🎛️ ...not showing dashboard")
+            return
+        } else if appDelegate.feedDetailViewController.dashboardIndex >= 0 {
+            NSLog("🎛️ ...deferred loading dashboard")
+            
+            deferredLoadNextDash()
+        } else {
+            NSLog("🎛️ ...resetting timer")
+            
+            let frequency: TimeInterval = 5 * 60
+            
+            dashboardTimer?.invalidate()
+            dashboardTimer = Timer.scheduledTimer(timeInterval: frequency, target: self, selector: #selector(reloadDashboard), userInfo: nil, repeats: true
+            )
+            
+            immediatelyLoadNextDash(prepare: true, finishingSingleMode: false)
+        }
+    }
+    
+    var dashWorkItem: DispatchWorkItem?
+    
+    private func deferredLoadNextDash() {
+        NSLog("🎛️ deferredLoadNextDash")
+        
+        dashWorkItem?.cancel()
+        
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self, isDashboard else {
+                return
+            }
+            
+            immediatelyLoadNextDash(prepare: true,
+                                    finishingSingleMode: appDelegate.feedDetailViewController.dashboardSingleMode)
+        }
+        
+        let speed = appDelegate.feedDetailViewController.storyCache.settings.dashboardSpeed
+        
+        dashWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(speed), execute: workItem)
+    }
+    
+    private func immediatelyLoadNextDash(prepare: Bool, finishingSingleMode: Bool) {
+        NSLog("🎛️ immediatelyLoadNextDash(prepare: \(prepare), finishingSingleMode: \(finishingSingleMode))")
+        
+        let previousIndex = appDelegate.feedDetailViewController.dashboardIndex
+        
+        if previousIndex >= 0, previousIndex < StoryCache.cachedDashboard.count {
+            if finishingSingleMode || !appDelegate.feedDetailViewController.dashboardSingleMode {
+                appDelegate.feedDetailViewController.storyCache.reloadDashboard(for: previousIndex)
+                
+                let dash = StoryCache.cachedDashboard[previousIndex]
+                dash.isFetching = false
+            }
+            
+            if finishingSingleMode {
+                NSLog("🎛️ ...finished loading single dash")
+                
+                appDelegate.feedDetailViewController.dashboardIndex = StoryCache.cachedDashboard.count
+                appDelegate.feedDetailViewController.dashboardSingleMode = false
+                
+                appDelegate.feedDetailViewController.reload()
+                return
+            }
+        } else {
+            appDelegate.feedDetailViewController.dashboardSingleMode = false
+        }
+        
+        if !appDelegate.feedDetailViewController.dashboardSingleMode {
+            appDelegate.feedDetailViewController.dashboardIndex += 1
+        }
+        
+        let index = appDelegate.feedDetailViewController.dashboardIndex
+        
+        if index == 0 {
+            if prepare {
+                appDelegate.feedDetailViewController.storyCache.prepareDashboard()
+            }
+        } else if index >= StoryCache.cachedDashboard.count {
+            // Done.
+            
+            NSLog("🎛️ ...finished loading dashboard: \(StoryCache.cachedDashboard)")
+            
+            appDelegate.feedDetailViewController.reload()
+            return
+        }
+        
+        let dash = StoryCache.cachedDashboard[index]
+        
+        NSLog("🎛️ ...starting to fetch dashboard \(index): \(dash)")
+        
+        dash.isFetching = true
+        
+        appDelegate.storiesCollection.reset()
+        
+        if let searchQuery = dash.searchQuery {
+            appDelegate.storiesCollection.inSearch = true
+            appDelegate.storiesCollection.searchQuery = searchQuery
+            appDelegate.storiesCollection.savedSearchQuery = searchQuery
+        } else {
+            appDelegate.storiesCollection.inSearch = false
+            appDelegate.storiesCollection.searchQuery = nil
+            appDelegate.storiesCollection.savedSearchQuery = nil
+        }
+        
+        if let feed = dash.feedId {
+            NSLog("🎛️ ...loadFolder \(dash.folderId) feedID: \(feed)")
+            
+            appDelegate.loadFolder(dash.folderId, feedID: feed)
+        } else {
+            NSLog("🎛️ loadRiverFeedDetailView \(dash.folderId)")
+            
+            appDelegate.loadRiverFeedDetailView(appDelegate.feedDetailViewController, withFolder: dash.folderId)
+        }
+    }
+    
     var loadWorkItem: DispatchWorkItem?
     
     @objc func loadNotificationStory() {
@@ -123,21 +295,31 @@ class FeedsViewController: FeedsObjCViewController {
     }
     
     var reloadWorkItem: DispatchWorkItem?
-    
+    var lastFeedTitlesReloadTime: Date = .distantPast
+
     @objc func deferredReloadFeedTitlesTable() {
         reloadWorkItem?.cancel()
-        
+
+        let throttleInterval: TimeInterval = 0.5
+        let timeSinceLastReload = Date().timeIntervalSince(lastFeedTitlesReloadTime)
+        let delay: TimeInterval = timeSinceLastReload >= throttleInterval ? 0 : throttleInterval - timeSinceLastReload
+
         let workItem = DispatchWorkItem { [weak self] in
             guard let self else {
                 return
             }
-            
-            self.reloadFeedTitlesTable()
-            self.refreshHeaderCounts()
+
+            self.lastFeedTitlesReloadTime = Date()
+            self.refreshFeedCounts()
         }
-        
+
         reloadWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
+    }
+
+    @objc func refreshFeedCounts() {
+        refreshFolderCounts()
+        refreshHeaderCounts()
     }
     
     override func viewDidAppear(_ animated: Bool) {

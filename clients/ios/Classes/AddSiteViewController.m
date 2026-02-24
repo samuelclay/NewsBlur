@@ -343,6 +343,7 @@
                        @"widget_stories",
                        @"river_blurblogs",
                        @"river_global",
+                       @"dashboard",
                        @"infrequent",
                        @"everything"]);
 }

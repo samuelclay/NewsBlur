@@ -23,7 +23,6 @@ UIActionSheetDelegate, WKNavigationDelegate> {
     BOOL inTextView;
     BOOL inDoubleTap;
     BOOL hasScrolled;
-    NSURL *activeLongPressUrl;
     CGSize preRotateSize;
     CGFloat scrollPct;
     
@@ -53,6 +52,10 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 - (void)drawStory:(BOOL)force withOrientation:(UIInterfaceOrientation)orientation;
 - (void)updateStoryTheme;
 - (void)drawFeedGradient;
+- (void)updateFeedTitleGradientPosition;
+- (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha;
+- (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha maintainVisualPosition:(BOOL)maintainVisualPosition;
+- (void)updateContentInsetForNavigationBarAlpha:(CGFloat)alpha maintainVisualPosition:(BOOL)maintainVisualPosition force:(BOOL)force;
 - (void)showStory;
 - (void)clearStory;
 - (void)hideStory;

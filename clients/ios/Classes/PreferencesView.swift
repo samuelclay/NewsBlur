@@ -261,18 +261,22 @@ class PreferencesViewModel: ObservableObject {
                         )
                     ),
                     PreferenceItem(
-                        title: "Mark stories read on scroll",
+                        title: "Mark stories read",
                         icon: "scroll",
                         iconColor: .cyan,
-                        type: .toggle(key: "default_scroll_read_filter", defaultValue: true),
-                        subtitle: "Automatically mark stories as read when you scroll past them"
+                        type: .multiValue(
+                            key: "default_mark_read_filter",
+                            titles: ["On scroll or selection", "Only on selection", "After 1 second", "After 2 seconds", "After 3 seconds", "After 4 seconds", "After 5 seconds", "After 10 seconds", "After 15 seconds", "After 30 seconds", "After 45 seconds", "After 60 seconds", "Manually"],
+                            values: ["scroll", "selection", "after1", "after2", "after3", "after4", "after5", "after10", "after15", "after30", "after45", "after60", "manually"],
+                            defaultValue: "scroll"
+                        )
                     ),
                     PreferenceItem(
-                        title: "Show scroll override button",
+                        title: "Site-specific mark read",
                         icon: "hand.raised",
                         iconColor: .yellow,
-                        type: .toggle(key: "override_scroll_read_filter", defaultValue: true),
-                        subtitle: "Show button to temporarily disable mark read on scroll"
+                        type: .toggle(key: "override_mark_read_filter", defaultValue: true),
+                        subtitle: "Allow per-site/folder mark read settings"
                     )
                 ]
             ),

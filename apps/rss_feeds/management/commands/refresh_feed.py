@@ -5,6 +5,8 @@ from utils.management_functions import daemonize
 
 
 class Command(BaseCommand):
+    help = "Fetch and update a single feed by ID or title with verbose output."
+
     def add_arguments(self, parser):
         parser.add_argument("-f", "--feed", dest="feed", default=None)
         parser.add_argument("-F", "--force", dest="force", action="store_true")

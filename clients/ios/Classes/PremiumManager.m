@@ -11,6 +11,7 @@
 
 #define kPremium36ProductIdentifier @"newsblur_premium_auto_renew_36"
 #define kPremiumArchiveProductIdentifier @"newsblur_premium_archive"
+#define kPremiumProProductIdentifier @"newsblur_premium_pro"
 
 @interface PremiumManager () <SKProductsRequestDelegate, SKPaymentTransactionObserver>
 
@@ -26,6 +27,7 @@
     if ((self = [super init])) {
         self.premiumProduct = nil;
         self.premiumArchiveProduct = nil;
+        self.premiumProProduct = nil;
     }
 
     [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
@@ -43,6 +45,7 @@
                                               initWithProductIdentifiers:[NSSet setWithObjects:
                                                                           kPremium36ProductIdentifier,
                                                                           kPremiumArchiveProductIdentifier,
+                                                                          kPremiumProProductIdentifier,
                                                                           nil]];
         productsRequest.delegate = self;
         self.request = productsRequest;
@@ -61,9 +64,11 @@
                 self.premiumProduct = product;
             } else if ([product.productIdentifier isEqualToString:kPremiumArchiveProductIdentifier]) {
                 self.premiumArchiveProduct = product;
+            } else if ([product.productIdentifier isEqualToString:kPremiumProProductIdentifier]) {
+                self.premiumProProduct = product;
             }
         }
-        
+
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.appDelegate.premiumViewController loadedProducts];
         });
@@ -189,6 +194,8 @@
         [self.appDelegate.premiumViewController finishedTransaction];
         NSDictionary *results = (NSDictionary *)responseObject;
         self.appDelegate.isPremium = [[results objectForKey:@"is_premium"] integerValue] == 1;
+        self.appDelegate.isPremiumArchive = [[results objectForKey:@"is_archive"] integerValue] == 1;
+        self.appDelegate.isPremiumPro = [[results objectForKey:@"is_pro"] integerValue] == 1;
         id premiumExpire = [results objectForKey:@"premium_expire"];
         if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]] && premiumExpire != 0) {
             self.appDelegate.premiumExpire = [premiumExpire integerValue];

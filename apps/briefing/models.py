@@ -1,3 +1,5 @@
+"""Briefing models: user briefings with curated story collections and AI summaries."""
+
 import datetime
 
 import mongoengine as mongo

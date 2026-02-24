@@ -189,7 +189,7 @@
         owner: "{{ ansible_effective_user_id|int }}"
         group: "{{ ansible_effective_group_id|int }}"
         recurse: yes
-  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['hdb-mongo-primary', 'hdb-mongo-secondary', 'hdb-mongo-analytics']
+  when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['hdb-mongo-primary', 'hdb-mongo-secondary']
 
 - name: Start db-mongo-analytics docker container
   become: yes
@@ -219,43 +219,58 @@
       - /mnt/{{ inventory_hostname | regex_replace('db-|-', '') }}/backup/:/backup/
   when: (inventory_hostname | regex_replace('[0-9]+', '')) in ['db-mongo-analytics']
 
-- name: Start db-mongo-analytics docker container on hetzner
-  become: yes
-  docker_container:
-    name: mongo
-    image: mongo:4.0
-    state: started
-    container_default_behavior: no_defaults
-    hostname: "{{ inventory_hostname }}"
-    restart_policy: unless-stopped
-    networks_cli_compatible: yes
-    network_mode: default
-    networks:
-      - name: newsblurnet
-        aliases:
-          - mongo
-          - "{{ inventory_hostname }}"
-    ports:
-      - "27017:27017"
-    command: --config /etc/mongod.conf
-    user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
-    volumes:
-      - /srv/newsblur/docker/volumes/mongo:/data/db
-      - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
-      - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
-      - /var/log/mongodb/:/var/log/mongodb/
-      - /srv/newsblur/docker/volumes/mongo/backup/:/backup/
+- name: Start mongo analytics and set permissions on hetzner
+  block:
+    - name: Create mongo data directory for analytics on hetzner
+      become: yes
+      file:
+        path: "/srv/newsblur/docker/volumes/mongo"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        mode: 0755
+
+    - name: Start db-mongo-analytics docker container on hetzner
+      become: yes
+      docker_container:
+        name: mongo
+        image: mongo:4.0
+        state: started
+        container_default_behavior: no_defaults
+        hostname: "{{ inventory_hostname }}"
+        restart_policy: unless-stopped
+        networks_cli_compatible: yes
+        network_mode: default
+        networks:
+          - name: newsblurnet
+            aliases:
+              - mongo
+              - "{{ inventory_hostname }}"
+        ports:
+          - "27017:27017"
+        command: --config /etc/mongod.conf
+        user: "{{ ansible_effective_user_id|int }}:{{ ansible_effective_group_id|int }}"
+        volumes:
+          - /srv/newsblur/docker/volumes/mongo:/data/db
+          - /srv/newsblur/ansible/roles/mongo/templates/mongo.analytics.conf:/etc/mongod.conf
+          - /srv/newsblur/config/mongodb_keyfile.key:/srv/newsblur/config/mongodb_keyfile.key
+          - /var/log/mongodb/:/var/log/mongodb/
+          - /srv/newsblur/docker/volumes/mongo/backup/:/backup/
+
+    - name: Set permissions on mongo analytics volume
+      become: yes
+      file:
+        path: "/srv/newsblur/docker/volumes/"
+        state: directory
+        owner: "{{ ansible_effective_user_id|int }}"
+        group: "{{ ansible_effective_group_id|int }}"
+        recurse: yes
   when: (inventory_hostname | regex_replace('\-?[0-9]+', '')) in ['hdb-mongo-analytics']
 
-- name: Create mongo database user
+- name: Create mongo database user (bootstrap without auth for fresh DB, localhost exception)
   shell:
-    # Don't use this line below as it means there is already a username and password, so no need to set one
-    # sleep 2; docker exec mongo mongo -u "{{ mongodb_username }}" -p "{{ mongodb_password }}" --eval '
     cmd: >-
-      sleep 2; docker exec mongo mongo admin 
-      -u "{{ mongodb_username }}" 
-      -p "{{ mongodb_password }}" 
-      --authenticationDatabase admin 
+      sleep 2; docker exec mongo mongo admin
       --eval '
       db.createUser(
         {
