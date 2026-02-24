@@ -126,6 +126,8 @@ def ComputeStoryClusters(feed_id):
     if len(stories) < 2:
         return
 
+    story_title_map = {s["story_hash"]: s["story_title"] for s in stories}
+
     logging.debug(
         " ---> ~FBClustering: computing clusters for feed %s (%s stories, %s candidates)"
         % (feed_id, len(unclustered), len(candidate_hashes))
@@ -153,7 +155,8 @@ def ComputeStoryClusters(feed_id):
     semantic_clusters = {}
     if unclustered_stories:
         semantic_clusters = find_semantic_clusters(
-            unclustered_stories, all_feed_ids, lookback_date=lookback, original_feed_map=original_feed_map
+            unclustered_stories, all_feed_ids, lookback_date=lookback,
+            original_feed_map=original_feed_map, story_title_map=story_title_map,
         )
 
     # Merge title and semantic clusters
@@ -164,6 +167,7 @@ def ComputeStoryClusters(feed_id):
             semantic_clusters,
             story_feed_map=story_feed_map,
             original_feed_map=original_feed_map,
+            story_title_map=story_title_map,
         )
         store_clusters_to_redis(combined)
         logging.debug(

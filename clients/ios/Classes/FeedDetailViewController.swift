@@ -100,9 +100,10 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         addChild(viewController)
         view.addSubview(viewController.view)
         viewController.didMove(toParent: self)
-        
+
+        let topAnchor = storyTitlesHeaderBar?.headerContainer.bottomAnchor ?? view.topAnchor
         NSLayoutConstraint.activate([
-            viewController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            viewController.view.topAnchor.constraint(equalTo: topAnchor),
             viewController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             viewController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             viewController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
@@ -161,9 +162,9 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     @objc override func changedLayout() {
         // Make sure the view has loaded.
         _ = view
-        
+
         storyTitlesTable.isHidden = !isLegacyTable || isDashboard
-        
+
         if let gridViewController {
             gridViewController.view.isHidden = isLegacyTable || isDashboard
         } else if !isLegacyTable && !isDashboard {
@@ -171,7 +172,7 @@ class FeedDetailViewController: FeedDetailObjCViewController {
             add(viewController: viewController)
             gridViewController = viewController
         }
-        
+
         if let dashboardViewController {
             dashboardViewController.view.isHidden = !isDashboard
         } else if isDashboard {
@@ -179,7 +180,12 @@ class FeedDetailViewController: FeedDetailObjCViewController {
             add(viewController: viewController)
             dashboardViewController = viewController
         }
-        
+
+        // Keep pill bar above content views
+        if let headerContainer = storyTitlesHeaderBar?.headerContainer {
+            view.bringSubviewToFront(headerContainer)
+        }
+
         deferredReload()
     }
     

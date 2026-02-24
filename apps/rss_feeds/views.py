@@ -112,6 +112,7 @@ def feed_autocomplete(request):
     query = request.GET.get("term") or request.GET.get("query")
     version = int(request.GET.get("v", 1))
     autocomplete_format = request.GET.get("format", "autocomplete")
+    limit = int(request.GET.get("limit", 5))
 
     # user = get_user(request)
     # if True or not user.profile.is_premium:
@@ -136,7 +137,7 @@ def feed_autocomplete(request):
     tries_left = 5
     while len(query_params) and tries_left:
         tries_left -= 1
-        feed_ids = Feed.autocomplete(" ".join(query_params))
+        feed_ids = Feed.autocomplete(" ".join(query_params), limit=limit)
         if feed_ids:
             break
         else:
@@ -730,6 +731,17 @@ def discover_stories(request, story_hash):
     feeds = {feed.pk: feed.canonical(include_favicon=False) for feed in feeds}
 
     return {"discover_stories": stories, "feeds": feeds}
+
+
+@ajax_login_required
+@json.json_view
+def discover_index(request):
+    from apps.search.models import MUserSearch
+
+    user_search = MUserSearch.get_user(request.user.pk)
+    user_search.touch_discover_date()
+
+    return {"code": 1, "indexing": True}
 
 
 @json.json_view

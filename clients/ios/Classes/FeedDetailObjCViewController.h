@@ -14,6 +14,7 @@
 #import "FeedDetailTableCell.h"
 
 @class MCSwipeTableViewCell;
+@class StoryTitlesHeaderBar;
 
 @interface FeedDetailObjCViewController : BaseViewController
 <UITableViewDelegate, UITableViewDataSource,
@@ -54,6 +55,7 @@
 
 @property (nonatomic, strong) UIView *tryFeedBannerView;
 @property (nonatomic, strong) UIView *fetchingBannerView;
+@property (nonatomic, strong) StoryTitlesHeaderBar *storyTitlesHeaderBar;
 
 @property (nonatomic, readonly) BOOL canPullToRefresh;
 @property (nonatomic, readonly) BOOL isMarkReadOnScroll;
@@ -153,5 +155,11 @@
 
 - (void)confirmDeleteSite:(UINavigationController *)menuNavigationController;
 - (void)openMoveView:(UINavigationController *)menuNavigationController;
+- (IBAction)doOpenOptionsMenu:(id)sender;
+- (IBAction)doOpenDiscoverFromPill:(id)sender;
+- (IBAction)doActivateSearch:(id)sender;
+- (IBAction)doDeactivateSearch:(id)sender;
+- (void)deactivateSearch;
+- (void)updateStoryTitlesHeaderPillState;
 
 @end

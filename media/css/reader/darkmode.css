@@ -3710,6 +3710,12 @@ a.mention, a.mention-group {
     color: #707070;
 }
 
+/* Discover index banner dark mode (archive users) */
+.NB-dark .NB-discover-popover .NB-discover-index-banner {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
 .NB-dark .NB-staff-only-badge {
     background: #c03800;
 }
