@@ -770,6 +770,21 @@
     self.storyToolbar.transform = CGAffineTransformMakeTranslation(0, -clamped);
     [self updateStatusBarState];
     [self.currentPage updateFeedTitleGradientPosition];
+
+    // Keep adjacent pages in sync so there's no jump when swiping to them.
+    // Only adjust pages that are at the top (not user-scrolled).
+    for (StoryDetailViewController *page in @[self.nextPage, self.previousPage]) {
+        if (!page || page == self.currentPage) continue;
+        UIScrollView *sv = page.webView.scrollView;
+        CGFloat topRest = -sv.contentInset.top;
+        CGFloat maxAdjustedTop = topRest + self.toolbarScrollHandler.toolbarHeight;
+        CGFloat targetOffset = topRest + clamped;
+        // Page is "at top" if within the toolbar adjustment range (topRest to topRest+toolbarHeight)
+        if (sv.contentOffset.y <= maxAdjustedTop + 1) {
+            sv.contentOffset = CGPointMake(sv.contentOffset.x, targetOffset);
+            [page updateFeedTitleGradientPosition];
+        }
+    }
 }
 
 - (void)updateStoryToolbarTitle {
@@ -872,13 +887,12 @@
         safeAreaTop = 59;  // Fallback for notched devices
     }
 
-    // When custom toolbar is used (always on iPhone), content inset reflects
-    // how much toolbar is currently visible. Fully shown = safeAreaTop + toolbarHeight,
-    // fully hidden = safeAreaTop. This ensures new stories don't have a gap when
-    // the toolbar is already hidden from the previous story.
+    // When custom toolbar is used (always on iPhone), content inset is always fixed at
+    // safeAreaTop + toolbarHeight. This keeps insets stable during scroll (no jitter).
+    // When toolbar is hidden and a new story loads, the initial scroll position is
+    // adjusted instead (see setStoryFromScroll:).
     if (self.useCustomToolbar) {
-        CGFloat visibleToolbar = self.toolbarScrollHandler.toolbarHeight - self.toolbarScrollHandler.toolbarOffset;
-        return safeAreaTop + visibleToolbar;
+        return safeAreaTop + self.toolbarScrollHandler.toolbarHeight;
     }
 
     UINavigationController *navController = self.navigationController;
@@ -1774,8 +1788,30 @@
             [[ReadTimeTracker shared] startTrackingWithStoryHash:newHash];
         }
 
-        // Sync the new page's content inset (fixed when custom toolbar active)
+        // Reset scroll direction tracking so toolbar can respond to first scroll-up
+        currentPage.lastDragDirectionDown = NO;
+
+        // Sync all pages' content insets and scroll positions with current toolbar state
         [currentPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:NO force:YES];
+        [nextPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:NO force:YES];
+        [previousPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:NO force:YES];
+
+        if (self.isCustomToolbarActive) {
+            CGFloat toolbarOffset = self.toolbarScrollHandler.toolbarOffset;
+            CGFloat toolbarHeight = self.toolbarScrollHandler.toolbarHeight;
+            // Adjust all pages' scroll positions for toolbar state
+            for (StoryDetailViewController *page in @[currentPage, nextPage, previousPage]) {
+                if (!page) continue;
+                UIScrollView *sv = page.webView.scrollView;
+                CGFloat topRest = -sv.contentInset.top;
+                CGFloat maxAdjustedTop = topRest + toolbarHeight;
+                CGFloat targetOffset = topRest + toolbarOffset;
+                if (sv.contentOffset.y <= maxAdjustedTop + 1) {
+                    sv.contentOffset = CGPointMake(sv.contentOffset.x, targetOffset);
+                }
+            }
+        }
+
         [currentPage drawFeedGradient];
     }
     

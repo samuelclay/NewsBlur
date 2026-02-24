@@ -4101,7 +4101,7 @@
     UIView *gradientView = [[UIView alloc] initWithFrame:rect];
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
-    gradient.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
+    gradient.frame = CGRectMake(0, 0, rect.size.width, rect.size.height);
     gradient.opacity = 0.7;
     if ([start class] == [NSNull class] || !start) {
         start = @"505050";

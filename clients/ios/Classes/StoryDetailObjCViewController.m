@@ -34,7 +34,6 @@
 @property (nonatomic) BOOL isUpdatingContentInset;
 @property (nonatomic) BOOL isUserScrolling;
 @property (nonatomic) BOOL hasScrolledAwayFromTop;
-@property (nonatomic) BOOL lastDragDirectionDown;
 
 - (NSString *)embedResourcesInCSS:(NSString *)css bundle:(NSBundle *)bundle;
 - (NSInteger)storyContentWidth;
@@ -327,6 +326,17 @@
 
     // Set initial content inset based on nav bar visibility
     [self updateContentInsetForNavigationBarAlpha:appDelegate.storyPagesViewController.navigationBarFadeAlpha];
+
+    // When custom toolbar is hidden, scroll up to fill the toolbar gap
+    StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+    if (pagesVC.isCustomToolbarActive) {
+        CGFloat toolbarOffset = pagesVC.toolbarScrollHandler.toolbarOffset;
+        if (toolbarOffset > 0) {
+            UIScrollView *sv = self.webView.scrollView;
+            CGFloat topRest = -sv.contentInset.top;
+            sv.contentOffset = CGPointMake(sv.contentOffset.x, topRest + toolbarOffset);
+        }
+    }
 
     if (_orientation != self.view.window.windowScene.interfaceOrientation) {
         _orientation = self.view.window.windowScene.interfaceOrientation;
