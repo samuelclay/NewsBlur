@@ -253,8 +253,7 @@ class MUserSearch(mongo.Document):
                 continue
 
             feed.index_stories_for_discover()
-
-        r.publish(user.username, "discover_index_complete:feeds:%s" % ",".join([str(f) for f in feed_ids]))
+            r.publish(user.username, "discover_index_complete:feeds:%s" % feed_id)
 
     @classmethod
     def schedule_index_feeds_for_search(cls, feed_ids, user_id):

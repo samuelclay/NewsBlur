@@ -16,6 +16,7 @@ TITLE_MIN_LENGTH = 10
 FUZZY_MIN_WORDS = 5
 FUZZY_SIMILARITY_THRESHOLD = 0.6
 FUZZY_MIN_INTERSECTION = 3
+SEMANTIC_MIN_TITLE_INTERSECTION = 3
 
 # clustering/models.py: Common English stopwords for fuzzy title matching
 STOPWORDS = frozenset(
@@ -238,7 +239,7 @@ def find_title_clusters(stories, original_feed_map=None):
     return clusters
 
 
-def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30, original_feed_map=None):
+def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30, original_feed_map=None, story_title_map=None):
     """Find semantically similar stories using Elasticsearch more_like_this.
 
     For each story, sends its title + content as text to ES MLT to find
@@ -356,6 +357,18 @@ def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30, 
             sim_feed = (hit.get("fields", {}).get("feed_id") or [None])[0]
             if sim_feed:
                 story_feed_map[sim_hash] = sim_feed
+            # clustering/models.py: Validate title-word overlap before unioning.
+            # ES more_like_this can match on shared terms like "apple" + "app"
+            # even when the stories are about completely different topics.
+            if story_title_map:
+                query_title_words = title_significant_words(story.get("story_title") or "")
+                sim_title = story_title_map.get(sim_hash, "")
+                if sim_title:
+                    sim_title_words = title_significant_words(sim_title)
+                    if len(query_title_words & sim_title_words) < SEMANTIC_MIN_TITLE_INTERSECTION:
+                        continue
+                else:
+                    continue
             if sim_hash not in parent:
                 parent[sim_hash] = sim_hash
             union(story_hash, sim_hash)
@@ -386,7 +399,7 @@ def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30, 
     return clusters
 
 
-def merge_clusters(title_clusters, semantic_clusters, story_feed_map=None, original_feed_map=None):
+def merge_clusters(title_clusters, semantic_clusters, story_feed_map=None, original_feed_map=None, story_title_map=None):
     """Merge title-based and semantic clusters using union-find.
 
     If any story appears in both a title cluster and a semantic cluster,
@@ -427,9 +440,17 @@ def merge_clusters(title_clusters, semantic_clusters, story_feed_map=None, origi
         for i in range(1, len(members)):
             union(members[0], members[i])
 
-    # Union within semantic clusters
+    # Union within semantic clusters (with title-word validation when available)
     for members in semantic_clusters.values():
         for i in range(1, len(members)):
+            if story_title_map:
+                title_a = story_title_map.get(members[0], "")
+                title_b = story_title_map.get(members[i], "")
+                if title_a and title_b:
+                    words_a = title_significant_words(title_a)
+                    words_b = title_significant_words(title_b)
+                    if len(words_a & words_b) < SEMANTIC_MIN_TITLE_INTERSECTION:
+                        continue
             union(members[0], members[i])
 
     # Collect final groups

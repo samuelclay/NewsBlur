@@ -6366,6 +6366,12 @@
                 var progress = Math.ceil(indexed / total * 100);
                 NEWSBLUR.utils.attach_loading_gradient($related_stories_buttons, progress);
             }
+
+            // Forward to the discover popover if it's open
+            var popover = NEWSBLUR.ReaderPopover._popover;
+            if (popover && popover._open && popover.update_discover_progress) {
+                popover.update_discover_progress(message);
+            }
         },
 
         show_discover_indexing_tooltip: function (show) {
