@@ -1,8 +1,10 @@
 from django.test import TestCase
 
 from apps.clustering.models import (
+    SEMANTIC_MIN_TITLE_INTERSECTION,
     _simple_stem,
     find_title_clusters,
+    merge_clusters,
     normalize_title,
     title_significant_words,
 )
@@ -156,3 +158,112 @@ class Test_FindTitleClusters(TestCase):
         ]
         clusters = find_title_clusters(stories)
         self.assertEqual(len(clusters), 1)
+
+
+class Test_SemanticClusterFalsePositive(TestCase):
+    """Tests that semantic clustering rejects false positives with insufficient title overlap."""
+
+    def _make_stories(self):
+        return [
+            {
+                "story_hash": "100:aaa",
+                "story_feed_id": 1,
+                "story_title": "Apple Launches New 'Sales Coach' App",
+                "story_date": 1000,
+            },
+            {
+                "story_hash": "200:bbb",
+                "story_feed_id": 2,
+                "story_title": "Rivian owners will soon be able to access Apple Watch apps from their cars",
+                "story_date": 999,
+            },
+            {
+                "story_hash": "300:ccc",
+                "story_feed_id": 3,
+                "story_title": "Rivian Releases Apple Watch App",
+                "story_date": 998,
+            },
+        ]
+
+    def test_title_words_for_apple_stories(self):
+        """Verify the word intersection counts that drive the threshold decision."""
+        w1 = title_significant_words("Apple Launches New 'Sales Coach' App")
+        w2 = title_significant_words(
+            "Rivian owners will soon be able to access Apple Watch apps from their cars"
+        )
+        w3 = title_significant_words("Rivian Releases Apple Watch App")
+
+        # Sales Coach vs either Rivian story: only 'apple' and 'app'
+        self.assertEqual(len(w1 & w2), 2)
+        self.assertEqual(len(w1 & w3), 2)
+        # Rivian vs Rivian: 'apple', 'app', 'rivian', 'watch'
+        self.assertEqual(len(w2 & w3), 4)
+        self.assertGreaterEqual(len(w2 & w3), SEMANTIC_MIN_TITLE_INTERSECTION)
+        self.assertLess(len(w1 & w2), SEMANTIC_MIN_TITLE_INTERSECTION)
+
+    def test_merge_rejects_semantic_false_positive(self):
+        """Sales Coach story should not merge with Rivian Apple Watch stories
+        when semantic clustering falsely matches them on shared 'apple'/'app' terms."""
+        stories = self._make_stories()
+        story_title_map = {s["story_hash"]: s["story_title"] for s in stories}
+        story_feed_map = {s["story_hash"]: s["story_feed_id"] for s in stories}
+
+        # Title clusters correctly group only Rivian stories
+        title_clusters = find_title_clusters(stories)
+
+        # Simulate ES semantic false positive: Sales Coach matched with Rivian story
+        semantic_clusters = {"100:aaa": ["100:aaa", "200:bbb"]}
+
+        merged = merge_clusters(
+            title_clusters,
+            semantic_clusters,
+            story_feed_map=story_feed_map,
+            story_title_map=story_title_map,
+        )
+
+        # Sales Coach should NOT be in the same cluster as Rivian stories
+        for members in merged.values():
+            self.assertFalse(
+                "100:aaa" in members and ("200:bbb" in members or "300:ccc" in members),
+                "Sales Coach story should not merge with Rivian Apple Watch stories",
+            )
+
+    def test_merge_preserves_valid_rivian_cluster(self):
+        """Rivian Apple Watch stories should remain clustered together."""
+        stories = self._make_stories()
+        story_title_map = {s["story_hash"]: s["story_title"] for s in stories}
+        story_feed_map = {s["story_hash"]: s["story_feed_id"] for s in stories}
+
+        title_clusters = find_title_clusters(stories)
+        semantic_clusters = {"100:aaa": ["100:aaa", "200:bbb"]}
+
+        merged = merge_clusters(
+            title_clusters,
+            semantic_clusters,
+            story_feed_map=story_feed_map,
+            story_title_map=story_title_map,
+        )
+
+        # Rivian stories should still be clustered together
+        rivian_clustered = any(
+            "200:bbb" in members and "300:ccc" in members for members in merged.values()
+        )
+        self.assertTrue(rivian_clustered, "Rivian Apple Watch stories should remain clustered")
+
+    def test_merge_without_title_map_unions_everything(self):
+        """Without story_title_map, merge_clusters should behave as before (union all)."""
+        stories = self._make_stories()
+        story_feed_map = {s["story_hash"]: s["story_feed_id"] for s in stories}
+
+        semantic_clusters = {"100:aaa": ["100:aaa", "200:bbb"]}
+
+        merged = merge_clusters(
+            {},
+            semantic_clusters,
+            story_feed_map=story_feed_map,
+            story_title_map=None,
+        )
+
+        # Without title validation, the false positive union is allowed
+        found_both = any("100:aaa" in members and "200:bbb" in members for members in merged.values())
+        self.assertTrue(found_both, "Without title map, all semantic matches should union")
