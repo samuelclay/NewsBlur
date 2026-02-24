@@ -9,6 +9,7 @@ Usage:
     python manage.py bootstrap_popular_feeds --force-update
 """
 
+import datetime
 import json
 import os
 import time
@@ -133,11 +134,14 @@ class Command(BaseCommand):
         updated = 0
         feed_linked = 0
         failed = 0
+        skipped_recent = 0
+        month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
 
         # Phase 1: Create/update PopularFeed records sequentially
         phase1_start = time.time()
         feeds_to_fetch = []
         feeds_to_force_update = []
+        feeds_to_update_stale = []
         total_phase1 = len(all_feeds)
         for i, entry in enumerate(all_feeds):
             fixture_index = offset + i
@@ -178,6 +182,13 @@ class Command(BaseCommand):
                 feeds_to_fetch.append((popular_feed, feed_url, fixture_index))
             elif force_update and popular_feed.feed:
                 feeds_to_force_update.append(popular_feed)
+            elif not skip_fetch and popular_feed.feed:
+                # Skip feeds that were fetched within the last month
+                last_update = popular_feed.feed.last_update
+                if not last_update or last_update.replace(tzinfo=None) < month_ago:
+                    feeds_to_update_stale.append((popular_feed, feed_url, fixture_index))
+                else:
+                    skipped_recent += 1
 
             if (i + 1) % 500 == 0 or i + 1 == total_phase1:
                 elapsed = time.time() - phase1_start
@@ -189,12 +200,22 @@ class Command(BaseCommand):
                     f" - {rate:.0f}/s, ~{remaining:.0f}s left"
                 )
 
+        if skipped_recent:
+            self.stdout.write(f"Skipped {skipped_recent} feeds fetched within the last 30 days")
+
         # Phase 2: Fetch and link Feed objects in parallel
         if feeds_to_fetch:
             self.stdout.write(f"Fetching {len(feeds_to_fetch)} feeds with {workers} workers...")
             linked, fetch_failed = self._fetch_feeds_parallel(feeds_to_fetch, workers, verbose)
             feed_linked += linked
             failed += fetch_failed
+
+        # Phase 2b: Update stale feeds (not fetched within last 30 days)
+        if feeds_to_update_stale:
+            self.stdout.write(f"Updating {len(feeds_to_update_stale)} stale feeds (>30 days old) with {workers} workers...")
+            self._force_update_parallel(
+                [pf for pf, _, _ in feeds_to_update_stale], workers, verbose
+            )
 
         # Phase 3: Force-update existing feeds in parallel
         if feeds_to_force_update:
@@ -204,9 +225,11 @@ class Command(BaseCommand):
         if dry_run:
             self.stdout.write(self.style.WARNING(f"\nDry run complete - {len(all_feeds)} entries would be processed"))
         else:
+            stale_count = len(feeds_to_update_stale)
             self.stdout.write(
                 self.style.SUCCESS(
-                    f"\nDone: {created} created, {updated} updated, {feed_linked} feeds linked, {failed} failed"
+                    f"\nDone: {created} created, {updated} updated, {feed_linked} feeds linked, "
+                    f"{failed} failed, {skipped_recent} skipped (recent), {stale_count} stale updated"
                 )
             )
 
