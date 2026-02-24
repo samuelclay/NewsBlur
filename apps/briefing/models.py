@@ -227,6 +227,8 @@ def create_briefing_story(
     on_demand=False,
     curated_sections=None,
     section_summaries=None,
+    frequency=None,
+    period_start=None,
 ):
     """
     Create or update an MStory in the briefing feed with the summary, and an MBriefing
@@ -341,7 +343,8 @@ def create_briefing_story(
             curated_sections=curated_sections,
             section_summaries=section_summaries,
             briefing_date=briefing_date,
-            period_start=briefing_date - datetime.timedelta(days=1),
+            period_start=period_start or (briefing_date - datetime.timedelta(days=1)),
+            frequency=frequency or "daily",
             generated_at=datetime.datetime.utcnow(),
             status="complete",
         )

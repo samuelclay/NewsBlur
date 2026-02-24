@@ -532,7 +532,7 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     # --- Phase 5: Embed favicons BEFORE story links as visual bullets ---
 
-    favicon_style = "width:16px;height:16px;border-radius:2px;margin:0;vertical-align:top;"
+    favicon_style = "width:16px;height:16px;border-radius:2px;margin:4px 0 0 0;vertical-align:top;"
 
     def _replace_story_link(match):
         tag = match.group(0)
