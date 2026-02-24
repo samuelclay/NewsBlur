@@ -454,7 +454,7 @@ class Feed(models.Model):
         return [f for f in feed_ids if f not in briefing_ids]
 
     @classmethod
-    def autocomplete(cls, prefix, limit=5):
+    def autocomplete(cls, prefix, limit=10):
         # Fast text search first
         results = SearchFeed.query(prefix, max_results=limit)
 

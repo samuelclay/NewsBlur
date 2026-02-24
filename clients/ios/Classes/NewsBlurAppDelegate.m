@@ -1638,17 +1638,30 @@
 }
 
 - (void)openAddSiteWithFeedAddress:(NSString *)feedAddress {
-    [self.addSiteViewController.view layoutIfNeeded];
-    self.addSiteViewController.siteAddressInput.text = feedAddress;
-    [self.addSiteViewController checkSiteAddress];
+    if (@available(iOS 16.0, *)) {
+        AddSiteSheetViewController *addSiteVC = [[AddSiteSheetViewController alloc] init];
+        addSiteVC.initialFeedAddress = feedAddress;
+        addSiteVC.onSuccess = ^{
+            [self reloadFeedsView:NO];
+        };
 
-    UINavigationController *addSiteNav = self.addSiteNavigationController;
-    if (!addSiteNav) {
-        addSiteNav = [[UINavigationController alloc] initWithRootViewController:self.addSiteViewController];
-        self.addSiteNavigationController = addSiteNav;
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:addSiteVC];
+        nav.modalPresentationStyle = UIModalPresentationPageSheet;
+        nav.navigationBarHidden = YES;
+
+        UISheetPresentationController *sheet = nav.sheetPresentationController;
+        UISheetPresentationControllerDetent *smallDetent = [UISheetPresentationControllerDetent customDetentWithIdentifier:@"addSiteSmall" resolver:^CGFloat(id<UISheetPresentationControllerDetentResolutionContext> context) {
+            return 200.0;
+        }];
+        sheet.detents = @[smallDetent, UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+        sheet.prefersGrabberVisible = YES;
+        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
+        sheet.preferredCornerRadius = 12.0;
+
+        [addSiteVC setSheetController:sheet];
+
+        [self.feedsNavigationController presentViewController:nav animated:YES completion:nil];
     }
-    addSiteNav.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self.feedsNavigationController presentViewController:addSiteNav animated:YES completion:nil];
 }
 
 - (void)dismissAskAIOnTap:(UITapGestureRecognizer *)gesture {
