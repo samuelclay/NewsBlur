@@ -93,6 +93,7 @@ class StoryTitlesHeaderBar: NSObject {
     /// Returns the headerContainer's bottomAnchor for pinning content views below.
     func setup(in parentView: UIView) {
         headerContainer.translatesAutoresizingMaskIntoConstraints = false
+        headerContainer.clipsToBounds = true
         parentView.addSubview(headerContainer)
 
         buildPillBar(in: headerContainer)
@@ -578,6 +579,7 @@ class StoryTitlesHeaderBar: NSObject {
     }
 
     /// Shows or hides the search field below the pill bar with animation.
+    /// Slides the search container in/out by expanding/collapsing the header height.
     func setSearchActive(_ active: Bool) {
         isSearchActive = active
 
@@ -585,22 +587,15 @@ class StoryTitlesHeaderBar: NSObject {
 
         if active {
             searchContainer.isHidden = false
-            searchContainer.alpha = 0
+            searchContainer.alpha = 1
         }
 
-        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut) {
+        UIView.animate(withDuration: 0.3, delay: 0, options: active ? .curveEaseOut : .curveEaseIn) {
             self.headerHeightConstraint?.constant = height
             self.headerContainer.superview?.layoutIfNeeded()
-
-            if active {
-                self.searchContainer.alpha = 1
-            } else {
-                self.searchContainer.alpha = 0
-            }
         } completion: { _ in
             if !active {
                 self.searchContainer.isHidden = true
-                self.searchContainer.alpha = 1
             }
         }
     }
