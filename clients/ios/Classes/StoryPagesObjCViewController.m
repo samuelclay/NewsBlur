@@ -508,12 +508,28 @@
     navController.navigationBar.alpha = 1.0;
     navController.navigationBar.userInteractionEnabled = YES;
 
-    // Hide custom toolbar and restore system nav bar
-    self.storyToolbar.hidden = YES;
-    self.storyToolbar.transform = CGAffineTransformIdentity;
-    [self.toolbarScrollHandler reset];
-
     self.autoscrollActive = NO;
+
+    // During interactive pop, keep custom toolbar visible until transition completes.
+    // If cancelled, re-hide the system nav bar and keep our toolbar.
+    if (self.useCustomToolbar && self.transitionCoordinator.isInteractive) {
+        [self.transitionCoordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            if (context.isCancelled) {
+                // Gesture cancelled — restore custom toolbar state
+                [navController setNavigationBarHidden:YES animated:NO];
+            } else {
+                // Transition completed — clean up custom toolbar
+                self.storyToolbar.hidden = YES;
+                self.storyToolbar.transform = CGAffineTransformIdentity;
+                [self.toolbarScrollHandler reset];
+            }
+        }];
+    } else {
+        // Non-interactive (back button, programmatic pop) — hide immediately
+        self.storyToolbar.hidden = YES;
+        self.storyToolbar.transform = CGAffineTransformIdentity;
+        [self.toolbarScrollHandler reset];
+    }
 }
 
 - (BOOL)becomeFirstResponder {
@@ -795,29 +811,39 @@
         if (appDelegate.storiesCollection.isSocialRiverView &&
             [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             titleImage = [UIImage imageNamed:@"global-shares"];
+            titleText = @"Global Shared Stories";
         } else if (appDelegate.storiesCollection.isSocialRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
             titleImage = [UIImage imageNamed:@"all-shares"];
+            titleText = @"All Shared Stories";
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"all-stories"];
+            titleText = @"All Site Stories";
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
             titleImage = [UIImage imageNamed:@"saved-stories"];
+            titleText = @"Dashboard";
         } else if (appDelegate.storiesCollection.isRiverView &&
                    [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
+            titleText = @"Infrequent Stories";
         } else if (appDelegate.storiesCollection.isSavedView &&
                    appDelegate.storiesCollection.activeSavedStoryTag) {
             titleImage = [UIImage imageNamed:@"tag.png"];
+            titleText = appDelegate.storiesCollection.activeSavedStoryTag;
         } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
             titleImage = [UIImage imageNamed:@"g_icn_folder_widget.png"];
+            titleText = @"Widget Stories";
         } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
             titleImage = [UIImage imageNamed:@"indicator-unread"];
+            titleText = @"Read Stories";
         } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
             titleImage = [UIImage imageNamed:@"search"];
+            titleText = @"Saved Searches";
         } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
             titleImage = [UIImage imageNamed:@"saved-stories"];
+            titleText = @"Saved Stories";
         } else if (appDelegate.storiesCollection.isRiverView) {
             NSString *folderName = appDelegate.storiesCollection.activeFolder;
             NSDictionary *customIcon = appDelegate.dictFolderIcons[folderName];
@@ -827,9 +853,11 @@
             if (!titleImage) {
                 titleImage = [UIImage imageNamed:@"folder-open"];
             }
+            titleText = folderName;
         } else {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                    [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+            NSDictionary *feed = [appDelegate getFeed:feedIdStr];
             NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
             if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
                 titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
@@ -837,6 +865,7 @@
             if (!titleImage) {
                 titleImage = [appDelegate getFavicon:feedIdStr];
             }
+            titleText = [feed objectForKey:@"feed_title"];
         }
     } else {
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",
@@ -849,6 +878,7 @@
             titleImage = [appDelegate getFavicon:feedIdStr];
             titleImage = [Utilities roundCorneredImage:titleImage radius:6];
         }
+        titleText = [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"];
     }
 
     [self.storyToolbar updateTitleWithImage:titleImage text:titleText];
