@@ -155,8 +155,11 @@ def ComputeStoryClusters(feed_id):
     semantic_clusters = {}
     if unclustered_stories:
         semantic_clusters = find_semantic_clusters(
-            unclustered_stories, all_feed_ids, lookback_date=lookback,
-            original_feed_map=original_feed_map, story_title_map=story_title_map,
+            unclustered_stories,
+            all_feed_ids,
+            lookback_date=lookback,
+            original_feed_map=original_feed_map,
+            story_title_map=story_title_map,
         )
 
     # Merge title and semantic clusters

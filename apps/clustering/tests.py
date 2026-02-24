@@ -245,9 +245,7 @@ class Test_SemanticClusterFalsePositive(TestCase):
         )
 
         # Rivian stories should still be clustered together
-        rivian_clustered = any(
-            "200:bbb" in members and "300:ccc" in members for members in merged.values()
-        )
+        rivian_clustered = any("200:bbb" in members and "300:ccc" in members for members in merged.values())
         self.assertTrue(rivian_clustered, "Rivian Apple Watch stories should remain clustered")
 
     def test_merge_without_title_map_unions_everything(self):

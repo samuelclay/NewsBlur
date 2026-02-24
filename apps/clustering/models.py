@@ -239,7 +239,9 @@ def find_title_clusters(stories, original_feed_map=None):
     return clusters
 
 
-def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30, original_feed_map=None, story_title_map=None):
+def find_semantic_clusters(
+    stories, feed_ids, lookback_date=None, min_score=30, original_feed_map=None, story_title_map=None
+):
     """Find semantically similar stories using Elasticsearch more_like_this.
 
     For each story, sends its title + content as text to ES MLT to find
@@ -399,7 +401,9 @@ def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30, 
     return clusters
 
 
-def merge_clusters(title_clusters, semantic_clusters, story_feed_map=None, original_feed_map=None, story_title_map=None):
+def merge_clusters(
+    title_clusters, semantic_clusters, story_feed_map=None, original_feed_map=None, story_title_map=None
+):
     """Merge title-based and semantic clusters using union-find.
 
     If any story appears in both a title cluster and a semantic cluster,

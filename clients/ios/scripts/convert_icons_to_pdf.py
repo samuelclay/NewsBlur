@@ -28,7 +28,7 @@ def convert_svg_to_png(svg_path: Path, png_path: Path, scale: int = 2) -> bool:
     """Convert an SVG file to PNG format at specified scale."""
     try:
         # Read SVG content
-        with open(svg_path, 'r') as f:
+        with open(svg_path, "r") as f:
             svg_content = f.read()
 
         # Replace currentColor with black (will be tinted at runtime)
@@ -38,10 +38,10 @@ def convert_svg_to_png(svg_path: Path, png_path: Path, scale: int = 2) -> bool:
         # Convert to PNG at specified scale (base size is 24x24)
         output_size = 24 * scale
         cairosvg.svg2png(
-            bytestring=svg_content.encode('utf-8'),
+            bytestring=svg_content.encode("utf-8"),
             write_to=str(png_path),
             output_width=output_size,
-            output_height=output_size
+            output_height=output_size,
         )
         return True
     except Exception as e:
