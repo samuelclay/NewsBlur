@@ -14,6 +14,8 @@
 
 @interface FeedChooserTitleView : UIView
 
+@property (nonatomic) BOOL isFlat;
+@property (nonatomic) BOOL isSelected;
 @property (nonatomic) NSUInteger section;
 @property (nonatomic, strong) NSString *title;
 @property (nonatomic, weak) id delegate;

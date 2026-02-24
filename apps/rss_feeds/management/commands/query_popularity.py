@@ -12,6 +12,8 @@ from apps.rss_feeds.models import Feed
 
 
 class Command(BaseCommand):
+    help = "Query feed popularity and export results to an XLS spreadsheet."
+
     def add_argument(self, parser):
         parser.add_argument("-q", "--query", dest="query", help="Search query")
         parser.add_argument("-l", "--limit", dest="limit", type="int", default=1000, help="Limit of stories")

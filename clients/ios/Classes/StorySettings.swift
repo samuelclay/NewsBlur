@@ -8,7 +8,7 @@
 
 import Foundation
 
-class StorySettings {
+@MainActor class StorySettings {
     let defaults = UserDefaults.standard
     
     enum Content: String, RawRepresentable {
@@ -21,16 +21,16 @@ class StorySettings {
         
         static let contentLimit = 10
         
-        var limit: Int {
+        var baseLimit: Int {
             switch self {
                 case .title:
-                    return 6
-                case .short:
                     return 2
+                case .short:
+                    return 1
                 case .medium:
-                    return 4
+                    return 2
                 case .long:
-                    return 6
+                    return 3
             }
         }
     }
@@ -115,7 +115,7 @@ class StorySettings {
         guard let pref = UserDefaults.standard.string(forKey: "grid_columns"), let columns = Int(pref) else {
             if NewsBlurAppDelegate.shared.isCompactWidth {
                 return 1
-            } else if NewsBlurAppDelegate.shared.isPortrait || NewsBlurAppDelegate.shared.isPhone {
+            } else if NewsBlurAppDelegate.shared.isPortrait || NewsBlurAppDelegate.shared.detailViewController.isPhoneOrCompact {
                 return 2
             } else {
                 return 4
@@ -146,5 +146,34 @@ class StorySettings {
             default:
                 return 400
         }
+    }
+    
+    enum DashboardLayout: String, RawRepresentable {
+        case none
+        case single
+        case vertical
+        case horizontal
+    }
+    
+    var dashboardLayout: DashboardLayout {
+        guard let pref = UserDefaults.standard.string(forKey: "dashboard_layout"), let layout = DashboardLayout(rawValue: pref) else {
+            return .vertical
+        }
+        
+        return layout
+    }
+    
+    var dashboardSpeed: Int {
+        return 500
+        
+//        let speed = UserDefaults.standard.integer(forKey: "dashboard_speed")
+//        
+//        if speed == 0 {
+//            NSLog("🎛️ dashboard speed is 0, defaulting to 500ms")
+//            return 500
+//        } else {
+//            NSLog("🎛️ dashboard speed is \(speed)ms")
+//            return speed
+//        }
     }
 }

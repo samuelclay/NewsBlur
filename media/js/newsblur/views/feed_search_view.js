@@ -44,6 +44,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             tipsy.disable();
             tipsy.hide();
         }
+        $('.NB-search-indexing-banner').remove();
         NEWSBLUR.reader.$s.$story_titles_header.removeClass("NB-searching");
         Backbone.View.prototype.remove.call(this);
     },
@@ -58,6 +59,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
 
         if (message == "start") {
             this.show_indexing_tooltip(true);
+            this.show_search_indexing_banner(0);
         } else if (message == "done") {
             $input.attr('style', null);
             var tipsy = $icon.data('tipsy');
@@ -66,6 +68,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
                 tipsy.disable();
                 tipsy.hide();
             });
+            this.hide_search_indexing_banner();
             this.retry();
         } else if (_.string.startsWith(message, 'feeds:')) {
             var feed_ids = message.replace('feeds:', '').split(',');
@@ -80,6 +83,7 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
             var total = NEWSBLUR.assets.feeds.length;
             var progress = Math.ceil(indexed / total * 100);
             NEWSBLUR.utils.attach_loading_gradient($input, progress);
+            this.show_search_indexing_banner(progress);
         }
     },
 
@@ -201,11 +205,54 @@ NEWSBLUR.Views.FeedSearchView = Backbone.View.extend({
         NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
     },
 
+    // ==========================
+    // = Search Indexing Banner =
+    // ==========================
+
+    show_search_indexing_banner: function (progress) {
+        var $existing = $('.NB-search-indexing-banner');
+        if ($existing.length) {
+            $existing.find('.NB-search-indexing-progress-fill').css('width', progress + '%');
+            return;
+        }
+
+        var $banner = $.make('div', { className: 'NB-search-indexing-banner' }, [
+            $.make('div', { className: 'NB-search-indexing-banner-icon' }),
+            $.make('div', { className: 'NB-search-indexing-banner-content' }, [
+                $.make('div', { className: 'NB-search-indexing-banner-text' }, 'Indexing your feeds for search'),
+                $.make('div', { className: 'NB-search-indexing-banner-subtext' }, 'Results will appear as indexing completes'),
+                $.make('div', { className: 'NB-search-indexing-progress' }, [
+                    $.make('div', { className: 'NB-search-indexing-progress-fill' })
+                ])
+            ])
+        ]).css({ 'opacity': 0 });
+
+        $('#story_titles').find('.NB-story-titles').before($banner);
+        $banner.animate({ 'opacity': 1 }, { 'duration': 600 });
+
+        _.defer(function () {
+            $banner.find('.NB-search-indexing-progress-fill').css('width', progress + '%');
+        });
+    },
+
+    hide_search_indexing_banner: function () {
+        var $banner = $('.NB-search-indexing-banner');
+        if (!$banner.length) return;
+
+        $banner.animate({ 'opacity': 0 }, {
+            'duration': 400,
+            'complete': function () {
+                $banner.remove();
+            }
+        });
+    },
+
     close_search: function () {
         var $search = this.$("input[name=feed_search]");
         $search.val('');
         window.history.pushState({}, "", $.updateQueryString('search', null, window.location.pathname));
         NEWSBLUR.reader.flags.searching = false;
+        $('.NB-search-indexing-banner').remove();
 
         NEWSBLUR.reader.reload_feed();
     },

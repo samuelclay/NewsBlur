@@ -1,3 +1,5 @@
+"""PubSubHubbub views: handle push notification callbacks for real-time feed updates."""
+
 # Adapted from djpubsubhubbub. See License: http://git.participatoryculture.org/djpubsubhubbub/tree/LICENSE
 
 import datetime

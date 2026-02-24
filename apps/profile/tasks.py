@@ -1,3 +1,5 @@
+"""Profile tasks: user lifecycle management including onboarding, premium tiers, and cleanup."""
+
 import datetime
 
 from django.conf import settings

@@ -1,3 +1,5 @@
+"""Search views: full-text story search and feed discovery via Elasticsearch."""
+
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.search.models import SearchStory

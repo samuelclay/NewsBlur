@@ -12,28 +12,27 @@
 
 @interface ShareViewController : BaseViewController <UITextViewDelegate> {
     NSString *activeReplyId;
+    CGSize _lastLayoutSize;
 }
 
 @property (nonatomic) IBOutlet UITextView *commentField;
-@property (nonatomic) IBOutlet UIButton *facebookButton;
-@property (nonatomic) IBOutlet UIButton *twitterButton;
-@property (nonatomic) IBOutlet UIBarButtonItem *submitButton;
+@property (nonatomic, strong) UIButton *inlineSubmitButton;
+@property (nonatomic, strong) UILabel *headerLabel;
 @property (nonatomic) IBOutlet UILabel *storyTitle;
 @property (nonatomic) NSString * activeReplyId;
 @property (nonatomic) NSString * activeCommentId;
 @property (nonatomic) NSString * activeStoryId;
 @property (nonatomic) NSString* currentType;
+@property (nonatomic, assign) CGSize lastKeyboardSize;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *keyboardHeight;
 
 - (void)setCommentType:(NSString *)type;
 - (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex;
 - (void)clearComments;
 - (IBAction)doCancelButton:(id)sender;
-- (IBAction)doToggleButton:(id)sender;
 - (IBAction)doShareThisStory:(id)sender;
 - (IBAction)doReplyToComment:(id)sender;
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId;
-- (void)adjustShareButtons;
 - (void)adjustCommentField:(CGSize)kbSize;
 - (NSString *)stringByStrippingHTML:(NSString *)s;
 

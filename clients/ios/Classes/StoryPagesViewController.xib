@@ -166,7 +166,7 @@
                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstItem="85" firstAttribute="top" secondItem="75" secondAttribute="top" constant="9" id="5Cq-8q-Cx5"/>
-                        <constraint firstAttribute="trailing" secondItem="71" secondAttribute="trailing" constant="6" id="5ET-pu-V3i"/>
+                        <constraint firstAttribute="trailing" secondItem="71" secondAttribute="trailing" constant="16" id="5ET-pu-V3i"/>
                         <constraint firstAttribute="bottom" secondItem="64" secondAttribute="bottom" constant="8" id="7Wu-eo-Pz3"/>
                         <constraint firstAttribute="bottom" secondItem="71" secondAttribute="bottom" constant="3" id="B0x-V4-UoQ"/>
                         <constraint firstItem="80" firstAttribute="top" secondItem="75" secondAttribute="top" constant="4" id="ElS-yF-Hrd"/>
@@ -184,9 +184,9 @@
                         <constraint firstAttribute="bottom" secondItem="73" secondAttribute="bottom" constant="15" id="dVt-VO-Q7X"/>
                         <constraint firstItem="71" firstAttribute="top" secondItem="75" secondAttribute="top" constant="4" id="fUQ-DO-Q28"/>
                         <constraint firstItem="64" firstAttribute="top" secondItem="75" secondAttribute="top" constant="9" id="fVP-fx-P1Y"/>
-                        <constraint firstAttribute="trailing" secondItem="62" secondAttribute="trailing" constant="12" id="gj9-gi-NU1"/>
-                        <constraint firstItem="80" firstAttribute="leading" secondItem="75" secondAttribute="leading" constant="4" id="lZh-iV-IwP"/>
-                        <constraint firstItem="81" firstAttribute="leading" secondItem="75" secondAttribute="leading" constant="9" id="wcc-d3-pBm"/>
+                        <constraint firstAttribute="trailing" secondItem="62" secondAttribute="trailing" constant="21" id="gj9-gi-NU1"/>
+                        <constraint firstItem="80" firstAttribute="leading" secondItem="75" secondAttribute="leading" constant="16" id="lZh-iV-IwP"/>
+                        <constraint firstItem="81" firstAttribute="leading" secondItem="75" secondAttribute="leading" constant="21" id="wcc-d3-pBm"/>
                         <constraint firstAttribute="bottom" secondItem="62" secondAttribute="bottom" constant="8" id="ydy-mj-RYr"/>
                         <constraint firstAttribute="bottom" secondItem="85" secondAttribute="bottom" constant="8" id="zhD-fx-yft"/>
                     </constraints>
@@ -298,14 +298,14 @@
             <viewLayoutGuide key="safeArea" id="ir3-jV-2M5"/>
             <color key="backgroundColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="5" firstAttribute="trailing" secondItem="ir3-jV-2M5" secondAttribute="trailing" id="A4p-mh-u6O"/>
+                <constraint firstItem="5" firstAttribute="trailing" secondItem="3" secondAttribute="trailing" id="A4p-mh-u6O"/>
                 <constraint firstItem="5" firstAttribute="bottom" secondItem="3" secondAttribute="bottom" id="AOS-qV-fjZ"/>
                 <constraint firstAttribute="bottomMargin" secondItem="LNI-9u-7l4" secondAttribute="bottom" constant="90" id="E9T-hc-jPk"/>
                 <constraint firstItem="LNI-9u-7l4" firstAttribute="centerX" secondItem="3" secondAttribute="centerXWithinMargins" id="HUr-0Q-AhZ"/>
-                <constraint firstItem="5" firstAttribute="leading" secondItem="ir3-jV-2M5" secondAttribute="leading" id="Pnz-qi-mdZ"/>
-                <constraint firstAttribute="bottomMargin" secondItem="75" secondAttribute="bottom" constant="24" id="PrE-ov-FD3"/>
+                <constraint firstItem="5" firstAttribute="leading" secondItem="3" secondAttribute="leading" id="Pnz-qi-mdZ"/>
+                <constraint firstAttribute="bottom" secondItem="75" secondAttribute="bottom" constant="12" id="PrE-ov-FD3"/>
                 <constraint firstItem="75" firstAttribute="leading" secondItem="5" secondAttribute="leading" id="htz-P9-PfM"/>
-                <constraint firstItem="75" firstAttribute="trailingMargin" secondItem="5" secondAttribute="trailingMargin" id="k4E-iI-ANK"/>
+                <constraint firstItem="75" firstAttribute="trailing" secondItem="5" secondAttribute="trailing" id="k4E-iI-ANK"/>
                 <constraint firstItem="5" firstAttribute="top" secondItem="3" secondAttribute="top" id="sgh-qa-2V3"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>

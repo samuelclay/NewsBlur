@@ -11,6 +11,7 @@
 
 typedef void (^MenuItemHandler)(void);
 typedef void (^MenuItemSegmentedHandler)(NSUInteger selectedIndex);
+typedef void (^MenuItemSubmenuHandler)(id selectedValue);
 
 @interface MenuViewController : BaseViewController <UITableViewDataSource, UITableViewDelegate>
 
@@ -22,6 +23,9 @@ typedef void (^MenuItemSegmentedHandler)(NSUInteger selectedIndex);
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName destructive:(BOOL)isDestructive selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler;
 - (void)addTitle:(NSString *)title iconName:(NSString *)iconName iconColor:(UIColor *)iconColor selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler;
 - (void)addTitle:(NSString *)title iconTemplateName:(NSString *)iconTemplateName selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemHandler)handler;
+
+- (void)addTitle:(NSString *)title iconName:(NSString *)iconName iconColor:(UIColor *)iconColor submenuTitles:(NSArray *)titles values:(NSArray *)values overrideSelectedValue:(id)overrideSelectedValue defaultValue:(id)defaultValue preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSubmenuHandler)handler;
+
 - (void)addSegmentedControlWithTitles:(NSArray *)titles selectIndex:(NSUInteger)selectIndex selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler;
 - (void)addSegmentedControlWithTitles:(NSArray *)titles values:(NSArray *)values preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler;
 - (void)addSegmentedControlWithTitles:(NSArray *)titles values:(NSArray *)values defaultValue:(NSString *)defaultValue preferenceKey:(NSString *)preferenceKey selectionShouldDismiss:(BOOL)selectionShouldDismiss handler:(MenuItemSegmentedHandler)handler;

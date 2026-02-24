@@ -1,3 +1,5 @@
+"""Reader tasks: periodic maintenance for homepage freshening and analytics cleanup."""
+
 import datetime
 import time
 

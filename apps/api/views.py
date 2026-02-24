@@ -1,3 +1,10 @@
+"""External REST API views for third-party NewsBlur clients.
+
+Provides the public API endpoints documented at newsblur.com/api -- feed
+subscriptions, story loading, sharing, and user authentication for mobile
+apps and browser extensions.
+"""
+
 import base64
 import datetime
 import os

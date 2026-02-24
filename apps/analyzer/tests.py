@@ -1006,3 +1006,97 @@ class Test_Classifiers(TransactionTestCase):
         tag_names = [c["tag"] for c in all_feed_classifiers if "tag" in c]
         self.assertIn("Jon Brodkin", author_names)
         self.assertIn("policy", tag_names)
+
+    def test_get_classifiers_filters_by_folder_feed_ids(self):
+        """
+        When folder_feed_ids is passed to get_classifiers_for_user, folder-scoped
+        classifiers that don't apply to the current feed should be excluded from
+        the payload. This prevents text classifier highlights from bleeding across
+        folder boundaries on the frontend.
+        """
+        other_feed = Feed.objects.create(
+            feed_address="http://other.example.com/feed",
+            feed_link="http://other.example.com",
+            feed_title="Other Feed",
+        )
+
+        # Folder-scoped text classifier for "Work" folder (contains other_feed)
+        MClassifierText.objects.create(
+            user_id=self.user.pk,
+            feed_id=0,
+            social_user_id=0,
+            text="Apple",
+            score=1,
+            scope="folder",
+            folder_name="Work",
+            creation_date=datetime.datetime.now(),
+        )
+        # Folder-scoped title classifier for "Tech" folder (contains self.feed)
+        MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=0,
+            social_user_id=0,
+            title="Breaking",
+            score=1,
+            scope="folder",
+            folder_name="Tech",
+            creation_date=datetime.datetime.now(),
+        )
+        # Feed-level text classifier on self.feed (always applies)
+        MClassifierText.objects.create(
+            user_id=self.user.pk,
+            feed_id=self.feed.pk,
+            social_user_id=0,
+            text="exclusive",
+            score=1,
+            creation_date=datetime.datetime.now(),
+        )
+        # Global classifier (always applies)
+        MClassifierTitle.objects.create(
+            user_id=self.user.pk,
+            feed_id=0,
+            social_user_id=0,
+            title="urgent",
+            score=-1,
+            scope="global",
+            folder_name="",
+            creation_date=datetime.datetime.now(),
+        )
+
+        folder_feed_ids = {
+            "Tech": {self.feed.pk},
+            "Work": {other_feed.pk},
+        }
+
+        # All classifiers pre-loaded (simulating how feed_stories merges them)
+        all_texts = list(MClassifierText.objects(user_id=self.user.pk))
+        all_titles = list(MClassifierTitle.objects(user_id=self.user.pk))
+
+        # Without folder_feed_ids: all classifiers included (manage UI behavior)
+        classifiers = get_classifiers_for_user(
+            self.user,
+            feed_id=self.feed.pk,
+            classifier_texts=all_texts,
+            classifier_titles=all_titles,
+        )
+        self.assertIn("Apple", classifiers["texts"])
+        self.assertIn("exclusive", classifiers["texts"])
+        self.assertIn("Breaking", classifiers["titles"])
+        self.assertIn("urgent", classifiers["titles"])
+
+        # With folder_feed_ids: only applicable classifiers for self.feed
+        classifiers = get_classifiers_for_user(
+            self.user,
+            feed_id=self.feed.pk,
+            classifier_texts=all_texts,
+            classifier_titles=all_titles,
+            folder_feed_ids=folder_feed_ids,
+        )
+        # "Apple" is scoped to "Work" folder which doesn't contain self.feed
+        self.assertNotIn("Apple", classifiers["texts"])
+        # "exclusive" is feed-level on self.feed, should be included
+        self.assertIn("exclusive", classifiers["texts"])
+        # "Breaking" is scoped to "Tech" folder which contains self.feed
+        self.assertIn("Breaking", classifiers["titles"])
+        # "urgent" is global, should always be included
+        self.assertIn("urgent", classifiers["titles"])

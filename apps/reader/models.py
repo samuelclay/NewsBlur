@@ -1,3 +1,10 @@
+"""Reader models: UserSubscription, UserSubscriptionFolders, and starred/read story tracking.
+
+UserSubscription links a user to a feed with per-user unread counts and scores.
+UserSubscriptionFolders stores the user's folder hierarchy as nested JSON.
+Additional MongoDB models track read stories (RUserStory) and starred stories.
+"""
+
 import datetime
 import heapq
 import re

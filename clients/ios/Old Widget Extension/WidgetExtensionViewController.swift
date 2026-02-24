@@ -442,7 +442,7 @@ private extension WidgetExtensionViewController {
             
             stories = try decoder.decode([Story].self, from: json)
         } catch {
-            print("Error \(error)")
+            NSLog("Error \(error)")
         }
     }
     
@@ -463,7 +463,7 @@ private extension WidgetExtensionViewController {
             
             try json.write(to: url)
         } catch {
-            print("Error \(error)")
+            NSLog("Error \(error)")
         }
     }
     
@@ -489,7 +489,7 @@ private extension WidgetExtensionViewController {
             
             try image.pngData()?.write(to: imageURL)
         } catch {
-            print("Image error: \(error)")
+            NSLog("Image error: \(error)")
         }
     }
     
@@ -513,7 +513,7 @@ private extension WidgetExtensionViewController {
                 storyImageCache[identifier] = nil
             }
         } catch {
-            print("Flush story images error: \(error)")
+            NSLog("Flush story images error: \(error)")
         }
     }
     
@@ -640,7 +640,7 @@ private extension WidgetExtensionViewController {
             
             return image
         } catch {
-            print("Image error: \(error)")
+            NSLog("Image error: \(error)")
         }
         
         return nil

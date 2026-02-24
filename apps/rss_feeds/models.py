@@ -1,3 +1,10 @@
+"""RSS feed and story models: Feed (PostgreSQL), MStory (MongoDB), and feed page/icon storage.
+
+Feed stores feed metadata and scheduling in PostgreSQL. MStory stores story
+content in MongoDB. Additional models handle feed pages, favicons, fetch
+history, and duplicate feed detection.
+"""
+
 import base64
 import csv
 import datetime
@@ -452,7 +459,7 @@ class Feed(models.Model):
         return [f for f in feed_ids if f not in briefing_ids]
 
     @classmethod
-    def autocomplete(cls, prefix, limit=5):
+    def autocomplete(cls, prefix, limit=10):
         # Use hybrid search to combine text matching with semantic similarity
         # This returns both exact matches (e.g., "cooking" in title) and
         # semantically related feeds (e.g., "smitten kitchen" for "cooking")
@@ -1835,10 +1842,12 @@ class Feed(models.Model):
         if discover_story_ids and self.archive_subscribers and self.archive_subscribers > 0:
             from apps.clustering.tasks import ComputeStoryClusters
 
-            ComputeStoryClusters.apply_async(
-                kwargs=dict(feed_id=self.pk),
-                queue="work_queue",
-            )
+            r_update = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+            if r_update.set("cluster_queued:%s" % self.pk, 1, nx=True, ex=60 * 60 * 6):
+                ComputeStoryClusters.apply_async(
+                    kwargs=dict(feed_id=self.pk),
+                    queue="work_queue",
+                )
 
         return ret_values
 

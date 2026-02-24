@@ -42,7 +42,7 @@ class AskAIViewModel: ObservableObject {
     init(story: [String: Any]) {
         self.story = story
         let storyHash = story["story_hash"] as? String ?? ""
-        let storyTitle = story["story_title"] as? String ?? ""
+        let storyTitle = ((story["story_title"] as? String ?? "") as NSString).decodingHTMLEntities() ?? ""
 
         self.conversation = AskAIConversation(storyHash: storyHash, storyTitle: storyTitle)
 

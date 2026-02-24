@@ -1,3 +1,10 @@
+"""Story content processing: HTML sanitization, text diffing, date formatting, and hashing.
+
+Core utilities for preparing story content for display -- strips unsafe HTML,
+generates content diffs between story versions, formats relative dates, and
+produces story content hashes for deduplication.
+"""
+
 import base64
 import datetime
 import hashlib
@@ -6,6 +13,7 @@ import html
 import re
 import struct
 import sys
+import urllib.parse
 from binascii import hexlify
 from hashlib import sha1
 from itertools import chain
@@ -26,6 +34,55 @@ from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
 
 # COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
 COMMENTS_RE = re.compile("\<!--.*?--\>")
+
+_IMG_SRC_RE = re.compile(r'<img[^>]+src=["\']([^"\']+)["\']', re.IGNORECASE)
+_CDN_PROXY_HOSTS = {"i0.wp.com", "i1.wp.com", "i2.wp.com", "i3.wp.com"}
+
+
+def _normalize_image_url_for_dedup(url):
+    """Strip scheme, query params, fragments, www., and CDN proxy hosts to get a canonical host+path."""
+    if not url:
+        return ""
+    try:
+        parsed = urllib.parse.urlparse(url)
+    except Exception:
+        return url.lower()
+
+    host = (parsed.netloc or "").lower()
+    path = parsed.path or ""
+
+    if host.startswith("www."):
+        host = host[4:]
+
+    # WordPress Photon CDN: i0.wp.com/example.com/path/image.jpg
+    if host in _CDN_PROXY_HOSTS:
+        inner = path.lstrip("/")
+        if "/" in inner:
+            host, path = inner.split("/", 1)[0].lower(), "/" + inner.split("/", 1)[1]
+        else:
+            host, path = inner.lower(), "/"
+        if host.startswith("www."):
+            host = host[4:]
+
+    return host + path
+
+
+def _image_url_matches_content(media_url, story_content):
+    """Check if an image URL (or a variant with different scheme/params/CDN) already exists in content."""
+    if not media_url or not story_content:
+        return False
+    if media_url in story_content:
+        return True
+
+    normalized_media = _normalize_image_url_for_dedup(media_url)
+    if not normalized_media or len(normalized_media) < 8:
+        return False
+
+    for match in _IMG_SRC_RE.finditer(story_content):
+        if _normalize_image_url_for_dedup(match.group(1)) == normalized_media:
+            return True
+
+    return False
 
 
 def midnight_today(now=None):
@@ -191,8 +248,9 @@ def pre_process_story(entry, encoding):
                     "media_url": media_url,
                     "media_type": media_type,
                 }
-            elif "image" in media_type and media_url and media_url not in entry["story_content"]:
-                entry["story_content"] += """<br><br><img src="%s" />""" % media_url
+            elif "image" in media_type and media_url:
+                if not _image_url_matches_content(media_url, entry["story_content"]):
+                    entry["story_content"] += """<br><br><img src="%s" />""" % media_url
                 continue
             elif media_content.get("rel", "") == "alternative" or "text" in media_content.get("type", ""):
                 continue

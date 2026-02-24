@@ -1,3 +1,10 @@
+"""User profile and subscription models: Profile, PaymentHistory, premium tiers, and billing.
+
+Profile extends Django's User with subscription tier (Free/Premium/Archive/Pro),
+payment integration (Stripe, PayPal), notification preferences, and usage limits.
+PaymentHistory tracks all billing events.
+"""
+
 import datetime
 import hashlib
 import re
@@ -614,9 +621,16 @@ class Profile(models.Model):
     def activate_archive(self, never_expire=False):
         logging.user(
             self.user,
-            "~FMTier change: activate_archive (was: premium=%s, archive=%s, pro=%s)"
-            % (self.is_premium, self.is_archive, self.is_pro),
+            "~FMTier change: activate_archive (was: premium=%s, archive=%s, pro=%s, trial=%s)"
+            % (self.is_premium, self.is_archive, self.is_pro, self.is_premium_trial),
         )
+
+        was_trial = self.is_premium_trial
+
+        # Clear trial status when converting to paid archive
+        if self.is_premium_trial:
+            self.is_premium_trial = False
+            logging.user(self.user, "~FMClearing trial status - converting to paid archive")
 
         # Atomically check archive to prevent duplicate processing from concurrent webhooks
         with transaction.atomic():
@@ -627,7 +641,9 @@ class Profile(models.Model):
             was_premium = fresh.is_premium
             was_archive = fresh.is_archive
             was_pro = fresh.is_pro
-            Profile.objects.filter(pk=self.pk).update(is_premium=True, is_archive=True)
+            Profile.objects.filter(pk=self.pk).update(
+                is_premium=True, is_archive=True, is_premium_trial=False
+            )
 
         UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
 
@@ -636,12 +652,13 @@ class Profile(models.Model):
         if not was_archive:
             from apps.profile.tasks import EmailStaffPremiumUpgrade
 
-            staff_previous_tier = "premium" if was_premium else "free"
+            staff_previous_tier = "trial" if was_trial else ("premium" if was_premium else "free")
             EmailStaffPremiumUpgrade.delay(
                 user_id=self.user.pk, tier="archive", previous_tier=staff_previous_tier
             )
         self.is_premium = True
         self.is_archive = True
+        self.is_premium_trial = False
         self.save()
         self.user.is_active = True
         self.user.save()
@@ -706,9 +723,16 @@ class Profile(models.Model):
 
         logging.user(
             self.user,
-            "~FMTier change: activate_pro (was: premium=%s, archive=%s, pro=%s)"
-            % (self.is_premium, self.is_archive, self.is_pro),
+            "~FMTier change: activate_pro (was: premium=%s, archive=%s, pro=%s, trial=%s)"
+            % (self.is_premium, self.is_archive, self.is_pro, self.is_premium_trial),
         )
+
+        was_trial = self.is_premium_trial
+
+        # Clear trial status when converting to paid pro
+        if self.is_premium_trial:
+            self.is_premium_trial = False
+            logging.user(self.user, "~FMClearing trial status - converting to paid pro")
 
         # Atomically check pro to prevent duplicate processing from concurrent webhooks
         with transaction.atomic():
@@ -718,7 +742,9 @@ class Profile(models.Model):
                 return True
             was_premium = fresh.is_premium
             was_archive = fresh.is_archive
-            Profile.objects.filter(pk=self.pk).update(is_premium=True, is_archive=True, is_pro=True)
+            Profile.objects.filter(pk=self.pk).update(
+                is_premium=True, is_archive=True, is_pro=True, is_premium_trial=False
+            )
 
         subs = UserSubscription.objects.filter(user=self.user)
         was_pro = self.is_pro
@@ -727,13 +753,18 @@ class Profile(models.Model):
             EmailNewPremiumPro.delay(user_id=self.user.pk)
             from apps.profile.tasks import EmailStaffPremiumUpgrade
 
-            staff_previous_tier = "archive" if was_archive else ("premium" if was_premium else "free")
+            staff_previous_tier = (
+                "trial"
+                if was_trial
+                else ("archive" if was_archive else ("premium" if was_premium else "free"))
+            )
             EmailStaffPremiumUpgrade.delay(
                 user_id=self.user.pk, tier="pro", previous_tier=staff_previous_tier
             )
         self.is_premium = True
         self.is_archive = True
         self.is_pro = True
+        self.is_premium_trial = False
         self.save()
         self.user.is_active = True
         self.user.save()
@@ -1622,6 +1653,60 @@ class Profile(models.Model):
             self.activate_premium()
 
         logging.user(self.user, "~FG~BBNew iOS premium subscription: $%s~FW" % amount)
+        return True
+
+    def activate_ios_archive(self, transaction_identifier=None, amount=99):
+        payments = PaymentHistory.objects.filter(
+            user=self.user,
+            payment_identifier=transaction_identifier,
+            payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
+        )
+        if len(payments):
+            logging.user(
+                self.user,
+                "~FG~BBAlready paid iOS archive subscription: $%s~FW" % transaction_identifier,
+            )
+            return False
+
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now(),
+            payment_amount=amount,
+            payment_provider="ios-archive-subscription",
+            payment_identifier=transaction_identifier,
+        )
+
+        self.setup_premium_history()
+        self.activate_archive()
+
+        logging.user(self.user, "~FG~BBNew iOS archive subscription: $%s~FW" % amount)
+        return True
+
+    def activate_ios_pro(self, transaction_identifier=None, amount=29):
+        payments = PaymentHistory.objects.filter(
+            user=self.user,
+            payment_identifier=transaction_identifier,
+            payment_date__gte=datetime.datetime.now() - datetime.timedelta(days=3),
+        )
+        if len(payments):
+            logging.user(
+                self.user,
+                "~FG~BBAlready paid iOS pro subscription: $%s~FW" % transaction_identifier,
+            )
+            return False
+
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now(),
+            payment_amount=amount,
+            payment_provider="ios-pro-subscription",
+            payment_identifier=transaction_identifier,
+        )
+
+        self.setup_premium_history()
+        self.activate_pro()
+
+        logging.user(self.user, "~FG~BBNew iOS pro subscription: $%s~FW" % amount)
         return True
 
     def activate_android_premium(self, order_id=None, amount=36):

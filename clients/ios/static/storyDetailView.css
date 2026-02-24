@@ -135,6 +135,39 @@
     font-size: 11px;
 }
 
+.NB-mac .NB-button.NB-share-button div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.NB-mac .NB-button.NB-share-button .NB-icon {
+    margin: 0;
+}
+
+.NB-mac .NB-button.NB-train-button .NB-icon {
+    top: 0;
+}
+.NB-mac .NB-button.NB-share-share-button .NB-icon {
+    top: 1px;
+}
+.NB-mac .NB-button.NB-save-button .NB-icon {
+    top: 0;
+}
+.NB-mac .NB-button.NB-ask-ai-button .NB-icon {
+    top: -1px;
+}
+
+.NB-mac .NB-button.NB-share-button .NB-sideoption-text {
+    position: relative;
+    top: -1px;
+}
+
+.NB-mac .NB-share-wrapper {
+    margin-bottom: 60px;
+}
+
 /**
  * iPad Wide Style
  */
@@ -294,6 +327,7 @@
 body {
     text-rendering: optimizeLegibility;
     margin: 0;
+    overflow-x: hidden;
     -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape while allowing user zoom */
     font-size: 14px;
     line-height: 120%;
@@ -912,6 +946,11 @@ a.NB-show-profile {
     margin: 0;
 }
 
+.NB-button.NB-read-button {
+    margin: 0;
+    width: 100%;
+}
+
 .NB-button a {
     display: inline-block;
     padding-top: 1px;
@@ -978,7 +1017,7 @@ a.NB-show-profile {
     padding-bottom: 0px;
 }
 
-.NB-button.NB-share-button div { 
+.NB-button.NB-share-button div {
     padding: 8px 0px 8px;
     border-radius: 2px;
     text-align: center;
@@ -1021,6 +1060,11 @@ a.NB-show-profile {
 
 .NB-button.NB-share-button .NB-sideoption-text {
     vertical-align: middle;
+}
+
+.NB-button.NB-read-button .NB-icon {
+    background: url("markread@2x.png") no-repeat 0 0;
+    background-size: 16px;
 }
 
 .NB-iphone .NB-button.NB-share-button .NB-icon {
