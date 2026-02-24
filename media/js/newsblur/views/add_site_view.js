@@ -911,7 +911,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             subcategory: subcategory,
             limit: limit,
             offset: offset,
-            include_stories: 'true'
+            include_stories: this.view_mode === 'list' ? 'true' : 'false'
         };
         if (platform && platform !== 'all') {
             params.platform = platform;
@@ -979,21 +979,23 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     }
                 }
 
-                // Build collection for list view (always build so grid→list toggle works instantly)
-                var feeds_array = _.chain(data.feeds)
-                    .filter(function(f) { return f.feed; })
-                    .map(function(f) {
-                        return {
-                            id: f.feed.id,
-                            feed: f.feed,
-                            stories: f.stories || []
-                        };
-                    }).value();
+                // Build collection for list view
+                if (self.view_mode === 'list') {
+                    var feeds_array = _.chain(data.feeds)
+                        .filter(function(f) { return f.feed; })
+                        .map(function(f) {
+                            return {
+                                id: f.feed.id,
+                                feed: f.feed,
+                                stories: f.stories || []
+                            };
+                        }).value();
 
-                if (is_load_more && state.popular_feeds_collection) {
-                    state.popular_feeds_collection.add(feeds_array);
-                } else {
-                    state.popular_feeds_collection = new NEWSBLUR.Collections.TrendingFeeds(feeds_array);
+                    if (is_load_more && state.popular_feeds_collection) {
+                        state.popular_feeds_collection.add(feeds_array);
+                    } else {
+                        state.popular_feeds_collection = new NEWSBLUR.Collections.TrendingFeeds(feeds_array);
+                    }
                 }
             }
             state.popular_feeds_loaded = true;
@@ -4114,7 +4116,20 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.$('.NB-add-site-view-toggle').removeClass('NB-active');
         $toggle.addClass('NB-active');
 
-        // Re-render the active tab to switch view mode
+        // Re-fetch data for the active tab so stories are included/excluded
+        var source_config = this.SOURCE_MAP[this.active_tab];
+        if (source_config) {
+            var state = this[source_config.state];
+            state.popular_feeds_loaded = false;
+            state.popular_feeds_collection = null;
+            this[source_config.render]();
+            return;
+        }
+        if (this.active_tab === 'search' && this.search_query) {
+            this.perform_search();
+            return;
+        }
+
         this.render_active_tab();
     },
 
@@ -4239,7 +4254,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             query: query,
             format: 'full',
             v: 2,
-            include_stories: 'true'
+            include_stories: this.view_mode === 'list' ? 'true' : 'false'
         }, function (data) {
             // Ignore stale responses from previous searches
             if (current_version !== self.search_version) {
