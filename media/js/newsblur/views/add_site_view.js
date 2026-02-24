@@ -3779,6 +3779,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (config.popular_feed_id) {
             card_attrs['data-popular-feed-id'] = config.popular_feed_id;
         }
+        if (config.feed_url) {
+            card_attrs['data-feed-url'] = config.feed_url;
+        }
         return $.make('div', card_attrs, [
             $.make('div', { className: 'NB-add-site-card-header' }, [
                 $.make('img', icon_attrs),
@@ -4284,12 +4287,23 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var $btn = $(e.currentTarget);
         var feed_id = $btn.data('feed-id');
         var discover_origin = this.get_discover_origin();
+        var $card = $btn.closest('.NB-add-site-card');
+        var feed_data = {
+            feed_title: $card.find('.NB-add-site-card-title').text(),
+            favicon_url: $card.find('.NB-add-site-card-icon').attr('src')
+        };
 
         if (feed_id) {
-            NEWSBLUR.reader.load_feed_in_tryfeed_view(feed_id, { discover_origin: discover_origin });
+            NEWSBLUR.reader.load_feed_in_tryfeed_view(feed_id, {
+                discover_origin: discover_origin,
+                feed: feed_data
+            });
         } else {
             this.link_popular_feed($btn, function (linked_feed_id) {
-                NEWSBLUR.reader.load_feed_in_tryfeed_view(linked_feed_id, { discover_origin: discover_origin });
+                NEWSBLUR.reader.load_feed_in_tryfeed_view(linked_feed_id, {
+                    discover_origin: discover_origin,
+                    feed: feed_data
+                });
             });
         }
     },
@@ -4322,10 +4336,14 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     link_popular_feed: function ($btn, callback) {
         var $card = $btn.closest('.NB-add-site-card');
         var popular_feed_id = $card.data('popular-feed-id');
-        if (!popular_feed_id) return;
+        var feed_url = $card.data('feed-url');
+        if (!popular_feed_id && !feed_url) return;
 
         $btn.text('Loading...');
-        this.model.make_request('/discover/link_popular_feed', { id: popular_feed_id }, function (data) {
+        var params = {};
+        if (popular_feed_id) params.id = popular_feed_id;
+        if (feed_url) params.feed_url = feed_url;
+        this.model.make_request('/discover/link_popular_feed', params, function (data) {
             if (data.code > 0 && data.feed_id) {
                 $btn.text($btn.hasClass('NB-add-site-try-btn') ? 'Try' : 'Stats');
                 $card.find('[data-feed-id]').each(function () {
