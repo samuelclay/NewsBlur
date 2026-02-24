@@ -157,7 +157,28 @@ struct AddSiteView: View {
                 .foregroundColor(AddSiteColors.textPrimary)
 
             Spacer()
+            
+#if targetEnvironment(macCatalyst)
+            Button(action: {
+                onDismiss()
+            }) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(AddSiteColors.textSecondary)
+                    .frame(width: 28, height: 28)
+                    .background(AddSiteColors.textFieldBackground)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(AddSiteColors.border, lineWidth: 1)
+                    )
+            }
+            .buttonStyle(.plain)
+            .help("Dismiss")
+            .accessibilityLabel("Dismiss")
+#endif
         }
+        
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .background(AddSiteColors.cardBackground)
