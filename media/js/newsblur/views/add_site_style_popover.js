@@ -119,6 +119,7 @@ NEWSBLUR.AddSiteStylePopover = NEWSBLUR.ReaderPopover.extend({
         var image_preview = NEWSBLUR.assets.preference('image_preview') || 'large-right';
         var content_preview = NEWSBLUR.assets.preference('show_content_preview') || 'medium';
         var sort_order = NEWSBLUR.assets.preference('add_site_sort_order') || 'subscribers';
+        if (!_.contains(['subscribers', 'stories', 'name'], sort_order)) sort_order = 'subscribers';
         var columns = NEWSBLUR.assets.preference('add_site_grid_columns') || 'auto';
 
         // Sort By (shared)
