@@ -4881,10 +4881,12 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         state.is_subscribed = true;
                         state.feed_id = sub_data.feed ? sub_data.feed.id : null;
 
-                        // Refresh feed list
-                        NEWSBLUR.assets.load_feeds();
-
-                        self.update_google_news_subscribe_button();
+                        // Refresh feed list, then open the feed
+                        NEWSBLUR.assets.load_feeds(function () {
+                            if (state.feed_id) {
+                                NEWSBLUR.reader.open_feed(state.feed_id);
+                            }
+                        });
                     } else {
                         self.show_google_news_error(sub_data.message || 'Failed to subscribe');
                     }
