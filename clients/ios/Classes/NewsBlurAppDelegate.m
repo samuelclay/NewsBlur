@@ -1564,20 +1564,9 @@
         sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
         sheet.prefersGrabberVisible = YES;
         sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
-        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
         sheet.preferredCornerRadius = 12.0;
 
-        [navController presentViewController:discoverNavController animated:YES completion:^{
-            UIView *containerView = discoverNavController.presentationController.containerView;
-            if (containerView && !self.isMac) {
-                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
-                    initWithTarget:self
-                    action:@selector(dismissAskAIOnTap:)];
-                tapToDismiss.cancelsTouchesInView = NO;
-                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
-                [containerView addGestureRecognizer:tapToDismiss];
-            }
-        }];
+        [navController presentViewController:discoverNavController animated:YES completion:nil];
     }
 }
 
@@ -1618,20 +1607,9 @@
         sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
         sheet.prefersGrabberVisible = YES;
         sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
-        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
         sheet.preferredCornerRadius = 12.0;
 
-        [navController presentViewController:discoverNavController animated:YES completion:^{
-            UIView *containerView = discoverNavController.presentationController.containerView;
-            if (containerView && !self.isMac) {
-                UITapGestureRecognizer *tapToDismiss = [[UITapGestureRecognizer alloc]
-                    initWithTarget:self
-                    action:@selector(dismissAskAIOnTap:)];
-                tapToDismiss.cancelsTouchesInView = NO;
-                tapToDismiss.delegate = (id<UIGestureRecognizerDelegate>)self;
-                [containerView addGestureRecognizer:tapToDismiss];
-            }
-        }];
+        [navController presentViewController:discoverNavController animated:YES completion:nil];
     }
 }
 

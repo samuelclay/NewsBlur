@@ -126,11 +126,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
 #endif
     
-    UIView *searchContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.storyTitlesTable.frame), 28.)];
-    searchContainerView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xf4f4f4, 0xF3E2CB, 0x333333, 0x222222);
-    searchContainerView.tag = 100;
-
-    self.searchField = [[UITextField alloc] initWithFrame:CGRectMake(8, 2, CGRectGetWidth(self.storyTitlesTable.frame) - 16, 24.)];
+    // Search field (fixed below nav bar, not in table)
+    self.searchField = [[UITextField alloc] init];
     self.searchField.delegate = self;
     self.searchField.returnKeyType = UIReturnKeySearch;
     self.searchField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x444444, 0x333333);
@@ -143,7 +140,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.searchField.placeholder = @"Search stories";
     self.searchField.layer.cornerRadius = 6;
     self.searchField.layer.masksToBounds = YES;
-    self.searchField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.searchField.translatesAutoresizingMaskIntoConstraints = NO;
 
     UIImageView *searchIcon = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"magnifyingglass"]];
     searchIcon.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
@@ -158,8 +155,51 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
     [self.searchField addTarget:self action:@selector(searchFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
 
-    [searchContainerView addSubview:self.searchField];
-    self.storyTitlesTable.tableHeaderView = searchContainerView;
+    // Story titles header pill bar (fixed above content views)
+    self.storyTitlesHeaderBar = [StoryTitlesHeaderBar new];
+    [self.storyTitlesHeaderBar setupIn:self.view];
+
+    // Pin table view top to pill bar bottom instead of view top
+    for (NSLayoutConstraint *constraint in self.view.constraints) {
+        if (constraint.firstItem == self.storyTitlesTable &&
+            constraint.firstAttribute == NSLayoutAttributeTop &&
+            constraint.secondItem == self.view &&
+            constraint.secondAttribute == NSLayoutAttributeTop) {
+            constraint.active = NO;
+            break;
+        }
+    }
+    [self.storyTitlesTable.topAnchor constraintEqualToAnchor:self.storyTitlesHeaderBar.headerContainer.bottomAnchor].active = YES;
+
+    // Add search field to the header bar's search container (below pill bar)
+    [self.storyTitlesHeaderBar addSearchField:self.searchField];
+
+    // Wire search cancel button
+    [self.storyTitlesHeaderBar.searchCancelButton addTarget:self action:@selector(doDeactivateSearch:) forControlEvents:UIControlEventTouchUpInside];
+
+    // Wire pill actions
+    [self.storyTitlesHeaderBar.discoverPill addTarget:self action:@selector(doOpenDiscoverFromPill:) forControlEvents:UIControlEventTouchUpInside];
+    [self.storyTitlesHeaderBar.optionsPill addTarget:self action:@selector(doOpenOptionsMenu:) forControlEvents:UIControlEventTouchUpInside];
+    [self.storyTitlesHeaderBar.searchPill addTarget:self action:@selector(doActivateSearch:) forControlEvents:UIControlEventTouchUpInside];
+
+    // Mark read pill: tap marks all read, long press / "+" shows day menu
+    __weak typeof(self) weakSelf = self;
+    self.storyTitlesHeaderBar.markReadTapHandler = ^{
+        [weakSelf doMarkAllRead:nil];
+    };
+    self.storyTitlesHeaderBar.markReadHandler = ^(NSInteger days) {
+        NSArray *feedIds = weakSelf.storiesCollection.isRiverView ?
+            [weakSelf.appDelegate feedIdsForFolderTitle:weakSelf.storiesCollection.activeFolder] :
+            @[weakSelf.storiesCollection.activeFeed[@"id"]];
+        [weakSelf.appDelegate.feedsViewController markFeedsRead:feedIds cutoffDays:days];
+        if (!weakSelf.isPhoneOrCompact) {
+            [weakSelf reloadStories];
+        }
+        [weakSelf.appDelegate.feedsViewController reloadFeedTitlesTable];
+    };
+    self.storyTitlesHeaderBar.markReadVisibleHandler = ^{
+        [weakSelf.appDelegate.feedsViewController markVisibleStoriesRead];
+    };
     self.storyTitlesTable.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     self.storyTitlesTable.translatesAutoresizingMaskIntoConstraints = NO;
     self.messageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -343,6 +383,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     storiesCollection.inSearch = NO;
     storiesCollection.searchQuery = nil;
     storiesCollection.savedSearchQuery = nil;
+    [self deactivateSearch];
     [self reloadStories];
     return YES;
 }
@@ -501,8 +542,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         sidebarButton = self.sidebarBarButton;
     }
 
-    NSArray *items = sidebarButton ? @[sidebarButton, settingsBarButton, feedMarkReadButton]
-                                   : @[settingsBarButton, feedMarkReadButton];
+    NSArray *items = sidebarButton ? @[sidebarButton, settingsBarButton]
+                                   : @[settingsBarButton];
 
     if (appDelegate.isPhone) {
         appDelegate.detailViewController.feedDetailNavigationItem.rightBarButtonItems = items;
@@ -572,25 +613,26 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         settingsBarButton.enabled = YES;
     }
     
-    if (self.isDashboard ||
+    BOOL markReadEnabled = !(self.isDashboard ||
         storiesCollection.isSocialRiverView ||
         storiesCollection.isSavedView ||
-        storiesCollection.isReadView) {
-        feedMarkReadButton.enabled = NO;
-    } else {
-        feedMarkReadButton.enabled = YES;
-    }
-    
+        storiesCollection.isReadView);
+    feedMarkReadButton.enabled = markReadEnabled;
+    [self.storyTitlesHeaderBar updateMarkReadEnabled:markReadEnabled];
+
     [self cancelMarkStoryReadTimer];
+    [self updateStoryTitlesHeaderPillState];
 
     if (storiesCollection.inSearch && storiesCollection.searchQuery) {
         [self.searchField setText:storiesCollection.searchQuery];
         [self.storyTitlesTable setContentOffset:CGPointMake(0, 0)];
+        [self.storyTitlesHeaderBar setSearchActive:YES];
         if (storiesCollection.savedSearchQuery == nil) {
             [self.searchField becomeFirstResponder];
         }
     } else {
         [self.searchField setText:@""];
+        [self.storyTitlesHeaderBar setSearchActive:NO];
     }
     
 #if !TARGET_OS_MACCATALYST
@@ -3504,38 +3546,16 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }
 
+    // Mark story read timing preference
     if (!dashboard) {
         NSString *preferenceKey = self.appDelegate.storiesCollection.markReadFilterKey;
-        NSArray *titles = @[@"On scroll or selection", @"Only on selection", @"After 1 second", @"After 2 seconds", @"After 3 seconds", @"After 4 seconds", @"After 5 seconds", @"After 10 seconds", @"After 15 seconds", @"After 30 seconds", @"After 45 seconds", @"After 60 seconds", @"Manually"];
-        NSArray *values = @[ @"scroll", @"selection", @"after1", @"after2", @"after3", @"after4", @"after5", @"after10", @"after15", @"after30", @"after45", @"after60", @"manually"];
-        
-        [viewController addTitle:@"Mark story read…" iconName:@"indicator-unread" iconColor:UIColorFromRGB(0xD58B4F) submenuTitles:titles values:values overrideSelectedValue:self.markReadValue defaultValue:@"scroll" preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(id selectedValue) {
-            // Nothing to do.
+        NSArray *titles = @[@"On scroll or selection", @"Only on selection", @"After 1 second", @"After 2 seconds", @"After 3 seconds", @"After 5 seconds", @"After 10 seconds", @"After 30 seconds", @"After 60 seconds", @"Manually"];
+        NSArray *values = @[@"scroll", @"selection", @"after1", @"after2", @"after3", @"after5", @"after10", @"after30", @"after60", @"manually"];
+
+        [viewController addTitle:@"Mark story read\u2026" iconName:@"menu_icn_markread.png" iconColor:UIColorFromRGB(0x95968F) submenuTitles:titles values:values overrideSelectedValue:nil defaultValue:@"scroll" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(id selectedValue) {
         }];
-        
-        [viewController addSegmentedControlWithTitles:@[@"Newest first", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-            if (selectedIndex == 0) {
-                [userPreferences setObject:@"newest" forKey:[self.appDelegate.storiesCollection orderKey]];
-            } else {
-                [userPreferences setObject:@"oldest" forKey:[self.appDelegate.storiesCollection orderKey]];
-            }
-            
-            [self reloadStories];
-        }];
-        
-        if (!dashboard || infrequent || !river) {
-            [viewController addSegmentedControlWithTitles:@[@"All stories", @"Unread only"] selectIndex:[appDelegate.storiesCollection.activeReadFilter isEqualToString:@"all"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-                if (selectedIndex == 0) {
-                    [userPreferences setObject:@"all" forKey:self.appDelegate.storiesCollection.readFilterKey];
-                } else {
-                    [userPreferences setObject:@"unread" forKey:self.appDelegate.storiesCollection.readFilterKey];
-                }
-                
-                [self reloadStories];
-            }];
-        }
     }
-    
+
     [appDelegate addSplitControlToMenuController:viewController];
     
     if (dashboard) {
@@ -3548,107 +3568,23 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
     
-    if (!dashboard) {
-        NSString *preferenceKey = self.appDelegate.storiesCollection.storyTitlesPositionKey;
-        NSArray *titles;
-        NSArray *values;
-        
-        if (appDelegate.detailViewController.isPhone) {
-            titles = @[@"List", @"Grid"];
-            values = @[@"titles_on_left", @"titles_in_grid"];
-        } else {
-            titles = @[@"layout-split.png", @"layout-top2.png", @"layout-full.png", @"layout-list.png", @"layout-magazine.png", @"layout-grid.png"];
-            values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom", @"titles_in_list", @"titles_in_magazine", @"titles_in_grid"];
-        }
-        
-        [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"titles_on_left" selectValue:self.appDelegate.storiesCollection.activeStoryTitlesPosition preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
-            [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
-        }];
-        
-        if (self.appDelegate.detailViewController.storyTitlesInGrid) {
-            preferenceKey = @"grid_columns";
-            
-            if (appDelegate.detailViewController.isPhone) {
-                titles = @[@"Auto Cols", @"1", @"2"];
-                values = @[@"auto", @"1", @"2"];
-            } else {
-                titles = @[@"Auto Cols", @"1", @"2", @"3", @"4"];
-                values = @[@"auto", @"1", @"2", @"3", @"4"];
-            }
-            
-            [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"auto" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
-                [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
-            }];
-            
-            preferenceKey = @"grid_height";
-            titles = @[@"XS", @"Short", @"Medium", @"Tall", @"XL"];
-            values = @[@"xs", @"short", @"medium", @"tall", @"xl"];
-            
-            [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"medium" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
-                [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
-            }];
-        }
-    }
-    
-    if (!self.appDelegate.detailViewController.storyTitlesInGrid) {
-        NSString *preferenceKey = @"story_list_preview_text_size";
-        NSArray *titles = @[@"Title", @"content_preview_small.png", @"content_preview_medium.png", @"content_preview_large.png"];
-        NSArray *values = @[@"title", @"short", @"medium", @"long"];
-        
-        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
-            [self.appDelegate resizePreviewSize];
-        }];
-        
-        // Upgrade the prefs; can remove these lines eventually, once most existing users are likely on version 11 or later.
-        NSString *preview = [[NSUserDefaults standardUserDefaults] stringForKey:@"story_list_preview_images_size"];
-        
-        if ([preview isEqualToString:@"small"]) {
-            [[NSUserDefaults standardUserDefaults] setObject:@"small_right" forKey:@"story_list_preview_images_size"];
-        } else if ([preview isEqualToString:@"large"]) {
-            [[NSUserDefaults standardUserDefaults] setObject:@"large_right" forKey:@"story_list_preview_images_size"];
-        }
-        
-        preferenceKey = @"story_list_preview_images_size";
-        titles = @[@"No image", @"image_preview_small_left.png", @"image_preview_large_left.png", @"image_preview_large_right.png", @"image_preview_small_right.png"];
-        values = @[@"none", @"small_left", @"large_left", @"large_right", @"small_right"];
-        
-        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
-            [self.appDelegate resizePreviewSize];
-        }];
-    }
-    
-    NSString *preferenceKey = @"feed_list_font_size";
-    NSArray *titles = @[@"XS", @"S", @"M", @"L", @"XL"];
-    NSArray *values = @[@"xs", @"small", @"medium", @"large", @"xl"];
-    
-    [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
-        [self.appDelegate resizeFontSize];
-    }];
-    
+    // Layout and display controls moved to Options pill (doOpenOptionsMenu:)
+
+    [viewController addThemeSegmentedControl];
+
     if (infrequent) {
-        preferenceKey = @"infrequent_stories_per_month";
-        titles = @[@"5", @"15", @"30", @"60", @"90"];
-        values = @[@5, @15, @30, @60, @90];
-        
+        NSString *preferenceKey = @"infrequent_stories_per_month";
+        NSArray *titles = @[@"5", @"15", @"30", @"60", @"90"];
+        NSArray *values = @[@5, @15, @30, @60, @90];
+
         [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
             [self.appDelegate.feedDetailViewController reloadStories];
             [self.appDelegate.feedDetailViewController flashInfrequentStories];
         }];
     }
-    
-    preferenceKey = @"feed_list_spacing";
-    titles = @[@"Compact", @"Comfortable"];
-    values = @[@"compact", @"comfortable"];
-    
-    [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"comfortable" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
-        [self.appDelegate.feedsViewController reloadFeedTitlesTable];
-        [self reloadWithSizing];
-    }];
-    
-    [viewController addThemeSegmentedControl];
-    
+
     UINavigationController *navController = self.navigationController ?: appDelegate.storyPagesViewController.navigationController;
-    
+
 #if TARGET_OS_MACCATALYST
     UIView *sourceView = navController.view;
     CGRect sourceRect = CGRectMake(430, 0, 20, 20);
@@ -3664,6 +3600,296 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
 #else
     [viewController showFromNavigationController:navController barButtonItem:self.settingsBarButton];
 #endif
+}
+
+#pragma mark -
+#pragma mark Story Titles Header Pills
+
+- (IBAction)doOpenOptionsMenu:(id)sender {
+    if (self.presentedViewController) {
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+        return;
+    }
+
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    MenuViewController *viewController = [MenuViewController new];
+
+    BOOL dashboard = self.isDashboard;
+
+    if (!dashboard) {
+        [viewController addSegmentedControlWithTitles:@[@"Newest first", @"Oldest"] selectIndex:[appDelegate.storiesCollection.activeOrder isEqualToString:@"newest"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+            if (selectedIndex == 0) {
+                [userPreferences setObject:@"newest" forKey:[self.appDelegate.storiesCollection orderKey]];
+            } else {
+                [userPreferences setObject:@"oldest" forKey:[self.appDelegate.storiesCollection orderKey]];
+            }
+
+            [self reloadStories];
+            [self updateStoryTitlesHeaderPillState];
+        }];
+
+        BOOL infrequent = appDelegate.storiesCollection.isInfrequent;
+        BOOL river = [self isRiver];
+
+        if (!dashboard || infrequent || !river) {
+            [viewController addSegmentedControlWithTitles:@[@"All stories", @"Unread only"] selectIndex:[appDelegate.storiesCollection.activeReadFilter isEqualToString:@"all"] ? 0 : 1 selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+                if (selectedIndex == 0) {
+                    [userPreferences setObject:@"all" forKey:self.appDelegate.storiesCollection.readFilterKey];
+                } else {
+                    [userPreferences setObject:@"unread" forKey:self.appDelegate.storiesCollection.readFilterKey];
+                }
+
+                [self reloadStories];
+                [self updateStoryTitlesHeaderPillState];
+            }];
+        }
+    }
+
+    // Layout controls (moved from settings menu)
+    if (!dashboard) {
+        NSString *preferenceKey = self.appDelegate.storiesCollection.storyTitlesPositionKey;
+        NSArray *titles;
+        NSArray *values;
+
+        if (appDelegate.detailViewController.isPhone) {
+            titles = @[@"List", @"Grid"];
+            values = @[@"titles_on_left", @"titles_in_grid"];
+        } else {
+            titles = @[@"layout-split.png", @"layout-top2.png", @"layout-full.png", @"layout-list.png", @"layout-magazine.png", @"layout-grid.png"];
+            values = @[@"titles_on_left", @"titles_on_top", @"titles_on_bottom", @"titles_in_list", @"titles_in_magazine", @"titles_in_grid"];
+        }
+
+        [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"titles_on_left" selectValue:self.appDelegate.storiesCollection.activeStoryTitlesPosition preferenceKey:preferenceKey selectionShouldDismiss:YES handler:^(NSUInteger selectedIndex) {
+            [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+        }];
+
+        if (self.appDelegate.detailViewController.storyTitlesInGrid) {
+            preferenceKey = @"grid_columns";
+
+            if (appDelegate.detailViewController.isPhone) {
+                titles = @[@"Auto Cols", @"1", @"2"];
+                values = @[@"auto", @"1", @"2"];
+            } else {
+                titles = @[@"Auto Cols", @"1", @"2", @"3", @"4"];
+                values = @[@"auto", @"1", @"2", @"3", @"4"];
+            }
+
+            [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"auto" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+                [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+            }];
+
+            preferenceKey = @"grid_height";
+            titles = @[@"XS", @"Short", @"Medium", @"Tall", @"XL"];
+            values = @[@"xs", @"short", @"medium", @"tall", @"xl"];
+
+            [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"medium" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+                [self.appDelegate.detailViewController updateLayoutWithReload:YES fetchFeeds:YES];
+            }];
+        }
+    }
+
+    if (!self.appDelegate.detailViewController.storyTitlesInGrid) {
+        NSString *preferenceKey = @"story_list_preview_text_size";
+        NSArray *titles = @[@"Title", @"content_preview_small.png", @"content_preview_medium.png", @"content_preview_large.png"];
+        NSArray *values = @[@"title", @"short", @"medium", @"long"];
+
+        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+            [self.appDelegate resizePreviewSize];
+        }];
+
+        // Upgrade the prefs; can remove these lines eventually, once most existing users are likely on version 11 or later.
+        NSString *preview = [[NSUserDefaults standardUserDefaults] stringForKey:@"story_list_preview_images_size"];
+
+        if ([preview isEqualToString:@"small"]) {
+            [[NSUserDefaults standardUserDefaults] setObject:@"small_right" forKey:@"story_list_preview_images_size"];
+        } else if ([preview isEqualToString:@"large"]) {
+            [[NSUserDefaults standardUserDefaults] setObject:@"large_right" forKey:@"story_list_preview_images_size"];
+        }
+
+        preferenceKey = @"story_list_preview_images_size";
+        titles = @[@"No image", @"image_preview_small_left.png", @"image_preview_large_left.png", @"image_preview_large_right.png", @"image_preview_small_right.png"];
+        values = @[@"none", @"small_left", @"large_left", @"large_right", @"small_right"];
+
+        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+            [self.appDelegate resizePreviewSize];
+        }];
+    }
+
+    {
+        NSString *preferenceKey = @"feed_list_font_size";
+        NSArray *titles = @[@"XS", @"S", @"M", @"L", @"XL"];
+        NSArray *values = @[@"xs", @"small", @"medium", @"large", @"xl"];
+
+        [viewController addSegmentedControlWithTitles:titles values:values preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+            [self.appDelegate resizeFontSize];
+        }];
+    }
+
+    {
+        NSString *preferenceKey = @"feed_list_spacing";
+        NSArray *titles = @[@"Compact", @"Comfortable"];
+        NSArray *values = @[@"compact", @"comfortable"];
+
+        [viewController addSegmentedControlWithTitles:titles values:values defaultValue:@"comfortable" preferenceKey:preferenceKey selectionShouldDismiss:NO handler:^(NSUInteger selectedIndex) {
+            [self.appDelegate.feedsViewController reloadFeedTitlesTable];
+            [self reloadWithSizing];
+        }];
+    }
+
+    [viewController addThemeSegmentedControl];
+
+    UINavigationController *navController = self.navigationController ?: appDelegate.storyPagesViewController.navigationController;
+
+#if TARGET_OS_MACCATALYST
+    UIView *sourceView = navController.view;
+    CGRect sourceRect = CGRectMake(430, 0, 20, 20);
+    UINavigationController *menuNavController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    menuNavController.navigationBarHidden = YES;
+    menuNavController.delegate = viewController;
+    [appDelegate showPopoverWithViewController:menuNavController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
+#else
+    UIView *pillView = self.storyTitlesHeaderBar.optionsPill;
+    [viewController showFromNavigationController:navController barButtonItem:nil sourceView:pillView sourceRect:pillView.bounds permittedArrowDirections:UIPopoverArrowDirectionUp];
+#endif
+}
+
+- (IBAction)doOpenDiscoverFromPill:(id)sender {
+    if (self.presentedViewController) {
+        [self.presentedViewController dismissViewControllerAnimated:YES completion:nil];
+        return;
+    }
+
+    if (!storiesCollection.isRiverView && storiesCollection.activeFeed) {
+        NSString *feedId = [NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]];
+        [appDelegate openDiscoverFeedsDialogFromSettingsButton:feedId];
+    } else if (storiesCollection.isRiverView) {
+        NSArray *folderFeedIds = storiesCollection.activeFolderFeeds;
+        if (folderFeedIds.count > 0) {
+            [appDelegate openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:folderFeedIds];
+        }
+    }
+}
+
+- (IBAction)doActivateSearch:(id)sender {
+    if (self.storyTitlesHeaderBar.isSearchActive) {
+        [self deactivateSearch];
+    } else {
+        [self.storyTitlesHeaderBar setSearchActive:YES];
+        [self.searchField becomeFirstResponder];
+    }
+}
+
+- (IBAction)doDeactivateSearch:(id)sender {
+    [self deactivateSearch];
+}
+
+- (void)deactivateSearch {
+    [self.storyTitlesHeaderBar setSearchActive:NO];
+    [self.searchField resignFirstResponder];
+}
+
+- (void)updateStoryTitlesHeaderPillState {
+    // Update options pill text
+    NSString *order = storiesCollection.activeOrder ?: @"newest";
+    NSString *readFilter = storiesCollection.activeReadFilter ?: @"all";
+    [self.storyTitlesHeaderBar updateOptionsPillWithOrder:order readFilter:readFilter];
+
+    // Update discover pill visibility
+    BOOL isEverything = storiesCollection.isEverything;
+    BOOL isSocial = storiesCollection.isSocialRiverView || storiesCollection.isSocialView;
+    BOOL isSaved = storiesCollection.isSavedView;
+    BOOL isRead = storiesCollection.isReadView;
+    BOOL isWidget = storiesCollection.isWidgetView;
+    BOOL isInfrequent = storiesCollection.isInfrequent;
+    [self.storyTitlesHeaderBar updateDiscoverVisibilityWithIsRiver:storiesCollection.isRiverView isEverything:isEverything isSocial:isSocial isSaved:isSaved isRead:isRead isWidget:isWidget isInfrequent:isInfrequent];
+
+    // Build mark-read menu with timing submenu
+    NSString *collectionTitle = storiesCollection.isRiverView ?
+        ([storiesCollection.activeFolder isEqualToString:@"everything"] ? @"everything" : @"entire folder") :
+        @"this site";
+    [self updateMarkReadPillMenu:collectionTitle];
+
+    // Update discover pill favicons
+    if (storiesCollection.activeFeed) {
+        NSArray *similarFeeds = storiesCollection.activeFeed[@"similar_feeds"];
+        if ([similarFeeds isKindOfClass:[NSArray class]] && similarFeeds.count > 0) {
+            NSArray *feedIds = [similarFeeds subarrayWithRange:NSMakeRange(0, MIN(similarFeeds.count, 5))];
+            [self loadDiscoverFavicons:feedIds];
+        } else {
+            [self.storyTitlesHeaderBar updateDiscoverPillWithFavicons:@[]];
+        }
+    } else {
+        [self.storyTitlesHeaderBar updateDiscoverPillWithFavicons:@[]];
+    }
+}
+
+- (void)loadDiscoverFavicons:(NSArray *)feedIds {
+    // Check which favicons are already cached vs need fetching
+    NSMutableArray *cachedFavicons = [NSMutableArray array];
+    NSMutableArray *missingFeedIds = [NSMutableArray array];
+
+    for (id feedId in feedIds) {
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+        UIImage *cached = [appDelegate.cachedFavicons objectForKey:feedIdStr];
+        if (cached) {
+            [cachedFavicons addObject:cached];
+        } else {
+            [missingFeedIds addObject:feedIdStr];
+        }
+    }
+
+    // If all cached, update immediately
+    if (missingFeedIds.count == 0) {
+        [self.storyTitlesHeaderBar updateDiscoverPillWithFavicons:cachedFavicons];
+        return;
+    }
+
+    // Show what we have so far (may be empty)
+    [self.storyTitlesHeaderBar updateDiscoverPillWithFavicons:cachedFavicons];
+
+    // Fetch missing favicons from server
+    NSString *feedIdsQuery = [NSString stringWithFormat:@"?feed_ids=%@",
+                              [missingFeedIds componentsJoinedByString:@"&feed_ids="]];
+    NSString *urlString = [NSString stringWithFormat:@"%@/reader/favicons%@",
+                           self.appDelegate.url, feedIdsQuery];
+
+    [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+            for (NSString *feedIdStr in missingFeedIds) {
+                NSString *faviconData = responseObject[feedIdStr];
+                if (faviconData && (id)faviconData != [NSNull null] && faviconData.length > 0) {
+                    NSData *imageData = [[NSData alloc] initWithBase64EncodedString:faviconData options:NSDataBase64DecodingIgnoreUnknownCharacters];
+                    UIImage *faviconImage = [UIImage imageWithData:imageData];
+                    if (faviconImage) {
+                        [self.appDelegate saveFavicon:faviconImage feedId:feedIdStr];
+                    }
+                }
+            }
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // Rebuild favicons from cache now that they're saved
+                NSMutableArray *updatedFavicons = [NSMutableArray array];
+                for (id feedId in feedIds) {
+                    NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+                    UIImage *favicon = [self.appDelegate.cachedFavicons objectForKey:feedIdStr];
+                    if (favicon) {
+                        [updatedFavicons addObject:favicon];
+                    }
+                }
+                [self.storyTitlesHeaderBar updateDiscoverPillWithFavicons:updatedFavicons];
+            });
+        });
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        // Silently fail — keep showing whatever cached favicons we have
+    }];
+}
+
+- (void)updateMarkReadPillMenu:(NSString *)collectionTitle {
+    NSInteger visibleUnreadCount = storiesCollection.visibleUnreadCount;
+    NSInteger totalUnreadCount = [self.appDelegate unreadCount];
+    BOOL showVisible = visibleUnreadCount > 0 && visibleUnreadCount < totalUnreadCount;
+
+    [self.storyTitlesHeaderBar updateMarkReadMenuFullWithTitle:collectionTitle showVisibleOption:showVisible visibleCount:visibleUnreadCount];
 }
 
 - (NSString *)feedIdForSearch {
@@ -4179,13 +4405,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     self.refreshControl.backgroundColor = UIColorFromRGB(0xE3E6E0);
 #endif
     
-    UIView *searchContainer = [self.storyTitlesTable.tableHeaderView viewWithTag:100] ?: self.storyTitlesTable.tableHeaderView;
-    searchContainer.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xf4f4f4, 0xF3E2CB, 0x333333, 0x222222);
+    // Search field theming
     self.searchField.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xFFFFFF, 0xFAF5ED, 0x444444, 0x333333);
     self.searchField.textColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
     self.searchField.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x333333, 0x333333, 0xd0d0d0, 0xd0d0d0);
     UIImageView *searchIcon = [self.searchField.leftView viewWithTag:101];
     searchIcon.tintColor = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0x8F918B, 0x8F918B);
+
+    // Story titles header pill bar (includes search container)
+    [self.storyTitlesHeaderBar updateTheme];
 
     self.appDelegate.detailViewController.navigationItem.titleView = [appDelegate makeFeedTitle:storiesCollection.activeFeed];
 

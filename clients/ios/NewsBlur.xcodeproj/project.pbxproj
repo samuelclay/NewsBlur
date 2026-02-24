@@ -1055,6 +1055,8 @@
 		A1B2C3D4E5F60718293A4B5C /* CatalystModalDismissal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9B3E2F6A4B7C8D9E0F1A2B /* CatalystModalDismissal.swift */; };
 		A1F95DEA4557CF57C5EB91B7 /* StoryTraverseBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D4BA645C9D3D33418C93D86 /* StoryTraverseBar.swift */; };
 		A387B305A16381FA9C41F886 /* DiscoverFeedsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED9DC149A632195E96A73EF /* DiscoverFeedsModels.swift */; };
+		A9ADD6D438D022A948E0108F /* StoryTitlesHeaderBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4759AD1B9903B8D996728A8 /* StoryTitlesHeaderBar.swift */; };
+		AF998E32037213DB8DA29473 /* StoryTitlesHeaderBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4759AD1B9903B8D996728A8 /* StoryTitlesHeaderBar.swift */; };
 		B1CC4CA96C214E4BA724EBD5 /* icons8-prompt-100.png in Resources */ = {isa = PBXBuildFile; fileRef = DA5B929B2C1F40819E9A88CE /* icons8-prompt-100.png */; };
 		BD59B22BD409064599E854E2 /* ReadTimeTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE21BE0E29B19B59DCEB5BF /* ReadTimeTracker.swift */; };
 		C0C15ADF4471C3F68691B131 /* AskAIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 408612AC60C1A227BEA502A6 /* AskAIViewModel.swift */; };
@@ -1912,6 +1914,7 @@
 		A388F989D14990BF30BBDBFF /* AskAIView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AskAIView.swift; sourceTree = "<group>"; };
 		A6133546989FF9DBBA772F71 /* CustomIconRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomIconRenderer.swift; sourceTree = "<group>"; };
 		A97CCFF043172D5AEAC5EABF /* AskAIModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AskAIModels.swift; sourceTree = "<group>"; };
+		B4759AD1B9903B8D996728A8 /* StoryTitlesHeaderBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StoryTitlesHeaderBar.swift; sourceTree = "<group>"; };
 		DA5B929B2C1F40819E9A88CE /* icons8-prompt-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icons8-prompt-100.png"; sourceTree = "<group>"; };
 		E160F0551C9DAC2C00CB96DF /* UIViewController+HidePopover.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+HidePopover.h"; path = "Other Sources/UIViewController+HidePopover.h"; sourceTree = "<group>"; };
 		E160F0561C9DAC2C00CB96DF /* UIViewController+HidePopover.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIViewController+HidePopover.m"; path = "Other Sources/UIViewController+HidePopover.m"; sourceTree = "<group>"; };
@@ -2507,6 +2510,7 @@
 				1C9B3E2F6A4B7C8D9E0F1A2B /* CatalystModalDismissal.swift */,
 				0BA641879DDE49DEE45A226C /* SyncNotifierView.swift */,
 				9EE21BE0E29B19B59DCEB5BF /* ReadTimeTracker.swift */,
+				B4759AD1B9903B8D996728A8 /* StoryTitlesHeaderBar.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -5213,6 +5217,7 @@
 				A1B2C3D4E5F60718293A4B5C /* CatalystModalDismissal.swift in Sources */,
 				FF5E1E05A010F0C272F68B3D /* SyncNotifierView.swift in Sources */,
 				BD59B22BD409064599E854E2 /* ReadTimeTracker.swift in Sources */,
+				AF998E32037213DB8DA29473 /* StoryTitlesHeaderBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5434,6 +5439,7 @@
 				D5E6F708192A3B4C5D6E7F80 /* CatalystModalDismissal.swift in Sources */,
 				95D27D08DCDA57CA45C41955 /* SyncNotifierView.swift in Sources */,
 				655E2C7DEB50BAE6F36CB575 /* ReadTimeTracker.swift in Sources */,
+				A9ADD6D438D022A948E0108F /* StoryTitlesHeaderBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5526,7 +5532,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -5579,7 +5585,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -5628,7 +5634,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -5684,7 +5690,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Share Extension/Share Extension.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -5724,7 +5730,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -5787,7 +5793,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -5858,7 +5864,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -5910,7 +5916,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -5958,7 +5964,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6011,7 +6017,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6046,7 +6052,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
@@ -6098,7 +6104,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
@@ -6268,7 +6274,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -6314,7 +6320,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 312;
+				CURRENT_PROJECT_VERSION = 313;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
