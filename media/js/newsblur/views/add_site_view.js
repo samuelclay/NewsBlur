@@ -1390,7 +1390,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     $.make('img', { src: '/media/img/icons/heroicons-solid/fire.svg', className: 'NB-mono' })
                 ]),
                 $.make('div', { className: 'NB-add-site-source-info' }, [
-                    $.make('div', { className: 'NB-add-site-source-title' }, 'Popular Sites'),
+                    $.make('div', { className: 'NB-add-site-source-title' }, 'Discover Sites'),
                     $.make('div', { className: 'NB-add-site-source-desc' },
                         'Browse popular blogs, news sites, and publications with RSS feeds.')
                 ])
@@ -1418,7 +1418,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (!$section.length) {
             $section = this.make_persistent_section({
                 state: state,
-                default_title: 'Popular Sites',
+                default_title: 'Discover Sites',
                 type_label: 'Sites',
                 search_class: 'NB-add-site-popular-search',
                 placeholder: 'Filter sites...'
@@ -1427,7 +1427,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }
 
         // Update title (with category name) and count badge in the existing header
-        this.update_section_header('.NB-add-site-popular-tab', state, 'Popular Sites', 'Sites');
+        this.update_section_header('.NB-add-site-popular-tab', state, 'Discover Sites', 'Sites');
 
         var $content = $section.find('.NB-add-site-section-content');
 
@@ -1461,7 +1461,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         var feeds = state.popular_feeds;
         if (!feeds || feeds.length === 0) {
-            var empty_msg = state.query ? 'No sites found matching your filter.' : 'No popular sites found.';
+            var empty_msg = state.query ? 'No sites found matching your filter.' : 'No sites found.';
             $content.html($.make('div', { className: 'NB-add-site-empty-state' }, empty_msg));
             return;
         }
@@ -1658,7 +1658,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (!$section.length) {
             $section = this.make_persistent_section({
                 state: state,
-                default_title: 'Popular Channels',
+                default_title: 'Discover Channels',
                 type_label: 'Channels',
                 search_class: 'NB-add-site-youtube-search',
                 placeholder: 'Filter channels...'
@@ -1666,7 +1666,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $results.html($section);
         }
 
-        this.update_section_header('.NB-add-site-youtube-tab', state, 'Popular Channels', 'Channels');
+        this.update_section_header('.NB-add-site-youtube-tab', state, 'Discover Channels', 'Channels');
 
         var $content = $section.find('.NB-add-site-section-content');
 
@@ -1700,7 +1700,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         // Card view: render feed cards from API data (grid view, or list view without linked Feed objects)
         var channels = state.popular_feeds;
         if (!channels || channels.length === 0) {
-            var empty_msg = state.query ? 'No channels found matching your filter.' : 'No popular YouTube channels found.';
+            var empty_msg = state.query ? 'No channels found matching your filter.' : 'No channels found.';
             $content.html($.make('div', { className: 'NB-add-site-empty-state' }, empty_msg));
             return;
         }
@@ -1814,7 +1814,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (!$section.length) {
             $section = this.make_persistent_section({
                 state: state,
-                default_title: 'Popular Subreddits',
+                default_title: 'Discover Subreddits',
                 type_label: 'Subreddits',
                 search_class: 'NB-add-site-reddit-search',
                 placeholder: 'Filter subreddits...'
@@ -1822,7 +1822,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $results.html($section);
         }
 
-        this.update_section_header('.NB-add-site-reddit-tab', state, 'Popular Subreddits', 'Subreddits');
+        this.update_section_header('.NB-add-site-reddit-tab', state, 'Discover Subreddits', 'Subreddits');
 
         var $content = $section.find('.NB-add-site-section-content');
 
@@ -2051,7 +2051,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (!$section.length) {
             $section = this.make_persistent_section({
                 state: state,
-                default_title: 'Newsletters',
+                default_title: 'Discover Newsletters',
                 type_label: 'Newsletters',
                 search_class: 'NB-add-site-newsletters-search',
                 placeholder: 'Filter newsletters...'
@@ -2059,7 +2059,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $results.html($section);
         }
 
-        this.update_section_header('.NB-add-site-newsletters-tab', state, 'Newsletters', 'Newsletters');
+        this.update_section_header('.NB-add-site-newsletters-tab', state, 'Discover Newsletters', 'Newsletters');
 
         var $content = $section.find('.NB-add-site-section-content');
 
@@ -2092,7 +2092,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         var newsletters = state.popular_feeds;
         if (!newsletters || newsletters.length === 0) {
-            var empty_msg = state.query ? 'No newsletters found matching your filter.' : 'No popular newsletters found.';
+            var empty_msg = state.query ? 'No newsletters found matching your filter.' : 'No newsletters found.';
             $content.html($.make('div', { className: 'NB-add-site-empty-state' }, empty_msg));
             return;
         }
@@ -2220,7 +2220,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (!$section.length) {
             $section = this.make_persistent_section({
                 state: state,
-                default_title: 'Popular Podcasts',
+                default_title: 'Discover Podcasts',
                 type_label: 'Podcasts',
                 search_class: 'NB-add-site-podcasts-search',
                 placeholder: 'Filter podcasts...'
@@ -2228,7 +2228,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $results.html($section);
         }
 
-        this.update_section_header('.NB-add-site-podcasts-tab', state, 'Popular Podcasts', 'Podcasts');
+        this.update_section_header('.NB-add-site-podcasts-tab', state, 'Discover Podcasts', 'Podcasts');
 
         var $content = $section.find('.NB-add-site-section-content');
 
@@ -2261,7 +2261,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         var podcasts = state.popular_feeds;
         if (!podcasts || podcasts.length === 0) {
-            var empty_msg = state.query ? 'No podcasts found matching your filter.' : 'No popular podcasts found.';
+            var empty_msg = state.query ? 'No podcasts found matching your filter.' : 'No podcasts found.';
             $content.html($.make('div', { className: 'NB-add-site-empty-state' }, empty_msg));
             return;
         }
