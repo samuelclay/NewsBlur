@@ -26058,6 +26058,7 @@ h5.NB-classifier-section-header {
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.15s ease;
+    user-select: none;
 }
 
 .NB-add-site-view-toggle img {
@@ -26118,6 +26119,7 @@ h5.NB-classifier-section-header {
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.15s ease;
+    user-select: none;
 }
 
 .NB-add-site-style-button img {
@@ -26402,6 +26404,7 @@ h5.NB-classifier-section-header {
     transition: all 0.15s ease;
     white-space: nowrap;
     flex-shrink: 0;
+    user-select: none;
 }
 
 .NB-add-site-tab:hover {

@@ -155,8 +155,8 @@ sentry-cli --url https://sentry.newsblur.com issues resolve -o newsblur -p web -
 5. Resolve the issue with `sentry-cli issues resolve -i <issue_id>`
 
 ## Browser Testing
-- Use the Chrome DevTools MCP server for browser automation and testing
-- Local dev: `https://localhost` (self-signed certs are accepted by default)
+- **Do NOT use the Chrome DevTools MCP server unless explicitly asked** — the user will verify manually
+- Local dev: `https://localhost` for main repo. In a worktree, run `make worktree` first, then `./worktree-dev.sh` to get the assigned ports/URLs.
 - **Screenshots**: Save to `/tmp/newsblur-screenshot.png`, then use Read tool to view
 
 ### Dev Auto-Login (DEBUG mode only)
