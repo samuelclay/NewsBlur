@@ -911,7 +911,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             subcategory: subcategory,
             limit: limit,
             offset: offset,
-            include_stories: this.view_mode === 'list' ? 'true' : 'false'
+            include_stories: 'true'
         };
         if (platform && platform !== 'all') {
             params.platform = platform;
@@ -979,23 +979,21 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     }
                 }
 
-                // Build collection for list view
-                if (self.view_mode === 'list') {
-                    var feeds_array = _.chain(data.feeds)
-                        .filter(function(f) { return f.feed; })
-                        .map(function(f) {
-                            return {
-                                id: f.feed.id,
-                                feed: f.feed,
-                                stories: f.stories || []
-                            };
-                        }).value();
+                // Build collection for list view (always build so grid→list toggle works instantly)
+                var feeds_array = _.chain(data.feeds)
+                    .filter(function(f) { return f.feed; })
+                    .map(function(f) {
+                        return {
+                            id: f.feed.id,
+                            feed: f.feed,
+                            stories: f.stories || []
+                        };
+                    }).value();
 
-                    if (is_load_more && state.popular_feeds_collection) {
-                        state.popular_feeds_collection.add(feeds_array);
-                    } else {
-                        state.popular_feeds_collection = new NEWSBLUR.Collections.TrendingFeeds(feeds_array);
-                    }
+                if (is_load_more && state.popular_feeds_collection) {
+                    state.popular_feeds_collection.add(feeds_array);
+                } else {
+                    state.popular_feeds_collection = new NEWSBLUR.Collections.TrendingFeeds(feeds_array);
                 }
             }
             state.popular_feeds_loaded = true;
@@ -1826,6 +1824,26 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.update_section_header('.NB-add-site-reddit-tab', state, 'Discover Subreddits', 'Subreddits');
 
         var $content = $section.find('.NB-add-site-section-content');
+
+        // List view with linked Feed objects
+        if (this.view_mode === 'list' && state.popular_feeds_collection && state.popular_feeds_collection.length > 0) {
+            var $list = this.render_list_view_feeds(state.popular_feeds_collection);
+
+            var unfetched = _.filter(state.popular_feeds, function (f) { return !f.feed; });
+            if (unfetched.length > 0) {
+                var $grid = self.make_results_container();
+                _.each(unfetched, function (subreddit) {
+                    $grid.append(self.render_reddit_card(subreddit));
+                });
+                $list.append($grid);
+            }
+
+            if (state.popular_loading_more) {
+                $list.append(self.make_scroll_loading_indicator());
+            }
+            $content.html($list);
+            return;
+        }
 
         // Try API-backed popular feeds first
         if (!state.popular_feeds_loaded) {
@@ -4096,12 +4114,6 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         this.$('.NB-add-site-view-toggle').removeClass('NB-active');
         $toggle.addClass('NB-active');
 
-        // If switching to list mode on search tab with results, re-search to get stories
-        if (mode === 'list' && this.active_tab === 'search' && this.search_query) {
-            this.perform_search();
-            return;
-        }
-
         // Re-render the active tab to switch view mode
         this.render_active_tab();
     },
@@ -4227,7 +4239,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             query: query,
             format: 'full',
             v: 2,
-            include_stories: this.view_mode === 'list' ? 'true' : 'false'
+            include_stories: 'true'
         }, function (data) {
             // Ignore stale responses from previous searches
             if (current_version !== self.search_version) {
