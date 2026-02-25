@@ -14215,6 +14215,102 @@ h5.NB-classifier-section-header {
     height: 14px;
 }
 
+/* Deep Analysis Toggle */
+.NB-deep-toggle-wrapper {
+    padding: 4px 0 0;
+}
+
+.NB-deep-toggle-segmented {
+    display: inline-flex;
+    background-color: #E8EAE4;
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+    flex: 1;
+}
+
+.NB-deep-toggle-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #808080;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.NB-deep-toggle-option:hover {
+    color: #505050;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.NB-deep-toggle-option.NB-selected {
+    background-color: white;
+    color: #303030;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.NB-deep-toggle-icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* Ask AI Tool Status Lines (Deep mode) */
+.NB-ask-ai-tools-container {
+    padding: 4px 0 8px;
+}
+
+.NB-ask-ai-tool-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 12px;
+    color: #888;
+}
+
+.NB-ask-ai-tool-line .NB-tool-icon {
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.NB-ask-ai-tool-line .NB-tool-spinner {
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid rgba(74, 144, 226, 0.2);
+    border-top-color: rgba(74, 144, 226, 0.6);
+    border-radius: 50%;
+    animation: tool-spin 0.8s linear infinite;
+}
+
+.NB-ask-ai-tool-line .NB-tool-check {
+    border: none;
+    animation: none;
+    border-radius: 0;
+}
+
+.NB-ask-ai-tool-line .NB-tool-check::before {
+    content: "\2713";
+    color: rgba(80, 160, 80, 0.8);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.NB-ask-ai-tool-line .NB-tool-message {
+    flex: 1;
+}
+
 /* =================== */
 /* = Ask AI Pane     = */
 /* =================== */
@@ -29190,6 +29286,32 @@ button.NB-merge-group-apply.NB-button:hover {
 
 .NB-dark .NB-archive-tool-preview {
     color: #555;
+}
+
+.NB-dark .NB-ask-ai-tool-line {
+    color: #777;
+}
+
+.NB-dark .NB-ask-ai-tool-line .NB-tool-check::before {
+    color: rgba(100, 180, 100, 0.7);
+}
+
+.NB-dark .NB-ask-ai-tool-line .NB-tool-spinner {
+    border-color: rgba(92, 137, 201, 0.2);
+    border-top-color: rgba(92, 137, 201, 0.6);
+}
+
+.NB-dark .NB-deep-toggle-segmented {
+    background-color: #333;
+}
+
+.NB-dark .NB-deep-toggle-option {
+    color: #888;
+}
+
+.NB-dark .NB-deep-toggle-option.NB-selected {
+    background-color: #444;
+    color: #DDD;
 }
 
 .NB-dark .NB-archive-process-log .NB-archive-tool-status {

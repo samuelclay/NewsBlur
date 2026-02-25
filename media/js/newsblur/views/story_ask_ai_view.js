@@ -18,7 +18,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         "click .NB-reask-dropdown .NB-model-option": "handle_reask_model_click",
         "click .NB-send-dropdown .NB-model-option": "handle_send_model_click",
         "click .NB-finish-recording-dropdown .NB-model-option": "handle_finish_recording_model_click",
-        "click .NB-thinking-toggle-option": "handle_thinking_toggle"
+        "click .NB-thinking-toggle-option": "handle_thinking_toggle",
+        "click .NB-deep-toggle-option": "handle_deep_toggle"
     },
 
     initialize: function (options) {
@@ -28,6 +29,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.transcription_error = options.transcription_error;
         this.model = options.model || 'opus';  // Default to opus
         this.thinking = options.thinking || false;
+        this.deep = options.deep || false;
+        this.current_tool_calls = [];
 
         // If there's a transcription error, show "Audio not transcribed" as the question text
         if (this.transcription_error) {
@@ -47,6 +50,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.original_custom_question = this.custom_question;  // Store for re-ask
         this.response_model = this.model;  // Track which model produced current response
         this.response_thinking = this.thinking;  // Track thinking mode of current response
+        this.response_deep = this.deep;  // Track deep mode of current response
         this.is_comparison_response = false;  // Track if comparing multiple model responses
         this.section_models = [];  // Track models for each answer section (for pills)
 
@@ -73,19 +77,22 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         // Store view instance on DOM element for Socket.IO handler access
         this.$el.data('view', this);
 
-        // Set the model dropdown to the current model and thinking toggle
+        // Set the model dropdown to the current model and thinking/deep toggles
         this.update_model_dropdown_selection();
         this.update_thinking_toggle_selection();
+        this.update_deep_toggle_selection();
 
         // If there's a transcription error, display it instead of sending a question
         if (this.transcription_error) {
             this.$el.removeClass('NB-thinking');
             this.show_usage_message(this.transcription_error);
         } else if (this.inline) {
-            // Add thinking class and set up initial timeout (15s to wait for first response)
+            // Add thinking class and set up initial timeout
+            // Deep mode gets 25s (tool calls take time), standard gets 15s
+            var timeout_ms = this.deep ? 25000 : 15000;
             this.$el.addClass('NB-thinking');
             this.show_loading_pill();
-            this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
+            this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), timeout_ms);
         }
 
         return this;
@@ -293,12 +300,14 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             story_hash: this.story_hash,
             question_id: this.question_id,
             model: this.model,
-            thinking: this.thinking
+            thinking: this.thinking,
+            deep: this.deep
         };
 
-        // Track which model and thinking mode is producing this response
+        // Track which model and mode is producing this response
         this.response_model = this.model;
         this.response_thinking = this.thinking;
+        this.response_deep = this.deep;
 
         var request_id = this.generate_request_id();
         this.active_request_id = request_id;
@@ -554,11 +563,12 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         var html = this.markdown_to_html(this.response_text);
         $answer.html(html);
 
-        // Reset debounce timeout - if no chunk for 10s, show timeout error
+        // Reset debounce timeout - deep mode gets 15s (code execution), standard gets 10s
         if (this.debounce_timeout) {
             clearTimeout(this.debounce_timeout);
         }
-        this.debounce_timeout = setTimeout(_.bind(this.handle_streaming_timeout, this), 10000);
+        var streaming_timeout_ms = this.deep ? 15000 : 10000;
+        this.debounce_timeout = setTimeout(_.bind(this.handle_streaming_timeout, this), streaming_timeout_ms);
     },
 
     complete_response: function () {
@@ -587,9 +597,10 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.$('.NB-story-ask-ai-reask-menu').show();
         this.$('.NB-story-ask-ai-send-menu').hide();
 
-        // Update model dropdown and thinking toggle selection
+        // Update model dropdown and thinking/deep toggle selection
         this.update_model_dropdown_selection();
         this.update_thinking_toggle_selection();
+        this.update_deep_toggle_selection();
     },
 
     show_error: function (error_message) {
@@ -678,8 +689,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.$el.addClass('NB-thinking');
         this.show_loading_pill();
 
-        // Set up initial timeout
-        this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
+        // Set up initial timeout (deep mode gets 25s)
+        var timeout_ms = this.deep ? 25000 : 15000;
+        this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), timeout_ms);
 
         // Send follow-up with conversation history
         this.send_question(null, this.conversation_history);
@@ -908,6 +920,99 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         }
     },
 
+    handle_deep_toggle: function (e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        var $option = this.$(e.currentTarget);
+        var deep = $option.data('deep') === true || $option.data('deep') === 'true';
+
+        // Update selected state
+        this.$('.NB-deep-toggle-option').removeClass('NB-selected');
+        $option.addClass('NB-selected');
+
+        // Deep and thinking are mutually exclusive
+        if (deep && this.thinking) {
+            this.thinking = false;
+            NEWSBLUR.assets.preference('ask_ai_thinking', false);
+            this.update_thinking_toggle_selection();
+        }
+
+        // Save preference
+        this.deep = deep;
+        NEWSBLUR.assets.preference('ask_ai_deep', deep);
+
+        // Re-ask if deep mode changed from what produced the current response
+        if (deep !== this.response_deep) {
+            this.reask_with_new_model();
+        }
+    },
+
+    update_deep_toggle_selection: function () {
+        var deep = this.deep;
+        this.$('.NB-deep-toggle-option').each(function () {
+            var $option = $(this);
+            var is_deep = $option.data('deep') === true || $option.data('deep') === 'true';
+            if (is_deep === deep) {
+                $option.addClass('NB-selected');
+            } else {
+                $option.removeClass('NB-selected');
+            }
+        });
+    },
+
+    show_tool_call: function (tool_name, tool_input) {
+        var status_messages = {
+            'search_feed_stories': 'Searching RSS feeds...',
+            'get_feed_story_content': 'Reading article...',
+            'search_starred_stories': 'Searching saved stories...',
+            'get_starred_story_content': 'Reading saved story...',
+            'search_shared_stories': 'Searching shared stories...',
+            'get_same_feed_recent': 'Checking recent stories from this feed...'
+        };
+
+        var $answer = this.$('.NB-story-ask-ai-answer');
+        var message = status_messages[tool_name] || 'Processing...';
+
+        // Add tool line with spinner
+        var $tool_line = $('<div class="NB-ask-ai-tool-line NB-active">' +
+            '<div class="NB-tool-icon"><div class="NB-tool-spinner"></div></div>' +
+            '<div class="NB-tool-message">' + _.escape(message) + '</div>' +
+        '</div>');
+
+        // Insert before any existing text content, or append
+        var $tools_container = $answer.find('.NB-ask-ai-tools-container');
+        if (!$tools_container.length) {
+            $tools_container = $('<div class="NB-ask-ai-tools-container"></div>');
+            $answer.prepend($tools_container);
+        }
+        $tools_container.append($tool_line);
+        $answer.show();
+
+        // Reset initial timeout since we got activity
+        if (this.initial_timeout) {
+            clearTimeout(this.initial_timeout);
+            this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 25000);
+        }
+    },
+
+    show_tool_result: function (tool_name, summary) {
+        // Find the last active tool line and mark it complete
+        var $active_tools = this.$('.NB-ask-ai-tool-line.NB-active');
+        if ($active_tools.length) {
+            var $last = $active_tools.last();
+            $last.removeClass('NB-active').addClass('NB-complete');
+            $last.find('.NB-tool-icon').html('<div class="NB-tool-check"></div>');
+            $last.find('.NB-tool-message').text(summary);
+        }
+
+        this.current_tool_calls.push({
+            tool: tool_name,
+            summary: summary
+        });
+    },
+
     get_model_display_name: function (model) {
         var models = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_models) || [];
         var match = _.find(models, function (m) { return m.key === model; });
@@ -938,6 +1043,17 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
                 '<div class="NB-thinking-toggle-option NB-thinking-thinking" data-thinking="true">' +
                     '<img src="/media/img/icons/nouns/ai-brain.svg" class="NB-thinking-toggle-icon" />' +
                     '<span>Thinking</span>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+        html += '<div class="NB-deep-toggle-wrapper">' +
+            '<div class="NB-deep-toggle-segmented">' +
+                '<div class="NB-deep-toggle-option NB-deep-off NB-selected" data-deep="false">' +
+                    '<span>Standard</span>' +
+                '</div>' +
+                '<div class="NB-deep-toggle-option NB-deep-on" data-deep="true">' +
+                    '<img src="/media/img/icons/nouns/ai-brain.svg" class="NB-deep-toggle-icon" />' +
+                    '<span>Deep</span>' +
                 '</div>' +
             '</div>' +
         '</div>';
@@ -986,6 +1102,8 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.current_response_text = '';
         this.conversation_history = [];
         this.streaming_started = false;
+        this.current_tool_calls = [];
+        this.$('.NB-ask-ai-tools-container').remove();
 
         // Keep answer visible while re-asking
         this.$('.NB-story-ask-ai-followup-wrapper').hide();
@@ -994,8 +1112,9 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.$el.addClass('NB-thinking');
         this.show_loading_pill();
 
-        // Set up initial timeout
-        this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), 15000);
+        // Set up initial timeout (deep mode gets 25s)
+        var timeout_ms = this.deep ? 25000 : 15000;
+        this.initial_timeout = setTimeout(_.bind(this.handle_initial_timeout, this), timeout_ms);
 
         // Send the original question with the new model
         this.send_question(this.custom_question);

@@ -38,6 +38,26 @@ handle_ask_ai_message = (socket, channel, message) =>
                 chunk: data.chunk or ''
             }
 
+        when 'tool_call'
+            log.debug "ask_ai:tool_call #{story_hash} #{data.tool}"
+            socket.emit 'ask_ai:tool_call', {
+                story_hash: story_hash,
+                question_id: question_id,
+                request_id: request_id,
+                tool: data.tool or '',
+                input: data.input or {}
+            }
+
+        when 'tool_result'
+            log.debug "ask_ai:tool_result #{story_hash} #{data.tool}: #{data.summary}"
+            socket.emit 'ask_ai:tool_result', {
+                story_hash: story_hash,
+                question_id: question_id,
+                request_id: request_id,
+                tool: data.tool or '',
+                summary: data.summary or ''
+            }
+
         when 'complete'
             log.debug "ask_ai:complete #{story_hash} #{question_id}"
             socket.emit 'ask_ai:complete', {

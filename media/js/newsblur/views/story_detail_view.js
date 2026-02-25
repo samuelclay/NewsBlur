@@ -1809,6 +1809,17 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 '</div>' +
             '</div>' +
         '</div>';
+        dropdown_html += '<div class="NB-deep-toggle-wrapper">' +
+            '<div class="NB-deep-toggle-segmented">' +
+                '<div class="NB-deep-toggle-option NB-deep-off NB-selected" data-deep="false">' +
+                    '<span>Standard</span>' +
+                '</div>' +
+                '<div class="NB-deep-toggle-option NB-deep-on" data-deep="true">' +
+                    '<img src="/media/img/icons/nouns/ai-brain.svg" class="NB-deep-toggle-icon" />' +
+                    '<span>Deep</span>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
         $menu.find('.NB-menu-ask-ai-model-dropdown').html(dropdown_html);
 
         // Set model from preference (default to opus)
@@ -1824,6 +1835,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (saved_thinking) {
             $menu.find('.NB-menu-ask-ai-model-dropdown .NB-thinking-toggle-option').removeClass('NB-selected');
             $menu.find('.NB-menu-ask-ai-model-dropdown .NB-thinking-toggle-option[data-thinking="true"]').addClass('NB-selected');
+        }
+
+        // Set deep from preference (default to false)
+        var saved_deep = NEWSBLUR.assets.preference('ask_ai_deep') || false;
+        $menu.data('deep', saved_deep);
+        if (saved_deep) {
+            $menu.find('.NB-menu-ask-ai-model-dropdown .NB-deep-toggle-option').removeClass('NB-selected');
+            $menu.find('.NB-menu-ask-ai-model-dropdown .NB-deep-toggle-option[data-deep="true"]').addClass('NB-selected');
         }
 
         $('body').append($menu);
@@ -1887,7 +1906,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             var question_id = $(ev.currentTarget).data('question-id');
             var model = $menu.find('.NB-menu-ask-ai-submit-menu').data('model');
             var thinking = $menu.data('thinking') || false;
-            this.handle_ask_ai_question(question_id, model, thinking);
+            var deep = $menu.data('deep') || false;
+            this.handle_ask_ai_question(question_id, model, thinking, deep);
             this.hide_ask_ai_menu();
         }, this));
 
@@ -1932,6 +1952,38 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             // Store thinking state and save preference
             $menu.data('thinking', thinking);
             NEWSBLUR.assets.preference('ask_ai_thinking', thinking);
+
+            // Deep and thinking are mutually exclusive
+            if (thinking) {
+                $menu.data('deep', false);
+                NEWSBLUR.assets.preference('ask_ai_deep', false);
+                $menu.find('.NB-menu-ask-ai-model-dropdown .NB-deep-toggle-option').removeClass('NB-selected');
+                $menu.find('.NB-menu-ask-ai-model-dropdown .NB-deep-toggle-option[data-deep="false"]').addClass('NB-selected');
+            }
+        }, this));
+
+        // Deep toggle handler
+        $menu.find('.NB-menu-ask-ai-model-dropdown .NB-deep-toggle-option').on('click', _.bind(function (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            var $option = $(ev.currentTarget);
+            var deep = $option.data('deep') === true || $option.data('deep') === 'true';
+
+            // Update selected state
+            $menu.find('.NB-menu-ask-ai-model-dropdown .NB-deep-toggle-option').removeClass('NB-selected');
+            $option.addClass('NB-selected');
+
+            // Store deep state and save preference
+            $menu.data('deep', deep);
+            NEWSBLUR.assets.preference('ask_ai_deep', deep);
+
+            // Deep and thinking are mutually exclusive
+            if (deep) {
+                $menu.data('thinking', false);
+                NEWSBLUR.assets.preference('ask_ai_thinking', false);
+                $menu.find('.NB-menu-ask-ai-model-dropdown .NB-thinking-toggle-option').removeClass('NB-selected');
+                $menu.find('.NB-menu-ask-ai-model-dropdown .NB-thinking-toggle-option[data-thinking="false"]').addClass('NB-selected');
+            }
         }, this));
 
         // Custom question input handlers
@@ -1989,21 +2041,22 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var transcription_error = $menu.data('transcription_error');
         var model = $menu.find('.NB-menu-ask-ai-submit-menu').data('model');
         var thinking = $menu.data('thinking') || false;
+        var deep = $menu.data('deep') || false;
 
         // Allow opening with empty question if there's a transcription error to display
         if ((!custom_question || !custom_question.trim()) && !transcription_error) {
             return;
         }
 
-        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question, transcription_error, model, thinking);
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, 'custom', custom_question, transcription_error, model, thinking, deep);
         this.hide_ask_ai_menu();
 
         // Clear the stored error
         $menu.removeData('transcription_error');
     },
 
-    handle_ask_ai_question: function (question_id, model, thinking) {
-        NEWSBLUR.reader.open_ask_ai_pane(this.model, question_id, null, null, model, thinking);
+    handle_ask_ai_question: function (question_id, model, thinking, deep) {
+        NEWSBLUR.reader.open_ask_ai_pane(this.model, question_id, null, null, model, thinking, deep);
     },
 
     start_voice_recording_for_menu: function ($menu) {

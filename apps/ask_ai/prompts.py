@@ -153,6 +153,102 @@ Provide only your answer to the question, without any preamble or introductory p
     return prompt_template.full_prompt.format(story_title=story_title, story_content=story_content)
 
 
+DEEP_ANALYSIS_SYSTEM_PROMPT = """You are an AI assistant performing deep analysis of a news article by cross-referencing it against the user's other reading sources in NewsBlur.
+
+You have access to tools that search the user's RSS feeds, saved stories, and shared stories. Use these to find related content that adds context, corroborates claims, or provides alternative perspectives.
+
+Tool Usage:
+- Search multiple sources to find related coverage of the article's topic
+- Only retrieve full content for the most relevant results -- not every search hit
+- Deduplicate: the same story may appear in feeds and starred stories
+- Filter and summarize results in code before generating your response
+
+Linking to Stories:
+- When mentioning stories from search results, create clickable links
+- Link format: [Story Title](nb://story/FEED_ID/STORY_HASH) where FEED_ID and STORY_HASH come from tool results
+- These links open the story directly in NewsBlur
+
+Current Date: {current_date}
+"""
+
+DEEP_ANALYSIS_PROMPTS = {
+    "factcheck": """Cross-reference the factual claims in this article against other stories in the user's feeds.
+Search for corroborating or contradicting coverage. For each major claim, note whether other sources support or dispute it.
+
+Article being analyzed:
+Title: {story_title}
+Feed ID: {feed_id}
+
+Content:
+{story_content}""",
+    "context": """Search the user's feeds and saved stories for earlier coverage and background on this article's topic.
+Find stories that provide historical context, previous developments, or background information.
+
+Article being analyzed:
+Title: {story_title}
+Feed ID: {feed_id}
+
+Content:
+{story_content}""",
+    "arguments": """Search the user's feeds, saved stories, and shared stories for different perspectives on this topic.
+Identify and present the main arguments from multiple sources, including viewpoints that may differ from this article.
+
+Article being analyzed:
+Title: {story_title}
+Feed ID: {feed_id}
+
+Content:
+{story_content}""",
+    "default": """Analyze this article and cross-reference it with related content from the user's other reading sources.
+Search for related stories that add context, provide different perspectives, or expand on the topic.
+
+{custom_question_section}
+
+Article being analyzed:
+Title: {story_title}
+Feed ID: {feed_id}
+
+Content:
+{story_content}""",
+}
+
+
+def get_deep_analysis_prompt(question_id, story_title, story_content, feed_id, custom_question=None):
+    """
+    Build the user prompt for deep analysis mode.
+
+    Args:
+        question_id: ID of the question template
+        story_title: Title of the story
+        story_content: Content of the story
+        feed_id: Feed ID the story belongs to
+        custom_question: Optional custom question from user
+
+    Returns:
+        Complete formatted prompt string
+    """
+    template = DEEP_ANALYSIS_PROMPTS.get(question_id, DEEP_ANALYSIS_PROMPTS["default"])
+
+    custom_question_section = ""
+    if custom_question:
+        custom_question_section = f"User's question: {custom_question}\n"
+
+    return template.format(
+        story_title=story_title,
+        story_content=story_content,
+        feed_id=feed_id,
+        custom_question_section=custom_question_section,
+    )
+
+
+def get_deep_system_prompt():
+    """Get the system prompt for deep analysis mode with current date."""
+    from datetime import datetime
+
+    current_date = datetime.now().strftime("%A, %B %d, %Y")
+    return DEEP_ANALYSIS_SYSTEM_PROMPT.format(current_date=current_date)
+
+
 def get_prompts_for_frontend() -> list:
     """
     Get all prompts formatted for frontend JavaScript consumption.

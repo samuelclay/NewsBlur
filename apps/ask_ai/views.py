@@ -50,6 +50,7 @@ def ask_ai_question(request):
     request_id = request.POST.get("request_id")
     model = request.POST.get("model", "")
     thinking = request.POST.get("thinking", "").lower() in ("true", "1", "yes")
+    deep = request.POST.get("deep", "").lower() in ("true", "1", "yes")
 
     # Validate request identifier (optional client-provided UUID)
     if request_id:
@@ -101,6 +102,10 @@ def ask_ai_question(request):
     elif not get_prompt(question_id):
         return {"code": -1, "message": "Unknown Ask AI question"}
 
+    # Deep mode is mutually exclusive with thinking mode
+    if deep and thinking:
+        thinking = False
+
     # Queue Celery task
     AskAIQuestion.apply_async(
         kwargs={
@@ -112,6 +117,7 @@ def ask_ai_question(request):
             "request_id": request_id,
             "model": model if model else None,
             "thinking": thinking,
+            "deep": deep,
         },
         queue="work_queue",
     )

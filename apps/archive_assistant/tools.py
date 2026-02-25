@@ -18,6 +18,8 @@ from apps.search.models import SearchStory
 from utils import log as logging
 
 # Tool definitions for Claude API
+PTC_ALLOWED_CALLERS = ["code_execution_20260120"]
+
 ARCHIVE_TOOLS = [
     {
         "name": "search_archives",
@@ -54,6 +56,7 @@ ARCHIVE_TOOLS = [
             },
             "required": [],
         },
+        "allowed_callers": PTC_ALLOWED_CALLERS,
     },
     {
         "name": "get_archive_content",
@@ -68,6 +71,7 @@ ARCHIVE_TOOLS = [
             },
             "required": ["archive_id"],
         },
+        "allowed_callers": PTC_ALLOWED_CALLERS,
     },
     {
         "name": "get_archive_summary",
@@ -77,6 +81,7 @@ ARCHIVE_TOOLS = [
             "properties": {},
             "required": [],
         },
+        "allowed_callers": PTC_ALLOWED_CALLERS,
     },
     {
         "name": "get_recent_archives",
@@ -95,6 +100,7 @@ ARCHIVE_TOOLS = [
             },
             "required": [],
         },
+        "allowed_callers": PTC_ALLOWED_CALLERS,
     },
     # RSS Feed Story Tools
     {
@@ -131,6 +137,7 @@ ARCHIVE_TOOLS = [
             },
             "required": [],
         },
+        "allowed_callers": PTC_ALLOWED_CALLERS,
     },
     {
         "name": "get_starred_story_content",
@@ -145,6 +152,7 @@ ARCHIVE_TOOLS = [
             },
             "required": ["story_hash"],
         },
+        "allowed_callers": PTC_ALLOWED_CALLERS,
     },
     {
         "name": "get_starred_summary",
@@ -154,6 +162,7 @@ ARCHIVE_TOOLS = [
             "properties": {},
             "required": [],
         },
+        "allowed_callers": PTC_ALLOWED_CALLERS,
     },
     {
         "name": "search_feed_stories",
@@ -177,6 +186,7 @@ ARCHIVE_TOOLS = [
             },
             "required": ["query"],
         },
+        "allowed_callers": PTC_ALLOWED_CALLERS,
     },
     {
         "name": "get_feed_story_content",
@@ -191,6 +201,7 @@ ARCHIVE_TOOLS = [
             },
             "required": ["story_hash"],
         },
+        "allowed_callers": PTC_ALLOWED_CALLERS,
     },
     {
         "name": "search_shared_stories",
@@ -209,8 +220,12 @@ ARCHIVE_TOOLS = [
             },
             "required": [],
         },
+        "allowed_callers": PTC_ALLOWED_CALLERS,
     },
 ]
+
+# Code execution tool for PTC
+CODE_EXECUTION_TOOL = {"type": "code_execution_20260120", "name": "code_execution"}
 
 
 def execute_tool(tool_name, tool_input, user_id):
@@ -669,7 +684,7 @@ def _get_starred_summary(user_id):
     }
 
 
-def _search_feed_stories(user_id, query, feed_ids=None, limit=10):
+def _search_feed_stories(user_id, query=None, feed_ids=None, limit=10):
     """Search user's feed stories using Elasticsearch."""
     limit = min(limit or 10, 30)
 

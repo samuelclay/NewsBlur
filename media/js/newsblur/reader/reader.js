@@ -4104,7 +4104,7 @@
             story_view.show_ask_ai_menu(fake_event);
         },
 
-        open_ask_ai_pane: function (story, question_id, custom_question, transcription_error, model, thinking) {
+        open_ask_ai_pane: function (story, question_id, custom_question, transcription_error, model, thinking, deep) {
             var story_view = story.latest_story_detail_view;
             if (!story_view) {
                 console.log(['No story view found for Ask AI', story]);
@@ -4126,6 +4126,7 @@
                 transcription_error: transcription_error,
                 model: model,
                 thinking: thinking,
+                deep: deep,
                 inline: true
             });
 
@@ -5997,6 +5998,12 @@
                 this.socket.removeAllListeners('ask_ai:usage');
                 this.socket.on('ask_ai:usage', _.bind(this.handle_ask_ai_usage, this));
 
+                this.socket.removeAllListeners('ask_ai:tool_call');
+                this.socket.on('ask_ai:tool_call', _.bind(this.handle_ask_ai_tool_call, this));
+
+                this.socket.removeAllListeners('ask_ai:tool_result');
+                this.socket.on('ask_ai:tool_result', _.bind(this.handle_ask_ai_tool_result, this));
+
                 // Archive Assistant streaming event listeners
                 this.socket.removeAllListeners('archive_assistant:start');
                 this.socket.on('archive_assistant:start', _.bind(this.handle_archive_assistant_start, this));
@@ -6215,6 +6222,20 @@
             var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
             if (view) {
                 view.show_usage_message(data.message);
+            }
+        },
+
+        handle_ask_ai_tool_call: function (data) {
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
+            if (view && view.show_tool_call) {
+                view.show_tool_call(data.tool, data.input);
+            }
+        },
+
+        handle_ask_ai_tool_result: function (data) {
+            var view = this.find_ask_ai_view_for_story(data.story_hash, data.question_id, data.request_id);
+            if (view && view.show_tool_result) {
+                view.show_tool_result(data.tool, data.summary);
             }
         },
 
