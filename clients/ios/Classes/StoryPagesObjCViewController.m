@@ -450,11 +450,13 @@
     [self reorientPages];
     previousPage.view.hidden = NO;
     [self alignScrollViewToCurrentPageIfNeeded];
-    
+    // Correct viewport width on all pages now that the view is at its final size.
+    [appDelegate adjustStoryDetailWebView];
+
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         self.doneInitialDisplay = YES;
     });
-    
+
     [self becomeFirstResponder];
 }
 
@@ -473,6 +475,11 @@
     if (!CGSizeEqualToSize(self.lastScrollViewBoundsSize, self.scrollView.bounds.size)) {
         self.lastScrollViewBoundsSize = self.scrollView.bounds.size;
         [self reorientPages];
+        // Update viewport width on all pages to match the new layout size.
+        // Deferred so web view subviews complete their layout pass first.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self->appDelegate adjustStoryDetailWebView];
+        });
     }
     
     if (self.scrollView.subviews.lastObject != self.currentPage.view) {
