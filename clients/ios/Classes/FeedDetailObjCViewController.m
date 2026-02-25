@@ -1778,7 +1778,9 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         settingsBarButton.hidden = NO;
     }
 #endif
-
+    
+    [self updateStoryTitlesHeaderPillState];
+    
     self.pageFinished = NO;
     [self renderStories:confirmedNewStories];
 
