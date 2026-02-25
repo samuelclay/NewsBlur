@@ -48,6 +48,13 @@ def _normalize_image_url_for_dedup(url):
     except Exception:
         return url.lower()
 
+    # CDN services (Brightspot, etc.) embed source image URL in ?url= param
+    if parsed.query:
+        query_params = urllib.parse.parse_qs(parsed.query)
+        source_url = query_params.get("url", [None])[0]
+        if source_url:
+            return _normalize_image_url_for_dedup(source_url)
+
     host = (parsed.netloc or "").lower()
     path = parsed.path or ""
 
