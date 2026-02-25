@@ -594,9 +594,11 @@
 }
 
 - (void)updateStatusBarState {
-    // When the custom toolbar is active, the status bar background must always be visible
-    // so the toolbar slides behind an opaque surface as it translates upward.
-    if (self.isCustomToolbarActive) {
+    // On iPhone the status bar background must always be visible so the toolbar
+    // slides behind an opaque surface. Use useCustomToolbar (not isCustomToolbarActive)
+    // because the toolbar may still be hidden during early viewWillAppear setup.
+    if (self.useCustomToolbar) {
+        [self.statusBarBackgroundView.layer removeAllAnimations];
         self.statusBarBackgroundView.hidden = NO;
         self.statusBarBackgroundView.alpha = 1.0;
         return;
@@ -610,7 +612,7 @@
     [UIView animateWithDuration:0.15 animations:^{
         self.statusBarBackgroundView.alpha = targetAlpha;
     } completion:^(BOOL finished) {
-        if (!shouldShow) {
+        if (finished && !shouldShow) {
             self.statusBarBackgroundView.hidden = YES;
         }
     }];
@@ -1455,6 +1457,10 @@
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     self.isDraggingScrollview = YES;
+    // Prevent diagonal scrolling: disable web view scroll and cancel in-progress gestures
+    if (self.isHorizontal) {
+        [self setWebViewsScrollEnabled:NO];
+    }
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
@@ -1501,6 +1507,7 @@
 {
     [self lockScrollViewToNearestPage];
     self.isDraggingScrollview = NO;
+    [self setWebViewsScrollEnabled:YES];
     if (appDelegate.feedDetailViewController.suppressMarkAsRead) {
         return;
     }
@@ -1511,6 +1518,20 @@
                                                   pageAmount:pageAmount];
     self.scrollingToPage = nearestNumber;
     [self setStoryFromScroll];
+}
+
+- (void)setWebViewsScrollEnabled:(BOOL)enabled {
+    for (StoryDetailViewController *page in @[currentPage, nextPage, previousPage]) {
+        if (!page) continue;
+        UIScrollView *sv = page.webView.scrollView;
+        sv.scrollEnabled = enabled;
+        if (!enabled) {
+            // Force-cancel any in-progress pan gesture by toggling enabled.
+            // This transitions the gesture to .cancelled then back to .possible.
+            sv.panGestureRecognizer.enabled = NO;
+            sv.panGestureRecognizer.enabled = YES;
+        }
+    }
 }
 
 - (void)lockScrollViewToNearestPage {
