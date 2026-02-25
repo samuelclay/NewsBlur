@@ -8,6 +8,16 @@
 
 import UIKit
 
+/// Container view that notifies its owner when bounds change so pills can adapt.
+class HeaderContainerView: UIView {
+    var onBoundsChange: (() -> Void)?
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        onBoundsChange?()
+    }
+}
+
 /// Builds and manages the story titles header pill bar above the story list.
 /// Contains pills for Discover, Options, Search, and Mark Read.
 /// When search is active, a search field appears below the pill bar.
@@ -17,7 +27,7 @@ class StoryTitlesHeaderBar: NSObject {
     // MARK: - Public Views
 
     /// The outer container added to the parent view. Pin content views below this.
-    let headerContainer = UIView()
+    let headerContainer = HeaderContainerView()
 
     let pillBar = UIView()
     let discoverPill = UIButton(type: .system)
@@ -93,7 +103,12 @@ class StoryTitlesHeaderBar: NSObject {
     /// Returns the headerContainer's bottomAnchor for pinning content views below.
     func setup(in parentView: UIView) {
         headerContainer.translatesAutoresizingMaskIntoConstraints = false
+        headerContainer.clipsToBounds = true
         parentView.addSubview(headerContainer)
+
+        headerContainer.onBoundsChange = { [weak self] in
+            self?.relayoutPills()
+        }
 
         buildPillBar(in: headerContainer)
         buildSearchContainer(in: headerContainer)
@@ -154,6 +169,7 @@ class StoryTitlesHeaderBar: NSObject {
         config.title = "DISCOVER"
         config.imagePadding = 4
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 6)
+        config.titleLineBreakMode = .byClipping
         config.titleTextAttributesTransformer = pillFontTransformer()
         discoverPill.configuration = config
         configurePillAppearance(discoverPill)
@@ -471,6 +487,7 @@ class StoryTitlesHeaderBar: NSObject {
             config.title = "DISCOVER"
             config.imagePadding = 4
             config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 6)
+            config.titleLineBreakMode = .byClipping
             config.titleTextAttributesTransformer = pillFontTransformer()
             discoverPill.configuration = config
             discoverPill.contentHorizontalAlignment = .center
@@ -578,29 +595,33 @@ class StoryTitlesHeaderBar: NSObject {
     }
 
     /// Shows or hides the search field below the pill bar with animation.
+    /// Slides the search container in/out by expanding/collapsing the header height.
     func setSearchActive(_ active: Bool) {
+        let changed = isSearchActive != active
         isSearchActive = active
 
         let height: CGFloat = active ? 72 : 36
 
         if active {
             searchContainer.isHidden = false
-            searchContainer.alpha = 0
+            searchContainer.alpha = 1
         }
 
-        UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut) {
-            self.headerHeightConstraint?.constant = height
-            self.headerContainer.superview?.layoutIfNeeded()
-
-            if active {
-                self.searchContainer.alpha = 1
-            } else {
-                self.searchContainer.alpha = 0
+        // Skip animation when state isn't changing to avoid animating
+        // unrelated pending constraint changes (e.g. initial layout).
+        if changed {
+            UIView.animate(withDuration: 0.3, delay: 0, options: active ? .curveEaseOut : .curveEaseIn) {
+                self.headerHeightConstraint?.constant = height
+                self.headerContainer.superview?.layoutIfNeeded()
+            } completion: { _ in
+                if !active {
+                    self.searchContainer.isHidden = true
+                }
             }
-        } completion: { _ in
+        } else {
+            headerHeightConstraint?.constant = height
             if !active {
-                self.searchContainer.isHidden = true
-                self.searchContainer.alpha = 1
+                searchContainer.isHidden = true
             }
         }
     }
