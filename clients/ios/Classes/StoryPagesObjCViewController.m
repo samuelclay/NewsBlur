@@ -2127,10 +2127,15 @@
     UINavigationController *storiesNavController = appDelegate.storyPagesViewController.navigationController;
     UIView *sourceView = storiesNavController.view;
     CGRect sourceRect = CGRectMake(storiesNavController.view.frame.size.width - 59, 0, 20, 20);
-    
+
     [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
 #else
-    [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
+    if (self.isCustomToolbarActive) {
+        UIView *btn = self.storyToolbar.settingsButton;
+        [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceView:btn sourceRect:btn.bounds permittedArrowDirections:UIPopoverArrowDirectionUp];
+    } else {
+        [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
+    }
 #endif
 }
 
