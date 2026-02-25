@@ -570,6 +570,66 @@ class SearchStory:
         return result_ids
 
     @classmethod
+    def query_briefing_custom(cls, feed_ids, phrase, date_start, date_end, limit=10):
+        """Search stories by exact phrase within a date range, for briefing custom sections.
+
+        Wraps the phrase in quotes so ES query_string treats it as an exact phrase match
+        across title and content fields. Scoped to feed_ids and the briefing period.
+
+        Returns list of story_hash strings, or empty list on error.
+        """
+        if not feed_ids or not phrase or not phrase.strip():
+            return []
+
+        try:
+            cls.ES().indices.flush(cls.index_name())
+        except elasticsearch.exceptions.NotFoundError:
+            return []
+        except (elasticsearch.exceptions.ConnectionError, urllib3.exceptions.NewConnectionError):
+            return []
+
+        clean_phrase = phrase.strip().replace('"', "")
+        if not clean_phrase:
+            return []
+        quoted_phrase = '"%s"' % clean_phrase
+        quoted_phrase = cls._sanitize_query(quoted_phrase)
+
+        body = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {"query_string": {"query": quoted_phrase, "default_operator": "AND"}},
+                        {"terms": {"feed_id": feed_ids[:2000]}},
+                        {"range": {"date": {"gte": date_start, "lte": date_end}}},
+                    ]
+                }
+            },
+            "sort": [{"date": {"order": "desc"}}],
+            "from": 0,
+            "size": limit,
+        }
+
+        try:
+            results = cls.ES().search(body=body, index=cls.index_name(), doc_type=cls.doc_type())
+        except elasticsearch.exceptions.ConnectionError as e:
+            logging.debug(" ***> ~FRNo search server for briefing custom query: %s" % e)
+            return []
+        except elasticsearch.exceptions.RequestError as e:
+            logging.debug(" ***> ~FRBriefing custom search query error: %s" % e)
+            return []
+
+        logging.debug(
+            " ---> ~FG~SNBriefing custom search for: ~SB%s~SN, ~SB%s~SN results"
+            % (quoted_phrase, len(results["hits"]["hits"]))
+        )
+
+        try:
+            return [r["_id"] for r in results["hits"]["hits"]]
+        except Exception as e:
+            logging.debug(" ---> ~FRBriefing custom search result error: %s" % e)
+            return []
+
+    @classmethod
     def global_query(cls, query, order, offset, limit, strip=False):
         cls.create_elasticsearch_mapping()
         cls.ES().indices.flush()
