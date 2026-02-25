@@ -14,6 +14,8 @@
 
 @class StoryDetailViewController;
 @class StoryTraverseBar;
+@class StoryToolbar;
+@class StoryToolbarScrollHandler;
 
 @interface StoryPagesObjCViewController : BaseViewController
 <UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate> {
@@ -90,12 +92,15 @@
 @property (nonatomic, readonly) BOOL isNavigationBarHidden;
 @property (nonatomic, readonly) CGFloat navigationBarFadeAlpha;
 @property (nonatomic, readonly) BOOL allowFullscreen;
+@property (nonatomic, readonly) BOOL useCustomToolbar;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
 @property (nonatomic) BOOL temporarilyMarkedUnread;
 @property (nonatomic) CGFloat navBarFadeAccumulator;
 @property (nonatomic) CGFloat traverseFadeAccumulator;
+@property (nonatomic, strong) StoryToolbar *storyToolbar;
+@property (nonatomic, strong) StoryToolbarScrollHandler *toolbarScrollHandler;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
@@ -104,6 +109,8 @@
 - (void)setNavigationBarHidden:(BOOL)hide;
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse;
 - (void)setNavigationBarFadeAlpha:(CGFloat)alpha;
+- (void)setToolbarOffset:(CGFloat)offset;
+- (BOOL)isCustomToolbarActive;
 - (CGFloat)topInsetForNavigationBarAlpha:(CGFloat)alpha;
 
 //- (void)transitionFromFeedDetail;

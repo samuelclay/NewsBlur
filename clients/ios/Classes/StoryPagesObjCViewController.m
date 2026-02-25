@@ -23,7 +23,7 @@
 
 @import WebKit;
 
-@interface StoryPagesObjCViewController ()
+@interface StoryPagesObjCViewController () <StoryToolbarDelegate>
 
 @property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic) BOOL wasNavigationBarHidden;
@@ -213,6 +213,31 @@
                                                    originalStoryButton,
                                                    fontSettingsButton, nil];
     }
+
+    // Custom toolbar for scroll-to-hide (replaces system nav bar when fullscreen)
+    self.toolbarScrollHandler = [[StoryToolbarScrollHandler alloc] init];
+    StoryToolbar *toolbar = [[StoryToolbar alloc] init];
+    [toolbar setupIn:self.view];
+    toolbar.delegate = (id<StoryToolbarDelegate>)self;
+    toolbar.hidden = YES;
+    self.storyToolbar = toolbar;
+
+    // Status bar background covers the area above the safe area so the toolbar
+    // slides behind an opaque surface when translating upward, and so story
+    // content never shows through the status bar.
+    if (!self.statusBarBackgroundView) {
+        UIView *sbBg = [[UIView alloc] init];
+        sbBg.translatesAutoresizingMaskIntoConstraints = NO;
+        sbBg.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
+        [self.view addSubview:sbBg];
+        [NSLayoutConstraint activateConstraints:@[
+            [sbBg.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+            [sbBg.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+            [sbBg.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+            [sbBg.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+        ]];
+        self.statusBarBackgroundView = sbBg;
+    }
     
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
                          options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
@@ -365,6 +390,33 @@
         }
     }
     
+    // Update custom toolbar title with same image used for nav bar
+    [self updateStoryToolbarTitle];
+
+    // On iPhone, always use the custom toolbar instead of the system nav bar.
+    // Wrap in performWithoutAnimation to prevent the toolbar from animating in
+    // from (0,0) during the navigation controller push transition.
+    if (self.useCustomToolbar) {
+        [self.navigationController setNavigationBarHidden:YES animated:animated];
+        [UIView performWithoutAnimation:^{
+            self.storyToolbar.hidden = NO;
+            self.storyToolbar.transform = CGAffineTransformIdentity;
+            [self.toolbarScrollHandler reset];
+            // Ensure toolbar and status bar bg are above the scroll view
+            [self.view bringSubviewToFront:self.storyToolbar];
+            [self.view bringSubviewToFront:self.statusBarBackgroundView];
+            [self.view layoutIfNeeded];
+        }];
+        [self updateStatusBarState];
+        // Force content insets on all pages so content starts below the toolbar
+        [self.currentPage updateContentInsetForNavigationBarAlpha:1.0 maintainVisualPosition:NO force:YES];
+        [self.nextPage updateContentInsetForNavigationBarAlpha:1.0 maintainVisualPosition:NO force:YES];
+        [self.previousPage updateContentInsetForNavigationBarAlpha:1.0 maintainVisualPosition:NO force:YES];
+    } else {
+        [self.navigationController setNavigationBarHidden:NO animated:animated];
+        self.storyToolbar.hidden = YES;
+    }
+
     self.autoscrollView.alpha = 0;
     previousPage.view.hidden = YES;
     // Only show traverse controls when there's an active feed or folder
@@ -372,12 +424,12 @@
     self.traverseView.alpha = hasFeedOrFolder ? 1 : 0;
     self.isAnimatedIntoPlace = NO;
     currentPage.view.hidden = NO;
-    
+
     self.navigationController.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@" "
                                              style:UIBarButtonItemStylePlain
                                              target:nil action:nil];
-    
+
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self reorientPages];
@@ -398,11 +450,13 @@
     [self reorientPages];
     previousPage.view.hidden = NO;
     [self alignScrollViewToCurrentPageIfNeeded];
-    
+    // Correct viewport width on all pages now that the view is at its final size.
+    [appDelegate adjustStoryDetailWebView];
+
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         self.doneInitialDisplay = YES;
     });
-    
+
     [self becomeFirstResponder];
 }
 
@@ -421,6 +475,11 @@
     if (!CGSizeEqualToSize(self.lastScrollViewBoundsSize, self.scrollView.bounds.size)) {
         self.lastScrollViewBoundsSize = self.scrollView.bounds.size;
         [self reorientPages];
+        // Update viewport width on all pages to match the new layout size.
+        // Deferred so web view subviews complete their layout pass first.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self->appDelegate adjustStoryDetailWebView];
+        });
     }
     
     if (self.scrollView.subviews.lastObject != self.currentPage.view) {
@@ -449,14 +508,35 @@
     UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
     navController.interactivePopGestureRecognizer.enabled = YES;
     navController.interactivePopGestureRecognizer.delegate = appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate;
-    
+
 #if !TARGET_OS_MACCATALYST
     [navController setNavigationBarHidden:NO animated:YES];
 #endif
     navController.navigationBar.alpha = 1.0;
     navController.navigationBar.userInteractionEnabled = YES;
-    
+
     self.autoscrollActive = NO;
+
+    // During interactive pop, keep custom toolbar visible until transition completes.
+    // If cancelled, re-hide the system nav bar and keep our toolbar.
+    if (self.useCustomToolbar && self.transitionCoordinator.isInteractive) {
+        [self.transitionCoordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            if (context.isCancelled) {
+                // Gesture cancelled — restore custom toolbar state
+                [navController setNavigationBarHidden:YES animated:NO];
+            } else {
+                // Transition completed — clean up custom toolbar
+                self.storyToolbar.hidden = YES;
+                self.storyToolbar.transform = CGAffineTransformIdentity;
+                [self.toolbarScrollHandler reset];
+            }
+        }];
+    } else {
+        // Non-interactive (back button, programmatic pop) — hide immediately
+        self.storyToolbar.hidden = YES;
+        self.storyToolbar.transform = CGAffineTransformIdentity;
+        [self.toolbarScrollHandler reset];
+    }
 }
 
 - (BOOL)becomeFirstResponder {
@@ -514,10 +594,23 @@
 }
 
 - (BOOL)isNavigationBarHidden {
+    if (self.isCustomToolbarActive) {
+        return self.toolbarScrollHandler.toolbarOffset >= self.toolbarScrollHandler.toolbarHeight - 1;
+    }
     return self.isNavigationBarFaded;
 }
 
 - (void)updateStatusBarState {
+    // On iPhone the status bar background must always be visible so the toolbar
+    // slides behind an opaque surface. Use useCustomToolbar (not isCustomToolbarActive)
+    // because the toolbar may still be hidden during early viewWillAppear setup.
+    if (self.useCustomToolbar) {
+        [self.statusBarBackgroundView.layer removeAllAnimations];
+        self.statusBarBackgroundView.hidden = NO;
+        self.statusBarBackgroundView.alpha = 1.0;
+        return;
+    }
+
     BOOL shouldShow = !self.shouldHideStatusBar && self.isNavigationBarHidden && appDelegate.isPortrait;
     CGFloat targetAlpha = shouldShow ? 1.0 : 0.0;
     if (shouldShow) {
@@ -526,7 +619,7 @@
     [UIView animateWithDuration:0.15 animations:^{
         self.statusBarBackgroundView.alpha = targetAlpha;
     } completion:^(BOOL finished) {
-        if (!shouldShow) {
+        if (finished && !shouldShow) {
             self.statusBarBackgroundView.hidden = YES;
         }
     }];
@@ -547,6 +640,10 @@
     BOOL storyFullScreen = [preferences boolForKey:@"story_full_screen"];
     BOOL result = (storyFullScreen || self.autoscrollAvailable) && !self.forceNavigationBarShown;
     return result;
+}
+
+- (BOOL)useCustomToolbar {
+    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone;
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide {
@@ -606,12 +703,22 @@
         });
     }
     
-    [UIView animateWithDuration:0.2 animations:^{
-        [self setNavigationBarFadeAlpha:(hide ? 0.0 : 1.0)];
-    } completion:^(BOOL finished) {
-        self.currentlyTogglingNavigationBar = NO;
-        [self updateStatusBarState];
-    }];
+    if (self.isCustomToolbarActive) {
+        CGFloat targetOffset = hide ? self.toolbarScrollHandler.toolbarHeight : 0;
+        [UIView animateWithDuration:0.2 animations:^{
+            [self setToolbarOffset:targetOffset];
+        } completion:^(BOOL finished) {
+            self.currentlyTogglingNavigationBar = NO;
+            [self updateStatusBarState];
+        }];
+    } else {
+        [UIView animateWithDuration:0.2 animations:^{
+            [self setNavigationBarFadeAlpha:(hide ? 0.0 : 1.0)];
+        } completion:^(BOOL finished) {
+            self.currentlyTogglingNavigationBar = NO;
+            [self updateStatusBarState];
+        }];
+    }
 }
 
 - (void)setNavigationBarFadeAlpha:(CGFloat)alpha {
@@ -676,17 +783,135 @@
     self.isUpdatingNavigationBarFade = NO;
 }
 
+#pragma mark - Custom Toolbar (Scroll-to-hide)
+
+- (BOOL)isCustomToolbarActive {
+    return !self.storyToolbar.hidden;
+}
+
+- (void)setToolbarOffset:(CGFloat)offset {
+    CGFloat clamped = MAX(0, MIN(self.toolbarScrollHandler.toolbarHeight, offset));
+    [self.toolbarScrollHandler setOffset:clamped];
+    self.storyToolbar.transform = CGAffineTransformMakeTranslation(0, -clamped);
+    [self updateStatusBarState];
+    [self.currentPage updateFeedTitleGradientPosition];
+
+    // Keep adjacent pages in sync so there's no jump when swiping to them.
+    // Only adjust pages that are at the top (not user-scrolled).
+    for (StoryDetailViewController *page in @[self.nextPage, self.previousPage]) {
+        if (!page || page == self.currentPage) continue;
+        UIScrollView *sv = page.webView.scrollView;
+        CGFloat topRest = -sv.contentInset.top;
+        CGFloat maxAdjustedTop = topRest + self.toolbarScrollHandler.toolbarHeight;
+        CGFloat targetOffset = topRest + clamped;
+        // Page is "at top" if within the toolbar adjustment range (topRest to topRest+toolbarHeight)
+        if (sv.contentOffset.y <= maxAdjustedTop + 1) {
+            sv.contentOffset = CGPointMake(sv.contentOffset.x, targetOffset);
+            [page updateFeedTitleGradientPosition];
+        }
+    }
+}
+
+- (void)updateStoryToolbarTitle {
+    UIImage *titleImage = nil;
+    NSString *titleText = nil;
+
+    if (!appDelegate.storiesCollection.isSocialView) {
+        if (appDelegate.storiesCollection.isSocialRiverView &&
+            [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_global"]) {
+            titleImage = [UIImage imageNamed:@"global-shares"];
+            titleText = @"Global Shared Stories";
+        } else if (appDelegate.storiesCollection.isSocialRiverView &&
+                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
+            titleImage = [UIImage imageNamed:@"all-shares"];
+            titleText = @"All Shared Stories";
+        } else if (appDelegate.storiesCollection.isRiverView &&
+                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
+            titleImage = [UIImage imageNamed:@"all-stories"];
+            titleText = @"All Site Stories";
+        } else if (appDelegate.storiesCollection.isRiverView &&
+                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+            titleImage = [UIImage imageNamed:@"saved-stories"];
+            titleText = @"Dashboard";
+        } else if (appDelegate.storiesCollection.isRiverView &&
+                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+            titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
+            titleText = @"Infrequent Stories";
+        } else if (appDelegate.storiesCollection.isSavedView &&
+                   appDelegate.storiesCollection.activeSavedStoryTag) {
+            titleImage = [UIImage imageNamed:@"tag.png"];
+            titleText = appDelegate.storiesCollection.activeSavedStoryTag;
+        } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
+            titleImage = [UIImage imageNamed:@"g_icn_folder_widget.png"];
+            titleText = @"Widget Stories";
+        } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
+            titleImage = [UIImage imageNamed:@"indicator-unread"];
+            titleText = @"Read Stories";
+        } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
+            titleImage = [UIImage imageNamed:@"search"];
+            titleText = @"Saved Searches";
+        } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
+            titleImage = [UIImage imageNamed:@"saved-stories"];
+            titleText = @"Saved Stories";
+        } else if (appDelegate.storiesCollection.isRiverView) {
+            NSString *folderName = appDelegate.storiesCollection.activeFolder;
+            NSDictionary *customIcon = appDelegate.dictFolderIcons[folderName];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(22, 22)];
+            }
+            if (!titleImage) {
+                titleImage = [UIImage imageNamed:@"folder-open"];
+            }
+            titleText = folderName;
+        } else {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                                   [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+            NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+            NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+            }
+            if (!titleImage) {
+                titleImage = [appDelegate getFavicon:feedIdStr];
+            }
+            titleText = [feed objectForKey:@"feed_title"];
+        }
+    } else {
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                               [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
+        NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+        if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+            titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(22, 22)];
+        }
+        if (!titleImage) {
+            titleImage = [appDelegate getFavicon:feedIdStr];
+            titleImage = [Utilities roundCorneredImage:titleImage radius:6];
+        }
+        titleText = [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"];
+    }
+
+    [self.storyToolbar updateTitleWithImage:titleImage text:titleText];
+}
+
+#pragma mark - StoryToolbarDelegate
+
+- (void)toolbarDidTapBack {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)toolbarDidTapSettings {
+    [self toggleFontSize:self.storyToolbar.settingsButton];
+}
+
+- (void)toolbarDidTapBrowser {
+    [self showOriginalSubview:self.storyToolbar.browserButton];
+}
+
 - (CGFloat)topInsetForNavigationBarAlpha:(CGFloat)alpha {
     if (!appDelegate.isCompactWidth && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
         return 0;
     }
 
-    UINavigationController *navController = self.navigationController;
-    if (!navController) {
-        return 0;
-    }
-
-    CGFloat navBarHeight = navController.navigationBar.frame.size.height;
     UIWindow *window = self.view.window ?: appDelegate.detailViewController.view.window;
 
     // Use window's safe area insets for the status bar area (most reliable)
@@ -700,6 +925,21 @@
     if (safeAreaTop <= 0) {
         safeAreaTop = 59;  // Fallback for notched devices
     }
+
+    // When custom toolbar is used (always on iPhone), content inset is always fixed at
+    // safeAreaTop + toolbarHeight. This keeps insets stable during scroll (no jitter).
+    // When toolbar is hidden and a new story loads, the initial scroll position is
+    // adjusted instead (see setStoryFromScroll:).
+    if (self.useCustomToolbar) {
+        return safeAreaTop + self.toolbarScrollHandler.toolbarHeight;
+    }
+
+    UINavigationController *navController = self.navigationController;
+    if (!navController) {
+        return 0;
+    }
+
+    CGFloat navBarHeight = navController.navigationBar.frame.size.height;
 
     // When nav bar is fully visible (alpha=1), include full nav bar height
     // When nav bar is faded out (alpha=0), just include safe area top
@@ -941,6 +1181,8 @@
     [self setTextButton];
     [self updateStoriesTheme];
     [self updateStatusBarTheme];
+    [self.storyToolbar updateTheme];
+    self.statusBarBackgroundView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
 }
 
 - (void)applyToolbarButtonTint {
@@ -1222,6 +1464,10 @@
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     self.isDraggingScrollview = YES;
+    // Prevent diagonal scrolling: disable web view scroll and cancel in-progress gestures
+    if (self.isHorizontal) {
+        [self setWebViewsScrollEnabled:NO];
+    }
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
@@ -1268,6 +1514,7 @@
 {
     [self lockScrollViewToNearestPage];
     self.isDraggingScrollview = NO;
+    [self setWebViewsScrollEnabled:YES];
     if (appDelegate.feedDetailViewController.suppressMarkAsRead) {
         return;
     }
@@ -1278,6 +1525,20 @@
                                                   pageAmount:pageAmount];
     self.scrollingToPage = nearestNumber;
     [self setStoryFromScroll];
+}
+
+- (void)setWebViewsScrollEnabled:(BOOL)enabled {
+    for (StoryDetailViewController *page in @[currentPage, nextPage, previousPage]) {
+        if (!page) continue;
+        UIScrollView *sv = page.webView.scrollView;
+        sv.scrollEnabled = enabled;
+        if (!enabled) {
+            // Force-cancel any in-progress pan gesture by toggling enabled.
+            // This transitions the gesture to .cancelled then back to .possible.
+            sv.panGestureRecognizer.enabled = NO;
+            sv.panGestureRecognizer.enabled = YES;
+        }
+    }
 }
 
 - (void)lockScrollViewToNearestPage {
@@ -1585,8 +1846,30 @@
             [[ReadTimeTracker shared] startTrackingWithStoryHash:newHash];
         }
 
-        // Sync the new current page's content inset and gradient with current nav bar state
-        [currentPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:YES];
+        // Reset scroll direction tracking so toolbar can respond to first scroll-up
+        currentPage.lastDragDirectionDown = NO;
+
+        // Sync all pages' content insets and scroll positions with current toolbar state
+        [currentPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:NO force:YES];
+        [nextPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:NO force:YES];
+        [previousPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:NO force:YES];
+
+        if (self.isCustomToolbarActive) {
+            CGFloat toolbarOffset = self.toolbarScrollHandler.toolbarOffset;
+            CGFloat toolbarHeight = self.toolbarScrollHandler.toolbarHeight;
+            // Adjust all pages' scroll positions for toolbar state
+            for (StoryDetailViewController *page in @[currentPage, nextPage, previousPage]) {
+                if (!page) continue;
+                UIScrollView *sv = page.webView.scrollView;
+                CGFloat topRest = -sv.contentInset.top;
+                CGFloat maxAdjustedTop = topRest + toolbarHeight;
+                CGFloat targetOffset = topRest + toolbarOffset;
+                if (sv.contentOffset.y <= maxAdjustedTop + 1) {
+                    sv.contentOffset = CGPointMake(sv.contentOffset.x, targetOffset);
+                }
+            }
+        }
+
         [currentPage drawFeedGradient];
     }
     
@@ -1851,10 +2134,15 @@
     UINavigationController *storiesNavController = appDelegate.storyPagesViewController.navigationController;
     UIView *sourceView = storiesNavController.view;
     CGRect sourceRect = CGRectMake(storiesNavController.view.frame.size.width - 59, 0, 20, 20);
-    
+
     [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
 #else
-    [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
+    if (self.isCustomToolbarActive) {
+        UIView *btn = self.storyToolbar.settingsButton;
+        [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceView:btn sourceRect:btn.bounds permittedArrowDirections:UIPopoverArrowDirectionUp];
+    } else {
+        [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
+    }
 #endif
 }
 
@@ -1877,11 +2165,22 @@
 }
 
 - (void)changedFullscreen {
-    BOOL wantHidden = self.allowFullscreen;
-    
-//    self.navigationController.hidesBarsOnSwipe = self.allowFullscreen;
-    
-    [self setNavigationBarHidden:wantHidden alsoTraverse:YES];
+    if (self.useCustomToolbar) {
+        // Custom toolbar is always active on iPhone; fullscreen setting only controls scroll-to-hide.
+        // When fullscreen is off, ensure toolbar is fully visible.
+        if (!self.allowFullscreen) {
+            [self.toolbarScrollHandler reset];
+            [self setToolbarOffset:0];
+        }
+    } else {
+        BOOL wantHidden = self.allowFullscreen;
+        if (wantHidden) {
+            [self.navigationController setNavigationBarHidden:YES animated:YES];
+        } else {
+            [self.navigationController setNavigationBarHidden:NO animated:YES];
+        }
+        [self setNavigationBarHidden:wantHidden alsoTraverse:YES];
+    }
 }
 
 - (void)changedAutoscroll {
