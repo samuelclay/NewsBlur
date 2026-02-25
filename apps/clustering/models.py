@@ -625,19 +625,16 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
 
     from apps.rss_feeds.models import Feed, MStory
 
-    # Determine read status for off-page members via Redis
+    # Determine read status for off-page members via Redis.
+    # Always check Redis directly because the unread_feed_story_hashes from
+    # the view only covers feeds on the current page, not other feeds that
+    # cluster members may belong to.
     off_page_read_hashes = set()
-    if off_page_hashes and classifiers_context:
-        read_filter = classifiers_context.get("read_filter", "unread")
-        unread_hashes = classifiers_context.get("unread_feed_story_hashes")
+    if off_page_hashes:
+        read_filter = classifiers_context.get("read_filter", "unread") if classifiers_context else "unread"
         if read_filter == "unread":
-            # In unread mode, all displayed stories are unread
             off_page_read_hashes = set()
-        elif unread_hashes is not None:
-            # In "all" mode, check against unread set
-            off_page_read_hashes = set(h for h in off_page_hashes if h not in unread_hashes)
         else:
-            # Fallback: check Redis directly
             read_pipe = r.pipeline()
             read_stories_key = "RS:%s" % user.pk
             for h in off_page_hashes:
@@ -649,9 +646,9 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
     if off_page_hashes:
         # Build the list of fields to fetch from MongoDB
         only_fields = ["story_hash", "story_feed_id", "story_title", "story_date",
-                        "story_author_name", "story_tags"]
+                        "story_author_name", "story_tags", "image_urls"]
         if include_expanded_data:
-            only_fields.extend(["image_urls", "story_content_z"])
+            only_fields.append("story_content_z")
 
         off_page_list = list(off_page_hashes)
         for batch_start in range(0, len(off_page_list), 100):
@@ -702,12 +699,13 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
                     meta["score"] = 0
                     meta["read_status"] = 0
 
-                # Include expanded data (images, content) if requested
+                # Always include image URLs for cluster stories
+                image_urls = story.image_urls or []
+                meta["image_urls"] = image_urls
+                meta["secure_image_thumbnails"] = Feed.secure_image_thumbnails(image_urls) if image_urls else {}
+
+                # Include content preview only for expanded mode
                 if include_expanded_data:
-                    image_urls = story.image_urls or []
-                    meta["image_urls"] = image_urls
-                    meta["secure_image_thumbnails"] = Feed.secure_image_thumbnails(image_urls) if image_urls else {}
-                    # Decompress and truncate story content
                     content = ""
                     if hasattr(story, "story_content_z") and story.story_content_z:
                         try:
@@ -748,18 +746,12 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
         for s in page_group[1:]:
             clustered_hashes.add(s["story_hash"])
 
-        # Build cluster_stories from ALL other members (on-page and off-page).
-        # Dedup by GUID: show one story per unique GUID, skipping the
-        # representative's GUID and any duplicate GUIDs already seen.
-        seen_guids = {story_guid_hash(representative["story_hash"])}
+        # Build cluster_stories from ALL other members (on-page and off-page),
+        # skipping only the representative itself.
         cluster_stories = []
         for member_hash in all_members:
             if member_hash == representative["story_hash"]:
                 continue
-            guid = story_guid_hash(member_hash)
-            if guid in seen_guids:
-                continue
-            seen_guids.add(guid)
 
             if member_hash in page_stories_by_hash:
                 # On-page member — already has intelligence, score, read_status
@@ -777,9 +769,9 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
                     "score": s.get("score", 0),
                     "read_status": s.get("read_status", 0),
                 }
+                entry["image_urls"] = s.get("image_urls", [])
+                entry["secure_image_thumbnails"] = s.get("secure_image_thumbnails", {})
                 if include_expanded_data:
-                    entry["image_urls"] = s.get("image_urls", [])
-                    entry["secure_image_thumbnails"] = s.get("secure_image_thumbnails", {})
                     content = s.get("story_content", "")
                     if content and len(content) > 500:
                         content = content[:500]
