@@ -334,39 +334,80 @@ def select_briefing_stories(
     result = enriched[:max_stories]
 
     # scoring.py: Reserve slots for stories matching custom section prompts.
-    # Search through remaining candidates for keyword matches in story titles.
+    # Use Elasticsearch exact phrase search across title AND content, falling
+    # back to substring matching on titles if ES is unavailable or user is not indexed.
     if custom_section_prompts and active_sections:
         selected_hashes = {s["story_hash"] for s in result}
-        remaining = [s for s in enriched[max_stories:] if s["story_hash"] not in selected_hashes]
+        all_enriched_by_hash = {s["story_hash"]: s for s in enriched}
+
+        es_available = False
+        try:
+            from apps.search.models import MUserSearch
+
+            user_search = MUserSearch.get_user(user_id, create=False)
+            es_available = user_search and user_search.subscriptions_indexed
+        except Exception:
+            pass
 
         for i, prompt in enumerate(custom_section_prompts):
             custom_key = "custom_%d" % (i + 1)
             if not active_sections.get(custom_key, False) or not prompt:
                 continue
-            keywords = [w.lower() for w in prompt.split() if len(w) >= 3]
-            if not keywords:
-                continue
-            logging.debug(
-                " ---> Briefing scoring: %s keywords=%s (from prompt: %s)" % (custom_key, keywords, prompt)
-            )
+
+            matched_hashes = []
+
+            if es_available:
+                try:
+                    from apps.search.models import SearchStory
+
+                    es_hashes = SearchStory.query_briefing_custom(
+                        feed_ids, prompt, period_start, period_end, limit=10
+                    )
+                    matched_hashes = [h for h in es_hashes if h in all_enriched_by_hash]
+                    logging.debug(
+                        " ---> Briefing scoring: %s ES phrase search '%s' found %s matches (%s in candidates)"
+                        % (custom_key, prompt, len(es_hashes), len(matched_hashes))
+                    )
+                except Exception as e:
+                    logging.debug(
+                        " ---> Briefing scoring: %s ES search failed, falling back to keyword: %s"
+                        % (custom_key, e)
+                    )
+                    matched_hashes = []
+
+            # Fallback: substring matching on titles if ES unavailable or returned nothing
+            if not matched_hashes:
+                keywords = [w.lower() for w in prompt.split() if len(w) >= 3]
+                if keywords:
+                    for s in enriched:
+                        story = stories_by_hash.get(s["story_hash"])
+                        if not story or not story.story_title:
+                            continue
+                        title_lower = story.story_title.lower()
+                        if all(kw in title_lower for kw in keywords):
+                            matched_hashes.append(s["story_hash"])
+                    logging.debug(
+                        " ---> Briefing scoring: %s keyword fallback '%s' found %s matches"
+                        % (custom_key, prompt, len(matched_hashes))
+                    )
+
             reserved = 0
-            for s in remaining:
+            for story_hash in matched_hashes:
                 if reserved >= 2:
                     break
-                story = stories_by_hash.get(s["story_hash"])
-                if not story or not story.story_title:
-                    continue
-                title_lower = story.story_title.lower()
-                if all(kw in title_lower for kw in keywords):
-                    matched_kws = [kw for kw in keywords if kw in title_lower]
-                    logging.debug(
-                        " ---> Briefing scoring: %s matched '%s' (keywords: %s)"
-                        % (custom_key, story.story_title, matched_kws)
-                    )
+                if story_hash in selected_hashes:
+                    for s in result:
+                        if s["story_hash"] == story_hash:
+                            s["category"] = custom_key
+                            reserved += 1
+                            break
+                else:
+                    s = all_enriched_by_hash[story_hash]
                     s["category"] = custom_key
                     result.append(s)
-                    selected_hashes.add(s["story_hash"])
+                    selected_hashes.add(story_hash)
                     reserved += 1
+
             if reserved > 0:
                 logging.debug(
                     " ---> Briefing scoring: reserved %s stories for %s (%s)" % (reserved, custom_key, prompt)
