@@ -2282,6 +2282,19 @@
         // Initialize content inset for edge-to-edge layout
         [self updateContentInsetForNavigationBarAlpha:alpha];
 
+        // Adjust initial scroll position for hidden toolbar. After setting the
+        // inset, the scroll view rests at -contentInset.top (full toolbar space).
+        // If the toolbar is partially/fully hidden, scroll down to fill the gap.
+        StoryPagesObjCViewController *pagesVC = self.appDelegate.storyPagesViewController;
+        if (pagesVC.isCustomToolbarActive) {
+            CGFloat toolbarOffset = pagesVC.toolbarScrollHandler.toolbarOffset;
+            if (toolbarOffset > 0) {
+                UIScrollView *sv = self.webView.scrollView;
+                CGFloat topRest = -sv.contentInset.top;
+                sv.contentOffset = CGPointMake(sv.contentOffset.x, topRest + toolbarOffset);
+            }
+        }
+
         if (self == self.appDelegate.storyPagesViewController.currentPage && !self.appDelegate.detailViewController.isPhoneOrCompact && self.appDelegate.detailViewController.storyTitlesInGridView) {
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 //                [self.appDelegate.feedDetailViewController changedStoryHeight:self.webView.scrollView.contentSize.height];
