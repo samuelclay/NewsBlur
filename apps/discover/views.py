@@ -1210,6 +1210,9 @@ def link_popular_feed(request):
         # Check if a Feed with this address already exists
         existing = Feed.objects.filter(feed_address=pf.feed_url, branch_from_feed__isnull=True).first()
         if existing:
+            if pf.title and (not existing.feed_title or existing.feed_title == "[Untitled]"):
+                existing.feed_title = pf.title
+                existing.save(update_fields=["feed_title"])
             pf.feed_id = existing.pk
             pf.save(update_fields=["feed"])
             return {"code": 1, "feed_id": existing.pk}
