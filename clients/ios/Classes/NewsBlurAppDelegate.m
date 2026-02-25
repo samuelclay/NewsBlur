@@ -1545,25 +1545,6 @@
     }
 }
 
-- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId {
-    if (@available(iOS 15.0, *)) {
-        if (!self.isPhone) {
-            DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
-            discoverVC.modalPresentationStyle = UIModalPresentationPopover;
-            discoverVC.preferredContentSize = CGSizeMake(500, 550);
-
-            UIPopoverPresentationController *popover = discoverVC.popoverPresentationController;
-            popover.delegate = self;
-            popover.barButtonItem = self.feedDetailViewController.settingsBarButton;
-            popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
-
-            [self.navigationControllerForPopover presentViewController:discoverVC animated:YES completion:nil];
-        } else {
-            [self openDiscoverFeedsDialog:feedId];
-        }
-    }
-}
-
 - (void)openDiscoverFeedsDialogWithFeedIds:(NSArray *)feedIds {
     if (@available(iOS 15.0, *)) {
         NSMutableArray *feedIdStrings = [NSMutableArray array];
@@ -1588,24 +1569,29 @@
     }
 }
 
+- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId {
+    if (@available(iOS 15.0, *)) {
+        if (!self.isPhone) {
+            DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
+            
+            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) barButtonItem:self.feedDetailViewController.settingsBarButton];
+        } else {
+            [self openDiscoverFeedsDialog:feedId];
+        }
+    }
+}
+
 - (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds {
     if (@available(iOS 15.0, *)) {
         NSMutableArray *feedIdStrings = [NSMutableArray array];
         for (id feedId in feedIds) {
             [feedIdStrings addObject:[NSString stringWithFormat:@"%@", feedId]];
         }
-
+        
         if (!self.isPhone) {
             DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIdStrings];
-            discoverVC.modalPresentationStyle = UIModalPresentationPopover;
-            discoverVC.preferredContentSize = CGSizeMake(500, 550);
-
-            UIPopoverPresentationController *popover = discoverVC.popoverPresentationController;
-            popover.delegate = self;
-            popover.barButtonItem = self.feedDetailViewController.settingsBarButton;
-            popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
-
-            [self.navigationControllerForPopover presentViewController:discoverVC animated:YES completion:nil];
+            
+            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) barButtonItem:self.feedDetailViewController.settingsBarButton];
         } else {
             [self openDiscoverFeedsDialogWithFeedIds:feedIds];
         }
