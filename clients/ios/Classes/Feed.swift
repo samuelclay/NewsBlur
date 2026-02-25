@@ -8,13 +8,13 @@
 
 import Foundation
 
-// The Feed, Story, and StoryCache classes could be quite useful going forward; Rather than calling getStory() to get the dictionary, could have a variation that returns a Story instance. Could fetch from the cache if available, or make and cache one from the dictionary. Would need to remove it from the cache when changing anything about a story. Could perhaps make the cache part of StoriesCollection.
+// The Folder, Feed, Story, and StoryCache classes could be quite useful going forward; Rather than calling getStory() to get the dictionary, could have a variation that returns a Story instance. Could fetch from the cache if available, or make and cache one from the dictionary. Would need to remove it from the cache when changing anything about a story. Could perhaps make the cache part of StoriesCollection.
 
 /// A dictionary with the most broad key and value types, common in ObjC code.
 typealias AnyDictionary = [AnyHashable : Any]
 
 /// A feed, wrapping the dictionary representation.
-class Feed: Identifiable {
+@MainActor class Feed: Identifiable {
     let id: String
     var name = "<deleted>"
     var subscribers = 0
@@ -184,12 +184,12 @@ class Feed: Identifiable {
 }
 
 extension Feed: Equatable {
-    static func == (lhs: Feed, rhs: Feed) -> Bool {
+    nonisolated static func == (lhs: Feed, rhs: Feed) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
-extension Feed: CustomDebugStringConvertible {
+extension Feed: @preconcurrency CustomDebugStringConvertible {
     var debugDescription: String {
         return "Feed \"\(name)\" (\(id))"
     }

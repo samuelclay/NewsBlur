@@ -1,3 +1,5 @@
+"""Statistics views: dashboard graphs, feedback tables, and revenue reports."""
+
 import base64
 import datetime
 import pickle

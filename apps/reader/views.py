@@ -1,3 +1,10 @@
+"""Core feed reader views: subscriptions, story loading, folder management, and mark-read.
+
+Handles the primary API endpoints for the NewsBlur reader -- loading feeds and
+stories, managing folders and subscriptions, marking stories as read/unread/saved,
+and river (multi-feed) story views.
+"""
+
 import base64
 import concurrent
 import datetime
@@ -1055,6 +1062,7 @@ def load_single_feed(request, feed_id):
         classifier_tags=classifier_tags,
         classifier_texts=classifier_texts,
         classifier_urls=classifier_urls,
+        folder_feed_ids=folder_feed_ids,
     )
     checkpoint3 = time.time()
 
@@ -1248,7 +1256,25 @@ def load_single_feed(request, feed_id):
         if user_prefs.get("story_clustering", True):
             from apps.clustering.models import apply_clustering_to_stories
 
-            stories = apply_clustering_to_stories(stories, user)
+            classifiers_context = {
+                "classifier_feeds": classifier_feeds,
+                "classifier_authors": classifier_authors,
+                "classifier_titles": classifier_titles,
+                "classifier_tags": classifier_tags,
+                "classifier_texts": classifier_texts,
+                "classifier_urls": classifier_urls,
+                "folder_feed_ids": folder_feed_ids,
+                "user_is_pro": user_is_pro,
+                "unread_feed_story_hashes": unread_story_hashes,
+                "read_filter": read_filter,
+            }
+            include_expanded = user_prefs.get("cluster_preview_style") == "expanded"
+            stories = apply_clustering_to_stories(
+                stories,
+                user,
+                classifiers_context=classifiers_context,
+                include_expanded_data=include_expanded,
+            )
 
     data = dict(
         stories=stories,
@@ -2372,7 +2398,25 @@ def load_river_stories__redis(request):
         if user_preferences.get("story_clustering", True):
             from apps.clustering.models import apply_clustering_to_stories
 
-            stories = apply_clustering_to_stories(stories, user)
+            classifiers_context = {
+                "classifier_feeds": classifier_feeds,
+                "classifier_authors": classifier_authors,
+                "classifier_titles": classifier_titles,
+                "classifier_tags": classifier_tags,
+                "classifier_texts": classifier_texts,
+                "classifier_urls": classifier_urls,
+                "folder_feed_ids": folder_feed_ids,
+                "user_is_pro": user_is_pro,
+                "unread_feed_story_hashes": unread_feed_story_hashes,
+                "read_filter": read_filter,
+            }
+            include_expanded = user_preferences.get("cluster_preview_style") == "expanded"
+            stories = apply_clustering_to_stories(
+                stories,
+                user,
+                classifiers_context=classifiers_context,
+                include_expanded_data=include_expanded,
+            )
 
     diff = time.time() - start
     timediff = round(float(diff), 2)
@@ -2732,7 +2776,10 @@ def mark_story_hashes_as_read(request):
     if request.user.profile.is_archive:
         user_prefs = json.decode(request.user.profile.preferences or "{}")
         if user_prefs.get("cluster_mark_read", False):
-            from apps.clustering.models import get_cluster_for_story, get_cluster_members
+            from apps.clustering.models import (
+                get_cluster_for_story,
+                get_cluster_members,
+            )
 
             seen = set(story_hashes)
             for story_hash in list(story_hashes):
@@ -4809,6 +4856,14 @@ def load_cluster_stories(request):
     from apps.clustering.models import get_cluster_members
 
     member_hashes = get_cluster_members(cluster_id)
+    if not member_hashes:
+        return {"code": 1, "stories": []}
+
+    # Only include cluster members from feeds the user is subscribed to
+    user_feed_ids = set(
+        UserSubscription.objects.filter(user=user, active=True).values_list("feed_id", flat=True)
+    )
+    member_hashes = [h for h in member_hashes if int(h.split(":", 1)[0]) in user_feed_ids]
     if not member_hashes:
         return {"code": 1, "stories": []}
 

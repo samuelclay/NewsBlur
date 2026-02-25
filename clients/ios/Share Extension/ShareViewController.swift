@@ -105,7 +105,7 @@ class ShareViewController: UIViewController {
         if let foldersArray = prefs.object(forKey: "share:folders") as? [String] {
             folders = foldersArray
             
-            folders.removeAll { ["river_global", "river_blurblogs", "infrequent", "widget_stories", "read_stories", "saved_searches", "saved_stories"].contains($0) }
+            folders.removeAll { ["river_global", "river_blurblogs", "dashboard", "infrequent", "widget_stories", "read_stories", "saved_searches", "saved_stories"].contains($0) }
         }
         
         updateSaveButtonState()
@@ -440,7 +440,8 @@ extension ShareViewController: URLSessionTaskDelegate {
         let folderSuffix = addedToFolder.map { " to \($0)" } ?? ""
 
         if let error {
-            print("task completed with error: \(error)")
+            NSLog("task completed with error: \(error)")
+            
             NSLog("⚾️ share error: \(error)")
 
             switch mode {
@@ -452,7 +453,8 @@ extension ShareViewController: URLSessionTaskDelegate {
                 content.body = "Failed to add \(siteName)\(folderSuffix)"
             }
         } else {
-            print("task completed successfully: \(String(describing: task.response))")
+            NSLog("task completed successfully: \(String(describing: task.response))")
+            
             NSLog("⚾️ share success: \(String(describing: task.response))")
 
             switch mode {
@@ -473,7 +475,7 @@ extension ShareViewController: URLSessionTaskDelegate {
 
         notificationCenter.add(request) { (error) in
             if let error {
-                print("notification error: \(error)")
+                NSLog("notification error: \(error)")
             }
         }
     }

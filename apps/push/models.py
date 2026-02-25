@@ -1,3 +1,5 @@
+"""PubSubHubbub models: manage push subscriptions for real-time feed updates."""
+
 # Adapted from djpubsubhubbub. See License: http://git.participatoryculture.org/djpubsubhubbub/tree/LICENSE
 
 import hashlib

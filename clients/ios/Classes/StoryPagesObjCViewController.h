@@ -13,6 +13,9 @@
 #import "NBNotifier.h"
 
 @class StoryDetailViewController;
+@class StoryTraverseBar;
+@class StoryToolbar;
+@class StoryToolbarScrollHandler;
 
 @interface StoryPagesObjCViewController : BaseViewController
 <UIScrollViewDelegate, UIPopoverControllerDelegate, UIPopoverPresentationControllerDelegate, UIGestureRecognizerDelegate> {
@@ -21,7 +24,6 @@
     UIButton *buttonNext;
     UIButton *buttonText;
     UIBarButtonItem *markReadBarButton;
-    UIBarButtonItem *separatorBarButton2;
     UIActivityIndicatorView *loadingIndicator;
     UIBarButtonItem *buttonBack;
     UIView *traverseView;
@@ -63,10 +65,6 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic) IBOutlet UIView *bottomSize;
 @property (nonatomic) IBOutlet NSLayoutConstraint *bottomSizeHeightConstraint;
-@property (nonatomic) IBOutlet UIBarButtonItem * spacerBarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * spacer2BarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * spacer3BarButton;
-@property (nonatomic) IBOutlet UIBarButtonItem * separatorBarButton;
 @property (nonatomic) IBOutlet UIView *traverseView;
 @property (nonatomic) IBOutlet UIView *progressView;
 @property (nonatomic) IBOutlet UIView *progressViewContainer;
@@ -81,6 +79,8 @@
 @property (nonatomic) NSTimeInterval autoscrollSpeed;
 @property (readwrite) BOOL traversePinned;
 @property (readwrite) BOOL traverseFloating;
+@property (nonatomic, readonly) CGFloat traverseBottomGap;
+@property (nonatomic, strong) StoryTraverseBar *traverseBar;
 @property (readwrite) CGFloat inTouchMove;
 @property (assign) BOOL isDraggingScrollview;
 @property (assign) BOOL isAnimatedIntoPlace;
@@ -90,11 +90,17 @@
 @property (nonatomic) NSInteger scrollingToPage;
 @property (nonatomic, readonly) BOOL shouldHideStatusBar;
 @property (nonatomic, readonly) BOOL isNavigationBarHidden;
+@property (nonatomic, readonly) CGFloat navigationBarFadeAlpha;
 @property (nonatomic, readonly) BOOL allowFullscreen;
+@property (nonatomic, readonly) BOOL useCustomToolbar;
 @property (nonatomic) BOOL forceNavigationBarShown;
 @property (nonatomic) BOOL currentlyTogglingNavigationBar;
 @property (nonatomic, readonly) BOOL isHorizontal;
 @property (nonatomic) BOOL temporarilyMarkedUnread;
+@property (nonatomic) CGFloat navBarFadeAccumulator;
+@property (nonatomic) CGFloat traverseFadeAccumulator;
+@property (nonatomic, strong) StoryToolbar *storyToolbar;
+@property (nonatomic, strong) StoryToolbarScrollHandler *toolbarScrollHandler;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
@@ -102,6 +108,10 @@
 - (void)updateStatusBarState;
 - (void)setNavigationBarHidden:(BOOL)hide;
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse;
+- (void)setNavigationBarFadeAlpha:(CGFloat)alpha;
+- (void)setToolbarOffset:(CGFloat)offset;
+- (BOOL)isCustomToolbarActive;
+- (CGFloat)topInsetForNavigationBarAlpha:(CGFloat)alpha;
 
 //- (void)transitionFromFeedDetail;
 - (void)resetPages;

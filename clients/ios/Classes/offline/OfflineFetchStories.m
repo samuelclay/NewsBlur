@@ -42,7 +42,6 @@
         ![self.appDelegate isReachableForOffline]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.appDelegate.feedsViewController showDoneNotifier];
-            [self.appDelegate.feedsViewController hideNotifier];
         });
         return NO;
     }
@@ -62,7 +61,6 @@
                 [self.appDelegate startOfflineFetchImages];
             } else {
                 [self.appDelegate.feedsViewController showDoneNotifier];
-                [self.appDelegate.feedsViewController hideNotifier];
                 [self.appDelegate finishBackground];
             }
         });
@@ -76,7 +74,7 @@
                            self.appDelegate.url, [hashes componentsJoinedByString:@"&h="]];
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     manager.responseSerializer = [AFJSONResponseSerializer serializer];
-    manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+    manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     
     [manager GET:urlString parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self storeAllUnreadStories:responseObject withHashes:hashes];

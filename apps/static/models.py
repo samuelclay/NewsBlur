@@ -1,3 +1,3 @@
-from django.db import models
+"""Static models: placeholder for the static pages app."""
 
-# Create your models here.
+from django.db import models

@@ -1,3 +1,5 @@
+"""Category models: predefined feed categories for bulk subscription."""
+
 from itertools import groupby
 
 import mongoengine as mongo

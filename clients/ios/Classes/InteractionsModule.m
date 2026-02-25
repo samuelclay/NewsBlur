@@ -12,7 +12,7 @@
 #import "SmallInteractionCell.h"
 #import <QuartzCore/QuartzCore.h>
 #import "UserProfileViewController.h"
-#import "DashboardViewController.h"
+#import "ActivitiesViewController.h"
 
 #define MINIMUM_INTERACTION_HEIGHT_IPAD 78
 #define MINIMUM_INTERACTION_HEIGHT_IPHONE 54

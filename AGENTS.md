@@ -1,6 +1,14 @@
 # NewsBlur Development Guidelines
 
-## Ask Questions Liberally
+## Planning & Clarification
+**IMPORTANT: Before starting any implementation or creating a plan, ask clarifying questions in chat.** The AskUserQuestion tool is not available in Codex/Claude Code, so use normal questions to understand:
+- The specific goals and desired outcomes
+- Edge cases and error handling preferences
+- UI/UX preferences (if applicable)
+- Performance or scalability requirements
+- Integration points with existing code
+- Testing expectations
+- Any constraints or preferences I might have
 
 **Codex: Use the `request_user_input` tool frequently throughout development - not just during planning.**
 **Claude: Continue using the AskUserQuestion tool frequently throughout development - not just during planning.**
@@ -29,6 +37,7 @@ For debugging sessions: always take a screenshot first, reproduce the issue, the
 
 ## Platform-Specific Guidelines
 - **iOS**: See `clients/ios/CLAUDE.md` for iOS simulator testing and development
+  - **All new iOS files must be written in Swift** (not Objective-C)
 
 ## Git Worktree Development
 - **Use git worktrees for parallel development**: Run `make worktree` in a worktree to start workspace-specific services

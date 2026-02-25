@@ -4,6 +4,8 @@ from apps.rss_feeds.models import Feed
 
 
 class Command(BaseCommand):
+    help = "Count subscribers per feed in batches, optionally deleting feeds with zero subscribers."
+
     def add_arguments(self, parser):
         parser.add_argument("-f", "--feed", dest="feed", default=None)
         parser.add_argument("-t", "--title", dest="title", default=None)

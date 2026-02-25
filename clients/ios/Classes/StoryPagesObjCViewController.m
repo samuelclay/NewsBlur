@@ -23,14 +23,19 @@
 
 @import WebKit;
 
-@interface StoryPagesObjCViewController ()
+@interface StoryPagesObjCViewController () <StoryToolbarDelegate>
 
 @property (nonatomic) CGFloat statusBarHeight;
 @property (nonatomic) BOOL wasNavigationBarHidden;
+@property (nonatomic) BOOL isNavigationBarFaded;
+@property (nonatomic, readwrite) CGFloat navigationBarFadeAlpha;
+@property (nonatomic) BOOL isUpdatingNavigationBarFade;
 @property (nonatomic) BOOL doneInitialRefresh;
+@property (nonatomic) BOOL doneInitialDisplay;
 @property (nonatomic, strong) NSTimer *autoscrollTimer;
 @property (nonatomic, strong) NSTimer *autoscrollViewTimer;
 @property (nonatomic, strong) NSString *restoringStoryId;
+@property (nonatomic) CGSize lastScrollViewBoundsSize;
 
 @end
 
@@ -38,8 +43,6 @@
 
 @synthesize currentPage, nextPage, previousPage;
 @synthesize circularProgressView;
-@synthesize separatorBarButton;
-@synthesize spacerBarButton, spacer2BarButton, spacer3BarButton;
 @synthesize buttonPrevious;
 @synthesize buttonNext;
 @synthesize buttonAction;
@@ -64,6 +67,14 @@
 @synthesize traverseBottomConstraint;
 @synthesize scrollBottomConstraint;
 
+- (CGFloat)traverseBottomGap {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        return 12;
+    }
+    CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
+    return (safeAreaBottom > 0) ? 12.0 : 8.0;
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
@@ -74,7 +85,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
+    // Enable edge-to-edge layout so content can appear under the nav bar when it fades
+    self.edgesForExtendedLayout = UIRectEdgeAll;
+    self.extendedLayoutIncludesOpaqueBars = YES;
+
 	currentPage = [[StoryDetailViewController alloc]
                    initWithNibName:@"StoryDetailViewController"
                    bundle:nil];
@@ -88,9 +103,10 @@
     currentPage.appDelegate = appDelegate;
     nextPage.appDelegate = appDelegate;
     previousPage.appDelegate = appDelegate;
-    currentPage.view.frame = self.scrollView.frame;
-    nextPage.view.frame = self.scrollView.frame;
-    previousPage.view.frame = self.scrollView.frame;
+    CGRect scrollBounds = self.scrollView.bounds;
+    currentPage.view.frame = scrollBounds;
+    nextPage.view.frame = scrollBounds;
+    previousPage.view.frame = scrollBounds;
     
 //    NSLog(@"Scroll view content inset: %@", NSStringFromCGRect(self.scrollView.bounds));
 //    NSLog(@"Scroll view frame pre: %@", NSStringFromCGRect(self.scrollView.frame));
@@ -106,14 +122,15 @@
 	[self.scrollView setShowsVerticalScrollIndicator:NO];
     [self.scrollView setAlwaysBounceHorizontal:self.isHorizontal];
     [self.scrollView setAlwaysBounceVertical:!self.isHorizontal];
+    [self.scrollView setDirectionalLockEnabled:YES];
     
     if (@available(iOS 17.0, *)) {
         self.scrollView.allowsKeyboardScrolling = NO;
     }
     
-    if (!self.isPhone) {
-        self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    }
+    // Ensure paging is edge-to-edge on iPhone (avoid safe-area inset offsets).
+    self.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    self.scrollView.contentInset = UIEdgeInsetsZero;
     
 //    NSLog(@"Scroll view frame post: %@", NSStringFromCGRect(self.scrollView.frame));
 //    NSLog(@"Scroll view parent: %@", NSStringFromCGRect(currentPage.view.frame));
@@ -122,77 +139,47 @@
     
     self.statusBarHeight = self.view.window.windowScene.statusBarManager.statusBarFrame.size.height;
     
-    // adding HUD for progress bar
-    CGFloat radius = 8;
-    circularProgressView = [[THCircularProgressView alloc]
-                            initWithCenter:CGPointMake(self.buttonNext.frame.origin.x + 2*radius,
-                                                       self.traverseView.frame.size.height / 2)
-                            radius:radius
-                            lineWidth:radius / 4.0f
-                            progressMode:THProgressModeFill
-                            progressColor:[UIColor colorWithRed:0.612f green:0.62f blue:0.596f alpha:0.4f]
-                            progressBackgroundMode:THProgressBackgroundModeCircumference
-                            progressBackgroundColor:[UIColor colorWithRed:0.312f green:0.32f blue:0.296f alpha:.04f]
-                            percentage:20];
-    circularProgressView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-    [self.traverseView addSubview:circularProgressView];
-    UIView *tapIndicator = [[UIView alloc]
-                            initWithFrame:CGRectMake(circularProgressView.frame.origin.x -
-                                                     circularProgressView.frame.size.width / 2,
-                                                     circularProgressView.frame.origin.y -
-                                                     circularProgressView.frame.size.height / 2,
-                                                     circularProgressView.frame.size.width*2,
-                                                     circularProgressView.frame.size.height*2)];
+    // Build the new native traverse bar, replacing old XIB-based buttons
+    StoryTraverseBar *bar = [[StoryTraverseBar alloc] init];
+    [bar setupIn:self.traverseView];
+    self.traverseBar = bar;
+
+    // Reassign outlets to the new bar's views
+    circularProgressView = bar.circularProgressView;
+    self.loadingIndicator = bar.loadingIndicator;
+    buttonPrevious = bar.previousButton;
+    buttonNext = bar.nextButton;
+    buttonText = bar.textButton;
+    buttonSend = bar.sendButton;
+
+    // Wire up button actions
+    [bar.textButton addTarget:self action:@selector(toggleTextView:) forControlEvents:UIControlEventTouchUpInside];
+    [bar.sendButton addTarget:self action:@selector(openSendToDialog:) forControlEvents:UIControlEventTouchUpInside];
+    [bar.previousButton addTarget:self action:@selector(doPreviousStory:) forControlEvents:UIControlEventTouchUpInside];
+    [bar.nextButton addTarget:self action:@selector(doNextUnreadStory:) forControlEvents:UIControlEventTouchUpInside];
+
+    // Progress tap gesture
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
                                    initWithTarget:self
                                    action:@selector(tapProgressBar:)];
-    [tapIndicator addGestureRecognizer:tap];
-    tapIndicator.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-    [self.traverseView insertSubview:tapIndicator aboveSubview:circularProgressView];
-    self.loadingIndicator.frame = self.circularProgressView.frame;
+    [bar.progressTapArea addGestureRecognizer:tap];
 
-    spacerBarButton = [[UIBarButtonItem alloc]
-                       initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                       target:nil action:nil];
-    spacerBarButton.width = -12;
-    spacer2BarButton = [[UIBarButtonItem alloc]
-                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                        target:nil action:nil];
-    spacer2BarButton.width = -6;
-    spacer3BarButton = [[UIBarButtonItem alloc]
-                        initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                        target:nil action:nil];
-    spacer3BarButton.width = -6;
-    
-    UIImage *separatorImage = [UIImage imageNamed:@"bar-separator.png"];
-    if ([ThemeManager themeManager].isDarkTheme) {
-        separatorImage = [UIImage imageNamed:@"bar_separator_dark"];
-    }
-    separatorBarButton = [UIBarButtonItem barItemWithImage:separatorImage
-                                                    target:nil
-                                                    action:nil];
-    [separatorBarButton setEnabled:NO];
-    separatorBarButton.isAccessibilityElement = NO;
-    
     UIImage *settingsImage = [Utilities imageNamed:@"settings" sized:self.isMac ? 24 : 30];
+    settingsImage = [settingsImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     fontSettingsButton = [UIBarButtonItem barItemWithImage:settingsImage
                                                     target:self
                                                     action:@selector(toggleFontSize:)];
     fontSettingsButton.accessibilityLabel = @"Story settings";
     
     UIImage *markreadImage = [Utilities imageNamed:@"original_button.png" sized:self.isMac ? 24 : 30];
+    markreadImage = [markreadImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     originalStoryButton = [UIBarButtonItem barItemWithImage:markreadImage
                                                      target:self
                                                      action:@selector(showOriginalSubview:)];
     originalStoryButton.accessibilityLabel = @"Show original story";
 
-    separatorBarButton2 = [UIBarButtonItem barItemWithImage:separatorImage
-                                                                      target:nil
-                                                                      action:nil];
-    [separatorBarButton2 setEnabled:NO];
-    separatorBarButton2.isAccessibilityElement = NO;
-    
     UIImage *markReadImage = [UIImage imageNamed:@"markread.png"];
+    markReadImage = [markReadImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     markReadBarButton = [UIBarButtonItem barItemWithImage:markReadImage
                                                                     target:self
                                                                     action:@selector(markAllRead:)];
@@ -206,6 +193,8 @@
                                      ];
     
     self.subscribeButton = subscribeBtn;
+
+    [self updateTheme];
     
     self.notifier = [[NBNotifier alloc] initWithTitle:@"Fetching text..."
                                            withOffset:CGPointMake(0.0, 0.0 /*self.bottomSize.frame.size.height*/)];
@@ -216,14 +205,38 @@
     self.notifier.topOffsetConstraint = [NSLayoutConstraint constraintWithItem:self.notifier attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
     [self.view addConstraint:self.notifier.topOffsetConstraint];
     [self.notifier hideNow];
-    
-    self.traverseBottomConstraint.constant = 0;
-    
+
+    self.traverseBottomConstraint.constant = self.traverseBottomGap;
+
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+        appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
                                                    originalStoryButton,
-                                                   separatorBarButton,
                                                    fontSettingsButton, nil];
+    }
+
+    // Custom toolbar for scroll-to-hide (replaces system nav bar when fullscreen)
+    self.toolbarScrollHandler = [[StoryToolbarScrollHandler alloc] init];
+    StoryToolbar *toolbar = [[StoryToolbar alloc] init];
+    [toolbar setupIn:self.view];
+    toolbar.delegate = (id<StoryToolbarDelegate>)self;
+    toolbar.hidden = YES;
+    self.storyToolbar = toolbar;
+
+    // Status bar background covers the area above the safe area so the toolbar
+    // slides behind an opaque surface when translating upward, and so story
+    // content never shows through the status bar.
+    if (!self.statusBarBackgroundView) {
+        UIView *sbBg = [[UIView alloc] init];
+        sbBg.translatesAutoresizingMaskIntoConstraints = NO;
+        sbBg.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
+        [self.view addSubview:sbBg];
+        [NSLayoutConstraint activateConstraints:@[
+            [sbBg.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+            [sbBg.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+            [sbBg.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+            [sbBg.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+        ]];
+        self.statusBarBackgroundView = sbBg;
     }
     
     [self.scrollView addObserver:self forKeyPath:@"contentOffset"
@@ -257,7 +270,8 @@
     [self.navigationController setNavigationBarHidden:YES animated:animated];
     [self.navigationController setToolbarHidden:YES animated:animated];
 #endif
-    
+
+    [self applyToolbarButtonTint];
     [self updateTheme];
     
     [self updateAutoscrollButtons];
@@ -267,12 +281,22 @@
     [self updateStatusBarState];
     
     self.currentlyTogglingNavigationBar = NO;
+    self.doneInitialDisplay = NO;
+    self.navigationBarFadeAlpha = 1.0;
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
     
-    appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    navController.interactivePopGestureRecognizer.enabled = swipeEnabled;
+    navController.interactivePopGestureRecognizer.delegate = nil;
+    if (swipeEnabled) {
+        if (navController.interactivePopGestureRecognizer) {
+            [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
+            [self.currentPage.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
+        }
+    }
     
     if (self.isPhoneOrCompact) {
         if (!appDelegate.storiesCollection.isSocialView) {
@@ -286,6 +310,9 @@
             } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
                 titleImage = [UIImage imageNamed:@"all-stories"];
+            } else if (appDelegate.storiesCollection.isRiverView &&
+                       [appDelegate.storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+                titleImage = [UIImage imageNamed:@"saved-stories"];
             } else if (appDelegate.storiesCollection.isRiverView &&
                        [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
                 titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
@@ -301,11 +328,26 @@
             } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
                 titleImage = [UIImage imageNamed:@"saved-stories"];
             } else if (appDelegate.storiesCollection.isRiverView) {
-                titleImage = [UIImage imageNamed:@"folder-open"];
+                // Check for custom folder icon
+                NSString *folderName = appDelegate.storiesCollection.activeFolder;
+                NSDictionary *customIcon = appDelegate.dictFolderIcons[folderName];
+                if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                    titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(22, 22)];
+                }
+                if (!titleImage) {
+                    titleImage = [UIImage imageNamed:@"folder-open"];
+                }
             } else {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                        [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-                titleImage = [appDelegate getFavicon:feedIdStr];
+                // Check for custom feed icon
+                NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+                if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                    titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+                }
+                if (!titleImage) {
+                    titleImage = [appDelegate getFavicon:feedIdStr];
+                }
             }
             
             UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
@@ -326,7 +368,15 @@
         } else {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                                    [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
-            UIImage *titleImage  = [appDelegate getFavicon:feedIdStr];
+            UIImage *titleImage = nil;
+            // Check for custom feed icon
+            NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(28, 28)];
+            }
+            if (!titleImage) {
+                titleImage = [appDelegate getFavicon:feedIdStr];
+            }
             titleImage = [Utilities roundCorneredImage:titleImage radius:6];
             
             UIImageView *titleImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -340,6 +390,33 @@
         }
     }
     
+    // Update custom toolbar title with same image used for nav bar
+    [self updateStoryToolbarTitle];
+
+    // On iPhone, always use the custom toolbar instead of the system nav bar.
+    // Wrap in performWithoutAnimation to prevent the toolbar from animating in
+    // from (0,0) during the navigation controller push transition.
+    if (self.useCustomToolbar) {
+        [self.navigationController setNavigationBarHidden:YES animated:animated];
+        [UIView performWithoutAnimation:^{
+            self.storyToolbar.hidden = NO;
+            self.storyToolbar.transform = CGAffineTransformIdentity;
+            [self.toolbarScrollHandler reset];
+            // Ensure toolbar and status bar bg are above the scroll view
+            [self.view bringSubviewToFront:self.storyToolbar];
+            [self.view bringSubviewToFront:self.statusBarBackgroundView];
+            [self.view layoutIfNeeded];
+        }];
+        [self updateStatusBarState];
+        // Force content insets on all pages so content starts below the toolbar
+        [self.currentPage updateContentInsetForNavigationBarAlpha:1.0 maintainVisualPosition:NO force:YES];
+        [self.nextPage updateContentInsetForNavigationBarAlpha:1.0 maintainVisualPosition:NO force:YES];
+        [self.previousPage updateContentInsetForNavigationBarAlpha:1.0 maintainVisualPosition:NO force:YES];
+    } else {
+        [self.navigationController setNavigationBarHidden:NO animated:animated];
+        self.storyToolbar.hidden = YES;
+    }
+
     self.autoscrollView.alpha = 0;
     previousPage.view.hidden = YES;
     // Only show traverse controls when there's an active feed or folder
@@ -347,12 +424,12 @@
     self.traverseView.alpha = hasFeedOrFolder ? 1 : 0;
     self.isAnimatedIntoPlace = NO;
     currentPage.view.hidden = NO;
-    
+
     self.navigationController.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@" "
                                              style:UIBarButtonItemStylePlain
                                              target:nil action:nil];
-    
+
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
     [self reorientPages];
@@ -372,8 +449,20 @@
     appDelegate.isTryFeedView = NO;
     [self reorientPages];
     previousPage.view.hidden = NO;
-    
+    [self alignScrollViewToCurrentPageIfNeeded];
+    // Correct viewport width on all pages now that the view is at its final size.
+    [appDelegate adjustStoryDetailWebView];
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.doneInitialDisplay = YES;
+    });
+
     [self becomeFirstResponder];
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+    [super viewSafeAreaInsetsDidChange];
+    [self alignScrollViewToCurrentPageIfNeeded];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -382,10 +471,22 @@
     if (frame.size.width != floor(frame.size.width)) {
         self.scrollView.frame = CGRectMake(frame.origin.x, frame.origin.y, floor(frame.size.width), floor(frame.size.height));
     }
+
+    if (!CGSizeEqualToSize(self.lastScrollViewBoundsSize, self.scrollView.bounds.size)) {
+        self.lastScrollViewBoundsSize = self.scrollView.bounds.size;
+        [self reorientPages];
+        // Update viewport width on all pages to match the new layout size.
+        // Deferred so web view subviews complete their layout pass first.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self->appDelegate adjustStoryDetailWebView];
+        });
+    }
     
     if (self.scrollView.subviews.lastObject != self.currentPage.view) {
         [self.scrollView bringSubviewToFront:self.currentPage.view];
     }
+
+    [self alignScrollViewToCurrentPageIfNeeded];
     
     [super viewDidLayoutSubviews];
 }
@@ -393,22 +494,49 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    if (!appDelegate.detailViewController.storyTitlesInGrid) {
+    if (!appDelegate.detailViewController.storyTitlesInGridView) {
         appDelegate.detailViewController.navigationItem.leftBarButtonItem = nil;
     }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    
+
+    [[ReadTimeTracker shared] harvestAndFlush];
+
     previousPage.view.hidden = YES;
-    appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.enabled = YES;
-    
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    navController.interactivePopGestureRecognizer.enabled = YES;
+    navController.interactivePopGestureRecognizer.delegate = appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate;
+
 #if !TARGET_OS_MACCATALYST
-    [appDelegate.detailViewController.parentNavigationController setNavigationBarHidden:NO animated:YES];
+    [navController setNavigationBarHidden:NO animated:YES];
 #endif
-    
+    navController.navigationBar.alpha = 1.0;
+    navController.navigationBar.userInteractionEnabled = YES;
+
     self.autoscrollActive = NO;
+
+    // During interactive pop, keep custom toolbar visible until transition completes.
+    // If cancelled, re-hide the system nav bar and keep our toolbar.
+    if (self.useCustomToolbar && self.transitionCoordinator.isInteractive) {
+        [self.transitionCoordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            if (context.isCancelled) {
+                // Gesture cancelled — restore custom toolbar state
+                [navController setNavigationBarHidden:YES animated:NO];
+            } else {
+                // Transition completed — clean up custom toolbar
+                self.storyToolbar.hidden = YES;
+                self.storyToolbar.transform = CGAffineTransformIdentity;
+                [self.toolbarScrollHandler reset];
+            }
+        }];
+    } else {
+        // Non-interactive (back button, programmatic pop) — hide immediately
+        self.storyToolbar.hidden = YES;
+        self.storyToolbar.transform = CGAffineTransformIdentity;
+        [self.toolbarScrollHandler reset];
+    }
 }
 
 - (BOOL)becomeFirstResponder {
@@ -449,13 +577,9 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-    
-    if (self.isNavigationBarHidden && !self.shouldHideStatusBar) {
-        self.scrollViewTopConstraint.constant = self.statusBarHeight;
-    } else {
-        self.scrollViewTopConstraint.constant = 0;
-    }
-    
+    // Scroll view is edge-to-edge; content inset handles nav bar spacing
+    self.scrollViewTopConstraint.constant = 0;
+
     UIInterfaceOrientation orientation = self.view.window.windowScene.interfaceOrientation;
     [self layoutForInterfaceOrientation:orientation];
 }
@@ -470,13 +594,35 @@
 }
 
 - (BOOL)isNavigationBarHidden {
-    return self.navigationController.navigationBarHidden;
+    if (self.isCustomToolbarActive) {
+        return self.toolbarScrollHandler.toolbarOffset >= self.toolbarScrollHandler.toolbarHeight - 1;
+    }
+    return self.isNavigationBarFaded;
 }
 
 - (void)updateStatusBarState {
-    BOOL isNavBarHidden = self.isNavigationBarHidden;
-    
-    self.statusBarBackgroundView.hidden = self.shouldHideStatusBar || !isNavBarHidden || !appDelegate.isPortrait;
+    // On iPhone the status bar background must always be visible so the toolbar
+    // slides behind an opaque surface. Use useCustomToolbar (not isCustomToolbarActive)
+    // because the toolbar may still be hidden during early viewWillAppear setup.
+    if (self.useCustomToolbar) {
+        [self.statusBarBackgroundView.layer removeAllAnimations];
+        self.statusBarBackgroundView.hidden = NO;
+        self.statusBarBackgroundView.alpha = 1.0;
+        return;
+    }
+
+    BOOL shouldShow = !self.shouldHideStatusBar && self.isNavigationBarHidden && appDelegate.isPortrait;
+    CGFloat targetAlpha = shouldShow ? 1.0 : 0.0;
+    if (shouldShow) {
+        self.statusBarBackgroundView.hidden = NO;
+    }
+    [UIView animateWithDuration:0.15 animations:^{
+        self.statusBarBackgroundView.alpha = targetAlpha;
+    } completion:^(BOOL finished) {
+        if (finished && !shouldShow) {
+            self.statusBarBackgroundView.hidden = YES;
+        }
+    }];
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -489,10 +635,15 @@
     if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone || self.presentedViewController != nil) {
         return NO;
     }
-    
+
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
-    
-    return ([preferences boolForKey:@"story_full_screen"] || self.autoscrollAvailable) && !self.forceNavigationBarShown;
+    BOOL storyFullScreen = [preferences boolForKey:@"story_full_screen"];
+    BOOL result = (storyFullScreen || self.autoscrollAvailable) && !self.forceNavigationBarShown;
+    return result;
+}
+
+- (BOOL)useCustomToolbar {
+    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone;
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide {
@@ -500,57 +651,39 @@
 }
 
 - (void)setNavigationBarHidden:(BOOL)hide alsoTraverse:(BOOL)alsoTraverse {
-    if (appDelegate.isMac || self.navigationController == nil || self.navigationController.navigationBarHidden == hide || self.currentlyTogglingNavigationBar) {
+//    #warning temporarily disabled hiding menubar
+//    return;
+    
+    if (appDelegate.isMac || self.navigationController == nil || self.isNavigationBarFaded == hide || self.currentlyTogglingNavigationBar || !self.doneInitialDisplay) {
         return;
     }
     
     self.currentlyTogglingNavigationBar = YES;
     self.wasNavigationBarHidden = hide;
-    
-    [self.navigationController setNavigationBarHidden:hide animated:YES];
-    
+    self.isNavigationBarFaded = hide;
+    self.navBarFadeAccumulator = hide ? 80.0 : 0.0;
+
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     BOOL swipeEnabled = [[userPreferences stringForKey:@"story_detail_swipe_left_edge"]
                          isEqualToString:@"pop_to_story_list"];;
-    appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.enabled = swipeEnabled;
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    navController.interactivePopGestureRecognizer.enabled = swipeEnabled;
+    navController.interactivePopGestureRecognizer.delegate = nil;
     
-    if (hide) {
-        appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.delegate = self;
-    } else if (appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate != nil) {
-        appDelegate.detailViewController.parentNavigationController.interactivePopGestureRecognizer.delegate = appDelegate.feedDetailViewController.standardInteractivePopGestureDelegate;
-    }
-    
-    CGPoint oldOffset = currentPage.webView.scrollView.contentOffset;
-    CGFloat navHeight = self.navigationController.navigationBar.bounds.size.height;
-    CGFloat statusAdjustment = 0.0;
-    
-//    // The top inset is zero when the status bar is hidden, so using the bottom one to confirm.
-//    if (self.view.safeAreaInsets.top > 0.0 || self.view.safeAreaInsets.bottom > 0.0) {
-//        statusAdjustment = 0.0;
-//    }
-    
-    if (oldOffset.y < 0.0) {
-        oldOffset.y = 0.0;
-    }
-    
-    CGFloat sign = hide ? -1.0 : 1.0;
-    CGFloat absoluteAdjustment = navHeight + statusAdjustment;
-    CGFloat totalAdjustment = sign * absoluteAdjustment;
-    CGPoint newOffset = CGPointMake(oldOffset.x, oldOffset.y + totalAdjustment);
+    self.navigationController.navigationBar.userInteractionEnabled = !hide;
     
     if (alsoTraverse) {
         self.traversePinned = YES;
         self.traverseFloating = NO;
         
         if (!hide) {
-            self.traverseBottomConstraint.constant = 0;
+            self.traverseBottomConstraint.constant = self.traverseBottomGap;
             [self.view layoutIfNeeded];
         }
     }
-    
-    self.currentPage.webView.scrollView.contentOffset = newOffset;
-    
+
     [self.appDelegate.detailViewController adjustForAutoscroll];
+    [self.currentPage drawFeedGradient];
     
     if (alsoTraverse) {
         [self.view layoutIfNeeded];
@@ -570,22 +703,282 @@
         });
     }
     
-    [self.view layoutIfNeeded];
-    
-    [UIView animateWithDuration:0.2 animations:^{
-        [self setNeedsStatusBarAppearanceUpdate];
-    } completion:^(BOOL finished) {
-        self.currentlyTogglingNavigationBar = NO;
+    if (self.isCustomToolbarActive) {
+        CGFloat targetOffset = hide ? self.toolbarScrollHandler.toolbarHeight : 0;
+        [UIView animateWithDuration:0.2 animations:^{
+            [self setToolbarOffset:targetOffset];
+        } completion:^(BOOL finished) {
+            self.currentlyTogglingNavigationBar = NO;
+            [self updateStatusBarState];
+        }];
+    } else {
+        [UIView animateWithDuration:0.2 animations:^{
+            [self setNavigationBarFadeAlpha:(hide ? 0.0 : 1.0)];
+        } completion:^(BOOL finished) {
+            self.currentlyTogglingNavigationBar = NO;
+            [self updateStatusBarState];
+        }];
+    }
+}
+
+- (void)setNavigationBarFadeAlpha:(CGFloat)alpha {
+    if (![NSThread isMainThread]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self setNavigationBarFadeAlpha:alpha];
+        });
+        return;
+    }
+
+    CGFloat clampedAlpha = MAX(0.0, MIN(1.0, alpha));
+    if (self.isUpdatingNavigationBarFade) {
+        return;
+    }
+
+    self.isUpdatingNavigationBarFade = YES;
+
+    UIView *loadedView = self.viewIfLoaded;
+    if (!loadedView || loadedView.window == nil) {
+        self.navigationBarFadeAlpha = clampedAlpha;
+        self.isUpdatingNavigationBarFade = NO;
+        return;
+    }
+
+    UINavigationController *navController = self.navigationController;
+    if (!navController) {
+        self.navigationBarFadeAlpha = clampedAlpha;
+        self.isUpdatingNavigationBarFade = NO;
+        return;
+    }
+
+    if (fabs(self.navigationBarFadeAlpha - clampedAlpha) < 0.001 &&
+        self.isNavigationBarFaded == (clampedAlpha < 0.05)) {
+        self.isUpdatingNavigationBarFade = NO;
+        return;
+    }
+    self.navigationBarFadeAlpha = clampedAlpha;
+    navController.navigationBar.alpha = clampedAlpha;
+    navController.navigationBar.userInteractionEnabled = clampedAlpha > 0.05;
+
+    // Update content inset on all pages' web views so swiping between them is seamless
+    // Current page: force update when transitioning from hidden to shown so content isn't clipped
+    BOOL wasFaded = self.isNavigationBarFaded;
+    [self.currentPage updateContentInsetForNavigationBarAlpha:clampedAlpha
+                                       maintainVisualPosition:YES
+                                                        force:NO];
+    // Adjacent pages: always maintain visual position to keep them at correct scroll position
+    [self.previousPage updateContentInsetForNavigationBarAlpha:clampedAlpha maintainVisualPosition:YES];
+    [self.nextPage updateContentInsetForNavigationBarAlpha:clampedAlpha maintainVisualPosition:YES];
+
+    if (self.isNavigationBarFaded) {
+        self.isNavigationBarFaded = clampedAlpha < 0.10;  // must rise above 0.10 to unfade
+    } else {
+        self.isNavigationBarFaded = clampedAlpha < 0.03;  // must drop below 0.03 to fade
+    }
+
+    if (wasFaded != self.isNavigationBarFaded) {
+        [self.currentPage updateFeedTitleGradientPosition];
         [self updateStatusBarState];
-    }];
+    }
+
+    self.isUpdatingNavigationBarFade = NO;
+}
+
+#pragma mark - Custom Toolbar (Scroll-to-hide)
+
+- (BOOL)isCustomToolbarActive {
+    return !self.storyToolbar.hidden;
+}
+
+- (void)setToolbarOffset:(CGFloat)offset {
+    CGFloat clamped = MAX(0, MIN(self.toolbarScrollHandler.toolbarHeight, offset));
+    [self.toolbarScrollHandler setOffset:clamped];
+    self.storyToolbar.transform = CGAffineTransformMakeTranslation(0, -clamped);
+    [self updateStatusBarState];
+    [self.currentPage updateFeedTitleGradientPosition];
+
+    // Keep adjacent pages in sync so there's no jump when swiping to them.
+    // Only adjust pages that are at the top (not user-scrolled).
+    for (StoryDetailViewController *page in @[self.nextPage, self.previousPage]) {
+        if (!page || page == self.currentPage) continue;
+        UIScrollView *sv = page.webView.scrollView;
+        CGFloat topRest = -sv.contentInset.top;
+        CGFloat maxAdjustedTop = topRest + self.toolbarScrollHandler.toolbarHeight;
+        CGFloat targetOffset = topRest + clamped;
+        // Page is "at top" if within the toolbar adjustment range (topRest to topRest+toolbarHeight)
+        if (sv.contentOffset.y <= maxAdjustedTop + 1) {
+            sv.contentOffset = CGPointMake(sv.contentOffset.x, targetOffset);
+            [page updateFeedTitleGradientPosition];
+        }
+    }
+}
+
+- (void)updateStoryToolbarTitle {
+    UIImage *titleImage = nil;
+    NSString *titleText = nil;
+
+    if (!appDelegate.storiesCollection.isSocialView) {
+        if (appDelegate.storiesCollection.isSocialRiverView &&
+            [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_global"]) {
+            titleImage = [UIImage imageNamed:@"global-shares"];
+            titleText = @"Global Shared Stories";
+        } else if (appDelegate.storiesCollection.isSocialRiverView &&
+                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
+            titleImage = [UIImage imageNamed:@"all-shares"];
+            titleText = @"All Shared Stories";
+        } else if (appDelegate.storiesCollection.isRiverView &&
+                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"everything"]) {
+            titleImage = [UIImage imageNamed:@"all-stories"];
+            titleText = @"All Site Stories";
+        } else if (appDelegate.storiesCollection.isRiverView &&
+                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
+            titleImage = [UIImage imageNamed:@"saved-stories"];
+            titleText = @"Dashboard";
+        } else if (appDelegate.storiesCollection.isRiverView &&
+                   [appDelegate.storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
+            titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];
+            titleText = @"Infrequent Stories";
+        } else if (appDelegate.storiesCollection.isSavedView &&
+                   appDelegate.storiesCollection.activeSavedStoryTag) {
+            titleImage = [UIImage imageNamed:@"tag.png"];
+            titleText = appDelegate.storiesCollection.activeSavedStoryTag;
+        } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"widget_stories"]) {
+            titleImage = [UIImage imageNamed:@"g_icn_folder_widget.png"];
+            titleText = @"Widget Stories";
+        } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"read_stories"]) {
+            titleImage = [UIImage imageNamed:@"indicator-unread"];
+            titleText = @"Read Stories";
+        } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_searches"]) {
+            titleImage = [UIImage imageNamed:@"search"];
+            titleText = @"Saved Searches";
+        } else if ([appDelegate.storiesCollection.activeFolder isEqualToString:@"saved_stories"]) {
+            titleImage = [UIImage imageNamed:@"saved-stories"];
+            titleText = @"Saved Stories";
+        } else if (appDelegate.storiesCollection.isRiverView) {
+            NSString *folderName = appDelegate.storiesCollection.activeFolder;
+            NSDictionary *customIcon = appDelegate.dictFolderIcons[folderName];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(22, 22)];
+            }
+            if (!titleImage) {
+                titleImage = [UIImage imageNamed:@"folder-open"];
+            }
+            titleText = folderName;
+        } else {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                                   [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+            NSDictionary *feed = [appDelegate getFeed:feedIdStr];
+            NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+            if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+                titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(16, 16)];
+            }
+            if (!titleImage) {
+                titleImage = [appDelegate getFavicon:feedIdStr];
+            }
+            titleText = [feed objectForKey:@"feed_title"];
+        }
+    } else {
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                               [appDelegate.storiesCollection.activeFeed objectForKey:@"id"]];
+        NSDictionary *customIcon = appDelegate.dictFeedIcons[feedIdStr];
+        if (customIcon && ![customIcon[@"icon_type"] isEqualToString:@"none"]) {
+            titleImage = [CustomIconRenderer renderIcon:customIcon size:CGSizeMake(22, 22)];
+        }
+        if (!titleImage) {
+            titleImage = [appDelegate getFavicon:feedIdStr];
+            titleImage = [Utilities roundCorneredImage:titleImage radius:6];
+        }
+        titleText = [appDelegate.storiesCollection.activeFeed objectForKey:@"feed_title"];
+    }
+
+    [self.storyToolbar updateTitleWithImage:titleImage text:titleText];
+}
+
+#pragma mark - StoryToolbarDelegate
+
+- (void)toolbarDidTapBack {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)toolbarDidTapSettings {
+    [self toggleFontSize:self.storyToolbar.settingsButton];
+}
+
+- (void)toolbarDidTapBrowser {
+    [self showOriginalSubview:self.storyToolbar.browserButton];
+}
+
+- (CGFloat)topInsetForNavigationBarAlpha:(CGFloat)alpha {
+    if (!appDelegate.isCompactWidth && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        return 0;
+    }
+
+    UIWindow *window = self.view.window ?: appDelegate.detailViewController.view.window;
+
+    // Use window's safe area insets for the status bar area (most reliable)
+    CGFloat safeAreaTop = window.safeAreaInsets.top;
+    if (safeAreaTop <= 0) {
+        safeAreaTop = self.view.safeAreaInsets.top;
+    }
+    if (safeAreaTop <= 0) {
+        safeAreaTop = window.windowScene.statusBarManager.statusBarFrame.size.height;
+    }
+    if (safeAreaTop <= 0) {
+        safeAreaTop = 59;  // Fallback for notched devices
+    }
+
+    // When custom toolbar is used (always on iPhone), content inset is always fixed at
+    // safeAreaTop + toolbarHeight. This keeps insets stable during scroll (no jitter).
+    // When toolbar is hidden and a new story loads, the initial scroll position is
+    // adjusted instead (see setStoryFromScroll:).
+    if (self.useCustomToolbar) {
+        return safeAreaTop + self.toolbarScrollHandler.toolbarHeight;
+    }
+
+    UINavigationController *navController = self.navigationController;
+    if (!navController) {
+        return 0;
+    }
+
+    CGFloat navBarHeight = navController.navigationBar.frame.size.height;
+
+    // When nav bar is fully visible (alpha=1), include full nav bar height
+    // When nav bar is faded out (alpha=0), just include safe area top
+    CGFloat navOffset = navBarHeight > 0.0 ? navBarHeight * alpha : 0.0;
+    return safeAreaTop + navOffset;
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    if (gestureRecognizer == navController.interactivePopGestureRecognizer) {
+        return navController.viewControllers.count > 1;
+    }
+    
     return YES;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-    return ![otherGestureRecognizer isKindOfClass:[UIScreenEdgePanGestureRecognizer class]];
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    if (gestureRecognizer == navController.interactivePopGestureRecognizer) {
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRequireFailureOfGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+    if (gestureRecognizer == navController.interactivePopGestureRecognizer) {
+        if (otherGestureRecognizer == self.scrollView.panGestureRecognizer ||
+            otherGestureRecognizer == self.currentPage.webView.scrollView.panGestureRecognizer) {
+            return YES;
+        }
+    }
+    
+    return NO;
 }
 
 - (void)highlightButton:(UIButton *)b {
@@ -624,13 +1017,14 @@
     
     [currentPage hideStory];
 
-    CGRect frame = self.scrollView.frame;
-    self.scrollView.contentSize = frame.size;
+    CGRect bounds = self.scrollView.bounds;
+    self.scrollView.contentSize = bounds.size;
     
 //    NSLog(@"Pages are at: %f / %f / %f (%@)", previousPage.view.frame.origin.x, currentPage.view.frame.origin.x, nextPage.view.frame.origin.x, NSStringFromCGRect(frame));
-    currentPage.view.frame = self.scrollView.frame;
-    nextPage.view.frame = self.scrollView.frame;
-    previousPage.view.frame = self.scrollView.frame;
+    CGRect scrollBounds = self.scrollView.bounds;
+    currentPage.view.frame = scrollBounds;
+    nextPage.view.frame = scrollBounds;
+    previousPage.view.frame = scrollBounds;
 
     currentPage.pageIndex = -2;
     nextPage.pageIndex = -2;
@@ -666,13 +1060,18 @@
     
     // Scroll back to preserved index
     CGRect frame = self.scrollView.bounds;
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
     
     if (self.isHorizontal) {
-        frame.origin.x = frame.size.width * currentIndex;
+        frame.origin.x = [self pageOffsetForIndex:currentIndex
+                                       pageAmount:frame.size.width
+                                        axisInset:axisInset];
         frame.origin.y = 0;
     } else {
         frame.origin.x = 0;
-        frame.origin.y = (frame.size.height * currentIndex) - self.view.safeAreaInsets.bottom;
+        frame.origin.y = [self pageOffsetForIndex:currentIndex
+                                       pageAmount:frame.size.height
+                                        axisInset:axisInset];
     }
     
     [self.scrollView scrollRectToVisible:frame animated:NO];
@@ -680,7 +1079,7 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self hideNotifier];
     
-    if (!self.isPhone) {
+    if (!self.isPhoneOrCompact) {
         [currentPage realignScroll];
     }
 }
@@ -739,17 +1138,41 @@
 }
 
 - (void)updateTraverseBackground {
-    self.textStorySendBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
-    self.prevNextBackgroundImageView.image = [[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_background.png"]];
+    [self.traverseBar updateTheme];
     self.bottomSize.backgroundColor = UIColorFromRGB(NEWSBLUR_WHITE_COLOR);
 }
 
 - (void)updateTheme {
     [super updateTheme];
+
+    [self applyToolbarButtonTint];
     
-    self.navigationController.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
-    self.navigationController.navigationBar.barTintColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xFFFFC5, 0x222222, 0x111111);
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);
+    self.navigationController.navigationBar.tintColor = toolbarButtonTint;
+    self.navigationController.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
     self.navigationController.navigationBar.backgroundColor = [UINavigationBar appearance].backgroundColor;
+    self.navigationController.navigationBar.barStyle = ThemeManager.shared.isDarkTheme ? UIBarStyleBlack : UIBarStyleDefault;
+    if (@available(iOS 13.0, *)) {
+        UINavigationBarAppearance *appearance = self.navigationController.navigationBar.standardAppearance;
+        if (!appearance) {
+            appearance = [[UINavigationBarAppearance alloc] init];
+        }
+        appearance.backgroundColor = self.navigationController.navigationBar.barTintColor;
+
+        UIBarButtonItemAppearance *buttonAppearance = [[UIBarButtonItemAppearance alloc] init];
+        NSDictionary *textAttributes = @{NSForegroundColorAttributeName: toolbarButtonTint};
+        [buttonAppearance.normal setTitleTextAttributes:textAttributes];
+        [buttonAppearance.highlighted setTitleTextAttributes:textAttributes];
+        [buttonAppearance.disabled setTitleTextAttributes:textAttributes];
+        appearance.buttonAppearance = buttonAppearance;
+        appearance.backButtonAppearance = buttonAppearance;
+        appearance.doneButtonAppearance = buttonAppearance;
+        appearance.titleTextAttributes = [UINavigationBar appearance].titleTextAttributes;
+        
+        self.navigationController.navigationBar.standardAppearance = appearance;
+        self.navigationController.navigationBar.scrollEdgeAppearance = appearance;
+        self.navigationController.navigationBar.compactAppearance = appearance;
+    }
     self.view.backgroundColor = UIColorFromLightDarkRGB(0xe0e0e0, 0x111111);
     
     [self updateAutoscrollButtons];
@@ -758,6 +1181,31 @@
     [self setTextButton];
     [self updateStoriesTheme];
     [self updateStatusBarTheme];
+    [self.storyToolbar updateTheme];
+    self.statusBarBackgroundView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE3E6E0, 0xF3E2CB, 0x333333, 0x222222);
+}
+
+- (void)applyToolbarButtonTint {
+    UIColor *toolbarButtonTint = UIColorFromLightSepiaMediumDarkRGB(0x8F918B, 0x8B7B6B, 0xAEAFAF, 0xAEAFAF);
+
+    fontSettingsButton.tintColor = toolbarButtonTint;
+    originalStoryButton.tintColor = toolbarButtonTint;
+    markReadBarButton.tintColor = toolbarButtonTint;
+    self.subscribeButton.tintColor = toolbarButtonTint;
+    UIButton *settingsButton = (UIButton *)fontSettingsButton.customView;
+    if ([settingsButton isKindOfClass:[UIButton class]]) {
+        settingsButton.tintColor = toolbarButtonTint;
+    }
+    UIButton *originalButton = (UIButton *)originalStoryButton.customView;
+    if ([originalButton isKindOfClass:[UIButton class]]) {
+        originalButton.tintColor = toolbarButtonTint;
+    }
+    UIButton *markReadButton = (UIButton *)markReadBarButton.customView;
+    if ([markReadButton isKindOfClass:[UIButton class]]) {
+        markReadButton.tintColor = toolbarButtonTint;
+    }
+    self.navigationController.navigationBar.tintColor = toolbarButtonTint;
+    self.navigationController.toolbar.tintColor = toolbarButtonTint;
 }
 
 // allow keyboard commands
@@ -789,7 +1237,7 @@
         
         if (pageIndex >= 0) {
             [self changePage:pageIndex animated:NO];
-        } else if (!self.isPhone) {
+        } else if (!self.isPhoneOrCompact) {
             // If the story can't be found, don't show anything; uncomment this to instead show the first unread story:
 //            [self doNextUnreadStory:nil];
         } else {
@@ -875,6 +1323,11 @@
     } else if (!outOfBounds) {
         NSInteger location = [appDelegate.storiesCollection indexFromLocation:pageController.pageIndex];
         [pageController setActiveStoryAtIndex:location];
+        UINavigationController *navController = self.navigationController ?: appDelegate.detailViewController.parentNavigationController;
+        if (navController.interactivePopGestureRecognizer) {
+            [pageController.webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
+            [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:navController.interactivePopGestureRecognizer];
+        }
         [pageController clearStory];
         if (self.isDraggingScrollview ||
             self.scrollingToPage < 0 ||
@@ -899,7 +1352,7 @@
     } else if (outOfBounds && pageController == self.currentPage) {
         [pageController clearStory];
         
-        [self.appDelegate showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"applyNewIndex"];
+        [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"applyNewIndex" animated:YES];
     }
     
     if (!suppressRedraw) {
@@ -917,10 +1370,24 @@
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
     if (inRotation) return;
     NSInteger currentPageIndex = currentPage.pageIndex;
-    CGSize size = self.scrollView.frame.size;
+    CGSize size = self.scrollView.bounds.size;
     CGPoint offset = self.scrollView.contentOffset;
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
+    if (self.isHorizontal) {
+        CGFloat lockedY = -self.scrollView.adjustedContentInset.top;
+        if (fabs(offset.y - lockedY) > 0.5) {
+            offset.y = lockedY;
+            self.scrollView.contentOffset = CGPointMake(offset.x, offset.y);
+        }
+    } else {
+        CGFloat lockedX = -self.scrollView.adjustedContentInset.left;
+        if (fabs(offset.x - lockedX) > 0.5) {
+            offset.x = lockedX;
+            self.scrollView.contentOffset = CGPointMake(offset.x, offset.y);
+        }
+    }
     CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
-    float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
+    float fractionalPage = ((self.isHorizontal ? offset.x : offset.y) + axisInset) / pageAmount;
 	
 	NSInteger lowerNumber = floor(fractionalPage);
 	NSInteger upperNumber = lowerNumber + 1;
@@ -978,8 +1445,8 @@
     
     // Stick to bottom
     traversePinned = YES;
-    
-    self.traverseBottomConstraint.constant = 0;
+
+    self.traverseBottomConstraint.constant = self.traverseBottomGap;
     
     if (self.traverseView.alpha == 0) {
         [UIView animateWithDuration:.24 delay:0
@@ -997,6 +1464,45 @@
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     self.isDraggingScrollview = YES;
+    // Prevent diagonal scrolling: disable web view scroll and cancel in-progress gestures
+    if (self.isHorizontal) {
+        [self setWebViewsScrollEnabled:NO];
+    }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    if (scrollView != self.scrollView || decelerate) {
+        return;
+    }
+
+    [self lockScrollViewToNearestPage];
+    [self scrollViewDidEndScrollingAnimation:scrollView];
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView
+                     withVelocity:(CGPoint)velocity
+              targetContentOffset:(inout CGPoint *)targetContentOffset {
+    if (scrollView != self.scrollView || inRotation) {
+        return;
+    }
+
+    CGFloat pageAmount = self.isHorizontal ? scrollView.bounds.size.width : scrollView.bounds.size.height;
+    if (pageAmount <= 0) {
+        return;
+    }
+
+    CGFloat axisInset = [self axisInsetForScrollView:scrollView];
+    CGFloat rawOffset = self.isHorizontal ? targetContentOffset->x : targetContentOffset->y;
+    NSInteger nearestNumber = [self clampedPageIndexForOffset:rawOffset pageAmount:pageAmount];
+    CGFloat targetOffset = [self pageOffsetForIndex:nearestNumber pageAmount:pageAmount axisInset:axisInset];
+
+    if (self.isHorizontal) {
+        targetContentOffset->x = targetOffset;
+        targetContentOffset->y = -scrollView.adjustedContentInset.top;
+    } else {
+        targetContentOffset->y = targetOffset;
+        targetContentOffset->x = -scrollView.adjustedContentInset.left;
+    }
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView
@@ -1006,18 +1512,119 @@
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
+    [self lockScrollViewToNearestPage];
+    self.isDraggingScrollview = NO;
+    [self setWebViewsScrollEnabled:YES];
     if (appDelegate.feedDetailViewController.suppressMarkAsRead) {
         return;
     }
-    
-    self.isDraggingScrollview = NO;
-    CGSize size = self.scrollView.frame.size;
+    CGSize size = self.scrollView.bounds.size;
     CGPoint offset = self.scrollView.contentOffset;
     CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
-    float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
-	NSInteger nearestNumber = lround(fractionalPage);
+    NSInteger nearestNumber = [self clampedPageIndexForOffset:(self.isHorizontal ? offset.x : offset.y)
+                                                  pageAmount:pageAmount];
     self.scrollingToPage = nearestNumber;
     [self setStoryFromScroll];
+}
+
+- (void)setWebViewsScrollEnabled:(BOOL)enabled {
+    for (StoryDetailViewController *page in @[currentPage, nextPage, previousPage]) {
+        if (!page) continue;
+        UIScrollView *sv = page.webView.scrollView;
+        sv.scrollEnabled = enabled;
+        if (!enabled) {
+            // Force-cancel any in-progress pan gesture by toggling enabled.
+            // This transitions the gesture to .cancelled then back to .possible.
+            sv.panGestureRecognizer.enabled = NO;
+            sv.panGestureRecognizer.enabled = YES;
+        }
+    }
+}
+
+- (void)lockScrollViewToNearestPage {
+    CGFloat pageAmount = self.isHorizontal ? self.scrollView.bounds.size.width : self.scrollView.bounds.size.height;
+    if (pageAmount <= 0) {
+        return;
+    }
+
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
+    CGPoint offset = self.scrollView.contentOffset;
+    CGFloat rawOffset = self.isHorizontal ? offset.x : offset.y;
+    NSInteger nearestNumber = [self clampedPageIndexForOffset:rawOffset pageAmount:pageAmount];
+    CGFloat targetOffset = [self pageOffsetForIndex:nearestNumber pageAmount:pageAmount axisInset:axisInset];
+
+    if (self.isHorizontal) {
+        offset.x = targetOffset;
+        offset.y = -self.scrollView.adjustedContentInset.top;
+    } else {
+        offset.y = targetOffset;
+        offset.x = -self.scrollView.adjustedContentInset.left;
+    }
+
+    if (fabs(self.scrollView.contentOffset.x - offset.x) > 0.5 ||
+        fabs(self.scrollView.contentOffset.y - offset.y) > 0.5) {
+        [self.scrollView setContentOffset:offset animated:NO];
+    }
+}
+
+- (void)alignScrollViewToCurrentPageIfNeeded {
+    if (self.isDraggingScrollview || inRotation) {
+        return;
+    }
+
+    NSInteger targetIndex = currentPage.pageIndex >= 0 ? currentPage.pageIndex : self.scrollingToPage;
+    if (targetIndex < 0) {
+        return;
+    }
+
+    CGFloat pageAmount = self.isHorizontal ? self.scrollView.bounds.size.width : self.scrollView.bounds.size.height;
+    if (pageAmount <= 0) {
+        return;
+    }
+
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
+    CGFloat targetOffset = [self pageOffsetForIndex:targetIndex pageAmount:pageAmount axisInset:axisInset];
+    CGPoint offset = self.scrollView.contentOffset;
+
+    if (self.isHorizontal) {
+        offset.x = targetOffset;
+        offset.y = -self.scrollView.adjustedContentInset.top;
+    } else {
+        offset.y = targetOffset;
+        offset.x = -self.scrollView.adjustedContentInset.left;
+    }
+
+    if (fabs(self.scrollView.contentOffset.x - offset.x) > 0.5 ||
+        fabs(self.scrollView.contentOffset.y - offset.y) > 0.5) {
+        [self.scrollView setContentOffset:offset animated:NO];
+    }
+}
+
+- (void)scrollViewDidChangeAdjustedContentInset:(UIScrollView *)scrollView {
+    if (scrollView != self.scrollView) {
+        return;
+    }
+
+    [self alignScrollViewToCurrentPageIfNeeded];
+}
+
+- (CGFloat)axisInsetForScrollView:(UIScrollView *)scrollView {
+    return self.isHorizontal ? scrollView.adjustedContentInset.left : scrollView.adjustedContentInset.top;
+}
+
+- (CGFloat)pageOffsetForIndex:(NSInteger)pageIndex pageAmount:(CGFloat)pageAmount axisInset:(CGFloat)axisInset {
+    return (pageAmount * pageIndex) - axisInset;
+}
+
+- (NSInteger)clampedPageIndexForOffset:(CGFloat)rawOffset pageAmount:(CGFloat)pageAmount {
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
+    NSInteger storyCount = appDelegate.storiesCollection.storyLocationsCount;
+    if (storyCount <= 0) {
+        storyCount = 1;
+    }
+
+    NSInteger nearestNumber = lround((rawOffset + axisInset) / pageAmount);
+    return MAX(0, MIN(storyCount - 1, nearestNumber));
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -1027,15 +1634,13 @@
     if (!self.isPhoneOrCompact &&
         [keyPath isEqual:@"contentOffset"] &&
         self.isDraggingScrollview) {
-        CGSize size = self.scrollView.frame.size;
+        CGSize size = self.scrollView.bounds.size;
         CGPoint offset = self.scrollView.contentOffset;
         CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
-        float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
-        NSInteger nearestNumber = lround(fractionalPage);
+        NSInteger nearestNumber = [self clampedPageIndexForOffset:(self.isHorizontal ? offset.x : offset.y)
+                                                      pageAmount:pageAmount];
         
         if (![appDelegate.storiesCollection.activeFeedStories count]) return;
-        
-//        NSLog(@"observe content offset: fractional page %@", @(fractionalPage));  // log
         
         NSInteger storyIndex = [appDelegate.storiesCollection indexFromLocation:nearestNumber];
         if (storyIndex != [appDelegate.storiesCollection indexOfActiveStory] && storyIndex != NSNotFound) {
@@ -1086,15 +1691,20 @@
     
 	// update the scroll view to the appropriate page
     [self resizeScrollView];
-    CGRect frame = self.scrollView.frame;
+    CGRect frame = self.scrollView.bounds;
     CGPoint offset = self.scrollView.contentOffset;
+    CGFloat axisInset = [self axisInsetForScrollView:self.scrollView];
     
     if (self.isHorizontal) {
-        frame.origin.x = frame.size.width * pageIndex;
+        frame.origin.x = [self pageOffsetForIndex:pageIndex
+                                       pageAmount:frame.size.width
+                                        axisInset:axisInset];
         frame.origin.y = 0;
     } else {
         frame.origin.x = 0;
-        frame.origin.y = (frame.size.height * pageIndex) - self.view.safeAreaInsets.bottom + self.view.safeAreaInsets.bottom;
+        frame.origin.y = [self pageOffsetForIndex:pageIndex
+                                       pageAmount:frame.size.height
+                                        axisInset:axisInset];
     }
     
     self.scrollingToPage = pageIndex;
@@ -1117,7 +1727,10 @@
     }
     
     if (self.isPhoneOrCompact || animated) {
-        [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"changePage"];
+        appDelegate.storyPagesViewController.currentPage.view.hidden = NO;
+        appDelegate.storyPagesViewController.currentPage.noStoryMessage.hidden = YES;
+        
+        [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"changePage" animated:animated];
     }
     
     [self becomeFirstResponder];
@@ -1160,10 +1773,9 @@
     CGSize size = self.scrollView.bounds.size;
     CGPoint offset = self.scrollView.contentOffset;
     CGFloat pageAmount = self.isHorizontal ? size.width : size.height;
-    float fractionalPage = (self.isHorizontal ? offset.x : offset.y) / pageAmount;
-	NSInteger nearestNumber = lround(fractionalPage);
+	NSInteger nearestNumber = [self clampedPageIndexForOffset:(self.isHorizontal ? offset.x : offset.y)
+                                                  pageAmount:pageAmount];
     
-//    NSLog(@"setStoryFromScroll: fractional page %@", @(fractionalPage));  // log
     
     if (!force && currentPage.pageIndex >= 0 &&
         currentPage.pageIndex == nearestNumber &&
@@ -1188,7 +1800,6 @@
         previousPage = swapNextController;
     }
     
-//    NSLog(@"Set Story from scroll: %@ = %@ (%@/%@/%@)", @(fractionalPage), @(nearestNumber), @(previousPage.pageIndex), @(currentPage.pageIndex), @(nextPage.pageIndex));
     
     self.autoscrollActive = NO;
 //    [self showAutoscrollBriefly:YES];
@@ -1211,13 +1822,55 @@
             NSLog(@"invalid story index: %@ for page index: %@", @(storyIndex), @(currentPage.pageIndex));  // log
         }
         
+        // Harvest read time for the previous story before switching
+        NSDictionary *previousStory = appDelegate.activeStory;
+        if (previousStory) {
+            NSString *prevHash = previousStory[@"story_hash"];
+            if (prevHash) {
+                NSInteger readTime = [[ReadTimeTracker shared] getAndResetReadTimeWithStoryHash:prevHash];
+                if (readTime > 0) {
+                    [[ReadTimeTracker shared] queueReadTimeWithStoryHash:prevHash seconds:readTime];
+                }
+            }
+        }
+
         appDelegate.activeStory = [appDelegate.storiesCollection.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex updateFeedDetail:YES];
-        if ([appDelegate.storiesCollection isStoryUnread:appDelegate.activeStory]) {
-            [appDelegate.storiesCollection markStoryRead:appDelegate.activeStory];
-            [appDelegate.storiesCollection syncStoryAsRead:appDelegate.activeStory];
-        }
+        [appDelegate.feedDetailViewController markStoryReadIfNeeded:appDelegate.activeStory isScrolling:NO];
         [appDelegate.feedDetailViewController redrawUnreadStory];
+        [appDelegate.storyPagesViewController.currentPage refreshHeader];
+
+        // Start tracking read time for the new story
+        NSString *newHash = [appDelegate.activeStory objectForKey:@"story_hash"];
+        if (newHash) {
+            [[ReadTimeTracker shared] startTrackingWithStoryHash:newHash];
+        }
+
+        // Reset scroll direction tracking so toolbar can respond to first scroll-up
+        currentPage.lastDragDirectionDown = NO;
+
+        // Sync all pages' content insets and scroll positions with current toolbar state
+        [currentPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:NO force:YES];
+        [nextPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:NO force:YES];
+        [previousPage updateContentInsetForNavigationBarAlpha:self.navigationBarFadeAlpha maintainVisualPosition:NO force:YES];
+
+        if (self.isCustomToolbarActive) {
+            CGFloat toolbarOffset = self.toolbarScrollHandler.toolbarOffset;
+            CGFloat toolbarHeight = self.toolbarScrollHandler.toolbarHeight;
+            // Adjust all pages' scroll positions for toolbar state
+            for (StoryDetailViewController *page in @[currentPage, nextPage, previousPage]) {
+                if (!page) continue;
+                UIScrollView *sv = page.webView.scrollView;
+                CGFloat topRest = -sv.contentInset.top;
+                CGFloat maxAdjustedTop = topRest + toolbarHeight;
+                CGFloat targetOffset = topRest + toolbarOffset;
+                if (sv.contentOffset.y <= maxAdjustedTop + 1) {
+                    sv.contentOffset = CGPointMake(sv.contentOffset.x, targetOffset);
+                }
+            }
+        }
+
+        [currentPage drawFeedGradient];
     }
     
     if (!appDelegate.storiesCollection.inSearch) {
@@ -1250,20 +1903,15 @@
     self.appDelegate.detailViewController.navigationItem.leftBarButtonItems = @[[[UIBarButtonItem alloc] initWithCustomView:[UIView new]]];
 #endif
     
-    if (!self.isPhone) {
-        if (appDelegate.detailViewController.storyTitlesOnLeft) {
-            appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                       originalStoryButton,
-                                                       separatorBarButton,
-                                                       fontSettingsButton, nil];
-        } else {
-            appDelegate.detailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
-                                                       originalStoryButton,
-                                                       separatorBarButton,
-                                                       fontSettingsButton,
-                                                       separatorBarButton2,
-                                                       markReadBarButton, nil];
-        }
+    if (appDelegate.detailViewController.storyTitlesOnLeft) {
+        appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                   originalStoryButton,
+                                                   fontSettingsButton, nil];
+    } else {
+        appDelegate.detailViewController.storiesNavigationItem.rightBarButtonItems = [NSArray arrayWithObjects:
+                                                   originalStoryButton,
+                                                   fontSettingsButton,
+                                                   markReadBarButton, nil];
     }
     
     [self setNextPreviousButtons];
@@ -1298,44 +1946,26 @@
 }
 
 - (void)setNextPreviousButtons {
-    // setting up the PREV BUTTON
+    // Previous button enabled state
     NSInteger readStoryCount = [appDelegate.readStories count];
-    if (readStoryCount == 0 ||
+    BOOL prevEnabled = !(readStoryCount == 0 ||
         (readStoryCount == 1 &&
-         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"story_hash"])) {
-        [buttonPrevious setEnabled:NO];
-    } else {
-        [buttonPrevious setEnabled:YES];
-    }
-    
-    NSString *previousName = self.isHorizontal ? @"traverse_previous.png" : @"traverse_previous_vert.png";
-    NSString *previousNameOff = self.isHorizontal ? @"traverse_previous_off.png" : @"traverse_previous_off_vert.png";
-    [buttonPrevious setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:previousName]]
-                              forState:UIControlStateNormal];
-    [buttonPrevious setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:previousNameOff]]
-                              forState:UIControlStateDisabled];
-    
-    // setting up the NEXT UNREAD STORY BUTTON
+         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"story_hash"]));
+    [self.traverseBar updatePreviousEnabled:prevEnabled];
+
+    // Next/Done button state
     buttonNext.enabled = YES;
     NSInteger nextIndex = [appDelegate.storiesCollection indexOfNextUnreadStory];
     NSInteger unreadCount = [appDelegate unreadCount];
     BOOL pageFinished = appDelegate.feedDetailViewController.pageFinished;
-    if ((nextIndex == -1 && unreadCount > 0 && !pageFinished) ||
-        nextIndex != -1) {
-        NSString *nextName = self.isHorizontal ? @"traverse_next.png" : @"traverse_next_vert.png";
-        [buttonNext setTitle:@"Next" forState:UIControlStateNormal];
-        [buttonNext setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:nextName]]
-                              forState:UIControlStateNormal];
-    } else {
-        [buttonNext setTitle:@"Done" forState:UIControlStateNormal];
-        [buttonNext setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_done.png"]]
-                              forState:UIControlStateNormal];
-    }
-    
+    BOOL hasMoreUnread = (nextIndex == -1 && unreadCount > 0 && !pageFinished) || nextIndex != -1;
+    [self.traverseBar updateNextShowDone:!hasMoreUnread];
+
+    // Progress indicator
     float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
-    circularProgressView.percentage = progress;
+    [self.traverseBar updateProgress:progress];
 }
 
 - (void)setTextButton {
@@ -1344,52 +1974,20 @@
 
 - (void)setTextButton:(StoryDetailViewController *)storyViewController {
     if (storyViewController != currentPage) return;
-    if (storyViewController.pageIndex >= 0) {
-        [buttonText setEnabled:YES];
-        [buttonText setAlpha:1];
-        [buttonSend setEnabled:YES];
-        [buttonSend setAlpha:1];
-        
-        fontSettingsButton.enabled = YES;
-        originalStoryButton.enabled = YES;
-        
+
+    BOOL enabled = storyViewController.pageIndex >= 0;
+    [self.traverseBar updateTextInTextView:storyViewController.inTextView enabled:enabled];
+    [self.traverseBar updateSendEnabled:enabled];
+
+    fontSettingsButton.enabled = enabled;
+    originalStoryButton.enabled = enabled;
+
 #if TARGET_OS_MACCATALYST
-        if (@available(macCatalyst 16.0, *)) {
-            fontSettingsButton.hidden = NO;
-            originalStoryButton.hidden = NO;
-        }
-#endif
-    } else {
-        [buttonText setEnabled:NO];
-        [buttonText setAlpha:.4];
-        [buttonSend setEnabled:NO];
-        [buttonSend setAlpha:.4];
-        
-        fontSettingsButton.enabled = NO;
-        originalStoryButton.enabled = NO;
-        
-#if TARGET_OS_MACCATALYST
-        if (@available(macCatalyst 16.0, *)) {
-            fontSettingsButton.hidden = YES;
-            originalStoryButton.hidden = YES;
-        }
-#endif
+    if (@available(macCatalyst 16.0, *)) {
+        fontSettingsButton.hidden = !enabled;
+        originalStoryButton.hidden = !enabled;
     }
-    
-    [buttonSend setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_send.png"]]
-                          forState:UIControlStateNormal];
-    
-    if (storyViewController.inTextView) {
-        [buttonText setTitle:@"Story" forState:UIControlStateNormal];
-        [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text_on.png"]]
-                              forState:0];
-        self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 26, 0, 0);
-    } else {
-        [buttonText setTitle:@"Text" forState:UIControlStateNormal];
-        [buttonText setBackgroundImage:[[ThemeManager themeManager] themedImage:[UIImage imageNamed:@"traverse_text.png"]]
-                              forState:0];
-        self.buttonText.titleEdgeInsets = UIEdgeInsetsMake(0, 22, 0, 0);
-    }
+#endif
 }
 
 - (IBAction)openSendToDialog:(id)sender {
@@ -1536,10 +2134,15 @@
     UINavigationController *storiesNavController = appDelegate.storyPagesViewController.navigationController;
     UIView *sourceView = storiesNavController.view;
     CGRect sourceRect = CGRectMake(storiesNavController.view.frame.size.width - 59, 0, 20, 20);
-    
+
     [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
 #else
-    [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
+    if (self.isCustomToolbarActive) {
+        UIView *btn = self.storyToolbar.settingsButton;
+        [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero sourceView:btn sourceRect:btn.bounds permittedArrowDirections:UIPopoverArrowDirectionUp];
+    } else {
+        [appDelegate showPopoverWithViewController:fontSettingsNavigationController contentSize:CGSizeZero barButtonItem:self.fontSettingsButton];
+    }
 #endif
 }
 
@@ -1562,11 +2165,22 @@
 }
 
 - (void)changedFullscreen {
-    BOOL wantHidden = self.allowFullscreen;
-    
-//    self.navigationController.hidesBarsOnSwipe = self.allowFullscreen;
-    
-    [self setNavigationBarHidden:wantHidden alsoTraverse:YES];
+    if (self.useCustomToolbar) {
+        // Custom toolbar is always active on iPhone; fullscreen setting only controls scroll-to-hide.
+        // When fullscreen is off, ensure toolbar is fully visible.
+        if (!self.allowFullscreen) {
+            [self.toolbarScrollHandler reset];
+            [self setToolbarOffset:0];
+        }
+    } else {
+        BOOL wantHidden = self.allowFullscreen;
+        if (wantHidden) {
+            [self.navigationController setNavigationBarHidden:YES animated:YES];
+        } else {
+            [self.navigationController setNavigationBarHidden:NO animated:YES];
+        }
+        [self setNavigationBarHidden:wantHidden alsoTraverse:YES];
+    }
 }
 
 - (void)changedAutoscroll {
@@ -1806,7 +2420,7 @@
     self.circularProgressView.hidden = NO;
     id previousStoryId = [appDelegate.storiesCollection popReadStory];
     if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"story_hash"]) {
-        [self.appDelegate showColumn:UISplitViewControllerColumnSupplementary debugInfo:@"doPreviousStory"];
+        [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"doPreviousStory" animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
         NSInteger previousLocation = [appDelegate.storiesCollection locationOfStoryId:previousStoryId];

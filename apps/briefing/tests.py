@@ -1004,6 +1004,126 @@ class Test_Scoring(BriefingTestCase):
             story = MStory.objects.get(story_hash=s["story_hash"])
             self.assertEqual(story.story_feed_id, self.feed.pk)
 
+    @patch("apps.briefing.scoring.redis.Redis")
+    @patch("apps.briefing.scoring._get_trending_scores")
+    @patch("apps.briefing.scoring._get_feed_trending_times")
+    def test_custom_section_es_phrase_match(self, mock_feed_trending, mock_trending, mock_redis_cls):
+        """Custom section should use ES phrase search when available."""
+        from apps.briefing.scoring import select_briefing_stories
+
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_pipe = MagicMock()
+        mock_r.pipeline.return_value = mock_pipe
+
+        all_hashes = [s.story_hash.encode() for s in self.stories]
+        mock_pipe.execute.side_effect = [
+            [all_hashes[:3], all_hashes[3:]],
+            [False] * 6,
+        ]
+        mock_trending.return_value = {}
+        mock_feed_trending.return_value = {}
+
+        # Mock ES as available and returning a match from overflow stories
+        from apps.search.models import MUserSearch, SearchStory
+
+        mock_user_search = MagicMock()
+        mock_user_search.subscriptions_indexed = True
+        with patch.object(MUserSearch, "get_user", return_value=mock_user_search), patch.object(
+            SearchStory, "query_briefing_custom", return_value=[self.stories[4].story_hash]
+        ):
+            result = select_briefing_stories(
+                self.user.pk,
+                self.period_start,
+                self.now,
+                max_stories=3,
+                custom_section_prompts=["World Economy"],
+                active_sections={"custom_1": True},
+            )
+
+        custom_stories = [s for s in result if s["category"] == "custom_1"]
+        self.assertEqual(len(custom_stories), 1)
+        self.assertEqual(custom_stories[0]["story_hash"], self.stories[4].story_hash)
+
+    @patch("apps.briefing.scoring.redis.Redis")
+    @patch("apps.briefing.scoring._get_trending_scores")
+    @patch("apps.briefing.scoring._get_feed_trending_times")
+    def test_custom_section_es_unavailable_fallback(self, mock_feed_trending, mock_trending, mock_redis_cls):
+        """Custom section should fall back to keyword matching when ES not indexed."""
+        from apps.briefing.scoring import select_briefing_stories
+
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_pipe = MagicMock()
+        mock_r.pipeline.return_value = mock_pipe
+
+        all_hashes = [s.story_hash.encode() for s in self.stories]
+        mock_pipe.execute.side_effect = [
+            [all_hashes[:3], all_hashes[3:]],
+            [False] * 6,
+        ]
+        mock_trending.return_value = {}
+        mock_feed_trending.return_value = {}
+
+        # Mock ES as unavailable (user not indexed)
+        from apps.search.models import MUserSearch
+
+        with patch.object(MUserSearch, "get_user", return_value=None):
+            result = select_briefing_stories(
+                self.user.pk,
+                self.period_start,
+                self.now,
+                max_stories=3,
+                custom_section_prompts=["Breaking News"],
+                active_sections={"custom_1": True},
+            )
+
+        # Should fall back to keyword matching on title — stories[0] and stories[3] have "Breaking News"
+        custom_stories = [s for s in result if s["category"] == "custom_1"]
+        self.assertGreater(len(custom_stories), 0)
+
+    @patch("apps.briefing.scoring.redis.Redis")
+    @patch("apps.briefing.scoring._get_trending_scores")
+    @patch("apps.briefing.scoring._get_feed_trending_times")
+    def test_custom_section_es_reassigns_existing(self, mock_feed_trending, mock_trending, mock_redis_cls):
+        """ES match already in top N should get its category reassigned to custom_X."""
+        from apps.briefing.scoring import select_briefing_stories
+
+        mock_r = MagicMock()
+        mock_redis_cls.return_value = mock_r
+        mock_pipe = MagicMock()
+        mock_r.pipeline.return_value = mock_pipe
+
+        all_hashes = [s.story_hash.encode() for s in self.stories]
+        mock_pipe.execute.side_effect = [
+            [all_hashes[:3], all_hashes[3:]],
+            [False] * 6,
+        ]
+        mock_trending.return_value = {}
+        mock_feed_trending.return_value = {}
+
+        # ES returns a story that's already in the top 3
+        from apps.search.models import MUserSearch, SearchStory
+
+        mock_user_search = MagicMock()
+        mock_user_search.subscriptions_indexed = True
+        with patch.object(MUserSearch, "get_user", return_value=mock_user_search), patch.object(
+            SearchStory, "query_briefing_custom", return_value=[self.stories[0].story_hash]
+        ):
+            result = select_briefing_stories(
+                self.user.pk,
+                self.period_start,
+                self.now,
+                max_stories=3,
+                custom_section_prompts=["Breaking News"],
+                active_sections={"custom_1": True},
+            )
+
+        # Story should be reassigned, not duplicated
+        matching = [s for s in result if s["story_hash"] == self.stories[0].story_hash]
+        self.assertEqual(len(matching), 1)
+        self.assertEqual(matching[0]["category"], "custom_1")
+
 
 # ---------------------------------------------------------------------------
 # 3. Test_Models — apps/briefing/models.py

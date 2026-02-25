@@ -4,6 +4,8 @@ from apps.rss_feeds.models import Feed
 
 
 class Command(BaseCommand):
+    help = "Count stories in feeds to recalculate next scheduled update time."
+
     def add_arguments(self, parser):
         parser.add_argument("-f", "--feed", dest="feed", default=None)
         parser.add_argument("-t", "--title", dest="title", default=None)

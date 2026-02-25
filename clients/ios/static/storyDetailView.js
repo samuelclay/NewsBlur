@@ -31,6 +31,14 @@ $('a.NB-show-profile').live('click', function () {
     return false;
 });
 
+$('.NB-read-button a').live('click', function () {
+    var offset = $(this).offset();
+    console.log(offset);
+    var url = $(this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
+    window.location = url;
+    return false;
+});
+
 $('.NB-train-button a').live('click', function () {
     var offset = $(this).offset();
     console.log(offset);
@@ -50,6 +58,13 @@ $('.NB-user-tag').live('click', function () {
 $('.NB-save-button').live('click', function () {
     var offset = $('a', this).offset();
     console.log(['Offset', offset]);
+    var url = $('a', this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
+    window.location = url;
+    return false;
+});
+
+$('.NB-share-share-button').live('click', function () {
+    var offset = $('a', this).offset();
     var url = $('a', this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
     window.location = url;
     return false;

@@ -14,14 +14,20 @@ struct CardView: View {
     
     let cache: StoryCache
     
+    let dash: DashList?
+    
     let story: Story
     
     @State private var isPinned: Bool = false
     
     var body: some View {
         ZStack(alignment: .leading) {
-            if story.isSelected || cache.isGrid {
-                RoundedRectangle(cornerRadius: 10).foregroundColor(highlightColor)
+            if story.isSelected || cache.isGrid || cache.isDashboard {
+                if cache.isDashboard {
+                    Rectangle().foregroundColor(highlightColor)
+                } else {
+                    RoundedRectangle(cornerRadius: 10).foregroundColor(highlightColor)
+                }
                 
                 CardFeedBarView(cache: cache, story: story)
                     .padding(.leading, 2)
@@ -64,39 +70,74 @@ struct CardView: View {
         }
         .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .onTapGesture {
-            feedDetailInteraction.tapped(story: story)
+            feedDetailInteraction.tapped(story: story, in: dash)
         }
-        .contextMenu {
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button {
                 cache.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
                 cache.appDelegate.feedDetailViewController.reload()
             } label: {
-                Label(story.isRead ? "Mark as unread" : "Mark as read", image: "mark-read")
+                Label(story.isRead ? "Mark Unread" : "Mark Read",
+                      image: story.isRead ? "indicator-unread" : "indicator-read")
             }
-            
-            Button {
-                cache.appDelegate.activeStory = story.dictionary
-                cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
-                cache.appDelegate.feedDetailViewController.reload()
-            } label: {
-                Label("Mark newer stories read", image: "mark-read")
-            }
-            
-            Button {
-                cache.appDelegate.activeStory = story.dictionary
-                cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
-                cache.appDelegate.feedDetailViewController.reload()
-            } label: {
-                Label("Mark older stories read", image: "mark-read")
-            }
-            
-            Divider()
+            .tint(Color.themed([story.isRead ? 0xD4A020 : 0x4CAF50,
+                                story.isRead ? 0xC89628 : 0x4A9648,
+                                story.isRead ? 0xBF8C1C : 0x2E7D32,
+                                story.isRead ? 0xA67C00 : 0x1B5E20]))
             
             Button {
                 cache.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
                 cache.appDelegate.feedDetailViewController.reload()
             } label: {
-                Label(story.isSaved ? "Unsave this story" : "Save this story", image: "saved-stories")
+                Label(story.isSaved ? "Unsave" : "Save", image: "saved-stories")
+            }
+            .tint(Color.themed([story.isSaved ? 0x00838F : 0x26C6DA,
+                                story.isSaved ? 0x007A86 : 0x1FB5C8,
+                                story.isSaved ? 0x00636E : 0x0FA3B5,
+                                story.isSaved ? 0x004A52 : 0x0B8FA0]))
+            
+            Button {
+                cache.appDelegate.activeStory = story.dictionary
+                cache.appDelegate.showSend(to: cache.appDelegate.feedDetailViewController,
+                                           sender: cache.appDelegate.feedDetailViewController.view)
+            } label: {
+                Label("Share", image: "email")
+            }
+            .tint(Color.themed([0x8E8E93, 0x847A6E, 0x545458, 0x48484A]))
+        }
+        .contextMenu {
+            if !cache.isDashboard {
+                Button {
+                    cache.appDelegate.storiesCollection.toggleStoryUnread(story.dictionary)
+                    cache.appDelegate.feedDetailViewController.reload()
+                } label: {
+                    Label(story.isRead ? "Mark as unread" : "Mark as read", image: "mark-read")
+                }
+                
+                Button {
+                    cache.appDelegate.activeStory = story.dictionary
+                    cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: false)
+                    cache.appDelegate.feedDetailViewController.reload()
+                } label: {
+                    Label("Mark newer stories read", image: "mark-read")
+                }
+                
+                Button {
+                    cache.appDelegate.activeStory = story.dictionary
+                    cache.appDelegate.feedDetailViewController.markFeedsRead(fromTimestamp: story.timestamp, andOlder: true)
+                    cache.appDelegate.feedDetailViewController.reload()
+                } label: {
+                    Label("Mark older stories read", image: "mark-read")
+                }
+                
+                Divider()
+                
+                Button {
+                    cache.appDelegate.storiesCollection.toggleStorySaved(story.dictionary)
+                    cache.appDelegate.feedDetailViewController.reload()
+                } label: {
+                    Label(story.isSaved ? "Unsave this story" : "Save this story", image: "saved-stories")
+                }
             }
             
             Button {
@@ -116,7 +157,7 @@ struct CardView: View {
     }
     
     var highlightColor: Color {
-        if cache.isGrid {
+        if cache.isGrid || cache.isDashboard {
             return Color.themed([0xFDFCFA, 0xFAF5ED, 0x4F4F4F, 0x292B2C])
         } else {
             return Color.themed([0xFFFDEF, 0xEEE0CE, 0x303A40, 0x303030])
@@ -150,7 +191,7 @@ struct CardView: View {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
-                .frame(width: 80)
+                .frame(width: listPreviewWidth)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .padding([.top, .bottom], 10)
                 .padding(.leading, isLeft ? 15 : -10)
@@ -159,10 +200,27 @@ struct CardView: View {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
-                .frame(width: 90)
+                .frame(width: listPreviewWidth + 10)
                 .clipped()
                 .padding(.leading, isLeft ? 8 : -10)
                 .padding(.trailing, isLeft ? -10 : 0)
+        }
+    }
+    
+    var listPreviewWidth: CGFloat {
+        if cache.isMagazine {
+            switch cache.settings.content {
+                case .title:
+                    return 150
+                case .short:
+                    return 200
+                case .medium:
+                    return 300
+                case .long:
+                    return 350
+            }
+        } else {
+            return 80
         }
     }
 }
@@ -217,29 +275,40 @@ struct CardContentView: View {
                         }
                         
                         Text(story.title)
-                            .font(font(named: "WhitneySSm-Medium", size: 18).bold())
+                            .font(font(named: "WhitneySSm-Medium", size: 16).bold())
                             .foregroundColor(titleColor)
-                            .lineLimit(cache.isGrid ? StorySettings.Content.titleLimit : cache.settings.content.limit)
+                            .lineLimit(titleLimit)
                             .truncationMode(.tail)
+                        
+                        if !cache.isDashboard, cache.isList {
+                            Spacer()
+                            
+                            Text(story.dateAndAuthor)
+                                .font(font(named: "WhitneySSm-Medium", size: 12))
+                                .foregroundColor(dateAndAuthorColor)
+                                .padding([.top, .leading, .trailing], 5)
+                        }
                     }
                     .padding(.bottom, cache.settings.spacing == .compact ? -5 : 0)
                     
                     if cache.isGrid || cache.settings.content != .title {
-                        Text(story.content)
-                            .font(font(named: "WhitneySSm-Book", size: 15))
+                        Text(content)
+                            .font(font(named: "WhitneySSm-Book", size: 14))
                             .foregroundColor(contentColor)
-                            .lineLimit(cache.isGrid ? StorySettings.Content.contentLimit : cache.settings.content.limit)
+                            .lineLimit(contentLimit)
                             .truncationMode(.tail)
                             .padding(.top, 5)
                             .padding(.bottom, cache.settings.spacing == .compact ? -5 : 0)
                     }
                     
-                    Spacer()
-                    
-                    Text(story.dateAndAuthor)
-                        .font(font(named: "WhitneySSm-Medium", size: 12))
-                        .foregroundColor(dateAndAuthorColor)
-                        .padding(.top, 5)
+                    if cache.isDashboard || !cache.isList {
+                        Spacer()
+                        
+                        Text(story.dateAndAuthor)
+                            .font(font(named: "WhitneySSm-Medium", size: 12))
+                            .foregroundColor(dateAndAuthorColor)
+                            .padding(.top, 5)
+                    }
                 }.padding(.leading, -4)
             }
         }
@@ -262,6 +331,42 @@ struct CardContentView: View {
     
     func font(named: String, size: CGFloat) -> Font {
         return Font.custom(named, size: size + cache.settings.fontSize.offset, relativeTo: .caption)
+    }
+    
+    var titleLimit: Int {
+        if cache.isDashboard {
+            return cache.settings.content.baseLimit * 2
+        } else if cache.isList {
+            return cache.settings.content.baseLimit
+        } else if cache.isMagazine {
+            return cache.settings.content.baseLimit * 4
+        } else if cache.isGrid {
+            return StorySettings.Content.titleLimit
+        } else {
+            return cache.settings.content.baseLimit * 2
+        }
+    }
+    
+    var contentLimit: Int {
+        if cache.isDashboard {
+            return cache.settings.content.baseLimit * 2
+        } else if cache.isList {
+            return cache.settings.content.baseLimit
+        } else if cache.isMagazine {
+            return cache.settings.content.baseLimit * 4
+        } else if cache.isGrid {
+            return StorySettings.Content.contentLimit
+        } else {
+            return cache.settings.content.baseLimit * 2
+        }
+    }
+    
+    var content: String {
+        if cache.isMagazine {
+            return story.longContent
+        } else {
+            return story.shortContent
+        }
     }
     
     var feedColor: Color {
@@ -302,21 +407,31 @@ struct CardFeedBarView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            if let feed = story.feed, let color = feed.colorBarLeft {
+            if let colorBar {
                 Path { path in
                     path.move(to: CGPoint(x: 0, y: 0))
                     path.addLine(to: CGPoint(x: 0, y: geometry.size.height))
                 }
-                .stroke(Color(color), lineWidth: 4)
-            }
-            
-            if let feed = story.feed, let color = feed.colorBarRight {
+                .stroke(Color(colorBar.left), lineWidth: 4)
+                
                 Path { path in
                     path.move(to: CGPoint(x: 4, y: 0))
                     path.addLine(to: CGPoint(x: 4, y: geometry.size.height))
                 }
-                .stroke(Color(color), lineWidth: 4)
+                .stroke(Color(colorBar.right), lineWidth: 4)
             }
+        }
+    }
+    
+    var colorBar: (left: UIColor, right: UIColor)? {
+        guard let feed = story.feed, let left = feed.colorBarLeft, let right = feed.colorBarRight else {
+            return nil
+        }
+        
+        if story.isRead {
+            return (left: left.withAlphaComponent(0.4), right: right.withAlphaComponent(0.4))
+        } else {
+            return (left: left, right: right)
         }
     }
 }

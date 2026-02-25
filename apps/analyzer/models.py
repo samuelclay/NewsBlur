@@ -1,3 +1,11 @@
+"""Intelligence classifier models stored in MongoDB.
+
+Per-user classifiers (MClassifierTitle, MClassifierAuthor, MClassifierTag,
+MClassifierFeed, MClassifierPrompt) that score stories as liked (+1),
+neutral (0), or disliked (-1). Supports both keyword-based and AI prompt
+classifiers.
+"""
+
 import datetime
 import re
 import threading
@@ -888,6 +896,7 @@ def get_classifiers_for_user(
     classifier_tags=None,
     classifier_texts=None,
     classifier_urls=None,
+    folder_feed_ids=None,
 ):
     params = dict(user_id=user.pk)
     if isinstance(feed_id, list):
@@ -913,6 +922,28 @@ def get_classifiers_for_user(
         if not social_user_id and feed_id:
             params["social_user_id"] = 0
         classifier_feeds = list(MClassifierFeed.objects(**params))
+
+    # Filter scoped classifiers to only those applicable to the current feed.
+    # Without this, folder-scoped classifiers bleed into other folders for
+    # frontend text highlighting (intelligence scoring is unaffected since
+    # it does its own scope check via classifier_matches_story_feed).
+    if folder_feed_ids is not None and feed_id and not isinstance(feed_id, list):
+        active_feed_id = int(feed_id)
+        classifier_authors = [
+            c for c in classifier_authors if classifier_matches_story_feed(c, active_feed_id, folder_feed_ids)
+        ]
+        classifier_titles = [
+            c for c in classifier_titles if classifier_matches_story_feed(c, active_feed_id, folder_feed_ids)
+        ]
+        classifier_tags = [
+            c for c in classifier_tags if classifier_matches_story_feed(c, active_feed_id, folder_feed_ids)
+        ]
+        classifier_texts = [
+            c for c in classifier_texts if classifier_matches_story_feed(c, active_feed_id, folder_feed_ids)
+        ]
+        classifier_urls = [
+            c for c in classifier_urls if classifier_matches_story_feed(c, active_feed_id, folder_feed_ids)
+        ]
 
     feeds = []
     for f in classifier_feeds:

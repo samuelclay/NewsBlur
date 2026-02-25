@@ -4,6 +4,8 @@ from apps.rss_feeds.models import Feed
 
 
 class Command(BaseCommand):
+    help = "Index all feeds into Elasticsearch for full-text feed search and discovery."
+
     def add_arguments(self, parser):
         parser.add_argument(
             "-o", "--offset", dest="offset", type=int, default=0, help="Specify offset to start at"

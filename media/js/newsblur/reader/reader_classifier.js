@@ -662,7 +662,7 @@ var classifier_prototype = {
         var matching_text_regex = this.make_user_text_regex(story_content);
         var non_matching_texts = this.make_user_texts_non_matching(story_content);
         var non_matching_text_regex = this.make_user_text_regex_non_matching(story_content);
-        var current_folder_names = this.feed ? this.feed.in_folders() : [];
+        var current_folder_names = this.feed ? this.feed.flat_folder_paths() : [];
         var $scoped_groups = this.make_scoped_groups(non_matching_texts.concat(non_matching_text_regex), current_folder_names);
 
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
@@ -716,7 +716,7 @@ var classifier_prototype = {
         var matching_title_regex = this.make_user_title_regex_matching(story_title);
         var non_matching_titles = this.make_user_titles_non_matching(story_title);
         var non_matching_title_regex = this.make_user_title_regex_non_matching(story_title);
-        var current_folder_names = this.feed ? this.feed.in_folders() : [];
+        var current_folder_names = this.feed ? this.feed.flat_folder_paths() : [];
         var $scoped_groups = this.make_scoped_groups(non_matching_titles.concat(non_matching_title_regex), current_folder_names);
 
         var $this_story = $.make('div', { className: 'NB-classifier-this-story' }, [
@@ -774,7 +774,7 @@ var classifier_prototype = {
         var matching_url_regex = this.make_user_url_regex_matching(story_url);
         var non_matching_urls = this.make_user_urls_non_matching(story_url);
         var non_matching_url_regex = this.make_user_url_regex_non_matching(story_url);
-        var current_folder_names = this.feed ? this.feed.in_folders() : [];
+        var current_folder_names = this.feed ? this.feed.flat_folder_paths() : [];
         var $scoped_groups = this.make_scoped_groups(non_matching_urls.concat(non_matching_url_regex), current_folder_names);
 
         // Always create the "this story" div with the placeholder, plus any matching URLs
@@ -885,7 +885,7 @@ var classifier_prototype = {
 
         var $story_authors = has_story_author ?
             $.make('div', { className: 'NB-classifier-this-story' }, this.make_authors([story_author])) : '';
-        var current_folder_names = this.feed ? this.feed.in_folders() : [];
+        var current_folder_names = this.feed ? this.feed.flat_folder_paths() : [];
         var $scoped_groups = has_other_authors ?
             this.make_scoped_groups(this.make_authors(other_authors), current_folder_names) : [];
 
@@ -930,7 +930,7 @@ var classifier_prototype = {
 
         var $story_tags = has_story_tags ?
             $.make('div', { className: 'NB-classifier-this-story' }, this.make_tags(story_tags)) : '';
-        var current_folder_names = this.feed ? this.feed.in_folders() : [];
+        var current_folder_names = this.feed ? this.feed.flat_folder_paths() : [];
         var $scoped_groups = has_other_tags ?
             this.make_scoped_groups(this.make_tags(other_tags), current_folder_names) : [];
 
@@ -952,7 +952,7 @@ var classifier_prototype = {
 
     make_combined_publisher_section: function (feed) {
         var has_other_publishers = this.feed_publishers && this.feed_publishers.length > 0;
-        var current_folder_names = this.feed ? this.feed.in_folders() : [];
+        var current_folder_names = this.feed ? this.feed.flat_folder_paths() : [];
         var $scoped_groups = has_other_publishers ?
             this.make_scoped_groups(this.make_publishers(this.feed_publishers), current_folder_names) : [];
 
@@ -1554,23 +1554,15 @@ var classifier_prototype = {
             return;
         }
 
-        // For folder scope, find the folder this feed belongs to
+        // For folder scope, find the folder this feed belongs to using the full
+        // path (e.g., "Blogs - Tumblrs") matching the backend's flatten_folders() format.
         var folder_name = '';
         if (new_scope === 'folder') {
-            if (this.feed_id && NEWSBLUR.assets.folders) {
-                var feed_id = parseInt(this.feed_id, 10);
-                var find_in_collection = function (collection) {
-                    collection.each(function (item) {
-                        if (folder_name) return;
-                        if (item.is_folder()) {
-                            var feed_ids = item.feed_ids_in_folder();
-                            if (_.contains(feed_ids, feed_id)) {
-                                folder_name = item.get('folder_title') || '';
-                            }
-                        }
-                    });
-                };
-                find_in_collection(NEWSBLUR.assets.folders);
+            if (this.feed) {
+                var paths = this.feed.flat_folder_paths();
+                if (paths.length) {
+                    folder_name = paths[0];
+                }
             }
         }
 

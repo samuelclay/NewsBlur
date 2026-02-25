@@ -1,3 +1,5 @@
+"""Search tasks: index user subscriptions and feeds in Elasticsearch."""
+
 from newsblur_web.celeryapp import app
 from utils import log as logging
 

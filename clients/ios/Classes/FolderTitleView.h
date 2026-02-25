@@ -23,6 +23,7 @@
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) UnreadCountView *unreadCount;
 @property (nonatomic) UIButton *invisibleHeaderButton;
+@property (nonatomic) UIColor *selectionColor;
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer;
 

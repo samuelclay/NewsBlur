@@ -1,3 +1,5 @@
+"""OAuth views: authentication flows for connecting to social media platforms."""
+
 import datetime
 import urllib.error
 import urllib.parse

@@ -8,10 +8,10 @@
 
 import Foundation
 
-// The Feed, Story, and StoryCache classes could be quite useful going forward; Rather than calling getStory() to get the dictionary, could have a variation that returns a Story instance. Could fetch from the cache if available, or make and cache one from the dictionary. Would need to remove it from the cache when changing anything about a story. Could perhaps make the cache part of StoriesCollection.
+// The Folder, Feed, Story, and StoryCache classes could be quite useful going forward; Rather than calling getStory() to get the dictionary, could have a variation that returns a Story instance. Could fetch from the cache if available, or make and cache one from the dictionary. Would need to remove it from the cache when changing anything about a story. Could perhaps make the cache part of StoriesCollection.
 
 /// A story, wrapping the dictionary representation.
-class Story: Identifiable {
+@MainActor class Story: Identifiable {
     let id = UUID()
     let index: Int
     
@@ -20,7 +20,8 @@ class Story: Identifiable {
     var feed: Feed?
     
     var title = ""
-    var content = ""
+    var shortContent = ""
+    var longContent = ""
     var dateString = ""
     var timestamp = 0
     var isRead = false
@@ -82,6 +83,13 @@ class Story: Identifiable {
         load()
     }
     
+    init(index: Int, dictionary: AnyDictionary) {
+        self.index = index
+        self.dictionary = dictionary
+        
+        loadFromDictionary()
+    }
+    
     private func string(for key: String) -> String {
         return dictionary[key] as? String ?? ""
     }
@@ -104,6 +112,14 @@ class Story: Identifiable {
         
         dictionary = story
         
+        loadFromDictionary()
+    }
+    
+    private func loadFromDictionary() {
+        guard let appDelegate = NewsBlurAppDelegate.shared, let storiesCollection = appDelegate.storiesCollection else {
+            return
+        }
+        
         if let dictID = dictionary["story_feed_id"], let id = appDelegate.feedIdWithoutSearchQuery("\(dictID)") {
             if let cachedFeed = StoryCache.feeds[id] {
                 feed = cachedFeed
@@ -113,8 +129,23 @@ class Story: Identifiable {
             }
         }
         
+        let tempContent: String = string(for: "story_content")
+        let components = tempContent.components(separatedBy: .newlines)
+        let filteredContent = components.filter { !$0.isEmpty }.joined(separator: "[:*CR*:]")
+        
         title = (string(for: "story_title") as NSString).decodingHTMLEntities()
-        content = String(string(for: "story_content").convertHTML().decodingXMLEntities().decodingHTMLEntities().replacingOccurrences(of: "\n", with: " ").prefix(500))
+        longContent = String(filteredContent
+            .convertHTML()
+            .decodingXMLEntities()
+            .decodingHTMLEntities()
+            .replacingOccurrences(of: "[:*CR*:]", with: "\n")
+            .prefix(1500))
+        shortContent = String(tempContent
+            .convertHTML()
+            .decodingXMLEntities()
+            .decodingHTMLEntities()
+            .replacingOccurrences(of: "\n", with: " ")
+            .prefix(500))
         author = string(for: "story_authors").replacingOccurrences(of: "\"", with: "")
         timestamp = int(for:"story_timestamp")
         dateString = Utilities.formatShortDate(fromTimestamp: timestamp) ?? ""
@@ -132,12 +163,12 @@ class Story: Identifiable {
 }
 
 extension Story: Equatable {
-    static func == (lhs: Story, rhs: Story) -> Bool {
+    nonisolated static func == (lhs: Story, rhs: Story) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
-extension Story: CustomDebugStringConvertible {
+extension Story: @preconcurrency CustomDebugStringConvertible {
     var debugDescription: String {
         return "Story #\(index) \"\(title)\" in \(feed?.name ?? "<none>")"
     }

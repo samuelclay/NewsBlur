@@ -1,3 +1,9 @@
+"""MongoDB replica set monitoring utilities.
+
+Calculates replication lag between primary and secondary members of a
+MongoDB replica set by comparing optime timestamps.
+"""
+
 import pymongo
 
 PRIMARY_STATE = 1

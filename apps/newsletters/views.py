@@ -1,3 +1,5 @@
+"""Newsletter views: inbound email handling and newsletter encoding repair."""
+
 import json
 from pprint import pprint
 

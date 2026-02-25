@@ -10,9 +10,9 @@
 #import "NewsBlurAppDelegate.h"
 
 int main(int argc, char *argv[]) {
-    
+
     @autoreleasepool {
-        int retVal = UIApplicationMain(argc, argv, nil, @"NewsBlurAppDelegate");
+        int retVal = UIApplicationMain(argc, argv, @"NewsBlurApplication", @"NewsBlurAppDelegate");
         return retVal;
     }
 }

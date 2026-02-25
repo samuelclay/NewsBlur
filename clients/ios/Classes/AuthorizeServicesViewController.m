@@ -70,7 +70,6 @@
 //}
 
 - (void)doCancelButton {
-    [appDelegate.shareViewController adjustShareButtons];
     [appDelegate.modalNavigationController dismissViewControllerAnimated:YES completion:nil];
 }
 

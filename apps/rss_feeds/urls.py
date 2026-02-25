@@ -29,5 +29,6 @@ urlpatterns = [
     re_path(r"^discover/(?P<feed_id>\d+)/?$", views.discover_feeds, name="discover-feed"),
     re_path(r"^discover/feeds/?$", views.discover_feeds, name="discover-feeds"),
     re_path(r"^discover/stories/(?P<story_hash>\w+:\w+)/?$", views.discover_stories, name="discover-stories"),
+    re_path(r"^discover/index/?$", views.discover_index, name="discover-index"),
     re_path(r"^trending_sites/?$", views.trending_sites, name="trending-sites"),
 ]

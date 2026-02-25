@@ -1,3 +1,9 @@
+"""Request rate-limiting decorator backed by Django's cache framework.
+
+Provides a configurable class-based decorator that limits the number of
+requests per time period, keyed by IP address and optionally request path.
+"""
+
 import functools
 import hashlib
 from datetime import datetime, timedelta
