@@ -1054,6 +1054,10 @@
 		9F2E4183FEBE9EC681638BD3 /* AskAIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A388F989D14990BF30BBDBFF /* AskAIView.swift */; };
 		A1B2C3D4E5F60718293A4B5C /* CatalystModalDismissal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9B3E2F6A4B7C8D9E0F1A2B /* CatalystModalDismissal.swift */; };
 		A1F95DEA4557CF57C5EB91B7 /* StoryTraverseBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D4BA645C9D3D33418C93D86 /* StoryTraverseBar.swift */; };
+		A2B3C4D5E6F70819A3B4C5D6 /* StoryToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C6D7E8F9A01B2C3D4E5F60 /* StoryToolbar.swift */; };
+		A2B3C4D5E6F70819A3B4C5D7 /* StoryToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C6D7E8F9A01B2C3D4E5F60 /* StoryToolbar.swift */; };
+		A2B3C4D5E6F70819A3B4C5D8 /* StoryToolbarScrollHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C6D7E8F9A01B2C3D4E5F61 /* StoryToolbarScrollHandler.swift */; };
+		A2B3C4D5E6F70819A3B4C5D9 /* StoryToolbarScrollHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C6D7E8F9A01B2C3D4E5F61 /* StoryToolbarScrollHandler.swift */; };
 		A387B305A16381FA9C41F886 /* DiscoverFeedsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED9DC149A632195E96A73EF /* DiscoverFeedsModels.swift */; };
 		A9ADD6D438D022A948E0108F /* StoryTitlesHeaderBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4759AD1B9903B8D996728A8 /* StoryTitlesHeaderBar.swift */; };
 		AF998E32037213DB8DA29473 /* StoryTitlesHeaderBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4759AD1B9903B8D996728A8 /* StoryTitlesHeaderBar.swift */; };
@@ -1913,6 +1917,8 @@
 		784B50EB127E3F68008F90EA /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		788EF355127E5BC80088EDC5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		7D4BA645C9D3D33418C93D86 /* StoryTraverseBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryTraverseBar.swift; sourceTree = "<group>"; };
+		B5C6D7E8F9A01B2C3D4E5F60 /* StoryToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryToolbar.swift; sourceTree = "<group>"; };
+		B5C6D7E8F9A01B2C3D4E5F61 /* StoryToolbarScrollHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryToolbarScrollHandler.swift; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		8F9C85C1E2B069B65F539DFF /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		9EE21BE0E29B19B59DCEB5BF /* ReadTimeTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadTimeTracker.swift; sourceTree = "<group>"; };
@@ -2910,6 +2916,8 @@
 			children = (
 				171B6FFC25C4C7C8008638A9 /* StoryPagesViewController.swift */,
 				7D4BA645C9D3D33418C93D86 /* StoryTraverseBar.swift */,
+				B5C6D7E8F9A01B2C3D4E5F60 /* StoryToolbar.swift */,
+				B5C6D7E8F9A01B2C3D4E5F61 /* StoryToolbarScrollHandler.swift */,
 				FF6A233016448E0700E15989 /* StoryPagesObjCViewController.h */,
 				FF6A233116448E0700E15989 /* StoryPagesObjCViewController.m */,
 				177D017C28B05D9500F2F2DB /* StoryPagesCollectionCell.swift */,
@@ -5075,6 +5083,8 @@
 				175792372930605500490924 /* FeedTableCell.m in Sources */,
 				175792382930605500490924 /* StoryPagesViewController.swift in Sources */,
 				EEAAFD95739A8B97EB0B94A7 /* StoryTraverseBar.swift in Sources */,
+				A2B3C4D5E6F70819A3B4C5D7 /* StoryToolbar.swift in Sources */,
+				A2B3C4D5E6F70819A3B4C5D9 /* StoryToolbarScrollHandler.swift in Sources */,
 				175792392930605500490924 /* NewsBlurAppDelegate.m in Sources */,
 				17FBFA9B2A6AEA4100149651 /* SwipeRightToPopViewController.swift in Sources */,
 				1757923A2930605500490924 /* FeedChooserTitleView.m in Sources */,
@@ -5300,6 +5310,8 @@
 				43F44B1C159D8DBC00F48F8A /* FeedTableCell.m in Sources */,
 				171B6FFD25C4C7C8008638A9 /* StoryPagesViewController.swift in Sources */,
 				A1F95DEA4557CF57C5EB91B7 /* StoryTraverseBar.swift in Sources */,
+				A2B3C4D5E6F70819A3B4C5D6 /* StoryToolbar.swift in Sources */,
+				A2B3C4D5E6F70819A3B4C5D8 /* StoryToolbarScrollHandler.swift in Sources */,
 				1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */,
 				17FBFA9A2A6AEA4100149651 /* SwipeRightToPopViewController.swift in Sources */,
 				17432C861C5343C0003F8FD6 /* FeedChooserTitleView.m in Sources */,

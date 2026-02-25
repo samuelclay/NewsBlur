@@ -47,7 +47,7 @@ class SplitViewController: UISplitViewController {
 
         updateTheme()
 
-        view.addSubview(headerView)
+        view.insertSubview(headerView, at: 0)
 
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: view.topAnchor),

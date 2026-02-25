@@ -29,6 +29,7 @@ def select_briefing_stories(
     include_read=False,
     custom_section_prompts=None,
     active_sections=None,
+    exclude_hashes=None,
 ):
     """
     Select the most important stories for a user's briefing and categorize them
@@ -124,6 +125,18 @@ def select_briefing_stories(
             story_hash = h.decode() if isinstance(h, bytes) else h
             candidate_hashes.append(story_hash)
             feed_id_for_hash[story_hash] = feed_id
+
+    # scoring.py: Exclude stories that appeared in a previous briefing (e.g. earlier
+    # same-day briefing for twice_daily users) so the user never sees the same story twice.
+    if exclude_hashes:
+        before = len(candidate_hashes)
+        candidate_hashes = [h for h in candidate_hashes if h not in exclude_hashes]
+        feed_id_for_hash = {h: fid for h, fid in feed_id_for_hash.items() if h not in exclude_hashes}
+        if before != len(candidate_hashes):
+            logging.debug(
+                " ---> Briefing scoring: excluded %s stories from previous briefings"
+                % (before - len(candidate_hashes))
+            )
 
     if not candidate_hashes:
         return []
