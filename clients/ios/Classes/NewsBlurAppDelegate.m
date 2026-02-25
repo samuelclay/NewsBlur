@@ -924,17 +924,14 @@
                 screenSize = UIScreen.mainScreen.bounds.size;
             }
             BOOL isLandscape = screenSize.width > screenSize.height;
-#if TARGET_OS_MACCATALYST
             // On Mac, use a minimum width threshold instead of just aspect ratio.
-            // Below 900pt the sidebar should auto-hide to overlay mode.
-            BOOL isTooNarrow = screenSize.width < 900;
-            if (isTooNarrow) {
+            // Below 1100pt the sidebar should auto-hide to overlay mode.
+            BOOL isTooNarrow = screenSize.width < 1100;
+            
+            if (detailViewController.isMac && isTooNarrow) {
                 self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
                 self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeSecondaryOnly;
             } else if (isLandscape) {
-#else
-            if (isLandscape) {
-#endif
                 self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
                 self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
                 if (!self.splitViewController.isCollapsed) {
