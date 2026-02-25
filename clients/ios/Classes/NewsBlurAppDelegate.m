@@ -1574,7 +1574,7 @@
         if (!self.isPhone) {
             DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
             
-            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) barButtonItem:self.feedDetailViewController.settingsBarButton];
+            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:self.feedDetailViewController.storyTitlesHeaderBar.discoverPill sourceRect:self.feedDetailViewController.storyTitlesHeaderBar.discoverPill.bounds];
         } else {
             [self openDiscoverFeedsDialog:feedId];
         }
@@ -1591,7 +1591,7 @@
         if (!self.isPhone) {
             DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIdStrings];
             
-            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) barButtonItem:self.feedDetailViewController.settingsBarButton];
+            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:self.feedDetailViewController.storyTitlesHeaderBar.discoverPill sourceRect:self.feedDetailViewController.storyTitlesHeaderBar.discoverPill.bounds];
         } else {
             [self openDiscoverFeedsDialogWithFeedIds:feedIds];
         }
