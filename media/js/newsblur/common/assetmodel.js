@@ -323,6 +323,18 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                                 self._cluster_read_hashes = {};
                             }, 5000);
                         }
+                        // Update cluster_stories metadata on representative story
+                        var rep_story = self.stories.get_by_story_hash(original_hash);
+                        if (rep_story && rep_story.get('cluster_stories')) {
+                            var extra_set = {};
+                            _.each(extra_hashes, function (h) { extra_set[h] = true; });
+                            var cluster_stories = rep_story.get('cluster_stories');
+                            _.each(cluster_stories, function (cs) {
+                                if (extra_set[cs.story_hash]) {
+                                    cs.read_status = 1;
+                                }
+                            });
+                        }
                     }
                     if (callback) callback(resp);
                 }, error_callback, {
