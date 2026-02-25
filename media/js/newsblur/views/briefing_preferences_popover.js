@@ -95,6 +95,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             ]),
             this.make_section('How often', 'Schedule when your briefing is generated', [
                 this.make_control('frequency', [
+                    ['thrice_daily', '3x daily'],
                     ['twice_daily', '2x daily'],
                     ['daily', 'Daily'],
                     ['weekly', 'Weekly']
@@ -108,6 +109,11 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                     this.make_control('twice_daily_time', [
                         ['afternoon', 'Morning + Afternoon'],
                         ['evening', 'Morning + Evening']
+                    ]),
+                    this.make_control('thrice_daily_time', [
+                        ['morning', 'Morning'],
+                        ['afternoon', 'Afternoon'],
+                        ['evening', 'Evening']
                     ]),
                     this.make_control('preferred_day', [
                         ['sun', 'Sun'],
@@ -204,19 +210,30 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var frequency = this.$('.NB-briefing-control-frequency .NB-active').data('value') || 'daily';
         var $time_control = this.$('.NB-briefing-control-preferred_time');
         var $twice_control = this.$('.NB-briefing-control-twice_daily_time');
+        var $thrice_control = this.$('.NB-briefing-control-thrice_daily_time');
         var $day_control = this.$('.NB-briefing-control-preferred_day');
 
-        if (frequency === 'twice_daily') {
+        if (frequency === 'thrice_daily') {
+            $time_control.hide();
+            $twice_control.hide();
+            $thrice_control.show();
+            $day_control.hide();
+            // briefing_preferences_popover.js: All three slots are always active for 3x daily
+            $thrice_control.find('.NB-briefing-setting-option').addClass('NB-active');
+        } else if (frequency === 'twice_daily') {
             $time_control.hide();
             $twice_control.show();
+            $thrice_control.hide();
             $day_control.hide();
         } else if (frequency === 'daily') {
             $time_control.show();
             $twice_control.hide();
+            $thrice_control.hide();
             $day_control.hide();
         } else if (frequency === 'weekly') {
             $time_control.show();
             $twice_control.hide();
+            $thrice_control.hide();
             $day_control.show();
         }
     },
@@ -435,6 +452,12 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         // briefing_preferences_popover.js: Map twice_daily_time to preferred_time for storage
         if (setting_name === 'twice_daily_time') {
             this.save_preference({ preferred_time: value });
+            return;
+        }
+
+        // briefing_preferences_popover.js: All three slots always active for 3x daily
+        if (setting_name === 'thrice_daily_time') {
+            this.$('.NB-briefing-control-thrice_daily_time .NB-briefing-setting-option').addClass('NB-active');
             return;
         }
 

@@ -27,7 +27,7 @@ class MBriefing(mongo.Document):
     briefing_date = mongo.DateTimeField()
     period_start = mongo.DateTimeField()
     generated_at = mongo.DateTimeField()
-    frequency = mongo.StringField(choices=["daily", "twice_daily", "weekly"], default="daily")
+    frequency = mongo.StringField(choices=["daily", "twice_daily", "thrice_daily", "weekly"], default="daily")
     status = mongo.StringField(choices=["pending", "generating", "complete", "failed"], default="pending")
 
     meta = {
@@ -133,7 +133,7 @@ class MBriefingPreferences(mongo.Document):
     """Per-user briefing configuration stored in MongoDB."""
 
     user_id = mongo.IntField(unique=True)
-    frequency = mongo.StringField(choices=["daily", "twice_daily", "weekly"], default="daily")
+    frequency = mongo.StringField(choices=["daily", "twice_daily", "thrice_daily", "weekly"], default="daily")
     preferred_time = mongo.StringField(default=None)  # "HH:MM" in user's timezone, null = auto-detect
     preferred_day = mongo.StringField(default=None)  # Day of week for weekly frequency (sun, mon, tue, etc.)
     enabled = mongo.BooleanField(default=False)

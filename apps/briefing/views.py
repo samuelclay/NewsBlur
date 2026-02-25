@@ -231,7 +231,7 @@ def briefing_preferences(request):
 
     if request.method == "POST":
         frequency = request.POST.get("frequency")
-        if frequency in ("daily", "twice_daily", "weekly"):
+        if frequency in ("daily", "twice_daily", "thrice_daily", "weekly"):
             prefs.frequency = frequency
 
         preferred_time = request.POST.get("preferred_time")
