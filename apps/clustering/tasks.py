@@ -133,19 +133,22 @@ def ComputeStoryClusters(feed_id):
         % (feed_id, len(unclustered), len(candidate_hashes))
     )
 
-    # Build original_feed_map for branched feed resolution.
-    # Maps each feed_id to its original (non-branched) feed_id so that
-    # stories from branched/duplicate feeds are treated as the same source.
+    # Build original_feed_map and feed_title_map for branched feed resolution
+    # and feed-title-aware fuzzy matching. Combines both into one query.
     all_feed_ids = [feed_id] + related_feed_ids
     original_feed_map = {}
-    for f in Feed.objects.filter(pk__in=all_feed_ids).only("pk", "branch_from_feed"):
+    feed_title_map = {}
+    for f in Feed.objects.filter(pk__in=all_feed_ids).only("pk", "branch_from_feed", "feed_title"):
         if f.branch_from_feed_id:
             original_feed_map[f.pk] = f.branch_from_feed_id
         else:
             original_feed_map[f.pk] = f.pk
+        feed_title_map[f.pk] = f.feed_title or ""
 
     # Tier 1: Title-based clustering
-    title_clusters = find_title_clusters(stories, original_feed_map=original_feed_map)
+    title_clusters = find_title_clusters(
+        stories, original_feed_map=original_feed_map, feed_title_map=feed_title_map
+    )
 
     # Tier 2: Semantic clustering via Elasticsearch MLT on new stories only.
     # Use story titles as query text, searching both title and content fields
@@ -155,8 +158,12 @@ def ComputeStoryClusters(feed_id):
     semantic_clusters = {}
     if unclustered_stories:
         semantic_clusters = find_semantic_clusters(
-            unclustered_stories, all_feed_ids, lookback_date=lookback,
-            original_feed_map=original_feed_map, story_title_map=story_title_map,
+            unclustered_stories,
+            all_feed_ids,
+            lookback_date=lookback,
+            original_feed_map=original_feed_map,
+            story_title_map=story_title_map,
+            feed_title_map=feed_title_map,
         )
 
     # Merge title and semantic clusters
@@ -168,6 +175,7 @@ def ComputeStoryClusters(feed_id):
             story_feed_map=story_feed_map,
             original_feed_map=original_feed_map,
             story_title_map=story_title_map,
+            feed_title_map=feed_title_map,
         )
         store_clusters_to_redis(combined)
         logging.debug(
