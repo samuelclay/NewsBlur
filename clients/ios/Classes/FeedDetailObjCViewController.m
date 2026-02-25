@@ -1779,7 +1779,9 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         feedMarkReadButton.hidden = NO;
     }
 #endif
-
+    
+    [self updateStoryTitlesHeaderPillState];
+    
     self.pageFinished = NO;
     [self renderStories:confirmedNewStories];
 
