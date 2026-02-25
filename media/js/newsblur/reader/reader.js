@@ -2869,7 +2869,11 @@
 
             // Update URL (skip if navigated here via URL/back button — URL is already correct)
             if (!options.router) {
-                NEWSBLUR.router.navigate('/add');
+                var add_url_parts = ['add'];
+                if (options.tab) add_url_parts.push(options.tab);
+                if (options.category) add_url_parts.push(options.category);
+                if (options.subcategory) add_url_parts.push(options.subcategory);
+                NEWSBLUR.router.navigate('/' + add_url_parts.join('/'));
             }
 
             try {
@@ -6683,7 +6687,7 @@
                 }
                 $.ajax({
                     url: '/reader/feed/' + feed_id,
-                    data: { page: 1, include_hidden: true },
+                    data: { page: 1, include_hidden: true, insta_fetch: true },
                     type: 'GET',
                     success: function (data) {
                         if (data && data.fetched_once) {
