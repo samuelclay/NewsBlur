@@ -92,6 +92,22 @@ def GenerateBriefings():
             if not is_morning_window and not is_second_window:
                 skipped += 1
                 continue
+        elif prefs.frequency == "thrice_daily":
+            # tasks.py: For thrice_daily, check three independent windows:
+            # morning (8 AM), afternoon (1 PM), evening (5 PM).
+            def _slot_gen_utc(slot_name):
+                h, m = SLOT_TIMES[slot_name]
+                local_t = tz.localize(
+                    datetime.datetime.combine(local_now.date(), datetime.time(h, m))
+                )
+                return (local_t - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(tzinfo=None)
+
+            is_morning_window = now >= _slot_gen_utc("morning") and local_now.hour < 11
+            is_afternoon_window = now >= _slot_gen_utc("afternoon") and local_now.hour < 16
+            is_evening_window = now >= _slot_gen_utc("evening")
+            if not is_morning_window and not is_afternoon_window and not is_evening_window:
+                skipped += 1
+                continue
         else:
             if now < generation_time:
                 skipped += 1
@@ -113,6 +129,21 @@ def GenerateBriefings():
                 period_end = local_noon.astimezone(pytz.utc).replace(tzinfo=None)
             else:
                 period_start = local_noon.astimezone(pytz.utc).replace(tzinfo=None)
+                period_end = (
+                    (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
+                )
+        elif prefs.frequency == "thrice_daily":
+            # tasks.py: Split day into three 8-hour dedup periods.
+            local_8am = local_midnight + datetime.timedelta(hours=8)
+            local_4pm = local_midnight + datetime.timedelta(hours=16)
+            if local_now.hour < 8:
+                period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
+                period_end = local_8am.astimezone(pytz.utc).replace(tzinfo=None)
+            elif local_now.hour < 16:
+                period_start = local_8am.astimezone(pytz.utc).replace(tzinfo=None)
+                period_end = local_4pm.astimezone(pytz.utc).replace(tzinfo=None)
+            else:
+                period_start = local_4pm.astimezone(pytz.utc).replace(tzinfo=None)
                 period_end = (
                     (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
                 )
@@ -215,6 +246,8 @@ def GenerateUserBriefing(user_id, on_demand=False):
 
     if prefs.frequency == "weekly":
         period_start = now - datetime.timedelta(days=7)
+    elif prefs.frequency == "thrice_daily":
+        period_start = now - datetime.timedelta(hours=8)
     elif prefs.frequency == "twice_daily":
         period_start = now - datetime.timedelta(hours=12)
     else:
@@ -246,8 +279,8 @@ def GenerateUserBriefing(user_id, on_demand=False):
         exclude_hashes=exclude_hashes,
     )
 
-    # tasks.py: Lower minimum threshold for twice_daily since 12-hour windows may have fewer stories
-    min_stories = 1 if prefs.frequency == "twice_daily" else 3
+    # tasks.py: Lower minimum threshold for twice/thrice_daily since shorter windows may have fewer stories
+    min_stories = 1 if prefs.frequency in ("twice_daily", "thrice_daily") else 3
     if len(scored_stories) < min_stories:
         logging.debug(
             " ---> GenerateUserBriefing: only %s stories for user %s, skipping (need %s)"
