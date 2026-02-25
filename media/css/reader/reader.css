@@ -2996,15 +2996,235 @@ img.feed_favicon {
 }
 
 /* Dark theme */
+.NB-dark .NB-story-cluster-sources {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+}
 .NB-dark .NB-story-cluster-source {
-    color: #b0b0b0;
+    color: #c8c8c8;
 }
 .NB-dark .NB-story-cluster-source:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #d0d0d0;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e0e0e0;
 }
 .NB-dark .NB-story-cluster-source .NB-cluster-date {
-    color: #777;
+    color: #999;
+}
+.NB-dark .NB-story-cluster-source .NB-cluster-feed-title {
+    color: #d0d0d0;
+}
+
+/* Cluster source score indicators (single-line mode) */
+.NB-story-cluster-source .NB-cluster-sentiment {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    background-size: 8px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.NB-story-cluster-source.NB-story-positive .NB-cluster-sentiment {
+    background-image: url(/media/embed/icons/nouns/indicator-focus.svg);
+}
+.NB-story-cluster-source.NB-story-neutral .NB-cluster-sentiment {
+    background-image: url(/media/embed/icons/nouns/indicator-unread.svg);
+}
+.NB-story-cluster-source.NB-story-negative .NB-cluster-sentiment {
+    background-image: url(/media/embed/icons/nouns/indicator-hidden.svg);
+}
+
+/* No read-state dimming on cluster rows — size differentiates, not color */
+
+/* Dark theme - cluster score indicators (single-line mode) */
+.NB-dark .NB-story-cluster-source.NB-story-positive .NB-cluster-sentiment {
+    filter: brightness(1.4);
+}
+.NB-dark .NB-story-cluster-source.NB-story-negative .NB-cluster-sentiment {
+    filter: brightness(1.4);
+}
+.NB-dark .NB-story-cluster-source.NB-story-neutral .NB-cluster-sentiment {
+    filter: brightness(1.3);
+}
+
+/* ======== Cluster story title - expanded mode ======== */
+/* Compact modifier on .NB-story-title for cluster source rows */
+
+/* Reset padding and appearance for all layout contexts */
+.NB-story-title.NB-story-title-cluster,
+.NB-view-river .NB-story-title.NB-story-title-cluster,
+.NB-story-pane-west .NB-story-title.NB-story-title-cluster,
+.NB-view-river .NB-story-pane-west .NB-story-title.NB-story-title-cluster {
+    font-size: 11px;
+    line-height: 13px;
+    padding: 0 8px 0 42px;
+    background-color: transparent;
+    border-top: none;
+    border-bottom: none;
+    transition: none;
+}
+
+/* Right image: add space for smaller thumbnail */
+.NB-image-preview-small-right .NB-story-title.NB-story-title-cluster.NB-has-image,
+.NB-image-preview-large-right .NB-story-title.NB-story-title-cluster.NB-has-image,
+.NB-image-preview-small-right .NB-story-pane-west .NB-story-title.NB-story-title-cluster.NB-has-image,
+.NB-image-preview-large-right .NB-story-pane-west .NB-story-title.NB-story-title-cluster.NB-has-image {
+    padding-right: 52px;
+}
+
+/* Left image: add space on left */
+.NB-image-preview-small-left .NB-story-title.NB-story-title-cluster,
+.NB-image-preview-large-left .NB-story-title.NB-story-title-cluster,
+.NB-image-preview-small-left .NB-story-pane-west .NB-story-title.NB-story-title-cluster,
+.NB-image-preview-large-left .NB-story-pane-west .NB-story-title.NB-story-title-cluster {
+    padding-left: 88px;
+}
+
+/* Compact title link padding */
+.NB-story-title.NB-story-title-cluster a.story_title {
+    padding: 4px 4px 2px 4px;
+}
+
+/* Feed favicon column - positioned after border bars.
+   Use high specificity to beat .NB-story-pane-west overrides */
+.NB-story-cluster-sources .NB-story-title.NB-story-title-cluster .NB-story-feed {
+    display: block;
+    left: -30px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+}
+.NB-story-cluster-sources .NB-story-title.NB-story-title-cluster .NB-story-feed .feed_favicon {
+    width: 16px;
+    height: 16px;
+}
+.NB-story-cluster-sources .NB-story-title.NB-story-title-cluster .NB-story-feed .feed_title {
+    display: none;
+}
+
+/* Unread indicator column - positioned between favicon and title text.
+   Use high specificity to beat .NB-story-pane-west overrides */
+.NB-story-cluster-sources .NB-story-title.NB-story-title-cluster .NB-storytitles-sentiment {
+    left: -14px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+}
+/* Reposition indicator icons within the narrower sentiment div */
+.NB-story-title.NB-story-title-cluster.NB-story-positive .NB-storytitles-sentiment {
+    background-position: 2px 2px;
+    background-size: 10px;
+}
+.NB-story-title.NB-story-title-cluster.NB-story-neutral .NB-storytitles-sentiment {
+    background-position: 3px 3px;
+    background-size: 8px;
+}
+.NB-story-title.NB-story-title-cluster.NB-story-negative .NB-storytitles-sentiment {
+    background-position: 3px 3px;
+    background-size: 8px;
+}
+
+/* Smaller story image thumbnail */
+.NB-story-cluster-sources .NB-story-title .NB-storytitles-story-image {
+    width: 40px;
+    right: -44px;
+    top: 0;
+}
+/* Left image positioning */
+.NB-image-preview-small-left .NB-story-cluster-sources .NB-story-title .NB-storytitles-story-image,
+.NB-image-preview-large-left .NB-story-cluster-sources .NB-story-title .NB-storytitles-story-image,
+.NB-image-preview-small-left .NB-view-river .NB-story-cluster-sources .NB-story-title .NB-storytitles-story-image,
+.NB-image-preview-large-left .NB-view-river .NB-story-cluster-sources .NB-story-title .NB-storytitles-story-image {
+    right: inherit;
+    left: -80px;
+    top: 0;
+}
+
+/* Compact content preview - same color as parent, just tighter */
+.NB-story-title.NB-story-title-cluster .NB-storytitles-content-preview {
+    margin-top: 1px;
+    -webkit-line-clamp: 1;
+}
+
+/* Compact split bottom - tighter margin only, same font sizes as parent */
+.NB-story-title.NB-story-title-cluster .NB-story-title-split-bottom {
+    margin-top: 2px;
+}
+
+/* Remove ALL read-state dimming on cluster rows — size differentiates, not color */
+.NB-story-title.NB-story-title-cluster.read a.story_title {
+    color: #272727;
+}
+.NB-story-title.NB-story-title-cluster.read .NB-storytitles-feed-border-inner,
+.NB-story-title.NB-story-title-cluster.read .NB-storytitles-feed-border-outer {
+    opacity: 1;
+}
+.NB-story-title.NB-story-title-cluster.read .NB-storytitles-story-image {
+    opacity: 1;
+}
+.NB-story-title.NB-story-title-cluster.read .NB-storytitles-sentiment {
+    opacity: 1;
+}
+.NB-story-title.NB-story-title-cluster.read .feed_favicon {
+    opacity: .65;
+}
+.NB-story-title.NB-story-title-cluster.read .story_date {
+    color: #888785;
+}
+.NB-story-title.NB-story-title-cluster.read .NB-storytitles-author {
+    color: inherit;
+    font-weight: inherit;
+}
+.NB-story-title.NB-story-title-cluster.read .NB-middot {
+    color: inherit;
+}
+.NB-story-title.NB-story-title-cluster.read .NB-storytitles-content-preview {
+    color: #888785;
+}
+
+/* Hover state - subtle, no transform */
+.NB-story-title.NB-story-title-cluster:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+    transform: none;
+    border-radius: 0;
+    border-top: none;
+    border-bottom: none;
+}
+
+/* Dark mode - cluster expanded rows */
+.NB-dark .NB-story-title.NB-story-title-cluster {
+    background-color: transparent;
+    border-top: none;
+    border-bottom: none;
+}
+.NB-dark .NB-story-title.NB-story-title-cluster:hover,
+.NB-dark .NB-story-title.NB-story-title-cluster:hover:not(.NB-selected) {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-top: none;
+    border-bottom: none;
+}
+.NB-dark .NB-story-title.NB-story-title-cluster .NB-storytitles-sentiment {
+    filter: brightness(1.4);
+}
+.NB-dark .NB-story-title.NB-story-title-cluster.read:hover:not(.NB-selected) {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+/* Remove ALL read-state dimming on cluster rows in dark mode */
+.NB-dark .NB-story-title.NB-story-title-cluster.read a.story_title {
+    color: #ddd;
+}
+.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-storytitles-feed-border-inner,
+.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-storytitles-feed-border-outer {
+    opacity: 1;
+}
+.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-storytitles-author {
+    color: inherit;
+}
+.NB-dark .NB-story-title.NB-story-title-cluster.read .story_date {
+    color: inherit;
+}
+.NB-dark .read .NB-story-title-cluster .NB-storytitles-content-preview,
+.NB-dark .NB-story-title.NB-story-title-cluster.read .NB-storytitles-content-preview {
+    color: inherit;
 }
 
 /* Story detail cluster cards */
@@ -24178,6 +24398,19 @@ h5.NB-classifier-section-header {
 }
 
 .NB-filter-popover .segmented-control.NB-menu-manage-clustering-enabled {
+    margin-left: 0;
+}
+
+.NB-filter-popover .NB-clustering-preview-section {
+    margin-top: 8px;
+}
+
+.NB-filter-popover .NB-clustering-preview-section.NB-disabled {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.NB-filter-popover .segmented-control.NB-menu-manage-clustering-preview {
     margin-left: 0;
 }
 

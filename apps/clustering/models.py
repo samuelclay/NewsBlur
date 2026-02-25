@@ -544,7 +544,7 @@ def get_cluster_members(cluster_id):
     return [m.decode() if isinstance(m, bytes) else m for m in members]
 
 
-def apply_clustering_to_stories(stories, user):
+def apply_clustering_to_stories(stories, user, classifiers_context=None, include_expanded_data=False):
     """Apply clustering to a list of story dicts from the river view.
 
     For each story on the current page that belongs to a cluster, fetches
@@ -555,6 +555,11 @@ def apply_clustering_to_stories(stories, user):
     Args:
         stories: list of story dicts (already scored with 'score' key)
         user: User object
+        classifiers_context: dict with classifier_feeds, classifier_authors,
+            classifier_titles, classifier_tags, classifier_texts, classifier_urls,
+            folder_feed_ids, user_is_pro, unread_feed_story_hashes, read_filter
+        include_expanded_data: if True, include image_urls, story_content,
+            secure_image_thumbnails for expanded cluster preview
 
     Returns:
         Modified stories list with cluster_stories attached to representatives.
@@ -616,25 +621,104 @@ def apply_clustering_to_stories(stories, user):
                 if member_feed_id and member_feed_id in user_feed_ids:
                     off_page_hashes.add(h)
 
+    import zlib
+
     from apps.rss_feeds.models import Feed, MStory
+
+    # Determine read status for off-page members via Redis
+    off_page_read_hashes = set()
+    if off_page_hashes and classifiers_context:
+        read_filter = classifiers_context.get("read_filter", "unread")
+        unread_hashes = classifiers_context.get("unread_feed_story_hashes")
+        if read_filter == "unread":
+            # In unread mode, all displayed stories are unread
+            off_page_read_hashes = set()
+        elif unread_hashes is not None:
+            # In "all" mode, check against unread set
+            off_page_read_hashes = set(h for h in off_page_hashes if h not in unread_hashes)
+        else:
+            # Fallback: check Redis directly
+            read_pipe = r.pipeline()
+            read_stories_key = "RS:%s" % user.pk
+            for h in off_page_hashes:
+                read_pipe.sismember(read_stories_key, h)
+            read_results = read_pipe.execute()
+            off_page_read_hashes = {h for h, is_read in zip(off_page_hashes, read_results) if is_read}
 
     off_page_metadata = {}
     if off_page_hashes:
+        # Build the list of fields to fetch from MongoDB
+        only_fields = ["story_hash", "story_feed_id", "story_title", "story_date",
+                        "story_author_name", "story_tags"]
+        if include_expanded_data:
+            only_fields.extend(["image_urls", "story_content_z"])
+
         off_page_list = list(off_page_hashes)
         for batch_start in range(0, len(off_page_list), 100):
             batch = off_page_list[batch_start : batch_start + 100]
-            for story in MStory.objects(story_hash__in=batch).only(
-                "story_hash", "story_feed_id", "story_title", "story_date"
-            ):
+            for story in MStory.objects(story_hash__in=batch).only(*only_fields):
                 feed = Feed.get_by_id(story.story_feed_id)
-                off_page_metadata[story.story_hash] = {
+                meta = {
                     "story_hash": story.story_hash,
                     "story_feed_id": story.story_feed_id,
                     "story_title": story.story_title or "",
                     "story_date": story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else "",
                     "story_timestamp": str(int(story.story_date.timestamp())) if story.story_date else "",
                     "feed_title": feed.feed_title if feed else "",
+                    "story_authors": story.story_author_name or "",
                 }
+
+                # Compute intelligence score if classifiers are available
+                if classifiers_context:
+                    from apps.analyzer.models import (
+                        apply_classifier_authors,
+                        apply_classifier_feeds,
+                        apply_classifier_tags,
+                        apply_classifier_titles,
+                    )
+                    from apps.reader.models import UserSubscription
+
+                    cf = classifiers_context
+                    story_dict = {
+                        "story_feed_id": story.story_feed_id,
+                        "story_author_name": story.story_author_name or "",
+                        "story_tags": story.story_tags or [],
+                        "story_title": story.story_title or "",
+                    }
+                    intelligence = {
+                        "feed": apply_classifier_feeds(cf.get("classifier_feeds", []), story.story_feed_id),
+                        "author": apply_classifier_authors(cf.get("classifier_authors", []), story_dict,
+                                                            folder_feed_ids=cf.get("folder_feed_ids")),
+                        "tags": apply_classifier_tags(cf.get("classifier_tags", []), story_dict,
+                                                       folder_feed_ids=cf.get("folder_feed_ids")),
+                        "title": apply_classifier_titles(cf.get("classifier_titles", []), story_dict,
+                                                          folder_feed_ids=cf.get("folder_feed_ids")),
+                    }
+                    meta["intelligence"] = intelligence
+                    meta["score"] = UserSubscription.score_story(intelligence)
+                    meta["read_status"] = 1 if story.story_hash in off_page_read_hashes else 0
+                else:
+                    meta["intelligence"] = {"feed": 0, "author": 0, "tags": 0, "title": 0}
+                    meta["score"] = 0
+                    meta["read_status"] = 0
+
+                # Include expanded data (images, content) if requested
+                if include_expanded_data:
+                    image_urls = story.image_urls or []
+                    meta["image_urls"] = image_urls
+                    meta["secure_image_thumbnails"] = Feed.secure_image_thumbnails(image_urls) if image_urls else {}
+                    # Decompress and truncate story content
+                    content = ""
+                    if hasattr(story, "story_content_z") and story.story_content_z:
+                        try:
+                            content = zlib.decompress(story.story_content_z).decode("utf-8", errors="replace")
+                        except Exception:
+                            content = ""
+                    if len(content) > 500:
+                        content = content[:500]
+                    meta["story_content"] = content
+
+                off_page_metadata[story.story_hash] = meta
 
     # Group page stories by cluster_id
     cluster_page_stories = {}
@@ -678,19 +762,29 @@ def apply_clustering_to_stories(stories, user):
             seen_guids.add(guid)
 
             if member_hash in page_stories_by_hash:
-                # On-page member
+                # On-page member — already has intelligence, score, read_status
                 s = page_stories_by_hash[member_hash]
                 feed = Feed.get_by_id(s["story_feed_id"])
-                cluster_stories.append(
-                    {
-                        "story_hash": s["story_hash"],
-                        "story_feed_id": s["story_feed_id"],
-                        "story_title": s.get("story_title", ""),
-                        "story_date": s.get("story_date", ""),
-                        "story_timestamp": s.get("story_timestamp", ""),
-                        "feed_title": feed.feed_title if feed else "",
-                    }
-                )
+                entry = {
+                    "story_hash": s["story_hash"],
+                    "story_feed_id": s["story_feed_id"],
+                    "story_title": s.get("story_title", ""),
+                    "story_date": s.get("story_date", ""),
+                    "story_timestamp": s.get("story_timestamp", ""),
+                    "feed_title": feed.feed_title if feed else "",
+                    "story_authors": s.get("story_authors", ""),
+                    "intelligence": s.get("intelligence", {"feed": 0, "author": 0, "tags": 0, "title": 0}),
+                    "score": s.get("score", 0),
+                    "read_status": s.get("read_status", 0),
+                }
+                if include_expanded_data:
+                    entry["image_urls"] = s.get("image_urls", [])
+                    entry["secure_image_thumbnails"] = s.get("secure_image_thumbnails", {})
+                    content = s.get("story_content", "")
+                    if content and len(content) > 500:
+                        content = content[:500]
+                    entry["story_content"] = content
+                cluster_stories.append(entry)
             elif member_hash in off_page_metadata:
                 # Off-page member fetched from MongoDB
                 cluster_stories.append(off_page_metadata[member_hash])

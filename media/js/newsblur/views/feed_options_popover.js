@@ -341,6 +341,13 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
                         $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-on', 'data-setting': 'story_clustering', 'data-value': 'true', role: 'button' }, 'Cluster related stories'),
                         $.make('li', { className: 'NB-clustering-option NB-clustering-enabled-off', 'data-setting': 'story_clustering', 'data-value': 'false', role: 'button' }, 'Keep stories separate')
                     ]),
+                    $.make('div', { className: 'NB-clustering-preview-section' }, [
+                        $.make('div', { className: 'NB-clustering-read-label' }, 'Cluster preview:'),
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-preview' }, [
+                            $.make('li', { className: 'NB-clustering-option NB-clustering-preview-single', 'data-setting': 'cluster_preview_style', 'data-value': 'single_line', role: 'button' }, 'Single line'),
+                            $.make('li', { className: 'NB-clustering-option NB-clustering-preview-expanded', 'data-setting': 'cluster_preview_style', 'data-value': 'expanded', role: 'button' }, 'Expanded')
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-clustering-read-section' }, [
                         $.make('div', { className: 'NB-clustering-read-label' }, 'When reading a clustered story:'),
                         $.make('ul', { className: 'segmented-control NB-menu-manage-clustering-read' }, [
@@ -942,6 +949,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     update_clustering_ui: function () {
         var clustering_enabled = NEWSBLUR.assets.preference('story_clustering');
         var cluster_mark_read = NEWSBLUR.assets.preference('cluster_mark_read');
+        var cluster_preview_style = NEWSBLUR.assets.preference('cluster_preview_style') || 'single_line';
 
         // Default to true for archive users, false for non-archive
         if (clustering_enabled === undefined || clustering_enabled === null) {
@@ -953,10 +961,13 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
 
         this.$('.NB-clustering-enabled-on').toggleClass('NB-active', !!clustering_enabled);
         this.$('.NB-clustering-enabled-off').toggleClass('NB-active', !clustering_enabled);
+        this.$('.NB-clustering-preview-single').toggleClass('NB-active', cluster_preview_style === 'single_line');
+        this.$('.NB-clustering-preview-expanded').toggleClass('NB-active', cluster_preview_style === 'expanded');
         this.$('.NB-clustering-read-on').toggleClass('NB-active', !!cluster_mark_read);
         this.$('.NB-clustering-read-off').toggleClass('NB-active', !cluster_mark_read);
 
-        // Fade the mark-read section when clustering is disabled
+        // Fade the preview and mark-read sections when clustering is disabled
+        this.$('.NB-clustering-preview-section').toggleClass('NB-disabled', !clustering_enabled);
         this.$('.NB-clustering-read-section').toggleClass('NB-disabled', !clustering_enabled);
     },
 
@@ -973,14 +984,19 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             return;
         }
 
-        var bool_value = value === 'true' || value === true;
-        NEWSBLUR.assets.preference(setting, bool_value);
+        // cluster_preview_style uses string values, others use booleans
+        if (setting === 'cluster_preview_style') {
+            NEWSBLUR.assets.preference(setting, value);
+        } else {
+            var bool_value = value === 'true' || value === true;
+            NEWSBLUR.assets.preference(setting, bool_value);
+        }
 
         // Update UI
         this.update_clustering_ui();
 
-        // Reload feed to apply clustering changes
-        if (setting === 'story_clustering') {
+        // Reload feed to apply clustering or preview style changes
+        if (setting === 'story_clustering' || setting === 'cluster_preview_style') {
             this.reload_feed();
         }
     },

@@ -10,6 +10,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         "click .NB-storytitles-sentiment": "show_manage_menu",
         "click .NB-storytitles-shares": "select_story_shared",
         "click .NB-story-cluster-source": "select_cluster_story",
+        "click .NB-story-title-cluster": "select_cluster_story",
         "mouseenter .NB-story-title": "mouseenter_manage_icon",
         "mouseleave .NB-story-title": "mouseleave_manage_icon"
     },
@@ -472,6 +473,16 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         options = options || {};
         this.$st.toggleClass('read', !!this.model.get('read_status'));
 
+        // Optimistically mark cluster source rows as read when parent is read
+        if (this.model.get('read_status') && NEWSBLUR.assets.preference('cluster_mark_read')) {
+            this.$('.NB-story-cluster-source').addClass('read');
+            this.$('.NB-story-title-cluster').addClass('read');
+            var cluster_stories = this.model.get('cluster_stories');
+            if (cluster_stories) {
+                _.each(cluster_stories, function (cs) { cs.read_status = 1; });
+            }
+        }
+
         if (options.error_marking_unread) {
             var pane_alignment = NEWSBLUR.assets.preference('story_pane_anchor');
             var $star = this.$('.NB-storytitles-sentiment');
@@ -691,12 +702,16 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
 
         if (!NEWSBLUR.Globals.is_staff) return;
 
+        var preview_style = NEWSBLUR.assets.preference('cluster_preview_style') || 'single_line';
+        var is_expanded = preview_style === 'expanded';
+        var image_pref = NEWSBLUR.assets.preference('image_preview') || 'none';
+        var show_image = image_pref && image_pref !== 'none';
+
         var $container = $('<div class="NB-story-cluster-sources"></div>');
         $container.append('<span class="NB-staff-only-badge">STAFF ONLY</span>');
         _.each(cluster_stories, function (cs) {
             var feed = NEWSBLUR.assets.get_feed(cs.story_feed_id);
             var favicon = feed ? $.favicon_html(feed) : '';
-            var feed_title = cs.feed_title || (feed ? feed.get('feed_title') : '');
             var title = cs.story_title || '';
             var date = '';
             if (cs.story_timestamp) {
@@ -705,17 +720,78 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 var diff_hours = Math.round((now - d) / (1000 * 60 * 60));
                 date = diff_hours < 24 ? diff_hours + 'h ago' : Math.round(diff_hours / 24) + 'd ago';
             }
+            var feed_title = feed ? feed.get('feed_title') : '';
             var favicon_color = feed ? '#' + feed.get('favicon_color') : '#505050';
             var favicon_fade = feed ? '#' + feed.get('favicon_fade') : '#707070';
-            var $source = $('<div class="NB-story-cluster-source" data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '">' +
-                '<div class="NB-storytitles-feed-border-outer" style="background-color: ' + favicon_color + ';"></div>' +
-                '<div class="NB-storytitles-feed-border-inner" style="background-color: ' + favicon_fade + ';"></div>' +
-                favicon +
-                '<span class="NB-cluster-feed-title">' + _.escape(feed_title) + '</span>' +
-                '<span class="NB-cluster-story-title">' + _.escape(title) + '</span>' +
-                '<span class="NB-cluster-date">' + date + '</span>' +
-                '</div>');
-            $container.append($source);
+
+            // Score indicator class
+            var score = cs.score || 0;
+            var score_class = score > 0 ? 'NB-story-positive' : (score < 0 ? 'NB-story-negative' : 'NB-story-neutral');
+            var read_class = cs.read_status ? ' read' : '';
+
+            if (is_expanded) {
+                // Expanded mode: reuse .NB-story-title structure with .NB-story-title-cluster modifier
+                var image_html = '';
+                var has_image = show_image && cs.image_urls && cs.image_urls.length;
+                if (has_image) {
+                    var image_url = cs.image_urls[0];
+                    if (window.location.protocol == 'https:' && _.string.startsWith(image_url, "http://")) {
+                        var secure = cs.secure_image_thumbnails && cs.secure_image_thumbnails[image_url];
+                        if (secure) image_url = secure;
+                    }
+                    image_html = '<div class="NB-storytitles-story-image-container">' +
+                        '<div class="NB-storytitles-story-image" style="background-image: none, url(\'' + _.escape(image_url) + '\');"></div>' +
+                        '</div>';
+                }
+
+                var content_preview = '';
+                if (cs.story_content) {
+                    content_preview = cs.story_content
+                        .replace(/<p(>| [^>]+>)/ig, '\n\n')
+                        .replace(/(<br(\s*\/)?>\s*){3,}/igm, '\n\n')
+                        .replace(/<(\/)?h[1-6].*?>/igm, '\n\n')
+                        .replace(/<(div).*?>/igm, '\n\n')
+                        .replace(/<blockquote.*?>/igm, '\n\n')
+                        .replace(/<[^>]+>/ig, ' ')
+                        .replace(/&nbsp;/ig, ' ')
+                        .replace(/[\u00a0\u200c]/g, ' ')
+                        .replace(/\s+/gm, ' ');
+                    content_preview = _.string.prune(_.string.trim(content_preview), 120, "...");
+                }
+
+                var authors = cs.story_authors || '';
+                var $source = $(
+                    '<div class="NB-story-title NB-story-title-cluster ' + score_class + read_class +
+                    (has_image ? ' NB-has-image' : '') + '" ' +
+                    'data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '">' +
+                    '<div class="NB-storytitles-feed-border-inner" style="background-color: ' + favicon_fade + ';"></div>' +
+                    '<div class="NB-storytitles-feed-border-outer" style="background-color: ' + favicon_color + ';"></div>' +
+                    '<a class="story_title">' +
+                    '<div class="NB-storytitles-sentiment"></div>' +
+                    image_html +
+                    '<div class="NB-story-feed">' + favicon + '</div>' +
+                    '<span class="NB-storytitles-title">' + _.escape(title) + '</span>' +
+                    (content_preview ? '<div class="NB-storytitles-content-preview">' + _.escape(content_preview) + '</div>' : '') +
+                    '<div class="NB-story-title-split-bottom">' +
+                    '<span class="story_date">' + date + '</span> ' +
+                    (authors ? '<span class="NB-middot">&middot;</span> <span class="NB-storytitles-author">' + _.escape(authors) + '</span>' : '') +
+                    '</div>' +
+                    '</a>' +
+                    '</div>');
+                $container.append($source);
+            } else {
+                // Single line mode (default)
+                var $source = $('<div class="NB-story-cluster-source ' + score_class + read_class + '" ' +
+                    'data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '">' +
+                    '<div class="NB-storytitles-feed-border-outer" style="background-color: ' + favicon_color + ';"></div>' +
+                    '<div class="NB-storytitles-feed-border-inner" style="background-color: ' + favicon_fade + ';"></div>' +
+                    '<div class="NB-cluster-sentiment"></div>' +
+                    favicon +
+                    '<span class="NB-cluster-story-title">' + _.escape(title) + '</span>' +
+                    '<span class="NB-cluster-date">' + date + '</span>' +
+                    '</div>');
+                $container.append($source);
+            }
         });
         this.$('.NB-story-title').after($container);
     },
