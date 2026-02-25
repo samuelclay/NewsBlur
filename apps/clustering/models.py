@@ -62,6 +62,19 @@ def title_significant_words(title):
     return frozenset(_simple_stem(w) for w in norm.split() if w not in STOPWORDS and len(w) > 1)
 
 
+def title_words_excluding_feed(story_title, feed_title):
+    """Significant words from story title excluding words that appear in the feed title.
+
+    Prevents false fuzzy matches when story titles consistently start with
+    the feed name (e.g. "Saturday Morning Breakfast Cereal - Cow").
+    """
+    story_words = title_significant_words(story_title)
+    if feed_title:
+        feed_words = title_significant_words(feed_title)
+        story_words = story_words - feed_words
+    return story_words
+
+
 def story_guid_hash(story_hash):
     """Extract the GUID hash suffix from a story_hash (format: feed_id:guid_hash).
 
@@ -82,7 +95,7 @@ def resolve_feed_id(feed_id, original_feed_map):
     return feed_id
 
 
-def find_title_clusters(stories, original_feed_map=None):
+def find_title_clusters(stories, original_feed_map=None, feed_title_map=None):
     """Group stories by title similarity across different feeds.
 
     Uses two tiers:
@@ -152,13 +165,20 @@ def find_title_clusters(stories, original_feed_map=None):
             union(deduped_group[0]["story_hash"], deduped_group[i]["story_hash"])
 
     # Tier 2: Fuzzy matching via significant-word Jaccard similarity
-    # Build word-set index for stories not yet in a multi-feed cluster
+    # Build word-set index for stories not yet in a multi-feed cluster.
+    # When feed_title_map is provided, strip feed title words so that
+    # shared feed-name prefixes (e.g. "Saturday Morning Breakfast Cereal")
+    # don't dominate the similarity score.
     word_index = []
     for s in stories:
         h = s["story_hash"]
         if h not in parent:
             continue
-        words = title_significant_words(s.get("story_title") or "")
+        if feed_title_map:
+            feed_title = feed_title_map.get(s["story_feed_id"], "")
+            words = title_words_excluding_feed(s.get("story_title") or "", feed_title)
+        else:
+            words = title_significant_words(s.get("story_title") or "")
         if len(words) >= FUZZY_MIN_WORDS:
             word_index.append((h, s["story_feed_id"], words))
 
@@ -239,7 +259,15 @@ def find_title_clusters(stories, original_feed_map=None):
     return clusters
 
 
-def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30, original_feed_map=None, story_title_map=None):
+def find_semantic_clusters(
+    stories,
+    feed_ids,
+    lookback_date=None,
+    min_score=30,
+    original_feed_map=None,
+    story_title_map=None,
+    feed_title_map=None,
+):
     """Find semantically similar stories using Elasticsearch more_like_this.
 
     For each story, sends its title + content as text to ES MLT to find
@@ -360,11 +388,23 @@ def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30, 
             # clustering/models.py: Validate title-word overlap before unioning.
             # ES more_like_this can match on shared terms like "apple" + "app"
             # even when the stories are about completely different topics.
+            # When feed_title_map is provided, strip feed title words so
+            # shared feed-name prefixes don't inflate the intersection count.
             if story_title_map:
-                query_title_words = title_significant_words(story.get("story_title") or "")
+                if feed_title_map:
+                    query_feed_title = feed_title_map.get(story["story_feed_id"], "")
+                    query_title_words = title_words_excluding_feed(
+                        story.get("story_title") or "", query_feed_title
+                    )
+                else:
+                    query_title_words = title_significant_words(story.get("story_title") or "")
                 sim_title = story_title_map.get(sim_hash, "")
                 if sim_title:
-                    sim_title_words = title_significant_words(sim_title)
+                    if feed_title_map and sim_feed:
+                        sim_feed_title = feed_title_map.get(sim_feed, "")
+                        sim_title_words = title_words_excluding_feed(sim_title, sim_feed_title)
+                    else:
+                        sim_title_words = title_significant_words(sim_title)
                     if len(query_title_words & sim_title_words) < SEMANTIC_MIN_TITLE_INTERSECTION:
                         continue
                 else:
@@ -399,7 +439,14 @@ def find_semantic_clusters(stories, feed_ids, lookback_date=None, min_score=30, 
     return clusters
 
 
-def merge_clusters(title_clusters, semantic_clusters, story_feed_map=None, original_feed_map=None, story_title_map=None):
+def merge_clusters(
+    title_clusters,
+    semantic_clusters,
+    story_feed_map=None,
+    original_feed_map=None,
+    story_title_map=None,
+    feed_title_map=None,
+):
     """Merge title-based and semantic clusters using union-find.
 
     If any story appears in both a title cluster and a semantic cluster,
@@ -440,15 +487,23 @@ def merge_clusters(title_clusters, semantic_clusters, story_feed_map=None, origi
         for i in range(1, len(members)):
             union(members[0], members[i])
 
-    # Union within semantic clusters (with title-word validation when available)
+    # Union within semantic clusters (with title-word validation when available).
+    # When feed_title_map is provided, strip feed title words so shared
+    # feed-name prefixes don't inflate the intersection count.
     for members in semantic_clusters.values():
         for i in range(1, len(members)):
             if story_title_map:
                 title_a = story_title_map.get(members[0], "")
                 title_b = story_title_map.get(members[i], "")
                 if title_a and title_b:
-                    words_a = title_significant_words(title_a)
-                    words_b = title_significant_words(title_b)
+                    if feed_title_map and story_feed_map:
+                        ft_a = feed_title_map.get(story_feed_map.get(members[0]), "")
+                        ft_b = feed_title_map.get(story_feed_map.get(members[i]), "")
+                        words_a = title_words_excluding_feed(title_a, ft_a)
+                        words_b = title_words_excluding_feed(title_b, ft_b)
+                    else:
+                        words_a = title_significant_words(title_a)
+                        words_b = title_significant_words(title_b)
                     if len(words_a & words_b) < SEMANTIC_MIN_TITLE_INTERSECTION:
                         continue
             union(members[0], members[i])
@@ -645,8 +700,15 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
     off_page_metadata = {}
     if off_page_hashes:
         # Build the list of fields to fetch from MongoDB
-        only_fields = ["story_hash", "story_feed_id", "story_title", "story_date",
-                        "story_author_name", "story_tags", "image_urls"]
+        only_fields = [
+            "story_hash",
+            "story_feed_id",
+            "story_title",
+            "story_date",
+            "story_author_name",
+            "story_tags",
+            "image_urls",
+        ]
         if include_expanded_data:
             only_fields.append("story_content_z")
 
@@ -684,12 +746,21 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
                     }
                     intelligence = {
                         "feed": apply_classifier_feeds(cf.get("classifier_feeds", []), story.story_feed_id),
-                        "author": apply_classifier_authors(cf.get("classifier_authors", []), story_dict,
-                                                            folder_feed_ids=cf.get("folder_feed_ids")),
-                        "tags": apply_classifier_tags(cf.get("classifier_tags", []), story_dict,
-                                                       folder_feed_ids=cf.get("folder_feed_ids")),
-                        "title": apply_classifier_titles(cf.get("classifier_titles", []), story_dict,
-                                                          folder_feed_ids=cf.get("folder_feed_ids")),
+                        "author": apply_classifier_authors(
+                            cf.get("classifier_authors", []),
+                            story_dict,
+                            folder_feed_ids=cf.get("folder_feed_ids"),
+                        ),
+                        "tags": apply_classifier_tags(
+                            cf.get("classifier_tags", []),
+                            story_dict,
+                            folder_feed_ids=cf.get("folder_feed_ids"),
+                        ),
+                        "title": apply_classifier_titles(
+                            cf.get("classifier_titles", []),
+                            story_dict,
+                            folder_feed_ids=cf.get("folder_feed_ids"),
+                        ),
                     }
                     meta["intelligence"] = intelligence
                     meta["score"] = UserSubscription.score_story(intelligence)
@@ -702,7 +773,9 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
                 # Always include image URLs for cluster stories
                 image_urls = story.image_urls or []
                 meta["image_urls"] = image_urls
-                meta["secure_image_thumbnails"] = Feed.secure_image_thumbnails(image_urls) if image_urls else {}
+                meta["secure_image_thumbnails"] = (
+                    Feed.secure_image_thumbnails(image_urls) if image_urls else {}
+                )
 
                 # Include content preview only for expanded mode
                 if include_expanded_data:

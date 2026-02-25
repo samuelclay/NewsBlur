@@ -7,6 +7,7 @@ from apps.clustering.models import (
     merge_clusters,
     normalize_title,
     title_significant_words,
+    title_words_excluding_feed,
 )
 
 
@@ -245,9 +246,7 @@ class Test_SemanticClusterFalsePositive(TestCase):
         )
 
         # Rivian stories should still be clustered together
-        rivian_clustered = any(
-            "200:bbb" in members and "300:ccc" in members for members in merged.values()
-        )
+        rivian_clustered = any("200:bbb" in members and "300:ccc" in members for members in merged.values())
         self.assertTrue(rivian_clustered, "Rivian Apple Watch stories should remain clustered")
 
     def test_merge_without_title_map_unions_everything(self):
@@ -267,3 +266,128 @@ class Test_SemanticClusterFalsePositive(TestCase):
         # Without title validation, the false positive union is allowed
         found_both = any("100:aaa" in members and "200:bbb" in members for members in merged.values())
         self.assertTrue(found_both, "Without title map, all semantic matches should union")
+
+
+class Test_TitleWordsExcludingFeed(TestCase):
+    def test_strips_feed_title_words(self):
+        """Feed title words should be removed from significant words."""
+        words = title_words_excluding_feed(
+            "Saturday Morning Breakfast Cereal - Cow",
+            "Saturday Morning Breakfast Cereal",
+        )
+        self.assertEqual(words, frozenset({"cow"}))
+
+    def test_no_feed_title(self):
+        """Without feed title, all significant words are kept."""
+        words = title_words_excluding_feed("Saturday Morning Breakfast Cereal - Cow", "")
+        self.assertEqual(words, title_significant_words("Saturday Morning Breakfast Cereal - Cow"))
+
+    def test_feed_title_words_not_in_story(self):
+        """When feed title words don't appear in story, nothing is stripped."""
+        words = title_words_excluding_feed(
+            "Trump Signs Executive Order on Artificial Intelligence",
+            "New York Times",
+        )
+        expected = title_significant_words("Trump Signs Executive Order on Artificial Intelligence")
+        self.assertEqual(words, expected)
+
+
+class Test_FeedTitleStripping(TestCase):
+    def _smbc_stories(self):
+        """SMBC-style stories: shared feed-name prefix, unique single-word suffix."""
+        return [
+            {
+                "story_hash": "785:aaa",
+                "story_feed_id": 1,
+                "story_title": "Saturday Morning Breakfast Cereal - Cow",
+                "story_date": 1000,
+            },
+            {
+                "story_hash": "6165:bbb",
+                "story_feed_id": 2,
+                "story_title": "Saturday Morning Breakfast Cereal - Ant",
+                "story_date": 999,
+            },
+            {
+                "story_hash": "785:ccc",
+                "story_feed_id": 1,
+                "story_title": "Saturday Morning Breakfast Cereal - Out",
+                "story_date": 998,
+            },
+            {
+                "story_hash": "6165:ddd",
+                "story_feed_id": 2,
+                "story_title": "Saturday Morning Breakfast Cereal - Never",
+                "story_date": 997,
+            },
+            {
+                "story_hash": "785:eee",
+                "story_feed_id": 1,
+                "story_title": "Saturday Morning Breakfast Cereal - Nantucket",
+                "story_date": 996,
+            },
+            {
+                "story_hash": "6165:fff",
+                "story_feed_id": 2,
+                "story_title": "Saturday Morning Breakfast Cereal - Nantucket",
+                "story_date": 995,
+            },
+        ]
+
+    def _feed_title_map(self):
+        return {1: "Saturday Morning Breakfast Cereal", 2: "Saturday Morning Breakfast Cereal"}
+
+    def test_smbc_not_clustered_with_feed_title_map(self):
+        """SMBC-style stories should NOT fuzzy-match when feed title is stripped."""
+        stories = self._smbc_stories()
+        feed_title_map = self._feed_title_map()
+        clusters = find_title_clusters(stories, feed_title_map=feed_title_map)
+        # Only exact title match "Nantucket" should cluster (785:eee + 6165:fff)
+        self.assertEqual(len(clusters), 1)
+        cluster = list(clusters.values())[0]
+        self.assertIn("785:eee", cluster)
+        self.assertIn("6165:fff", cluster)
+        # Other stories should NOT be in any cluster
+        all_clustered = set()
+        for members in clusters.values():
+            all_clustered.update(members)
+        self.assertNotIn("785:aaa", all_clustered)
+        self.assertNotIn("6165:bbb", all_clustered)
+
+    def test_smbc_falsely_clustered_without_feed_title_map(self):
+        """Without feed_title_map, SMBC stories WOULD fuzzy-match (demonstrating the bug)."""
+        stories = self._smbc_stories()
+        clusters = find_title_clusters(stories)
+        # Without the fix, fuzzy matching chains everything together
+        all_clustered = set()
+        for members in clusters.values():
+            all_clustered.update(members)
+        # All 6 stories end up clustered
+        self.assertEqual(len(all_clustered), 6)
+
+    def test_legitimate_cluster_still_works_with_feed_title_map(self):
+        """Normal news stories should still cluster when feed title is stripped."""
+        stories = [
+            {
+                "story_hash": "111:aaa",
+                "story_feed_id": 1,
+                "story_title": "Backed by Anthropic, a Super PAC Begins an Ad Blitz in Support of A.I. Regulation",
+                "story_date": 1000,
+            },
+            {
+                "story_hash": "222:bbb",
+                "story_feed_id": 2,
+                "story_title": (
+                    "Anthropic-backed super PAC Public First Action begins running ads urging AI"
+                    " regulations in New Jersey; the PAC raised nearly $50M and now aims to raise"
+                    " $75M (Cecilia Kang/New York Times)"
+                ),
+                "story_date": 999,
+            },
+        ]
+        feed_title_map = {1: "New York Times", 2: "Techmeme"}
+        clusters = find_title_clusters(stories, feed_title_map=feed_title_map)
+        self.assertEqual(len(clusters), 1)
+        cluster = list(clusters.values())[0]
+        self.assertIn("111:aaa", cluster)
+        self.assertIn("222:bbb", cluster)
