@@ -3764,18 +3764,9 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [viewController addThemeSegmentedControl];
 
     UINavigationController *navController = self.navigationController ?: appDelegate.storyPagesViewController.navigationController;
-
-#if TARGET_OS_MACCATALYST
-    UIView *sourceView = navController.view;
-    CGRect sourceRect = CGRectMake(430, 0, 20, 20);
-    UINavigationController *menuNavController = [[UINavigationController alloc] initWithRootViewController:viewController];
-    menuNavController.navigationBarHidden = YES;
-    menuNavController.delegate = viewController;
-    [appDelegate showPopoverWithViewController:menuNavController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
-#else
+    
     UIView *pillView = self.storyTitlesHeaderBar.optionsPill;
     [viewController showFromNavigationController:navController barButtonItem:nil sourceView:pillView sourceRect:pillView.bounds permittedArrowDirections:UIPopoverArrowDirectionUp];
-#endif
 }
 
 - (IBAction)doOpenDiscoverFromPill:(id)sender {
