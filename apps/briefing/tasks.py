@@ -222,6 +222,16 @@ def GenerateUserBriefing(user_id, on_demand=False):
 
     feed = ensure_briefing_feed(user)
 
+    # tasks.py: Collect story hashes from any briefings generated within the current
+    # lookback period so the same story never appears in consecutive briefings
+    # (e.g. morning + afternoon for twice_daily users).
+    from apps.briefing.models import MBriefing
+
+    exclude_hashes = set()
+    recent_briefings = MBriefing.objects(user_id=user_id, briefing_date__gte=period_start)
+    for b in recent_briefings:
+        exclude_hashes.update(b.curated_story_hashes or [])
+
     publish("progress", {"step": "scoring", "message": "Selecting your top stories..."})
     scored_stories = select_briefing_stories(
         user_id,
@@ -233,6 +243,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
         include_read=prefs.include_read,
         custom_section_prompts=prefs.custom_section_prompts,
         active_sections=prefs.sections,
+        exclude_hashes=exclude_hashes,
     )
 
     # tasks.py: Lower minimum threshold for twice_daily since 12-hour windows may have fewer stories
@@ -346,6 +357,25 @@ def GenerateUserBriefing(user_id, on_demand=False):
     for key, hashes in summary_hashes.items():
         if key not in curated_sections:
             curated_sections[key] = [h for h in hashes if h in curated_hash_set]
+
+    # tasks.py: Reorder curated_hashes to match the editorial order from the AI summary.
+    # This ensures the sidebar story list matches the summary content order. Stories
+    # not mentioned in the summary (e.g. only in categorical sections) go at the end.
+    import re as re_mod
+
+    summary_order = re_mod.findall(r'data-story-hash="([^"]+)"', summary_html)
+    seen = set()
+    ordered_hashes = []
+    for h in summary_order:
+        if h in curated_hash_set and h not in seen:
+            ordered_hashes.append(h)
+            seen.add(h)
+    for h in curated_hashes:
+        if h not in seen:
+            ordered_hashes.append(h)
+            seen.add(h)
+    curated_hashes = ordered_hashes
+
     briefing, story = create_briefing_story(
         feed,
         user,
@@ -355,6 +385,8 @@ def GenerateUserBriefing(user_id, on_demand=False):
         on_demand=on_demand,
         curated_sections=curated_sections,
         section_summaries=section_summaries,
+        frequency=prefs.frequency,
+        period_start=period_start,
     )
 
     logging.debug(

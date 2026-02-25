@@ -574,7 +574,14 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     self.finishedAnimatingIn = NO;
     [MBProgressHUD hideHUDForView:self.view animated:NO];
     self.messageView.hidden = YES;
-    
+
+    // Force header pill bar layout immediately so pending constraints resolve
+    // before any animated calls (e.g. setSearchActive:) that would cause
+    // the header to fly in from the origin.
+    [UIView performWithoutAnimation:^{
+        [self.storyTitlesHeaderBar.headerContainer.superview layoutIfNeeded];
+    }];
+
     [self updateTextSize];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -2116,7 +2123,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         [bottomBorder.bottomAnchor constraintEqualToAnchor:banner.bottomAnchor],
         [bottomBorder.heightAnchor constraintEqualToConstant:1],
 
-        [banner.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+        [banner.topAnchor constraintEqualToAnchor:self.storyTitlesHeaderBar.headerContainer.bottomAnchor],
         [banner.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
         [banner.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
     ]];
@@ -2147,7 +2154,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         }
         [NSLayoutConstraint deactivateConstraints:toRemove];
         [NSLayoutConstraint activateConstraints:@[
-            [self.fetchingBannerView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor]
+            [self.fetchingBannerView.topAnchor constraintEqualToAnchor:self.storyTitlesHeaderBar.headerContainer.bottomAnchor]
         ]];
     }
 
@@ -2246,10 +2253,10 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     banner.tag = styleTag;
     self.fetchingBannerView = banner;
 
-    // Position below try-feed banner if it exists, otherwise at safe area top
+    // Position below try-feed banner if it exists, otherwise below the header pill bar
     NSLayoutAnchor *topAnchor = self.tryFeedBannerView
         ? self.tryFeedBannerView.bottomAnchor
-        : self.view.safeAreaLayoutGuide.topAnchor;
+        : self.storyTitlesHeaderBar.headerContainer.bottomAnchor;
 
     [NSLayoutConstraint activateConstraints:@[
         [accessoryView.widthAnchor constraintEqualToConstant:16],
@@ -2270,13 +2277,18 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         [banner.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
     ]];
 
-    [self updateTopBannerInsets];
+    // Animate in: expand height from 0 so banner slides out from under the header bar,
+    // pushing story titles down
+    NSLayoutConstraint *collapseHeight = [banner.heightAnchor constraintEqualToConstant:0];
+    collapseHeight.priority = UILayoutPriorityRequired;
+    collapseHeight.active = YES;
+    [self.view layoutIfNeeded];
 
-    // Animate in
-    banner.alpha = 0;
-    [UIView animateWithDuration:0.3 animations:^{
-        banner.alpha = 1;
-    }];
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        collapseHeight.active = NO;
+        [self updateTopBannerInsets];
+        [self.view layoutIfNeeded];
+    } completion:nil];
 }
 
 - (void)hideFetchingBanner {
@@ -2285,10 +2297,19 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     UIView *banner = self.fetchingBannerView;
     self.fetchingBannerView = nil;
 
-    // Cancel any in-flight animations on the banner
-    [banner.layer removeAllAnimations];
-    [banner removeFromSuperview];
-    [self updateTopBannerInsets];
+    // Animate out: collapse height so banner slides back up under the header bar,
+    // pulling story titles up
+    NSLayoutConstraint *collapseHeight = [banner.heightAnchor constraintEqualToConstant:0];
+    collapseHeight.priority = UILayoutPriorityRequired;
+
+    [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        collapseHeight.active = YES;
+        [self updateTopBannerInsets];
+        [self.view layoutIfNeeded];
+    } completion:^(BOOL finished) {
+        [banner.layer removeAllAnimations];
+        [banner removeFromSuperview];
+    }];
 }
 
 - (void)updateTopBannerInsets {
@@ -3556,8 +3577,10 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }];
     }
 
-    [appDelegate addSplitControlToMenuController:viewController];
-    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        [appDelegate addSplitControlToMenuController:viewController];
+    }
+
     if (dashboard) {
         NSString *preferenceKey = @"dashboard_layout";
         NSArray *titles = @[@"Single", @"Columns", @"Rows"];

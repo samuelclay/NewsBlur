@@ -532,7 +532,7 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     # --- Phase 5: Embed favicons BEFORE story links as visual bullets ---
 
-    favicon_style = "width:16px;height:16px;border-radius:2px;margin:0;vertical-align:top;"
+    favicon_style = "width:16px;height:16px;border-radius:2px;margin:4px 0 0 0;vertical-align:top;"
 
     def _replace_story_link(match):
         tag = match.group(0)
@@ -583,7 +583,7 @@ def embed_briefing_icons(summary_html, scored_stories):
             '%s<table cellpadding="0" cellspacing="0" border="0" style="width:100%%;">'
             "<tr>"
             '<td style="width:22px;vertical-align:top;padding-top:0;">%s</td>'
-            '<td style="vertical-align:top;">%s</td>'
+            '<td style="vertical-align:top;font-size:18px;line-height:1.5;">%s</td>'
             "</tr></table></li>" % (li_tag, favicon_img, rest)
         )
 
@@ -616,7 +616,7 @@ def embed_briefing_icons(summary_html, scored_stories):
             '%s<table cellpadding="0" cellspacing="0" border="0" style="width:100%%;">'
             "<tr>"
             '<td style="width:22px;vertical-align:top;padding-top:0;">%s</td>'
-            '<td style="vertical-align:top;">%s</td>'
+            '<td style="vertical-align:top;font-size:18px;line-height:1.5;">%s</td>'
             "</tr></table></div>" % (div_tag, favicon_img, rest)
         )
 
