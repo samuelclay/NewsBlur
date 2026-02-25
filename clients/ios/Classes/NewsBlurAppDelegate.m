@@ -1553,20 +1553,11 @@
     if (@available(iOS 15.0, *)) {
         if (!self.isPhone) {
             DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
-            discoverVC.modalPresentationStyle = UIModalPresentationPopover;
-            discoverVC.preferredContentSize = CGSizeMake(500, 550);
-
-            UIPopoverPresentationController *popover = discoverVC.popoverPresentationController;
-            popover.delegate = self;
             if (sourceView) {
-                popover.sourceView = sourceView;
-                popover.sourceRect = sourceView.bounds;
+                [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:sourceView sourceRect:sourceView.bounds];
             } else {
-                popover.barButtonItem = self.feedDetailViewController.settingsBarButton;
+                [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) barButtonItem:self.feedDetailViewController.settingsBarButton];
             }
-            popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
-
-            [self.navigationControllerForPopover presentViewController:discoverVC animated:YES completion:nil];
         } else {
             [self openDiscoverFeedsDialog:feedId];
         }
@@ -1607,23 +1598,14 @@
         for (id feedId in feedIds) {
             [feedIdStrings addObject:[NSString stringWithFormat:@"%@", feedId]];
         }
-
+        
         if (!self.isPhone) {
             DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIdStrings];
-            discoverVC.modalPresentationStyle = UIModalPresentationPopover;
-            discoverVC.preferredContentSize = CGSizeMake(500, 550);
-
-            UIPopoverPresentationController *popover = discoverVC.popoverPresentationController;
-            popover.delegate = self;
             if (sourceView) {
-                popover.sourceView = sourceView;
-                popover.sourceRect = sourceView.bounds;
+                [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:sourceView sourceRect:sourceView.bounds];
             } else {
-                popover.barButtonItem = self.feedDetailViewController.settingsBarButton;
+                [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) barButtonItem:self.feedDetailViewController.settingsBarButton];
             }
-            popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
-
-            [self.navigationControllerForPopover presentViewController:discoverVC animated:YES completion:nil];
         } else {
             [self openDiscoverFeedsDialogWithFeedIds:feedIds];
         }
