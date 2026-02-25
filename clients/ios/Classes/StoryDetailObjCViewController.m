@@ -2248,6 +2248,14 @@
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
     [self loadStory];
+
+    // After the full story HTML finishes loading, update the viewport width to
+    // match the actual web view size. On initial load, drawStory may fire before
+    // the view is laid out at its final device width (e.g., XIB default 414pt vs
+    // iPhone 13's 390pt), baking the wrong width into the viewport meta tag.
+    if (self.hasStory) {
+        [self changeWebViewWidth];
+    }
 }
 
 - (void)loadStory {
