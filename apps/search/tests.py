@@ -419,7 +419,9 @@ class Test_BriefingCustomQuery(TestCase):
         mock_es = MagicMock()
         mock_es_class.return_value = mock_es
         mock_es.indices.flush.return_value = None
-        mock_es.search.side_effect = elasticsearch.exceptions.ConnectionError("N/A", "test", Exception("test"))
+        mock_es.search.side_effect = elasticsearch.exceptions.ConnectionError(
+            "N/A", "test", Exception("test")
+        )
 
         date_start = datetime.datetime(2025, 1, 1)
         date_end = datetime.datetime(2025, 1, 2)
@@ -432,9 +434,7 @@ class Test_BriefingCustomQuery(TestCase):
         mock_es = MagicMock()
         mock_es_class.return_value = mock_es
         mock_es.indices.flush.return_value = None
-        mock_es.search.return_value = {
-            "hits": {"hits": [{"_id": "123:abc"}, {"_id": "456:def"}]}
-        }
+        mock_es.search.return_value = {"hits": {"hits": [{"_id": "123:abc"}, {"_id": "456:def"}]}}
 
         date_start = datetime.datetime(2025, 1, 1)
         date_end = datetime.datetime(2025, 1, 2)

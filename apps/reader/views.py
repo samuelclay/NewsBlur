@@ -1270,7 +1270,8 @@ def load_single_feed(request, feed_id):
             }
             include_expanded = user_prefs.get("cluster_preview_style") == "expanded"
             stories = apply_clustering_to_stories(
-                stories, user,
+                stories,
+                user,
                 classifiers_context=classifiers_context,
                 include_expanded_data=include_expanded,
             )
@@ -2411,7 +2412,8 @@ def load_river_stories__redis(request):
             }
             include_expanded = user_preferences.get("cluster_preview_style") == "expanded"
             stories = apply_clustering_to_stories(
-                stories, user,
+                stories,
+                user,
                 classifiers_context=classifiers_context,
                 include_expanded_data=include_expanded,
             )
