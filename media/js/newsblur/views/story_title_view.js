@@ -781,13 +781,25 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 $container.append($source);
             } else {
                 // Single line mode (default)
-                var $source = $('<div class="NB-story-cluster-source ' + score_class + read_class + '" ' +
+                var cluster_image_html = '';
+                var has_cluster_image = show_image && cs.image_urls && cs.image_urls.length;
+                if (has_cluster_image) {
+                    var cluster_image_url = cs.image_urls[0];
+                    if (window.location.protocol == 'https:' && _.string.startsWith(cluster_image_url, "http://")) {
+                        var cluster_secure = cs.secure_image_thumbnails && cs.secure_image_thumbnails[cluster_image_url];
+                        if (cluster_secure) cluster_image_url = cluster_secure;
+                    }
+                    cluster_image_html = '<div class="NB-cluster-story-image" style="background-image: url(\'' + _.escape(cluster_image_url) + '\');"></div>';
+                }
+                var $source = $('<div class="NB-story-cluster-source ' + score_class + read_class +
+                    (has_cluster_image ? ' NB-has-cluster-image' : '') + '" ' +
                     'data-story-hash="' + cs.story_hash + '" data-feed-id="' + cs.story_feed_id + '">' +
                     '<div class="NB-storytitles-feed-border-outer" style="background-color: ' + favicon_color + ';"></div>' +
                     '<div class="NB-storytitles-feed-border-inner" style="background-color: ' + favicon_fade + ';"></div>' +
                     '<div class="NB-cluster-sentiment"></div>' +
                     favicon +
                     '<span class="NB-cluster-story-title">' + _.escape(title) + '</span>' +
+                    cluster_image_html +
                     '<span class="NB-cluster-date">' + date + '</span>' +
                     '</div>');
                 $container.append($source);
