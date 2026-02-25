@@ -102,8 +102,8 @@ def GenerateBriefings():
                 )
                 return (local_t - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(tzinfo=None)
 
-            is_morning_window = now >= _slot_gen_utc("morning") and local_now.hour < 11
-            is_afternoon_window = now >= _slot_gen_utc("afternoon") and local_now.hour < 16
+            is_morning_window = now >= _slot_gen_utc("morning") and local_now.hour < 13
+            is_afternoon_window = now >= _slot_gen_utc("afternoon") and local_now.hour < 17
             is_evening_window = now >= _slot_gen_utc("evening")
             if not is_morning_window and not is_afternoon_window and not is_evening_window:
                 skipped += 1
@@ -133,17 +133,17 @@ def GenerateBriefings():
                     (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
                 )
         elif prefs.frequency == "thrice_daily":
-            # tasks.py: Split day into three 8-hour dedup periods.
+            # tasks.py: Dedup periods align with delivery times: 8 AM, 1 PM, 5 PM.
             local_8am = local_midnight + datetime.timedelta(hours=8)
-            local_4pm = local_midnight + datetime.timedelta(hours=16)
+            local_1pm = local_midnight + datetime.timedelta(hours=13)
             if local_now.hour < 8:
                 period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
                 period_end = local_8am.astimezone(pytz.utc).replace(tzinfo=None)
-            elif local_now.hour < 16:
+            elif local_now.hour < 13:
                 period_start = local_8am.astimezone(pytz.utc).replace(tzinfo=None)
-                period_end = local_4pm.astimezone(pytz.utc).replace(tzinfo=None)
+                period_end = local_1pm.astimezone(pytz.utc).replace(tzinfo=None)
             else:
-                period_start = local_4pm.astimezone(pytz.utc).replace(tzinfo=None)
+                period_start = local_1pm.astimezone(pytz.utc).replace(tzinfo=None)
                 period_end = (
                     (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
                 )
