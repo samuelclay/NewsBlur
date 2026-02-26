@@ -3548,7 +3548,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         // or feed.feed_id (from search results), NOT feed.id (which may be PopularFeed PK).
         // Only check feeds collection, not temp_feeds (which contains try feeds).
         var feed_id = feed.feed || feed.feed_id || feed.id;
-        var subscribed = feed_id && NEWSBLUR.assets.feeds.get(feed_id);
+        var feed_model = feed_id && NEWSBLUR.assets.feeds.get(feed_id);
+        var subscribed = feed_model && !feed_model.get('temp');
 
         // Get display preferences
         var image_preview = NEWSBLUR.assets.preference('add_site_image_preview') || 'large';
@@ -3719,9 +3720,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             show_empty: show_empty
         });
 
-        // Check if already subscribed (only feeds collection, not temp_feeds from try view)
+        // Check if already subscribed (exclude temp feeds from try view)
         var feed_id = config.feed_id;
-        var subscribed = feed_id && NEWSBLUR.assets.feeds.get(feed_id);
+        var feed_model = feed_id && NEWSBLUR.assets.feeds.get(feed_id);
+        var subscribed = feed_model && !feed_model.get('temp');
 
         var $actions;
         var $stats_btn = $.make('div', {
