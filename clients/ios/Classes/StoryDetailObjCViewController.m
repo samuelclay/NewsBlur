@@ -107,7 +107,8 @@
     
     self.webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     // Content inset is set dynamically in updateContentInsetForNavigationBarAlpha:
-    
+    self.webView.scrollView.delegate = self;
+
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
@@ -1189,8 +1190,8 @@
     NSString *askAIButton = showAskAI ? @
                              "  <div class='NB-share-button NB-ask-ai-button NB-button'>"
                              "    <a href=\"http://ios.newsblur.com/ask-ai\"><div>"
-                             "      <span class=\"NB-icon\"></span>"
                              "      <span class=\"NB-sideoption-text\">Ask AI</span>"
+                             "      <span class=\"NB-icon\"></span>"
                              "    </div></a>"
                              "  </div>" : @"";
 
@@ -1200,20 +1201,20 @@
                              "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
                              "  <div class='NB-share-button NB-train-button NB-button'>"
                              "    <a href=\"http://ios.newsblur.com/train\"><div>"
-                             "      <span class=\"NB-icon\"></span>"
                              "      <span class=\"NB-sideoption-text\">Train</span>"
+                             "      <span class=\"NB-icon\"></span>"
                              "    </div></a>"
                              "  </div>"
                              "  <div class='NB-share-button NB-share-share-button NB-button %@'>"
                              "    <a href=\"http://ios.newsblur.com/share\"><div>"
-                             "      <span class=\"NB-icon\"></span>"
                              "      <span class=\"NB-sideoption-text\">%@</span>"
+                             "      <span class=\"NB-icon\"></span>"
                              "    </div></a>"
                              "  </div>"
                              "  <div class='NB-share-button NB-save-button NB-button %@'>"
                              "    <a href=\"http://ios.newsblur.com/save/save/\"><div>"
-                             "      <span class=\"NB-icon\"></span>"
                              "      <span class=\"NB-sideoption-text\">%@</span>"
+                             "      <span class=\"NB-icon\"></span>"
                              "    </div></a>"
                              "  </div>"
                              "%@"
@@ -1669,6 +1670,23 @@
 }
 
 #pragma mark - Scrolling
+
+- (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView {
+    StoryPagesObjCViewController *pagesVC = appDelegate.storyPagesViewController;
+    if (pagesVC.isCustomToolbarActive) {
+        [pagesVC.toolbarScrollHandler reset];
+        [UIView animateWithDuration:0.3 animations:^{
+            [pagesVC setToolbarOffset:0];
+        }];
+    } else {
+        pagesVC.navBarFadeAccumulator = 0.0;
+        pagesVC.traverseFadeAccumulator = 0.0;
+        [UIView animateWithDuration:0.3 animations:^{
+            [pagesVC setNavigationBarFadeAlpha:1.0];
+        }];
+    }
+    return YES;
+}
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqual:@"contentOffset"]) {
