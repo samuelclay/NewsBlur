@@ -97,9 +97,7 @@ def GenerateBriefings():
             # morning (8 AM), afternoon (1 PM), evening (5 PM).
             def _slot_gen_utc(slot_name):
                 h, m = SLOT_TIMES[slot_name]
-                local_t = tz.localize(
-                    datetime.datetime.combine(local_now.date(), datetime.time(h, m))
-                )
+                local_t = tz.localize(datetime.datetime.combine(local_now.date(), datetime.time(h, m)))
                 return (local_t - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(tzinfo=None)
 
             is_morning_window = now >= _slot_gen_utc("morning") and local_now.hour < 13
