@@ -28599,6 +28599,11 @@ h5.NB-classifier-section-header {
     color: #333;
 }
 
+.NB-add-site-section-title-sep {
+    color: #999;
+    font-weight: 400;
+}
+
 .NB-add-site-section-count {
     font-size: 12px;
     color: #888;
@@ -28889,7 +28894,7 @@ h5.NB-classifier-section-header {
     gap: 5px;
     margin-top: 10px;
     padding: 8px 10px;
-    background: #F4F5F7;
+    background: #E8EAED;
     border-radius: 8px;
 }
 
@@ -29463,13 +29468,17 @@ h5.NB-classifier-section-header {
     color: #E0E0E0;
 }
 
+.NB-dark .NB-add-site-section-title-sep {
+    color: #666;
+}
+
 .NB-dark .NB-add-site-section-count {
     background: #444;
     color: #AAA;
 }
 
 .NB-dark .NB-add-site-section-search {
-    background: #252729;
+    background: #292B2E;
     border-color: #404346;
 }
 
@@ -29478,8 +29487,11 @@ h5.NB-classifier-section-header {
     opacity: 0.5;
 }
 
-.NB-dark .NB-add-site-section-search-input {
+.NB-dark .NB-add-site-section-search input.NB-add-site-section-search-input {
     color: #E0E0E0;
+    background: transparent;
+    background-color: transparent;
+    border: none;
 }
 
 .NB-dark .NB-add-site-section-search-input::placeholder {

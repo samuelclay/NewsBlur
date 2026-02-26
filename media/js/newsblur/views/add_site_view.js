@@ -1495,7 +1495,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     make_persistent_section: function (config) {
         var state = config.state;
         var title_text = this.get_section_title(state, config.default_title, config.type_label);
-        var title_parts = [title_text];
+        var title_parts = [].concat(title_text);
         if (state.popular_total !== undefined) {
             title_parts.push(' ');
             title_parts.push($.make('span', { className: 'NB-add-site-section-count' },
@@ -1534,18 +1534,36 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var display_name = group ? group.name : category;
         // Title-case each word (e.g. "fitness & health" → "Fitness & Health")
         display_name = display_name.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
-        return display_name + ' ' + type_label;
+
+        var parts = [display_name];
+        var subcategory = state.selected_subcategory;
+        if (subcategory && subcategory !== 'all') {
+            var sub_display = subcategory.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+            parts.push($.make('span', { className: 'NB-add-site-section-title-sep' }, ' \u203a '));
+            parts.push(sub_display);
+        }
+        parts.push(' ' + type_label);
+
+        return parts;
     },
 
     update_section_header: function (tab_selector, state, default_title, type_label) {
         var $title = this.$(tab_selector + ' .NB-add-site-section-title');
         if (!$title.length) return;
 
-        // Update title text (first text node)
-        var title_text = this.get_section_title(state, default_title, type_label);
+        // Update title text and separator
+        var title_parts = this.get_section_title(state, default_title, type_label);
         var $count = $title.find('.NB-add-site-section-count');
         $title.contents().filter(function() { return this.nodeType === 3; }).remove();
-        $title.prepend(document.createTextNode(title_text));
+        $title.find('.NB-add-site-section-title-sep').remove();
+        var parts = [].concat(title_parts);
+        for (var i = parts.length - 1; i >= 0; i--) {
+            if (typeof parts[i] === 'string') {
+                $title.prepend(document.createTextNode(parts[i]));
+            } else {
+                $title.prepend(parts[i]);
+            }
+        }
 
         // Update count badge
         if (state.popular_total !== undefined) {
