@@ -7171,7 +7171,8 @@
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
 
             this.flags['tryfeed_discover_origin'] = options.discover_origin || null;
-            this.flags['tryfeed_title'] = feed.feed_title || null;
+            var dominated_titles = ['Untitled', '[Untitled]', 'search results', ''];
+            this.flags['tryfeed_title'] = (feed.feed_title && dominated_titles.indexOf(feed.feed_title) === -1) ? feed.feed_title : null;
 
             this.reset_feed(options);
             feed = this.model.set_feed(feed_id, feed);
