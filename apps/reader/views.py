@@ -2162,6 +2162,7 @@ def load_river_stories__redis(request):
                 "%sstarred_date" % ("-" if order == "newest" else "")
             )[offset : offset + limit]
             stories = Feed.format_stories(mstories)
+            unread_feed_story_hashes = None
         else:
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
             feed_ids = [sub.feed_id for sub in usersubs]
