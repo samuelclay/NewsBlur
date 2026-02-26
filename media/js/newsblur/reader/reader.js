@@ -3730,6 +3730,10 @@
                 feed_title = feed.get('feed_title');
             }
 
+            if (this.flags['tryfeed_title'] && this.flags['showing_feed_in_tryfeed_view']) {
+                feed_title = this.flags['tryfeed_title'];
+            }
+
             return feed_title;
         },
 
