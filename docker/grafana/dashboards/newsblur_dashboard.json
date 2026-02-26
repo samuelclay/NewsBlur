@@ -7548,8 +7548,7 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "archive",
-                  "pro"
+                  "premium_non_trial"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -7594,7 +7593,7 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "users",
+          "expr": "label_replace(users, \"category\", \"premium_from_trial\", \"category\", \"premium_paid\")",
           "interval": "",
           "legendFormat": "{{ category }}",
           "queryType": "randomWalk",
