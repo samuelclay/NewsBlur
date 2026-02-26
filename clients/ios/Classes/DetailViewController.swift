@@ -623,12 +623,17 @@ class DetailViewController: BaseViewController {
     private var isDraggingHorizontalDivider = false
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first else { return }
+        guard let touch = touches.first else {
+            super.touchesBegan(touches, with: event)
+            return
+        }
 
         if touch.view === verticalDividerView {
             (verticalDividerView as? DividerView)?.isHighlighted = true
         } else if touch.view === horizontalDividerView {
             (horizontalDividerView as? DividerView)?.isHighlighted = true
+        } else {
+            super.touchesBegan(touches, with: event)
         }
     }
 
@@ -636,6 +641,7 @@ class DetailViewController: BaseViewController {
         let touch = touches.first
 
         guard let point = touch?.location(in: view) else {
+            super.touchesMoved(touches, with: event)
             return
         }
 
@@ -648,7 +654,7 @@ class DetailViewController: BaseViewController {
             let leftContainerOriginX = leftContainerView.frame.origin.x
             let position = point.x - leftContainerOriginX
 
-            guard position > 150, position < view.frame.width - leftContainerOriginX - 200 else {
+            guard position > 150, position < view.frame.width - leftContainerOriginX - 150 else {
                 return
             }
 
@@ -665,23 +671,34 @@ class DetailViewController: BaseViewController {
 
             horizontalDividerPosition = position
             horizontalDividerViewBottomConstraint.constant = position
+        } else {
+            super.touchesMoved(touches, with: event)
+            return
         }
 
         view.setNeedsLayout()
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        isDraggingVerticalDivider = false
-        isDraggingHorizontalDivider = false
-        (verticalDividerView as? DividerView)?.isHighlighted = false
-        (horizontalDividerView as? DividerView)?.isHighlighted = false
+        if isDraggingVerticalDivider || isDraggingHorizontalDivider {
+            isDraggingVerticalDivider = false
+            isDraggingHorizontalDivider = false
+            (verticalDividerView as? DividerView)?.isHighlighted = false
+            (horizontalDividerView as? DividerView)?.isHighlighted = false
+        } else {
+            super.touchesEnded(touches, with: event)
+        }
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        isDraggingVerticalDivider = false
-        isDraggingHorizontalDivider = false
-        (verticalDividerView as? DividerView)?.isHighlighted = false
-        (horizontalDividerView as? DividerView)?.isHighlighted = false
+        if isDraggingVerticalDivider || isDraggingHorizontalDivider {
+            isDraggingVerticalDivider = false
+            isDraggingHorizontalDivider = false
+            (verticalDividerView as? DividerView)?.isHighlighted = false
+            (horizontalDividerView as? DividerView)?.isHighlighted = false
+        } else {
+            super.touchesCancelled(touches, with: event)
+        }
     }
 }
 

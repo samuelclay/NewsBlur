@@ -377,24 +377,25 @@ struct DiscoverFeedsView: View {
                         HStack(spacing: 3) {
                             Image(systemName: "person.2")
                                 .font(.system(size: 10))
-                            Text("\(feed.numSubscribers)")
+                            (Text("\(feed.numSubscribers)")
                                 .font(.system(size: 11, weight: .semibold))
                             + Text(" \(feed.numSubscribers == 1 ? "subscriber" : "subscribers")")
-                                .font(.system(size: 11))
+                                .font(.system(size: 11)))
+                                .lineLimit(1)
                         }
                         .foregroundColor(DiscoverColors.textSecondary)
 
                         HStack(spacing: 3) {
                             Image(systemName: "doc.text")
                                 .font(.system(size: 10))
-                            Text("\(feed.averageStoriesPerMonth)")
+                            (Text("\(feed.averageStoriesPerMonth)")
                                 .font(.system(size: 11, weight: .semibold))
                             + Text(" \(feed.averageStoriesPerMonth == 1 ? "story" : "stories")/mo")
-                                .font(.system(size: 11))
+                                .font(.system(size: 11)))
+                                .lineLimit(1)
                         }
                         .foregroundColor(DiscoverColors.textSecondary)
                     }
-                    .fixedSize()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -404,6 +405,7 @@ struct DiscoverFeedsView: View {
                         .foregroundColor(DiscoverColors.accent)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 6)
+                        .fixedSize()
                 } else {
                     HStack(spacing: 6) {
                         Button(action: { onTryFeed?(feed) }) {
