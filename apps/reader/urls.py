@@ -104,5 +104,5 @@ urlpatterns = [
     re_path(
         r"^get_auto_mark_read_settings", views.get_auto_mark_read_settings, name="get-auto-mark-read-settings"
     ),
-    url(r"^cluster_stories", views.load_cluster_stories, name="load-cluster-stories"),
+    re_path(r"^cluster_stories", views.load_cluster_stories, name="load-cluster-stories"),
 ]
