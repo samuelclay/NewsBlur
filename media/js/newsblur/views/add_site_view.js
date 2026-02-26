@@ -4983,7 +4983,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var normalized_slug = this._normalize(slug);
         if (field === 'category') {
             var match = _.find(grouped, function (g) {
-                return g.name.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase() === normalized_slug;
+                return g.name.replace(/[-]/g, ' ').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase() === normalized_slug;
             });
             return match ? match.name : slug;
         } else if (field === 'subcategory') {
@@ -4992,7 +4992,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 var subcats = grouped[i].subcategories || [];
                 for (var j = 0; j < subcats.length; j++) {
                     var subcat_name = (typeof subcats[j] === 'string') ? subcats[j] : subcats[j].name;
-                    if (subcat_name.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase() === normalized_slug) {
+                    if (subcat_name.replace(/[-]/g, ' ').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase() === normalized_slug) {
                         return subcat_name;
                     }
                 }
