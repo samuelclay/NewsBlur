@@ -3782,13 +3782,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         return;
     }
 
+    UIView *pillView = self.storyTitlesHeaderBar.discoverPill;
+
     if (!storiesCollection.isRiverView && storiesCollection.activeFeed) {
         NSString *feedId = [NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]];
-        [appDelegate openDiscoverFeedsDialogFromSettingsButton:feedId];
+        [appDelegate openDiscoverFeedsDialogFromSettingsButton:feedId sourceView:pillView];
     } else if (storiesCollection.isRiverView) {
         NSArray *folderFeedIds = storiesCollection.activeFolderFeeds;
         if (folderFeedIds.count > 0) {
-            [appDelegate openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:folderFeedIds];
+            [appDelegate openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:folderFeedIds sourceView:pillView];
         }
     }
 }
