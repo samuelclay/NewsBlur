@@ -65,9 +65,9 @@ class MBriefing(mongo.Document):
 
 BRIEFING_SECTION_DEFINITIONS = [
     {
-        "key": "trending_unread",
-        "name": "Stories you missed",
-        "subtitle": "Popular stories you haven't read yet",
+        "key": "top_stories",
+        "name": "Top stories",
+        "subtitle": "The most important stories from your feeds",
         "default": True,
     },
     {
@@ -89,33 +89,9 @@ BRIEFING_SECTION_DEFINITIONS = [
         "default": True,
     },
     {
-        "key": "trending_global",
-        "name": "Trending across NewsBlur",
-        "subtitle": "Widely-read stories from across the platform",
-        "default": True,
-    },
-    {
-        "key": "duplicates",
-        "name": "Common stories",
-        "subtitle": "Stories covered by multiple feeds",
-        "default": True,
-    },
-    {
-        "key": "quick_catchup",
-        "name": "Quick catch-up",
-        "subtitle": "TL;DR of the most important stories",
-        "default": True,
-    },
-    {
-        "key": "emerging_topics",
-        "name": "Emerging topics",
-        "subtitle": "Topics getting increasing coverage",
-        "default": True,
-    },
-    {
-        "key": "contrarian_views",
-        "name": "Contrarian views",
-        "subtitle": "Different perspectives on the same topic",
+        "key": "widely_covered",
+        "name": "Widely covered",
+        "subtitle": "Stories appearing across many of your feeds",
         "default": True,
     },
 ]

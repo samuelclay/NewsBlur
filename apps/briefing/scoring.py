@@ -18,6 +18,13 @@ from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import MStory
 from utils import log as logging
 
+CLASSIFIER_WEIGHTS = {
+    "title": 0.10,  # Title keyword matches — highest value
+    "author": 0.08,  # Author matches
+    "tag": 0.06,  # Tag/category matches
+    "feed": 0.03,  # Site/publisher matches — lowest value
+}
+
 
 def select_briefing_stories(
     user_id,
@@ -43,11 +50,11 @@ def select_briefing_stories(
     5. Intelligence classifier scores (10%)
 
     Each story is categorized (priority order):
+    - widely_covered: Story appears in 2+ feeds
     - follow_up: Unread story from a feed the user recently read
     - classifier_match: Matches user's positive intelligence classifiers
-    - trending_unread: High trending score (trending_norm > 0.5)
     - long_read: Has significant word count
-    - trending_global: Fallback for remaining stories
+    - top_stories: Fallback for remaining stories
 
     Args:
         story_sources: "all" (all feeds) or "folder:FolderName" (specific folder's feeds)
@@ -214,7 +221,7 @@ def select_briefing_stories(
             period_range = max(period_end_ts - period_start_ts, 1)
             recency_score = ((story_ts - period_start_ts) / period_range) * 0.1
 
-        # Intelligence score (10%): user's trained classifiers
+        # Intelligence score (10%): user's trained classifiers, weighted by match type
         intelligence_score = 0.0
         classifier_matches = []
         if story:
@@ -232,7 +239,6 @@ def select_briefing_stories(
                 classifier_feeds,
             )
             if raw_score > 0:
-                intelligence_score = 0.1
                 classifier_matches = _get_classifier_matches(
                     story,
                     classifier_feeds,
@@ -241,6 +247,12 @@ def select_briefing_stories(
                     classifier_titles,
                     feed_title_map,
                 )
+                if classifier_matches:
+                    intelligence_score = max(
+                        CLASSIFIER_WEIGHTS.get(m.split(":")[0], 0.03) for m in classifier_matches
+                    )
+                else:
+                    intelligence_score = 0.03
             elif raw_score < 0:
                 intelligence_score = -0.1
 
@@ -293,31 +305,29 @@ def select_briefing_stories(
             if story and story.story_date:
                 read_feeds_with_dates.setdefault(s["feed_id"], []).append(story.story_date)
 
-    # scoring.py: Detect duplicate stories across feeds by normalized title
-    duplicate_hashes = _find_duplicate_stories(top_candidates, stories_by_hash)
+    # scoring.py: Detect clustered stories across feeds by normalized title
+    clustered = _find_clustered_stories(top_candidates, stories_by_hash)
 
     enriched = []
     for s in top_candidates:
         story = stories_by_hash.get(s["story_hash"])
         word_count = _estimate_word_count(story) if story else 0
 
-        # Categorize by priority: duplicates > follow_up > classifier_match > trending_unread > long_read > trending_global
-        category = "trending_global"
+        # Categorize by priority: widely_covered > follow_up > classifier_match > long_read > top_stories
+        category = "top_stories"
 
-        if s["story_hash"] in duplicate_hashes:
-            category = "duplicates"
+        cluster_category = clustered.get(s["story_hash"])
+        if cluster_category:
+            category = cluster_category
         elif not s["is_read"] and s["feed_id"] in read_feeds_with_dates:
             read_dates = read_feeds_with_dates[s["feed_id"]]
             if story and story.story_date and any(story.story_date > rd for rd in read_dates if rd):
                 category = "follow_up"
 
-        if category == "trending_global" and s["classifier_matches"]:
+        if category == "top_stories" and s["classifier_matches"]:
             category = "classifier_match"
 
-        if category == "trending_global" and s["trending_norm"] > 0.5:
-            category = "trending_unread"
-
-        if category == "trending_global" and word_count >= 800:
+        if category == "top_stories" and word_count >= 800:
             category = "long_read"
 
         enriched.append(
@@ -428,23 +438,25 @@ def _normalize_title(title):
     return normalize_title(title)
 
 
-def _find_duplicate_stories(candidates, stories_by_hash):
-    """Find stories that appear in multiple feeds by comparing normalized titles.
+def _find_clustered_stories(candidates, stories_by_hash):
+    """Find stories covered by 2+ feeds and categorize them as widely_covered.
 
     Uses the shared clustering normalize_title logic. Also checks pre-computed
     clusters from Redis when available.
-    Returns a set of story_hashes that are duplicates.
+    Returns a set of story_hashes that are widely covered.
     """
     from apps.clustering.models import get_cluster_for_story, normalize_title
 
+    categorized = {}
+
     # Check pre-computed clusters first
-    duplicate_hashes = set()
     cluster_groups = {}
     for s in candidates:
         cluster_id = get_cluster_for_story(s["story_hash"])
         if cluster_id:
             cluster_groups.setdefault(cluster_id, []).append(s["story_hash"])
 
+    clustered_hashes = set()
     for cluster_id, hashes in cluster_groups.items():
         if len(hashes) >= 2:
             feed_ids = set()
@@ -453,12 +465,14 @@ def _find_duplicate_stories(candidates, stories_by_hash):
                 if story:
                     feed_ids.add(story.story_feed_id)
             if len(feed_ids) >= 2:
-                duplicate_hashes.update(hashes)
+                for h in hashes:
+                    categorized[h] = "widely_covered"
+                clustered_hashes.update(hashes)
 
     # Also do title-based matching for stories not yet in clusters
     title_groups = {}
     for s in candidates:
-        if s["story_hash"] in duplicate_hashes:
+        if s["story_hash"] in clustered_hashes:
             continue
         story = stories_by_hash.get(s["story_hash"])
         if not story or not story.story_title:
@@ -476,9 +490,9 @@ def _find_duplicate_stories(candidates, stories_by_hash):
                 feed_ids.add(story.story_feed_id)
         if len(feed_ids) >= 2:
             for h in hashes:
-                duplicate_hashes.add(h)
+                categorized[h] = "widely_covered"
 
-    return duplicate_hashes
+    return categorized
 
 
 def _get_classifier_matches(
