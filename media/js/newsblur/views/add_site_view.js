@@ -4957,9 +4957,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         return str.replace(/-/g, ' ').toLowerCase();
     },
 
-    // add_site_view.js - _normalize: strip non-alphanumeric chars for comparison
+    // add_site_view.js - _normalize: convert to comparable form (hyphens→spaces, strip special chars)
     _normalize: function (str) {
-        return str.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+        return str.replace(/[-]/g, ' ').replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
     },
 
     // add_site_view.js - _resolve_from_grouped: find real category/subcategory name by matching slug
