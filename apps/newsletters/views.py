@@ -151,7 +151,8 @@ def newsletter_receive(request):
             raise Http404
     else:
         # Convert QueryDict to regular dict for mutability
-        params = dict(params)
+        # Note: params.dict() returns {key: string}, while dict(params) returns {key: [list]}
+        params = params.dict()
 
     response = HttpResponse("OK")
 
