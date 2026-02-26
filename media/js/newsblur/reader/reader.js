@@ -2869,10 +2869,13 @@
 
             // Update URL (skip if navigated here via URL/back button — URL is already correct)
             if (!options.router) {
+                var slugify = function (s) {
+                    return s.replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').toLowerCase();
+                };
                 var add_url_parts = ['add'];
-                if (options.tab) add_url_parts.push(options.tab);
-                if (options.category) add_url_parts.push(options.category);
-                if (options.subcategory) add_url_parts.push(options.subcategory);
+                if (options.tab) add_url_parts.push(slugify(options.tab));
+                if (options.category) add_url_parts.push(slugify(options.category));
+                if (options.subcategory) add_url_parts.push(slugify(options.subcategory));
                 NEWSBLUR.router.navigate('/' + add_url_parts.join('/'));
             }
 
