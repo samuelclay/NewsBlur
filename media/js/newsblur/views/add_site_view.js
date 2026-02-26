@@ -963,10 +963,12 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         }
                         state._pending_category_slug = null;
                     }
+                    var needs_refetch = false;
                     if (state._pending_subcategory_slug) {
                         var resolved_sub = self._resolve_from_grouped(state._pending_subcategory_slug, data.grouped_categories, 'subcategory');
                         if (resolved_sub !== state.selected_subcategory) {
                             state.selected_subcategory = resolved_sub;
+                            needs_refetch = true;
                         }
                         state._pending_subcategory_slug = null;
                     }
@@ -976,6 +978,19 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                     // existing pills to avoid re-render flash.
                     if (!had_categories) {
                         self.update_category_pills(feed_type);
+                    }
+
+                    // Re-fetch if slug resolution changed the subcategory after
+                    // the initial request already returned with wrong results
+                    if (needs_refetch) {
+                        state.popular_feeds_loaded = false;
+                        state.popular_feeds = [];
+                        state.popular_feeds_collection = null;
+                        state.popular_offset = 0;
+                        if (render_method) {
+                            self[render_method]();
+                        }
+                        return;
                     }
                 }
 
