@@ -2136,6 +2136,7 @@ def load_river_stories__redis(request):
         else:
             stories = []
             mstories = []
+            unread_feed_story_hashes = []
             message = "You must be a premium subscriber to search."
     else:
         # Only run feed aggregation if stories weren't already fetched via story_hashes or query
