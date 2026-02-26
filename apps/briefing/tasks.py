@@ -97,9 +97,7 @@ def GenerateBriefings():
             # morning (8 AM), afternoon (1 PM), evening (5 PM).
             def _slot_gen_utc(slot_name):
                 h, m = SLOT_TIMES[slot_name]
-                local_t = tz.localize(
-                    datetime.datetime.combine(local_now.date(), datetime.time(h, m))
-                )
+                local_t = tz.localize(datetime.datetime.combine(local_now.date(), datetime.time(h, m)))
                 return (local_t - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(tzinfo=None)
 
             is_morning_window = now >= _slot_gen_utc("morning") and local_now.hour < 13
@@ -202,10 +200,12 @@ def GenerateUserBriefing(user_id, on_demand=False):
     from apps.briefing.scoring import select_briefing_stories
     from apps.briefing.summary import (
         embed_briefing_icons,
+        enforce_exclusive_sections,
         extract_section_story_hashes,
         extract_section_summaries,
         filter_disabled_sections,
         generate_briefing_summary,
+        rebuild_summary_from_sections,
     )
 
     # tasks.py: Per-user distributed lock prevents duplicate generation from
@@ -342,6 +342,50 @@ def GenerateUserBriefing(user_id, on_demand=False):
     # appear in email notifications and don't pop in on the web.
     summary_html = embed_briefing_icons(summary_html, scored_stories)
 
+    curated_hashes = [s["story_hash"] for s in scored_stories]
+    curated_sections = {}
+    for s in scored_stories:
+        curated_sections.setdefault(s.get("category", "top_stories"), []).append(s["story_hash"])
+
+    # tasks.py: Filter curated_sections to remove disabled section keys, remapping their
+    # stories to top_stories so the sidebar doesn't show pills for disabled categories.
+    if active_sections:
+        allowed_curated = {k for k, v in active_sections.items() if v}
+        allowed_curated.add("top_stories")
+        filtered_curated = {}
+        for key, hashes in curated_sections.items():
+            if key in allowed_curated:
+                filtered_curated.setdefault(key, []).extend(hashes)
+            else:
+                filtered_curated.setdefault("top_stories", []).extend(hashes)
+        curated_sections = filtered_curated
+
+    section_summaries = extract_section_summaries(summary_html)
+    # tasks.py: Filter section_summaries to remove disabled sections
+    if active_sections:
+        allowed = {k for k, v in active_sections.items() if v}
+        allowed.add("top_stories")
+        section_summaries = {k: v for k, v in section_summaries.items() if k in allowed}
+
+    # tasks.py: Enforce exclusive section ownership — each story hash in exactly one section.
+    section_summaries = enforce_exclusive_sections(section_summaries)
+    summary_html = rebuild_summary_from_sections(section_summaries)
+
+    # tasks.py: Merge story hashes referenced in the AI summary into curated_sections.
+    summary_hashes = extract_section_story_hashes(section_summaries)
+    curated_hash_set = set(curated_hashes)
+    for key, hashes in summary_hashes.items():
+        if key not in curated_sections:
+            curated_sections[key] = [h for h in hashes if h in curated_hash_set]
+
+    # tasks.py: Deduplicate curated_sections so no story hash appears in multiple sections.
+    seen = set()
+    for key in list(curated_sections.keys()):
+        curated_sections[key] = [h for h in curated_sections[key] if h not in seen]
+        seen.update(curated_sections[key])
+        if not curated_sections[key]:
+            del curated_sections[key]
+
     # tasks.py: Append debug footer with model and generation stats
     if summary_meta:
         num_candidates = len(scored_stories)
@@ -357,39 +401,6 @@ def GenerateUserBriefing(user_id, on_demand=False):
             '\n<p class="NB-briefing-debug" style="margin-top:2em;font-style:italic;'
             'color:#999;font-size:12px;">%s</p>' % " · ".join(footer_parts)
         )
-
-    curated_hashes = [s["story_hash"] for s in scored_stories]
-    curated_sections = {}
-    for s in scored_stories:
-        curated_sections.setdefault(s.get("category", "trending_global"), []).append(s["story_hash"])
-
-    # tasks.py: Filter curated_sections to remove disabled section keys, remapping their
-    # stories to trending_global so the sidebar doesn't show pills for disabled categories.
-    if active_sections:
-        allowed_curated = {k for k, v in active_sections.items() if v}
-        allowed_curated.add("trending_global")
-        filtered_curated = {}
-        for key, hashes in curated_sections.items():
-            if key in allowed_curated:
-                filtered_curated.setdefault(key, []).extend(hashes)
-            else:
-                filtered_curated.setdefault("trending_global", []).extend(hashes)
-        curated_sections = filtered_curated
-
-    section_summaries = extract_section_summaries(summary_html)
-    # tasks.py: Filter section_summaries to remove disabled sections
-    if active_sections:
-        allowed = {k for k, v in active_sections.items() if v}
-        allowed.add("trending_global")
-        section_summaries = {k: v for k, v in section_summaries.items() if k in allowed}
-    # tasks.py: Merge story hashes referenced in the AI summary into curated_sections.
-    # The AI may organize stories into sections (like "Quick catch-up") that don't
-    # correspond to scoring categories, referencing stories via data-story-hash links.
-    summary_hashes = extract_section_story_hashes(section_summaries)
-    curated_hash_set = set(curated_hashes)
-    for key, hashes in summary_hashes.items():
-        if key not in curated_sections:
-            curated_sections[key] = [h for h in hashes if h in curated_hash_set]
 
     # tasks.py: Reorder curated_hashes to match the editorial order from the AI summary.
     # This ensures the sidebar story list matches the summary content order. Stories

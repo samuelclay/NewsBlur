@@ -1,13 +1,9 @@
 NEWSBLUR.BRIEFING_SECTION_DEFINITIONS = [
-    {key: "trending_unread", name: "Stories you missed", subtitle: "Popular stories you haven't read yet"},
+    {key: "top_stories", name: "Top stories", subtitle: "The most important stories from your feeds"},
     {key: "long_read", name: "Long reads for later", subtitle: "Longer articles worth setting time aside for"},
     {key: "classifier_match", name: "Based on your interests", subtitle: "Stories matching your trained topics and authors"},
     {key: "follow_up", name: "Follow-ups", subtitle: "New posts from feeds you recently read"},
-    {key: "trending_global", name: "Trending across NewsBlur", subtitle: "Widely-read stories from across the platform"},
-    {key: "duplicates", name: "Common stories", subtitle: "Stories covered by multiple feeds"},
-    {key: "quick_catchup", name: "Quick catch-up", subtitle: "TL;DR of the most important stories"},
-    {key: "emerging_topics", name: "Emerging topics", subtitle: "Topics getting increasing coverage"},
-    {key: "contrarian_views", name: "Contrarian views", subtitle: "Different perspectives on the same topic"}
+    {key: "widely_covered", name: "Widely covered", subtitle: "Stories appearing across many of your feeds"}
 ];
 
 NEWSBLUR.MAX_CUSTOM_SECTIONS = 5;
@@ -268,7 +264,8 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
     make_sections_ui: function () {
         var sections = this.prefs.sections || {};
         var items = _.map(NEWSBLUR.BRIEFING_SECTION_DEFINITIONS, _.bind(function (def) {
-            return this.make_section_item(def, sections[def.key]);
+            var is_enabled = sections.hasOwnProperty(def.key) ? sections[def.key] : true;
+            return this.make_section_item(def, is_enabled);
         }, this));
 
         var $section = this.make_section('Sections', 'Choose which sections appear in your briefing', [
@@ -335,7 +332,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             {
                 value: 'headlines',
                 name: 'Headlines',
-                subtitle: 'Just the headlines with minimal commentary',
+                subtitle: 'Just the headlines, no commentary',
                 icon: 'content-preview-m.svg'
             }
         ];
