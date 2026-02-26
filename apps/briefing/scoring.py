@@ -439,35 +439,46 @@ def _normalize_title(title):
 
 
 def _find_clustered_stories(candidates, stories_by_hash):
-    """Find stories covered by 2+ feeds and categorize them as widely_covered.
+    """Find stories in clusters with 3+ feeds and categorize as widely_covered.
 
-    Uses the shared clustering normalize_title logic. Also checks pre-computed
-    clusters from Redis when available.
-    Returns a set of story_hashes that are widely covered.
+    Checks pre-computed clusters in Redis. A story qualifies as widely_covered
+    if its cluster has 3+ unique feeds (total cluster members, not just the
+    user's candidates). Also falls back to title-based matching.
     """
-    from apps.clustering.models import get_cluster_for_story, normalize_title
+    from apps.clustering.models import get_cluster_for_story, get_cluster_members, normalize_title
 
     categorized = {}
 
-    # Check pre-computed clusters first
-    cluster_groups = {}
+    # Check pre-computed clusters — use full cluster membership, not just candidates
+    candidate_hashes = {s["story_hash"] for s in candidates}
+    checked_clusters = set()
     for s in candidates:
         cluster_id = get_cluster_for_story(s["story_hash"])
-        if cluster_id:
-            cluster_groups.setdefault(cluster_id, []).append(s["story_hash"])
+        if not cluster_id or cluster_id in checked_clusters:
+            continue
+        checked_clusters.add(cluster_id)
 
-    clustered_hashes = set()
-    for cluster_id, hashes in cluster_groups.items():
-        if len(hashes) >= 2:
-            feed_ids = set()
-            for h in hashes:
-                story = stories_by_hash.get(h)
-                if story:
-                    feed_ids.add(story.story_feed_id)
-            if len(feed_ids) >= 2:
-                for h in hashes:
-                    categorized[h] = "widely_covered"
-                clustered_hashes.update(hashes)
+        # scoring.py: Get ALL members of this cluster (not just the user's candidates)
+        # to determine total coverage breadth across feeds.
+        all_members = get_cluster_members(cluster_id)
+        if len(all_members) < 3:
+            continue
+
+        # Count unique feed IDs from all cluster members
+        feed_ids = set()
+        for member_hash in all_members:
+            # Extract feed_id from story_hash format "feed_id:guid_hash"
+            feed_id_str = member_hash.split(":")[0] if ":" in member_hash else None
+            if feed_id_str:
+                feed_ids.add(feed_id_str)
+
+        if len(feed_ids) >= 3:
+            # Mark any of this user's candidates that are in this cluster
+            for member_hash in all_members:
+                if member_hash in candidate_hashes:
+                    categorized[member_hash] = "widely_covered"
+
+    clustered_hashes = set(categorized.keys())
 
     # Also do title-based matching for stories not yet in clusters
     title_groups = {}

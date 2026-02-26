@@ -64,15 +64,20 @@ LENGTH_INSTRUCTIONS = {
 
 STYLE_INSTRUCTIONS = {
     "editorial": (
+        "Within each section, briefly explain WHY these stories matter to the reader — not just what "
+        "they are about. Focus on what makes each story worth reading. "
         "Write in a narrative editorial style with flowing prose that connects stories thematically. "
         "Wrap each story paragraph in a <p> tag. Do NOT use <ul> or <li> tags."
     ),
     "bullets": (
+        "Within each section, briefly explain WHY these stories matter to the reader — not just what "
+        "they are about. Focus on what makes each story worth reading. "
         "Write each story as a concise one-sentence summary. Group by the section headers below. "
         "Wrap each story in its own <p> tag. Do NOT use <ul> or <li> tags."
     ),
     "headlines": (
-        "List each story as just the headline — no commentary, no explanatory sentences, just the title. "
+        "List each story as ONLY the headline — absolutely no commentary, no explanatory sentences, "
+        "no dashes followed by descriptions, just the linked story title and nothing else. "
         "Group by the section headers below. "
         "Wrap each story in its own <p> tag. Do NOT use <ul> or <li> tags."
     ),
@@ -147,9 +152,6 @@ Organize the briefing into sections based on these categories. Use ONLY these se
 are stories that match it. Do not omit sections to save space:
 
 %s
-
-Within each section, briefly explain WHY these stories matter to the reader — not just what
-they are about. Focus on what makes each story worth reading.
 
 %s
 
@@ -385,8 +387,12 @@ def extract_section_summaries(summary_html):
         # Content runs until the next h3 or end
         content = parts[i + 2] if i + 2 < len(parts) else ""
 
-        # summary.py: Strip trailing </div> that closes the outer wrapper
-        content = re.sub(r"\s*</div>\s*$", "", content)
+        # summary.py: Strip trailing </div> that closes the outer wrapper, but ONLY
+        # from the last section. Non-last sections don't have the outer </div>, so
+        # stripping would remove a story's closing </div> and break nesting.
+        is_last_section = i + 3 >= len(parts)
+        if is_last_section:
+            content = re.sub(r"\s*</div>\s*$", "", content)
 
         section_html = '<div class="NB-briefing-summary">%s%s</div>' % (h3_tag, content)
         sections[section_key] = section_html
