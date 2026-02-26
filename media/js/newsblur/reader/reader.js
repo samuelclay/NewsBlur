@@ -7167,6 +7167,7 @@
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
 
             this.flags['tryfeed_discover_origin'] = options.discover_origin || null;
+            this.flags['tryfeed_title'] = feed.feed_title || null;
 
             this.reset_feed(options);
             feed = this.model.set_feed(feed_id, feed);
@@ -7236,6 +7237,7 @@
             this.flags['showing_feed_in_tryfeed_view'] = false;
             this.flags['showing_social_feed_in_tryfeed_view'] = false;
             this.flags['tryfeed_discover_origin'] = null;
+            this.flags['tryfeed_title'] = null;
         },
 
         show_tryfeed_add_button: function () {
@@ -7255,7 +7257,7 @@
             var $banner = $.make('div', { className: 'NB-tryfeed-subscribe-banner' }, [
                 $icon || $.make('div', { className: 'NB-tryfeed-banner-icon' }),
                 $.make('div', { className: 'NB-tryfeed-banner-content' }, [
-                    $.make('div', { className: 'NB-tryfeed-banner-text' }, feed ? feed.get('feed_title') : 'Subscribe'),
+                    $.make('div', { className: 'NB-tryfeed-banner-text' }, this.flags['tryfeed_title'] || (feed ? feed.get('feed_title') : 'Subscribe')),
                     $.make('div', { className: 'NB-tryfeed-banner-subtext' }, 'Subscribe to add this feed to your NewsBlur')
                 ]),
                 $.make('div', { className: 'NB-tryfeed-banner-button NB-tryfeed-banner-button-green' }, 'Subscribe')
@@ -7323,7 +7325,9 @@
 
         correct_tryfeed_title: function () {
             var feed = this.model.get_feed(this.active_feed);
-            $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(feed.get('feed_title'));
+            var title = this.flags['tryfeed_title'] || feed.get('feed_title');
+            $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(title);
+            $('.NB-tryfeed-banner-text').text(title);
 
             // Update favicon in tryfeed header
             var $header_icon = $.favicon_el(feed, {
