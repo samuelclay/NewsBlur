@@ -1318,6 +1318,16 @@ def load_single_feed(request, feed_id):
         data["dupe_feed_id"] = dupe_feed_id
     if not usersub:
         data.update(feed.canonical())
+        # Override bad DB title with PopularFeed title for try-feeds
+        if not data.get("feed_title") or data["feed_title"] in ("[Untitled]", "Untitled"):
+            from apps.discover.models import PopularFeed as PopularFeedModel
+
+            pf = PopularFeedModel.objects.filter(feed_id=feed.pk).first()
+            if pf and pf.title:
+                data["feed_title"] = pf.title
+                if feed.feed_title != pf.title:
+                    feed.feed_title = pf.title
+                    feed.save(update_fields=["feed_title"])
     # Signal frontend to poll for fetch completion on stale/unfetched try-feeds
     if not usersub and (
         not feed.fetched_once
