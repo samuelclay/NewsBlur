@@ -895,11 +895,12 @@ def popular_feeds(request):
         if exact.exists():
             qs = exact
         else:
-            normalized = re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", category)).strip().lower()
+            normalized = re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", category.replace("-", " "))).strip().lower()
             matching_cats = [
                 cat_name
                 for cat_name in qs.values_list("category", flat=True).distinct()
-                if re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", cat_name)).strip().lower() == normalized
+                if re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", cat_name.replace("-", " "))).strip().lower()
+                == normalized
             ]
             if matching_cats:
                 qs = qs.filter(category=matching_cats[0])
@@ -911,11 +912,14 @@ def popular_feeds(request):
         if exact_sub.exists():
             qs = exact_sub
         else:
-            normalized_sub = re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", subcategory)).strip().lower()
+            # Convert hyphens to spaces before stripping special chars so
+            # "School-Age Kids" normalizes to "school age kids" (not "schoolage kids")
+            normalized_sub = re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", subcategory.replace("-", " "))).strip().lower()
             matching_subs = [
                 sub_name
                 for sub_name in qs.values_list("subcategory", flat=True).distinct()
-                if re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", sub_name)).strip().lower() == normalized_sub
+                if re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9\s]", "", sub_name.replace("-", " "))).strip().lower()
+                == normalized_sub
             ]
             if matching_subs:
                 qs = qs.filter(subcategory=matching_subs[0])
