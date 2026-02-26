@@ -91,7 +91,7 @@ BRIEFING_SECTION_DEFINITIONS = [
     {
         "key": "widely_covered",
         "name": "Widely covered",
-        "subtitle": "Stories appearing across many of your feeds",
+        "subtitle": "Stories covered by 3+ feeds",
         "default": True,
     },
 ]

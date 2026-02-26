@@ -3,7 +3,7 @@ NEWSBLUR.BRIEFING_SECTION_DEFINITIONS = [
     {key: "long_read", name: "Long reads for later", subtitle: "Longer articles worth setting time aside for"},
     {key: "classifier_match", name: "Based on your interests", subtitle: "Stories matching your trained topics and authors"},
     {key: "follow_up", name: "Follow-ups", subtitle: "New posts from feeds you recently read"},
-    {key: "widely_covered", name: "Widely covered", subtitle: "Stories appearing across many of your feeds"}
+    {key: "widely_covered", name: "Widely covered", subtitle: "Stories covered by 3+ feeds"}
 ];
 
 NEWSBLUR.MAX_CUSTOM_SECTIONS = 5;
