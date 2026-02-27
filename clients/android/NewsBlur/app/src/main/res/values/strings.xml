@@ -173,6 +173,7 @@
     <string name="menu_save_search">Save Search</string>
     <string name="menu_web_search">Web search</string>
     <string name="menu_highlight">Highlight</string>
+    <string name="menu_train">Train</string>
     <string name="list_style_list">List</string>
     <string name="list_style_grid_f">Grid (fine)</string>
     <string name="list_style_grid_m">Grid (medium)</string>
@@ -556,7 +557,9 @@
 
     <string name="story_intel_dialog_title">What do you like and dislike about this story?</string>
     <string name="feed_intel_dialog_title">What do you like and dislike about this site?</string>
+    <string name="intel_text_header">Story texts</string>
     <string name="intel_title_header">Story titles</string>
+    <string name="feed_intel_text_header">Texts</string>
     <string name="feed_intel_title_header">Titles</string>
     <string name="intel_tag_header">Story tags</string>
     <string name="feed_intel_tag_header">Tags</string>
@@ -809,5 +812,11 @@
     <string name="renaming_folder_message">Renaming folder %s</string>
     <string name="story_thumbnail">Story thumbnail</string>
     <string name="feed_favicon">Feed favicon</string>
+    <string name="intel_clear_text_content_desc">Intel clear text</string>
+    <string name="intel_text_thumbs_up_content_desc">Intel text thumbs up</string>
+    <string name="intel_text_thumbs_down_content_desc">Intel text thumbs down</string>
+    <string name="intel_title_clear_content_desc">Intel title clear</string>
+    <string name="intel_title_thumbs_down_content_desc">Intel title thumbs down</string>
+    <string name="intel_title_thumbs_up_content_desc">Intel title thumbs up</string>
 
 </resources>

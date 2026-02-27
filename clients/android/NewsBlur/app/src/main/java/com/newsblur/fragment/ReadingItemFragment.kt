@@ -615,8 +615,8 @@ class ReadingItemFragment :
             ?: updateStoryReadTitleState.invoke()
     }
 
-    fun openStoryTrainer() {
-        val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
+    fun openStoryTrainer(selectedText: String? = null) {
+        val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs, selectedText)
         intelFrag.show(requireActivity().supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
     }
 
@@ -724,14 +724,14 @@ class ReadingItemFragment :
         binding.readingItemAuthors.setOnClickListener(
             View.OnClickListener {
                 if (story!!.feedId == "0") return@OnClickListener // cannot train on feedless stories
-                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
+                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs, null)
                 intelFrag.show(parentFragmentManager, StoryIntelTrainerFragment::class.java.name)
             },
         )
         binding.readingFeedTitle.setOnClickListener(
             View.OnClickListener {
                 if (story!!.feedId == "0") return@OnClickListener // cannot train on feedless stories
-                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
+                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs, null)
                 intelFrag.show(parentFragmentManager, StoryIntelTrainerFragment::class.java.name)
             },
         )
@@ -768,7 +768,7 @@ class ReadingItemFragment :
             if (!(fs!!.isAllSaved || fs!!.singleSavedTag != null)) {
                 v.setOnClickListener {
                     if (story!!.feedId == "0") return@setOnClickListener // cannot train on feedless stories
-                    val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
+                    val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs, null)
                     intelFrag.show(parentFragmentManager, StoryIntelTrainerFragment::class.java.name)
                 }
             }
@@ -1215,6 +1215,12 @@ class ReadingItemFragment :
             WebviewActionType.HIGHLIGHT -> {
                 story?.let {
                     viewModel.updateHighlights(selectedText, it.storyHash, storyHighlights)
+                }
+            }
+
+            WebviewActionType.TRAIN -> {
+                if (selectedText.isNotEmpty()) {
+                    openStoryTrainer(selectedText)
                 }
             }
         }

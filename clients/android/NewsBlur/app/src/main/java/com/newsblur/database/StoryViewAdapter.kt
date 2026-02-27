@@ -441,7 +441,7 @@ class StoryViewAdapter(
             } else if (item.itemId == R.id.menu_intel) {
                 if (story!!.feedId == "0") return true // cannot train on feedless stories
 
-                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs)
+                val intelFrag = StoryIntelTrainerFragment.newInstance(story, fs, null)
                 intelFrag.show(context.supportFragmentManager, StoryIntelTrainerFragment::class.java.name)
                 return true
             } else if (item.itemId == R.id.menu_go_to_feed) {
@@ -488,12 +488,28 @@ class StoryViewAdapter(
                 gestureR2L = false
             }
             when (action) {
-                GestureAction.GEST_ACTION_MARKREAD -> feedUtils.markStoryAsRead(story!!, context)
-                GestureAction.GEST_ACTION_MARKUNREAD -> feedUtils.markStoryUnread(story!!, context)
-                GestureAction.GEST_ACTION_SAVE -> feedUtils.setStorySaved(story!!, true, context, emptyList(), emptyList())
-                GestureAction.GEST_ACTION_UNSAVE -> feedUtils.setStorySaved(story!!, false, context, emptyList(), emptyList())
-                GestureAction.GEST_ACTION_STATISTICS -> feedUtils.openStatistics(context, prefsRepo, story!!.feedId)
+                GestureAction.GEST_ACTION_MARKREAD -> {
+                    feedUtils.markStoryAsRead(story!!, context)
+                }
+
+                GestureAction.GEST_ACTION_MARKUNREAD -> {
+                    feedUtils.markStoryUnread(story!!, context)
+                }
+
+                GestureAction.GEST_ACTION_SAVE -> {
+                    feedUtils.setStorySaved(story!!, true, context, emptyList(), emptyList())
+                }
+
+                GestureAction.GEST_ACTION_UNSAVE -> {
+                    feedUtils.setStorySaved(story!!, false, context, emptyList(), emptyList())
+                }
+
+                GestureAction.GEST_ACTION_STATISTICS -> {
+                    feedUtils.openStatistics(context, prefsRepo, story!!.feedId)
+                }
+
                 GestureAction.GEST_ACTION_NONE -> {}
+
                 else -> {}
             }
         }
