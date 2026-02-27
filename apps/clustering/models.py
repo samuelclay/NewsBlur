@@ -876,3 +876,133 @@ def apply_clustering_to_stories(stories, user, classifiers_context=None, include
         )
 
     return result
+
+
+def attach_cluster_data_to_stories(stories, user):
+    """Attach cluster member data to stories without deduplication.
+
+    Unlike apply_clustering_to_stories() which removes duplicate cluster
+    members, this function only enriches each story with its cluster_stories
+    metadata. Designed for the briefing view where the curated story list
+    should not be modified.
+
+    Args:
+        stories: list of story dicts (must have 'story_hash' and 'story_feed_id')
+        user: User object
+
+    Returns:
+        None (modifies stories in place by setting 'cluster_stories' key)
+    """
+    if not stories:
+        return
+
+    from apps.reader.models import UserSubscription
+
+    user_feed_ids = set(
+        UserSubscription.objects.filter(user=user, active=True).values_list("feed_id", flat=True)
+    )
+
+    r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+
+    # Batch lookup cluster IDs for all stories
+    story_hashes = [s["story_hash"] for s in stories]
+    pipe = r.pipeline()
+    for h in story_hashes:
+        pipe.get("sCL:%s" % h)
+    cluster_ids = pipe.execute()
+
+    hash_to_cluster = {}
+    unique_cluster_ids = set()
+    for h, cid in zip(story_hashes, cluster_ids):
+        if cid:
+            cid_str = cid.decode() if isinstance(cid, bytes) else cid
+            hash_to_cluster[h] = cid_str
+            unique_cluster_ids.add(cid_str)
+
+    if not hash_to_cluster:
+        return
+
+    # Fetch all members for each cluster
+    cluster_all_members = {}
+    pipe = r.pipeline()
+    for cid in unique_cluster_ids:
+        pipe.zrange("zCL:%s" % cid, 0, -1)
+    member_results = pipe.execute()
+    for cid, members in zip(unique_cluster_ids, member_results):
+        cluster_all_members[cid] = [m.decode() if isinstance(m, bytes) else m for m in members]
+
+    # Collect member hashes that are NOT in the input stories and belong
+    # to feeds the user subscribes to
+    input_hashes = set(story_hashes)
+    external_hashes = set()
+    for cid, members in cluster_all_members.items():
+        for h in members:
+            if h not in input_hashes:
+                member_feed_id = int(h.split(":", 1)[0]) if ":" in h else None
+                if member_feed_id and member_feed_id in user_feed_ids:
+                    external_hashes.add(h)
+
+    # Fetch metadata from MongoDB for external members
+    from apps.rss_feeds.models import Feed, MStory
+
+    external_metadata = {}
+    if external_hashes:
+        only_fields = [
+            "story_hash",
+            "story_feed_id",
+            "story_title",
+            "story_date",
+            "story_author_name",
+            "story_tags",
+            "image_urls",
+        ]
+        ext_list = list(external_hashes)
+        for batch_start in range(0, len(ext_list), 100):
+            batch = ext_list[batch_start : batch_start + 100]
+            for story in MStory.objects(story_hash__in=batch).only(*only_fields):
+                feed = Feed.get_by_id(story.story_feed_id)
+                image_urls = story.image_urls or []
+                external_metadata[story.story_hash] = {
+                    "story_hash": story.story_hash,
+                    "story_feed_id": story.story_feed_id,
+                    "story_title": story.story_title or "",
+                    "story_date": (
+                        story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else ""
+                    ),
+                    "story_timestamp": (
+                        str(int(story.story_date.timestamp())) if story.story_date else ""
+                    ),
+                    "feed_title": feed.feed_title if feed else "",
+                    "story_authors": story.story_author_name or "",
+                    "intelligence": {"feed": 0, "author": 0, "tags": 0, "title": 0},
+                    "score": 0,
+                    "read_status": 0,
+                    "image_urls": image_urls,
+                    "secure_image_thumbnails": (
+                        Feed.secure_image_thumbnails(image_urls) if image_urls else {}
+                    ),
+                }
+
+    # Attach cluster_stories to each input story that has a cluster
+    for story in stories:
+        cid = hash_to_cluster.get(story["story_hash"])
+        if not cid:
+            continue
+        all_members = cluster_all_members.get(cid, [])
+        # Need 2+ GUID-unique members for a valid cluster
+        unique_guids = set(story_guid_hash(h) for h in all_members)
+        if len(unique_guids) < 2:
+            continue
+
+        cluster_stories = []
+        for member_hash in all_members:
+            if member_hash == story["story_hash"]:
+                continue
+            if member_hash in input_hashes:
+                # Skip other curated stories — they appear independently in the briefing
+                continue
+            if member_hash in external_metadata:
+                cluster_stories.append(external_metadata[member_hash])
+
+        if cluster_stories:
+            story["cluster_stories"] = cluster_stories
