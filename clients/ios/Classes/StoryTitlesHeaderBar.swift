@@ -70,6 +70,15 @@ class StoryTitlesHeaderBar: NSObject {
 
     // MARK: - Helpers
 
+    private var isMac: Bool {
+        ProcessInfo.processInfo.isMacCatalystApp
+    }
+
+    /// Extra horizontal padding needed on Mac Catalyst where buttons render tighter.
+    private var macPadding: CGFloat {
+        isMac ? 6 : 0
+    }
+
     private var pillFont: UIFont {
         .systemFont(ofSize: 10, weight: .medium)
     }
@@ -169,7 +178,7 @@ class StoryTitlesHeaderBar: NSObject {
         }
         config.title = "DISCOVER"
         config.imagePadding = 4
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 6)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8 + macPadding, bottom: 0, trailing: 6 + macPadding)
         config.titleLineBreakMode = .byClipping
         config.titleTextAttributesTransformer = pillFontTransformer()
         discoverPill.configuration = config
@@ -188,7 +197,7 @@ class StoryTitlesHeaderBar: NSObject {
         config.image = sym("chevron.down", size: 8, weight: .bold)
         config.imagePlacement = .trailing
         config.imagePadding = 4
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 6)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8 + macPadding, bottom: 0, trailing: 6 + macPadding)
         config.titleTextAttributesTransformer = pillFontTransformer()
         optionsPill.configuration = config
         configurePillAppearance(optionsPill)
@@ -205,7 +214,7 @@ class StoryTitlesHeaderBar: NSObject {
         config.image = sym("magnifyingglass", size: 11)
         config.title = "SEARCH"
         config.imagePadding = 4
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8 + macPadding, bottom: 0, trailing: 8 + macPadding)
         config.titleTextAttributesTransformer = pillFontTransformer()
         searchPill.configuration = config
         configurePillAppearance(searchPill)
@@ -231,7 +240,7 @@ class StoryTitlesHeaderBar: NSObject {
         // Expand button ("+" on left) — tap shows day menu
         var expandConfig = UIButton.Configuration.plain()
         expandConfig.image = sym("plus", size: 9, weight: .bold)
-        expandConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 4)
+        expandConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8 + macPadding, bottom: 0, trailing: 4)
         markReadExpandButton.configuration = expandConfig
         markReadExpandButton.translatesAutoresizingMaskIntoConstraints = false
         markReadExpandButton.showsMenuAsPrimaryAction = true
@@ -246,7 +255,7 @@ class StoryTitlesHeaderBar: NSObject {
         if let markReadAsset = UIImage(named: "mark-read") {
             mainConfig.image = resizedImage(markReadAsset, to: CGSize(width: 22, height: 22))
         }
-        mainConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
+        mainConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20 + macPadding)
         markReadPill.configuration = mainConfig
         markReadPill.translatesAutoresizingMaskIntoConstraints = false
         // Menu without showsMenuAsPrimaryAction = long press shows menu
@@ -257,7 +266,7 @@ class StoryTitlesHeaderBar: NSObject {
 
         NSLayoutConstraint.activate([
             markReadContainer.heightAnchor.constraint(equalToConstant: 28),
-            markReadContainer.widthAnchor.constraint(equalToConstant: 94),
+            markReadContainer.widthAnchor.constraint(equalToConstant: 94 + macPadding * 2),
 
             markReadExpandButton.leadingAnchor.constraint(equalTo: markReadContainer.leadingAnchor),
             markReadExpandButton.topAnchor.constraint(equalTo: markReadContainer.topAnchor),
@@ -320,12 +329,8 @@ class StoryTitlesHeaderBar: NSObject {
 
     // MARK: - Layout
 
-    private var isMac: Bool {
-        UIDevice.current.userInterfaceIdiom == .mac
-    }
-
     private func buildLayout(in container: UIView) {
-        let pillEdgeInset: CGFloat = isMac ? 80 : 8
+        let pillEdgeInset: CGFloat = 8
 
         NSLayoutConstraint.activate([
             pillBar.leadingAnchor.constraint(equalTo: container.leadingAnchor),
