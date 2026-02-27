@@ -189,12 +189,17 @@ class StoryTraverseBar: NSObject {
 
     // MARK: - Constraints
 
+    private var isMac: Bool {
+        UIDevice.current.userInterfaceIdiom == .mac
+    }
+
     private func buildLayout(in container: UIView) {
         let groupHeight: CGFloat = 40
+        let edgeInset: CGFloat = isMac ? 80 : 16
 
         NSLayoutConstraint.activate([
             // -- Left group positioning --
-            leftGroupView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
+            leftGroupView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: edgeInset),
             leftGroupView.centerYAnchor.constraint(equalTo: container.centerYAnchor, constant: -2),
             leftGroupView.heightAnchor.constraint(equalToConstant: groupHeight),
 
@@ -223,7 +228,7 @@ class StoryTraverseBar: NSObject {
             sendButton.widthAnchor.constraint(equalToConstant: 44),
 
             // -- Right group positioning --
-            rightGroupView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
+            rightGroupView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -edgeInset),
             rightGroupView.centerYAnchor.constraint(equalTo: container.centerYAnchor, constant: -2),
             rightGroupView.heightAnchor.constraint(equalToConstant: groupHeight),
             rightGroupView.leadingAnchor.constraint(greaterThanOrEqualTo: leftGroupView.trailingAnchor, constant: 12),

@@ -320,15 +320,21 @@ class StoryTitlesHeaderBar: NSObject {
 
     // MARK: - Layout
 
+    private var isMac: Bool {
+        UIDevice.current.userInterfaceIdiom == .mac
+    }
+
     private func buildLayout(in container: UIView) {
+        let pillEdgeInset: CGFloat = isMac ? 80 : 8
+
         NSLayoutConstraint.activate([
             pillBar.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             pillBar.trailingAnchor.constraint(equalTo: container.trailingAnchor),
             pillBar.topAnchor.constraint(equalTo: container.topAnchor),
             pillBar.heightAnchor.constraint(equalToConstant: 36),
 
-            pillStack.leadingAnchor.constraint(equalTo: pillBar.leadingAnchor, constant: 8),
-            pillStack.trailingAnchor.constraint(equalTo: pillBar.trailingAnchor, constant: -8),
+            pillStack.leadingAnchor.constraint(equalTo: pillBar.leadingAnchor, constant: pillEdgeInset),
+            pillStack.trailingAnchor.constraint(equalTo: pillBar.trailingAnchor, constant: -pillEdgeInset),
             pillStack.topAnchor.constraint(equalTo: pillBar.topAnchor, constant: 4),
             pillStack.bottomAnchor.constraint(equalTo: pillBar.bottomAnchor, constant: -4),
 
@@ -705,10 +711,12 @@ class StoryTitlesHeaderBar: NSObject {
             let activeBg = tm.color(fromLightRGB: 0x4A89DC, sepiaRGB: 0x4A7EC0, mediumRGB: 0x4A78B0, darkRGB: 0x3A6898)
             config.background.backgroundColor = activeBg
             config.baseForegroundColor = .white
+            searchPill.backgroundColor = activeBg
         } else {
             let pillBg = tm.color(fromLightRGB: 0xE3E6E0, sepiaRGB: 0xEADFD0, mediumRGB: 0x444444, darkRGB: 0x2A2A2A)
             config.background.backgroundColor = pillBg
             config.baseForegroundColor = tm.color(fromLightRGB: 0x555555, sepiaRGB: 0x6A5A4A, mediumRGB: 0xAAAAAA, darkRGB: 0xAAAAAA)
+            searchPill.backgroundColor = pillBg
         }
 
         searchPill.configuration = config
