@@ -8449,6 +8449,7 @@ form.opml_import_form input {
 .NB-dashboard-columns-triple .NB-dashboard-rivers-left>*,
 .NB-dashboard-columns-triple .NB-dashboard-rivers-right>* {
     flex: 1;
+    min-width: 0;
 }
 
 .NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-feedbar-options,
