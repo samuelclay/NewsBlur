@@ -426,7 +426,7 @@
 }
 
 - (void)pushReadStory:(id)storyId {
-    if ([appDelegate.readStories lastObject] != storyId) {
+    if (![[appDelegate.readStories lastObject] isEqual:storyId]) {
         [appDelegate.readStories addObject:storyId];
     }
 }

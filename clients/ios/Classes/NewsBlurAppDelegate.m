@@ -1159,32 +1159,24 @@
     
     if (!self.isPhone) {
         BOOL fromPopover = [self hidePopoverAnimated:NO];
-        [self.splitViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
+        // Configure popover BEFORE presenting so the anchor is applied on Catalyst
         activityViewController.modalPresentationStyle = UIModalPresentationPopover;
-        // iOS 8+
         UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
         popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
         popPC.backgroundColor = UIColorFromLightDarkRGB(NEWSBLUR_WHITE_COLOR, 0x707070);
-        
+
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             popPC.barButtonItem = sender;
         } else if ([sender isKindOfClass:[NSValue class]]) {
-            //            // Uncomment below to show share popover from linked text. Problem is
-            //            // that on finger up the link will open.
             CGPoint pt = [(NSValue *)sender CGPointValue];
             CGRect rect = CGRectMake(pt.x, pt.y, 1, 1);
-            ////            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:rect inView:self.storyPagesViewController.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
-            
-            //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
-            //                                                           presentingViewController:vc options:options];
             popPC.sourceRect = rect;
             popPC.sourceView = self.storyPagesViewController.view;
         } else {
             popPC.sourceRect = [sender frame];
             popPC.sourceView = (UIView *)[sender superview];
-            
-            //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
+        [self.splitViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
     } else {
         [self.feedsNavigationController presentViewController:activityViewController animated:YES completion:^{}];
     }
