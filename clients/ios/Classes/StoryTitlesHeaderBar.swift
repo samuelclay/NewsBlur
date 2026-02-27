@@ -30,17 +30,27 @@ class StoryTitlesHeaderBar: NSObject {
     let headerContainer = HeaderContainerView()
 
     let pillBar = UIView()
-    let discoverPill = UIButton(type: .system)
-    let optionsPill = UIButton(type: .system)
-    let searchPill = UIButton(type: .system)
+    let discoverPill = StoryTitlesHeaderBar.makePillButton()
+    let optionsPill = StoryTitlesHeaderBar.makePillButton()
+    let searchPill = StoryTitlesHeaderBar.makePillButton()
     let markReadContainer = UIView()
-    let markReadExpandButton = UIButton(type: .system)
-    let markReadPill = UIButton(type: .system)
+    let markReadExpandButton = StoryTitlesHeaderBar.makePillButton()
+    let markReadPill = StoryTitlesHeaderBar.makePillButton()
 
     /// Container for the search field, sits below the pill bar.
     let searchContainer = UIView()
     /// Cancel button (X) inside the search container.
-    let searchCancelButton = UIButton(type: .system)
+    let searchCancelButton = StoryTitlesHeaderBar.makePillButton()
+
+    /// On Catalyst, use `.custom` type to avoid AppKit button chrome that
+    /// overrides sizing and colors. On iOS, `.system` works well with Configuration.
+    private static func makePillButton() -> UIButton {
+        #if targetEnvironment(macCatalyst)
+        return UIButton(type: .custom)
+        #else
+        return UIButton(type: .system)
+        #endif
+    }
 
     // MARK: - Private Views
 
@@ -70,15 +80,6 @@ class StoryTitlesHeaderBar: NSObject {
 
     // MARK: - Helpers
 
-    /// Extra horizontal padding needed on Mac Catalyst where buttons render tighter.
-    private var macPadding: CGFloat {
-        #if targetEnvironment(macCatalyst)
-        return 8
-        #else
-        return 0
-        #endif
-    }
-
     private var pillFont: UIFont {
         .systemFont(ofSize: 10, weight: .medium)
     }
@@ -105,6 +106,74 @@ class StoryTitlesHeaderBar: NSObject {
         return renderer.image { _ in
             image.draw(in: CGRect(origin: .zero, size: size))
         }.withRenderingMode(.alwaysTemplate)
+    }
+
+    // MARK: - Platform-Adaptive Pill API
+
+    /// Sets pill button content. On iOS uses UIButton.Configuration; on Catalyst uses
+    /// the legacy button API since Configuration ignores contentInsets, imagePlacement,
+    /// and contentHorizontalAlignment on Catalyst.
+    private func setPillContent(_ button: UIButton,
+                                title: String?,
+                                image: UIImage?,
+                                trailingImage: Bool = false,
+                                imagePadding: CGFloat = 4,
+                                leadingInset: CGFloat,
+                                trailingInset: CGFloat,
+                                lineBreakMode: NSLineBreakMode = .byWordWrapping) {
+        #if targetEnvironment(macCatalyst)
+        button.configuration = nil
+        button.setTitle(title, for: .normal)
+        button.setImage(image?.withRenderingMode(.alwaysTemplate), for: .normal)
+        button.titleLabel?.font = pillFont
+        button.titleLabel?.lineBreakMode = lineBreakMode
+        button.contentEdgeInsets = UIEdgeInsets(top: 0, left: leadingInset, bottom: 0, right: trailingInset)
+        button.semanticContentAttribute = trailingImage ? .forceRightToLeft : .unspecified
+        if image != nil && title != nil {
+            let half = imagePadding / 2
+            if trailingImage {
+                button.imageEdgeInsets = UIEdgeInsets(top: 0, left: half, bottom: 0, right: -half)
+                button.titleEdgeInsets = UIEdgeInsets(top: 0, left: -half, bottom: 0, right: half)
+            } else {
+                button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -half, bottom: 0, right: half)
+                button.titleEdgeInsets = UIEdgeInsets(top: 0, left: half, bottom: 0, right: -half)
+            }
+        } else {
+            button.imageEdgeInsets = .zero
+            button.titleEdgeInsets = .zero
+        }
+        #else
+        var config = UIButton.Configuration.plain()
+        config.title = title
+        config.image = image
+        config.imagePlacement = trailingImage ? .trailing : .leading
+        if image != nil && title != nil {
+            config.imagePadding = imagePadding
+        }
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: leadingInset, bottom: 0, trailing: trailingInset)
+        if title != nil {
+            config.titleTextAttributesTransformer = pillFontTransformer()
+            config.titleLineBreakMode = lineBreakMode
+        }
+        button.configuration = config
+        #endif
+    }
+
+    /// Updates pill foreground/background colors for the current platform.
+    private func setPillColors(_ button: UIButton, bg: UIColor?, tint: UIColor?) {
+        button.backgroundColor = bg
+        button.tintColor = tint
+        #if targetEnvironment(macCatalyst)
+        button.setTitleColor(tint, for: .normal)
+        #else
+        if var config = button.configuration {
+            if let bg = bg {
+                config.background.backgroundColor = bg
+            }
+            config.baseForegroundColor = tint
+            button.configuration = config
+        }
+        #endif
     }
 
     // MARK: - Setup
@@ -169,19 +238,30 @@ class StoryTitlesHeaderBar: NSObject {
         button.clipsToBounds = true
         button.titleLabel?.numberOfLines = 1
         button.titleLabel?.lineBreakMode = .byClipping
+        addCatalystHighlight(button)
+    }
+
+    /// On Catalyst, `.custom` buttons have no automatic press highlight,
+    /// so add manual alpha dimming on touch events.
+    private func addCatalystHighlight(_ button: UIButton) {
+        #if targetEnvironment(macCatalyst)
+        button.addTarget(self, action: #selector(pillTouchDown(_:)), for: .touchDown)
+        button.addTarget(self, action: #selector(pillTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        #endif
+    }
+
+    @objc private func pillTouchDown(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.08) { sender.alpha = 0.5 }
+    }
+
+    @objc private func pillTouchUp(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.2) { sender.alpha = 1.0 }
     }
 
     private func buildDiscoverPill() {
-        var config = UIButton.Configuration.plain()
-        if let discoverAsset = UIImage(named: "discover") {
-            config.image = resizedImage(discoverAsset, to: CGSize(width: 14, height: 14))
-        }
-        config.title = "DISCOVER"
-        config.imagePadding = 4
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 12 + macPadding)
-        config.titleLineBreakMode = .byClipping
-        config.titleTextAttributesTransformer = pillFontTransformer()
-        discoverPill.configuration = config
+        let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
+        setPillContent(discoverPill, title: "DISCOVER", image: discoverImage,
+                       leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
         configurePillAppearance(discoverPill)
         discoverPill.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         pillStack.addArrangedSubview(discoverPill)
@@ -192,14 +272,9 @@ class StoryTitlesHeaderBar: NSObject {
     }
 
     private func buildOptionsPill() {
-        var config = UIButton.Configuration.plain()
-        config.title = "ALL \u{00B7} NEWEST"
-        config.image = sym("chevron.down", size: 8, weight: .bold)
-        config.imagePlacement = .trailing
-        config.imagePadding = 4
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16 + macPadding, bottom: 0, trailing: 14 + macPadding)
-        config.titleTextAttributesTransformer = pillFontTransformer()
-        optionsPill.configuration = config
+        setPillContent(optionsPill, title: "ALL \u{00B7} NEWEST",
+                       image: sym("chevron.down", size: 8, weight: .bold),
+                       trailingImage: true, leadingInset: 16, trailingInset: 14)
         configurePillAppearance(optionsPill)
         optionsPill.setContentCompressionResistancePriority(.required, for: .horizontal)
         pillStack.addArrangedSubview(optionsPill)
@@ -210,13 +285,9 @@ class StoryTitlesHeaderBar: NSObject {
     }
 
     private func buildSearchPill() {
-        var config = UIButton.Configuration.plain()
-        config.image = sym("magnifyingglass", size: 11)
-        config.title = "SEARCH"
-        config.imagePadding = 4
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 14 + macPadding)
-        config.titleTextAttributesTransformer = pillFontTransformer()
-        searchPill.configuration = config
+        setPillContent(searchPill, title: "SEARCH",
+                       image: sym("magnifyingglass", size: 11),
+                       leadingInset: 14, trailingInset: 14)
         configurePillAppearance(searchPill)
         searchPill.setContentCompressionResistancePriority(.required, for: .horizontal)
         pillStack.addArrangedSubview(searchPill)
@@ -238,12 +309,12 @@ class StoryTitlesHeaderBar: NSObject {
         pillStack.addArrangedSubview(markReadContainer)
 
         // Expand button ("+" on left) — tap shows day menu
-        var expandConfig = UIButton.Configuration.plain()
-        expandConfig.image = sym("plus", size: 9, weight: .bold)
-        expandConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 12 + macPadding, bottom: 0, trailing: 6)
-        markReadExpandButton.configuration = expandConfig
+        setPillContent(markReadExpandButton, title: nil,
+                       image: sym("plus", size: 9, weight: .bold),
+                       leadingInset: 12, trailingInset: 6)
         markReadExpandButton.translatesAutoresizingMaskIntoConstraints = false
         markReadExpandButton.showsMenuAsPrimaryAction = true
+        addCatalystHighlight(markReadExpandButton)
         markReadContainer.addSubview(markReadExpandButton)
 
         // Thin vertical divider
@@ -251,13 +322,11 @@ class StoryTitlesHeaderBar: NSObject {
         markReadContainer.addSubview(markReadDivider)
 
         // Main button (mark-read icon on right) — tap marks all read
-        var mainConfig = UIButton.Configuration.plain()
-        if let markReadAsset = UIImage(named: "mark-read") {
-            mainConfig.image = resizedImage(markReadAsset, to: CGSize(width: 22, height: 22))
-        }
-        mainConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 14 + macPadding)
-        markReadPill.configuration = mainConfig
+        let markReadImage = UIImage(named: "mark-read").map { resizedImage($0, to: CGSize(width: 22, height: 22)) }
+        setPillContent(markReadPill, title: nil, image: markReadImage,
+                       leadingInset: 12, trailingInset: 14)
         markReadPill.translatesAutoresizingMaskIntoConstraints = false
+        addCatalystHighlight(markReadPill)
         // Menu without showsMenuAsPrimaryAction = long press shows menu
         markReadContainer.addSubview(markReadPill)
 
@@ -266,7 +335,7 @@ class StoryTitlesHeaderBar: NSObject {
 
         NSLayoutConstraint.activate([
             markReadContainer.heightAnchor.constraint(equalToConstant: 28),
-            markReadContainer.widthAnchor.constraint(equalToConstant: 98 + macPadding * 2),
+            markReadContainer.widthAnchor.constraint(equalToConstant: 98),
 
             markReadExpandButton.leadingAnchor.constraint(equalTo: markReadContainer.leadingAnchor),
             markReadExpandButton.topAnchor.constraint(equalTo: markReadContainer.topAnchor),
@@ -299,11 +368,17 @@ class StoryTitlesHeaderBar: NSObject {
         searchContainer.isHidden = true
         container.addSubview(searchContainer)
 
+        #if targetEnvironment(macCatalyst)
+        searchCancelButton.setImage(sym("xmark", size: 10, weight: .bold)?.withRenderingMode(.alwaysTemplate), for: .normal)
+        searchCancelButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+        #else
         var cancelConfig = UIButton.Configuration.plain()
         cancelConfig.image = sym("xmark", size: 10, weight: .bold)
         cancelConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)
         searchCancelButton.configuration = cancelConfig
+        #endif
         searchCancelButton.translatesAutoresizingMaskIntoConstraints = false
+        addCatalystHighlight(searchCancelButton)
         searchContainer.addSubview(searchCancelButton)
 
         NSLayoutConstraint.activate([
@@ -367,13 +442,7 @@ class StoryTitlesHeaderBar: NSObject {
 
         for pill in [discoverPill, optionsPill, searchPill] {
             pill.layer.borderColor = borderColor?.cgColor
-
-            if var config = pill.configuration {
-                config.background.backgroundColor = pillBg
-                config.baseForegroundColor = tint
-                pill.configuration = config
-            }
-            pill.backgroundColor = pillBg
+            setPillColors(pill, bg: pillBg, tint: tint)
         }
 
         // Restore search pill highlight if search is active
@@ -388,10 +457,15 @@ class StoryTitlesHeaderBar: NSObject {
         markReadDivider.backgroundColor = borderColor
 
         for btn in [markReadExpandButton, markReadPill] {
+            btn.tintColor = tint
+            #if targetEnvironment(macCatalyst)
+            // No configuration on Catalyst
+            #else
             if var config = btn.configuration {
                 config.baseForegroundColor = tint
                 btn.configuration = config
             }
+            #endif
         }
 
         searchCancelButton.tintColor = tint
@@ -405,10 +479,14 @@ class StoryTitlesHeaderBar: NSObject {
         let orderText = order == "oldest" ? "OLDEST" : "NEWEST"
         let title = "\(filterText) \u{00B7} \(orderText)"
 
+        #if targetEnvironment(macCatalyst)
+        optionsPill.setTitle(title, for: .normal)
+        #else
         guard var config = optionsPill.configuration else { return }
         config.title = title
         config.titleTextAttributesTransformer = pillFontTransformer()
         optionsPill.configuration = config
+        #endif
     }
 
     /// Updates the discover pill with favicon images or "DISCOVER" text.
@@ -446,22 +524,15 @@ class StoryTitlesHeaderBar: NSObject {
         searchWidthConstraint?.isActive = false
         searchWidthConstraint = nil
 
-        guard var config = searchPill.configuration else { return }
-
         if shouldBeCompact {
-            // Icon only — wider pill, centered icon
-            config.title = nil
-            config.image = sym("magnifyingglass", size: 12)
-            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 14 + macPadding)
+            setPillContent(searchPill, title: nil,
+                           image: sym("magnifyingglass", size: 12),
+                           leadingInset: 14, trailingInset: 14)
         } else {
-            // Icon + text
-            config.title = "SEARCH"
-            config.image = sym("magnifyingglass", size: 11)
-            config.imagePadding = 4
-            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 14 + macPadding)
-            config.titleTextAttributesTransformer = pillFontTransformer()
+            setPillContent(searchPill, title: "SEARCH",
+                           image: sym("magnifyingglass", size: 11),
+                           leadingInset: 14, trailingInset: 14)
         }
-        searchPill.configuration = config
     }
 
     /// Returns true if the "SEARCH" text fits alongside other pills.
@@ -469,12 +540,10 @@ class StoryTitlesHeaderBar: NSObject {
         let availableWidth = headerContainer.bounds.width
         guard availableWidth > 0 else { return true }
 
-        // Calculate width needed with full search text
-        let extraPadding = macPadding * 2
         let discoverWidth = discoverPill.isHidden ? 0 : estimateDiscoverWidth()
         let optionsWidth = optionsPill.isHidden ? 0 : optionsPill.intrinsicContentSize.width
-        let searchFullWidth: CGFloat = 80 + extraPadding // icon + "SEARCH" + padding
-        let markReadWidth: CGFloat = 108 + extraPadding
+        let searchFullWidth: CGFloat = 80
+        let markReadWidth: CGFloat = 108
         let gaps: CGFloat = 4 * 6
         let edges: CGFloat = 16
 
@@ -505,8 +574,6 @@ class StoryTitlesHeaderBar: NSObject {
         discoverWidthConstraint?.isActive = false
         discoverWidthConstraint = nil
 
-        guard var config = discoverPill.configuration else { return }
-
         let discoverDisplay = UserDefaults.standard.string(forKey: "discover_display") ?? "with_icons"
         let favicons = storedFavicons
         let showFavicons = discoverDisplay == "with_icons" && !favicons.isEmpty && canFitFavicons()
@@ -514,9 +581,9 @@ class StoryTitlesHeaderBar: NSObject {
         if showFavicons {
             // Favicon mode: icon + up to 5 favicons
             isDiscoverCompact = false
-            config.title = nil
-            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 12 + macPadding)
-            discoverPill.configuration = config
+            let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
+            setPillContent(discoverPill, title: nil, image: discoverImage,
+                           leadingInset: 14, trailingInset: 12)
             discoverPill.contentHorizontalAlignment = .leading
 
             let maxFavicons = min(favicons.count, 5)
@@ -547,26 +614,16 @@ class StoryTitlesHeaderBar: NSObject {
         } else if canFitDiscoverText() {
             // Text mode: icon + "DISCOVER"
             isDiscoverCompact = false
-            if let discoverAsset = UIImage(named: "discover") {
-                config.image = resizedImage(discoverAsset, to: CGSize(width: 14, height: 14))
-            }
-            config.title = "DISCOVER"
-            config.imagePadding = 4
-            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 12 + macPadding)
-            config.titleLineBreakMode = .byClipping
-            config.titleTextAttributesTransformer = pillFontTransformer()
-            discoverPill.configuration = config
+            let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
+            setPillContent(discoverPill, title: "DISCOVER", image: discoverImage,
+                           leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
             discoverPill.contentHorizontalAlignment = .center
         } else {
             // Compact mode: icon only (like search pill)
             isDiscoverCompact = true
-            if let discoverAsset = UIImage(named: "discover") {
-                config.image = resizedImage(discoverAsset, to: CGSize(width: 14, height: 14))
-            }
-            config.title = nil
-            config.imagePadding = 0
-            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 14 + macPadding)
-            discoverPill.configuration = config
+            let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
+            setPillContent(discoverPill, title: nil, image: discoverImage,
+                           leadingInset: 14, trailingInset: 14)
             discoverPill.contentHorizontalAlignment = .center
         }
     }
@@ -576,11 +633,10 @@ class StoryTitlesHeaderBar: NSObject {
         let availableWidth = headerContainer.bounds.width
         guard availableWidth > 0 else { return true }
 
-        let extraPadding = macPadding * 2
-        let discoverTextWidth: CGFloat = 80 + extraPadding
+        let discoverTextWidth: CGFloat = 80
         let optionsWidth = optionsPill.isHidden ? 0 : optionsPill.intrinsicContentSize.width
-        let searchWidth: CGFloat = (isSearchCompact ? 38 : 80) + extraPadding
-        let markReadWidth: CGFloat = 108 + extraPadding
+        let searchWidth: CGFloat = isSearchCompact ? 38 : 80
+        let markReadWidth: CGFloat = 108
         let gaps: CGFloat = 4 * 6
         let edges: CGFloat = 16
 
@@ -593,14 +649,12 @@ class StoryTitlesHeaderBar: NSObject {
         let availableWidth = headerContainer.bounds.width
         guard availableWidth > 0 else { return true }
 
-        let extraPadding = macPadding * 2
         let maxFavicons = min(storedFavicons.count, 5)
-        let faviconPillWidth: CGFloat = CGFloat(maxFavicons) * 14 + 28 + 8 + extraPadding
+        let faviconPillWidth: CGFloat = CGFloat(maxFavicons) * 14 + 28 + 8
 
         let optionsWidth = optionsPill.isHidden ? 0 : optionsPill.intrinsicContentSize.width
-        // Use compact search width if already compact, otherwise estimate
-        let searchWidth: CGFloat = (isSearchCompact ? 38 : 80) + extraPadding
-        let markReadWidth: CGFloat = 108 + extraPadding
+        let searchWidth: CGFloat = isSearchCompact ? 38 : 80
+        let markReadWidth: CGFloat = 108
         let gaps: CGFloat = 4 * 6
         let edges: CGFloat = 16
 
@@ -710,24 +764,18 @@ class StoryTitlesHeaderBar: NSObject {
         }
     }
 
-    /// Applies both background and foreground colors to the search pill via its configuration.
+    /// Applies both background and foreground colors to the search pill.
     private func applySearchPillColors(active: Bool) {
         guard let tm = ThemeManager.shared else { return }
-        guard var config = searchPill.configuration else { return }
 
         if active {
             let activeBg = tm.color(fromLightRGB: 0x4A89DC, sepiaRGB: 0x4A7EC0, mediumRGB: 0x4A78B0, darkRGB: 0x3A6898)
-            config.background.backgroundColor = activeBg
-            config.baseForegroundColor = .white
-            searchPill.backgroundColor = activeBg
+            setPillColors(searchPill, bg: activeBg, tint: .white)
         } else {
             let pillBg = tm.color(fromLightRGB: 0xE3E6E0, sepiaRGB: 0xEADFD0, mediumRGB: 0x444444, darkRGB: 0x2A2A2A)
-            config.background.backgroundColor = pillBg
-            config.baseForegroundColor = tm.color(fromLightRGB: 0x555555, sepiaRGB: 0x6A5A4A, mediumRGB: 0xAAAAAA, darkRGB: 0xAAAAAA)
-            searchPill.backgroundColor = pillBg
+            let tint = tm.color(fromLightRGB: 0x555555, sepiaRGB: 0x6A5A4A, mediumRGB: 0xAAAAAA, darkRGB: 0xAAAAAA)
+            setPillColors(searchPill, bg: pillBg, tint: tint)
         }
-
-        searchPill.configuration = config
     }
 
     private func searchPillBorderColor(active: Bool) -> CGColor? {
