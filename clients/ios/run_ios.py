@@ -38,10 +38,10 @@ import time
 
 # Configuration
 UDID = os.environ.get("IOS_SIM_UDID", "")
-BUNDLE_ID = os.environ.get("IOS_BUNDLE_ID", "com.newsblur.NB-Alpha")
+BUNDLE_ID = os.environ.get("IOS_BUNDLE_ID", "com.newsblur.NewsBlur")
 APP_PATH = os.environ.get(
     "IOS_APP_PATH",
-    "/Users/sclay/Library/Developer/Xcode/DerivedData/NewsBlur-dnwoengkjrcsjaezlhydxgrfmbhw/Build/Products/Debug-iphonesimulator/NB Alpha.app",
+    "/Users/sclay/Library/Developer/Xcode/DerivedData/NewsBlur-dnwoengkjrcsjaezlhydxgrfmbhw/Build/Products/Debug-iphonesimulator/NewsBlur.app",
 )
 
 # Add idb to PATH

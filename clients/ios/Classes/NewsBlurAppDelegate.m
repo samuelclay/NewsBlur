@@ -1549,6 +1549,10 @@
 }
 
 - (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId {
+    [self openDiscoverFeedsDialogFromSettingsButton:feedId sourceView:nil];
+}
+
+- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId sourceView:(UIView *)sourceView {
     if (@available(iOS 15.0, *)) {
         if (!self.isPhone) {
             DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
@@ -1557,7 +1561,12 @@
 
             UIPopoverPresentationController *popover = discoverVC.popoverPresentationController;
             popover.delegate = self;
-            popover.barButtonItem = self.feedDetailViewController.settingsBarButton;
+            if (sourceView) {
+                popover.sourceView = sourceView;
+                popover.sourceRect = sourceView.bounds;
+            } else {
+                popover.barButtonItem = self.feedDetailViewController.settingsBarButton;
+            }
             popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
 
             [self.navigationControllerForPopover presentViewController:discoverVC animated:YES completion:nil];
@@ -1592,6 +1601,10 @@
 }
 
 - (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds {
+    [self openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:feedIds sourceView:nil];
+}
+
+- (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds sourceView:(UIView *)sourceView {
     if (@available(iOS 15.0, *)) {
         NSMutableArray *feedIdStrings = [NSMutableArray array];
         for (id feedId in feedIds) {
@@ -1605,7 +1618,12 @@
 
             UIPopoverPresentationController *popover = discoverVC.popoverPresentationController;
             popover.delegate = self;
-            popover.barButtonItem = self.feedDetailViewController.settingsBarButton;
+            if (sourceView) {
+                popover.sourceView = sourceView;
+                popover.sourceRect = sourceView.bounds;
+            } else {
+                popover.barButtonItem = self.feedDetailViewController.settingsBarButton;
+            }
             popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
 
             [self.navigationControllerForPopover presentViewController:discoverVC animated:YES completion:nil];

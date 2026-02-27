@@ -9,19 +9,14 @@ Open in Xcode:
 open NewsBlur.xcodeproj
 ```
 
-Build from command line:
+Build from command line (**always use "NewsBlur" scheme**, not "NewsBlur Alpha"):
 ```bash
-xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16' build
-```
-
-Build for Alpha (development):
-```bash
-xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur Alpha" -sdk iphonesimulator build
+xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16e' build
 ```
 
 Run tests:
 ```bash
-xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16' test
+xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16e' test
 ```
 
 ## Architecture Overview
@@ -134,7 +129,16 @@ Story content is rendered in WKWebView with:
 
 ## iOS Simulator Testing
 
+**IMPORTANT**: Always use the **"NewsBlur"** scheme (NOT "NewsBlur Alpha" / "NB Alpha").
+
 **IMPORTANT**: Always use `run_ios.py` for ALL simulator interactions (screenshots, taps, builds, installs). Do NOT use Chrome DevTools MCP server, `xcrun simctl`, or `idb` directly — `run_ios.py` wraps these and handles PATH setup automatically.
+
+### Choosing a Device
+
+Preferred devices for testing:
+- **iPhone 16e** simulator (default simulator)
+- **Clay Phone** (physical device)
+- **ClayPad** (physical device / iPad)
 
 ### Choosing a Simulator
 
@@ -192,4 +196,4 @@ tap_y = screenshot_y / 3.073
 
 - **Boot a simulator**: `xcrun simctl boot <UDID>`
 - **Stream logs**: `xcrun simctl spawn booted log stream --predicate 'process == "NewsBlur"'`
-- **Build for simulator**: `xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur Alpha" -destination 'id=<UDID>' -configuration Debug build`
+- **Build for simulator**: `xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -destination 'id=<UDID>' -configuration Debug build`

@@ -59,6 +59,28 @@ class StoryTraverseBar: NSObject {
         }
     }
 
+    private var isMac: Bool {
+        ProcessInfo.processInfo.isMacCatalystApp
+    }
+
+    /// Extra horizontal padding needed on Mac Catalyst where buttons render tighter.
+    private var macPadding: CGFloat {
+        isMac ? 6 : 0
+    }
+
+    // MARK: - Highlight Colors
+
+    private var highlightColor: UIColor? {
+        ThemeManager.shared?.color(fromLightRGB: 0xCDD2C8, sepiaRGB: 0xDDD0C0, mediumRGB: 0x555555, darkRGB: 0x3A3A3A)
+    }
+
+    private func installHighlightHandler(_ button: UIButton) {
+        button.configurationUpdateHandler = { [weak self] button in
+            guard let self else { return }
+            button.backgroundColor = button.isHighlighted ? self.highlightColor : .clear
+        }
+    }
+
     // MARK: - Setup
 
     /// Builds the traverse bar inside the given container, replacing its existing subviews.
@@ -69,6 +91,10 @@ class StoryTraverseBar: NSObject {
         buildLeftGroup(in: traverseView)
         buildRightGroup(in: traverseView)
         buildLayout(in: traverseView)
+        installHighlightHandler(textButton)
+        installHighlightHandler(sendButton)
+        installHighlightHandler(previousButton)
+        installHighlightHandler(nextButton)
         updateTheme()
     }
 
@@ -93,7 +119,7 @@ class StoryTraverseBar: NSObject {
         textConfig.image = sym("doc.plaintext")
         textConfig.title = "Text"
         textConfig.imagePadding = 6
-        textConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14, bottom: 0, trailing: 10)
+        textConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 10 + macPadding)
         textConfig.titleTextAttributesTransformer = fontTransformer()
         textButton.configuration = textConfig
         textButton.translatesAutoresizingMaskIntoConstraints = false
@@ -106,7 +132,7 @@ class StoryTraverseBar: NSObject {
         // Share / Send button
         var sendConfig = UIButton.Configuration.plain()
         sendConfig.image = sym("square.and.arrow.up", size: 14)
-        sendConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
+        sendConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 12 + macPadding, bottom: 0, trailing: 12 + macPadding)
         sendButton.configuration = sendConfig
         sendButton.translatesAutoresizingMaskIntoConstraints = false
         leftGroupView.addSubview(sendButton)
@@ -124,7 +150,7 @@ class StoryTraverseBar: NSObject {
         // Previous story button
         var prevConfig = UIButton.Configuration.plain()
         prevConfig.image = sym("chevron.left", size: 14, weight: .semibold)
-        prevConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14, bottom: 0, trailing: 14)
+        prevConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 14 + macPadding)
         previousButton.configuration = prevConfig
         previousButton.translatesAutoresizingMaskIntoConstraints = false
         rightGroupView.addSubview(previousButton)
@@ -163,7 +189,7 @@ class StoryTraverseBar: NSObject {
         nextConfig.image = sym("chevron.right", size: 12, weight: .semibold)
         nextConfig.imagePlacement = .trailing
         nextConfig.imagePadding = 4
-        nextConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 14)
+        nextConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 6 + macPadding, bottom: 0, trailing: 14 + macPadding)
         nextConfig.titleTextAttributesTransformer = fontTransformer()
         nextButton.configuration = nextConfig
         nextButton.translatesAutoresizingMaskIntoConstraints = false

@@ -163,6 +163,9 @@ class SplitViewController: UISplitViewController {
         let dividerWidth: CGFloat = 5
         feedsDividerView.frame.origin.x = newWidth - dividerWidth / 2
 
+        // Force the split view to apply the new column width immediately.
+        view.setNeedsLayout()
+
         UserDefaults.standard.set(Float(newWidth), forKey: Self.feedsWidthKey)
     }
 

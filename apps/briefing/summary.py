@@ -64,15 +64,20 @@ LENGTH_INSTRUCTIONS = {
 
 STYLE_INSTRUCTIONS = {
     "editorial": (
+        "Within each section, briefly explain WHY these stories matter to the reader — not just what "
+        "they are about. Focus on what makes each story worth reading. "
         "Write in a narrative editorial style with flowing prose that connects stories thematically. "
         "Wrap each story paragraph in a <p> tag. Do NOT use <ul> or <li> tags."
     ),
     "bullets": (
+        "Within each section, briefly explain WHY these stories matter to the reader — not just what "
+        "they are about. Focus on what makes each story worth reading. "
         "Write each story as a concise one-sentence summary. Group by the section headers below. "
         "Wrap each story in its own <p> tag. Do NOT use <ul> or <li> tags."
     ),
     "headlines": (
-        "List each story as a headline with a single explanatory sentence beneath it. "
+        "List each story as ONLY the headline — absolutely no commentary, no explanatory sentences, "
+        "no dashes followed by descriptions, just the linked story title and nothing else. "
         "Group by the section headers below. "
         "Wrap each story in its own <p> tag. Do NOT use <ul> or <li> tags."
     ),
@@ -80,7 +85,7 @@ STYLE_INSTRUCTIONS = {
 
 
 SECTION_PROMPTS = {
-    "trending_unread": '"Stories you missed" — CATEGORY: trending_unread. Popular stories the reader hasn\'t read yet.',
+    "top_stories": '"Top stories" — CATEGORY: top_stories. The most important stories from the reader\'s feeds.',
     "long_read": '"Long reads for later" — CATEGORY: long_read. Longer articles worth setting time aside for. Use the WORD_COUNT field to judge which stories qualify as long reads relative to other stories.',
     "classifier_match": (
         '"Based on your interests" — CATEGORY: classifier_match. '
@@ -96,11 +101,12 @@ SECTION_PROMPTS = {
         "and VALUE is the text after the colon. Include all matches, not just the first one."
     ),
     "follow_up": '"Follow-ups" — CATEGORY: follow_up. New posts from feeds where the reader recently read other stories.',
-    "trending_global": '"Trending across NewsBlur" — CATEGORY: trending_global. Widely-read stories from across the platform.',
-    "duplicates": '"Common stories" — CATEGORY: duplicates. Stories covered by multiple feeds. Check the CLUSTER annotation for pre-identified groupings. For each story, show the shared headline then list each source\'s unique angle or perspective as sub-items.',
-    "quick_catchup": '"Quick catch-up" — KEY: quick_catchup. This is a special section. Select the 3-5 most important stories from the entire briefing and write a 1-2 sentence TL;DR for each. Link to each story using the anchor tag format specified below. This section should appear first.',
-    "emerging_topics": '"Emerging topics" — CATEGORY: emerging_topics. Look across all the stories for topics that appear multiple times or are getting increasing coverage. Group these stories under the topic and explain why it\'s trending.',
-    "contrarian_views": '"Contrarian views" — CATEGORY: contrarian_views. Look for stories where different feeds have notably different perspectives on the same topic. Highlight the disagreement and present each side.',
+    "widely_covered": (
+        '"Widely covered" — CATEGORY: widely_covered. '
+        "Stories covered by multiple feeds and sources. "
+        "Check the CLUSTER annotation for pre-identified groupings. "
+        "For each story, show the shared headline then list each source's unique angle or perspective."
+    ),
 }
 
 
@@ -142,13 +148,10 @@ it was selected for them.
 
 Organize the briefing into sections based on these categories. Use ONLY these section headers
 (as <h3 data-section="CATEGORY_KEY"> tags, where CATEGORY_KEY is the category value like
-"trending_unread" or "classifier_match"). You MUST include every section listed below if there
+"top_stories" or "classifier_match"). You MUST include every section listed below if there
 are stories that match it. Do not omit sections to save space:
 
 %s
-
-Within each section, briefly explain WHY these stories matter to the reader — not just what
-they are about. Focus on what makes each story worth reading.
 
 %s
 
@@ -156,6 +159,9 @@ they are about. Focus on what makes each story worth reading.
 
 Reference each story by wrapping its title in an anchor tag like:
 <a class="NB-briefing-story-link" data-story-hash="HASH">Story Title</a>
+
+CRITICAL: Each story must appear in exactly ONE section. Never reference the same story
+with an anchor tag in multiple sections.
 
 Output valid HTML. Use <h3 data-section="CATEGORY_KEY"> for section headers.
 Do not use markdown. Do not wrap in code fences. Do not add any preamble.
@@ -204,18 +210,18 @@ def generate_briefing_summary(
     for feed in Feed.objects.filter(pk__in=feed_ids).only("pk", "feed_title"):
         feeds_by_id[feed.pk] = feed.feed_title
 
-    # summary.py: Remap story categories for disabled sections to "trending_global" so the
+    # summary.py: Remap story categories for disabled sections to "top_stories" so the
     # LLM doesn't see category annotations for sections it shouldn't create.
     from apps.briefing.models import DEFAULT_SECTIONS
 
     active_sections = sections if sections else DEFAULT_SECTIONS
     category_overrides = {}
     for scored in scored_stories:
-        category = scored.get("category", "trending_global")
-        if category.startswith("custom_") or category == "trending_global":
+        category = scored.get("category", "top_stories")
+        if category.startswith("custom_") or category == "top_stories":
             continue
         if not active_sections.get(category, False):
-            category_overrides[scored["story_hash"]] = "trending_global"
+            category_overrides[scored["story_hash"]] = "top_stories"
 
     story_lines = []
     for scored in scored_stories:
@@ -381,8 +387,12 @@ def extract_section_summaries(summary_html):
         # Content runs until the next h3 or end
         content = parts[i + 2] if i + 2 < len(parts) else ""
 
-        # summary.py: Strip trailing </div> that closes the outer wrapper
-        content = re.sub(r"\s*</div>\s*$", "", content)
+        # summary.py: Strip trailing </div> that closes the outer wrapper, but ONLY
+        # from the last section. Non-last sections don't have the outer </div>, so
+        # stripping would remove a story's closing </div> and break nesting.
+        is_last_section = i + 3 >= len(parts)
+        if is_last_section:
+            content = re.sub(r"\s*</div>\s*$", "", content)
 
         section_html = '<div class="NB-briefing-summary">%s%s</div>' % (h3_tag, content)
         sections[section_key] = section_html
@@ -407,15 +417,11 @@ def extract_section_story_hashes(section_summaries):
 
 
 BRIEFING_SECTION_ICONS = {
-    "trending_unread": "indicator-unread-gray.svg",
+    "top_stories": "indicator-unread-gray.svg",
     "long_read": "scroll.svg",
     "classifier_match": "train.svg",
     "follow_up": "boomerang.svg",
-    "trending_global": "discover.svg",
-    "duplicates": "venn.svg",
-    "quick_catchup": "pulse.svg",
-    "emerging_topics": "growth-rocket-gray.svg",
-    "contrarian_views": "stack.svg",
+    "widely_covered": "growth-rocket-gray.svg",
     "custom_1": "prompt.svg",
     "custom_2": "prompt.svg",
     "custom_3": "prompt.svg",
@@ -758,8 +764,8 @@ def filter_disabled_sections(summary_html, active_sections):
         return summary_html
 
     allowed = {k for k, v in active_sections.items() if v}
-    # Always keep trending_global as the fallback section
-    allowed.add("trending_global")
+    # Always keep top_stories as the fallback section
+    allowed.add("top_stories")
 
     filtered = {k: v for k, v in sections.items() if k in allowed}
     if not filtered:
@@ -772,6 +778,45 @@ def filter_disabled_sections(summary_html, active_sections):
         inner = re.sub(r"</div>$", "", inner)
         parts.append(inner)
 
+    return '<div class="NB-briefing-summary">%s</div>' % "".join(parts)
+
+
+def enforce_exclusive_sections(section_summaries):
+    """Ensure no story hash appears in multiple sections. First occurrence wins."""
+    seen_hashes = set()
+    result = {}
+    for key, html in section_summaries.items():
+        section_hashes = set(re.findall(r'data-story-hash="([^"]+)"', html))
+        dupes = section_hashes & seen_hashes
+        if dupes:
+            html = _strip_duplicate_story_links(html, dupes)
+        seen_hashes.update(section_hashes - dupes)
+        result[key] = html
+    return result
+
+
+def _strip_duplicate_story_links(html, hashes_to_strip):
+    """Convert anchor tags for specified hashes to plain text, preserving title."""
+
+    def _replace(match):
+        if match.group("hash") in hashes_to_strip:
+            return match.group("title")
+        return match.group(0)
+
+    pattern = (
+        r"(?:<img\s[^>]*NB-briefing-inline-favicon[^>]*>\s*)?"
+        r'<a\s[^>]*data-story-hash="(?P<hash>[^"]+)"[^>]*>(?P<title>.*?)</a>'
+    )
+    return re.sub(pattern, _replace, html, flags=re.DOTALL)
+
+
+def rebuild_summary_from_sections(section_summaries):
+    """Reconstruct full briefing HTML from per-section blocks."""
+    parts = []
+    for section_html in section_summaries.values():
+        inner = re.sub(r'^<div class="NB-briefing-summary">', "", section_html)
+        inner = re.sub(r"</div>$", "", inner)
+        parts.append(inner)
     return '<div class="NB-briefing-summary">%s</div>' % "".join(parts)
 
 
