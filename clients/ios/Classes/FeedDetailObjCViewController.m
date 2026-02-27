@@ -1776,7 +1776,6 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 #if TARGET_OS_MACCATALYST
     if (@available(macCatalyst 16.0, *)) {
         settingsBarButton.hidden = NO;
-        feedMarkReadButton.hidden = NO;
     }
 #endif
     
@@ -3440,15 +3439,8 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
     
 #if TARGET_OS_MACCATALYST
-    UINavigationController *feedDetailNavController = appDelegate.feedDetailViewController.navigationController;
-    UIView *sourceView = feedDetailNavController.view;
-    CGRect sourceRect = CGRectMake(120, 10, 20, 20);
-    
-    if (appDelegate.splitViewController.isFeedsListHidden) {
-        sourceRect = CGRectMake(-130, 10, 20, 20);
-    }
-    
-    [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount sourceView:sourceView sourceRect:sourceRect completionHandler:^(BOOL marked){
+    UIView *markReadView = self.storyTitlesHeaderBar.markReadContainer;
+    [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount sourceView:markReadView sourceRect:markReadView.bounds completionHandler:^(BOOL marked){
         if (marked) {
             pop();
         }
@@ -3773,9 +3765,17 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     [viewController addThemeSegmentedControl];
 
     UINavigationController *navController = self.navigationController ?: appDelegate.storyPagesViewController.navigationController;
-    
+
+#if TARGET_OS_MACCATALYST
+    UIView *pillView = self.storyTitlesHeaderBar.optionsPill;
+    UINavigationController *menuNavController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    menuNavController.navigationBarHidden = YES;
+    menuNavController.delegate = viewController;
+    [appDelegate showPopoverWithViewController:menuNavController contentSize:CGSizeZero sourceView:pillView sourceRect:pillView.bounds];
+#else
     UIView *pillView = self.storyTitlesHeaderBar.optionsPill;
     [viewController showFromNavigationController:navController barButtonItem:nil sourceView:pillView sourceRect:pillView.bounds permittedArrowDirections:UIPopoverArrowDirectionUp];
+#endif
 }
 
 - (IBAction)doOpenDiscoverFromPill:(id)sender {

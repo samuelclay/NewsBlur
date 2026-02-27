@@ -140,6 +140,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
+    padding: 6px 8px;
 }
 
 .NB-mac .NB-button.NB-share-button .NB-icon {
