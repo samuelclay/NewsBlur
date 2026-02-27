@@ -29,7 +29,7 @@ struct TrainerCapsule: View {
             }
             .padding([.top, .bottom], 5)
             .padding([.leading, .trailing], 10)
-            .background(score == .like ? Color(red: 0, green: 0.5, blue: 0.0) : score == .dislike ? Color.red : Color(white: ThemeManager.shared.isSystemDark ? 0.35 : 0.6))
+            .background(score == .like ? Color(red: 0, green: 0.5, blue: 0.0) : score == .dislike ? Color.red : Color.themed([0x999999, 0x8B7B6B, 0x595959, 0x595959]))
             .clipShape(Capsule())
             
             if count > 0 {
