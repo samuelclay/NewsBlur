@@ -200,7 +200,7 @@ def load_briefing_stories(request):
             get_briefing_models_for_frontend,
         )
 
-        TIME_DISPLAY_MAP = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
+        TIME_DISPLAY_MAP = {"08:00": "morning", "12:30": "afternoon", "13:00": "afternoon", "17:00": "evening"}
         preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
         result["preferences"] = {
             "frequency": prefs.frequency,
@@ -244,7 +244,7 @@ def briefing_preferences(request):
         if preferred_time == "auto":
             prefs.preferred_time = None
         elif preferred_time in ("morning", "afternoon", "evening"):
-            time_map = {"morning": "08:00", "afternoon": "13:00", "evening": "17:00"}
+            time_map = {"morning": "08:00", "afternoon": "12:30", "evening": "17:00"}
             prefs.preferred_time = time_map[preferred_time]
         elif preferred_time:
             try:
@@ -336,7 +336,7 @@ def briefing_preferences(request):
         prefs.read_filter = "focus"
         prefs.save()
 
-    TIME_DISPLAY_MAP = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
+    TIME_DISPLAY_MAP = {"08:00": "morning", "12:30": "afternoon", "13:00": "afternoon", "17:00": "evening"}
     preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
 
     from apps.ask_ai.providers import (
