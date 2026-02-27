@@ -27,7 +27,8 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
     },
 
     render: function () {
-        var subscribed = NEWSBLUR.assets.get_feed(this.model.id);
+        var feed_model = NEWSBLUR.assets.get_feed(this.model.id);
+        var subscribed = feed_model && !feed_model.get('temp');
         var in_add_site = this.options.in_add_site_view;
         var actions_in_header = in_add_site && !this.options.in_popover;
 

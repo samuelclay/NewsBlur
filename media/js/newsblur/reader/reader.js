@@ -1683,7 +1683,8 @@
                     }
                     if (!_.string.include(window.location.pathname, url)) {
                         NEWSBLUR.log(["Navigating to url", url]);
-                        NEWSBLUR.router.navigate(url);
+                        var already_on_feed = _.string.include(window.location.pathname, "site/" + feed.id + "/");
+                        NEWSBLUR.router.navigate(url, {replace: already_on_feed});
                     }
                 }
             }
