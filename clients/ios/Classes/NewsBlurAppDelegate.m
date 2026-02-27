@@ -773,7 +773,7 @@
             return [storiesCollection.activeFeedUserProfiles objectAtIndex:i];
         }
     }
-    
+
     // Check DB if not found in active feed
     __block NSDictionary *user;
     [self.database inDatabase:^(FMDatabase *db) {
@@ -788,8 +788,17 @@
         }
         [cursor close];
     }];
-    
-    return user;
+
+    if (user) return user;
+
+    // Fall back to current user's social profile (handles Catalyst timing where
+    // activeFeedUserProfiles may not yet include the current user)
+    if (self.dictSocialProfile &&
+        [[self.dictSocialProfile objectForKey:@"user_id"] integerValue] == userId) {
+        return self.dictSocialProfile;
+    }
+
+    return nil;
 }
 
 - (void)showUserProfileModal:(id)sender {
