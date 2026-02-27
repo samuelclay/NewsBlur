@@ -571,7 +571,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     "generate-briefings": {
         "task": "generate-briefings",
-        "schedule": datetime.timedelta(minutes=15),
+        "schedule": datetime.timedelta(minutes=1),
         "options": {"queue": "cron_queue"},
     },
 }

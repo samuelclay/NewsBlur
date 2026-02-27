@@ -90,7 +90,7 @@ class RUserActivity:
         Compute the next briefing generation time for this user.
 
         Returns a datetime in UTC representing when the briefing should be generated
-        (30 minutes before their typical reading time).
+        (5 minutes before their typical reading time).
 
         Falls back to DEFAULT_HOUR (7:00 AM) if insufficient activity data.
         """
@@ -102,7 +102,7 @@ class RUserActivity:
 
         today = datetime.datetime.now(tz).date()
         local_target = tz.localize(datetime.datetime.combine(today, datetime.time(typical_hour, 0)))
-        generation_time = local_target - datetime.timedelta(minutes=30)
+        generation_time = local_target - datetime.timedelta(minutes=5)
 
         utc_time = generation_time.astimezone(pytz.utc).replace(tzinfo=None)
 
