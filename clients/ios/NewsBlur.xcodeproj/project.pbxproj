@@ -810,6 +810,7 @@
 		17BC56B02BBF6C2200A30C41 /* StorySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17BC56AF2BBF6C2200A30C41 /* StorySettings.swift */; };
 		17BC56B12BBF6C2200A30C41 /* StorySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17BC56AF2BBF6C2200A30C41 /* StorySettings.swift */; };
 		17BD3BA52271102500F615EC /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BD3BA42271102500F615EC /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		17BD3BA52271102500F615ED /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BD3BA42271102500F615EC /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		17BD3BA72271122800F615EC /* CoreSpotlight.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BD3BA62271122800F615EC /* CoreSpotlight.framework */; };
 		17BD3BA92271125400F615EC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BD3BA82271125400F615EC /* CoreServices.framework */; };
 		17BE1A5527A243CF003F528E /* WhitneySSm-Medium-Bas.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3E051BFBBAC600ADC01A /* WhitneySSm-Medium-Bas.otf */; };
@@ -2488,6 +2489,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17BD3BA52271102500F615ED /* Intents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
