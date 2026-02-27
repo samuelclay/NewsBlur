@@ -956,6 +956,14 @@
         UIEdgeInsets insets = self.webView.scrollView.adjustedContentInset;
         width -= (insets.left + insets.right);
     }
+    // On iPhone/compact, the story page always fills the screen width.
+    // Before the view is in the hierarchy, the webView may report its XIB
+    // default size (414pt) which is wrong for narrower devices. Clamp to
+    // the screen width so the viewport meta tag is never too wide.
+    if (self.isPhoneOrCompact) {
+        CGFloat screenWidth = CGRectGetWidth([UIScreen mainScreen].bounds);
+        width = MIN(width, screenWidth);
+    }
     if (width < 1.0) {
         width = CGRectGetWidth([UIScreen mainScreen].bounds);
     }
