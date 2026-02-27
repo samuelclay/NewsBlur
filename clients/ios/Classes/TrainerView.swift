@@ -24,16 +24,18 @@ struct TrainerView: View {
         VStack(alignment: .leading) {
             Text("What do you 👍 \(Text("like").colored(.green)) and 👎 \(Text("dislike").colored(.red)) about this \(feedOrStoryLowercase)?")
                 .font(font(named: "WhitneySSm-Medium", size: 16))
+                .foregroundColor(textColor)
                 .padding()
-            
+
             List {
                 Section(content: {
                     VStack(alignment: .leading) {
                         if interaction.isStoryTrainer {
                             Text("Choose one or more words from the title:")
                                 .font(font(named: "WhitneySSm-Medium", size: 12))
+                                .foregroundColor(secondaryTextColor)
                                 .padding([.top], 10)
-                            
+
                             WrappingHStack(models: titleWords, horizontalSpacing: 1) { word in
                                 Button(action: {
                                     if addingTitle.isEmpty {
@@ -47,7 +49,7 @@ struct TrainerView: View {
                                 .buttonStyle(BorderlessButtonStyle())
                                 .padding([.top, .bottom], 5)
                             }
-                            
+
                             if !addingTitle.isEmpty {
                                 HStack {
                                     Button(action: {
@@ -58,7 +60,7 @@ struct TrainerView: View {
                                     })
                                     .buttonStyle(BorderlessButtonStyle())
                                     .padding([.top, .bottom], 5)
-                                    
+
                                     Button {
                                         addingTitle = ""
                                     } label: {
@@ -69,7 +71,7 @@ struct TrainerView: View {
                                 }
                             }
                         }
-                        
+
                         WrappingHStack(models: titles) { title in
                             Button(action: {
                                 cache.appDelegate.toggleTitleClassifier(title.name, feedId: feed?.id, score: 0)
@@ -80,10 +82,11 @@ struct TrainerView: View {
                             .padding([.top, .bottom], 5)
                         }
                     }
+                    .listRowBackground(rowBackground)
                 }, header: {
                     header(story: "Story Title", feed: "Titles & Phrases")
                 })
-                
+
                 Section(content: {
                     WrappingHStack(models: authors) { author in
                         Button(action: {
@@ -94,10 +97,11 @@ struct TrainerView: View {
                         .buttonStyle(BorderlessButtonStyle())
                         .padding([.top, .bottom], 5)
                     }
+                    .listRowBackground(rowBackground)
                 }, header: {
                     header(story: "Story Author", feed: "Authors")
                 })
-                
+
                 Section(content: {
                     WrappingHStack(models: tags) { tag in
                         Button(action: {
@@ -108,10 +112,11 @@ struct TrainerView: View {
                         .buttonStyle(BorderlessButtonStyle())
                         .padding([.top, .bottom], 5)
                     }
+                    .listRowBackground(rowBackground)
                 }, header: {
                     header(story: "Story Categories & Tags", feed: "Categories & Tags")
                 })
-                
+
                 Section(content: {
                     HStack {
                         if let feed = feed {
@@ -124,12 +129,16 @@ struct TrainerView: View {
                             .padding([.top, .bottom], 5)
                         }
                     }
+                    .listRowBackground(rowBackground)
                 }, header: {
                     header(feed: "Everything by This Publisher")
                 })
             }
             .font(font(named: "WhitneySSm-Medium", size: 12))
+            .scrollContentBackground(.hidden)
+            .background(listBackground)
         }
+        .background(listBackground)
         .onAppear {
             addingTitle = ""
             cache.reload()
@@ -149,14 +158,32 @@ struct TrainerView: View {
         return interaction.isStoryTrainer ? "story" : "site"
     }
     
+    var listBackground: Color {
+        Color.themed([0xF0F2ED, 0xF3E2CB, 0x2C2C2E, 0x1C1C1E])
+    }
+
+    var rowBackground: Color {
+        Color.themed([0xFFFFFF, 0xFAF5ED, 0x3A3A3C, 0x2C2C2E])
+    }
+
+    var textColor: Color {
+        Color.themed([0x1C1C1E, 0x3C3226, 0xF2F2F7, 0xF2F2F7])
+    }
+
+    var secondaryTextColor: Color {
+        Color.themed([0x6E6E73, 0x8B7B6B, 0xAEAEB2, 0x98989D])
+    }
+
     @ViewBuilder
     func header(story: String? = nil, feed: String) -> some View {
         if let story {
             Text(interaction.isStoryTrainer ? story : feed)
                 .font(font(named: "WhitneySSm-Medium", size: 16))
+                .foregroundColor(textColor)
         } else {
             Text(feed)
                 .font(font(named: "WhitneySSm-Medium", size: 16))
+                .foregroundColor(textColor)
         }
     }
     

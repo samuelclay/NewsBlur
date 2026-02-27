@@ -47,9 +47,15 @@ class Users(View):
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
-            "premium_paid": MStatistics.get(
-                "munin:users_premium_paid",
+            "premium_from_trial": MStatistics.get(
+                "munin:users_premium_from_trial",
                 lambda: Profile.objects.filter(is_premium=True, is_premium_trial=False).count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
+            "premium_non_trial": MStatistics.get(
+                "munin:users_premium_non_trial",
+                lambda: Profile.objects.filter(is_premium=True).exclude(is_premium_trial=True).count(),
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),

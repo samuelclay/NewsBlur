@@ -141,6 +141,12 @@ def load_briefing_stories(request):
                         story_dict["feed_id"] = feed.pk
                     curated_stories.append(story_dict)
 
+        # views.py: Attach cluster data so the frontend can show cluster sources
+        if curated_stories:
+            from apps.clustering.models import attach_cluster_data_to_stories
+
+            attach_cluster_data_to_stories(curated_stories, user)
+
         # views.py: Normalize section keys to handle legacy data with incorrect keys
         normalized_curated_sections = _normalize_section_dict(briefing.curated_sections, merge_lists=True)
         normalized_section_summaries = _normalize_section_dict(briefing.section_summaries)
@@ -206,7 +212,7 @@ def load_briefing_stories(request):
             "read_filter": prefs.read_filter or "unread",
             "summary_style": prefs.summary_style or "bullets",
             "include_read": prefs.include_read,
-            "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
+            "sections": dict(DEFAULT_SECTIONS, **(prefs.sections or {})),
             "custom_section_prompts": prefs.custom_section_prompts or [],
             "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
             "briefing_feed_id": prefs.briefing_feed_id,
@@ -231,7 +237,7 @@ def briefing_preferences(request):
 
     if request.method == "POST":
         frequency = request.POST.get("frequency")
-        if frequency in ("daily", "twice_daily", "weekly"):
+        if frequency in ("daily", "twice_daily", "thrice_daily", "weekly"):
             prefs.frequency = frequency
 
         preferred_time = request.POST.get("preferred_time")
@@ -360,7 +366,7 @@ def briefing_preferences(request):
         "read_filter": prefs.read_filter or "unread",
         "summary_style": prefs.summary_style or "bullets",
         "include_read": prefs.include_read,
-        "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
+        "sections": dict(DEFAULT_SECTIONS, **(prefs.sections or {})),
         "custom_section_prompts": prefs.custom_section_prompts or [],
         "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
         "briefing_model": prefs.briefing_model or DEFAULT_BRIEFING_MODEL,

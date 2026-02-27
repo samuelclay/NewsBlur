@@ -3633,6 +3633,7 @@ img.feed_favicon {
 
 .NB-story-title {
     transition: transform 0.12s ease-out, border-radius 0.12s ease-out, height 0.36s ease-out, background-color 0.22s ease-out;
+    transform-origin: center top;
 }
 
 .NB-story-title.NB-selected,
@@ -8588,6 +8589,7 @@ form.opml_import_form input {
 .NB-dashboard-columns-triple .NB-dashboard-rivers-left>*,
 .NB-dashboard-columns-triple .NB-dashboard-rivers-right>* {
     flex: 1;
+    min-width: 0;
 }
 
 .NB-dashboard-columns-triple .NB-dashboard-rivers-left .NB-feedbar-options,
@@ -12903,6 +12905,7 @@ h5.NB-classifier-section-header {
 
 .NB-account-wide {
     flex: 3 1 0;
+    min-width: 0;
 }
 
 .NB-module-header {
