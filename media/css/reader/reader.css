@@ -12307,6 +12307,7 @@ h5.NB-classifier-section-header {
 
 .NB-account-wide {
     flex: 3 1 0;
+    min-width: 0;
 }
 
 .NB-module-header {
