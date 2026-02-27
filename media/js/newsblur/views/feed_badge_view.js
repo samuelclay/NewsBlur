@@ -157,7 +157,11 @@ NEWSBLUR.Views.FeedBadge = Backbone.View.extend({
     },
 
     try_feed: function () {
-        NEWSBLUR.reader.load_feed_in_tryfeed_view(this.model.id);
+        var options = {};
+        if (this.options.in_add_site_view && this.options.in_add_site_view.get_discover_origin) {
+            options.discover_origin = this.options.in_add_site_view.get_discover_origin();
+        }
+        NEWSBLUR.reader.load_feed_in_tryfeed_view(this.model.id, options);
         if (this.options.in_popover) {
             this.options.in_popover.close();
         }
