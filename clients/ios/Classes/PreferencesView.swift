@@ -277,6 +277,18 @@ class PreferencesViewModel: ObservableObject {
                         iconColor: .yellow,
                         type: .toggle(key: "override_mark_read_filter", defaultValue: true),
                         subtitle: "Allow per-site/folder mark read settings"
+                    ),
+                    PreferenceItem(
+                        title: "Discover sites",
+                        icon: "sparkle.magnifyingglass",
+                        iconColor: .orange,
+                        type: .multiValue(
+                            key: "discover_display",
+                            titles: ["Show with feed icons", "Show without icons", "Hidden"],
+                            values: ["with_icons", "without_icons", "hidden"],
+                            defaultValue: "with_icons"
+                        ),
+                        subtitle: "Show related feeds in the story list header"
                     )
                 ]
             ),
