@@ -70,6 +70,15 @@ class StoryTitlesHeaderBar: NSObject {
 
     // MARK: - Helpers
 
+    private var isMac: Bool {
+        ProcessInfo.processInfo.isMacCatalystApp
+    }
+
+    /// Extra horizontal padding needed on Mac Catalyst where buttons render tighter.
+    private var macPadding: CGFloat {
+        isMac ? 6 : 0
+    }
+
     private var pillFont: UIFont {
         .systemFont(ofSize: 10, weight: .medium)
     }
@@ -169,7 +178,7 @@ class StoryTitlesHeaderBar: NSObject {
         }
         config.title = "DISCOVER"
         config.imagePadding = 4
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 6)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8 + macPadding, bottom: 0, trailing: 6 + macPadding)
         config.titleLineBreakMode = .byClipping
         config.titleTextAttributesTransformer = pillFontTransformer()
         discoverPill.configuration = config
@@ -188,7 +197,7 @@ class StoryTitlesHeaderBar: NSObject {
         config.image = sym("chevron.down", size: 8, weight: .bold)
         config.imagePlacement = .trailing
         config.imagePadding = 4
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 6)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8 + macPadding, bottom: 0, trailing: 6 + macPadding)
         config.titleTextAttributesTransformer = pillFontTransformer()
         optionsPill.configuration = config
         configurePillAppearance(optionsPill)
@@ -205,7 +214,7 @@ class StoryTitlesHeaderBar: NSObject {
         config.image = sym("magnifyingglass", size: 11)
         config.title = "SEARCH"
         config.imagePadding = 4
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8 + macPadding, bottom: 0, trailing: 8 + macPadding)
         config.titleTextAttributesTransformer = pillFontTransformer()
         searchPill.configuration = config
         configurePillAppearance(searchPill)
@@ -231,7 +240,7 @@ class StoryTitlesHeaderBar: NSObject {
         // Expand button ("+" on left) — tap shows day menu
         var expandConfig = UIButton.Configuration.plain()
         expandConfig.image = sym("plus", size: 9, weight: .bold)
-        expandConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 4)
+        expandConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8 + macPadding, bottom: 0, trailing: 4)
         markReadExpandButton.configuration = expandConfig
         markReadExpandButton.translatesAutoresizingMaskIntoConstraints = false
         markReadExpandButton.showsMenuAsPrimaryAction = true
@@ -246,7 +255,7 @@ class StoryTitlesHeaderBar: NSObject {
         if let markReadAsset = UIImage(named: "mark-read") {
             mainConfig.image = resizedImage(markReadAsset, to: CGSize(width: 22, height: 22))
         }
-        mainConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
+        mainConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20 + macPadding)
         markReadPill.configuration = mainConfig
         markReadPill.translatesAutoresizingMaskIntoConstraints = false
         // Menu without showsMenuAsPrimaryAction = long press shows menu
@@ -257,7 +266,7 @@ class StoryTitlesHeaderBar: NSObject {
 
         NSLayoutConstraint.activate([
             markReadContainer.heightAnchor.constraint(equalToConstant: 28),
-            markReadContainer.widthAnchor.constraint(equalToConstant: 94),
+            markReadContainer.widthAnchor.constraint(equalToConstant: 94 + macPadding * 2),
 
             markReadExpandButton.leadingAnchor.constraint(equalTo: markReadContainer.leadingAnchor),
             markReadExpandButton.topAnchor.constraint(equalTo: markReadContainer.topAnchor),
@@ -321,14 +330,16 @@ class StoryTitlesHeaderBar: NSObject {
     // MARK: - Layout
 
     private func buildLayout(in container: UIView) {
+        let pillEdgeInset: CGFloat = 8
+
         NSLayoutConstraint.activate([
             pillBar.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             pillBar.trailingAnchor.constraint(equalTo: container.trailingAnchor),
             pillBar.topAnchor.constraint(equalTo: container.topAnchor),
             pillBar.heightAnchor.constraint(equalToConstant: 36),
 
-            pillStack.leadingAnchor.constraint(equalTo: pillBar.leadingAnchor, constant: 8),
-            pillStack.trailingAnchor.constraint(equalTo: pillBar.trailingAnchor, constant: -8),
+            pillStack.leadingAnchor.constraint(equalTo: pillBar.leadingAnchor, constant: pillEdgeInset),
+            pillStack.trailingAnchor.constraint(equalTo: pillBar.trailingAnchor, constant: -pillEdgeInset),
             pillStack.topAnchor.constraint(equalTo: pillBar.topAnchor, constant: 4),
             pillStack.bottomAnchor.constraint(equalTo: pillBar.bottomAnchor, constant: -4),
 
@@ -705,10 +716,12 @@ class StoryTitlesHeaderBar: NSObject {
             let activeBg = tm.color(fromLightRGB: 0x4A89DC, sepiaRGB: 0x4A7EC0, mediumRGB: 0x4A78B0, darkRGB: 0x3A6898)
             config.background.backgroundColor = activeBg
             config.baseForegroundColor = .white
+            searchPill.backgroundColor = activeBg
         } else {
             let pillBg = tm.color(fromLightRGB: 0xE3E6E0, sepiaRGB: 0xEADFD0, mediumRGB: 0x444444, darkRGB: 0x2A2A2A)
             config.background.backgroundColor = pillBg
             config.baseForegroundColor = tm.color(fromLightRGB: 0x555555, sepiaRGB: 0x6A5A4A, mediumRGB: 0xAAAAAA, darkRGB: 0xAAAAAA)
+            searchPill.backgroundColor = pillBg
         }
 
         searchPill.configuration = config
