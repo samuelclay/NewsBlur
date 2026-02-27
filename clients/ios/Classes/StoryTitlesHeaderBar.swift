@@ -70,13 +70,13 @@ class StoryTitlesHeaderBar: NSObject {
 
     // MARK: - Helpers
 
-    private var isMac: Bool {
-        ProcessInfo.processInfo.isMacCatalystApp
-    }
-
     /// Extra horizontal padding needed on Mac Catalyst where buttons render tighter.
     private var macPadding: CGFloat {
-        isMac ? 6 : 0
+        #if targetEnvironment(macCatalyst)
+        return 8
+        #else
+        return 0
+        #endif
     }
 
     private var pillFont: UIFont {
@@ -178,7 +178,7 @@ class StoryTitlesHeaderBar: NSObject {
         }
         config.title = "DISCOVER"
         config.imagePadding = 4
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8 + macPadding, bottom: 0, trailing: 6 + macPadding)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 12 + macPadding)
         config.titleLineBreakMode = .byClipping
         config.titleTextAttributesTransformer = pillFontTransformer()
         discoverPill.configuration = config
@@ -197,7 +197,7 @@ class StoryTitlesHeaderBar: NSObject {
         config.image = sym("chevron.down", size: 8, weight: .bold)
         config.imagePlacement = .trailing
         config.imagePadding = 4
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8 + macPadding, bottom: 0, trailing: 6 + macPadding)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16 + macPadding, bottom: 0, trailing: 14 + macPadding)
         config.titleTextAttributesTransformer = pillFontTransformer()
         optionsPill.configuration = config
         configurePillAppearance(optionsPill)
@@ -214,7 +214,7 @@ class StoryTitlesHeaderBar: NSObject {
         config.image = sym("magnifyingglass", size: 11)
         config.title = "SEARCH"
         config.imagePadding = 4
-        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8 + macPadding, bottom: 0, trailing: 8 + macPadding)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 14 + macPadding)
         config.titleTextAttributesTransformer = pillFontTransformer()
         searchPill.configuration = config
         configurePillAppearance(searchPill)
@@ -240,7 +240,7 @@ class StoryTitlesHeaderBar: NSObject {
         // Expand button ("+" on left) — tap shows day menu
         var expandConfig = UIButton.Configuration.plain()
         expandConfig.image = sym("plus", size: 9, weight: .bold)
-        expandConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8 + macPadding, bottom: 0, trailing: 4)
+        expandConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 12 + macPadding, bottom: 0, trailing: 6)
         markReadExpandButton.configuration = expandConfig
         markReadExpandButton.translatesAutoresizingMaskIntoConstraints = false
         markReadExpandButton.showsMenuAsPrimaryAction = true
@@ -255,7 +255,7 @@ class StoryTitlesHeaderBar: NSObject {
         if let markReadAsset = UIImage(named: "mark-read") {
             mainConfig.image = resizedImage(markReadAsset, to: CGSize(width: 22, height: 22))
         }
-        mainConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20 + macPadding)
+        mainConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 14 + macPadding)
         markReadPill.configuration = mainConfig
         markReadPill.translatesAutoresizingMaskIntoConstraints = false
         // Menu without showsMenuAsPrimaryAction = long press shows menu
@@ -266,7 +266,7 @@ class StoryTitlesHeaderBar: NSObject {
 
         NSLayoutConstraint.activate([
             markReadContainer.heightAnchor.constraint(equalToConstant: 28),
-            markReadContainer.widthAnchor.constraint(equalToConstant: 94 + macPadding * 2),
+            markReadContainer.widthAnchor.constraint(equalToConstant: 98 + macPadding * 2),
 
             markReadExpandButton.leadingAnchor.constraint(equalTo: markReadContainer.leadingAnchor),
             markReadExpandButton.topAnchor.constraint(equalTo: markReadContainer.topAnchor),
@@ -452,13 +452,13 @@ class StoryTitlesHeaderBar: NSObject {
             // Icon only — wider pill, centered icon
             config.title = nil
             config.image = sym("magnifyingglass", size: 12)
-            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 14 + macPadding)
         } else {
             // Icon + text
             config.title = "SEARCH"
             config.image = sym("magnifyingglass", size: 11)
             config.imagePadding = 4
-            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)
+            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 14 + macPadding)
             config.titleTextAttributesTransformer = pillFontTransformer()
         }
         searchPill.configuration = config
@@ -470,10 +470,11 @@ class StoryTitlesHeaderBar: NSObject {
         guard availableWidth > 0 else { return true }
 
         // Calculate width needed with full search text
+        let extraPadding = macPadding * 2
         let discoverWidth = discoverPill.isHidden ? 0 : estimateDiscoverWidth()
         let optionsWidth = optionsPill.isHidden ? 0 : optionsPill.intrinsicContentSize.width
-        let searchFullWidth: CGFloat = 80 // icon + "SEARCH" + padding
-        let markReadWidth: CGFloat = 108
+        let searchFullWidth: CGFloat = 80 + extraPadding // icon + "SEARCH" + padding
+        let markReadWidth: CGFloat = 108 + extraPadding
         let gaps: CGFloat = 4 * 6
         let edges: CGFloat = 16
 
@@ -514,7 +515,7 @@ class StoryTitlesHeaderBar: NSObject {
             // Favicon mode: icon + up to 5 favicons
             isDiscoverCompact = false
             config.title = nil
-            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 6)
+            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 12 + macPadding)
             discoverPill.configuration = config
             discoverPill.contentHorizontalAlignment = .leading
 
@@ -551,7 +552,7 @@ class StoryTitlesHeaderBar: NSObject {
             }
             config.title = "DISCOVER"
             config.imagePadding = 4
-            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 6)
+            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 12 + macPadding)
             config.titleLineBreakMode = .byClipping
             config.titleTextAttributesTransformer = pillFontTransformer()
             discoverPill.configuration = config
@@ -564,7 +565,7 @@ class StoryTitlesHeaderBar: NSObject {
             }
             config.title = nil
             config.imagePadding = 0
-            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 14 + macPadding)
             discoverPill.configuration = config
             discoverPill.contentHorizontalAlignment = .center
         }
@@ -575,10 +576,11 @@ class StoryTitlesHeaderBar: NSObject {
         let availableWidth = headerContainer.bounds.width
         guard availableWidth > 0 else { return true }
 
-        let discoverTextWidth: CGFloat = 80
+        let extraPadding = macPadding * 2
+        let discoverTextWidth: CGFloat = 80 + extraPadding
         let optionsWidth = optionsPill.isHidden ? 0 : optionsPill.intrinsicContentSize.width
-        let searchWidth: CGFloat = isSearchCompact ? 38 : 80
-        let markReadWidth: CGFloat = 108
+        let searchWidth: CGFloat = (isSearchCompact ? 38 : 80) + extraPadding
+        let markReadWidth: CGFloat = 108 + extraPadding
         let gaps: CGFloat = 4 * 6
         let edges: CGFloat = 16
 
@@ -591,13 +593,14 @@ class StoryTitlesHeaderBar: NSObject {
         let availableWidth = headerContainer.bounds.width
         guard availableWidth > 0 else { return true }
 
+        let extraPadding = macPadding * 2
         let maxFavicons = min(storedFavicons.count, 5)
-        let faviconPillWidth: CGFloat = CGFloat(maxFavicons) * 14 + 28 + 8
+        let faviconPillWidth: CGFloat = CGFloat(maxFavicons) * 14 + 28 + 8 + extraPadding
 
         let optionsWidth = optionsPill.isHidden ? 0 : optionsPill.intrinsicContentSize.width
         // Use compact search width if already compact, otherwise estimate
-        let searchWidth: CGFloat = isSearchCompact ? 38 : 80
-        let markReadWidth: CGFloat = 108
+        let searchWidth: CGFloat = (isSearchCompact ? 38 : 80) + extraPadding
+        let markReadWidth: CGFloat = 108 + extraPadding
         let gaps: CGFloat = 4 * 6
         let edges: CGFloat = 16
 
