@@ -141,6 +141,12 @@ def load_briefing_stories(request):
                         story_dict["feed_id"] = feed.pk
                     curated_stories.append(story_dict)
 
+        # views.py: Attach cluster data so the frontend can show cluster sources
+        if curated_stories:
+            from apps.clustering.models import attach_cluster_data_to_stories
+
+            attach_cluster_data_to_stories(curated_stories, user)
+
         # views.py: Normalize section keys to handle legacy data with incorrect keys
         normalized_curated_sections = _normalize_section_dict(briefing.curated_sections, merge_lists=True)
         normalized_section_summaries = _normalize_section_dict(briefing.section_summaries)
