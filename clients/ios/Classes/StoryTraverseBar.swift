@@ -59,6 +59,15 @@ class StoryTraverseBar: NSObject {
         }
     }
 
+    private var isMac: Bool {
+        ProcessInfo.processInfo.isMacCatalystApp
+    }
+
+    /// Extra horizontal padding needed on Mac Catalyst where buttons render tighter.
+    private var macPadding: CGFloat {
+        isMac ? 6 : 0
+    }
+
     // MARK: - Highlight Colors
 
     private var highlightColor: UIColor? {
@@ -110,7 +119,7 @@ class StoryTraverseBar: NSObject {
         textConfig.image = sym("doc.plaintext")
         textConfig.title = "Text"
         textConfig.imagePadding = 6
-        textConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14, bottom: 0, trailing: 10)
+        textConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 10 + macPadding)
         textConfig.titleTextAttributesTransformer = fontTransformer()
         textButton.configuration = textConfig
         textButton.translatesAutoresizingMaskIntoConstraints = false
@@ -123,7 +132,7 @@ class StoryTraverseBar: NSObject {
         // Share / Send button
         var sendConfig = UIButton.Configuration.plain()
         sendConfig.image = sym("square.and.arrow.up", size: 14)
-        sendConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
+        sendConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 12 + macPadding, bottom: 0, trailing: 12 + macPadding)
         sendButton.configuration = sendConfig
         sendButton.translatesAutoresizingMaskIntoConstraints = false
         leftGroupView.addSubview(sendButton)
@@ -141,7 +150,7 @@ class StoryTraverseBar: NSObject {
         // Previous story button
         var prevConfig = UIButton.Configuration.plain()
         prevConfig.image = sym("chevron.left", size: 14, weight: .semibold)
-        prevConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14, bottom: 0, trailing: 14)
+        prevConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 14 + macPadding, bottom: 0, trailing: 14 + macPadding)
         previousButton.configuration = prevConfig
         previousButton.translatesAutoresizingMaskIntoConstraints = false
         rightGroupView.addSubview(previousButton)
@@ -180,7 +189,7 @@ class StoryTraverseBar: NSObject {
         nextConfig.image = sym("chevron.right", size: 12, weight: .semibold)
         nextConfig.imagePlacement = .trailing
         nextConfig.imagePadding = 4
-        nextConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 14)
+        nextConfig.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 6 + macPadding, bottom: 0, trailing: 14 + macPadding)
         nextConfig.titleTextAttributesTransformer = fontTransformer()
         nextButton.configuration = nextConfig
         nextButton.translatesAutoresizingMaskIntoConstraints = false
@@ -189,17 +198,12 @@ class StoryTraverseBar: NSObject {
 
     // MARK: - Constraints
 
-    private var isMac: Bool {
-        UIDevice.current.userInterfaceIdiom == .mac
-    }
-
     private func buildLayout(in container: UIView) {
         let groupHeight: CGFloat = 40
-        let edgeInset: CGFloat = isMac ? 80 : 16
 
         NSLayoutConstraint.activate([
             // -- Left group positioning --
-            leftGroupView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: edgeInset),
+            leftGroupView.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 16),
             leftGroupView.centerYAnchor.constraint(equalTo: container.centerYAnchor, constant: -2),
             leftGroupView.heightAnchor.constraint(equalToConstant: groupHeight),
 
@@ -228,7 +232,7 @@ class StoryTraverseBar: NSObject {
             sendButton.widthAnchor.constraint(equalToConstant: 44),
 
             // -- Right group positioning --
-            rightGroupView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -edgeInset),
+            rightGroupView.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -16),
             rightGroupView.centerYAnchor.constraint(equalTo: container.centerYAnchor, constant: -2),
             rightGroupView.heightAnchor.constraint(equalToConstant: groupHeight),
             rightGroupView.leadingAnchor.constraint(greaterThanOrEqualTo: leftGroupView.trailingAnchor, constant: 12),

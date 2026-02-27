@@ -104,7 +104,7 @@
 }
 
 .NB-mac .NB-share-inner-wrapper {
-    margin: 0 80px;
+    margin: 0 30px;
 }
 
 .NB-mac#story_pane .NB-story-comments-public-teaser,
@@ -140,6 +140,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
+    padding: 6px 8px;
 }
 
 .NB-mac .NB-button.NB-share-button .NB-icon {
