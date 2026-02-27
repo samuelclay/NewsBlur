@@ -423,7 +423,7 @@ class MUserFeedNotification(mongo.Document):
                 alert=alert,
                 custom=custom_data,
                 category="STORY_CATEGORY",
-                mutable_content=image_url is not None,
+                mutable_content=True,
             )
             notification = IOSNotification(payload=payload, topic="com.newsblur.NewsBlur")
 
