@@ -396,6 +396,7 @@ struct DiscoverFeedsView: View {
                         }
                         .foregroundColor(DiscoverColors.textSecondary)
                     }
+                    .fixedSize()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
