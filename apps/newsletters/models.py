@@ -1,6 +1,7 @@
 """Newsletter models: process incoming email newsletters and manage newsletter feeds."""
 
 import datetime
+import html as html_module
 import re
 
 import redis
@@ -95,6 +96,7 @@ class EmailNewsletter:
 
         story_hash = MStory.ensure_story_hash(params["signature"], feed.pk)
         story_content = self._get_content(params)
+        story_content = self._maybe_unescape_html(story_content)
         plain_story_content = self._get_content(params, force_plain=True)
         # apps/newsletters/models.py: Choose the longer content version if available
         # Handle plain-text-only newsletters where body-html may be None
@@ -265,6 +267,22 @@ class EmailNewsletter:
             f"subject={params.get('subject')}, available_keys={list(params.keys())}"
         )
         return ""
+
+    def _maybe_unescape_html(self, content):
+        """Detect and fix entity-encoded HTML content from email providers.
+
+        Some providers (e.g. ImprovMX) send HTML with entities encoded,
+        e.g., &lt;table&gt; instead of <table>. BeautifulSoup treats these
+        as text rather than tags, causing raw HTML to display to the user.
+        """
+        if not content:
+            return content
+        # apps/newsletters/models.py: Check for entity-encoded HTML tags
+        entity_tag_pattern = r"&lt;/?(?:table|tr|td|th|div|span|p|a|img|br|hr|h[1-6]|ul|ol|li|strong|em|b|i|font|center|blockquote|html|head|body|style|meta)\b"
+        if re.search(entity_tag_pattern, content, re.IGNORECASE):
+            logging.debug(" ---> Unescaping entity-encoded HTML in newsletter content")
+            return html_module.unescape(content)
+        return content
 
     def _clean_content(self, content):
         original = content

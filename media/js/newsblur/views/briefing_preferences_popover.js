@@ -1,13 +1,9 @@
 NEWSBLUR.BRIEFING_SECTION_DEFINITIONS = [
-    {key: "trending_unread", name: "Stories you missed", subtitle: "Popular stories you haven't read yet"},
+    {key: "top_stories", name: "Top stories", subtitle: "The most important stories from your feeds"},
     {key: "long_read", name: "Long reads for later", subtitle: "Longer articles worth setting time aside for"},
     {key: "classifier_match", name: "Based on your interests", subtitle: "Stories matching your trained topics and authors"},
     {key: "follow_up", name: "Follow-ups", subtitle: "New posts from feeds you recently read"},
-    {key: "trending_global", name: "Trending across NewsBlur", subtitle: "Widely-read stories from across the platform"},
-    {key: "duplicates", name: "Common stories", subtitle: "Stories covered by multiple feeds"},
-    {key: "quick_catchup", name: "Quick catch-up", subtitle: "TL;DR of the most important stories"},
-    {key: "emerging_topics", name: "Emerging topics", subtitle: "Topics getting increasing coverage"},
-    {key: "contrarian_views", name: "Contrarian views", subtitle: "Different perspectives on the same topic"}
+    {key: "widely_covered", name: "Widely covered", subtitle: "Stories covered by 3+ feeds"}
 ];
 
 NEWSBLUR.MAX_CUSTOM_SECTIONS = 5;
@@ -95,6 +91,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             ]),
             this.make_section('How often', 'Schedule when your briefing is generated', [
                 this.make_control('frequency', [
+                    ['thrice_daily', '3x daily'],
                     ['twice_daily', '2x daily'],
                     ['daily', 'Daily'],
                     ['weekly', 'Weekly']
@@ -108,6 +105,11 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
                     this.make_control('twice_daily_time', [
                         ['afternoon', 'Morning + Afternoon'],
                         ['evening', 'Morning + Evening']
+                    ]),
+                    this.make_control('thrice_daily_time', [
+                        ['morning', 'Morning'],
+                        ['afternoon', 'Afternoon'],
+                        ['evening', 'Evening']
                     ]),
                     this.make_control('preferred_day', [
                         ['sun', 'Sun'],
@@ -204,19 +206,30 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         var frequency = this.$('.NB-briefing-control-frequency .NB-active').data('value') || 'daily';
         var $time_control = this.$('.NB-briefing-control-preferred_time');
         var $twice_control = this.$('.NB-briefing-control-twice_daily_time');
+        var $thrice_control = this.$('.NB-briefing-control-thrice_daily_time');
         var $day_control = this.$('.NB-briefing-control-preferred_day');
 
-        if (frequency === 'twice_daily') {
+        if (frequency === 'thrice_daily') {
+            $time_control.hide();
+            $twice_control.hide();
+            $thrice_control.show();
+            $day_control.hide();
+            // briefing_preferences_popover.js: All three slots are always active for 3x daily
+            $thrice_control.find('.NB-briefing-setting-option').addClass('NB-active');
+        } else if (frequency === 'twice_daily') {
             $time_control.hide();
             $twice_control.show();
+            $thrice_control.hide();
             $day_control.hide();
         } else if (frequency === 'daily') {
             $time_control.show();
             $twice_control.hide();
+            $thrice_control.hide();
             $day_control.hide();
         } else if (frequency === 'weekly') {
             $time_control.show();
             $twice_control.hide();
+            $thrice_control.hide();
             $day_control.show();
         }
     },
@@ -251,7 +264,8 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
     make_sections_ui: function () {
         var sections = this.prefs.sections || {};
         var items = _.map(NEWSBLUR.BRIEFING_SECTION_DEFINITIONS, _.bind(function (def) {
-            return this.make_section_item(def, sections[def.key]);
+            var is_enabled = sections.hasOwnProperty(def.key) ? sections[def.key] : true;
+            return this.make_section_item(def, is_enabled);
         }, this));
 
         var $section = this.make_section('Sections', 'Choose which sections appear in your briefing', [
@@ -318,7 +332,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             {
                 value: 'headlines',
                 name: 'Headlines',
-                subtitle: 'Just the headlines with minimal commentary',
+                subtitle: 'Just the headlines, no commentary',
                 icon: 'content-preview-m.svg'
             }
         ];
@@ -387,7 +401,7 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-briefing-section-hint-content' }, [
                 $.make('div', { className: 'NB-briefing-section-hint-title' }, 'Keyword Section'),
                 $.make('div', { className: 'NB-briefing-section-hint-text' },
-                    'Enter keywords to create a section for matching stories. All keywords must appear in the story title.'),
+                    'Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content.'),
                 $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, 'Examples'),
                 $.make('ul', { className: 'NB-briefing-section-hint-examples' }, [
                     $.make('li', 'Claude Code'),
@@ -435,6 +449,12 @@ NEWSBLUR.BriefingPreferencesPopover = NEWSBLUR.ReaderPopover.extend({
         // briefing_preferences_popover.js: Map twice_daily_time to preferred_time for storage
         if (setting_name === 'twice_daily_time') {
             this.save_preference({ preferred_time: value });
+            return;
+        }
+
+        // briefing_preferences_popover.js: All three slots always active for 3x daily
+        if (setting_name === 'thrice_daily_time') {
+            this.$('.NB-briefing-control-thrice_daily_time .NB-briefing-setting-option').addClass('NB-active');
             return;
         }
 

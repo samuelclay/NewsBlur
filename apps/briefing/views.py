@@ -206,7 +206,7 @@ def load_briefing_stories(request):
             "read_filter": prefs.read_filter or "unread",
             "summary_style": prefs.summary_style or "bullets",
             "include_read": prefs.include_read,
-            "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
+            "sections": dict(DEFAULT_SECTIONS, **(prefs.sections or {})),
             "custom_section_prompts": prefs.custom_section_prompts or [],
             "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
             "briefing_feed_id": prefs.briefing_feed_id,
@@ -231,7 +231,7 @@ def briefing_preferences(request):
 
     if request.method == "POST":
         frequency = request.POST.get("frequency")
-        if frequency in ("daily", "twice_daily", "weekly"):
+        if frequency in ("daily", "twice_daily", "thrice_daily", "weekly"):
             prefs.frequency = frequency
 
         preferred_time = request.POST.get("preferred_time")
@@ -360,7 +360,7 @@ def briefing_preferences(request):
         "read_filter": prefs.read_filter or "unread",
         "summary_style": prefs.summary_style or "bullets",
         "include_read": prefs.include_read,
-        "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
+        "sections": dict(DEFAULT_SECTIONS, **(prefs.sections or {})),
         "custom_section_prompts": prefs.custom_section_prompts or [],
         "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
         "briefing_model": prefs.briefing_model or DEFAULT_BRIEFING_MODEL,

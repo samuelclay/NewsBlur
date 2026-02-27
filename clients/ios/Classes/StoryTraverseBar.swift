@@ -59,6 +59,19 @@ class StoryTraverseBar: NSObject {
         }
     }
 
+    // MARK: - Highlight Colors
+
+    private var highlightColor: UIColor? {
+        ThemeManager.shared?.color(fromLightRGB: 0xCDD2C8, sepiaRGB: 0xDDD0C0, mediumRGB: 0x555555, darkRGB: 0x3A3A3A)
+    }
+
+    private func installHighlightHandler(_ button: UIButton) {
+        button.configurationUpdateHandler = { [weak self] button in
+            guard let self else { return }
+            button.backgroundColor = button.isHighlighted ? self.highlightColor : .clear
+        }
+    }
+
     // MARK: - Setup
 
     /// Builds the traverse bar inside the given container, replacing its existing subviews.
@@ -69,6 +82,10 @@ class StoryTraverseBar: NSObject {
         buildLeftGroup(in: traverseView)
         buildRightGroup(in: traverseView)
         buildLayout(in: traverseView)
+        installHighlightHandler(textButton)
+        installHighlightHandler(sendButton)
+        installHighlightHandler(previousButton)
+        installHighlightHandler(nextButton)
         updateTheme()
     }
 

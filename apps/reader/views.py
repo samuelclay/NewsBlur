@@ -1256,7 +1256,25 @@ def load_single_feed(request, feed_id):
         if user_prefs.get("story_clustering", True):
             from apps.clustering.models import apply_clustering_to_stories
 
-            stories = apply_clustering_to_stories(stories, user)
+            classifiers_context = {
+                "classifier_feeds": classifier_feeds,
+                "classifier_authors": classifier_authors,
+                "classifier_titles": classifier_titles,
+                "classifier_tags": classifier_tags,
+                "classifier_texts": classifier_texts,
+                "classifier_urls": classifier_urls,
+                "folder_feed_ids": folder_feed_ids,
+                "user_is_pro": user_is_pro,
+                "unread_feed_story_hashes": unread_story_hashes,
+                "read_filter": read_filter,
+            }
+            include_expanded = user_prefs.get("cluster_preview_style") == "expanded"
+            stories = apply_clustering_to_stories(
+                stories,
+                user,
+                classifiers_context=classifiers_context,
+                include_expanded_data=include_expanded,
+            )
 
     data = dict(
         stories=stories,
@@ -2118,6 +2136,7 @@ def load_river_stories__redis(request):
         else:
             stories = []
             mstories = []
+            unread_feed_story_hashes = []
             message = "You must be a premium subscriber to search."
     else:
         # Only run feed aggregation if stories weren't already fetched via story_hashes or query
@@ -2143,6 +2162,7 @@ def load_river_stories__redis(request):
                 "%sstarred_date" % ("-" if order == "newest" else "")
             )[offset : offset + limit]
             stories = Feed.format_stories(mstories)
+            unread_feed_story_hashes = None
         else:
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
             feed_ids = [sub.feed_id for sub in usersubs]
@@ -2380,7 +2400,25 @@ def load_river_stories__redis(request):
         if user_preferences.get("story_clustering", True):
             from apps.clustering.models import apply_clustering_to_stories
 
-            stories = apply_clustering_to_stories(stories, user)
+            classifiers_context = {
+                "classifier_feeds": classifier_feeds,
+                "classifier_authors": classifier_authors,
+                "classifier_titles": classifier_titles,
+                "classifier_tags": classifier_tags,
+                "classifier_texts": classifier_texts,
+                "classifier_urls": classifier_urls,
+                "folder_feed_ids": folder_feed_ids,
+                "user_is_pro": user_is_pro,
+                "unread_feed_story_hashes": unread_feed_story_hashes,
+                "read_filter": read_filter,
+            }
+            include_expanded = user_preferences.get("cluster_preview_style") == "expanded"
+            stories = apply_clustering_to_stories(
+                stories,
+                user,
+                classifiers_context=classifiers_context,
+                include_expanded_data=include_expanded,
+            )
 
     diff = time.time() - start
     timediff = round(float(diff), 2)
