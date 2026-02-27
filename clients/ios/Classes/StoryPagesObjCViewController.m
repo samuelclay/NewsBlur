@@ -1733,8 +1733,25 @@
         [appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"changePage" animated:animated];
     }
     
+    // Ensure traverse bar is visible when a valid story page is loaded.
+    // On iPad/Catalyst the split view keeps this VC visible so viewWillAppear
+    // may have set alpha to 0 before any feed was active.
+    if (pageIndex >= 0 && self.traverseView.alpha == 0) {
+        BOOL hasFeedOrFolder = appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
+        if (hasFeedOrFolder) {
+            self.traversePinned = YES;
+            self.traverseBottomConstraint.constant = self.traverseBottomGap;
+            [UIView animateWithDuration:.24 delay:0
+                                options:UIViewAnimationOptionCurveEaseInOut
+                             animations:^{
+                                 self.traverseView.alpha = 1;
+                                 [self.view layoutIfNeeded];
+                             } completion:nil];
+        }
+    }
+
     [self becomeFirstResponder];
-    
+
     if (!self.isPhoneOrCompact && !self.doneInitialRefresh) {
         self.doneInitialRefresh = YES;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC),
@@ -1950,7 +1967,7 @@
     NSInteger readStoryCount = [appDelegate.readStories count];
     BOOL prevEnabled = !(readStoryCount == 0 ||
         (readStoryCount == 1 &&
-         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"story_hash"]));
+         [[appDelegate.readStories lastObject] isEqual:[appDelegate.activeStory objectForKey:@"story_hash"]]));
     [self.traverseBar updatePreviousEnabled:prevEnabled];
 
     // Next/Done button state
@@ -2419,7 +2436,7 @@
     [self.loadingIndicator stopAnimating];
     self.circularProgressView.hidden = NO;
     id previousStoryId = [appDelegate.storiesCollection popReadStory];
-    if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"story_hash"]) {
+    if (!previousStoryId || [previousStoryId isEqual:[appDelegate.activeStory objectForKey:@"story_hash"]]) {
         [self.appDelegate showColumn:UISplitViewControllerColumnSecondary debugInfo:@"doPreviousStory" animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
