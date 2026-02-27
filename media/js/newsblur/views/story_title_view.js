@@ -527,6 +527,9 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             // NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model, options);
         } else {
             this.destroy_inline_story_detail();
+            if (_.contains(['list', 'magazine'], story_layout)) {
+                NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model, {force: true, scroll_up_only: true});
+            }
         }
     },
 

@@ -3555,6 +3555,7 @@ img.feed_favicon {
 
 .NB-story-title {
     transition: transform 0.12s ease-out, border-radius 0.12s ease-out, height 0.36s ease-out, background-color 0.22s ease-out;
+    transform-origin: center top;
 }
 
 .NB-story-title.NB-selected,
