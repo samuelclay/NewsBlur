@@ -1809,7 +1809,7 @@ class Test_Tasks(BriefingTestCase):
 
         self.make_prefs(enabled=True)
         GenerateBriefings()
-        mock_r.set.assert_called_once_with("briefing:generate_all_lock", "1", nx=True, ex=840)
+        mock_r.set.assert_called_once_with("briefing:generate_all_lock", "1", nx=True, ex=50)
 
     @patch("redis.Redis")
     def test_generate_all_skips_if_locked(self, mock_redis_cls):
