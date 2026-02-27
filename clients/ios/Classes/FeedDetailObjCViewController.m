@@ -185,7 +185,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     // Mark read pill: tap marks all read, long press / "+" shows day menu
     __weak typeof(self) weakSelf = self;
     self.storyTitlesHeaderBar.markReadTapHandler = ^{
-        [weakSelf doMarkAllRead:nil];
+        [weakSelf markReadShowMenu:MarkReadShowMenuBasedOnPref sender:weakSelf.storyTitlesHeaderBar.markReadContainer];
     };
     self.storyTitlesHeaderBar.markReadHandler = ^(NSInteger days) {
         NSArray *feedIds = weakSelf.storiesCollection.isRiverView ?
@@ -3452,14 +3452,23 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         }
     }];
 #else
-    UIBarButtonItem *barButton = self.feedMarkReadButton;
-    if (sender && [sender isKindOfClass:[UIBarButtonItem class]]) barButton = sender;
-    
-    [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount barButtonItem:barButton completionHandler:^(BOOL marked){
-        if (marked) {
-            pop();
-        }
-    }];
+    if (sender && [sender isKindOfClass:[UIView class]]) {
+        UIView *sourceView = (UIView *)sender;
+        [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount sourceView:sourceView sourceRect:sourceView.bounds completionHandler:^(BOOL marked){
+            if (marked) {
+                pop();
+            }
+        }];
+    } else {
+        UIBarButtonItem *barButton = self.feedMarkReadButton;
+        if (sender && [sender isKindOfClass:[UIBarButtonItem class]]) barButton = sender;
+
+        [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount barButtonItem:barButton completionHandler:^(BOOL marked){
+            if (marked) {
+                pop();
+            }
+        }];
+    }
 #endif
 }
 
