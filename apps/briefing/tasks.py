@@ -100,12 +100,8 @@ def GenerateBriefings():
                 local_t = tz.localize(datetime.datetime.combine(local_now.date(), datetime.time(h, m)))
                 return (local_t - datetime.timedelta(minutes=5)).astimezone(pytz.utc).replace(tzinfo=None)
 
-            local_12_30pm = tz.localize(
-                datetime.datetime.combine(local_now.date(), datetime.time(12, 30))
-            )
-            local_5pm = tz.localize(
-                datetime.datetime.combine(local_now.date(), datetime.time(17, 0))
-            )
+            local_12_30pm = tz.localize(datetime.datetime.combine(local_now.date(), datetime.time(12, 30)))
+            local_5pm = tz.localize(datetime.datetime.combine(local_now.date(), datetime.time(17, 0)))
             is_morning_window = now >= _slot_gen_utc("morning") and local_now < local_12_30pm
             is_afternoon_window = now >= _slot_gen_utc("afternoon") and local_now < local_5pm
             is_evening_window = now >= _slot_gen_utc("evening")

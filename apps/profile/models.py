@@ -1168,7 +1168,12 @@ class Profile(models.Model):
             % (total_paypal_payments, total_stripe_payments, len(payment_history), self.premium_expire),
         )
 
-        if set_premium_expire and not self.is_premium and self.premium_expire and self.premium_expire > datetime.datetime.now():
+        if (
+            set_premium_expire
+            and not self.is_premium
+            and self.premium_expire
+            and self.premium_expire > datetime.datetime.now()
+        ):
             self.activate_premium()
 
         logging.user(

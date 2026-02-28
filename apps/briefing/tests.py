@@ -1834,7 +1834,19 @@ class Test_Tasks(BriefingTestCase):
         mock_mbriefing.exists_for_period.return_value = False
 
         self.make_prefs(enabled=True)
-        GenerateBriefings()
+        real_datetime = datetime.datetime
+        fixed_utc_now = real_datetime(2025, 1, 15, 14, 0, 0)
+
+        def _mock_now(tz=None):
+            if tz is None:
+                return fixed_utc_now
+            return pytz.utc.localize(fixed_utc_now).astimezone(tz)
+
+        with patch("apps.briefing.tasks.datetime.datetime") as mock_datetime_cls:
+            mock_datetime_cls.utcnow.return_value = fixed_utc_now
+            mock_datetime_cls.now.side_effect = _mock_now
+            mock_datetime_cls.combine.side_effect = real_datetime.combine
+            GenerateBriefings()
         mock_user_task.delay.assert_called_with(self.user.pk)
 
     @patch("apps.briefing.tasks.GenerateUserBriefing")
