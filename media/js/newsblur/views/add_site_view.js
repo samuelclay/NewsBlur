@@ -11,7 +11,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         "input .NB-add-site-search-input": "handle_search_input",
         "keypress .NB-add-site-search-input": "handle_search_keypress",
         "click .NB-add-site-search-tab .NB-add-site-search-clear": "clear_search",
-        "click .NB-add-site-search-btn": "force_search",
+        "click .NB-add-site-search-tab .NB-add-site-search-btn": "force_search",
         // Source tab search clear buttons
         "input .NB-add-site-tab-search-input": "handle_source_search_input",
         "click .NB-add-site-youtube-tab .NB-add-site-search-clear": "clear_youtube_search",
