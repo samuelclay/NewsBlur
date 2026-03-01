@@ -133,6 +133,13 @@ Server names are defined in `ansible/inventories/hetzner.ini`. Common server pre
 - **Frontend model selectors**: Search for `data-model="gemini` to find all dropdown locations
 - **CSS for model pills**: Search for `NB-provider-` to find pill styles
 
+## Archive Development
+- **Start with `ARCHIVE.md`**: Use the top-level archive deep dive for the end-to-end flow before changing archive code, extension code, or assistant streaming.
+- **Restart Celery after archive task changes**: After modifying `apps/archive_extension/` or `apps/archive_assistant/` code that Celery tasks import or execute, restart celery: `docker restart newsblur_celery` (or `newsblur_celery_<worktree-name>` in worktrees).
+- **Archive queues and streaming**: Archive ingest tasks, archive indexing, categorization, and Archive Assistant queries all route to `push_feeds`; realtime UI updates are published on Redis PubSub and relayed through `node/unread_counts.js` and `node/archive_assistant.js`.
+- **Primary files**: Start with `apps/archive_extension/views.py`, `apps/archive_extension/tasks.py`, `apps/archive_extension/search.py`, `apps/archive_assistant/views.py`, `apps/archive_assistant/tasks.py`, `apps/archive_assistant/tools.py`, `media/js/newsblur/views/archive_view.js`, and `clients/browser-extension/src/background/service-worker.js`.
+- **OAuth caveat**: The browser extension uses client ID `newsblur-archive-extension` with scope `archive`; if your local/worktree URL changes, refresh the OAuth app with `docker exec -t newsblur_web python manage.py setup_archive_oauth` (or the worktree container name).
+
 ## Sentry
 - **Projects**: `web`, `task`, `node`, `monitor` (auth token in `~/.sentryclirc`)
 - **Always use sentry-cli** when given a Sentry issue URL

@@ -118,6 +118,8 @@ All apps live under `apps/`. Each app is a self-contained Django module.
 
 ## Request Flows
 
+For the archive subsystem specifically, see [`ARCHIVE.md`](ARCHIVE.md). This section keeps the high-level architecture summary aligned with that deeper contributor guide.
+
 ### Reading stories (River of News)
 
 1. Browser requests `/reader/river_stories` with feed IDs
@@ -150,6 +152,15 @@ All apps live under `apps/`. Each app is a self-contained Django module.
 4. Response cached in MongoDB (`MAskAIResponse`) with zlib compression
 5. Subsequent identical queries return the cached response
 
+### Archive subsystem
+
+1. Browser extension captures page visits after a 5-second threshold and batches them locally
+2. Django archive ingest views store/update `MArchivedStory` documents in the analytics MongoDB
+3. Matching logic links archives to subscribed NewsBlur stories and marks matched stories read
+4. Celery tasks on `push_feeds` handle archive categorization, archive search indexing, and Archive Assistant queries
+5. Redis PubSub publishes `archive:*` and `archive_assistant:*` messages on the user's channel
+6. Node socket handlers relay those messages to the Backbone archive UI at `/archive`
+
 ## Celery Task Pipeline
 
 Workers process async jobs across dedicated queues:
@@ -158,7 +169,7 @@ Workers process async jobs across dedicated queues:
 |-------|---------|
 | `work_queue` | Default queue for general tasks |
 | `new_feeds` | Processing newly added feeds |
-| `push_feeds` | PubSubHubbub real-time updates |
+| `push_feeds` | PubSubHubbub real-time updates plus archive extension / Archive Assistant work |
 | `update_feeds` | Scheduled feed fetching |
 | `search_indexer` | Elasticsearch indexing |
 | `discover_indexer` | Discovery/embedding indexing |

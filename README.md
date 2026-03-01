@@ -61,6 +61,11 @@ NewsBlur is a Django application (Python 3.7+) with a Backbone.js frontend. It u
 - Celery for background tasks (feed fetching)
 - Node.js services for text extraction and image processing
 
+## Documentation
+
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) - high-level system layout and data-store overview
+- [`ARCHIVE.md`](ARCHIVE.md) - archive subsystem deep dive covering the browser extension, archive APIs, Archive Assistant, indexing, and local development
+
 ## Self-Hosted Installation
 
 This repository contains everything you need to run your own NewsBlur instance with complete control over your data.
@@ -161,6 +166,7 @@ NewsBlur welcomes contributions! The development workflow:
 - Web and Node servers restart automatically when code changes
 - Run `make` after `git pull` to apply migrations
 - See `AGENTS.md` for code style and development conventions
+- Use `ARCHIVE.md` when working on the archive browser extension, archive APIs, or Archive Assistant
 
 ## Support
 
