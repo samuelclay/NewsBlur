@@ -59,7 +59,8 @@
                 $feedbar: $('.NB-feedbar'),
                 $add_button: $('.NB-task-add'),
                 $taskbar_options: $('.NB-taskbar-options'),
-                $search_header: $('.NB-search-header')
+                $search_header: $('.NB-search-header'),
+                $media_player: $('.NB-media-player')
             };
             this.flags = {
                 'bouncing_callout': false,
@@ -141,10 +142,16 @@
             NEWSBLUR.app.taskbar_info = new NEWSBLUR.Views.ReaderTaskbarInfo().render();
             NEWSBLUR.app.story_titles_header = new NEWSBLUR.Views.StoryTitlesHeader();
             NEWSBLUR.app.search_header = new NEWSBLUR.Views.FeedSearchHeader();
+            NEWSBLUR.app.media_player = new NEWSBLUR.Views.MediaPlayerView();
 
             NEWSBLUR.assets.feeds.bind('reset', _.bind(function () {
                 this.load_dashboard_rivers();
                 this.load_intelligence_slider();
+                // Restore media player state from server
+                if (NEWSBLUR.app.media_player) {
+                    NEWSBLUR.app.media_player.restore_state();
+                    NEWSBLUR.app.media_player.setup_beforeunload();
+                }
                 // Check for growth prompts after feeds load
                 if (NEWSBLUR.growth_prompts) {
                     NEWSBLUR.growth_prompts.check_on_load();
@@ -6041,6 +6048,14 @@
 
                 this.socket.removeAllListeners('briefing:error');
                 this.socket.on('briefing:error', _.bind(this.handle_briefing_error, this));
+
+                // Media player position sync from other tabs
+                this.socket.removeAllListeners('media:update');
+                this.socket.on('media:update', _.bind(function (data) {
+                    if (NEWSBLUR.app.media_player) {
+                        NEWSBLUR.app.media_player.handle_media_update(data);
+                    }
+                }, this));
 
                 this.socket.on('disconnect', _.bind(function (reason) {
                     NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);
