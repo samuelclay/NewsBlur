@@ -143,6 +143,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.apply_starred_story_selections();
         this.watch_images_load();
         this.attach_custom_handler();
+        this.attach_media_player_handler();
     },
 
     attach_custom_handler: function () {
@@ -914,6 +915,101 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 customSelector: "iframe[src*='youtu.be'],iframe[src*='www.flickr.com'],iframe[src*='view.vzaar.com']"
             });
         }, this), 50);
+    },
+
+    attach_media_player_handler: function () {
+        if (!NEWSBLUR.app.media_player) return;
+
+        var self = this;
+        var story = this.model;
+        var media_player = NEWSBLUR.app.media_player;
+        var media_items = media_player.detect_media_in_story(story, this.$el);
+        if (!media_items.length) return;
+
+        // Headphones + play triangle: play now
+        var svg_play_now = '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 1C7.03 1 3 5.03 3 10v8c0 1.66 1.34 3 3 3h2v-8H5v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><polygon points="10,11 10,19 16,15" opacity="0.9"/></svg>';
+        // Headphones + skip-next arrow: play next
+        var svg_play_next = '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 1C7.03 1 3 5.03 3 10v8c0 1.66 1.34 3 3 3h2v-8H5v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><path d="M9.5 11v8l5-4-5-4zm6 0v8h1.5v-8h-1.5z" opacity="0.9"/></svg>';
+        // Headphones + plus sign: play last (add to end)
+        var svg_play_last = '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 1C7.03 1 3 5.03 3 10v8c0 1.66 1.34 3 3 3h2v-8H5v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><path d="M11 12h2v3h3v2h-3v3h-2v-3H8v-2h3v-3z" opacity="0.9"/></svg>';
+
+        // Add overlay buttons on audio/video elements
+        this.$('.NB-feed-story-content audio, .NB-feed-story-content video').each(function (i) {
+            var $el = $(this);
+            // Find matching media item
+            var src = $el.find('source').attr('src') || $el.attr('src');
+            var item = _.find(media_items, function (m) { return m.media_url === src; });
+            if (!item) return;
+
+            var $buttons = $('<div class="NB-media-overlay-buttons"></div>');
+            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play Now</div>');
+            var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' Play Next</div>');
+            var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' Play Last</div>');
+
+            $buttons.append($play_now).append($play_next).append($play_last);
+            $el.after($buttons);
+
+            $play_now.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.play_media(item);
+            });
+            $play_next.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.add_to_queue(item, 0);
+            });
+            $play_last.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.add_to_queue(item);
+            });
+        });
+
+        // Add overlay buttons on YouTube iframes
+        this.$('.NB-feed-story-content iframe[src*="youtube.com"], .NB-feed-story-content iframe[src*="youtu.be"]').each(function () {
+            var $iframe = $(this);
+            var src = $iframe.attr('src');
+            var item = _.find(media_items, function (m) {
+                return m.media_type === 'youtube' && m.media_url === src;
+            });
+            if (!item) return;
+
+            var $overlay = $('<div class="NB-media-youtube-overlay"></div>');
+            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play Now</div>');
+            var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' Play Next</div>');
+            var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' Play Last</div>');
+
+            $overlay.append($play_now).append($play_next).append($play_last);
+            $iframe.parent().css('position', 'relative').append($overlay);
+
+            $play_now.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.play_media(item);
+            });
+            $play_next.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.add_to_queue(item, 0);
+            });
+            $play_last.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.add_to_queue(item);
+            });
+        });
+
+        // Intercept native play events to hand off to media player
+        this.$('.NB-feed-story-content audio, .NB-feed-story-content video').on('play', function () {
+            var el = this;
+            el.pause();
+            var src = $(el).find('source').attr('src') || $(el).attr('src');
+            var item = _.find(media_items, function (m) { return m.media_url === src; });
+            if (item) {
+                media_player.play_media(item);
+            }
+        });
     },
 
     // ==========
