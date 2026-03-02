@@ -367,22 +367,10 @@
     - mongo-backup
     - cron
 
-- name: Add full mongo dump log
-  file:
-    path: /var/log/mongo_full_dump.log
-    state: touch
-    mode: 0755
-    owner: "{{ ansible_effective_user_id|int }}"
-    group: "{{ ansible_effective_group_id|int }}"
-  when: inventory_hostname == 'hdb-mongo-secondary-1'
-
-- name: Add weekly full mongo dump for off-site backup
+- name: Remove old full mongo dump cron (now handled by offsite pull)
   cron:
     name: mongo full dump
-    minute: "0"
-    hour: "3"
-    weekday: "0"
-    job: /srv/newsblur/docker/mongo/backup_mongo_full.sh >> /var/log/mongo_full_dump.log 2>&1
+    state: absent
   when: inventory_hostname == 'hdb-mongo-secondary-1'
   tags:
     - mongo-backup
