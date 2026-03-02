@@ -1831,11 +1831,15 @@ class Test_Tasks(BriefingTestCase):
         mock_r = MagicMock()
         mock_redis_cls.return_value = mock_r
         mock_r.set.return_value = True
-        mock_mbriefing.exists_for_period.return_value = False
+        mock_mbriefing.slot_exists.return_value = False
 
         self.make_prefs(enabled=True)
         GenerateBriefings()
-        mock_user_task.delay.assert_called_with(self.user.pk)
+        # tasks.py: Now dispatches with slot and local_date kwargs
+        call_args = mock_user_task.delay.call_args
+        self.assertEqual(call_args[0][0], self.user.pk)
+        self.assertIn(call_args[1]["slot"], ("morning", "afternoon", "evening"))
+        self.assertIsNotNone(call_args[1]["local_date"])
 
     @patch("apps.briefing.tasks.GenerateUserBriefing")
     @patch("redis.Redis")
