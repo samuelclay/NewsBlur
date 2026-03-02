@@ -442,6 +442,10 @@ def generate_briefing(request):
     # notification preferences immediately, before the Celery task runs.
     feed = ensure_briefing_feed(user)
 
+    # views.py: Clear the slot guard on the most recent briefing so on-demand
+    # regeneration can proceed even if the slot was already generated today.
+    MBriefing.delete_latest_slot(user.pk)
+
     GenerateUserBriefing.delay(user.pk, on_demand=True)
 
     return {"status": "generating", "briefing_feed_id": feed.pk}
