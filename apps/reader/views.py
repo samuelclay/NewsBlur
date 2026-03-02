@@ -558,6 +558,8 @@ def load_feeds(request):
     folder_auto_mark_read = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
     folder_auto_mark_read_dict = {fs.folder_title: fs.to_json() for fs in folder_auto_mark_read}
 
+    playback_state = MMediaPlaybackState.get_state_with_redis_position(user.pk)
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB feeds/socials%s"
@@ -581,6 +583,7 @@ def load_feeds(request):
         "folder_icons": folder_icons_dict,
         "feed_icons": feed_icons_dict,
         "folder_auto_mark_read": folder_auto_mark_read_dict,
+        "playback_state": playback_state,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -4923,6 +4926,14 @@ def save_playback_state(request):
 
     if "is_playing" in request.POST:
         state_fields["is_playing"] = request.POST["is_playing"] in ("true", "True", "1", True)
+
+    for field in ["skip_back_seconds", "skip_forward_seconds"]:
+        if field in request.POST:
+            state_fields[field] = int(request.POST[field])
+
+    for field in ["auto_play_next", "remember_position", "resume_on_load"]:
+        if field in request.POST:
+            state_fields[field] = request.POST[field] in ("true", "True", "1", True)
 
     if not state_fields:
         return {"code": -1, "message": "No fields to update"}

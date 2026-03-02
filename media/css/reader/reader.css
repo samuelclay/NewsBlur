@@ -9673,13 +9673,29 @@ form.opml_import_form input {
     display: none;
 }
 
-/* Mini player bar */
+/* Mini player — two-row layout */
 .NB-media-player-mini {
     display: flex;
+    flex-direction: column;
+    padding: 8px 10px 8px;
+    gap: 4px;
+    user-select: none;
+}
+
+/* Row 1: Now-playing info */
+.NB-media-player-row-info {
+    display: flex;
     align-items: center;
-    height: 56px;
-    padding: 0 6px;
+    gap: 8px;
+    min-height: 36px;
+}
+
+/* Row 2: Transport + progress + speed + type + volume */
+.NB-media-player-row-transport {
+    display: flex;
+    align-items: center;
     gap: 6px;
+    height: 28px;
 }
 
 /* Video container in mini player */
@@ -9706,8 +9722,8 @@ form.opml_import_form input {
 
 /* Podcast artwork in mini player */
 .NB-media-player-artwork {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     flex-shrink: 0;
     border-radius: 4px;
     overflow: hidden;
@@ -9747,8 +9763,7 @@ form.opml_import_form input {
     display: flex;
     flex-direction: column;
     min-width: 0;
-    flex: 0 1 auto;
-    max-width: 140px;
+    flex: 1;
     gap: 2px;
 }
 
@@ -9799,21 +9814,22 @@ form.opml_import_form input {
     color: #999;
     font-weight: 600;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 /* Transport controls */
 .NB-media-player-controls {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 0;
     flex-shrink: 0;
 }
 
 .NB-media-player-play-pause,
 .NB-media-player-skip-back,
 .NB-media-player-skip-forward {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     cursor: pointer;
     border-radius: 4px;
     opacity: 0.65;
@@ -9823,8 +9839,8 @@ form.opml_import_form input {
 }
 
 .NB-media-player-play-pause {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     opacity: 0.8;
 }
 
@@ -9838,14 +9854,14 @@ form.opml_import_form input {
 .NB-media-player-play-pause svg,
 .NB-media-player-skip-back svg,
 .NB-media-player-skip-forward svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     fill: #404040;
 }
 
 .NB-media-player-play-pause svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
 
 .NB-media-player-skip-back .NB-skip-label,
@@ -9860,11 +9876,9 @@ form.opml_import_form input {
 /* Progress bar */
 .NB-media-player-progress-container {
     flex: 1;
-    min-width: 40px;
+    min-width: 60px;
     display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 0 2px;
+    align-items: center;
 }
 
 .NB-media-player-progress {
@@ -9904,19 +9918,13 @@ form.opml_import_form input {
 }
 
 .NB-media-player-time {
-    font-size: 9px;
+    font-size: 10px;
     color: #999;
     display: flex;
     gap: 2px;
     line-height: 1;
     font-variant-numeric: tabular-nums;
-}
-
-/* Secondary controls */
-.NB-media-player-secondary-controls {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    white-space: nowrap;
     flex-shrink: 0;
 }
 
@@ -9931,6 +9939,7 @@ form.opml_import_form input {
     text-align: center;
     white-space: nowrap;
     line-height: 1.4;
+    flex-shrink: 0;
 }
 
 .NB-media-player-speed:hover {
@@ -9941,6 +9950,7 @@ form.opml_import_form input {
     display: flex;
     align-items: center;
     gap: 2px;
+    flex-shrink: 0;
 }
 
 .NB-media-player-volume-icon {
@@ -9960,7 +9970,7 @@ form.opml_import_form input {
 }
 
 .NB-media-player-volume {
-    width: 50px;
+    width: 40px;
     height: 3px;
     -webkit-appearance: none;
     appearance: none;
@@ -9989,7 +9999,30 @@ form.opml_import_form input {
     cursor: pointer;
 }
 
-.NB-media-player-expand,
+.NB-media-player-settings {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    opacity: 0.35;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.NB-media-player-settings:hover {
+    opacity: 0.7;
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.NB-media-player-settings svg {
+    width: 14px;
+    height: 14px;
+    fill: #505050;
+}
+
 .NB-media-player-close {
     width: 20px;
     height: 20px;
@@ -9999,29 +10032,31 @@ form.opml_import_form input {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
-.NB-media-player-expand:hover,
 .NB-media-player-close:hover {
     opacity: 0.7;
     background-color: rgba(0, 0, 0, 0.06);
 }
 
-.NB-media-player-expand svg,
 .NB-media-player-close svg {
     width: 12px;
     height: 12px;
     fill: #505050;
 }
 
-/* Expanded queue area */
-.NB-media-player-expanded-area {
-    border-top: 1px solid #e5e5e4;
-    max-height: 200px;
-    overflow-y: auto;
+/* Type badge in transport row */
+.NB-media-player-row-transport .NB-media-player-type-badge {
+    margin-left: -2px;
 }
 
-.NB-media-player-expanded-area.NB-hidden {
+/* Always-visible queue area */
+.NB-media-player-queue-area {
+    border-top: 1px solid #e5e5e4;
+}
+
+.NB-media-player-queue-area:empty {
     display: none;
 }
 
@@ -10030,7 +10065,7 @@ form.opml_import_form input {
     font-weight: 600;
     text-transform: uppercase;
     color: #999;
-    padding: 6px 10px 4px;
+    padding: 5px 10px 3px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -10070,12 +10105,14 @@ form.opml_import_form input {
     list-style: none;
     margin: 0;
     padding: 0;
+    max-height: 102px;
+    overflow-y: auto;
 }
 
 .NB-media-player-queue-empty {
     font-size: 11px;
     color: #bbb;
-    padding: 12px 10px;
+    padding: 8px 10px;
     text-align: center;
     font-style: italic;
 }
@@ -10217,6 +10254,8 @@ form.opml_import_form input {
     font-weight: 600;
     border: 1px solid rgba(0, 0, 0, 0.12);
     transition: background-color 0.15s, box-shadow 0.15s;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .NB-media-play-btn svg {
@@ -10278,6 +10317,62 @@ form.opml_import_form input {
 
 .NB-media-youtube-overlay .NB-media-play-btn:hover {
     background: rgba(0, 0, 0, 0.9);
+}
+
+/* Media player settings popover - arrow positioning */
+.NB-media-settings-popover-container.popover.top-right .arrow {
+    left: auto;
+    right: 30px;
+    margin-left: 0;
+}
+
+/* Media player settings popover */
+.NB-media-settings-popover .NB-popover-section {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 10px 0;
+    margin: 0 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.NB-media-settings-popover .NB-popover-section:last-child {
+    border-bottom: none;
+}
+
+.NB-media-settings-popover .NB-popover-section-label {
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.NB-media-settings-popover .NB-popover-section-controls {
+    flex: 1;
+    min-width: 0;
+}
+
+.NB-media-settings-popover .NB-popover-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #909090;
+    margin-bottom: 2px;
+    line-height: 16px;
+}
+
+.NB-media-settings-popover .NB-popover-section-description {
+    font-size: 10px;
+    color: #a0a0a0;
+    line-height: 14px;
+}
+
+.NB-media-settings-popover .segmented-control {
+    font-size: 11px;
+}
+
+.NB-media-settings-popover .segmented-control li {
+    padding: 3px 8px;
+    font-size: 11px;
 }
 
 /* ===================== */
