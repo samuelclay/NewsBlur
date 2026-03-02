@@ -354,7 +354,7 @@
     mode: 0755
     owner: "{{ ansible_effective_user_id|int }}"
     group: "{{ ansible_effective_group_id|int }}"
-  when: '"db-mongo-secondary1" in inventory_hostname'
+  when: inventory_hostname == 'hdb-mongo-secondary-1'
 
 - name: Add mongo backup
   cron:
@@ -362,19 +362,31 @@
     minute: "0"
     hour: "4"
     job: /srv/newsblur/docker/mongo/backup_mongo.sh >> /var/log/mongo_backup.log 2>&1
-  when: '"db-mongo-secondary1" in inventory_hostname'
+  when: inventory_hostname == 'hdb-mongo-secondary-1'
   tags:
     - mongo-backup
     - cron
-# - name: Add mongo starred_stories+stories backup
-#   cron:
-#     name: mongo starred/shared/all stories backup
-#     minute: "0"
-#     hour: "5"
-#     job: /srv/newsblur/docker/mongo/backup_mongo.sh stories
-#   when: '"db-mongo-secondary1" in inventory_hostname'
-#   tags:
-#     - mongo-backup
+
+- name: Add full mongo dump log
+  file:
+    path: /var/log/mongo_full_dump.log
+    state: touch
+    mode: 0755
+    owner: "{{ ansible_effective_user_id|int }}"
+    group: "{{ ansible_effective_group_id|int }}"
+  when: inventory_hostname == 'hdb-mongo-secondary-1'
+
+- name: Add weekly full mongo dump for off-site backup
+  cron:
+    name: mongo full dump
+    minute: "0"
+    hour: "3"
+    weekday: "0"
+    job: /srv/newsblur/docker/mongo/backup_mongo_full.sh >> /var/log/mongo_full_dump.log 2>&1
+  when: inventory_hostname == 'hdb-mongo-secondary-1'
+  tags:
+    - mongo-backup
+    - cron
 
 # Renaming a db-mongo-primary3 to db-mongo-primary2:
 #  - Change hostname to db-mongo-primary2 on Digital Ocean
