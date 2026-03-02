@@ -1216,7 +1216,7 @@ color: #a85b40;
     fill: #ccc;
 }
 
-.NB-dark .NB-media-player-expand svg,
+.NB-dark .NB-media-player-settings svg,
 .NB-dark .NB-media-player-close svg {
     fill: #aaa;
 }
@@ -1229,12 +1229,24 @@ color: #a85b40;
 .NB-dark .NB-media-player-play-pause:hover,
 .NB-dark .NB-media-player-skip-back:hover,
 .NB-dark .NB-media-player-skip-forward:hover,
-.NB-dark .NB-media-player-expand:hover,
+.NB-dark .NB-media-player-settings:hover,
 .NB-dark .NB-media-player-close:hover {
     background-color: rgba(255, 255, 255, 0.08);
 }
 
-.NB-dark .NB-media-player-expanded-area {
+.NB-dark .NB-media-settings-popover .NB-popover-section {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-media-settings-popover .NB-popover-section-title {
+    color: #777;
+}
+
+.NB-dark .NB-media-settings-popover .NB-popover-section-description {
+    color: #666;
+}
+
+.NB-dark .NB-media-player-queue-area {
     border-top-color: #404040;
 }
 

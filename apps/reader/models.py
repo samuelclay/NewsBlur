@@ -3020,6 +3020,13 @@ class MMediaPlaybackState(mongo.Document):
     current_volume = mongo.FloatField(default=1.0)
     is_playing = mongo.BooleanField(default=False)
 
+    # Player settings
+    skip_back_seconds = mongo.IntField(default=15)
+    skip_forward_seconds = mongo.IntField(default=30)
+    auto_play_next = mongo.BooleanField(default=True)
+    remember_position = mongo.BooleanField(default=True)
+    resume_on_load = mongo.BooleanField(default=True)
+
     # Queue: ordered list of media items
     # Each item: {story_hash, media_url, media_type, media_title, feed_id, image_url}
     queue = mongo.ListField(mongo.DictField())
@@ -3048,6 +3055,11 @@ class MMediaPlaybackState(mongo.Document):
             "current_playback_rate": self.current_playback_rate,
             "current_volume": self.current_volume,
             "is_playing": self.is_playing,
+            "skip_back_seconds": self.skip_back_seconds,
+            "skip_forward_seconds": self.skip_forward_seconds,
+            "auto_play_next": self.auto_play_next,
+            "remember_position": self.remember_position,
+            "resume_on_load": self.resume_on_load,
             "queue": self.queue or [],
         }
 

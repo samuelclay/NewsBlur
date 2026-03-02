@@ -933,6 +933,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // Headphones + plus sign: play last (add to end)
         var svg_play_last = '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 1C7.03 1 3 5.03 3 10v8c0 1.66 1.34 3 3 3h2v-8H5v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><path d="M11 12h2v3h3v2h-3v3h-2v-3H8v-2h3v-3z" opacity="0.9"/></svg>';
 
+        // Remove any existing overlay buttons (prevents duplicates on re-render)
+        this.$('.NB-media-overlay-buttons').remove();
+        this.$('.NB-media-youtube-overlay').remove();
+
         // Add overlay buttons on audio/video elements
         this.$('.NB-feed-story-content audio, .NB-feed-story-content video').each(function (i) {
             var $el = $(this);
@@ -942,7 +946,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             if (!item) return;
 
             var $buttons = $('<div class="NB-media-overlay-buttons"></div>');
-            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play Now</div>');
+            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play in Mini Media Player</div>');
             var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' Play Next</div>');
             var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' Play Last</div>');
 
@@ -976,7 +980,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             if (!item) return;
 
             var $overlay = $('<div class="NB-media-youtube-overlay"></div>');
-            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play Now</div>');
+            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play in Mini Media Player</div>');
             var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' Play Next</div>');
             var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' Play Last</div>');
 
