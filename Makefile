@@ -557,7 +557,7 @@ offsite-backup-dry-run:
 	ssh $(HA_HOST) "$(HA_SCRIPTS)/offsite_pull.sh --dry-run"
 
 offsite-backup-status:
-	@ssh $(HA_HOST) "tail -30 /media/newsblur-backup/backup.log 2>/dev/null; echo '---'; du -sh /media/newsblur-backup/*/ 2>/dev/null; echo '---'; df -h /media/newsblur-backup"
+	@ssh $(HA_HOST) "echo '=== Backup log ==='; tail -20 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; ls -lh /media/newsblur-backup/mongo_full/ 2>/dev/null; echo; echo '=== Disk usage ==='; du -sh /media/newsblur-backup/mongo_full/ /media/newsblur-backup/postgres/ 2>/dev/null; du -sh /media/newsblur-backup/redis/*/ 2>/dev/null; echo '---'; df -h /media/newsblur-backup"
 
 offsite-backup-uninstall:
 	@$(call log,~FY---> Removing off-site backup from HA box~ST)
