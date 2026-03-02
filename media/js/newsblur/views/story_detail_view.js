@@ -606,7 +606,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 model: story_model,
                 collection: collection,
                 override_layout: 'split',
-                is_list: true
+                is_list: true,
+                is_cluster_detail: true
             });
             story_view.render();
             story_view.$el.addClass('NB-story-cluster-detail-item');
