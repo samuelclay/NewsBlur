@@ -56,6 +56,7 @@ struct DiscoverStory: Identifiable {
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
             formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.timeZone = TimeZone(identifier: "UTC")
             self.date = formatter.date(from: dateString)
         } else {
             self.date = nil

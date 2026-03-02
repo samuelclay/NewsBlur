@@ -260,7 +260,7 @@ class StoryTitlesHeaderBar: NSObject {
 
     private func buildDiscoverPill() {
         let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
-        setPillContent(discoverPill, title: "DISCOVER", image: discoverImage,
+        setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
                        leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
         configurePillAppearance(discoverPill)
         discoverPill.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -612,10 +612,10 @@ class StoryTitlesHeaderBar: NSObject {
             wc.isActive = true
             discoverWidthConstraint = wc
         } else if canFitDiscoverText() {
-            // Text mode: icon + "DISCOVER"
+            // Text mode: icon + "RELATED SITES"
             isDiscoverCompact = false
             let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
-            setPillContent(discoverPill, title: "DISCOVER", image: discoverImage,
+            setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
                            leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
             discoverPill.contentHorizontalAlignment = .center
         } else {

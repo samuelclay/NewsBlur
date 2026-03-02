@@ -120,7 +120,7 @@ struct DiscoverFeedsView: View {
                 .frame(width: 16, height: 16)
                 .foregroundColor(Color(UIColor(red: 0x95/255.0, green: 0x96/255.0, blue: 0x8F/255.0, alpha: 1.0)))
 
-            Text("Discover sites")
+            Text("Related sites")
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(DiscoverColors.textPrimary)
 
