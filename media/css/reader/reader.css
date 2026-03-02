@@ -7637,6 +7637,12 @@ body {
 /* = Tryfeed Subscribe Banner = */
 /* ========================== */
 
+.NB-tryfeed-banner-container {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
 .NB-tryfeed-subscribe-banner,
 .NB-tryfeed-follow-banner,
 .NB-tryfeed-signup-banner {
@@ -7646,9 +7652,6 @@ body {
     padding: 14px 16px;
     border-bottom: 1px solid rgba(106, 168, 79, 0.15);
     cursor: pointer;
-    position: sticky;
-    top: 0;
-    z-index: 5;
 }
 
 .NB-tryfeed-subscribe-banner,
