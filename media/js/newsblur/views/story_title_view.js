@@ -716,6 +716,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     render_cluster_sources: function () {
         var cluster_stories = this.model.get('cluster_stories');
         if (!cluster_stories || !cluster_stories.length) return;
+        if (this.options.is_cluster_detail) return;
 
         if (!NEWSBLUR.Globals.is_staff) return;
 
