@@ -74,6 +74,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.auto_play_next = true;
         this.remember_position = true;
         this.resume_on_load = true;
+        this.state_restored = false;
     },
 
     // ================
@@ -81,6 +82,8 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
     // ================
 
     restore_state: function () {
+        this.state_restored = true;
+
         var state = NEWSBLUR.assets.playback_state;
         if (!state || !state.current_media_url) return;
 
@@ -113,7 +116,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.show_player();
         this.create_media_element(this.current_media);
 
-        // Seek to saved position after media loads (don't auto-play due to browser policy)
+        // Seek to saved position after media loads (don't auto-play)
         var self = this;
         _.delay(function () {
             self.seek_to(self.current_position);
@@ -366,11 +369,19 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
 
     play_media: function (media_item) {
         // If same item is already playing, just toggle
-        if (this.current_media &&
-            this.current_media.story_hash === media_item.story_hash &&
-            this.current_media.media_url === media_item.media_url) {
+        if (this.is_currently_playing(media_item)) {
             this.toggle_play_pause();
             return;
+        }
+
+        // Remove from queue if it's queued
+        if (this.is_in_queue(media_item)) {
+            NEWSBLUR.assets.remove_from_media_queue(media_item.story_hash, media_item.media_url, _.bind(function (response) {
+                if (response.playback_state) {
+                    this.queue = response.playback_state.queue || [];
+                    this.render_queue();
+                }
+            }, this));
         }
 
         // Save current item to history before switching
@@ -712,6 +723,20 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
     // = Queue Mgmt =
     // ==============
 
+    is_currently_playing: function (media_item) {
+        if (!this.current_media || !media_item) return false;
+        return this.current_media.story_hash === media_item.story_hash &&
+               this.current_media.media_url === media_item.media_url;
+    },
+
+    is_in_queue: function (media_item) {
+        if (!media_item) return false;
+        return _.any(this.queue, function (q) {
+            return q.story_hash === media_item.story_hash &&
+                   q.media_url === media_item.media_url;
+        });
+    },
+
     add_to_queue: function (media_item, position) {
         // If nothing is playing, play immediately instead
         if (!this.current_media) {
@@ -719,6 +744,24 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             return;
         }
 
+        // Don't queue an item that's already playing
+        if (this.is_currently_playing(media_item)) return;
+
+        // If already in queue, remove first then re-add at new position
+        if (this.is_in_queue(media_item)) {
+            NEWSBLUR.assets.remove_from_media_queue(media_item.story_hash, media_item.media_url, _.bind(function (response) {
+                if (response.playback_state) {
+                    this.queue = response.playback_state.queue || [];
+                }
+                this._do_add_to_queue(media_item, position);
+            }, this));
+            return;
+        }
+
+        this._do_add_to_queue(media_item, position);
+    },
+
+    _do_add_to_queue: function (media_item, position) {
         var data = _.extend({}, media_item);
         if (position !== undefined) {
             data.position = position;

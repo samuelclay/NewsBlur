@@ -1004,8 +1004,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             });
         });
 
-        // Intercept native play events to hand off to media player
-        this.$('.NB-feed-story-content audio, .NB-feed-story-content video').on('play', function () {
+        // Remove autoplay attributes to prevent automatic playback
+        this.$('.NB-feed-story-content audio, .NB-feed-story-content video').removeAttr('autoplay');
+
+        // Intercept native play events (e.g. user clicking native controls) to hand off to media player
+        this.$('.NB-feed-story-content audio, .NB-feed-story-content video').on('play', function (e) {
+            // Only intercept user-initiated play events
+            if (!e.originalEvent || !e.originalEvent.isTrusted) return;
             var el = this;
             el.pause();
             var src = $(el).find('source').attr('src') || $(el).attr('src');

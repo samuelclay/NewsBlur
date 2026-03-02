@@ -147,8 +147,8 @@
             NEWSBLUR.assets.feeds.bind('reset', _.bind(function () {
                 this.load_dashboard_rivers();
                 this.load_intelligence_slider();
-                // Restore media player state from server
-                if (NEWSBLUR.app.media_player) {
+                // Restore media player state from server (only on initial load)
+                if (NEWSBLUR.app.media_player && !NEWSBLUR.app.media_player.state_restored) {
                     NEWSBLUR.app.media_player.restore_state();
                     NEWSBLUR.app.media_player.setup_beforeunload();
                 }
