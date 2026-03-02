@@ -1787,6 +1787,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 
     if (self.dashboardIndex >= 0) {
         self.pageFinished = YES;
+        [self hideFetchingBanner];
         [appDelegate.feedsViewController loadDashboard];
         return;
     }
