@@ -9666,7 +9666,7 @@ form.opml_import_form input {
     border-bottom: 1px solid #dbdbda;
     background-color: #f6f7f5;
     background-image: linear-gradient(180deg, #f8f9f6, #f0f1ee);
-    overflow: hidden;
+    overflow: visible;
 }
 
 .NB-media-player.NB-hidden {
@@ -9690,12 +9690,26 @@ form.opml_import_form input {
     min-height: 36px;
 }
 
-/* Row 2: Transport + progress + speed + type + volume */
-.NB-media-player-row-transport {
+/* Row 2: Full-width scrubber */
+.NB-media-player-row-scrubber {
     display: flex;
     align-items: center;
-    gap: 6px;
-    height: 28px;
+    height: 14px;
+}
+
+/* Row 3: Controls + time (centered) + speed/volume */
+.NB-media-player-row-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 26px;
+}
+
+.NB-media-player-right-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
 }
 
 /* Video container in mini player */
@@ -9876,7 +9890,6 @@ form.opml_import_form input {
 /* Progress bar */
 .NB-media-player-progress-container {
     flex: 1;
-    min-width: 60px;
     display: flex;
     align-items: center;
 }
@@ -9922,10 +9935,11 @@ form.opml_import_form input {
     color: #999;
     display: flex;
     gap: 2px;
+    justify-content: center;
     line-height: 1;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
-    flex-shrink: 0;
+    flex: 1;
 }
 
 .NB-media-player-speed {
@@ -9946,21 +9960,27 @@ form.opml_import_form input {
     background-color: rgba(0, 0, 0, 0.06);
 }
 
+/* Volume: icon + hover popover */
 .NB-media-player-volume-container {
-    display: flex;
-    align-items: center;
-    gap: 2px;
+    position: relative;
     flex-shrink: 0;
 }
 
 .NB-media-player-volume-icon {
-    width: 16px;
-    height: 16px;
+    width: 22px;
+    height: 22px;
     cursor: pointer;
     opacity: 0.5;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 3px;
+}
+
+.NB-media-player-volume-container:hover .NB-media-player-volume-icon,
+.NB-media-player-volume-icon:hover {
+    opacity: 0.8;
+    background-color: rgba(0, 0, 0, 0.06);
 }
 
 .NB-media-player-volume-icon svg {
@@ -9969,34 +9989,78 @@ form.opml_import_form input {
     fill: #505050;
 }
 
+/* Popover: vertical slider above volume icon */
+.NB-media-player-volume-popover {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 96px;
+    padding: 0 0 8px;
+    background: #f0f1ee;
+    border: 1px solid #cccbc9;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.06);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.NB-media-player-volume-container:hover .NB-media-player-volume-popover {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Rotated horizontal slider to appear vertical */
 .NB-media-player-volume {
-    width: 40px;
-    height: 3px;
     -webkit-appearance: none;
     appearance: none;
-    background: #ddd;
-    border-radius: 2px;
+    width: 80px;
+    height: 6px;
+    background: transparent;
     cursor: pointer;
     margin: 0;
+    padding: 0;
+    transform: rotate(-90deg);
+}
+
+.NB-media-player-volume::-webkit-slider-runnable-track {
+    height: 4px;
+    background: #d4d4d2;
+    border-radius: 2px;
 }
 
 .NB-media-player-volume::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 8px;
-    height: 8px;
-    background: #707070;
+    width: 12px;
+    height: 12px;
+    background: #606060;
     border-radius: 50%;
     cursor: pointer;
-    margin-top: -2.5px;
+    margin-top: -4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.NB-media-player-volume::-moz-range-track {
+    height: 4px;
+    background: #d4d4d2;
+    border-radius: 2px;
+    border: none;
 }
 
 .NB-media-player-volume::-moz-range-thumb {
-    width: 8px;
-    height: 8px;
-    background: #707070;
+    width: 12px;
+    height: 12px;
+    background: #606060;
     border-radius: 50%;
     border: none;
     cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .NB-media-player-settings {
@@ -10046,10 +10110,6 @@ form.opml_import_form input {
     fill: #505050;
 }
 
-/* Type badge in transport row */
-.NB-media-player-row-transport .NB-media-player-type-badge {
-    margin-left: -2px;
-}
 
 /* Always-visible queue area */
 .NB-media-player-queue-area {
@@ -10259,7 +10319,7 @@ form.opml_import_form input {
 }
 
 .NB-media-play-btn svg {
-    width: 16px;
+    width: 20px;
     height: 16px;
     flex-shrink: 0;
 }
@@ -10321,8 +10381,8 @@ form.opml_import_form input {
 
 /* Media player settings popover - arrow positioning */
 .NB-media-settings-popover-container.popover.top-right .arrow {
-    left: auto;
-    right: 30px;
+    left: 12px;
+    right: auto;
     margin-left: 0;
 }
 

@@ -1194,16 +1194,33 @@ color: #a85b40;
     color: #777;
 }
 
-.NB-dark .NB-media-player-volume {
-    background: #555;
+.NB-dark .NB-media-player-volume-popover {
+    background: #36393d;
+    border-color: #4a4d52;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-media-player-volume-container:hover .NB-media-player-volume-icon,
+.NB-dark .NB-media-player-volume-icon:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-media-player-volume::-webkit-slider-runnable-track {
+    background: #505356;
 }
 
 .NB-dark .NB-media-player-volume::-webkit-slider-thumb {
-    background: #999;
+    background: #a0a2a6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-media-player-volume::-moz-range-track {
+    background: #505356;
 }
 
 .NB-dark .NB-media-player-volume::-moz-range-thumb {
-    background: #999;
+    background: #a0a2a6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .NB-dark .NB-media-player-speed {
