@@ -8,40 +8,29 @@ NEWSBLUR_DIR = "".join([CURRENT_DIR, "/../../"])
 sys.path.insert(0, NEWSBLUR_DIR)
 os.environ["DJANGO_SETTINGS_MODULE"] = "newsblur_web.settings"
 
-import threading
-
-
-class ProgressPercentage(object):
-    def __init__(self, filename):
-        self._filename = filename
-        self._size = float(os.path.getsize(filename))
-        self._seen_so_far = 0
-        self._lock = threading.Lock()
-
-    def __call__(self, bytes_amount):
-        # To simplify, assume this is hooked up to a single filename
-        with self._lock:
-            self._seen_so_far += bytes_amount
-            percentage = (self._seen_so_far / self._size) * 100
-            sys.stdout.write(
-                "\r%s  %s / %s  (%.2f%%)" % (self._filename, self._seen_so_far, self._size, percentage)
-            )
-            sys.stdout.flush()
-
-
-import time
-
-import boto3
 from django.conf import settings
 
-BACKUP_DIR = "/srv/newsblur/backup/"
+from utils.backups.backup_rotation import rotate_s3_backups, upload_to_s3
 
-s3 = boto3.client("s3", aws_access_key_id=settings.S3_ACCESS_KEY, aws_secret_access_key=settings.S3_SECRET)
-
+dry_run = "--dry-run" in sys.argv
 hostname = socket.gethostname().replace("-", "_")
-full_path = sys.argv[1]
-backup_filename = os.path.basename(full_path)
-s3_object_name = f"backup_{hostname}/{backup_filename}.sql"
-print("Uploading %s to %s on S3 bucket %s" % (full_path, s3_object_name, settings.S3_BACKUP_BUCKET))
-s3.upload_file(full_path, settings.S3_BACKUP_BUCKET, s3_object_name, Callback=ProgressPercentage(full_path))
-os.remove(full_path)
+
+if not dry_run:
+    full_path = sys.argv[1]
+    backup_filename = os.path.basename(full_path)
+    s3_object_name = "backup_%s/%s" % (hostname, backup_filename)
+
+    print("Uploading %s to %s on S3 bucket %s" % (full_path, s3_object_name, settings.S3_BACKUP_BUCKET))
+    upload_to_s3(full_path, settings.S3_BACKUP_BUCKET, s3_object_name)
+
+    # Don't delete local file — the existing ansible cron (postgres_backup_cleaner) handles cleanup
+    # of files older than 12.5 days, and offsite backup pulls from local files too.
+
+print("Rotating PostgreSQL backups on S3...")
+# Rotate both .sql (new format) and .sql.sql (old double-extension bug) backups
+rotate_s3_backups(
+    settings.S3_BACKUP_BUCKET, "backup_%s/backup_postgresql" % hostname, ".sql", dry_run=dry_run
+)
+rotate_s3_backups(
+    settings.S3_BACKUP_BUCKET, "backup_%s/backup_postgresql" % hostname, ".sql.sql", dry_run=dry_run
+)

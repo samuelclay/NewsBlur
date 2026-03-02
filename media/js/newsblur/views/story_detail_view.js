@@ -598,13 +598,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             var story_model = collection.get_by_story_hash(story_data.story_hash);
             if (!story_model) {
                 story_model = new NEWSBLUR.Models.Story(story_data);
+            } else if (parent_read && mark_children_read && !story_model.get('read_status')) {
+                story_model.set('read_status', 1);
             }
 
             var story_view = new NEWSBLUR.Views.StoryTitleView({
                 model: story_model,
                 collection: collection,
                 override_layout: 'split',
-                is_list: true
+                is_list: true,
+                is_cluster_detail: true
             });
             story_view.render();
             story_view.$el.addClass('NB-story-cluster-detail-item');
@@ -700,6 +703,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     toggle_read_status: function () {
         this.$el.toggleClass('read', !!this.model.get('read_status'));
+
+        if (this.model.get('read_status') && NEWSBLUR.assets.preference('cluster_mark_read')) {
+            if (this._cluster_title_views) {
+                _.each(this._cluster_title_views, function (view) {
+                    if (!view.model.get('read_status')) {
+                        view.model.set('read_status', 1);
+                    }
+                });
+            }
+        }
     },
 
     toggle_intelligence: function () {
