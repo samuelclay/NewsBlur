@@ -35,6 +35,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             arguments.length && arguments[0] && arguments[0].models) {
             return;
         }
+        this.stop_maintaining_scroll();
         this.clear();
         this.cache = {
             story_pane_position: null,
@@ -44,7 +45,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             latest_mark_read_scroll_position: -1
         };
         this.flags = {
-            mousemove_timeout: false
+            mousemove_timeout: false,
+            maintaining_scroll: null
         };
         this.counts = {
             positions_timer: 0
@@ -221,8 +223,10 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             return;
         }
 
+        this.stop_maintaining_scroll();
         clearTimeout(NEWSBLUR.reader.locks.scrolling);
         NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
+        var self = this;
         var scroll_to = options.scroll_to_top ? 0 : $story;
         NEWSBLUR.reader.$s.$feed_scroll.stop().scrollTo(scroll_to, {
             duration: options.immediate ? 0 : 340,
@@ -234,6 +238,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
                 NEWSBLUR.reader.locks.scrolling = setTimeout(function () {
                     NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = false;
                 }, 100);
+                self.maintain_scroll_position(story, options);
             }
         });
     },
@@ -661,6 +666,103 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (!story.get('selected')) {
             story.set('selected', true, { selected_by_scrolling: true, mouse: true, immediate: true });
         }
+    },
+
+    maintain_scroll_position: function (story, options) {
+        if (NEWSBLUR.assets.preference('feed_view_single_story')) return;
+        if (options && options.scroll_to_top) return;
+        if (!story || !story.story_view) return;
+
+        var $target = (options && options.scroll_to_comments)
+            ? story.story_view.$('.NB-feed-story-comments')
+            : story.story_view.$el;
+        if (!$target || !$target.length) return;
+
+        var self = this;
+        var $feed_scroll = NEWSBLUR.reader.$s.$feed_scroll;
+        var scroll_offset = (options && options.scroll_offset) || 0;
+        var DRIFT_THRESHOLD = 10;
+        var MONITORING_DURATION = 2000;
+
+        this.flags['maintaining_scroll'] = {
+            raf_handle: null,
+            correcting: false,
+            cancel_timeout: null
+        };
+        var state = this.flags['maintaining_scroll'];
+
+        $feed_scroll.on(
+            'wheel.maintain_scroll mousedown.maintain_scroll touchstart.maintain_scroll',
+            function () {
+                console.log(['maintain_scroll: cancelled by user interaction']);
+                self.stop_maintaining_scroll();
+            }
+        );
+
+        state.cancel_timeout = setTimeout(function () {
+            self.stop_maintaining_scroll();
+        }, MONITORING_DURATION);
+
+        console.log(['maintain_scroll: started', story.get('story_title')]);
+
+        var check = function () {
+            var current_state = self.flags['maintaining_scroll'];
+            if (!current_state) return;
+            if (!$target.closest($feed_scroll).length) {
+                self.stop_maintaining_scroll();
+                return;
+            }
+            if (current_state.correcting) {
+                current_state.raf_handle = requestAnimationFrame(check);
+                return;
+            }
+
+            var container_top = $feed_scroll[0].getBoundingClientRect().top;
+            var target_top = $target[0].getBoundingClientRect().top;
+            var drift = (target_top - container_top) + scroll_offset;
+
+            if (Math.abs(drift) > DRIFT_THRESHOLD) {
+                console.log(['maintain_scroll: correcting drift', drift, story.get('story_title')]);
+                current_state.correcting = true;
+
+                clearTimeout(NEWSBLUR.reader.locks.scrolling);
+                NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
+
+                $feed_scroll.stop().scrollTo($target, {
+                    duration: 200,
+                    axis: 'y',
+                    easing: 'easeOutQuint',
+                    offset: scroll_offset,
+                    queue: false,
+                    onAfter: function () {
+                        if (!self.flags['maintaining_scroll']) return;
+                        self.flags['maintaining_scroll'].correcting = false;
+                        NEWSBLUR.reader.locks.scrolling = setTimeout(function () {
+                            NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = false;
+                        }, 100);
+                    }
+                });
+            }
+
+            current_state.raf_handle = requestAnimationFrame(check);
+        };
+
+        state.raf_handle = requestAnimationFrame(check);
+    },
+
+    stop_maintaining_scroll: function () {
+        var state = this.flags && this.flags['maintaining_scroll'];
+        if (!state) return;
+
+        if (state.raf_handle) {
+            cancelAnimationFrame(state.raf_handle);
+        }
+        if (state.cancel_timeout) {
+            clearTimeout(state.cancel_timeout);
+        }
+
+        NEWSBLUR.reader.$s.$feed_scroll.off('.maintain_scroll');
+        this.flags['maintaining_scroll'] = null;
     },
 
     scroll: function (elem, e) {
