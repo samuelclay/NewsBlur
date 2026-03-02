@@ -185,6 +185,3 @@
   tags:
     - redis-backup
     - cron
-  tags:
-    - redis-backup
-    - cron
