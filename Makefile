@@ -556,6 +556,9 @@ offsite-backup-dry-run:
 	@$(call log,~FB---> Running off-site backup pull (dry run)~ST)
 	ssh $(HA_HOST) "$(HA_SCRIPTS)/offsite_pull.sh --dry-run"
 
+offsite-backup-status:
+	@ssh $(HA_HOST) "tail -30 /media/newsblur-backup/backup.log 2>/dev/null; echo '---'; du -sh /media/newsblur-backup/*/ 2>/dev/null; echo '---'; df -h /media/newsblur-backup"
+
 offsite-backup-uninstall:
 	@$(call log,~FY---> Removing off-site backup from HA box~ST)
 	ssh $(HA_HOST) "rm -f $(HA_SCRIPTS)/offsite_pull.sh $(HA_SCRIPTS)/docker.key"
