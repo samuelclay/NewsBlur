@@ -168,7 +168,7 @@ struct CardView: View {
         guard cache.settings.preview != .none, let image = cache.appDelegate.cachedImage(forStoryHash: story.hash), image.isKind(of: UIImage.self) else {
             return nil
         }
-        
+
         return image
     }
     
