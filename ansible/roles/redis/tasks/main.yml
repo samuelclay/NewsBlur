@@ -157,7 +157,7 @@
 
 - name: Add redis backup
   cron:
-    name: "{{ ansible_hostname }} backup"
+    name: "{{ inventory_hostname }} backup"
     minute: "0"
     hour: "4"
     job: >
@@ -165,7 +165,7 @@
       -v /srv/newsblur:/srv/newsblur
       -v /srv/newsblur/docker/volumes/redis_{{ redis_role }}/dump.rdb:/data/dump.rdb
       --network=newsblurnet
-      --hostname={{ ansible_hostname }}
+      --hostname={{ inventory_hostname }}
       newsblur/newsblur_python3 python /srv/newsblur/utils/backups/backup_redis.py
   when: redis_secondary | default(false)
   tags:
@@ -174,9 +174,17 @@
 
 - name: Remove redis backup from primary
   cron:
-    name: "{{ ansible_hostname }} backup"
+    name: "{{ inventory_hostname }} backup"
     state: absent
   when: not (redis_secondary | default(false))
+
+- name: Remove old ansible_hostname-based backup cron
+  cron:
+    name: "{{ ansible_hostname }} backup"
+    state: absent
+  tags:
+    - redis-backup
+    - cron
   tags:
     - redis-backup
     - cron
