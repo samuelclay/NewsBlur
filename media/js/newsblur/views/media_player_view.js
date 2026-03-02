@@ -1226,7 +1226,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
                 data.append('auto_play_next', self.auto_play_next);
                 data.append('remember_position', self.remember_position);
                 data.append('resume_on_load', self.resume_on_load);
-                navigator.sendBeacon('/reader/save_playback_state', data);
+                navigator.sendBeacon('/media_player/save_playback_state', data);
             }
         });
     }

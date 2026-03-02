@@ -2567,7 +2567,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     // ===================
 
     save_playback_state: function (state_data, callback, error_callback) {
-        this.make_request('/reader/save_playback_state', state_data, _.bind(function (response) {
+        this.make_request('/media_player/save_playback_state', state_data, _.bind(function (response) {
             if (response.playback_state) {
                 this.playback_state = response.playback_state;
             }
@@ -2576,7 +2576,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     add_to_media_queue: function (media_item, callback, error_callback) {
-        this.make_request('/reader/add_to_media_queue', media_item, _.bind(function (response) {
+        this.make_request('/media_player/add_to_media_queue', media_item, _.bind(function (response) {
             if (response.playback_state) {
                 this.playback_state = response.playback_state;
             }
@@ -2585,7 +2585,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     remove_from_media_queue: function (story_hash, media_url, callback, error_callback) {
-        this.make_request('/reader/remove_from_media_queue', {
+        this.make_request('/media_player/remove_from_media_queue', {
             story_hash: story_hash,
             media_url: media_url
         }, _.bind(function (response) {
@@ -2597,7 +2597,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     reorder_media_queue: function (queue_order, callback, error_callback) {
-        this.make_request('/reader/reorder_media_queue', {
+        this.make_request('/media_player/reorder_media_queue', {
             queue_order: JSON.stringify(queue_order)
         }, _.bind(function (response) {
             if (response.playback_state) {
@@ -2608,14 +2608,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     clear_playback_state: function (callback, error_callback) {
-        this.make_request('/reader/clear_playback_state', {}, _.bind(function (response) {
+        this.make_request('/media_player/clear_playback_state', {}, _.bind(function (response) {
             this.playback_state = null;
             callback && callback(response);
         }, this), error_callback);
     },
 
     clear_media_queue: function (callback, error_callback) {
-        this.make_request('/reader/clear_media_queue', {}, _.bind(function (response) {
+        this.make_request('/media_player/clear_media_queue', {}, _.bind(function (response) {
             if (response.playback_state) {
                 this.playback_state = response.playback_state;
             }
@@ -2624,7 +2624,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     add_to_media_history: function (media_item, callback, error_callback) {
-        this.make_request('/reader/add_to_media_history', media_item, _.bind(function (response) {
+        this.make_request('/media_player/add_to_media_history', media_item, _.bind(function (response) {
             if (response.playback_state) {
                 this.playback_state = response.playback_state;
             }
@@ -2633,7 +2633,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     remove_from_media_history: function (story_hash, media_url, callback, error_callback) {
-        this.make_request('/reader/remove_from_media_history', {
+        this.make_request('/media_player/remove_from_media_history', {
             story_hash: story_hash,
             media_url: media_url
         }, _.bind(function (response) {
@@ -2645,7 +2645,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     clear_media_history: function (callback, error_callback) {
-        this.make_request('/reader/clear_media_history', {}, _.bind(function (response) {
+        this.make_request('/media_player/clear_media_history', {}, _.bind(function (response) {
             if (response.playback_state) {
                 this.playback_state = response.playback_state;
             }
