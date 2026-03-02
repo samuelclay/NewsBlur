@@ -2,7 +2,7 @@
 # offsite_pull.sh - Pull NewsBlur backups to Home Assistant box
 #
 # Runs on the HA box (HAOS). Pulls:
-# - MongoDB full dump: rsync directly from Hetzner secondary
+# - MongoDB full dump: streamed directly via SSH (mongodump --archive --gzip)
 # - PostgreSQL + Redis: download latest from S3 (small files)
 #
 # Usage: ./offsite_pull.sh [--dry-run]
@@ -31,16 +31,16 @@ else
 fi
 
 # S3 prefixes for each backup type (hostname with underscores)
-# Postgres backs up from the primary (only server with pg_dump cron)
-S3_POSTGRES_PREFIX="backup_hdb_postgres_1/backup_postgresql"
-# Redis: prefer replica (-2) backups, fall back to primary (-1) during transition
+# Postgres backs up from the secondary (physical hostname: hdb-redis-secondary)
+S3_POSTGRES_PREFIXES=(
+    "backup_hdb_redis_secondary/backup_postgresql"
+    "backup_hdb_postgres_1/backup_postgresql"
+)
+# Redis: replica (-2) backups
 S3_REDIS_PREFIXES=(
     "backup_hdb_redis_story_2/backup_hdb_redis_story_2"
-    "backup_hdb_redis_story_1/backup_hdb_redis_story_1"
     "backup_hdb_redis_user_2/backup_hdb_redis_user_2"
-    "backup_hdb_redis_user_1/backup_hdb_redis_user_1"
     "backup_hdb_redis_session_2/backup_hdb_redis_session_2"
-    "backup_hdb_redis_session_1/backup_hdb_redis_session_1"
 )
 
 # Local retention: how many backups to keep per type
@@ -76,44 +76,41 @@ mkdir -p "${BACKUP_DRIVE}/redis"
 
 log "=== Starting NewsBlur off-site backup pull ==="
 
-# --- 1. Full MongoDB Dump (rsync from server) ---
-log "--- MongoDB full dump ---"
+# --- 1. Full MongoDB Dump (stream directly via SSH) ---
+# Streams mongodump --archive --gzip over SSH directly to the backup drive.
+# Uses zero disk space on the mongo server.
+# NOTE: No -t flag on docker exec — TTY mangles binary streams.
+log "--- MongoDB full dump (streaming from server) ---"
 
-LATEST_DUMP=$(ssh ${SSH_OPTS} ${SSH_USER}@${MONGO_SECONDARY} \
-    "cat /srv/newsblur/docker/volumes/mongo/backup/latest_full_dump.txt 2>/dev/null" || echo "")
+DUMP_DATE=$(date '+%Y-%m-%d')
+DUMP_FILE="${BACKUP_DRIVE}/mongo_full/mongodump_full_${DUMP_DATE}.gz"
+DUMP_TMP="${DUMP_FILE}.partial"
 
-if [[ -z "${LATEST_DUMP}" ]]; then
-    log "WARNING: No latest_full_dump.txt found on mongo server. Skipping MongoDB."
+if [[ -f "${DUMP_FILE}" ]]; then
+    log "MongoDB dump already exists for today: $(basename ${DUMP_FILE}). Skipping."
 else
-    DUMP_DIR="mongodump_full_${LATEST_DUMP}"
-    LOCAL_MONGO_DIR="${BACKUP_DRIVE}/mongo_full/${DUMP_DIR}"
-
-    if [[ -d "${LOCAL_MONGO_DIR}" ]]; then
-        log "MongoDB dump ${DUMP_DIR} already downloaded. Skipping."
+    log "Streaming full mongodump from ${MONGO_SECONDARY}..."
+    if [[ "${DRY_RUN}" == "false" ]]; then
+        # Write to .partial first, rename on success to avoid keeping truncated dumps
+        rm -f "${DUMP_TMP}"
+        ssh ${SSH_OPTS} ${SSH_USER}@${MONGO_SECONDARY} \
+            "docker exec mongo mongodump -d newsblur --gzip --archive" \
+            > "${DUMP_TMP}"
+        mv "${DUMP_TMP}" "${DUMP_FILE}"
+        DUMP_SIZE=$(du -sh "${DUMP_FILE}" | cut -f1)
+        log "MongoDB dump complete: $(basename ${DUMP_FILE}) (${DUMP_SIZE})"
     else
-        log "Downloading MongoDB dump: ${DUMP_DIR}"
-        if [[ "${DRY_RUN}" == "false" ]]; then
-            rsync -avz --progress \
-                -e "ssh ${SSH_OPTS}" \
-                "${SSH_USER}@${MONGO_SECONDARY}:/srv/newsblur/docker/volumes/mongo/backup/${DUMP_DIR}/" \
-                "${LOCAL_MONGO_DIR}/"
-            log "MongoDB dump download complete: ${DUMP_DIR}"
-        else
-            log "[DRY RUN] Would download ${DUMP_DIR}"
-        fi
+        log "[DRY RUN] Would stream mongodump to ${DUMP_FILE}"
     fi
 fi
 
 # --- 2. PostgreSQL + Redis (download from S3) ---
-# We use aws CLI via a lightweight Docker container since HAOS doesn't have aws CLI natively.
-# Alternatively, use curl with S3 v4 signatures. For simplicity, we use python + boto3.
+# Uses python (from venv with boto3) to find and download the latest backup.
 
 s3_download_latest() {
     local prefix="$1"
     local local_dir="$2"
-    local file_ext="$3"
 
-    # Use python (from venv with boto3) to find and download the latest backup from S3
     /config/scripts/venv/bin/python3 -c "
 import boto3, os, sys
 
@@ -160,29 +157,33 @@ print('Downloaded: %s' % local_path)
 }
 
 log "--- PostgreSQL backup from S3 ---"
-s3_download_latest "${S3_POSTGRES_PREFIX}" "${BACKUP_DRIVE}/postgres" ".sql" | while read line; do log "  $line"; done
+for pg_prefix in "${S3_POSTGRES_PREFIXES[@]}"; do
+    s3_download_latest "${pg_prefix}" "${BACKUP_DRIVE}/postgres" | while read line; do log "  $line"; done
+done
 
 log "--- Redis backups from S3 ---"
 for redis_prefix in "${S3_REDIS_PREFIXES[@]}"; do
     redis_name=$(echo "${redis_prefix}" | cut -d/ -f1)
     mkdir -p "${BACKUP_DRIVE}/redis/${redis_name}"
-    s3_download_latest "${redis_prefix}" "${BACKUP_DRIVE}/redis/${redis_name}" ".rdb.gz" | while read line; do log "  $line"; done
+    s3_download_latest "${redis_prefix}" "${BACKUP_DRIVE}/redis/${redis_name}" | while read line; do log "  $line"; done
 done
 
 # --- 3. Local Retention Cleanup ---
 log "--- Running local retention cleanup ---"
 
 if [[ "${DRY_RUN}" == "false" ]]; then
-    # Mongo full dumps: keep N most recent directories
+    # Mongo full dumps: keep N most recent files
     cd "${BACKUP_DRIVE}/mongo_full"
-    MONGO_DIRS=$(ls -dt mongodump_full_* 2>/dev/null || true)
-    MONGO_COUNT=$(echo "${MONGO_DIRS}" | grep -c "mongodump_full_" 2>/dev/null || true)
+    MONGO_FILES=$(ls -t mongodump_full_*.gz 2>/dev/null || true)
+    MONGO_COUNT=$(echo "${MONGO_FILES}" | grep -c "mongodump_full_" 2>/dev/null || true)
     if [[ ${MONGO_COUNT} -gt ${MONGO_FULL_KEEP} ]]; then
-        echo "${MONGO_DIRS}" | tail -n +$((MONGO_FULL_KEEP + 1)) | while read dir; do
-            log "  Removing old mongo dump: ${dir}"
-            rm -rf "${dir}"
+        echo "${MONGO_FILES}" | tail -n +$((MONGO_FULL_KEEP + 1)) | while read f; do
+            log "  Removing old mongo dump: ${f}"
+            rm -f "${f}"
         done
     fi
+    # Also clean up any .partial files from interrupted dumps
+    rm -f "${BACKUP_DRIVE}/mongo_full/"*.partial
 
     # Postgres dumps: keep N most recent files
     cd "${BACKUP_DRIVE}/postgres"
