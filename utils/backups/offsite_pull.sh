@@ -113,8 +113,8 @@ s3_download_latest() {
     local local_dir="$2"
     local file_ext="$3"
 
-    # Use python to find and download the latest backup from S3
-    python3 -c "
+    # Use python (from venv with boto3) to find and download the latest backup from S3
+    /config/scripts/venv/bin/python3 -c "
 import boto3, os, sys
 
 s3 = boto3.client('s3',
