@@ -44,7 +44,7 @@ S3_REDIS_PREFIXES=(
 )
 
 # Local retention: how many backups to keep per type
-MONGO_FULL_KEEP=4
+MONGO_FULL_KEEP=7
 POSTGRES_KEEP=8
 REDIS_KEEP=8
 
@@ -88,11 +88,12 @@ DUMP_TMP="${DUMP_FILE}.partial"
 
 if [[ -f "${DUMP_FILE}" ]]; then
     log "MongoDB dump already exists for today: $(basename ${DUMP_FILE}). Skipping."
+elif [[ -f "${DUMP_TMP}" ]]; then
+    log "MongoDB dump already in progress: $(basename ${DUMP_TMP}). Skipping."
 else
     log "Streaming full mongodump from ${MONGO_SECONDARY}..."
     if [[ "${DRY_RUN}" == "false" ]]; then
         # Write to .partial first, rename on success to avoid keeping truncated dumps
-        rm -f "${DUMP_TMP}"
         ssh ${SSH_OPTS} ${SSH_USER}@${MONGO_SECONDARY} \
             "docker exec mongo mongodump -d newsblur --gzip --archive" \
             > "${DUMP_TMP}"
@@ -182,8 +183,8 @@ if [[ "${DRY_RUN}" == "false" ]]; then
             rm -f "${f}"
         done
     fi
-    # Also clean up any .partial files from interrupted dumps
-    rm -f "${BACKUP_DRIVE}/mongo_full/"*.partial
+    # Clean up stale .partial files older than 24h (failed dumps, not in-progress)
+    find "${BACKUP_DRIVE}/mongo_full/" -name "*.partial" -mmin +1440 -delete 2>/dev/null || true
 
     # Postgres dumps: keep N most recent files
     cd "${BACKUP_DRIVE}/postgres"
