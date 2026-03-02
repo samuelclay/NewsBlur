@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-02-03T19:57:01-05:00</updated>
+  <updated>2026-03-02T17:35:24-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,48 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Secure images for everybody</title>
+    <link href="https://blog.newsblur.com/2019/08/15/secure-images-for-everybody/" rel="alternate" type="text/html" title="Secure images for everybody" />
+    <published>2019-08-15T10:59:11-04:00</published>
+    <updated>2019-08-15T10:59:11-04:00</updated>
+    <id>https://blog.newsblur.com/2019/08/15/secure-images-for-everybody</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2019/08/15/secure-images-for-everybody/">
+      <![CDATA[<p>There are two ways to connect to the NewsBlur website. The first is <em>http</em>://www.newsblur.com. The second is <em>https</em>://www.newsblur.com. The first is plain text and the second is encrypted. You get to choose which one you want to use.</p>
+
+<p>Part of the draw of using an encrypted https connection instead of a plain text http connection is that you can protect your privacy. As far as I can tell, there are two reasons for preferring https over http.</p>
+
+<p>One is that using an encrypted https connection to NewsBlur protects what you read from hackers or a man-in-the-middle changing your data as it comes to you. This could be your internet service provider (ISP) inserting ads or it could be snooping wifi router that you are connected to that injects malware into your content. Some companies have been known to do this and https protects you.</p>
+
+<p>But the second reason is that your privacy is also protected from more benign, aggregate collections by ISPs and middlemen that sees what you read and sells that data. NewsBlur doesn’t sell any of your data and beginning this week NewsBlur can ensure that nobody other than you and the site you read can either.</p>
+
+<p>The feature that is launching this week (it actually launched Monday in order for me to ensure that it works well) is a secure image proxy for all images served on NewsBlur. That means that NewsBlur will take any images that isn’t behind an encrypted https connection and proxies it behind NewsBlur’s own secure, encrypted connection.</p>
+
+<figure class="tmblr-full" data-orig-height="1021" data-orig-width="1110" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png"><img width="650" style="margin: 0 auto; width: 650px;" data-orig-height="1021" data-orig-width="1110" src="https://s3.amazonaws.com/static.newsblur.com/blog/https-proxy.png" /></figure>
+
+<p>You should notice next to no difference. The only difference you may notice is that some images may load <em>faster</em>, since NewsBlur has a thicker pipe to the Internet and can download data faster than your client browser can, which means that your persistent connection to NewsBlur’s servers takes over instead of having to make new connections with the associated overhead to various servers around the net.</p>
+
+<figure class="tmblr-full" data-orig-height="488" data-orig-width="1392" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png"><img style="margin: 0 auto; border: 1px solid #A0A0A0;" data-orig-height="488" data-orig-width="1392" src="https://s3.amazonaws.com/static.newsblur.com/blog/https-preference.png" /></figure>
+
+<p>Now you can turn on the SSL setting on the NewsBlur Web and ensure your data stays private.</p>
+
+<p>And to answer the question of why you wouldn’t wan t to use https — it used to mean serving and loading pages over https gave a slight performance hit, but that’s no longer true. But some people use http because it will load images from both http and https websites, whereas loading NewsBlur via https means that you can only load images via https, as loading an image via http will throw up a Mixed Content Warning. This update addresses that issue and it is my hope that http-only will be phased out.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[There are two ways to connect to the NewsBlur website. The first is http://www.newsblur.com. The second is https://www.newsblur.com. The first is plain text and the second is encrypted. You get to choose which one you want to use.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">NewsBlur iOS v9: full screen, autoscroll, customizable story titles, story change highlighter, and return to last read story</title>
@@ -1099,44 +1141,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[As performance updates go, this month’s upgrade to v4.8.0 of the NewsBlur Android app is a doozy. This one’s specifically made for those users with a heavier load of feeds.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Tracking story changes with NewsBlur</title>
-    <link href="https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur/" rel="alternate" type="text/html" title="Tracking story changes with NewsBlur" />
-    <published>2016-03-03T12:55:11-05:00</published>
-    <updated>2016-03-03T12:55:11-05:00</updated>
-    <id>https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur/">
-      <![CDATA[<p>NewsBlur has been tracking story changes for a long, long time now (first mentioned <a href="http://blog.newsblur.com/2021/06/21/2012-01-16-2011-year-in-review.html">on the blog five years ago in April 2011</a>). But I felt it was time for an upgrade and today I’m pleased to launch some changes to the story tracker.</p>
-
-<p>If you use a third-party client to read NewsBlur, like Reeder, ReadKit, or Unread, you may have noticed strange <ins style="text-decoration: underline;color: #006600">revision</ins> change highlighters that cross out what gets edited out by a publisher and highlights what gets added.</p>
-
-<p>This is great, except you probably don’t want this turned on for every single story.</p>
-
-<p>By default you will now only see the final edit of the story. And if you are on the web you will see a new Show Story Changes button in the heading of any story that has seen changes.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/show_changes_button.png" alt="" /></p>
-
-<p>You can also toggle back and forth between showing and hiding story changes, so you can take a peek behind the curtains and still come back to the read the story in its final, finished form.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/show_changes.png" alt="" /></p>
-
-<p>This should relieve the burden of having to implement a story change tracker in third-party clients when almost no other news readers have this feature. So third-party reading app makers neglected to include support, leading to a less than ideal NewsBlur reading experience. No longer!</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[NewsBlur has been tracking story changes for a long, long time now (first mentioned on the blog five years ago in April 2011). But I felt it was time for an upgrade and today I’m pleased to launch some changes to the story tracker.
 ]]>
     </summary>
     

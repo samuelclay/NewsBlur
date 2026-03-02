@@ -12,7 +12,7 @@
   <link href="/feed-page-5.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-02-03T19:57:01-05:00</updated>
+  <updated>2026-03-02T17:35:24-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,36 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Use the new Saved Stories view to find saved stories by site</title>
+    <link href="https://blog.newsblur.com/2014/06/03/use-the-new-saved-stories-view-to-find-saved/" rel="alternate" type="text/html" title="Use the new Saved Stories view to find saved stories by site" />
+    <published>2014-06-03T15:40:00-04:00</published>
+    <updated>2014-06-03T15:40:00-04:00</updated>
+    <id>https://blog.newsblur.com/2014/06/03/use-the-new-saved-stories-view-to-find-saved</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2014/06/03/use-the-new-saved-stories-view-to-find-saved/">
+      <![CDATA[<p>After launching <a href="http://blog.newsblur.com/2021/06/21/2014-01-14-saved-story-tagging.html">Saved Story Tagging</a> earlier this year, I realized that there is an inherent categorization to every saved story: the site. But instead of just allowing you to search by site, I created a new view that you can now use to see stories saved by site.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/saved_stories_view.png" alt="" /></p>
+
+<p>The neat thing about this new view is that it works for folders, too. If you click on a containing folder, you’ll see the saved stories from all of the sites inside that folder. And thanks to last month’s full text search, you can search all of these saved stories.</p>
+
+<p>And you should expect that these features will eventually make their way to iOS and Android.</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[After launching Saved Story Tagging earlier this year, I realized that there is an inherent categorization to every saved story: the site. But instead of just allowing you to search by site, I created a new view that you can now use to see stories saved by site.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Full text search across all of your subscriptions and folders </title>
@@ -1083,30 +1113,6 @@ color: #606060;
     
     <summary type="html">
       <![CDATA[There are lots of reasons not to post a cool article you’ve seen to your blurblog. Maybe you already follow too many blogs, and don’t have room to add any more to your feed (in which case, may we humbly recommend a Premium account?) Maybe you don’t want everyone to...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Time for some free NewsBlur swag!</title>
-    <link href="https://blog.newsblur.com/2012/10/29/free-newsblur-swag-time/" rel="alternate" type="text/html" title="Time for some free NewsBlur swag!" />
-    <published>2012-10-29T15:38:00-04:00</published>
-    <updated>2012-10-29T15:38:00-04:00</updated>
-    <id>https://blog.newsblur.com/2012/10/29/free-newsblur-swag-time</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2012/10/29/free-newsblur-swag-time/">
-      <![CDATA[<p>That’s right, t-shirts, stickers, buttons, and magnets. I’ve got a whole lot of good stuff to send out, so give me some critical info and I’ll get you hooked up with the latest in startup love.</p>
-
-<p><strong>The t-shirt entry form has been taken down as of Thursday, November 29th. Hopefully you’ve ordered your t-shirt by now.</strong></p>
-
-]]>
-    </content>
-    
-    
-    
-    
-    <summary type="html">
-      <![CDATA[That’s right, t-shirts, stickers, buttons, and magnets. I’ve got a whole lot of good stuff to send out, so give me some critical info and I’ll get you hooked up with the latest in startup love.
-]]>
     </summary>
     
   </entry>

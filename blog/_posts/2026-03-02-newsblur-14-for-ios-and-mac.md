@@ -24,13 +24,13 @@ The Sepia theme has been completely reworked with warmer tones that are easier o
 
 ### Story titles pill bar
 
-The top of the story list now has a pill bar with quick access to Discover, Options, Search, and Mark Read. The search bar slides in and out instead of fading, and the mark-read button has a wider tap target with a confirmation step. The pill bar updates its state as you navigate between feeds and folders.
+The top of the story list now has a pill bar with quick access to Discover, Options, Search, and Mark Read. The search bar slides in and out instead of fading, and the mark-read button has a wider tap target with an optional confirmation step.
 
 <img src="/assets/ios-14-pill-bar.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
 
 ### Discover related sites
 
-Discover Related Sites lets you find related feeds from any feed or folder. Tap the Discover button in the new story titles pill bar, browse what's available, and try a feed before subscribing with a preview banner. Premium Archive subscribers also see an upgrade banner right in the popover.
+Discover Related Sites lets you find related feeds from any feed or folder. Tap the Discover button in the new story titles pill bar, browse what's available, and try a feed before subscribing with a preview banner.
 
 <img src="/assets/ios-14-discover-sites.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
 
@@ -93,7 +93,6 @@ Beyond the headline features, this release includes a long list of improvements 
 - Fetching/offline banner moved from bottom overlay to top of story titles.
 - Feed list search bar replaced with a compact text field.
 - Scroll-to-hide toolbar synced with swipe-back gestures.
-- Dismiss buttons for Ask AI and Add Site views on Mac.
 - Sidebar toggle buttons for showing and hiding the feed list.
 - Redesigned Add Site as a SwiftUI half-height sheet with autocomplete.
 - Story traverse bar and feed bar fade gradually as you scroll.
