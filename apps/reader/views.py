@@ -5056,3 +5056,55 @@ def clear_media_queue(request):
         logging.user(request, "~FCMedia player: ~SBclear queue~SN")
         return {"playback_state": state.canonical()}
     return {"playback_state": None}
+
+
+@ajax_login_required
+@json.json_view
+def add_to_media_history(request):
+    """Add a media item to playback history with its position."""
+    user = request.user
+    media_item = {
+        "story_hash": request.POST.get("story_hash", ""),
+        "media_url": request.POST.get("media_url", ""),
+        "media_type": request.POST.get("media_type", ""),
+        "media_title": request.POST.get("media_title", ""),
+        "feed_id": int(request.POST.get("feed_id", 0)),
+        "image_url": request.POST.get("image_url", ""),
+        "position": float(request.POST.get("position", 0)),
+        "duration": float(request.POST.get("duration", 0)),
+    }
+
+    state = MMediaPlaybackState.add_to_history(user.pk, media_item)
+
+    logging.user(request, "~FCMedia player: ~SBadd to history~SN (%s)" % media_item.get("media_title", ""))
+
+    return {"playback_state": state.canonical()}
+
+
+@ajax_login_required
+@json.json_view
+def remove_from_media_history(request):
+    """Remove a media item from playback history."""
+    user = request.user
+    story_hash = request.POST.get("story_hash", "")
+    media_url = request.POST.get("media_url", "")
+
+    state = MMediaPlaybackState.remove_from_history(user.pk, story_hash, media_url)
+    if not state:
+        return {"playback_state": None}
+
+    logging.user(request, "~FCMedia player: ~SBremove from history~SN")
+
+    return {"playback_state": state.canonical()}
+
+
+@ajax_login_required
+@json.json_view
+def clear_media_history(request):
+    """Clear playback history."""
+    user = request.user
+    state = MMediaPlaybackState.clear_history(user.pk)
+    if state:
+        logging.user(request, "~FCMedia player: ~SBclear history~SN")
+        return {"playback_state": state.canonical()}
+    return {"playback_state": None}
