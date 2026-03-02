@@ -4855,9 +4855,12 @@ def load_cluster_stories(request):
     if not cluster_id:
         return {"code": -1, "message": "Missing cluster_id parameter.", "stories": []}
 
-    from apps.clustering.models import get_cluster_members
+    from apps.clustering.models import get_cluster_for_story, get_cluster_members
 
-    member_hashes = get_cluster_members(cluster_id)
+    # The frontend passes a story_hash as cluster_id. Look up the actual
+    # cluster_id first, then get all members for that cluster.
+    actual_cluster_id = get_cluster_for_story(cluster_id)
+    member_hashes = get_cluster_members(actual_cluster_id or cluster_id)
     if not member_hashes:
         return {"code": 1, "stories": []}
 
