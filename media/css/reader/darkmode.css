@@ -1308,6 +1308,18 @@ color: #a85b40;
     background: #3a3d40;
 }
 
+.NB-dark .NB-media-player-queue-header .segmented-control li {
+    color: #777;
+}
+
+.NB-dark .NB-media-player-queue-header .segmented-control li.NB-active {
+    color: #ddd;
+}
+
+.NB-dark .NB-media-player-history-remove svg {
+    fill: #888;
+}
+
 .NB-dark .NB-media-player-artwork {
     background: #444;
 }

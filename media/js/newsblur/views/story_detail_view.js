@@ -979,13 +979,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             });
             if (!item) return;
 
-            var $overlay = $('<div class="NB-media-youtube-overlay"></div>');
+            var $buttons = $('<div class="NB-media-overlay-buttons"></div>');
             var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play in Mini Media Player</div>');
             var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' Play Next</div>');
             var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' Play Last</div>');
 
-            $overlay.append($play_now).append($play_next).append($play_last);
-            $iframe.parent().css('position', 'relative').append($overlay);
+            $buttons.append($play_now).append($play_next).append($play_last);
+            $iframe.parent().after($buttons);
 
             $play_now.on('click', function (e) {
                 e.stopPropagation();

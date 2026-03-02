@@ -10121,20 +10121,35 @@ form.opml_import_form input {
 }
 
 .NB-media-player-queue-header {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #999;
-    padding: 5px 10px 3px;
+    padding: 5px 6px 3px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
-.NB-media-player-queue-count {
+.NB-media-player-queue-header .segmented-control {
+    margin: 0;
+    flex: 1;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.NB-media-player-queue-header .segmented-control li {
+    padding: 2px 8px;
+    line-height: 16px;
+    font-weight: 600;
+    color: #999;
+}
+
+.NB-media-player-queue-header .segmented-control li.NB-active {
+    color: #505050;
+}
+
+.NB-media-player-queue-count,
+.NB-media-player-history-count {
     font-weight: 500;
     color: #bbb;
-    flex: 1;
+    font-size: 9px;
 }
 
 .NB-media-player-queue-clear {
@@ -10291,6 +10306,36 @@ form.opml_import_form input {
     opacity: 0.9;
 }
 
+/* History items - no drag handle, extra left padding */
+.NB-media-player-history-list li {
+    padding-left: 8px;
+}
+
+.NB-media-player-history-remove {
+    width: 16px;
+    height: 16px;
+    opacity: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.NB-media-player-history-remove svg {
+    width: 10px;
+    height: 10px;
+    fill: #999;
+}
+
+.NB-media-player-queue li:hover .NB-media-player-history-remove {
+    opacity: 0.5;
+}
+
+.NB-media-player-history-remove:hover {
+    opacity: 1 !important;
+}
+
 /* In-story media player overlay buttons */
 .NB-media-play-wrapper {
     position: relative;
@@ -10356,32 +10401,10 @@ form.opml_import_form input {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.NB-media-youtube-overlay {
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
-    display: flex;
-    gap: 6px;
-    z-index: 5;
-}
-
-.NB-media-youtube-overlay .NB-media-play-btn {
-    background: rgba(0, 0, 0, 0.75);
-    color: #fff;
-    border-color: transparent;
-}
-
-.NB-media-youtube-overlay .NB-media-play-btn svg {
-    fill: #fff;
-}
-
-.NB-media-youtube-overlay .NB-media-play-btn:hover {
-    background: rgba(0, 0, 0, 0.9);
-}
 
 /* Media player settings popover - arrow positioning */
 .NB-media-settings-popover-container.popover.top-right .arrow {
-    left: 12px;
+    left: 6px;
     right: auto;
     margin-left: 0;
 }

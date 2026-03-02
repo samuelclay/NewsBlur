@@ -3031,6 +3031,10 @@ class MMediaPlaybackState(mongo.Document):
     # Each item: {story_hash, media_url, media_type, media_title, feed_id, image_url}
     queue = mongo.ListField(mongo.DictField())
 
+    # History: last 10 played items with saved positions
+    # Each item: {story_hash, media_url, media_type, media_title, feed_id, image_url, position, duration, played_at}
+    history = mongo.ListField(mongo.DictField())
+
     updated_at = mongo.DateTimeField(default=datetime.datetime.now)
 
     meta = {
@@ -3061,6 +3065,7 @@ class MMediaPlaybackState(mongo.Document):
             "remember_position": self.remember_position,
             "resume_on_load": self.resume_on_load,
             "queue": self.queue or [],
+            "history": self.history or [],
         }
 
     @classmethod
@@ -3141,6 +3146,53 @@ class MMediaPlaybackState(mongo.Document):
             if key in queue_map:
                 new_queue.append(queue_map[key])
         state.queue = new_queue
+        state.updated_at = datetime.datetime.now()
+        state.save()
+        return state
+
+    @classmethod
+    def add_to_history(cls, user_id, media_item):
+        """Add a played item to history. Capped at 10 items, most recent first."""
+        state = cls.get_or_create_user(user_id)
+        history = list(state.history or [])
+        # Remove existing entry for same item (deduplicate by story_hash + media_url)
+        history = [
+            h
+            for h in history
+            if not (
+                h.get("story_hash") == media_item.get("story_hash")
+                and h.get("media_url") == media_item.get("media_url")
+            )
+        ]
+        if "played_at" not in media_item:
+            media_item["played_at"] = datetime.datetime.now().isoformat()
+        history.insert(0, media_item)
+        history = history[:10]
+        state.history = history
+        state.updated_at = datetime.datetime.now()
+        state.save()
+        return state
+
+    @classmethod
+    def remove_from_history(cls, user_id, story_hash, media_url):
+        state = cls.get_user(user_id)
+        if not state:
+            return None
+        state.history = [
+            h
+            for h in (state.history or [])
+            if not (h.get("story_hash") == story_hash and h.get("media_url") == media_url)
+        ]
+        state.updated_at = datetime.datetime.now()
+        state.save()
+        return state
+
+    @classmethod
+    def clear_history(cls, user_id):
+        state = cls.get_user(user_id)
+        if not state:
+            return None
+        state.history = []
         state.updated_at = datetime.datetime.now()
         state.save()
         return state

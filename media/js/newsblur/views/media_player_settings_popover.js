@@ -7,8 +7,8 @@ NEWSBLUR.MediaPlayerSettingsPopover = NEWSBLUR.ReaderPopover.extend({
         'anchor': '.NB-media-player-settings',
         'placement': 'top -right',
         'offset': {
-            top: -8,
-            left: 0
+            top: 8,
+            left: 7
         },
         'overlay_top': true,
         'popover_class': 'NB-media-settings-popover-container'
