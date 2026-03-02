@@ -926,12 +926,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var media_items = media_player.detect_media_in_story(story, this.$el);
         if (!media_items.length) return;
 
-        // Headphones + play triangle: play now
-        var svg_play_now = '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 1C7.03 1 3 5.03 3 10v8c0 1.66 1.34 3 3 3h2v-8H5v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><polygon points="10,11 10,19 16,15" opacity="0.9"/></svg>';
-        // Headphones + skip-next arrow: play next
-        var svg_play_next = '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 1C7.03 1 3 5.03 3 10v8c0 1.66 1.34 3 3 3h2v-8H5v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><path d="M9.5 11v8l5-4-5-4zm6 0v8h1.5v-8h-1.5z" opacity="0.9"/></svg>';
-        // Headphones + plus sign: play last (add to end)
-        var svg_play_last = '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 1C7.03 1 3 5.03 3 10v8c0 1.66 1.34 3 3 3h2v-8H5v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><path d="M11 12h2v3h3v2h-3v3h-2v-3H8v-2h3v-3z" opacity="0.9"/></svg>';
+        // Play now: headphones with small play badge
+        var svg_play_now = '<svg viewBox="0 0 32 24" width="20" height="16"><path d="M10 1C5.03 1 1 5.03 1 10v8c0 1.66 1.34 3 3 3h2v-8H3v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><polygon points="22,8 22,16 30,12"/></svg>';
+        // Play next: headphones with skip-next badge
+        var svg_play_next = '<svg viewBox="0 0 32 24" width="20" height="16"><path d="M10 1C5.03 1 1 5.03 1 10v8c0 1.66 1.34 3 3 3h2v-8H3v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><polygon points="22,8 22,16 28,12"/><rect x="29" y="8" width="2" height="8"/></svg>';
+        // Play last: headphones with plus badge
+        var svg_play_last = '<svg viewBox="0 0 32 24" width="20" height="16"><path d="M10 1C5.03 1 1 5.03 1 10v8c0 1.66 1.34 3 3 3h2v-8H3v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><rect x="24.5" y="9" width="2" height="6" rx="1"/><rect x="22.5" y="11" width="6" height="2" rx="1"/></svg>';
 
         // Remove any existing overlay buttons (prevents duplicates on re-render)
         this.$('.NB-media-overlay-buttons').remove();

@@ -4,7 +4,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
     el: '.NB-media-player',
 
     POSITION_SYNC_INTERVAL: 10000,
-    MINI_PLAYER_HEIGHT: 80,
+    MINI_PLAYER_HEIGHT: 96,
     QUEUE_HEADER_HEIGHT: 26,
     QUEUE_ITEM_HEIGHT: 34,
     MAX_VISIBLE_QUEUE_ITEMS: 3,
@@ -14,8 +14,11 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
     SVG_PAUSE: '<svg viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>',
     SVG_SKIP_BACK: '<svg viewBox="0 0 24 24"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>',
     SVG_SKIP_FORWARD: '<svg viewBox="0 0 24 24"><path d="M12.01 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>',
-    SVG_VOLUME: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>',
-    SVG_VOLUME_MUTE: '<svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>',
+    // Volume icons: mute (X), low (1 arc), medium (2 arcs), high (3 arcs)
+    SVG_VOLUME_MUTE: '<svg viewBox="0 0 24 24"><path d="M4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>',
+    SVG_VOLUME_LOW: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>',
+    SVG_VOLUME_MED: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/><path d="M19 12c0-3.17-1.53-5.99-4-7.73v1.58c1.73 1.49 2.85 3.68 2.85 6.15s-1.12 4.66-2.85 6.15v1.58c2.47-1.74 4-4.56 4-7.73z"/></svg>',
+    SVG_VOLUME_HIGH: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/><path d="M19 12c0-3.17-1.53-5.99-4-7.73v1.58c1.73 1.49 2.85 3.68 2.85 6.15s-1.12 4.66-2.85 6.15v1.58c2.47-1.74 4-4.56 4-7.73z"/><path d="M21.5 12c0-4.28-2.13-8.06-5.5-10.22v1.52c2.61 1.97 4.35 5.13 4.35 8.7s-1.74 6.73-4.35 8.7v1.52c3.37-2.16 5.5-5.94 5.5-10.22z"/></svg>',
     SVG_EXPAND: '<svg viewBox="0 0 24 24"><path d="M7 14l5-5 5 5z"/></svg>',
     SVG_COLLAPSE: '<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>',
     SVG_CLOSE: '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>',
@@ -141,43 +144,49 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             html += '<div class="NB-media-player-icon">' + this.SVG_HEADPHONES + '</div>';
         }
 
-        // Info: favicon + feed name + story title, stacked vertically
+        // Info: favicon + feed name + type badge + story title, stacked vertically
         html += '<div class="NB-media-player-info">';
         html += '<div class="NB-media-player-feed-row">';
         html += '<div class="NB-media-player-favicon">' + favicon_html + '</div>';
         html += '<div class="NB-media-player-feed-title">' + _.escape(feed_title) + '</div>';
+        html += '<div class="NB-media-player-type-badge">' + media_type_label + '</div>';
         html += '</div>';
         html += '<div class="NB-media-player-title" title="' + _.escape(this.current_media.media_title) + '">' + _.escape(this.current_media.media_title) + '</div>';
         html += '</div>';
 
-        // Settings + close buttons on info row
+        // Settings + close on info row
         html += '<div class="NB-media-player-settings" title="Player settings">' + this.SVG_SETTINGS + '</div>';
         html += '<div class="NB-media-player-close" title="Close player">' + this.SVG_CLOSE + '</div>';
 
         html += '</div>'; // end row-info
 
-        // Row 2: Transport + progress + speed + type badge + volume
-        html += '<div class="NB-media-player-row-transport">';
+        // Row 2: Full-width scrubber
+        html += '<div class="NB-media-player-row-scrubber">';
+        html += '<input type="range" class="NB-media-player-progress" min="0" max="1000" value="0" />';
+        html += '</div>';
+
+        // Row 3: Controls + centered time + speed + volume
+        html += '<div class="NB-media-player-row-controls">';
         html += '<div class="NB-media-player-controls">';
         html += '<div class="NB-media-player-skip-back" title="Back ' + this.skip_back_seconds + ' seconds">' + this.SVG_SKIP_BACK + '</div>';
         html += '<div class="NB-media-player-play-pause" title="Play/Pause">' + (this.is_playing ? this.SVG_PAUSE : this.SVG_PLAY) + '</div>';
         html += '<div class="NB-media-player-skip-forward" title="Forward ' + this.skip_forward_seconds + ' seconds">' + this.SVG_SKIP_FORWARD + '</div>';
-        html += '</div>';
-        html += '<div class="NB-media-player-progress-container">';
-        html += '<input type="range" class="NB-media-player-progress" min="0" max="1000" value="0" />';
         html += '</div>';
         html += '<div class="NB-media-player-time">';
         html += '<span class="NB-media-player-time-current">' + this.format_time(this.current_position) + '</span>';
         html += '<span class="NB-media-player-time-separator">/</span>';
         html += '<span class="NB-media-player-time-duration">' + this.format_time(this.current_duration) + '</span>';
         html += '</div>';
+        html += '<div class="NB-media-player-right-controls">';
         html += '<div class="NB-media-player-speed" title="Playback speed">' + this.format_speed(this.playback_rate) + '</div>';
-        html += '<div class="NB-media-player-type-badge">' + media_type_label + '</div>';
         html += '<div class="NB-media-player-volume-container">';
-        html += '<div class="NB-media-player-volume-icon" title="Mute">' + (this.is_muted ? this.SVG_VOLUME_MUTE : this.SVG_VOLUME) + '</div>';
+        html += '<div class="NB-media-player-volume-icon" title="Mute">' + this.get_volume_svg() + '</div>';
+        html += '<div class="NB-media-player-volume-popover">';
         html += '<input type="range" class="NB-media-player-volume" min="0" max="100" value="' + Math.round(this.volume * 100) + '" />';
         html += '</div>';
-        html += '</div>'; // end row-transport
+        html += '</div>';
+        html += '</div>';
+        html += '</div>'; // end row-controls
 
         html += '</div>'; // end mini
 
@@ -616,9 +625,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             this.media_element.volume = this.volume;
         }
 
-        this.$('.NB-media-player-volume-icon').html(
-            this.is_muted ? this.SVG_VOLUME_MUTE : this.SVG_VOLUME
-        );
+        this.$('.NB-media-player-volume-icon').html(this.get_volume_svg());
     },
 
     toggle_mute: function (e) {
@@ -631,9 +638,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             this.media_element.volume = this.is_muted ? 0 : this.volume;
         }
 
-        this.$('.NB-media-player-volume-icon').html(
-            this.is_muted ? this.SVG_VOLUME_MUTE : this.SVG_VOLUME
-        );
+        this.$('.NB-media-player-volume-icon').html(this.get_volume_svg());
         this.$('.NB-media-player-volume').val(this.is_muted ? 0 : Math.round(this.volume * 100));
     },
 
@@ -708,7 +713,10 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
 
     render_queue: function () {
         this.$('.NB-media-player-queue-area').html(this.render_queue_html());
-        this._resize_south_pane(this._calculate_player_height() + 37);
+        var self = this;
+        _.defer(function () {
+            self._resize_south_pane(self._calculate_player_height() + 37);
+        });
     },
 
     clear_queue: function (e) {
@@ -901,7 +909,11 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
 
     show_player: function () {
         this.$el.removeClass('NB-hidden');
-        this._resize_south_pane(this._calculate_player_height() + 37);
+        var self = this;
+        // Defer to measure after flex-wrap layout settles
+        _.defer(function () {
+            self._resize_south_pane(self._calculate_player_height() + 37);
+        });
     },
 
     hide_player: function () {
@@ -910,6 +922,12 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
     },
 
     _calculate_player_height: function () {
+        // Measure actual rendered height to account for flex-wrap
+        var el = this.$el[0];
+        if (el && el.scrollHeight > 0) {
+            return el.scrollHeight;
+        }
+        // Fallback to estimate
         var height = this.MINI_PLAYER_HEIGHT;
         if (this.queue.length > 0) {
             var visible_items = Math.min(this.queue.length, this.MAX_VISIBLE_QUEUE_ITEMS);
@@ -940,10 +958,20 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         if (e) e.stopPropagation();
         if (!this.current_media || !this.current_media.story_hash) return;
 
-        var story = NEWSBLUR.assets.stories.get(this.current_media.story_hash);
+        var story_hash = this.current_media.story_hash;
+        var feed_id = this.current_media.feed_id;
+
+        // If the story is already in the current story list, scroll to it
+        var story = NEWSBLUR.assets.stories.get(story_hash);
         if (story) {
             story.set('selected', true);
             NEWSBLUR.app.story_list.scroll_to_selected_story(story);
+            return;
+        }
+
+        // Otherwise, open the feed and select the story once it loads
+        if (feed_id && NEWSBLUR.reader) {
+            NEWSBLUR.reader.open_feed(feed_id, { story_id: story_hash });
         }
     },
 
@@ -965,6 +993,13 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
 
     format_speed: function (rate) {
         return rate + 'x';
+    },
+
+    get_volume_svg: function () {
+        if (this.is_muted || this.volume === 0) return this.SVG_VOLUME_MUTE;
+        if (this.volume < 0.34) return this.SVG_VOLUME_LOW;
+        if (this.volume < 0.67) return this.SVG_VOLUME_MED;
+        return this.SVG_VOLUME_HIGH;
     },
 
     format_relative_date: function (iso_string) {
