@@ -511,3 +511,33 @@ api:
 
 grafana-dashboards:
 	uv run python utils/grafana_backup.py
+
+# Off-site backup to Home Assistant box
+HA_HOST := root@192.168.1.27
+HA_SCRIPTS := /config/scripts
+
+offsite-backup-install:
+	@$(call log,~FB---> Installing off-site backup on HA box~ST)
+	ssh $(HA_HOST) "mkdir -p $(HA_SCRIPTS)"
+	scp utils/backups/offsite_pull.sh $(HA_HOST):$(HA_SCRIPTS)/offsite_pull.sh
+	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/offsite_pull.sh"
+	scp /srv/secrets-newsblur/keys/docker.key $(HA_HOST):$(HA_SCRIPTS)/docker.key
+	ssh $(HA_HOST) "chmod 600 $(HA_SCRIPTS)/docker.key"
+	@awk -F= '/aws_access_key_id/{print $$2}' /srv/secrets-newsblur/keys/aws.s3.token | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/aws_s3_credentials"
+	@awk -F= '/aws_secret_access_key/{print $$2}' /srv/secrets-newsblur/keys/aws.s3.token | ssh $(HA_HOST) "cat >> $(HA_SCRIPTS)/aws_s3_credentials"
+	ssh $(HA_HOST) "chmod 600 $(HA_SCRIPTS)/aws_s3_credentials"
+	@$(call log,~FG---> Off-site backup installed. Add shell_command + automation to HA config.~ST)
+	@$(call log,~FYSee: utils/backups/ha_configuration.yaml~ST)
+
+offsite-backup:
+	@$(call log,~FB---> Running off-site backup pull~ST)
+	ssh $(HA_HOST) "$(HA_SCRIPTS)/offsite_pull.sh"
+
+offsite-backup-dry-run:
+	@$(call log,~FB---> Running off-site backup pull (dry run)~ST)
+	ssh $(HA_HOST) "$(HA_SCRIPTS)/offsite_pull.sh --dry-run"
+
+offsite-backup-uninstall:
+	@$(call log,~FY---> Removing off-site backup from HA box~ST)
+	ssh $(HA_HOST) "rm -f $(HA_SCRIPTS)/offsite_pull.sh $(HA_SCRIPTS)/docker.key"
+	@$(call log,~FG---> Removed. Don't forget to remove shell_command + automation from HA config.~ST)

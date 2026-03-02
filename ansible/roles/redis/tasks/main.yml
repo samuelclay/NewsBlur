@@ -167,3 +167,16 @@
       --network=newsblurnet
       --hostname={{ ansible_hostname }}
       newsblur/newsblur_python3 python /srv/newsblur/utils/backups/backup_redis.py
+  when: redis_secondary | default(false)
+  tags:
+    - redis-backup
+    - cron
+
+- name: Remove redis backup from primary
+  cron:
+    name: "{{ ansible_hostname }} backup"
+    state: absent
+  when: not (redis_secondary | default(false))
+  tags:
+    - redis-backup
+    - cron
