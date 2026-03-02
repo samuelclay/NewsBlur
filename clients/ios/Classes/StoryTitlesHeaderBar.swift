@@ -560,7 +560,7 @@ class StoryTitlesHeaderBar: NSObject {
             let maxFavicons = min(storedFavicons.count, 5)
             return CGFloat(maxFavicons) * 14 + 28 + 8
         }
-        return 80
+        return 120
     }
 
     // MARK: - Discover Pill Adaptive Layout
@@ -633,7 +633,7 @@ class StoryTitlesHeaderBar: NSObject {
         let availableWidth = headerContainer.bounds.width
         guard availableWidth > 0 else { return true }
 
-        let discoverTextWidth: CGFloat = 80
+        let discoverTextWidth: CGFloat = 120
         let optionsWidth = optionsPill.isHidden ? 0 : optionsPill.intrinsicContentSize.width
         let searchWidth: CGFloat = isSearchCompact ? 38 : 80
         let markReadWidth: CGFloat = 108
