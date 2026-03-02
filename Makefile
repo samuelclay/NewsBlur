@@ -513,19 +513,38 @@ grafana-dashboards:
 	uv run python utils/grafana_backup.py
 
 # Off-site backup to Home Assistant box
+# Hardware: Intel Celeron N5105, 3.6GB RAM, HAOS (Alpine-based)
+# SSH: key-based auth via Advanced SSH & Web Terminal add-on (protection mode off)
+# Backup drive: WD 12TB at /media/newsblur-backup (ext4, label=newsblur-backup)
+#   UUID: ef981d62-7a0b-4858-9ee9-38db68f1e46f, auto-mounted on boot via HA automation
+# Scripts/keys persist in /config/scripts/ (/root/.ssh/ is ephemeral, don't use it)
+# Python venv at /config/scripts/venv (boto3 for S3 downloads)
+# HA automation: weekly Monday 6am, mounts drive then runs shell_command.offsite_backup
+# HAOS gotchas:
+#   - SSH add-on runs in a container, not on the host
+#   - For host-level ops (mount, fdisk): docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -- <cmd>
+#   - No scp/sftp subsystem (Dropbear), use: cat file | ssh host "cat > path"
+#   - No pip (externally-managed), use venv
+#   - "ha os datadisk move" moves the HA data partition -- do NOT use for backup drives
+# Troubleshooting:
+#   ssh root@192.168.1.27 "tail -50 /media/newsblur-backup/backup.log"
+#   ssh root@192.168.1.27 "du -sh /media/newsblur-backup/*"
+#   ssh root@192.168.1.27 "df -h /media/newsblur-backup"
 HA_HOST := root@192.168.1.27
 HA_SCRIPTS := /config/scripts
 
 offsite-backup-install:
 	@$(call log,~FB---> Installing off-site backup on HA box~ST)
 	ssh $(HA_HOST) "mkdir -p $(HA_SCRIPTS)"
-	scp utils/backups/offsite_pull.sh $(HA_HOST):$(HA_SCRIPTS)/offsite_pull.sh
+	cat utils/backups/offsite_pull.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_pull.sh"
 	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/offsite_pull.sh"
-	scp /srv/secrets-newsblur/keys/docker.key $(HA_HOST):$(HA_SCRIPTS)/docker.key
+	cat /srv/secrets-newsblur/keys/docker.key | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/docker.key"
 	ssh $(HA_HOST) "chmod 600 $(HA_SCRIPTS)/docker.key"
 	@awk -F= '/aws_access_key_id/{print $$2}' /srv/secrets-newsblur/keys/aws.s3.token | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/aws_s3_credentials"
 	@awk -F= '/aws_secret_access_key/{print $$2}' /srv/secrets-newsblur/keys/aws.s3.token | ssh $(HA_HOST) "cat >> $(HA_SCRIPTS)/aws_s3_credentials"
 	ssh $(HA_HOST) "chmod 600 $(HA_SCRIPTS)/aws_s3_credentials"
+	@$(call log,~FB---> Setting up Python venv with boto3 on HA box~ST)
+	ssh $(HA_HOST) "python3 -m venv $(HA_SCRIPTS)/venv && $(HA_SCRIPTS)/venv/bin/pip install boto3"
 	@$(call log,~FG---> Off-site backup installed. Add shell_command + automation to HA config.~ST)
 	@$(call log,~FYSee: utils/backups/ha_configuration.yaml~ST)
 
