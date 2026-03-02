@@ -24,17 +24,21 @@ from apps.briefing.models import (
     MBriefingPreferences,
 )
 from apps.briefing.scoring import (
+    CLASSIFIER_WEIGHTS,
     _estimate_word_count,
-    _find_duplicate_stories,
+    _find_clustered_stories,
     _get_classifier_matches,
     _normalize_title,
 )
 from apps.briefing.summary import (
     _build_system_prompt,
+    _strip_duplicate_story_links,
+    enforce_exclusive_sections,
     extract_section_story_hashes,
     extract_section_summaries,
     filter_disabled_sections,
     normalize_section_key,
+    rebuild_summary_from_sections,
 )
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
@@ -150,7 +154,7 @@ class BriefingTestCase(TestCase):
     def make_scored_stories(self, stories, categories=None):
         result = []
         for i, story in enumerate(stories):
-            cat = "trending_global"
+            cat = "top_stories"
             if categories and i < len(categories):
                 cat = categories[i]
             result.append(
@@ -213,22 +217,22 @@ class Test_Summary(TestCase):
     # --- normalize_section_key ---
 
     def test_normalize_exact_match(self):
-        self.assertEqual(normalize_section_key("trending_unread"), "trending_unread")
+        self.assertEqual(normalize_section_key("top_stories"), "top_stories")
 
     def test_normalize_hyphenated(self):
-        self.assertEqual(normalize_section_key("trending-unread"), "trending_unread")
+        self.assertEqual(normalize_section_key("top-stories"), "top_stories")
 
     def test_normalize_uppercase(self):
-        self.assertEqual(normalize_section_key("TRENDING_UNREAD"), "trending_unread")
+        self.assertEqual(normalize_section_key("TOP_STORIES"), "top_stories")
 
     def test_normalize_extra_underscores(self):
-        self.assertEqual(normalize_section_key("trending__unread"), "trending_unread")
+        self.assertEqual(normalize_section_key("top__stories"), "top_stories")
 
     def test_normalize_leading_trailing(self):
-        self.assertEqual(normalize_section_key("_trending_unread_"), "trending_unread")
+        self.assertEqual(normalize_section_key("_top_stories_"), "top_stories")
 
     def test_normalize_fuzzy_no_separator(self):
-        self.assertEqual(normalize_section_key("trendingunread"), "trending_unread")
+        self.assertEqual(normalize_section_key("topstories"), "top_stories")
 
     def test_normalize_invalid_returns_none(self):
         self.assertIsNone(normalize_section_key("bogus_key"))
@@ -247,27 +251,28 @@ class Test_Summary(TestCase):
         self.assertEqual(normalize_section_key("custom-3"), "custom_3")
 
     def test_normalize_whitespace(self):
-        self.assertEqual(normalize_section_key("  trending_unread  "), "trending_unread")
+        self.assertEqual(normalize_section_key("  top_stories  "), "top_stories")
 
     # --- _build_system_prompt ---
 
     def test_prompt_default_sections(self):
         prompt = _build_system_prompt()
-        self.assertIn("trending_unread", prompt)
+        self.assertIn("top_stories", prompt)
         self.assertIn("long_read", prompt)
         self.assertIn("classifier_match", prompt)
         self.assertIn("follow_up", prompt)
-        self.assertIn("trending_global", prompt)
-        self.assertIn("duplicates", prompt)
-        self.assertIn("quick_catchup", prompt)
-        self.assertIn("emerging_topics", prompt)
-        self.assertIn("contrarian_views", prompt)
+        self.assertIn("widely_covered", prompt)
+        self.assertNotIn("quick_catchup", prompt)
+        self.assertNotIn("contrarian_views", prompt)
+        self.assertNotIn("emerging_topics", prompt)
+        self.assertNotIn("duplicates", prompt)
+        self.assertNotIn("trending_unread", prompt)
+        self.assertNotIn("trending_global", prompt)
 
     def test_prompt_all_enabled(self):
         all_enabled = {s["key"]: True for s in BRIEFING_SECTION_DEFINITIONS}
         prompt = _build_system_prompt(sections=all_enabled)
-        # tests.py: Check all 9 section prompts appear. Some prompts use CATEGORY: key,
-        # others (emerging_topics, contrarian_views) use their display name instead.
+        # tests.py: Check all section prompts appear by display name.
         for defn in BRIEFING_SECTION_DEFINITIONS:
             self.assertIn(defn["name"], prompt)
 
@@ -306,16 +311,16 @@ class Test_Summary(TestCase):
     def test_extract_basic(self):
         html = _make_sample_html(
             {
-                "trending_unread": [("hash1", "Story 1")],
+                "top_stories": [("hash1", "Story 1")],
                 "long_read": [("hash2", "Story 2")],
-                "trending_global": [("hash3", "Story 3")],
+                "widely_covered": [("hash3", "Story 3")],
             }
         )
         sections = extract_section_summaries(html)
         self.assertEqual(len(sections), 3)
-        self.assertIn("trending_unread", sections)
+        self.assertIn("top_stories", sections)
         self.assertIn("long_read", sections)
-        self.assertIn("trending_global", sections)
+        self.assertIn("widely_covered", sections)
         for key, section_html in sections.items():
             self.assertIn('class="NB-briefing-summary"', section_html)
 
@@ -329,10 +334,10 @@ class Test_Summary(TestCase):
         self.assertEqual(extract_section_summaries("<p>No sections here</p>"), {})
 
     def test_extract_normalizes_keys(self):
-        html = '<div class="NB-briefing-summary"><h3 data-section="TRENDING-UNREAD">Test</h3><p>Content</p></div>'
+        html = '<div class="NB-briefing-summary"><h3 data-section="TOP-STORIES">Test</h3><p>Content</p></div>'
         sections = extract_section_summaries(html)
-        self.assertIn("trending_unread", sections)
-        self.assertNotIn("TRENDING-UNREAD", sections)
+        self.assertIn("top_stories", sections)
+        self.assertNotIn("TOP-STORIES", sections)
 
     def test_extract_rejects_invalid_keys(self):
         html = '<div class="NB-briefing-summary"><h3 data-section="bogus_invalid_key">Test</h3><p>Content</p></div>'
@@ -343,11 +348,11 @@ class Test_Summary(TestCase):
         """Regression test: h3 with class before data-section should still parse."""
         html = (
             '<div class="NB-briefing-summary">'
-            '<h3 class="some-class" data-section="trending_unread">Test</h3>'
+            '<h3 class="some-class" data-section="top_stories">Test</h3>'
             "<p>Content</p></div>"
         )
         sections = extract_section_summaries(html)
-        self.assertIn("trending_unread", sections)
+        self.assertIn("top_stories", sections)
 
     def test_extract_h3_style_before_data_section(self):
         """Regression test: h3 with style before data-section should still parse."""
@@ -363,11 +368,11 @@ class Test_Summary(TestCase):
 
     def test_hashes_basic(self):
         section_summaries = {
-            "trending_unread": '<div><a data-story-hash="h1">S1</a><a data-story-hash="h2">S2</a></div>',
+            "top_stories": '<div><a data-story-hash="h1">S1</a><a data-story-hash="h2">S2</a></div>',
             "long_read": '<div><a data-story-hash="h3">S3</a></div>',
         }
         result = extract_section_story_hashes(section_summaries)
-        self.assertEqual(result["trending_unread"], ["h1", "h2"])
+        self.assertEqual(result["top_stories"], ["h1", "h2"])
         self.assertEqual(result["long_read"], ["h3"])
 
     def test_hashes_empty(self):
@@ -377,65 +382,65 @@ class Test_Summary(TestCase):
         self.assertEqual(extract_section_story_hashes(None), {})
 
     def test_hashes_no_links(self):
-        section_summaries = {"trending_unread": "<div><p>No story links here</p></div>"}
+        section_summaries = {"top_stories": "<div><p>No story links here</p></div>"}
         result = extract_section_story_hashes(section_summaries)
-        self.assertNotIn("trending_unread", result)
+        self.assertNotIn("top_stories", result)
 
     # --- filter_disabled_sections ---
 
     def test_filter_removes_disabled(self):
         html = _make_sample_html(
             {
-                "trending_unread": [("h1", "S1")],
+                "top_stories": [("h1", "S1")],
                 "long_read": [("h2", "S2")],
-                "trending_global": [("h3", "S3")],
+                "widely_covered": [("h3", "S3")],
             }
         )
-        active = {"trending_unread": True, "long_read": False, "trending_global": True}
+        active = {"top_stories": True, "long_read": False, "widely_covered": True}
         result = filter_disabled_sections(html, active)
-        self.assertIn("trending_unread", result)
+        self.assertIn("top_stories", result)
         self.assertNotIn("long_read", result)
-        self.assertIn("trending_global", result)
+        self.assertIn("widely_covered", result)
 
-    def test_filter_keeps_trending_global_always(self):
-        html = _make_sample_html({"trending_global": [("h1", "S1")]})
-        active = {"trending_global": False}
+    def test_filter_keeps_top_stories_always(self):
+        html = _make_sample_html({"top_stories": [("h1", "S1")]})
+        active = {"top_stories": False}
         result = filter_disabled_sections(html, active)
-        self.assertIn("trending_global", result)
+        self.assertIn("top_stories", result)
 
     def test_filter_empty_html(self):
-        self.assertEqual(filter_disabled_sections("", {"trending_unread": True}), "")
+        self.assertEqual(filter_disabled_sections("", {"top_stories": True}), "")
 
     def test_filter_none_html(self):
-        self.assertIsNone(filter_disabled_sections(None, {"trending_unread": True}))
+        self.assertIsNone(filter_disabled_sections(None, {"top_stories": True}))
 
     def test_filter_none_active_sections(self):
-        html = _make_sample_html({"trending_unread": [("h1", "S1")]})
+        html = _make_sample_html({"top_stories": [("h1", "S1")]})
         self.assertEqual(filter_disabled_sections(html, None), html)
 
     def test_filter_all_disabled(self):
         html = _make_sample_html(
             {
-                "trending_unread": [("h1", "S1")],
+                "top_stories": [("h1", "S1")],
                 "long_read": [("h2", "S2")],
-                "trending_global": [("h3", "S3")],
+                "widely_covered": [("h3", "S3")],
             }
         )
-        active = {"trending_unread": False, "long_read": False, "trending_global": False}
+        active = {"top_stories": False, "long_read": False, "widely_covered": False}
         result = filter_disabled_sections(html, active)
-        # tests.py: trending_global is always kept
-        self.assertIn("trending_global", result)
-        self.assertNotIn("trending_unread", result)
+        # tests.py: top_stories is always kept as the fallback section
+        self.assertIn("top_stories", result)
+        self.assertNotIn("widely_covered", result)
         self.assertNotIn("long_read", result)
 
     def test_filter_custom_enabled_kept(self):
         html = _make_sample_html(
             {
                 "custom_1": [("h1", "Custom Story")],
-                "trending_global": [("h2", "S2")],
+                "top_stories": [("h2", "S2")],
             }
         )
-        active = {"custom_1": True, "trending_global": True}
+        active = {"custom_1": True, "top_stories": True}
         result = filter_disabled_sections(html, active)
         self.assertIn("custom_1", result)
 
@@ -443,13 +448,13 @@ class Test_Summary(TestCase):
         html = _make_sample_html(
             {
                 "custom_1": [("h1", "Custom Story")],
-                "trending_global": [("h2", "S2")],
+                "top_stories": [("h2", "S2")],
             }
         )
-        active = {"custom_1": False, "trending_global": True}
+        active = {"custom_1": False, "top_stories": True}
         result = filter_disabled_sections(html, active)
         self.assertNotIn("custom_1", result)
-        self.assertIn("trending_global", result)
+        self.assertIn("top_stories", result)
 
     # --- generate_briefing_summary (mocked LLM) ---
 
@@ -466,7 +471,7 @@ class Test_Summary(TestCase):
         # tests.py: story_hash is computed on save from feed_id + guid_hash
         return story
 
-    def _scored_from_story(self, story, category="trending_global", word_count=200):
+    def _scored_from_story(self, story, category="top_stories", word_count=200):
         return {
             "story_hash": story.story_hash,
             "score": 0.8,
@@ -483,7 +488,7 @@ class Test_Summary(TestCase):
 
         mock_provider = MagicMock()
         mock_provider.is_configured.return_value = True
-        mock_provider.generate.return_value = '<div class="NB-briefing-summary"><h3 data-section="trending_global">Trending</h3><p>Content</p></div>'
+        mock_provider.generate.return_value = '<div class="NB-briefing-summary"><h3 data-section="top_stories">Trending</h3><p>Content</p></div>'
         mock_provider.get_last_usage.return_value = (100, 50)
         mock_get_provider.return_value = (mock_provider, "claude-haiku")
 
@@ -634,7 +639,7 @@ class Test_Summary(TestCase):
     @patch("apps.briefing.summary.LLMCostTracker")
     @patch("apps.ask_ai.providers.get_briefing_provider")
     def test_summary_category_remapping(self, mock_get_provider, mock_cost):
-        """Regression test: disabled section categories should become trending_global in LLM data."""
+        """Regression test: disabled section categories should become top_stories in LLM data."""
         from apps.briefing.summary import generate_briefing_summary
 
         mock_provider = MagicMock()
@@ -660,12 +665,12 @@ class Test_Summary(TestCase):
                 datetime.datetime.utcnow(),
                 sections=sections,
             )
-            # tests.py: Check the user prompt sent to the LLM has trending_global not long_read
+            # tests.py: Check the user prompt sent to the LLM has top_stories not long_read
             call_args = mock_provider.generate.call_args
             self.assertIsNotNone(call_args, "provider.generate was never called")
             messages = call_args[0][0]
             user_msg = messages[1]["content"]
-            self.assertIn("CATEGORY: trending_global", user_msg)
+            self.assertIn("CATEGORY: top_stories", user_msg)
             self.assertNotIn("CATEGORY: long_read", user_msg)
         finally:
             MStory.objects(story_hash=story.story_hash).delete()
@@ -678,6 +683,70 @@ class Test_Summary(TestCase):
 
         result = embed_briefing_icons(None, [])
         self.assertIsNone(result)
+
+    # --- enforce_exclusive_sections ---
+
+    def test_exclusive_sections_no_overlap(self):
+        section_summaries = {
+            "top_stories": '<div class="NB-briefing-summary"><h3>T</h3><a data-story-hash="h1">S1</a></div>',
+            "long_read": '<div class="NB-briefing-summary"><h3>L</h3><a data-story-hash="h2">S2</a></div>',
+        }
+        result = enforce_exclusive_sections(section_summaries)
+        self.assertIn('data-story-hash="h1"', result["top_stories"])
+        self.assertIn('data-story-hash="h2"', result["long_read"])
+
+    def test_exclusive_sections_strips_duplicates(self):
+        section_summaries = {
+            "top_stories": '<div class="NB-briefing-summary"><h3>T</h3><a data-story-hash="h1">Story One</a></div>',
+            "long_read": '<div class="NB-briefing-summary"><h3>L</h3><a data-story-hash="h1">Story One</a></div>',
+        }
+        result = enforce_exclusive_sections(section_summaries)
+        # First section keeps the link
+        self.assertIn('data-story-hash="h1"', result["top_stories"])
+        # Second section should have the link stripped to plain text
+        self.assertNotIn('data-story-hash="h1"', result["long_read"])
+        self.assertIn("Story One", result["long_read"])
+
+    def test_exclusive_sections_strips_favicon_with_link(self):
+        section_summaries = {
+            "top_stories": '<div class="NB-briefing-summary"><a data-story-hash="h1">S1</a></div>',
+            "long_read": (
+                '<div class="NB-briefing-summary">'
+                '<img src="x" class="NB-briefing-inline-favicon" style="width:16px"> '
+                '<a data-story-hash="h1">S1</a></div>'
+            ),
+        }
+        result = enforce_exclusive_sections(section_summaries)
+        self.assertNotIn('data-story-hash="h1"', result["long_read"])
+        self.assertNotIn("NB-briefing-inline-favicon", result["long_read"])
+
+    # --- rebuild_summary_from_sections ---
+
+    def test_rebuild_summary(self):
+        section_summaries = {
+            "top_stories": '<div class="NB-briefing-summary"><h3>T</h3><p>A</p></div>',
+            "long_read": '<div class="NB-briefing-summary"><h3>L</h3><p>B</p></div>',
+        }
+        result = rebuild_summary_from_sections(section_summaries)
+        self.assertTrue(result.startswith('<div class="NB-briefing-summary">'))
+        self.assertTrue(result.endswith("</div>"))
+        self.assertIn("<h3>T</h3>", result)
+        self.assertIn("<h3>L</h3>", result)
+
+    # --- _strip_duplicate_story_links ---
+
+    def test_strip_keeps_non_matching(self):
+        html = '<a data-story-hash="h1">S1</a> <a data-story-hash="h2">S2</a>'
+        result = _strip_duplicate_story_links(html, {"h1"})
+        self.assertNotIn('data-story-hash="h1"', result)
+        self.assertIn("S1", result)
+        self.assertIn('data-story-hash="h2"', result)
+
+    # --- dedup instruction in system prompt ---
+
+    def test_prompt_includes_exclusive_instruction(self):
+        prompt = _build_system_prompt()
+        self.assertIn("exactly ONE section", prompt)
 
 
 # ---------------------------------------------------------------------------
@@ -699,29 +768,31 @@ class Test_Scoring(BriefingTestCase):
     def test_normalize_title_none(self):
         self.assertEqual(_normalize_title(None), "")
 
-    def test_find_duplicates_basic(self):
-        """Same title across 2 feeds should mark both as duplicates."""
+    def test_find_clustered_basic(self):
+        """Same title across 2 feeds should mark both as widely_covered."""
         candidates = [
             {"story_hash": self.stories[0].story_hash, "feed_id": self.feed.pk},
             {"story_hash": self.stories[3].story_hash, "feed_id": self.feed2.pk},
         ]
         stories_by_hash = {s.story_hash: s for s in [self.stories[0], self.stories[3]]}
-        dupes = _find_duplicate_stories(candidates, stories_by_hash)
-        self.assertIn(self.stories[0].story_hash, dupes)
-        self.assertIn(self.stories[3].story_hash, dupes)
+        clustered = _find_clustered_stories(candidates, stories_by_hash)
+        self.assertIn(self.stories[0].story_hash, clustered)
+        self.assertIn(self.stories[3].story_hash, clustered)
+        self.assertEqual(clustered[self.stories[0].story_hash], "widely_covered")
+        self.assertEqual(clustered[self.stories[3].story_hash], "widely_covered")
 
-    def test_find_duplicates_same_feed(self):
-        """Same title in same feed should NOT be marked duplicate."""
+    def test_find_clustered_same_feed(self):
+        """Same title in same feed should NOT be clustered."""
         dup_story = self.make_story(self.feed, "Breaking News About Tech", content="Other content")
         candidates = [
             {"story_hash": self.stories[0].story_hash, "feed_id": self.feed.pk},
             {"story_hash": dup_story.story_hash, "feed_id": self.feed.pk},
         ]
         stories_by_hash = {s.story_hash: s for s in [self.stories[0], dup_story]}
-        dupes = _find_duplicate_stories(candidates, stories_by_hash)
-        self.assertEqual(len(dupes), 0)
+        clustered = _find_clustered_stories(candidates, stories_by_hash)
+        self.assertEqual(len(clustered), 0)
 
-    def test_find_duplicates_short_title(self):
+    def test_find_clustered_short_title(self):
         """Titles shorter than 10 chars after normalization should be ignored."""
         short1 = self.make_story(self.feed, "Hi")
         short2 = self.make_story(self.feed2, "Hi")
@@ -730,8 +801,38 @@ class Test_Scoring(BriefingTestCase):
             {"story_hash": short2.story_hash, "feed_id": self.feed2.pk},
         ]
         stories_by_hash = {s.story_hash: s for s in [short1, short2]}
-        dupes = _find_duplicate_stories(candidates, stories_by_hash)
-        self.assertEqual(len(dupes), 0)
+        clustered = _find_clustered_stories(candidates, stories_by_hash)
+        self.assertEqual(len(clustered), 0)
+
+    def test_find_clustered_widely_covered(self):
+        """4+ unique feeds covering same title should be widely_covered."""
+        feed3 = Feed.objects.create(
+            feed_address="http://test-feed-3.com/rss",
+            feed_link="http://test-feed-3.com",
+            feed_title="Test Feed 3",
+            fetched_once=True,
+            known_good=True,
+        )
+        feed4 = Feed.objects.create(
+            feed_address="http://test-feed-4.com/rss",
+            feed_link="http://test-feed-4.com",
+            feed_title="Test Feed 4",
+            fetched_once=True,
+            known_good=True,
+        )
+        story3 = self.make_story(feed3, "Breaking News About Tech", content="Feed 3 content")
+        story4 = self.make_story(feed4, "Breaking News About Tech", content="Feed 4 content")
+        candidates = [
+            {"story_hash": self.stories[0].story_hash, "feed_id": self.feed.pk},
+            {"story_hash": self.stories[3].story_hash, "feed_id": self.feed2.pk},
+            {"story_hash": story3.story_hash, "feed_id": feed3.pk},
+            {"story_hash": story4.story_hash, "feed_id": feed4.pk},
+        ]
+        stories_by_hash = {s.story_hash: s for s in [self.stories[0], self.stories[3], story3, story4]}
+        clustered = _find_clustered_stories(candidates, stories_by_hash)
+        self.assertEqual(len(clustered), 4)
+        for h in clustered.values():
+            self.assertEqual(h, "widely_covered")
 
     def test_estimate_word_count(self):
         story = self.stories[0]
@@ -948,7 +1049,7 @@ class Test_Scoring(BriefingTestCase):
     @patch("apps.briefing.scoring._get_feed_trending_times")
     @patch("apps.briefing.scoring._get_trending_scores")
     @patch("apps.briefing.scoring.redis.Redis")
-    def test_select_category_trending_global(self, mock_redis_cls, mock_trending, mock_feed_trending):
+    def test_select_category_top_stories(self, mock_redis_cls, mock_trending, mock_feed_trending):
         from apps.briefing.scoring import select_briefing_stories
 
         mock_r = MagicMock()
@@ -966,7 +1067,7 @@ class Test_Scoring(BriefingTestCase):
 
         result = select_briefing_stories(self.user.pk, self.period_start, self.now, max_stories=5)
         self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]["category"], "trending_global")
+        self.assertEqual(result[0]["category"], "top_stories")
 
     @patch("apps.briefing.scoring._get_feed_trending_times")
     @patch("apps.briefing.scoring._get_trending_scores")
@@ -1124,6 +1225,17 @@ class Test_Scoring(BriefingTestCase):
         self.assertEqual(len(matching), 1)
         self.assertEqual(matching[0]["category"], "custom_1")
 
+    # --- Classifier weights ---
+
+    def test_classifier_weights_title_highest(self):
+        self.assertGreater(CLASSIFIER_WEIGHTS["title"], CLASSIFIER_WEIGHTS["author"])
+        self.assertGreater(CLASSIFIER_WEIGHTS["author"], CLASSIFIER_WEIGHTS["tag"])
+        self.assertGreater(CLASSIFIER_WEIGHTS["tag"], CLASSIFIER_WEIGHTS["feed"])
+
+    def test_classifier_weights_all_positive(self):
+        for weight in CLASSIFIER_WEIGHTS.values():
+            self.assertGreater(weight, 0)
+
 
 # ---------------------------------------------------------------------------
 # 3. Test_Models — apps/briefing/models.py
@@ -1136,18 +1248,21 @@ class Test_Models(BriefingTestCase):
     # --- Constants ---
 
     def test_valid_section_keys_count(self):
-        self.assertEqual(len(VALID_SECTION_KEYS), 14)
+        # 5 built-in sections + 5 custom sections = 10
+        self.assertEqual(len(VALID_SECTION_KEYS), 10)
 
     def test_default_sections_values(self):
-        self.assertTrue(DEFAULT_SECTIONS["trending_unread"])
+        self.assertTrue(DEFAULT_SECTIONS["top_stories"])
         self.assertTrue(DEFAULT_SECTIONS["long_read"])
         self.assertTrue(DEFAULT_SECTIONS["classifier_match"])
         self.assertTrue(DEFAULT_SECTIONS["follow_up"])
-        self.assertTrue(DEFAULT_SECTIONS["trending_global"])
-        self.assertTrue(DEFAULT_SECTIONS["duplicates"])
-        self.assertTrue(DEFAULT_SECTIONS["quick_catchup"])
-        self.assertTrue(DEFAULT_SECTIONS["emerging_topics"])
-        self.assertTrue(DEFAULT_SECTIONS["contrarian_views"])
+        self.assertTrue(DEFAULT_SECTIONS["widely_covered"])
+        self.assertNotIn("quick_catchup", DEFAULT_SECTIONS)
+        self.assertNotIn("contrarian_views", DEFAULT_SECTIONS)
+        self.assertNotIn("emerging_topics", DEFAULT_SECTIONS)
+        self.assertNotIn("duplicates", DEFAULT_SECTIONS)
+        self.assertNotIn("trending_unread", DEFAULT_SECTIONS)
+        self.assertNotIn("trending_global", DEFAULT_SECTIONS)
 
     def test_max_custom_sections(self):
         self.assertEqual(MAX_CUSTOM_SECTIONS, 5)
@@ -1157,13 +1272,13 @@ class Test_Models(BriefingTestCase):
     def test_create_and_retrieve(self):
         briefing = self.make_briefing(
             curated_hashes=["h1", "h2"],
-            curated_sections={"trending_global": ["h1", "h2"]},
-            section_summaries={"trending_global": "<div>Summary</div>"},
+            curated_sections={"top_stories": ["h1", "h2"]},
+            section_summaries={"top_stories": "<div>Summary</div>"},
         )
         retrieved = MBriefing.objects.get(id=briefing.id)
         self.assertEqual(retrieved.user_id, self.user.pk)
         self.assertEqual(retrieved.curated_story_hashes, ["h1", "h2"])
-        self.assertEqual(retrieved.curated_sections["trending_global"], ["h1", "h2"])
+        self.assertEqual(retrieved.curated_sections["top_stories"], ["h1", "h2"])
 
     def test_latest_for_user(self):
         self.make_briefing(briefing_date=self.now - datetime.timedelta(days=2))
@@ -1424,15 +1539,15 @@ class Test_Views(BriefingTestCase):
 
         # tests.py: Store legacy hyphenated keys in the briefing
         self.make_briefing(
-            curated_sections={"trending-unread": ["h1"]},
-            section_summaries={"trending-unread": "<div>Test</div>"},
+            curated_sections={"top-stories": ["h1"]},
+            section_summaries={"top-stories": "<div>Test</div>"},
         )
 
         response = self.client.get(reverse("load-briefing-stories"))
         data = json.decode(response.content)
         b = data["briefings"][0]
-        self.assertIn("trending_unread", b["curated_sections"])
-        self.assertNotIn("trending-unread", b["curated_sections"])
+        self.assertIn("top_stories", b["curated_sections"])
+        self.assertNotIn("top-stories", b["curated_sections"])
 
     @patch("apps.briefing.views.redis.Redis")
     def test_includes_preferences_when_not_enabled(self, mock_redis_cls):
@@ -1512,24 +1627,24 @@ class Test_Views(BriefingTestCase):
 
     def test_post_sections_json(self):
         self.make_prefs()
-        sections = {"trending_unread": True, "long_read": False, "bogus_key": True}
+        sections = {"top_stories": True, "long_read": False, "bogus_key": True}
         response = self.client.post(
             reverse("briefing-preferences"),
             {"sections": stdlib_json.dumps(sections)},
         )
         prefs = MBriefingPreferences.objects.get(user_id=self.user.pk)
-        self.assertTrue(prefs.sections["trending_unread"])
+        self.assertTrue(prefs.sections["top_stories"])
         self.assertFalse(prefs.sections["long_read"])
         self.assertNotIn("bogus_key", prefs.sections)
 
     def test_post_sections_invalid_json(self):
-        self.make_prefs(sections={"trending_unread": True})
+        self.make_prefs(sections={"top_stories": True})
         response = self.client.post(
             reverse("briefing-preferences"),
             {"sections": "not-json"},
         )
         prefs = MBriefingPreferences.objects.get(user_id=self.user.pk)
-        self.assertTrue(prefs.sections["trending_unread"])
+        self.assertTrue(prefs.sections["top_stories"])
 
     def test_post_custom_prompts(self):
         self.make_prefs()
@@ -1698,7 +1813,7 @@ class Test_Tasks(BriefingTestCase):
 
         self.make_prefs(enabled=True)
         GenerateBriefings()
-        mock_r.set.assert_called_once_with("briefing:generate_all_lock", "1", nx=True, ex=840)
+        mock_r.set.assert_called_once_with("briefing:generate_all_lock", "1", nx=True, ex=50)
 
     @patch("redis.Redis")
     def test_generate_all_skips_if_locked(self, mock_redis_cls):
@@ -1720,11 +1835,15 @@ class Test_Tasks(BriefingTestCase):
         mock_r = MagicMock()
         mock_redis_cls.return_value = mock_r
         mock_r.set.return_value = True
-        mock_mbriefing.exists_for_period.return_value = False
+        mock_mbriefing.slot_exists.return_value = False
 
         self.make_prefs(enabled=True)
         GenerateBriefings()
-        mock_user_task.delay.assert_called_with(self.user.pk)
+        # tasks.py: Now dispatches with slot and local_date kwargs
+        call_args = mock_user_task.delay.call_args
+        self.assertEqual(call_args[0][0], self.user.pk)
+        self.assertIn(call_args[1]["slot"], ("morning", "afternoon", "evening"))
+        self.assertIsNotNone(call_args[1]["local_date"])
 
     @patch("apps.briefing.tasks.GenerateUserBriefing")
     @patch("redis.Redis")
@@ -1774,7 +1893,7 @@ class Test_Tasks(BriefingTestCase):
             "<div>Summary</div>",
             {"display_name": "Haiku", "input_tokens": 100, "output_tokens": 50},
         )
-        mock_extract_summaries.return_value = {"trending_global": "<div>S</div>"}
+        mock_extract_summaries.return_value = {"top_stories": "<div>S</div>"}
         mock_extract_hashes.return_value = {}
         mock_filter.return_value = "<div>Filtered</div>"
         mock_embed.return_value = "<div>Embedded</div>"
@@ -1895,7 +2014,7 @@ class Test_Tasks(BriefingTestCase):
         mock_embed,
         mock_create,
     ):
-        """Regression test: disabled section keys should be remapped to trending_global in curated_sections."""
+        """Regression test: disabled section keys should be remapped to top_stories in curated_sections."""
         from apps.briefing.tasks import GenerateUserBriefing
 
         mock_r = MagicMock()
@@ -1905,7 +2024,7 @@ class Test_Tasks(BriefingTestCase):
 
         scored = self.make_scored_stories(
             self.stories[:3],
-            categories=["long_read", "follow_up", "trending_global"],
+            categories=["long_read", "follow_up", "top_stories"],
         )
         mock_select.return_value = scored
         mock_summary.return_value = (
@@ -1913,7 +2032,7 @@ class Test_Tasks(BriefingTestCase):
             {"display_name": "H", "input_tokens": 10, "output_tokens": 5},
         )
         mock_filter.return_value = "<div>Filtered</div>"
-        mock_extract_summaries.return_value = {"trending_global": "<div>T</div>"}
+        mock_extract_summaries.return_value = {"top_stories": "<div>T</div>"}
         mock_extract_hashes.return_value = {}
         mock_embed.return_value = "<div>Embedded</div>"
         mock_create.return_value = (MagicMock(), MagicMock(story_hash="test:hash"))
@@ -1936,8 +2055,8 @@ class Test_Tasks(BriefingTestCase):
         # tests.py: long_read and follow_up should NOT be in curated_sections
         self.assertNotIn("long_read", curated_sections)
         self.assertNotIn("follow_up", curated_sections)
-        # tests.py: Their stories should be remapped to trending_global
-        self.assertIn("trending_global", curated_sections)
+        # tests.py: Their stories should be remapped to top_stories
+        self.assertIn("top_stories", curated_sections)
 
     @patch("apps.briefing.models.create_briefing_story")
     @patch("apps.briefing.summary.embed_briefing_icons")

@@ -2136,6 +2136,7 @@ def load_river_stories__redis(request):
         else:
             stories = []
             mstories = []
+            unread_feed_story_hashes = []
             message = "You must be a premium subscriber to search."
     else:
         # Only run feed aggregation if stories weren't already fetched via story_hashes or query
@@ -2161,6 +2162,7 @@ def load_river_stories__redis(request):
                 "%sstarred_date" % ("-" if order == "newest" else "")
             )[offset : offset + limit]
             stories = Feed.format_stories(mstories)
+            unread_feed_story_hashes = None
         else:
             usersubs = UserSubscription.subs_for_feeds(user.pk, feed_ids=feed_ids, read_filter=read_filter)
             feed_ids = [sub.feed_id for sub in usersubs]
@@ -4853,9 +4855,12 @@ def load_cluster_stories(request):
     if not cluster_id:
         return {"code": -1, "message": "Missing cluster_id parameter.", "stories": []}
 
-    from apps.clustering.models import get_cluster_members
+    from apps.clustering.models import get_cluster_for_story, get_cluster_members
 
-    member_hashes = get_cluster_members(cluster_id)
+    # The frontend passes a story_hash as cluster_id. Look up the actual
+    # cluster_id first, then get all members for that cluster.
+    actual_cluster_id = get_cluster_for_story(cluster_id)
+    member_hashes = get_cluster_members(actual_cluster_id or cluster_id)
     if not member_hashes:
         return {"code": 1, "stories": []}
 

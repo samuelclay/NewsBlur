@@ -141,6 +141,12 @@ def load_briefing_stories(request):
                         story_dict["feed_id"] = feed.pk
                     curated_stories.append(story_dict)
 
+        # views.py: Attach cluster data so the frontend can show cluster sources
+        if curated_stories:
+            from apps.clustering.models import attach_cluster_data_to_stories
+
+            attach_cluster_data_to_stories(curated_stories, user)
+
         # views.py: Normalize section keys to handle legacy data with incorrect keys
         normalized_curated_sections = _normalize_section_dict(briefing.curated_sections, merge_lists=True)
         normalized_section_summaries = _normalize_section_dict(briefing.section_summaries)
@@ -194,7 +200,7 @@ def load_briefing_stories(request):
             get_briefing_models_for_frontend,
         )
 
-        TIME_DISPLAY_MAP = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
+        TIME_DISPLAY_MAP = {"08:00": "morning", "12:30": "afternoon", "13:00": "afternoon", "17:00": "evening"}
         preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
         result["preferences"] = {
             "frequency": prefs.frequency,
@@ -206,7 +212,7 @@ def load_briefing_stories(request):
             "read_filter": prefs.read_filter or "unread",
             "summary_style": prefs.summary_style or "bullets",
             "include_read": prefs.include_read,
-            "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
+            "sections": dict(DEFAULT_SECTIONS, **(prefs.sections or {})),
             "custom_section_prompts": prefs.custom_section_prompts or [],
             "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
             "briefing_feed_id": prefs.briefing_feed_id,
@@ -231,14 +237,14 @@ def briefing_preferences(request):
 
     if request.method == "POST":
         frequency = request.POST.get("frequency")
-        if frequency in ("daily", "twice_daily", "weekly"):
+        if frequency in ("daily", "twice_daily", "thrice_daily", "weekly"):
             prefs.frequency = frequency
 
         preferred_time = request.POST.get("preferred_time")
         if preferred_time == "auto":
             prefs.preferred_time = None
         elif preferred_time in ("morning", "afternoon", "evening"):
-            time_map = {"morning": "08:00", "afternoon": "13:00", "evening": "17:00"}
+            time_map = {"morning": "08:00", "afternoon": "12:30", "evening": "17:00"}
             prefs.preferred_time = time_map[preferred_time]
         elif preferred_time:
             try:
@@ -330,7 +336,7 @@ def briefing_preferences(request):
         prefs.read_filter = "focus"
         prefs.save()
 
-    TIME_DISPLAY_MAP = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
+    TIME_DISPLAY_MAP = {"08:00": "morning", "12:30": "afternoon", "13:00": "afternoon", "17:00": "evening"}
     preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
 
     from apps.ask_ai.providers import (
@@ -360,7 +366,7 @@ def briefing_preferences(request):
         "read_filter": prefs.read_filter or "unread",
         "summary_style": prefs.summary_style or "bullets",
         "include_read": prefs.include_read,
-        "sections": prefs.sections if prefs.sections else DEFAULT_SECTIONS,
+        "sections": dict(DEFAULT_SECTIONS, **(prefs.sections or {})),
         "custom_section_prompts": prefs.custom_section_prompts or [],
         "notification_types": _get_briefing_notification_types(user.pk, prefs.briefing_feed_id),
         "briefing_model": prefs.briefing_model or DEFAULT_BRIEFING_MODEL,
@@ -435,6 +441,10 @@ def generate_briefing(request):
     # views.py: Create the briefing feed synchronously so the frontend can save
     # notification preferences immediately, before the Celery task runs.
     feed = ensure_briefing_feed(user)
+
+    # views.py: Clear the slot guard on the most recent briefing so on-demand
+    # regeneration can proceed even if the slot was already generated today.
+    MBriefing.delete_latest_slot(user.pk)
 
     GenerateUserBriefing.delay(user.pk, on_demand=True)
 

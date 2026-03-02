@@ -63,7 +63,7 @@ struct FeedDetailDashboardView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(10)
-        .background(Color.themed([0xE0E0E0, 0xFFF8CA, 0x363636, 0x101010]))
+        .background(Color.themed([0xE0E0E0, 0xE8DED0, 0x363636, 0x101010]))
         .lazyPop()
     }
     

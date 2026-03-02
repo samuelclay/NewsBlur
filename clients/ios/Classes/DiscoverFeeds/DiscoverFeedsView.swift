@@ -120,7 +120,7 @@ struct DiscoverFeedsView: View {
                 .frame(width: 16, height: 16)
                 .foregroundColor(Color(UIColor(red: 0x95/255.0, green: 0x96/255.0, blue: 0x8F/255.0, alpha: 1.0)))
 
-            Text("Discover sites")
+            Text("Related sites")
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundColor(DiscoverColors.textPrimary)
 
@@ -377,20 +377,22 @@ struct DiscoverFeedsView: View {
                         HStack(spacing: 3) {
                             Image(systemName: "person.2")
                                 .font(.system(size: 10))
-                            Text("\(feed.numSubscribers)")
+                            (Text("\(feed.numSubscribers)")
                                 .font(.system(size: 11, weight: .semibold))
                             + Text(" \(feed.numSubscribers == 1 ? "subscriber" : "subscribers")")
-                                .font(.system(size: 11))
+                                .font(.system(size: 11)))
+                                .lineLimit(1)
                         }
                         .foregroundColor(DiscoverColors.textSecondary)
 
                         HStack(spacing: 3) {
                             Image(systemName: "doc.text")
                                 .font(.system(size: 10))
-                            Text("\(feed.averageStoriesPerMonth)")
+                            (Text("\(feed.averageStoriesPerMonth)")
                                 .font(.system(size: 11, weight: .semibold))
                             + Text(" \(feed.averageStoriesPerMonth == 1 ? "story" : "stories")/mo")
-                                .font(.system(size: 11))
+                                .font(.system(size: 11)))
+                                .lineLimit(1)
                         }
                         .foregroundColor(DiscoverColors.textSecondary)
                     }
@@ -404,6 +406,7 @@ struct DiscoverFeedsView: View {
                         .foregroundColor(DiscoverColors.accent)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 6)
+                        .fixedSize()
                 } else {
                     HStack(spacing: 6) {
                         Button(action: { onTryFeed?(feed) }) {

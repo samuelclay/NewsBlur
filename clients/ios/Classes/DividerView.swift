@@ -158,24 +158,9 @@ class DividerView: UIView, UIPointerInteractionDelegate {
             return super.point(inside: point, with: event)
         }
 
-        let isVerticalDivider = bounds.height >= bounds.width
-        let expanded: CGRect
-        // Only expand the touch area near the grab handle, not along the full length.
-        let handleZone: CGFloat = 100
-        if isVerticalDivider {
-            let handleCenterY = bounds.midY
-            let zoneMinY = handleCenterY - handleZone / 2
-            let zoneMaxY = handleCenterY + handleZone / 2
-            guard point.y >= zoneMinY && point.y <= zoneMaxY else { return false }
-            expanded = bounds.insetBy(dx: -touchExpansion, dy: 0)
-        } else {
-            let handleCenterX = bounds.midX
-            let zoneMinX = handleCenterX - handleZone / 2
-            let zoneMaxX = handleCenterX + handleZone / 2
-            guard point.x >= zoneMinX && point.x <= zoneMaxX else { return false }
-            expanded = bounds.insetBy(dx: 0, dy: -touchExpansion)
-        }
-        return expanded.contains(point)
+        // Only respond to touches near the grab handle, not the full divider line.
+        let handleArea = grabHandle.frame.insetBy(dx: -touchExpansion, dy: -touchExpansion)
+        return handleArea.contains(point)
     }
 
     // MARK: - iPadOS pointer

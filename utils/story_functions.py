@@ -37,6 +37,7 @@ COMMENTS_RE = re.compile(r"\<!--.*?--\>")
 
 _IMG_SRC_RE = re.compile(r'<img[^>]+src=["\']([^"\']+)["\']', re.IGNORECASE)
 _CDN_PROXY_HOSTS = {"i0.wp.com", "i1.wp.com", "i2.wp.com", "i3.wp.com"}
+_SIZE_PREFIX_RE = re.compile(r"^[lsm]-")
 
 
 def _normalize_image_url_for_dedup(url):
@@ -70,6 +71,12 @@ def _normalize_image_url_for_dedup(url):
             host, path = inner.lower(), "/"
         if host.startswith("www."):
             host = host[4:]
+
+    # Strip CMS image size prefixes from filename (e.g., l-intro-1234.jpg → intro-1234.jpg)
+    if "/" in path:
+        directory, filename = path.rsplit("/", 1)
+        filename = _SIZE_PREFIX_RE.sub("", filename)
+        path = directory + "/" + filename
 
     return host + path
 

@@ -185,7 +185,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
     // Mark read pill: tap marks all read, long press / "+" shows day menu
     __weak typeof(self) weakSelf = self;
     self.storyTitlesHeaderBar.markReadTapHandler = ^{
-        [weakSelf doMarkAllRead:nil];
+        [weakSelf markReadShowMenu:MarkReadShowMenuBasedOnPref sender:weakSelf.storyTitlesHeaderBar.markReadContainer];
     };
     self.storyTitlesHeaderBar.markReadHandler = ^(NSInteger days) {
         NSArray *feedIds = weakSelf.storiesCollection.isRiverView ?
@@ -1224,7 +1224,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager.requestSerializer setTimeoutInterval:5];
         manager.responseSerializer = [AFImageResponseSerializer serializer];
-        
+
         for (NSDictionary *story in stories) {
             NSString *storyHash = story[@"story_hash"];
             NSArray *imageURLs = story[@"image_urls"];
@@ -1232,8 +1232,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             [self getFirstImage:imageURLs forStoryHash:storyHash withManager:manager];
         }
     }];
-    [cacheImagesOperation setQualityOfService:NSQualityOfServiceBackground];
-    [cacheImagesOperation setQueuePriority:NSOperationQueuePriorityVeryLow];
+    [cacheImagesOperation setQualityOfService:NSQualityOfServiceUtility];
+    [cacheImagesOperation setQueuePriority:NSOperationQueuePriorityLow];
     [appDelegate.cacheImagesOperationQueue addOperation:cacheImagesOperation];
 }
 
@@ -1252,7 +1252,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
         dispatch_async(queue, ^{
             UIImage *image = (UIImage *)responseObject;
-            
+
             if (!image || image.size.height < 50 || image.size.width < 50) {
                 if (storyImageUrls.count > 1) {
                     NSArray *remainingImageUrls = [storyImageUrls subarrayWithRange:NSMakeRange(1, storyImageUrls.count - 1)];
@@ -1279,11 +1279,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (void)showImageForStoryHash:(NSString *)storyHash {
-    if (!self.isLegacyTable) {
+    if (self.view.window == nil) {
         return;
     }
-    
-    if (self.view.window == nil) {
+
+    if (!self.isLegacyTable) {
+        [self reload];
         return;
     }
     
@@ -1776,15 +1777,17 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 #if TARGET_OS_MACCATALYST
     if (@available(macCatalyst 16.0, *)) {
         settingsBarButton.hidden = NO;
-        feedMarkReadButton.hidden = NO;
     }
 #endif
-
+    
+    [self updateStoryTitlesHeaderPillState];
+    
     self.pageFinished = NO;
     [self renderStories:confirmedNewStories];
 
     if (self.dashboardIndex >= 0) {
         self.pageFinished = YES;
+        [self hideFetchingBanner];
         [appDelegate.feedsViewController loadDashboard];
         return;
     }
@@ -1900,9 +1903,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         [self testForTryFeed];
     }
     
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
-                   queue, ^(void) {
+                   dispatch_get_main_queue(), ^(void) {
         [self cacheImagesForStories:newStories];
     });
     
@@ -3438,28 +3440,30 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     }
     
 #if TARGET_OS_MACCATALYST
-    UINavigationController *feedDetailNavController = appDelegate.feedDetailViewController.navigationController;
-    UIView *sourceView = feedDetailNavController.view;
-    CGRect sourceRect = CGRectMake(120, 10, 20, 20);
-    
-    if (appDelegate.splitViewController.isFeedsListHidden) {
-        sourceRect = CGRectMake(-130, 10, 20, 20);
-    }
-    
-    [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount sourceView:sourceView sourceRect:sourceRect completionHandler:^(BOOL marked){
+    UIView *markReadView = self.storyTitlesHeaderBar.markReadContainer;
+    [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount sourceView:markReadView sourceRect:markReadView.bounds completionHandler:^(BOOL marked){
         if (marked) {
             pop();
         }
     }];
 #else
-    UIBarButtonItem *barButton = self.feedMarkReadButton;
-    if (sender && [sender isKindOfClass:[UIBarButtonItem class]]) barButton = sender;
-    
-    [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount barButtonItem:barButton completionHandler:^(BOOL marked){
-        if (marked) {
-            pop();
-        }
-    }];
+    if (sender && [sender isKindOfClass:[UIView class]]) {
+        UIView *sourceView = (UIView *)sender;
+        [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount sourceView:sourceView sourceRect:sourceView.bounds completionHandler:^(BOOL marked){
+            if (marked) {
+                pop();
+            }
+        }];
+    } else {
+        UIBarButtonItem *barButton = self.feedMarkReadButton;
+        if (sender && [sender isKindOfClass:[UIBarButtonItem class]]) barButton = sender;
+
+        [self.appDelegate showMarkReadMenuWithFeedIds:feedIds collectionTitle:collectionTitle visibleUnreadCount:visibleUnreadCount barButtonItem:barButton completionHandler:^(BOOL marked){
+            if (marked) {
+                pop();
+            }
+        }];
+    }
 #endif
 }
 
@@ -3764,12 +3768,11 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
     UINavigationController *navController = self.navigationController ?: appDelegate.storyPagesViewController.navigationController;
 
 #if TARGET_OS_MACCATALYST
-    UIView *sourceView = navController.view;
-    CGRect sourceRect = CGRectMake(430, 0, 20, 20);
+    UIView *pillView = self.storyTitlesHeaderBar.optionsPill;
     UINavigationController *menuNavController = [[UINavigationController alloc] initWithRootViewController:viewController];
     menuNavController.navigationBarHidden = YES;
     menuNavController.delegate = viewController;
-    [appDelegate showPopoverWithViewController:menuNavController contentSize:CGSizeZero sourceView:sourceView sourceRect:sourceRect];
+    [appDelegate showPopoverWithViewController:menuNavController contentSize:CGSizeZero sourceView:pillView sourceRect:pillView.bounds];
 #else
     UIView *pillView = self.storyTitlesHeaderBar.optionsPill;
     [viewController showFromNavigationController:navController barButtonItem:nil sourceView:pillView sourceRect:pillView.bounds permittedArrowDirections:UIPopoverArrowDirectionUp];
@@ -3782,13 +3785,15 @@ didEndSwipingSwipingWithState:(MCSwipeTableViewCellState)state
         return;
     }
 
+    UIView *pillView = self.storyTitlesHeaderBar.discoverPill;
+
     if (!storiesCollection.isRiverView && storiesCollection.activeFeed) {
         NSString *feedId = [NSString stringWithFormat:@"%@", [storiesCollection.activeFeed objectForKey:@"id"]];
-        [appDelegate openDiscoverFeedsDialogFromSettingsButton:feedId];
+        [appDelegate openDiscoverFeedsDialogFromSettingsButton:feedId sourceView:pillView];
     } else if (storiesCollection.isRiverView) {
         NSArray *folderFeedIds = storiesCollection.activeFolderFeeds;
         if (folderFeedIds.count > 0) {
-            [appDelegate openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:folderFeedIds];
+            [appDelegate openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:folderFeedIds sourceView:pillView];
         }
     }
 }

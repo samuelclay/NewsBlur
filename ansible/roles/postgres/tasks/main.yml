@@ -178,6 +178,7 @@
     mode: 0777
     owner: 999
     group: 999
+  when: postgres_secondary | default(false)
 
 - name: Add postgres backup
   cron:
@@ -185,4 +186,16 @@
     minute: "0"
     hour: "4"
     job: /srv/newsblur/docker/postgres/backup_postgres.sh >> /var/log/postgres_backup.log 2>&1
-  tags: cron
+  when: postgres_secondary | default(false)
+  tags:
+    - postgres-backup
+    - cron
+
+- name: Remove postgres backup from primary
+  cron:
+    name: postgres backup
+    state: absent
+  when: not (postgres_secondary | default(false))
+  tags:
+    - postgres-backup
+    - cron

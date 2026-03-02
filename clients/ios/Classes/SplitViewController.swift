@@ -69,6 +69,11 @@ class SplitViewController: UISplitViewController {
         feedsDividerView.showsLine = false
         feedsDividerView.handleOffset = 8
         view.addSubview(feedsDividerView)
+
+        // Use a pan gesture on the divider view itself so it captures the drag
+        // before the system's NSSplitView (on Catalyst) can intercept it.
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(handleFeedsDividerPan(_:)))
+        feedsDividerView.addGestureRecognizer(pan)
     }
 
     override func viewDidLayoutSubviews() {
@@ -132,55 +137,38 @@ class SplitViewController: UISplitViewController {
         view.bringSubviewToFront(feedsDividerView)
     }
 
-    // MARK: - Touch handling for feeds divider
+    // MARK: - Feeds divider drag via gesture recognizer
 
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first, touch.view === feedsDividerView else {
-            super.touchesBegan(touches, with: event)
-            return
-        }
+    @objc private func handleFeedsDividerPan(_ gesture: UIPanGestureRecognizer) {
+        switch gesture.state {
+        case .began:
+            isDraggingFeedsDivider = true
+            feedsDividerView.isHighlighted = true
 
-        isDraggingFeedsDivider = true
-        feedsDividerView.isHighlighted = true
-    }
+        case .changed:
+            let point = gesture.location(in: view)
+            let newWidth = point.x
 
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard isDraggingFeedsDivider, let touch = touches.first else {
-            super.touchesMoved(touches, with: event)
-            return
-        }
+            guard newWidth >= minimumPrimaryColumnWidth,
+                  newWidth <= min(maximumPrimaryColumnWidth, view.bounds.width - 200) else {
+                return
+            }
 
-        let point = touch.location(in: view)
-        let newWidth = point.x
+            preferredPrimaryColumnWidth = newWidth
 
-        guard newWidth >= minimumPrimaryColumnWidth,
-              newWidth <= min(maximumPrimaryColumnWidth, view.bounds.width - 200) else {
-            return
-        }
+            let dividerWidth: CGFloat = 5
+            feedsDividerView.frame.origin.x = newWidth - dividerWidth / 2
 
-        preferredPrimaryColumnWidth = newWidth
+            view.layoutIfNeeded()
 
-        let dividerWidth: CGFloat = 5
-        feedsDividerView.frame.origin.x = newWidth - dividerWidth / 2
+            UserDefaults.standard.set(Float(newWidth), forKey: Self.feedsWidthKey)
 
-        UserDefaults.standard.set(Float(newWidth), forKey: Self.feedsWidthKey)
-    }
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if isDraggingFeedsDivider {
+        case .ended, .cancelled, .failed:
             isDraggingFeedsDivider = false
             feedsDividerView.isHighlighted = false
-        } else {
-            super.touchesEnded(touches, with: event)
-        }
-    }
 
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if isDraggingFeedsDivider {
-            isDraggingFeedsDivider = false
-            feedsDividerView.isHighlighted = false
-        } else {
-            super.touchesCancelled(touches, with: event)
+        default:
+            break
         }
     }
 

@@ -552,7 +552,7 @@
                                                                              options:UNNotificationActionOptionDestructive];
     UNNotificationCategory *storyCategory = [UNNotificationCategory categoryWithIdentifier:@"STORY_CATEGORY"
                                                                                    actions:@[readAction, starAction, dismissAction]
-                                                                         intentIdentifiers:@[]
+                                                                         intentIdentifiers:@[@"INSendMessageIntent"]
                                                                                    options:UNNotificationCategoryOptionNone];
     [center setNotificationCategories:[NSSet setWithObject:storyCategory]];
 }
@@ -773,7 +773,7 @@
             return [storiesCollection.activeFeedUserProfiles objectAtIndex:i];
         }
     }
-    
+
     // Check DB if not found in active feed
     __block NSDictionary *user;
     [self.database inDatabase:^(FMDatabase *db) {
@@ -788,8 +788,17 @@
         }
         [cursor close];
     }];
-    
-    return user;
+
+    if (user) return user;
+
+    // Fall back to current user's social profile (handles Catalyst timing where
+    // activeFeedUserProfiles may not yet include the current user)
+    if (self.dictSocialProfile &&
+        [[self.dictSocialProfile objectForKey:@"user_id"] integerValue] == userId) {
+        return self.dictSocialProfile;
+    }
+
+    return nil;
 }
 
 - (void)showUserProfileModal:(id)sender {
@@ -924,17 +933,14 @@
                 screenSize = UIScreen.mainScreen.bounds.size;
             }
             BOOL isLandscape = screenSize.width > screenSize.height;
-#if TARGET_OS_MACCATALYST
             // On Mac, use a minimum width threshold instead of just aspect ratio.
-            // Below 900pt the sidebar should auto-hide to overlay mode.
-            BOOL isTooNarrow = screenSize.width < 900;
-            if (isTooNarrow) {
+            // Below 1100pt the sidebar should auto-hide to overlay mode.
+            BOOL isTooNarrow = screenSize.width < 1100;
+            
+            if (detailViewController.isMac && isTooNarrow) {
                 self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorOverlay;
                 self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeSecondaryOnly;
             } else if (isLandscape) {
-#else
-            if (isLandscape) {
-#endif
                 self.splitViewController.preferredSplitBehavior = UISplitViewControllerSplitBehaviorTile;
                 self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeTwoBesideSecondary;
                 if (!self.splitViewController.isCollapsed) {
@@ -1162,32 +1168,24 @@
     
     if (!self.isPhone) {
         BOOL fromPopover = [self hidePopoverAnimated:NO];
-        [self.splitViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
+        // Configure popover BEFORE presenting so the anchor is applied on Catalyst
         activityViewController.modalPresentationStyle = UIModalPresentationPopover;
-        // iOS 8+
         UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
         popPC.permittedArrowDirections = UIPopoverArrowDirectionAny;
         popPC.backgroundColor = UIColorFromLightDarkRGB(NEWSBLUR_WHITE_COLOR, 0x707070);
-        
+
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             popPC.barButtonItem = sender;
         } else if ([sender isKindOfClass:[NSValue class]]) {
-            //            // Uncomment below to show share popover from linked text. Problem is
-            //            // that on finger up the link will open.
             CGPoint pt = [(NSValue *)sender CGPointValue];
             CGRect rect = CGRectMake(pt.x, pt.y, 1, 1);
-            ////            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:rect inView:self.storyPagesViewController.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
-            
-            //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content
-            //                                                           presentingViewController:vc options:options];
             popPC.sourceRect = rect;
             popPC.sourceView = self.storyPagesViewController.view;
         } else {
             popPC.sourceRect = [sender frame];
             popPC.sourceView = (UIView *)[sender superview];
-            
-            //            [[OSKPresentationManager sharedInstance] presentActivitySheetForContent:content presentingViewController:vc popoverFromRect:[sender frame] inView:[sender superview] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES options:options];
         }
+        [self.splitViewController presentViewController:activityViewController animated:!fromPopover completion:nil];
     } else {
         [self.feedsNavigationController presentViewController:activityViewController animated:YES completion:^{}];
     }
@@ -1549,18 +1547,15 @@
 }
 
 - (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId {
+    [self openDiscoverFeedsDialogFromSettingsButton:feedId sourceView:self.feedDetailViewController.storyTitlesHeaderBar.discoverPill];
+}
+
+- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId sourceView:(UIView *)sourceView {
     if (@available(iOS 15.0, *)) {
         if (!self.isPhone) {
             DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
-            discoverVC.modalPresentationStyle = UIModalPresentationPopover;
-            discoverVC.preferredContentSize = CGSizeMake(500, 550);
 
-            UIPopoverPresentationController *popover = discoverVC.popoverPresentationController;
-            popover.delegate = self;
-            popover.barButtonItem = self.feedDetailViewController.settingsBarButton;
-            popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
-
-            [self.navigationControllerForPopover presentViewController:discoverVC animated:YES completion:nil];
+            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:sourceView sourceRect:sourceView.bounds];
         } else {
             [self openDiscoverFeedsDialog:feedId];
         }
@@ -1592,6 +1587,10 @@
 }
 
 - (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds {
+    [self openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:feedIds sourceView:self.feedDetailViewController.storyTitlesHeaderBar.discoverPill];
+}
+
+- (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds sourceView:(UIView *)sourceView {
     if (@available(iOS 15.0, *)) {
         NSMutableArray *feedIdStrings = [NSMutableArray array];
         for (id feedId in feedIds) {
@@ -1600,15 +1599,8 @@
 
         if (!self.isPhone) {
             DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIdStrings];
-            discoverVC.modalPresentationStyle = UIModalPresentationPopover;
-            discoverVC.preferredContentSize = CGSizeMake(500, 550);
 
-            UIPopoverPresentationController *popover = discoverVC.popoverPresentationController;
-            popover.delegate = self;
-            popover.barButtonItem = self.feedDetailViewController.settingsBarButton;
-            popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
-
-            [self.navigationControllerForPopover presentViewController:discoverVC animated:YES completion:nil];
+            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:sourceView sourceRect:sourceView.bounds];
         } else {
             [self openDiscoverFeedsDialogWithFeedIds:feedIds];
         }

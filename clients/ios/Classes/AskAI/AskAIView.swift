@@ -164,6 +164,26 @@ struct AskAIView: View {
                     .foregroundColor(NewsBlurColors.textPrimary)
 
                 Spacer()
+                
+#if targetEnvironment(macCatalyst)
+                Button(action: {
+                    onDismiss()
+                }) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(NewsBlurColors.textSecondary)
+                        .frame(width: 28, height: 28)
+                        .background(NewsBlurColors.cardBackground)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(NewsBlurColors.border, lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+                .help("Dismiss")
+                .accessibilityLabel("Dismiss")
+#endif
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 16)

@@ -763,6 +763,8 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
             if (!selected_story.get('read_status')) {
                 this.mark_read(selected_story);
             }
+        } else {
+            clearTimeout(this.read_story_delay);
         }
     }
 
