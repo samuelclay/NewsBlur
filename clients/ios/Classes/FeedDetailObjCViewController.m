@@ -1224,7 +1224,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager.requestSerializer setTimeoutInterval:5];
         manager.responseSerializer = [AFImageResponseSerializer serializer];
-        
+
         for (NSDictionary *story in stories) {
             NSString *storyHash = story[@"story_hash"];
             NSArray *imageURLs = story[@"image_urls"];
@@ -1232,8 +1232,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
             [self getFirstImage:imageURLs forStoryHash:storyHash withManager:manager];
         }
     }];
-    [cacheImagesOperation setQualityOfService:NSQualityOfServiceBackground];
-    [cacheImagesOperation setQueuePriority:NSOperationQueuePriorityVeryLow];
+    [cacheImagesOperation setQualityOfService:NSQualityOfServiceUtility];
+    [cacheImagesOperation setQueuePriority:NSOperationQueuePriorityLow];
     [appDelegate.cacheImagesOperationQueue addOperation:cacheImagesOperation];
 }
 
@@ -1252,7 +1252,7 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
         dispatch_async(queue, ^{
             UIImage *image = (UIImage *)responseObject;
-            
+
             if (!image || image.size.height < 50 || image.size.width < 50) {
                 if (storyImageUrls.count > 1) {
                     NSArray *remainingImageUrls = [storyImageUrls subarrayWithRange:NSMakeRange(1, storyImageUrls.count - 1)];
@@ -1279,11 +1279,12 @@ typedef NS_ENUM(NSUInteger, FeedSection)
 }
 
 - (void)showImageForStoryHash:(NSString *)storyHash {
-    if (!self.isLegacyTable) {
+    if (self.view.window == nil) {
         return;
     }
-    
-    if (self.view.window == nil) {
+
+    if (!self.isLegacyTable) {
+        [self reload];
         return;
     }
     
@@ -1901,9 +1902,8 @@ typedef NS_ENUM(NSUInteger, FeedSection)
         [self testForTryFeed];
     }
     
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0ul);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  0.1 * NSEC_PER_SEC),
-                   queue, ^(void) {
+                   dispatch_get_main_queue(), ^(void) {
         [self cacheImagesForStories:newStories];
     });
     

@@ -47,8 +47,8 @@ ansible/roles/sentry/vars/secrets.yml
 templates/maintenance_on.html
 apps/social/spam.py
 venv*
-backup
-backups
+/backup
+/backups
 config/mongodb_keyfile.key
 
 # Docker Jinja templates
