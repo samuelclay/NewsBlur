@@ -11,6 +11,7 @@ from apps.monitor.views.newsblur_feed_counts import FeedCounts
 from apps.monitor.views.newsblur_feed_sizes import FeedSizes
 from apps.monitor.views.newsblur_feeds import Feeds
 from apps.monitor.views.newsblur_llm_costs import LLMCosts
+from apps.monitor.views.newsblur_media_player import MediaPlayer
 from apps.monitor.views.newsblur_loadtimes import LoadTimes
 from apps.monitor.views.newsblur_stories import Stories
 from apps.monitor.views.newsblur_tasks_codes import TasksCodes
