@@ -1,4 +1,4 @@
-WEBFEED_ANALYSIS_SYSTEM = """You are an expert web scraper that analyzes HTML pages to identify repeating story/article patterns. You generate XPath expressions to extract structured content from web pages.
+WEBFEED_ANALYSIS_SYSTEM = """You are an expert web scraper that analyzes HTML pages to identify repeating story/article patterns. You output ONLY valid JSON with no explanation or commentary.
 
 Rules:
 - Focus on the MAIN CONTENT area of the page (typically inside <main>, <article>, or primary content <section> elements)
@@ -14,29 +14,33 @@ Rules:
 - If images use CSS background-image styles instead of <img> tags, extract the style attribute (use @style) -- the backend will parse the URL from the CSS
 - Return 3-5 different extraction variants, ordered by confidence (best first)
 - Each variant should capture a different logical grouping of content on the page
-- The BEST variant is the one that captures the site's primary editorial/article content, not navigation or menu items"""
+- The BEST variant is the one that captures the site's primary editorial/article content, not navigation or menu items
 
-WEBFEED_ANALYSIS_USER = """Analyze this HTML page and identify repeating article/story patterns. Return 3-5 XPath variant sets as a JSON array.
+Your response must be a raw JSON array and nothing else. No markdown, no code fences, no text before or after the JSON."""
 
-Each variant object must have:
+WEBFEED_ANALYSIS_USER = """Here is a web page to analyze.
+
+URL: {url}
+
+HTML (truncated to ~100KB):
+{html}
+
+---
+
+Now analyze the HTML above and identify 3-5 repeating article/story patterns. Return them as a JSON array where each object has:
 - "label": short name (e.g. "Main article list", "Sidebar headlines")
 - "description": what the pattern captures
 - "story_container": absolute XPath to the repeating element (e.g. "//div[@class='post']")
 - "title": relative XPath for the title text (e.g. ".//h2/a/text()")
 - "link": relative XPath for the permalink href (e.g. ".//h2/a/@href")
-- "content": relative XPath for content/summary text (e.g. ".//p[@class='excerpt']/text()"), or null if not available
-- "image": relative XPath for image src (e.g. ".//img/@src" or ".//div[contains(@style,'background-image')]/@style"), or null if not available
-- "author": relative XPath for author text, or null if not available
-- "date": relative XPath for date text, or null if not available
+- "content": relative XPath for content/summary text (e.g. ".//p[@class='excerpt']/text()"), or null
+- "image": relative XPath for image src (e.g. ".//img/@src" or ".//div[contains(@style,'background-image')]/@style"), or null
+- "author": relative XPath for author text, or null
+- "date": relative XPath for date text, or null
 
-IMPORTANT: Prioritize the main editorial content of the page. Skip navigation menus, header links, footer links, and sidebar widgets. Look for content blocks that have rich structure (title + summary/image), not bare link lists.
+Prioritize the main editorial content. Skip navigation menus, header links, footer links, and sidebar widgets. Look for content blocks with rich structure (title + summary/image), not bare link lists.
 
-Return ONLY a JSON array with no markdown formatting, no code fences, no explanation. Just the raw JSON array.
-
-URL: {url}
-
-HTML (truncated to ~100KB):
-{html}"""
+Respond with ONLY the JSON array. No explanation, no markdown, no code fences."""
 
 
 WEBFEED_ANALYSIS_HINT = """
