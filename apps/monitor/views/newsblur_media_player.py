@@ -53,11 +53,29 @@ class MediaPlayer(View):
             "total_plays_youtube"
         ] = f'{chart_name}{{metric="total_plays",type="youtube"}} {totals.get("youtube", 0)}'
 
-        # Instantaneous: users with something currently loaded
-        active_states = MMediaPlaybackState.objects.filter(current_media_url__ne="").count()
-        formatted_data["active_states"] = f'{chart_name}{{metric="active_states"}} {active_states}'
+        # Instantaneous: users currently playing, by type
+        active_audio = MMediaPlaybackState.objects.filter(
+            current_media_url__ne="", current_media_type="audio"
+        ).count()
+        active_video = MMediaPlaybackState.objects.filter(
+            current_media_url__ne="", current_media_type="video"
+        ).count()
+        active_youtube = MMediaPlaybackState.objects.filter(
+            current_media_url__ne="", current_media_type="youtube"
+        ).count()
 
-        # Unique users by period
+        formatted_data[
+            "active_audio"
+        ] = f'{chart_name}{{metric="active_players",type="audio"}} {active_audio}'
+        formatted_data[
+            "active_video"
+        ] = f'{chart_name}{{metric="active_players",type="video"}} {active_video}'
+        formatted_data[
+            "active_youtube"
+        ] = f'{chart_name}{{metric="active_players",type="youtube"}} {active_youtube}'
+
+        # Unique users by period (counts all rows, including cleared ones)
+        total_users = MMediaPlaybackState.objects.count()
         daily_active = MMediaPlaybackState.objects.filter(updated_at__gte=day_ago).count()
         weekly_active = MMediaPlaybackState.objects.filter(updated_at__gte=week_ago).count()
         monthly_active = MMediaPlaybackState.objects.filter(updated_at__gte=month_ago).count()
@@ -73,7 +91,7 @@ class MediaPlayer(View):
         ] = f'{chart_name}{{metric="active_users",period="monthly"}} {monthly_active}'
         formatted_data[
             "active_users_alltime"
-        ] = f'{chart_name}{{metric="active_users",period="alltime"}} {active_states}'
+        ] = f'{chart_name}{{metric="active_users",period="alltime"}} {total_users}'
 
         context = {
             "data": formatted_data,
