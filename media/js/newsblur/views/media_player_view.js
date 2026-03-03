@@ -53,6 +53,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
     SVG_SETTINGS: '<svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1115.6 12 3.61 3.61 0 0112 15.6z"/></svg>',
 
     initialize: function () {
+        this.tab_id = Math.random().toString(36).substr(2, 9);
         this.is_playing = false;
         this.is_muted = false;
         this.current_media = null;
@@ -121,7 +122,9 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         // Seek to saved position after media loads (don't auto-play)
         var self = this;
         _.delay(function () {
-            self.seek_to(self.current_position);
+            if (self.remember_position && self.current_position > 0) {
+                self.seek_to(self.current_position);
+            }
             self.update_progress_display();
         }, 1000);
     },
@@ -357,7 +360,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         });
 
         // Detect YouTube iframes
-        $story_el.find('iframe[src*="youtube.com"], iframe[src*="youtu.be"]').each(function () {
+        $story_el.find('iframe[src*="youtube.com"], iframe[src*="youtu.be"], iframe[src*="youtube-nocookie.com"]').each(function () {
             var src = $(this).attr('src');
             var video_id = NEWSBLUR.Views.MediaPlayerView.extract_youtube_id(src);
             if (video_id) {
@@ -1025,8 +1028,8 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             this.add_to_queue(_.extend({}, this.current_media, {duration: this.get_duration()}), 0);
         }
 
-        // Play the history item
-        var resume_position = item.position || 0;
+        // Play the history item (respect remember_position setting)
+        var resume_position = this.remember_position ? (item.position || 0) : 0;
         this.current_media = {
             story_hash: item.story_hash,
             media_url: item.media_url,
@@ -1052,9 +1055,11 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
 
         // Seek to saved position after media loads
         var self = this;
-        _.delay(function () {
-            self.seek_to(resume_position);
-        }, 500);
+        if (resume_position > 0) {
+            _.delay(function () {
+                self.seek_to(resume_position);
+            }, 500);
+        }
 
         this.save_durable_state();
     },
@@ -1195,6 +1200,9 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
 
         NEWSBLUR.reader.socket.emit('media:sync', {
             user_id: NEWSBLUR.Globals.user_id,
+            tab_id: this.tab_id,
+            story_hash: this.current_media ? this.current_media.story_hash : null,
+            media_url: this.current_media ? this.current_media.media_url : null,
             position: this.get_current_time(),
             duration: this.get_duration(),
             is_playing: this.is_playing,
@@ -1231,18 +1239,25 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
     // =====================
 
     handle_media_update: function (data) {
+        // Ignore our own echo from the websocket relay
+        if (data.tab_id === this.tab_id) return;
+
         // Another tab is playing - pause this one
         if (data.is_playing && this.is_playing) {
             this.pause();
         }
-        // Update position display from remote
-        if (data.position != null) {
-            this.current_position = data.position;
+        // Only apply position/duration from the same media item
+        if (this.current_media &&
+            data.story_hash === this.current_media.story_hash &&
+            data.media_url === this.current_media.media_url) {
+            if (data.position != null) {
+                this.current_position = data.position;
+            }
+            if (data.duration != null) {
+                this.current_duration = data.duration;
+            }
+            this.update_progress_display();
         }
-        if (data.duration != null) {
-            this.current_duration = data.duration;
-        }
-        this.update_progress_display();
     },
 
     // ====================
@@ -1401,7 +1416,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
 
     extract_youtube_id: function (url) {
         if (!url) return null;
-        var match = url.match(/(?:youtube\.com\/embed\/|youtube\.com\/v\/|youtu\.be\/|youtube\.com\/watch\?v=)([A-Za-z0-9_-]+)/);
+        var match = url.match(/(?:youtube\.com\/embed\/|youtube-nocookie\.com\/embed\/|youtube\.com\/v\/|youtu\.be\/|youtube\.com\/watch\?v=)([A-Za-z0-9_-]+)/);
         return match ? match[1] : null;
     }
 });
