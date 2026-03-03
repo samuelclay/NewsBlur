@@ -12,7 +12,7 @@ from utils import log as logging
 @app.task(name="generate-briefings", time_limit=600)
 def GenerateBriefings():
     """
-    Periodic task that runs every 15 minutes.
+    Periodic task that runs every minute.
     Finds users who need a briefing generated and dispatches per-user tasks.
     """
     import pytz
@@ -23,19 +23,19 @@ def GenerateBriefings():
     from apps.profile.models import Profile
 
     # tasks.py: Distributed lock — multiple celery beat schedulers (one per htask-work
-    # server) fire this task concurrently. Only one instance should run per 15-min cycle.
-    # TTL of 14 minutes (just under the 15-min schedule) ensures the lock persists for
+    # server) fire this task concurrently. Only one instance should run per 1-min cycle.
+    # TTL of 50 seconds (just under the 1-min schedule) ensures the lock persists for
     # the entire interval. We intentionally do NOT delete the lock on completion — the
     # task finishes in ~0.1s, and deleting would let later beat tasks acquire the lock.
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     lock_key = "briefing:generate_all_lock"
-    if not r.set(lock_key, "1", nx=True, ex=840):
+    if not r.set(lock_key, "1", nx=True, ex=50):
         logging.debug(" ---> GenerateBriefings: another instance is running, skipping")
         return
 
     DAY_NAME_TO_WEEKDAY = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
     # tasks.py: Fixed delivery times for each slot (user's local timezone)
-    SLOT_TIMES = {"morning": (8, 0), "afternoon": (13, 0), "evening": (17, 0)}
+    SLOT_TIMES = {"morning": (8, 0), "afternoon": (12, 30), "evening": (17, 0)}
     DEFAULT_SLOT = "morning"
 
     now = datetime.datetime.utcnow()
@@ -62,9 +62,9 @@ def GenerateBriefings():
             tz = pytz.utc
         local_now = datetime.datetime.now(tz)
 
-        # tasks.py: Compute generation_time (UTC, naive) — 30 min before preferred delivery.
+        # tasks.py: Compute generation_time (UTC, naive) — 5 min before preferred delivery.
         # Parse preferred_time "HH:MM" to determine slot, default to morning (8 AM).
-        TIME_TO_SLOT = {"08:00": "morning", "13:00": "afternoon", "17:00": "evening"}
+        TIME_TO_SLOT = {"08:00": "morning", "12:30": "afternoon", "13:00": "afternoon", "17:00": "evening"}
         slot = TIME_TO_SLOT.get(prefs.preferred_time, DEFAULT_SLOT)
         # tasks.py: For twice_daily, preferred_time stores the second slot.
         # If it resolves to "morning" (legacy bug), default to "afternoon" instead.
@@ -73,7 +73,7 @@ def GenerateBriefings():
         hour, minute = SLOT_TIMES[slot]
         local_target = tz.localize(datetime.datetime.combine(local_now.date(), datetime.time(hour, minute)))
         generation_time = (
-            (local_target - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(tzinfo=None)
+            (local_target - datetime.timedelta(minutes=5)).astimezone(pytz.utc).replace(tzinfo=None)
         )
 
         # tasks.py: For twice_daily, preferred_time is the second slot (afternoon or evening).
@@ -85,7 +85,7 @@ def GenerateBriefings():
                 datetime.datetime.combine(local_now.date(), datetime.time(morning_hour, morning_minute))
             )
             morning_gen_utc = (
-                (morning_local - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(tzinfo=None)
+                (morning_local - datetime.timedelta(minutes=5)).astimezone(pytz.utc).replace(tzinfo=None)
             )
             is_morning_window = now >= morning_gen_utc and local_now.hour < 15
             is_second_window = now >= generation_time
@@ -94,14 +94,20 @@ def GenerateBriefings():
                 continue
         elif prefs.frequency == "thrice_daily":
             # tasks.py: For thrice_daily, check three independent windows:
-            # morning (8 AM), afternoon (1 PM), evening (5 PM).
+            # morning (8 AM), afternoon (12:30 PM), evening (5 PM).
             def _slot_gen_utc(slot_name):
                 h, m = SLOT_TIMES[slot_name]
                 local_t = tz.localize(datetime.datetime.combine(local_now.date(), datetime.time(h, m)))
-                return (local_t - datetime.timedelta(minutes=30)).astimezone(pytz.utc).replace(tzinfo=None)
+                return (local_t - datetime.timedelta(minutes=5)).astimezone(pytz.utc).replace(tzinfo=None)
 
-            is_morning_window = now >= _slot_gen_utc("morning") and local_now.hour < 13
-            is_afternoon_window = now >= _slot_gen_utc("afternoon") and local_now.hour < 17
+            local_12_30pm = tz.localize(
+                datetime.datetime.combine(local_now.date(), datetime.time(12, 30))
+            )
+            local_5pm = tz.localize(
+                datetime.datetime.combine(local_now.date(), datetime.time(17, 0))
+            )
+            is_morning_window = now >= _slot_gen_utc("morning") and local_now < local_12_30pm
+            is_afternoon_window = now >= _slot_gen_utc("afternoon") and local_now < local_5pm
             is_evening_window = now >= _slot_gen_utc("evening")
             if not is_morning_window and not is_afternoon_window and not is_evening_window:
                 skipped += 1
@@ -111,61 +117,43 @@ def GenerateBriefings():
                 skipped += 1
                 continue
 
-        # tasks.py: Build period bounds in the user's local timezone so dedupe
-        # matches local days, not UTC day boundaries.
-        local_midnight = tz.localize(datetime.datetime.combine(local_now.date(), datetime.time(0, 0)))
+        # tasks.py: Use MBriefing.slot_exists() as an idempotency guard instead of
+        # time-range queries. The unique sparse index on (user_id, slot, local_date)
+        # prevents duplicate generation regardless of timing edge cases.
+        local_date_str = local_now.strftime("%Y-%m-%d")
+        slots_to_dispatch = []
 
-        if prefs.frequency == "daily":
-            period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
-            period_end = (
-                (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
-            )
+        if prefs.frequency == "thrice_daily":
+            if is_morning_window and not MBriefing.slot_exists(user.pk, "morning", local_date_str):
+                slots_to_dispatch.append("morning")
+            if is_afternoon_window and not MBriefing.slot_exists(user.pk, "afternoon", local_date_str):
+                slots_to_dispatch.append("afternoon")
+            if is_evening_window and not MBriefing.slot_exists(user.pk, "evening", local_date_str):
+                slots_to_dispatch.append("evening")
         elif prefs.frequency == "twice_daily":
-            local_noon = local_midnight + datetime.timedelta(hours=12)
-            if local_now.hour < 12:
-                period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
-                period_end = local_noon.astimezone(pytz.utc).replace(tzinfo=None)
-            else:
-                period_start = local_noon.astimezone(pytz.utc).replace(tzinfo=None)
-                period_end = (
-                    (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
-                )
-        elif prefs.frequency == "thrice_daily":
-            # tasks.py: Dedup periods align with delivery times: 8 AM, 1 PM, 5 PM.
-            local_8am = local_midnight + datetime.timedelta(hours=8)
-            local_1pm = local_midnight + datetime.timedelta(hours=13)
-            if local_now.hour < 8:
-                period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
-                period_end = local_8am.astimezone(pytz.utc).replace(tzinfo=None)
-            elif local_now.hour < 13:
-                period_start = local_8am.astimezone(pytz.utc).replace(tzinfo=None)
-                period_end = local_1pm.astimezone(pytz.utc).replace(tzinfo=None)
-            else:
-                period_start = local_1pm.astimezone(pytz.utc).replace(tzinfo=None)
-                period_end = (
-                    (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
-                )
+            if is_morning_window and not MBriefing.slot_exists(user.pk, "morning", local_date_str):
+                slots_to_dispatch.append("morning")
+            if is_second_window and not MBriefing.slot_exists(user.pk, slot, local_date_str):
+                slots_to_dispatch.append(slot)
         elif prefs.frequency == "weekly":
             preferred_weekday = DAY_NAME_TO_WEEKDAY.get(prefs.preferred_day, 6)
             if local_now.weekday() != preferred_weekday:
                 skipped += 1
                 continue
-            period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
-            period_end = (
-                (local_midnight + datetime.timedelta(days=7)).astimezone(pytz.utc).replace(tzinfo=None)
-            )
+            if not MBriefing.slot_exists(user.pk, slot, local_date_str):
+                slots_to_dispatch.append(slot)
         else:
-            period_start = local_midnight.astimezone(pytz.utc).replace(tzinfo=None)
-            period_end = (
-                (local_midnight + datetime.timedelta(days=1)).astimezone(pytz.utc).replace(tzinfo=None)
-            )
+            # daily
+            if not MBriefing.slot_exists(user.pk, slot, local_date_str):
+                slots_to_dispatch.append(slot)
 
-        if MBriefing.exists_for_period(user.pk, period_start, period_end):
+        if not slots_to_dispatch:
             skipped += 1
             continue
 
-        GenerateUserBriefing.delay(user.pk)
-        dispatched += 1
+        for target_slot in slots_to_dispatch:
+            GenerateUserBriefing.delay(user.pk, slot=target_slot, local_date=local_date_str)
+            dispatched += 1
 
     logging.debug(
         " ---> GenerateBriefings: dispatched %s, skipped %s of %s eligible users"
@@ -174,7 +162,7 @@ def GenerateBriefings():
 
 
 @app.task(name="generate-user-briefing", time_limit=120, soft_time_limit=110)
-def GenerateUserBriefing(user_id, on_demand=False):
+def GenerateUserBriefing(user_id, on_demand=False, slot=None, local_date=None):
     """
     Generate a single user's daily briefing.
 
@@ -193,6 +181,7 @@ def GenerateUserBriefing(user_id, on_demand=False):
     from django.conf import settings
 
     from apps.briefing.models import (
+        MBriefing,
         MBriefingPreferences,
         create_briefing_story,
         ensure_briefing_feed,
@@ -227,6 +216,17 @@ def GenerateUserBriefing(user_id, on_demand=False):
         logging.error(" ---> GenerateUserBriefing: user %s not found" % user_id)
         return
 
+    # tasks.py: Double-check idempotency guard inside the worker. Even though the
+    # scheduler checked MBriefing.slot_exists(), another worker may have completed
+    # the same slot between dispatch and execution.
+    if slot and local_date and not on_demand:
+        if MBriefing.slot_exists(user_id, slot, local_date):
+            logging.debug(
+                " ---> GenerateUserBriefing: slot %s on %s already generated for user %s, skipping"
+                % (slot, local_date, user_id)
+            )
+            return
+
     def publish(event_type, extra=None):
         if not on_demand:
             return
@@ -258,8 +258,6 @@ def GenerateUserBriefing(user_id, on_demand=False):
     # tasks.py: Collect story hashes from any briefings generated within the current
     # lookback period so the same story never appears in consecutive briefings
     # (e.g. morning + afternoon for twice_daily users).
-    from apps.briefing.models import MBriefing
-
     exclude_hashes = set()
     recent_briefings = MBriefing.objects(user_id=user_id, briefing_date__gte=period_start)
     for b in recent_briefings:
@@ -431,6 +429,8 @@ def GenerateUserBriefing(user_id, on_demand=False):
         section_summaries=section_summaries,
         frequency=prefs.frequency,
         period_start=period_start,
+        slot=slot,
+        local_date_str=local_date,
     )
 
     logging.debug(

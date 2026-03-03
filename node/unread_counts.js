@@ -138,6 +138,37 @@
       socket.conn.on('close', function(reason) {
         return log.debug(`Socket ${socket_id} - connection closed: ${reason}`);
       });
+      // Media player position sync: client sends position every 10s, stored in Redis
+      socket.on('media:sync', (data) => {
+        var username = socket.data.username;
+        if (!username) return;
+
+        var redis_key = `media:playback:${data.user_id || username}`;
+        var redis_data = {};
+        if (data.position != null) redis_data.position = String(data.position);
+        if (data.duration != null) redis_data.duration = String(data.duration);
+        if (data.is_playing != null) redis_data.is_playing = data.is_playing ? 'true' : 'false';
+        if (data.playback_rate != null) redis_data.playback_rate = String(data.playback_rate);
+        if (data.volume != null) redis_data.volume = String(data.volume);
+
+        if (Object.keys(redis_data).length > 0) {
+          var sync_client = redis.createClient(redis_opts);
+          sync_client.on('error', function(err) {
+            log.debug(`Media sync Redis error: ${err}`);
+          });
+          sync_client.on('connect', function() {
+            sync_client.hmset(redis_key, redis_data, function() {
+              sync_client.expire(redis_key, 86400); // 24h expiry
+              // Publish media update to user's channel for multi-tab sync
+              var media_msg = 'media:' + JSON.stringify(data);
+              sync_client.publish(username, media_msg, function() {
+                sync_client.quit();
+              });
+            });
+          });
+        }
+      });
+
       socket.on('subscribe:feeds', (feeds, username) => {
         var ref;
         // Store user data directly on the socket for access during disconnect
@@ -207,6 +238,17 @@
               log.debug(username, "Archive Assistant handler processed message");
               return;
             }
+          }
+          // Handle media player sync events (multi-tab position updates)
+          if (typeof message.startsWith === "function" ? message.startsWith('media:') : void 0) {
+            try {
+              const payload = message.substring('media:'.length);
+              const data = JSON.parse(payload);
+              socket.emit('media:update', data);
+            } catch (e) {
+              log.debug(username, `Invalid media payload: ${e}`);
+            }
+            return;
           }
           // Handle archive extension real-time events (archive:new, archive:deleted, archive:categories)
           if (typeof message.startsWith === "function" ? message.startsWith('archive:') : void 0) {

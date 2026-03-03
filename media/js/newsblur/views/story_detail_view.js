@@ -143,6 +143,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.apply_starred_story_selections();
         this.watch_images_load();
         this.attach_custom_handler();
+        this.attach_media_player_handler();
     },
 
     attach_custom_handler: function () {
@@ -598,13 +599,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             var story_model = collection.get_by_story_hash(story_data.story_hash);
             if (!story_model) {
                 story_model = new NEWSBLUR.Models.Story(story_data);
+            } else if (parent_read && mark_children_read && !story_model.get('read_status')) {
+                story_model.set('read_status', 1);
             }
 
             var story_view = new NEWSBLUR.Views.StoryTitleView({
                 model: story_model,
                 collection: collection,
                 override_layout: 'split',
-                is_list: true
+                is_list: true,
+                is_cluster_detail: true
             });
             story_view.render();
             story_view.$el.addClass('NB-story-cluster-detail-item');
@@ -700,6 +704,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     toggle_read_status: function () {
         this.$el.toggleClass('read', !!this.model.get('read_status'));
+
+        if (this.model.get('read_status') && NEWSBLUR.assets.preference('cluster_mark_read')) {
+            if (this._cluster_title_views) {
+                _.each(this._cluster_title_views, function (view) {
+                    if (!view.model.get('read_status')) {
+                        view.model.set('read_status', 1);
+                    }
+                });
+            }
+        }
     },
 
     toggle_intelligence: function () {
@@ -914,6 +928,110 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 customSelector: "iframe[src*='youtu.be'],iframe[src*='www.flickr.com'],iframe[src*='view.vzaar.com']"
             });
         }, this), 50);
+    },
+
+    attach_media_player_handler: function () {
+        if (!NEWSBLUR.app.media_player) return;
+
+        var self = this;
+        var story = this.model;
+        var media_player = NEWSBLUR.app.media_player;
+        var media_items = media_player.detect_media_in_story(story, this.$el);
+        if (!media_items.length) return;
+
+        // Play now: headphones with small play badge
+        var svg_play_now = '<svg viewBox="0 0 32 24" width="20" height="16"><path d="M10 1C5.03 1 1 5.03 1 10v8c0 1.66 1.34 3 3 3h2v-8H3v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><polygon points="22,8 22,16 30,12"/></svg>';
+        // Play next: headphones with skip-next badge
+        var svg_play_next = '<svg viewBox="0 0 32 24" width="20" height="16"><path d="M10 1C5.03 1 1 5.03 1 10v8c0 1.66 1.34 3 3 3h2v-8H3v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><polygon points="22,8 22,16 28,12"/><rect x="29" y="8" width="2" height="8"/></svg>';
+        // Play last: headphones with plus badge
+        var svg_play_last = '<svg viewBox="0 0 32 24" width="20" height="16"><path d="M10 1C5.03 1 1 5.03 1 10v8c0 1.66 1.34 3 3 3h2v-8H3v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><rect x="24.5" y="9" width="2" height="6" rx="1"/><rect x="22.5" y="11" width="6" height="2" rx="1"/></svg>';
+
+        // Remove any existing overlay buttons (prevents duplicates on re-render)
+        this.$('.NB-media-overlay-buttons').remove();
+        this.$('.NB-media-youtube-overlay').remove();
+
+        // Add overlay buttons on audio/video elements
+        this.$('.NB-feed-story-content audio, .NB-feed-story-content video').each(function (i) {
+            var $el = $(this);
+            // Find matching media item
+            var src = $el.find('source').attr('src') || $el.attr('src');
+            var item = _.find(media_items, function (m) { return m.media_url === src; });
+            if (!item) return;
+
+            var $buttons = $('<div class="NB-media-overlay-buttons"></div>');
+            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play in Mini Media Player</div>');
+            var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' Play Next</div>');
+            var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' Play Last</div>');
+
+            $buttons.append($play_now).append($play_next).append($play_last);
+            $el.after($buttons);
+
+            $play_now.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.play_media(item);
+            });
+            $play_next.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.add_to_queue(item, 0);
+            });
+            $play_last.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.add_to_queue(item);
+            });
+        });
+
+        // Add overlay buttons on YouTube iframes
+        this.$('.NB-feed-story-content iframe[src*="youtube.com"], .NB-feed-story-content iframe[src*="youtu.be"]').each(function () {
+            var $iframe = $(this);
+            var src = $iframe.attr('src');
+            var item = _.find(media_items, function (m) {
+                return m.media_type === 'youtube' && m.media_url === src;
+            });
+            if (!item) return;
+
+            var $buttons = $('<div class="NB-media-overlay-buttons"></div>');
+            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play in Mini Media Player</div>');
+            var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' Play Next</div>');
+            var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' Play Last</div>');
+
+            $buttons.append($play_now).append($play_next).append($play_last);
+            $iframe.parent().after($buttons);
+
+            $play_now.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.play_media(item);
+            });
+            $play_next.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.add_to_queue(item, 0);
+            });
+            $play_last.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.add_to_queue(item);
+            });
+        });
+
+        // Remove autoplay attributes to prevent automatic playback
+        this.$('.NB-feed-story-content audio, .NB-feed-story-content video').removeAttr('autoplay');
+
+        // Intercept native play events (e.g. user clicking native controls) to hand off to media player
+        this.$('.NB-feed-story-content audio, .NB-feed-story-content video').on('play', function (e) {
+            // Only intercept user-initiated play events
+            if (!e.originalEvent || !e.originalEvent.isTrusted) return;
+            var el = this;
+            el.pause();
+            var src = $(el).find('source').attr('src') || $(el).attr('src');
+            var item = _.find(media_items, function (m) { return m.media_url === src; });
+            if (item) {
+                media_player.play_media(item);
+            }
+        });
     },
 
     // ==========
