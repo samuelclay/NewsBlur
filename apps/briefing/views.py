@@ -200,7 +200,12 @@ def load_briefing_stories(request):
             get_briefing_models_for_frontend,
         )
 
-        TIME_DISPLAY_MAP = {"08:00": "morning", "12:30": "afternoon", "13:00": "afternoon", "17:00": "evening"}
+        TIME_DISPLAY_MAP = {
+            "08:00": "morning",
+            "12:30": "afternoon",
+            "13:00": "afternoon",
+            "17:00": "evening",
+        }
         preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
         result["preferences"] = {
             "frequency": prefs.frequency,

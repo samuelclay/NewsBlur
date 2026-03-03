@@ -404,6 +404,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         $.isFunction(callback) && callback();
     },
 
+    mark_stories_as_unread: function (days, feed_id, folder, callback, error_callback) {
+        var data = { days: days };
+        if (feed_id) data.feed_id = feed_id;
+        if (folder) data.folder = folder;
+        this.make_request('/reader/mark_stories_as_unread', data, callback, error_callback);
+    },
+
     mark_story_as_starred: function (story_id, callback) {
         var self = this;
         var story = this.get_story(story_id);

@@ -36,6 +36,11 @@ def FreshenHomepage():
         sub.calculate_feed_scores(silent=True)
 
 
+@app.task(name="mark-stories-as-unread")
+def MarkStoriesAsUnread(user_id, feed_ids, days):
+    UserSubscription.mark_stories_as_unread(user_id, feed_ids, days)
+
+
 @app.task(name="clean-analytics", time_limit=720 * 10)
 def CleanAnalytics():
     total_count = settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.count_documents({})
