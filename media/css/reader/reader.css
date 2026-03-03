@@ -29303,6 +29303,98 @@ h5.NB-classifier-section-header {
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
+.NB-add-site-webfeed-folder-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.NB-add-site-webfeed-folder-row .NB-add-site-folder-select {
+    flex: 1;
+    min-width: 0;
+}
+.NB-add-site-webfeed-folder-add-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: 1px solid #D0D0D0;
+    background: #FFF;
+    color: #888;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+    line-height: 1;
+}
+.NB-add-site-webfeed-folder-add-icon:hover {
+    border-color: #999;
+    color: #555;
+    background: #F5F5F5;
+}
+.NB-add-site-webfeed-folder-add-icon.NB-active {
+    border-color: #5C89C9;
+    color: #5C89C9;
+    background: #EEF3FA;
+}
+.NB-add-site-webfeed-folder-input-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-top: 6px;
+    border: 1px solid #D0D0D0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.NB-add-site-webfeed-folder-input-row:focus-within {
+    border-color: #5C89C9;
+    box-shadow: 0 0 0 2px rgba(92, 137, 201, 0.15);
+}
+.NB-add-site-webfeed-folder-name {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    padding: 8px 12px;
+    font-size: 13px;
+    background: #FFF;
+}
+.NB-add-site-webfeed-folder-name::placeholder {
+    color: #A0A0A0;
+}
+.NB-add-site-webfeed-folder-submit {
+    flex-shrink: 0;
+    padding: 0 16px;
+    background: #6EA66E;
+    color: #FFF;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    border: none;
+}
+.NB-add-site-webfeed-folder-submit:hover {
+    background: #5C8F5C;
+}
+.NB-add-site-webfeed-folder-submit.NB-disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+.NB-add-site-webfeed-folder-input-row .NB-loading {
+    width: 0;
+    height: 16px;
+    flex-shrink: 0;
+    align-self: center;
+    overflow: hidden;
+    transition: width 0.2s, margin 0.2s;
+}
+.NB-add-site-webfeed-folder-input-row .NB-loading.NB-active {
+    width: 16px;
+    margin-right: 8px;
+}
 .NB-add-site-webfeed-staleness-slider {
     width: 100%;
     max-width: 300px;
@@ -30554,6 +30646,34 @@ h5.NB-classifier-section-header {
 .NB-dark .NB-add-site-webfeed-subscribed-title,
 .NB-dark .NB-add-site-webfeed-subscribed-desc {
     color: #80D080;
+}
+.NB-dark .NB-add-site-webfeed-folder-add-icon {
+    border-color: #555;
+    background: #333;
+    color: #999;
+}
+.NB-dark .NB-add-site-webfeed-folder-add-icon:hover {
+    border-color: #777;
+    color: #CCC;
+    background: #3A3A3A;
+}
+.NB-dark .NB-add-site-webfeed-folder-add-icon.NB-active {
+    border-color: #5C89C9;
+    color: #6AADEA;
+    background: #1A2A3A;
+}
+.NB-dark .NB-add-site-webfeed-folder-input-row {
+    border-color: #555;
+}
+.NB-dark .NB-add-site-webfeed-folder-input-row:focus-within {
+    border-color: #5C89C9;
+}
+.NB-dark .NB-add-site-webfeed-folder-name {
+    background: #333;
+    color: #DDD;
+}
+.NB-dark .NB-add-site-webfeed-folder-name::placeholder {
+    color: #777;
 }
 
 .NB-dark .NB-freshness-stale .NB-freshness-label {

@@ -22,7 +22,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         "click .NB-add-site-subscribe-btn": "subscribe_to_feed",
         "click .NB-add-site-open-btn": "open_subscribed_feed",
         "click .NB-add-site-stats-btn": "open_feed_stats",
-        "change .NB-add-site-folder-select": "handle_folder_change",
+        "click .NB-add-site-webfeed-folder-add-icon": "toggle_webfeed_folder_input",
+        "click .NB-add-site-webfeed-folder-submit": "save_webfeed_folder",
+        "keypress .NB-add-site-webfeed-folder-name": "handle_webfeed_folder_keypress",
         // YouTube tab events
         "input .NB-add-site-youtube-search": "handle_youtube_search_input",
         "click .NB-add-site-youtube-tab .NB-add-site-tab-search-btn": "perform_youtube_search",
@@ -2733,7 +2735,21 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 ]),
                 $.make('div', { className: 'NB-add-site-webfeed-option' }, [
                     $.make('label', { className: 'NB-add-site-webfeed-option-label' }, 'Add to folder'),
-                    self.make_folder_selector()
+                    $.make('div', { className: 'NB-add-site-webfeed-folder-row' }, [
+                        self.make_folder_selector(),
+                        $.make('div', { className: 'NB-add-site-webfeed-folder-add-icon', title: 'New folder', role: 'button' }, '+')
+                    ]),
+                    $.make('div', { className: 'NB-add-site-webfeed-folder-input NB-hidden' }, [
+                        $.make('div', { className: 'NB-add-site-webfeed-folder-input-row' }, [
+                            $.make('input', {
+                                type: 'text',
+                                className: 'NB-add-site-webfeed-folder-name',
+                                placeholder: 'New folder name...'
+                            }),
+                            $.make('div', { className: 'NB-loading' }),
+                            $.make('div', { className: 'NB-add-site-webfeed-folder-submit' }, 'Add Folder')
+                        ])
+                    ])
                 ])
             ]),
             $.make('div', {
@@ -3829,10 +3845,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         ].filter(Boolean));
     },
 
-    make_folder_selector: function () {
-        var folders = NEWSBLUR.utils.make_folders();
+    make_folder_selector: function (selected_folder) {
+        var folders = NEWSBLUR.utils.make_folders(selected_folder);
         var $select = $(folders).addClass('NB-add-site-folder-select');
-        $select.append($.make('option', { value: '__new__' }, '+ New Folder...'));
         return $select;
     },
 
@@ -4447,26 +4462,61 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         }
     },
 
-    handle_folder_change: function (e) {
-        var $select = $(e.currentTarget);
-        var value = $select.val();
+    toggle_webfeed_folder_input: function () {
+        var $input_row = this.$('.NB-add-site-webfeed-folder-input');
+        var $icon = this.$('.NB-add-site-webfeed-folder-add-icon');
 
-        if (value === '__new__') {
-            var folder_name = prompt('Enter new folder name:');
-            if (folder_name && folder_name.trim()) {
-                NEWSBLUR.assets.save_add_folder(folder_name.trim(), '', function (data) {
-                    if (data && !data.message) {
-                        var folders = NEWSBLUR.utils.make_folders();
-                        var $new_select = $(folders).addClass('NB-add-site-folder-select');
-                        $new_select.append($.make('option', { value: '__new__' }, '+ New Folder...'));
-                        $new_select.val(folder_name.trim());
-                        $select.replaceWith($new_select);
-                    }
+        if ($input_row.hasClass('NB-hidden')) {
+            $input_row.removeClass('NB-hidden').hide().slideDown(200);
+            $icon.addClass('NB-active');
+            this.$('.NB-add-site-webfeed-folder-name').focus();
+        } else {
+            $input_row.slideUp(200, function () {
+                $(this).addClass('NB-hidden');
+            });
+            $icon.removeClass('NB-active');
+        }
+    },
+
+    handle_webfeed_folder_keypress: function (e) {
+        if (e.keyCode === 13) {
+            e.preventDefault();
+            this.save_webfeed_folder();
+        }
+    },
+
+    save_webfeed_folder: function () {
+        var self = this;
+        var folder_name = this.$('.NB-add-site-webfeed-folder-name').val().trim();
+        if (!folder_name) return;
+
+        var $submit = this.$('.NB-add-site-webfeed-folder-submit');
+        var $loading = this.$('.NB-add-site-webfeed-folder-input .NB-loading');
+
+        $loading.addClass('NB-active');
+        $submit.addClass('NB-disabled').text('Adding...');
+
+        var parent_folder = this.$('.NB-add-site-webfeed-folder-row .NB-add-site-folder-select').val() || '';
+        NEWSBLUR.assets.save_add_folder(folder_name, parent_folder, function (data) {
+            $loading.removeClass('NB-active');
+            $submit.removeClass('NB-disabled');
+
+            if (data && !data.message) {
+                $submit.text('Added!');
+                NEWSBLUR.assets.load_feeds(function () {
+                    var $new_select = self.make_folder_selector(folder_name);
+                    self.$('.NB-add-site-webfeed-folder-row .NB-add-site-folder-select').replaceWith($new_select);
+                    self.$('.NB-add-site-webfeed-folder-name').val('');
+                    self.$('.NB-add-site-webfeed-folder-input').slideUp(200, function () {
+                        $(this).addClass('NB-hidden');
+                    });
+                    self.$('.NB-add-site-webfeed-folder-add-icon').removeClass('NB-active');
+                    $submit.text('Add Folder');
                 });
             } else {
-                $select.val('');
+                $submit.text('Add Folder');
             }
-        }
+        });
     },
 
     // ================================
