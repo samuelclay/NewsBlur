@@ -32,7 +32,9 @@ Switch from the "Up Next" tab to the "History" tab to see your last 10 played it
 
 Click the gear icon in the player to customize your experience:
 
-- **Skip back/forward**: Choose how far to jump (5s to 90s in each direction, defaulting to 15s back and 30s forward)
+<img src="/assets/mini-player-settings.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;">
+
+- **Skip back/forward**: Choose how far to jump (5s, 10s, 15s, 30s, or 60s in each direction)
 - **Auto-play**: Automatically play the next queued item when the current one finishes (on by default)
 - **Resume position**: Remember where you left off in each episode (on by default)
 - **Show on load**: Restore the player when you reload NewsBlur, so you can pick up right where you left off (on by default)

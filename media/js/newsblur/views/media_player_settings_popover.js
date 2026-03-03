@@ -40,11 +40,11 @@ NEWSBLUR.MediaPlayerSettingsPopover = NEWSBLUR.ReaderPopover.extend({
             ]),
             this.make_section('Skip Forward', 'Seconds to skip forward', [
                 this.make_control('skip_forward', [
+                    ['5', '5s'],
                     ['10', '10s'],
                     ['15', '15s'],
                     ['30', '30s'],
-                    ['60', '60s'],
-                    ['90', '90s']
+                    ['60', '60s']
                 ])
             ]),
             this.make_section('Auto-play', 'Automatically play next item in queue', [
