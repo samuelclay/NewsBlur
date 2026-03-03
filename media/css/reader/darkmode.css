@@ -1163,6 +1163,212 @@ color: #a85b40;
     border-color: #303030
 }
 
+/* Media Player dark mode */
+.NB-dark .NB-media-player {
+    background-color: #2e3033;
+    background-image: none;
+    border-bottom-color: #404040;
+}
+
+.NB-dark .NB-media-player-title {
+    color: #ddd;
+}
+
+.NB-dark .NB-media-player-type-badge {
+    color: #777;
+}
+
+.NB-dark .NB-media-player-progress {
+    background: #555;
+}
+
+.NB-dark .NB-media-player-progress::-webkit-slider-thumb {
+    background: #bbb;
+}
+
+.NB-dark .NB-media-player-progress::-moz-range-thumb {
+    background: #bbb;
+}
+
+.NB-dark .NB-media-player-time {
+    color: #777;
+}
+
+.NB-dark .NB-media-player-volume-popover {
+    background: #36393d;
+    border-color: #4a4d52;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-media-player-volume-container:hover .NB-media-player-volume-icon,
+.NB-dark .NB-media-player-volume-icon:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-media-player-volume::-webkit-slider-runnable-track {
+    background: #505356;
+}
+
+.NB-dark .NB-media-player-volume::-webkit-slider-thumb {
+    background: #a0a2a6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-media-player-volume::-moz-range-track {
+    background: #505356;
+}
+
+.NB-dark .NB-media-player-volume::-moz-range-thumb {
+    background: #a0a2a6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-media-player-speed {
+    color: #aaa;
+}
+
+.NB-dark .NB-media-player-play-pause svg,
+.NB-dark .NB-media-player-skip-back svg,
+.NB-dark .NB-media-player-skip-forward svg {
+    fill: #ccc;
+}
+
+.NB-dark .NB-media-player-settings svg,
+.NB-dark .NB-media-player-close svg {
+    fill: #aaa;
+}
+
+.NB-dark .NB-media-player-volume-icon svg {
+    fill: #aaa;
+}
+
+.NB-dark .NB-media-player-speed:hover,
+.NB-dark .NB-media-player-play-pause:hover,
+.NB-dark .NB-media-player-skip-back:hover,
+.NB-dark .NB-media-player-skip-forward:hover,
+.NB-dark .NB-media-player-settings:hover,
+.NB-dark .NB-media-player-close:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-media-settings-popover .NB-popover-section {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-media-settings-popover .NB-popover-section-title {
+    color: #777;
+}
+
+.NB-dark .NB-media-settings-popover .NB-popover-section-description {
+    color: #666;
+}
+
+.NB-dark .NB-media-player-queue-area {
+    border-top-color: #404040;
+}
+
+.NB-dark .NB-media-player-queue li {
+    color: #ccc;
+}
+
+.NB-dark .NB-media-player-queue li:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-media-player-queue-header {
+    color: #777;
+}
+
+.NB-dark .NB-media-player-queue-empty {
+    color: #666;
+}
+
+.NB-dark .NB-media-player-queue-remove svg {
+    fill: #888;
+}
+
+.NB-dark .NB-media-player-queue-clear {
+    color: #777;
+}
+
+.NB-dark .NB-media-player-queue-clear:hover {
+    color: #aaa;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-queue-drag-handle svg {
+    fill: #666;
+}
+
+.NB-dark .NB-queue-date {
+    color: #666;
+}
+
+.NB-dark .NB-media-player-queue li.NB-queue-dragging {
+    background: #3a3d40;
+}
+
+.NB-dark .NB-media-player-queue-header .segmented-control li {
+    color: #777;
+}
+
+.NB-dark .NB-media-player-queue-header .segmented-control li.NB-active {
+    color: #ddd;
+}
+
+.NB-dark .NB-media-player-queue-count,
+.NB-dark .NB-media-player-history-count {
+    color: #aaa;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-media-player-history-remove svg {
+    fill: #888;
+}
+
+.NB-dark .NB-media-player-artwork {
+    background: #444;
+}
+
+.NB-dark .NB-media-player-icon {
+    background: linear-gradient(135deg, #4d8530, #3d6e27);
+}
+
+.NB-dark .NB-media-player-skip-back .NB-skip-label,
+.NB-dark .NB-media-player-skip-forward .NB-skip-label {
+    color: #aaa;
+}
+
+.NB-dark .NB-media-player-feed-title {
+    color: #999;
+}
+
+.NB-dark .NB-media-play-now {
+    background: #4d8530;
+    border-color: #3d6e27;
+}
+
+.NB-dark .NB-media-play-now:hover {
+    background: #5a9938;
+}
+
+.NB-dark .NB-media-play-next,
+.NB-dark .NB-media-play-last {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ccc;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-media-play-next:hover,
+.NB-dark .NB-media-play-last:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.NB-dark .NB-media-play-next svg,
+.NB-dark .NB-media-play-last svg {
+    fill: #bbb;
+}
+
 /* Buttons on bottom & top bar */
 .NB-dark .NB-modal h5,
 .NB-dark .NB-module h5,

@@ -557,6 +557,10 @@ def load_feeds(request):
     folder_auto_mark_read = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
     folder_auto_mark_read_dict = {fs.folder_title: fs.to_json() for fs in folder_auto_mark_read}
 
+    from apps.media_player.models import MMediaPlaybackState
+
+    playback_state = MMediaPlaybackState.get_state_with_redis_position(user.pk)
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB feeds/socials%s"
@@ -580,6 +584,7 @@ def load_feeds(request):
         "folder_icons": folder_icons_dict,
         "feed_icons": feed_icons_dict,
         "folder_auto_mark_read": folder_auto_mark_read_dict,
+        "playback_state": playback_state,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -694,6 +699,10 @@ def load_feeds_flat(request):
     folder_auto_mark_read = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
     folder_auto_mark_read_dict = {fs.folder_title: fs.to_json() for fs in folder_auto_mark_read}
 
+    from apps.media_player.models import MMediaPlaybackState
+
+    playback_state = MMediaPlaybackState.get_state_with_redis_position(user.pk)
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s"
@@ -729,6 +738,7 @@ def load_feeds_flat(request):
         "folder_icons": folder_icons_dict,
         "feed_icons": feed_icons_dict,
         "folder_auto_mark_read": folder_auto_mark_read_dict,
+        "playback_state": playback_state,
         "share_ext_token": user.profile.secret_token,
     }
     return data
