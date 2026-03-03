@@ -29,6 +29,11 @@ class MMediaPlaybackState(mongo.Document):
     current_volume = mongo.FloatField(default=1.0)
     is_playing = mongo.BooleanField(default=False)
 
+    # Cumulative play counters (never decrease)
+    total_audio_plays = mongo.IntField(default=0)
+    total_video_plays = mongo.IntField(default=0)
+    total_youtube_plays = mongo.IntField(default=0)
+
     # Player settings
     skip_back_seconds = mongo.IntField(default=15)
     skip_forward_seconds = mongo.IntField(default=30)
@@ -94,6 +99,15 @@ class MMediaPlaybackState(mongo.Document):
     @classmethod
     def save_playback_state(cls, user_id, **kwargs):
         state = cls.get_or_create_user(user_id)
+        # Increment cumulative play counter when a new media item starts
+        if "current_media_url" in kwargs and kwargs["current_media_url"] != state.current_media_url:
+            media_type = kwargs.get("current_media_type", state.current_media_type)
+            if media_type == "audio":
+                state.total_audio_plays = (state.total_audio_plays or 0) + 1
+            elif media_type == "video":
+                state.total_video_plays = (state.total_video_plays or 0) + 1
+            elif media_type == "youtube":
+                state.total_youtube_plays = (state.total_youtube_plays or 0) + 1
         for key, value in kwargs.items():
             if hasattr(state, key) and key not in ("user_id", "meta"):
                 setattr(state, key, value)
