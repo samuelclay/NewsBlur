@@ -1803,7 +1803,7 @@ class Feed(models.Model):
             if r_update.set("cluster_queued:%s" % self.pk, 1, nx=True, ex=60 * 60 * 6):
                 ComputeStoryClusters.apply_async(
                     kwargs=dict(feed_id=self.pk),
-                    queue="work_queue",
+                    queue="update_feeds",
                 )
 
         return ret_values
