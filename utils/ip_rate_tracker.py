@@ -14,21 +14,13 @@ import time
 
 import redis
 from django.conf import settings
-from prometheus_client import Counter, Gauge
+from prometheus_client import Counter
 
 # Prometheus metrics - low cardinality (safe for high-volume scraping)
 READER_REQUESTS = Counter(
     "newsblur_reader_requests_total",
     "Total reader endpoint requests",
     ["endpoint", "user_agent"],
-)
-ABUSERS_CURRENT = Gauge(
-    "newsblur_rate_limit_abusers_current",
-    "Current number of IPs exceeding threshold in this window",
-)
-TOP_ABUSER_REQUESTS = Gauge(
-    "newsblur_rate_limit_top_abuser_requests",
-    "Request count from highest-volume IP in current window",
 )
 ABUSE_REQUESTS_TOTAL = Counter(
     "newsblur_rate_limit_abuse_requests_total",
@@ -39,10 +31,6 @@ ABUSE_REQUESTS_TOTAL = Counter(
 WOULD_BE_DENIED_TOTAL = Counter(
     "newsblur_rate_limit_would_deny_total",
     "Total requests that would be denied if rate limiting was enabled",
-)
-WOULD_BE_DENIED_IPS = Gauge(
-    "newsblur_rate_limit_would_deny_ips_current",
-    "Current number of unique IPs that would be denied",
 )
 
 
@@ -61,7 +49,6 @@ class IPRateTracker:
     TTL_SECONDS = 3600  # 1 hour
     META_TTL_SECONDS = 7200  # 2 hours
     ABUSE_THRESHOLD = 300  # requests per 5-min window
-    MAX_ABUSER_METRICS = 20  # limit Redis zrevrange scan to top N IPs
 
     # User agent classification patterns
     UA_PATTERNS = {
@@ -73,9 +60,6 @@ class IPRateTracker:
 
     def __init__(self):
         self._redis = None
-        self._last_gauge_update = 0
-        self._last_denial_gauge_update = 0
-        self._gauge_update_interval = 30  # seconds
 
     @property
     def redis(self):
@@ -191,50 +175,6 @@ class IPRateTracker:
         if current_count > self.ABUSE_THRESHOLD:
             ABUSE_REQUESTS_TOTAL.inc()
 
-        # Periodically update Prometheus gauges
-        self._maybe_update_gauges(window)
-
-    def _maybe_update_gauges(self, window):
-        """
-        Update Prometheus gauges periodically (not on every request).
-        """
-        now = time.time()
-        if now - self._last_gauge_update < self._gauge_update_interval:
-            return
-
-        self._last_gauge_update = now
-        self._update_gauges(window)
-
-    def _update_gauges(self, window):
-        """
-        Update Prometheus gauge metrics from Redis.
-        """
-        top_key = f"ipr:top:{window}"
-
-        # Get top offenders
-        top_ips = self.redis.zrevrange(top_key, 0, self.MAX_ABUSER_METRICS - 1, withscores=True)
-
-        if not top_ips:
-            ABUSERS_CURRENT.set(0)
-            TOP_ABUSER_REQUESTS.set(0)
-            return
-
-        # Count IPs over threshold
-        abuser_count = 0
-        top_count = 0
-
-        for ip_bytes, count in top_ips:
-            count = int(count)
-
-            if count > top_count:
-                top_count = count
-
-            if count > self.ABUSE_THRESHOLD:
-                abuser_count += 1
-
-        ABUSERS_CURRENT.set(abuser_count)
-        TOP_ABUSER_REQUESTS.set(top_count)
-
     def get_ip_metadata(self, ip):
         """
         Get metadata hash for an IP address.
@@ -313,13 +253,6 @@ class IPRateTracker:
         threshold = getattr(settings, "IP_RATE_LIMIT_THRESHOLD", self.ABUSE_THRESHOLD)
         return int(count) > threshold
 
-    def force_update_gauges(self):
-        """
-        Force immediate update of Prometheus gauges.
-        Useful for testing or manual refresh.
-        """
-        window = self.get_current_window()
-        self._update_gauges(window)
 
     def track_would_be_denied(self, request, endpoint):
         """
@@ -377,25 +310,6 @@ class IPRateTracker:
         pipe.expire(denied_count_key, self.TTL_SECONDS)
 
         pipe.execute()
-
-        # Update Prometheus gauges (rate-limited)
-        self._maybe_update_denial_gauges(window)
-
-    def _maybe_update_denial_gauges(self, window):
-        """Update denial gauges periodically (independent of regular gauges)."""
-        now = time.time()
-        if now - self._last_denial_gauge_update < self._gauge_update_interval:
-            return
-        self._last_denial_gauge_update = now
-        self._update_denial_gauges(window)
-
-    def _update_denial_gauges(self, window):
-        """Update Prometheus gauges for denial tracking."""
-        denied_ips_key = f"ipr:denied_ips:{window}"
-
-        # Get count of unique denied IPs
-        denied_count = self.redis.scard(denied_ips_key)
-        WOULD_BE_DENIED_IPS.set(denied_count)
 
     def get_denied_requests(self, window=None, limit=100):
         """
@@ -462,14 +376,6 @@ SCANNER_404_TOTAL = Counter(
     "Total 404 responses by IP category",
     ["category"],  # suspicious_path, normal_404
 )
-SCANNER_IPS_CURRENT = Gauge(
-    "newsblur_scanner_ips_current",
-    "Current number of IPs flagged as scanners",
-)
-SCANNER_TOP_404_COUNT = Gauge(
-    "newsblur_scanner_top_404_count",
-    "404 count from highest-volume scanning IP",
-)
 
 
 class ScannerTracker:
@@ -491,7 +397,6 @@ class ScannerTracker:
     TTL_SECONDS = 3600  # 1 hour
     META_TTL_SECONDS = 7200  # 2 hours
     SCANNER_THRESHOLD = 10  # 404s per 5-min window to be flagged
-    MAX_SCANNER_METRICS = 20
 
     # Patterns that indicate vulnerability scanning
     SUSPICIOUS_PATTERNS = [
@@ -517,8 +422,6 @@ class ScannerTracker:
 
     def __init__(self):
         self._redis = None
-        self._last_gauge_update = 0
-        self._gauge_update_interval = 30
         self._suspicious_re = re.compile("|".join(self.SUSPICIOUS_PATTERNS), re.IGNORECASE)
 
     @property
@@ -586,40 +489,6 @@ class ScannerTracker:
 
         pipe.execute()
 
-        # Periodically update gauges
-        self._maybe_update_gauges(window)
-
-    def _maybe_update_gauges(self, window):
-        now = time.time()
-        if now - self._last_gauge_update < self._gauge_update_interval:
-            return
-        self._last_gauge_update = now
-        self._update_gauges(window)
-
-    def _update_gauges(self, window):
-        top_key = f"scan:top:{window}"
-        top_ips = self.redis.zrevrange(top_key, 0, self.MAX_SCANNER_METRICS - 1, withscores=True)
-
-        if not top_ips:
-            SCANNER_IPS_CURRENT.set(0)
-            SCANNER_TOP_404_COUNT.set(0)
-            return
-
-        scanner_count = 0
-        top_count = 0
-
-        for ip_bytes, count in top_ips:
-            count = int(count)
-
-            if count > top_count:
-                top_count = count
-
-            if count >= self.SCANNER_THRESHOLD:
-                scanner_count += 1
-
-        SCANNER_IPS_CURRENT.set(scanner_count)
-        SCANNER_TOP_404_COUNT.set(top_count)
-
     def get_ip_metadata(self, ip):
         meta_key = f"scan:meta:{ip}"
         return self.redis.hgetall(meta_key)
@@ -672,7 +541,3 @@ class ScannerTracker:
             return False
 
         return int(count) >= self.SCANNER_THRESHOLD
-
-    def force_update_gauges(self):
-        window = self.get_current_window()
-        self._update_gauges(window)
