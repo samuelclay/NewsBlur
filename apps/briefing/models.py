@@ -16,6 +16,10 @@ class MBriefing(mongo.Document):
 
     Each briefing corresponds to one summary story plus
     a set of curated story hashes from the user's feeds.
+
+    The (user_id, slot, local_date) fields act as an idempotency guard —
+    the unique sparse index prevents duplicate generation of the same
+    time slot on the same calendar date.
     """
 
     user_id = mongo.IntField()
@@ -29,12 +33,26 @@ class MBriefing(mongo.Document):
     generated_at = mongo.DateTimeField()
     frequency = mongo.StringField(choices=["daily", "twice_daily", "thrice_daily", "weekly"], default="daily")
     status = mongo.StringField(choices=["pending", "generating", "complete", "failed"], default="pending")
+    # models.py: Slot-based idempotency fields. The unique sparse index on
+    # (user_id, slot, local_date) prevents duplicate generation regardless
+    # of timing edge cases. Sparse so existing records without these fields
+    # don't conflict.
+    slot = mongo.StringField(choices=["morning", "afternoon", "evening"])
+    local_date = mongo.StringField()  # "YYYY-MM-DD" in user's local timezone
 
     meta = {
         "collection": "briefings",
         "indexes": [
             ("user_id", "-briefing_date"),
             {"fields": ["summary_story_hash"], "unique": True, "sparse": True},
+            {
+                "fields": ["user_id", "slot", "local_date"],
+                "unique": True,
+                "partialFilterExpression": {
+                    "slot": {"$type": "string"},
+                    "local_date": {"$type": "string"},
+                },
+            },
         ],
         "ordering": ["-briefing_date"],
         "allow_inheritance": False,
@@ -61,6 +79,27 @@ class MBriefing(mongo.Document):
             ).count()
             > 0
         )
+
+    @classmethod
+    def slot_exists(cls, user_id, slot, local_date):
+        """Check if a briefing has already been generated for this user/slot/date."""
+        return cls.objects.filter(user_id=user_id, slot=slot, local_date=local_date).count() > 0
+
+    @classmethod
+    def delete_latest_slot(cls, user_id):
+        """
+        Delete the most recent MBriefing slot guard for a user by clearing the
+        slot/local_date fields. Used by on-demand regeneration to allow re-generation.
+        """
+        latest = cls.objects.filter(
+            user_id=user_id, slot__exists=True, local_date__exists=True
+        ).order_by("-briefing_date").first()
+        if latest:
+            latest.slot = None
+            latest.local_date = None
+            latest.save()
+            return True
+        return False
 
 
 BRIEFING_SECTION_DEFINITIONS = [
@@ -205,6 +244,8 @@ def create_briefing_story(
     section_summaries=None,
     frequency=None,
     period_start=None,
+    slot=None,
+    local_date_str=None,
 ):
     """
     Create or update an MStory in the briefing feed with the summary, and an MBriefing
@@ -301,6 +342,8 @@ def create_briefing_story(
     except UserSubscription.DoesNotExist:
         pass
 
+    is_new_briefing = not existing_briefing
+
     if existing_briefing:
         existing_briefing.curated_story_hashes = curated_story_hashes
         existing_briefing.curated_sections = curated_sections
@@ -323,13 +366,18 @@ def create_briefing_story(
             frequency=frequency or "daily",
             generated_at=datetime.datetime.utcnow(),
             status="complete",
+            slot=slot,
+            local_date=local_date_str,
         )
         briefing.save()
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(user.username, "reload:%s" % feed.pk)
 
-    if MUserFeedNotification.feed_has_users(feed.pk) > 0:
+    # models.py: Only send notifications for new briefings, not updates.
+    # Updates happen when a duplicate dispatch regenerates an existing slot,
+    # and sending notifications again would cause duplicate emails.
+    if is_new_briefing and MUserFeedNotification.feed_has_users(feed.pk) > 0:
         QueueNotifications.delay(feed.pk, 1)
 
     logging.debug(

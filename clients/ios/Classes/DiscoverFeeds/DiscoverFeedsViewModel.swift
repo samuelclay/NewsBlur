@@ -110,12 +110,19 @@ class DiscoverFeedsViewModel: ObservableObject {
 
                 self.isLoading = false
 
+                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+
                 if let error = error {
                     self.error = error.localizedDescription
                     return
                 }
 
-                guard let data = data else {
+                guard statusCode == 200 else {
+                    self.error = "Server error (HTTP \(statusCode))"
+                    return
+                }
+
+                guard let data = data, !data.isEmpty else {
                     self.error = "No response data"
                     return
                 }
@@ -127,7 +134,7 @@ class DiscoverFeedsViewModel: ObservableObject {
                     }
 
                     guard let discoverFeeds = json["discover_feeds"] as? [String: Any] else {
-                        self.error = json["message"] as? String ?? "No feeds found"
+                        self.error = json["message"] as? String ?? "No related sites found"
                         self.hasMorePages = false
                         return
                     }
@@ -152,7 +159,7 @@ class DiscoverFeedsViewModel: ObservableObject {
                         self.hasMorePages = page < self.maxPage
                     }
                 } catch {
-                    self.error = "Failed to parse response"
+                    self.error = "Failed to parse response (HTTP \(statusCode))"
                 }
             }
         }.resume()

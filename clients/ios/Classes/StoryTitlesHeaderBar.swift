@@ -260,7 +260,7 @@ class StoryTitlesHeaderBar: NSObject {
 
     private func buildDiscoverPill() {
         let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
-        setPillContent(discoverPill, title: "DISCOVER", image: discoverImage,
+        setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
                        leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
         configurePillAppearance(discoverPill)
         discoverPill.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -560,7 +560,7 @@ class StoryTitlesHeaderBar: NSObject {
             let maxFavicons = min(storedFavicons.count, 5)
             return CGFloat(maxFavicons) * 14 + 28 + 8
         }
-        return 80
+        return 120
     }
 
     // MARK: - Discover Pill Adaptive Layout
@@ -612,10 +612,10 @@ class StoryTitlesHeaderBar: NSObject {
             wc.isActive = true
             discoverWidthConstraint = wc
         } else if canFitDiscoverText() {
-            // Text mode: icon + "DISCOVER"
+            // Text mode: icon + "RELATED SITES"
             isDiscoverCompact = false
             let discoverImage = UIImage(named: "discover").map { resizedImage($0, to: CGSize(width: 14, height: 14)) }
-            setPillContent(discoverPill, title: "DISCOVER", image: discoverImage,
+            setPillContent(discoverPill, title: "RELATED SITES", image: discoverImage,
                            leadingInset: 14, trailingInset: 12, lineBreakMode: .byClipping)
             discoverPill.contentHorizontalAlignment = .center
         } else {
@@ -633,7 +633,7 @@ class StoryTitlesHeaderBar: NSObject {
         let availableWidth = headerContainer.bounds.width
         guard availableWidth > 0 else { return true }
 
-        let discoverTextWidth: CGFloat = 80
+        let discoverTextWidth: CGFloat = 120
         let optionsWidth = optionsPill.isHidden ? 0 : optionsPill.intrinsicContentSize.width
         let searchWidth: CGFloat = isSearchCompact ? 38 : 80
         let markReadWidth: CGFloat = 108

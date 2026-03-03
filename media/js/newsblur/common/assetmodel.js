@@ -69,6 +69,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.folder_icons = {};
         this.feed_icons = {};
         this.folder_auto_mark_read = {};
+        this.playback_state = null;
         this.flags = {
             'favicons_fetching': false,
             'has_chosen_feeds': false
@@ -670,6 +671,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.folder_icons = subscriptions.folder_icons || {};
             self.feed_icons = subscriptions.feed_icons || {};
             self.folder_auto_mark_read = subscriptions.folder_auto_mark_read || {};
+            self.playback_state = subscriptions.playback_state || null;
 
             if (selected && self.feeds.get(selected)) {
                 self.feeds.get(selected).set('selected', true);
@@ -2558,6 +2560,97 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
             story.set('intelligence', intelligence, options);
         }, this));
+    },
+
+    // ===================
+    // = Media Playback  =
+    // ===================
+
+    save_playback_state: function (state_data, callback, error_callback) {
+        this.make_request('/media_player/save_playback_state', state_data, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    add_to_media_queue: function (media_item, callback, error_callback) {
+        this.make_request('/media_player/add_to_media_queue', media_item, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    remove_from_media_queue: function (story_hash, media_url, callback, error_callback) {
+        this.make_request('/media_player/remove_from_media_queue', {
+            story_hash: story_hash,
+            media_url: media_url
+        }, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    reorder_media_queue: function (queue_order, callback, error_callback) {
+        this.make_request('/media_player/reorder_media_queue', {
+            queue_order: JSON.stringify(queue_order)
+        }, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    clear_playback_state: function (callback, error_callback) {
+        this.make_request('/media_player/clear_playback_state', {}, _.bind(function (response) {
+            this.playback_state = null;
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    clear_media_queue: function (callback, error_callback) {
+        this.make_request('/media_player/clear_media_queue', {}, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    add_to_media_history: function (media_item, callback, error_callback) {
+        this.make_request('/media_player/add_to_media_history', media_item, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    remove_from_media_history: function (story_hash, media_url, callback, error_callback) {
+        this.make_request('/media_player/remove_from_media_history', {
+            story_hash: story_hash,
+            media_url: media_url
+        }, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    clear_media_history: function (callback, error_callback) {
+        this.make_request('/media_player/clear_media_history', {}, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
     }
 
 });
