@@ -10007,11 +10007,35 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "media_player{metric=\"active_states\"}",
+          "expr": "media_player{metric=\"active_players\",type=\"audio\"}",
           "interval": "",
-          "legendFormat": "Active Players",
+          "legendFormat": "Audio",
           "queryType": "randomWalk",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "media_player{metric=\"active_players\",type=\"video\"}",
+          "interval": "",
+          "legendFormat": "Video",
+          "queryType": "randomWalk",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "media_player{metric=\"active_players\",type=\"youtube\"}",
+          "interval": "",
+          "legendFormat": "YouTube",
+          "queryType": "randomWalk",
+          "refId": "C"
         }
       ],
       "title": "Active Media Players",
