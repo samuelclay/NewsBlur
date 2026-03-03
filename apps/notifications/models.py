@@ -1,3 +1,10 @@
+"""Notification models: per-feed notification settings and device token storage.
+
+MUserFeedNotification configures which feeds trigger push notifications and
+at what frequency. MUserNotificationTokens stores iOS APNS and Android push
+tokens for delivering notifications.
+"""
+
 import datetime
 import enum
 import html
@@ -416,7 +423,7 @@ class MUserFeedNotification(mongo.Document):
                 alert=alert,
                 custom=custom_data,
                 category="STORY_CATEGORY",
-                mutable_content=image_url is not None,
+                mutable_content=True,
             )
             notification = IOSNotification(payload=payload, topic="com.newsblur.NewsBlur")
 

@@ -55,6 +55,7 @@ urlpatterns = [
     ),
     url(r"^mark_story_as_unread", views.mark_story_as_unread),
     url(r"^mark_story_hash_as_unread", views.mark_story_hash_as_unread, name="mark-story-hash-as-unread"),
+    url(r"^mark_stories_as_unread", views.mark_stories_as_unread, name="mark-stories-as-unread"),
     url(r"^mark_story_as_starred", views.mark_story_as_starred),
     url(r"^mark_story_hash_as_starred", views.mark_story_hash_as_starred),
     url(r"^mark_story_as_unstarred", views.mark_story_as_unstarred),
@@ -102,4 +103,5 @@ urlpatterns = [
     url(
         r"^get_auto_mark_read_settings", views.get_auto_mark_read_settings, name="get-auto-mark-read-settings"
     ),
+    url(r"^cluster_stories", views.load_cluster_stories, name="load-cluster-stories"),
 ]

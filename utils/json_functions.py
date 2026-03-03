@@ -1,3 +1,10 @@
+"""JSON encoding/decoding with Django and MongoDB type support.
+
+Custom JSON encoder that handles Django models, QuerySets, ObjectIds,
+datetimes, Decimals, and other non-standard types. Also provides
+JSON-based HTTP response helpers (json_response, json_404, json_403).
+"""
+
 # -*- coding: utf-8 -*-
 import datetime
 import json

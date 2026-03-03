@@ -639,7 +639,7 @@
     [[ThemeManager themeManager] updateSegmentedControl:self.themeSegment];
 
     // Show white pill for all selections (Auto and color themes)
-    self.themeSegment.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
+    self.themeSegment.selectedSegmentTintColor = UIColorFromLightSepiaMediumDarkRGB(0xdce6f0, 0xFAF5ED, 0xbbbbbb, 0x888890);
 
     [cell.contentView addSubview:self.themeSegment];
 

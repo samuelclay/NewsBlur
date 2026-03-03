@@ -119,17 +119,25 @@ struct PremiumView: View {
         PremiumFeature(title: "Privacy options for your blurblog", icon: "lock.shield.fill", iconColor: .green),
         PremiumFeature(title: "Custom RSS feeds for saved stories", icon: "dot.radiowaves.up.forward", iconColor: .orange),
         PremiumFeature(title: "Text view conveniently extracts the story", icon: "doc.text.fill", iconColor: .cyan),
+        PremiumFeature(title: "Discover related stories and sites", icon: "arrow.triangle.branch", iconColor: .teal),
         PremiumFeature(title: "You feed Lyric, NewsBlur's hungry hound, for 6 days", icon: "fork.knife", iconColor: .brown)
     ]
 
     private let archiveFeatures: [PremiumFeature] = [
         PremiumFeature(title: "Everything in the premium subscription, of course", icon: "sparkles", iconColor: .yellow),
+        PremiumFeature(title: "Follow up to 4,096 sites", icon: "square.stack.3d.up.fill", iconColor: .blue),
         PremiumFeature(title: "Choose when stories are automatically marked as read", icon: "book.fill", iconColor: .blue),
+        PremiumFeature(title: "Customize auto-read by site or folder", icon: "slider.horizontal.3", iconColor: .green),
         PremiumFeature(title: "Every story from every site is archived and searchable forever", icon: "archivebox.fill", iconColor: .purple),
         PremiumFeature(title: "Feeds that support paging are back-filled in for a complete archive", icon: "arrow.clockwise.circle.fill", iconColor: .teal),
+        PremiumFeature(title: "Train stories on full text content", icon: "doc.text.fill", iconColor: .cyan),
+        PremiumFeature(title: "Discover related stories across your archive", icon: "arrow.triangle.branch", iconColor: .teal),
         PremiumFeature(title: "Export trained stories from folders as RSS feeds", icon: "square.and.arrow.up.fill", iconColor: .orange),
         PremiumFeature(title: "Stories can stay unread forever", icon: "calendar.badge.clock", iconColor: .red),
-        PremiumFeature(title: "Ask AI questions about stories", icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true)
+        PremiumFeature(title: "Ask AI questions about stories", icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true),
+        PremiumFeature(title: "Filter stories by date range", icon: "calendar", iconColor: .pink),
+        PremiumFeature(title: "Apply training across a folder", icon: "folder.fill", iconColor: .mint),
+        PremiumFeature(title: "Apply training globally", icon: "globe", iconColor: .indigo)
     ]
 
     @available(iOS 15.0, *)

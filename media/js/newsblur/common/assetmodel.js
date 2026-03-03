@@ -69,6 +69,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.folder_icons = {};
         this.feed_icons = {};
         this.folder_auto_mark_read = {};
+        this.playback_state = null;
         this.flags = {
             'favicons_fetching': false,
             'has_chosen_feeds': false
@@ -273,7 +274,71 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     data.read_times = JSON.stringify(this.queued_read_stories['read_times']);
                 }
 
-                this.make_request('/reader/mark_story_hashes_as_read', data, callback, error_callback, {
+                var original_hash = story.get('story_hash');
+                var original_hashes = data.story_hash;
+                this.make_request('/reader/mark_story_hashes_as_read', data, function (resp) {
+                    // assetmodel.js: Mark cluster member stories as read on the client
+                    if (resp && resp.story_hashes) {
+                        var extra_hashes = _.difference(resp.story_hashes, original_hashes);
+                        if (!self._cluster_read_hashes) self._cluster_read_hashes = {};
+                        var cluster_feed_decrements = {};
+                        _.each(extra_hashes, function (hash) {
+                            var cluster_story = self.stories.get_by_story_hash(hash);
+                            if (cluster_story && !cluster_story.get('read_status')) {
+                                cluster_story.set('read_status', 1);
+                                self.stories.sync_briefing_read_status(hash, 1);
+                                self.stories.update_read_count(cluster_story, {});
+                            }
+                            // assetmodel.js: Track cluster feed_ids for count
+                            // adjustment and pubsub suppression
+                            var feed_id = parseInt(hash.split(':')[0], 10);
+                            if (!cluster_feed_decrements[feed_id]) {
+                                cluster_feed_decrements[feed_id] = 0;
+                            }
+                            if (!cluster_story && !self._cluster_read_hashes[hash]) {
+                                cluster_feed_decrements[feed_id] += 1;
+                                self._cluster_read_hashes[hash] = true;
+                            }
+                        });
+                        // assetmodel.js: For cluster stories not in the collection,
+                        // directly decrement the feed's neutral count
+                        _.each(cluster_feed_decrements, function (count, feed_id) {
+                            if (count <= 0) return;
+                            var feed = self.feeds.get(parseInt(feed_id, 10));
+                            if (feed) {
+                                feed.set('nt', Math.max(0, feed.get('nt') - count), {instant: true});
+                            }
+                        });
+                        // assetmodel.js: Suppress pubsub-triggered feed_unread_count
+                        // for cluster feeds to prevent overriding the local decrement
+                        var cluster_feed_ids = _.map(_.keys(cluster_feed_decrements), function (id) {
+                            return parseInt(id, 10);
+                        });
+                        if (cluster_feed_ids.length) {
+                            self.cluster_read_feed_ids = _.union(
+                                self.cluster_read_feed_ids || [], cluster_feed_ids
+                            );
+                            clearTimeout(self.cluster_read_timeout);
+                            self.cluster_read_timeout = setTimeout(function () {
+                                self.cluster_read_feed_ids = [];
+                                self._cluster_read_hashes = {};
+                            }, 5000);
+                        }
+                        // Update cluster_stories metadata on representative story
+                        var rep_story = self.stories.get_by_story_hash(original_hash);
+                        if (rep_story && rep_story.get('cluster_stories')) {
+                            var extra_set = {};
+                            _.each(extra_hashes, function (h) { extra_set[h] = true; });
+                            var cluster_stories = rep_story.get('cluster_stories');
+                            _.each(cluster_stories, function (cs) {
+                                if (extra_set[cs.story_hash]) {
+                                    cs.read_status = 1;
+                                }
+                            });
+                        }
+                    }
+                    if (callback) callback(resp);
+                }, error_callback, {
                     'ajax_group': 'queue_clear',
                     'beforeSend': function () {
                         self.queued_read_stories = {};
@@ -337,6 +402,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
 
         $.isFunction(callback) && callback();
+    },
+
+    mark_stories_as_unread: function (days, feed_id, folder, callback, error_callback) {
+        var data = { days: days };
+        if (feed_id) data.feed_id = feed_id;
+        if (folder) data.folder = folder;
+        this.make_request('/reader/mark_stories_as_unread', data, callback, error_callback);
     },
 
     mark_story_as_starred: function (story_id, callback) {
@@ -606,6 +678,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.folder_icons = subscriptions.folder_icons || {};
             self.feed_icons = subscriptions.feed_icons || {};
             self.folder_auto_mark_read = subscriptions.folder_auto_mark_read || {};
+            self.playback_state = subscriptions.playback_state || null;
 
             if (selected && self.feeds.get(selected)) {
                 self.feeds.get(selected).set('selected', true);
@@ -2494,6 +2567,97 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
             story.set('intelligence', intelligence, options);
         }, this));
+    },
+
+    // ===================
+    // = Media Playback  =
+    // ===================
+
+    save_playback_state: function (state_data, callback, error_callback) {
+        this.make_request('/media_player/save_playback_state', state_data, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    add_to_media_queue: function (media_item, callback, error_callback) {
+        this.make_request('/media_player/add_to_media_queue', media_item, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    remove_from_media_queue: function (story_hash, media_url, callback, error_callback) {
+        this.make_request('/media_player/remove_from_media_queue', {
+            story_hash: story_hash,
+            media_url: media_url
+        }, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    reorder_media_queue: function (queue_order, callback, error_callback) {
+        this.make_request('/media_player/reorder_media_queue', {
+            queue_order: JSON.stringify(queue_order)
+        }, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    clear_playback_state: function (callback, error_callback) {
+        this.make_request('/media_player/clear_playback_state', {}, _.bind(function (response) {
+            this.playback_state = null;
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    clear_media_queue: function (callback, error_callback) {
+        this.make_request('/media_player/clear_media_queue', {}, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    add_to_media_history: function (media_item, callback, error_callback) {
+        this.make_request('/media_player/add_to_media_history', media_item, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    remove_from_media_history: function (story_hash, media_url, callback, error_callback) {
+        this.make_request('/media_player/remove_from_media_history', {
+            story_hash: story_hash,
+            media_url: media_url
+        }, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    clear_media_history: function (callback, error_callback) {
+        this.make_request('/media_player/clear_media_history', {}, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
     }
 
 });

@@ -1,3 +1,5 @@
+"""Recommendation views: display and moderate recommended feeds."""
+
 import datetime
 import re
 

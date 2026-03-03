@@ -9,19 +9,14 @@ Open in Xcode:
 open NewsBlur.xcodeproj
 ```
 
-Build from command line:
+Build from command line (**always use "NewsBlur" scheme**, not "NewsBlur Alpha"):
 ```bash
-xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16' build
-```
-
-Build for Alpha (development):
-```bash
-xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur Alpha" -sdk iphonesimulator build
+xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16e' build
 ```
 
 Run tests:
 ```bash
-xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16' test
+xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16e' test
 ```
 
 ## Architecture Overview
@@ -134,24 +129,42 @@ Story content is rendered in WKWebView with:
 
 ## iOS Simulator Testing
 
-**IMPORTANT**: Do NOT use Chrome DevTools MCP server for iOS testing. Always use `run_ios.py` for screenshots and simulator interactions.
+**IMPORTANT**: Always use the **"NewsBlur"** scheme (NOT "NewsBlur Alpha" / "NB Alpha").
+
+**IMPORTANT**: Always use `run_ios.py` for ALL simulator interactions (screenshots, taps, builds, installs). Do NOT use Chrome DevTools MCP server, `xcrun simctl`, or `idb` directly — `run_ios.py` wraps these and handles PATH setup automatically.
+
+### Choosing a Device
+
+Preferred devices for testing:
+- **iPhone 16e** simulator (default simulator)
+- **Clay Phone** (physical device)
+- **ClayPad** (physical device / iPad)
+
+### Choosing a Simulator
+
+1. Run `python3 run_ios.py list` to see available simulators
+2. Use whichever device is already **Booted** (marked with `<-- BOOTED` in the list)
+3. If no device is booted, boot an **iPhone 16e** on the latest available iOS version: `xcrun simctl boot <UDID>`
 
 ### run_ios.py - Simulator Control Script
 
-Use `run_ios.py` for common simulator interactions. It handles idb PATH setup automatically.
+**IMPORTANT: You must specify a simulator UDID.** First run `list` to find the booted device, then pass the UDID via `--udid`:
 
 ```bash
-# Basic actions
-python3 run_ios.py tap:<x>,<y>              # Tap at coordinates
-python3 run_ios.py sleep:<seconds>          # Wait
-python3 run_ios.py swipe:<x1>,<y1>,<x2>,<y2> # Swipe
-python3 run_ios.py screenshot:/tmp/shot.png  # Take screenshot
-python3 run_ios.py launch                    # Launch NewsBlur
-python3 run_ios.py terminate                 # Kill NewsBlur
-python3 run_ios.py install                   # Install from DerivedData
+# Step 1: Find available simulators and their UDIDs
+python3 run_ios.py list
+
+# Step 2: Use --udid with any action
+python3 run_ios.py --udid <UDID> tap:<x>,<y>              # Tap at coordinates
+python3 run_ios.py --udid <UDID> sleep:<seconds>          # Wait
+python3 run_ios.py --udid <UDID> swipe:<x1>,<y1>,<x2>,<y2> # Swipe
+python3 run_ios.py --udid <UDID> screenshot:/tmp/shot.png  # Take screenshot
+python3 run_ios.py --udid <UDID> launch                    # Launch NewsBlur
+python3 run_ios.py --udid <UDID> terminate                 # Kill NewsBlur
+python3 run_ios.py --udid <UDID> install                   # Install from DerivedData
 
 # Chain multiple actions
-python3 run_ios.py launch sleep:2 tap:175,600 sleep:1 screenshot:/tmp/result.png
+python3 run_ios.py --udid <UDID> launch sleep:2 tap:175,600 sleep:1 screenshot:/tmp/result.png
 ```
 
 ### Screenshot Coordinate Mapping (iPhone 16e)
@@ -179,17 +192,8 @@ tap_y = screenshot_y / 3.073
 - Settings cog at screenshot position (1100, 2420) → tap coordinates (361, 788)
 - List item 8 rows down at screenshot position (400, 1190) → tap coordinates (131, 387)
 
-### Manual Simulator Commands
+### Manual Simulator Commands (reference only — prefer run_ios.py)
 
-- **idb (iOS Development Bridge)**: Use `idb` for UI interactions like tapping coordinates
-  - Install: `brew install idb-companion` and `pip3 install --user fb-idb`
-  - Add to PATH: `export PATH="$PATH:~/Library/Python/3.13/bin"`
-  - Tap: `idb ui tap --udid <UDID> <x> <y>`
-- **xcrun simctl commands**:
-  - List devices: `xcrun simctl list devices`
-  - Install app: `xcrun simctl install booted <path/to/App.app>`
-  - Launch app: `xcrun simctl launch booted <bundle.id>`
-  - Terminate app: `xcrun simctl terminate booted <bundle.id>`
-  - Screenshot: `xcrun simctl io booted screenshot /tmp/screenshot.png`
-  - Stream logs: `xcrun simctl spawn booted log stream --predicate 'process == "NewsBlur"'`
-- **Build for simulator**: `xcodebuild -project NewsBlur.xcodeproj -scheme NewsBlur -destination 'id=<UDID>' -configuration Debug build`
+- **Boot a simulator**: `xcrun simctl boot <UDID>`
+- **Stream logs**: `xcrun simctl spawn booted log stream --predicate 'process == "NewsBlur"'`
+- **Build for simulator**: `xcodebuild -project NewsBlur.xcodeproj -scheme "NewsBlur" -destination 'id=<UDID>' -configuration Debug build`

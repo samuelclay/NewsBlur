@@ -29,7 +29,11 @@
 
     <h2><a href="https://{% current_domain %}/site/{{ feed.pk }}/{{ feed_title|slugify }}?story={{ story.story_hash }}" style="color: #404070;text-decoration: none;">{{ story.story_title }}</a></h2>
 
-    <p>{{ story_content|safe }}</p>
+    {% if feed.is_daily_briefing %}
+        {{ story_content|safe }}
+    {% else %}
+        <p>{{ story_content|safe }}</p>
+    {% endif %}
     
     <a href="{{ story.story_permalink|safe }}">{{ story.story_permalink|safe }}</a>
 

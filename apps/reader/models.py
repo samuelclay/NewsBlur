@@ -1,3 +1,10 @@
+"""Reader models: UserSubscription, UserSubscriptionFolders, and starred/read story tracking.
+
+UserSubscription links a user to a feed with per-user unread counts and scores.
+UserSubscriptionFolders stores the user's folder hierarchy as nested JSON.
+Additional MongoDB models track read stories (RUserStory) and starred stories.
+"""
+
 import datetime
 import heapq
 import re
@@ -1084,6 +1091,19 @@ class UserSubscription(models.Model):
                 % (self, cutoff_date, self.mark_read_date, self.oldest_unread_story_date),
             )
 
+        # Clean up manual unread entries (uU keys) for archive users
+        if self.user.profile.is_archive:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+            cutoff_ts = int(cutoff_date.strftime("%s"))
+            # Get story hashes being removed from per-feed key before clearing
+            old_hashes = r.zrangebyscore(f"uU:{self.user_id}:{self.feed_id}", 0, cutoff_ts)
+            if old_hashes:
+                pipeline = r.pipeline()
+                pipeline.zremrangebyscore(f"uU:{self.user_id}:{self.feed_id}", 0, cutoff_ts)
+                for h in old_hashes:
+                    pipeline.zrem(f"uU:{self.user_id}", h)
+                pipeline.execute()
+
         if not recount:
             self.unread_count_negative = 0
             self.unread_count_positive = 0
@@ -1148,6 +1168,57 @@ class UserSubscription(models.Model):
         self.save(update_fields=["last_read_date"])
 
         return data
+
+    @classmethod
+    def mark_stories_as_unread(cls, user_id, feed_ids, days):
+        cutoff_date = datetime.datetime.utcnow() - datetime.timedelta(days=days)
+        now = datetime.datetime.utcnow()
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        ps = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        user = User.objects.get(pk=user_id)
+        unread_cutoff = user.profile.unread_cutoff
+        total_stories = 0
+
+        for feed_id in feed_ids:
+            stories = MStory.objects(
+                story_feed_id=feed_id,
+                story_date__gte=cutoff_date,
+                story_date__lte=now,
+            ).only("story_hash", "story_date")
+
+            story_list = list(stories)
+            if not story_list:
+                continue
+
+            expiry = Feed.days_of_story_hashes_for_feed(feed_id) * 24 * 60 * 60
+            all_read_key = "RS:%s" % user_id
+            feed_read_key = "RS:%s:%s" % (user_id, feed_id)
+            list_key = "lRS:%s" % user_id
+
+            pipeline = r.pipeline()
+            for story in story_list:
+                pipeline.srem(all_read_key, story.story_hash)
+                pipeline.srem(feed_read_key, story.story_hash)
+                pipeline.lrem(list_key, 1, story.story_hash)
+                if user.profile.is_archive and story.story_date < unread_cutoff:
+                    RUserUnreadStory.mark_unread(user_id, story.story_hash, story.story_date)
+            pipeline.expire(all_read_key, expiry)
+            pipeline.expire(feed_read_key, expiry)
+            pipeline.execute()
+
+            total_stories += len(story_list)
+
+            try:
+                usersub = cls.objects.get(user_id=user_id, feed_id=feed_id)
+                if usersub.mark_read_date > cutoff_date:
+                    usersub.mark_read_date = cutoff_date
+                usersub.needs_unread_recalc = True
+                usersub.save()
+            except cls.DoesNotExist:
+                continue
+
+        ps.publish(user.username, "reload:feeds")
+        return total_stories
 
     def invert_read_stories_after_unread_story(self, story, request=None):
         data = dict(code=1)

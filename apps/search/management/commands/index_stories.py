@@ -9,6 +9,8 @@ from apps.rss_feeds.models import Feed, MStory
 
 
 class Command(BaseCommand):
+    help = "Index stories into Elasticsearch for full-text search, by user, feed, or full reindex."
+
     def add_arguments(self, parser):
         parser.add_argument("-u", "--user", dest="user", type=str, help="Specify user id or username")
         parser.add_argument("-f", "--feed", dest="feed", type=str, help="Specify feed id or feed url")

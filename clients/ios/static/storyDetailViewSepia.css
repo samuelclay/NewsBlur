@@ -164,9 +164,10 @@ a:active {
     border-color: rgba(255, 255, 255, .3) rgba(0, 0, 0, .2) rgba(0, 0, 0, .3) rgba(255, 255, 255, .2);
 }
 .NB-button.NB-share-button div {
-    color: rgba(0, 0, 0, 0.25);
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-    border: 1px solid rgb(0, 0, 0, 0.25);
+    color: rgba(80, 60, 30, 0.4);
+    text-shadow: none;
+    border: 0.5px solid rgba(80, 60, 30, 0.15);
+    background: rgba(80, 60, 30, 0.05);
 }
 .NB-button:active div,
 .NB-button.NB-button-active div {
@@ -184,8 +185,9 @@ a:active {
 
 .NB-button.NB-share-button:active div,
 .NB-button.NB-share-button.NB-button-active div {
-    color: darkgrey;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .2);
+    color: rgba(80, 60, 30, 0.6);
+    background: rgba(80, 60, 30, 0.1);
+    text-shadow: none;
 }
 
 .NB-newsletter p,

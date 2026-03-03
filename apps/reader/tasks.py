@@ -1,3 +1,5 @@
+"""Reader tasks: periodic maintenance for homepage freshening and analytics cleanup."""
+
 import datetime
 import time
 
@@ -32,6 +34,11 @@ def FreshenHomepage():
         sub.needs_unread_recalc = True
         sub.save()
         sub.calculate_feed_scores(silent=True)
+
+
+@app.task(name="mark-stories-as-unread")
+def MarkStoriesAsUnread(user_id, feed_ids, days):
+    UserSubscription.mark_stories_as_unread(user_id, feed_ids, days)
 
 
 @app.task(name="clean-analytics", time_limit=720 * 10)

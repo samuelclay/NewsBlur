@@ -1,3 +1,5 @@
+"""Analyzer tasks: email notifications for popularity query results."""
+
 from newsblur_web.celeryapp import app
 from utils import log as logging
 

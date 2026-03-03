@@ -14,6 +14,7 @@ class Users(View):
         last_month = datetime.datetime.utcnow() - datetime.timedelta(days=30)
         last_day = datetime.datetime.utcnow() - datetime.timedelta(minutes=60 * 24)
         expiration_sec = 60 * 60  # 1 hour
+        expiration_sec_short = 60 * 5  # 5 minutes
 
         data = {
             "all": MStatistics.get(
@@ -46,9 +47,15 @@ class Users(View):
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
-            "premium_paid": MStatistics.get(
-                "munin:users_premium_paid",
+            "premium_from_trial": MStatistics.get(
+                "munin:users_premium_from_trial",
                 lambda: Profile.objects.filter(is_premium=True, is_premium_trial=False).count(),
+                set_default=True,
+                expiration_sec=expiration_sec,
+            ),
+            "premium_non_trial": MStatistics.get(
+                "munin:users_premium_non_trial",
+                lambda: Profile.objects.filter(is_premium=True).exclude(is_premium_trial=True).count(),
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
@@ -56,13 +63,13 @@ class Users(View):
                 "munin:users_archive",
                 lambda: Profile.objects.filter(is_archive=True).count(),
                 set_default=True,
-                expiration_sec=expiration_sec,
+                expiration_sec=expiration_sec_short,
             ),
             "pro": MStatistics.get(
                 "munin:users_pro",
                 lambda: Profile.objects.filter(is_pro=True).count(),
                 set_default=True,
-                expiration_sec=expiration_sec,
+                expiration_sec=expiration_sec_short,
             ),
             "trial": MStatistics.get(
                 "munin:users_trial",

@@ -1,3 +1,9 @@
+"""Feed URL handling, timeout decorators, and thread-based time-limited execution.
+
+Provides utilities for working with feed URLs (normalization, relative-to-absolute
+conversion) and a timelimit() decorator for running functions with a timeout.
+"""
+
 import datetime
 import pprint
 import random

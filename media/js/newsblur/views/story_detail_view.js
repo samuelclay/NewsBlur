@@ -110,6 +110,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.toggle_intelligence();
         this.generate_gradients();
         this.render_comments();
+        this.render_cluster_stories();
         this.attach_handlers();
         // if (!this.model.get('image_urls') || (this.model.get('image_urls') && this.model.get('image_urls').length == 0)) {
         // }
@@ -142,6 +143,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.apply_starred_story_selections();
         this.watch_images_load();
         this.attach_custom_handler();
+        this.attach_media_player_handler();
     },
 
     attach_custom_handler: function () {
@@ -405,6 +407,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     </div>\
                 </div>\
                 <div class="NB-story-content-discover-wrapper"></div>\
+                <div class="NB-story-content-cluster-wrapper"></div>\
             </div>\
             <div class="NB-feed-story-comments-container"></div>\
             <div class="NB-feed-story-sideoptions-container">\
@@ -522,6 +525,100 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
     },
 
+    render_cluster_stories: function () {
+        if (!NEWSBLUR.Globals.is_staff) return;
+        if (!this.model.has_cluster()) return;
+
+        var cluster_stories = this.model.get('cluster_stories');
+        var current_hash = this.model.get('story_hash');
+        var $wrapper = this.$('.NB-story-content-cluster-wrapper');
+
+        // Render initial story title views from cluster data
+        var $section = this.build_cluster_section(cluster_stories);
+        $wrapper.html($section);
+
+        // Fetch full story data to get additional stories and full content
+        var self = this;
+        this.cluster_request = $.ajax({
+            url: '/reader/cluster_stories',
+            data: { cluster_id: current_hash },
+            success: function (data) {
+                self.cluster_request = null;
+                if (data.code <= 0 || !data.stories || !data.stories.length) return;
+
+                // Register feeds for favicon rendering
+                if (data.feeds) {
+                    _.each(data.feeds, function (feed_data, feed_id) {
+                        NEWSBLUR.assets.set_temp_feed(feed_id, feed_data);
+                    });
+                }
+
+                // Filter out the current story
+                var stories = _.filter(data.stories, function (s) {
+                    return s.story_hash !== current_hash;
+                });
+
+                if (!stories.length) return;
+
+                // Re-render with full data
+                var $section = self.build_cluster_section(stories);
+                $wrapper.html($section);
+            }
+        });
+    },
+
+    build_cluster_section: function (stories) {
+        // Clean up previous cluster title views
+        if (this._cluster_title_views) {
+            _.each(this._cluster_title_views, function (view) {
+                view.remove();
+            });
+        }
+        this._cluster_title_views = [];
+
+        var $container = $('<div class="NB-story-cluster-detail"></div>');
+        $container.append(
+            '<div class="NB-story-cluster-detail-header">' +
+            '<span class="NB-staff-only-badge">STAFF ONLY</span>' +
+            '<span class="NB-story-cluster-detail-title">Also reported by ' + stories.length + ' source' + (stories.length !== 1 ? 's' : '') + '</span>' +
+            '</div>'
+        );
+
+        var self = this;
+        var parent_read = this.model.get('read_status');
+        var mark_children_read = NEWSBLUR.assets.preference('cluster_mark_read');
+        var collection = NEWSBLUR.assets.stories;
+
+        _.each(stories, function (story_data) {
+            // Apply read status from parent if preference is set
+            if (parent_read && mark_children_read && !story_data.read_status) {
+                story_data.read_status = 1;
+            }
+
+            // Use existing model from collection or create a new one
+            var story_model = collection.get_by_story_hash(story_data.story_hash);
+            if (!story_model) {
+                story_model = new NEWSBLUR.Models.Story(story_data);
+            } else if (parent_read && mark_children_read && !story_model.get('read_status')) {
+                story_model.set('read_status', 1);
+            }
+
+            var story_view = new NEWSBLUR.Views.StoryTitleView({
+                model: story_model,
+                collection: collection,
+                override_layout: 'split',
+                is_list: true,
+                is_cluster_detail: true
+            });
+            story_view.render();
+            story_view.$el.addClass('NB-story-cluster-detail-item');
+            self._cluster_title_views.push(story_view);
+            $container.append(story_view.$el);
+        });
+
+        return $container;
+    },
+
     render_story_content: function () {
         this.$(".NB-feed-story-show-changes-text").text((this.model.get('showing_diff') ? "Hide" : "Show") + " story changes");
         this.$(".NB-feed-story-content").html(this.model.story_content());
@@ -531,6 +628,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     destroy: function () {
         // console.log(["destroy story detail", this.model.get('story_title')]);
+        if (this.cluster_request) this.cluster_request.abort();
+        if (this._cluster_title_views) {
+            _.each(this._cluster_title_views, function (view) { view.remove(); });
+            this._cluster_title_views = null;
+        }
         clearTimeout(this.truncate_delay_function);
         this.images_to_load = null;
         this.model.unbind(null, null, this);
@@ -602,6 +704,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
 
     toggle_read_status: function () {
         this.$el.toggleClass('read', !!this.model.get('read_status'));
+
+        if (this.model.get('read_status') && NEWSBLUR.assets.preference('cluster_mark_read')) {
+            if (this._cluster_title_views) {
+                _.each(this._cluster_title_views, function (view) {
+                    if (!view.model.get('read_status')) {
+                        view.model.set('read_status', 1);
+                    }
+                });
+            }
+        }
     },
 
     toggle_intelligence: function () {
@@ -816,6 +928,100 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 customSelector: "iframe[src*='youtu.be'],iframe[src*='www.flickr.com'],iframe[src*='view.vzaar.com']"
             });
         }, this), 50);
+    },
+
+    attach_media_player_handler: function () {
+        if (!NEWSBLUR.app.media_player) return;
+
+        var self = this;
+        var story = this.model;
+        var media_player = NEWSBLUR.app.media_player;
+        var media_items = media_player.detect_media_in_story(story, this.$el);
+        if (!media_items.length) return;
+
+        // Play now: headphones with small play badge
+        var svg_play_now = '<svg viewBox="0 0 32 24" width="20" height="16"><path d="M10 1C5.03 1 1 5.03 1 10v8c0 1.66 1.34 3 3 3h2v-8H3v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><polygon points="22,8 22,16 30,12"/></svg>';
+        // Play next: headphones with skip-next badge
+        var svg_play_next = '<svg viewBox="0 0 32 24" width="20" height="16"><path d="M10 1C5.03 1 1 5.03 1 10v8c0 1.66 1.34 3 3 3h2v-8H3v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><polygon points="22,8 22,16 28,12"/><rect x="29" y="8" width="2" height="8"/></svg>';
+        // Play last: headphones with plus badge
+        var svg_play_last = '<svg viewBox="0 0 32 24" width="20" height="16"><path d="M10 1C5.03 1 1 5.03 1 10v8c0 1.66 1.34 3 3 3h2v-8H3v-3c0-3.87 3.13-7 7-7s7 3.13 7 7v3h-3v8h2c1.66 0 3-1.34 3-3v-8c0-4.97-4.03-9-9-9z"/><rect x="24.5" y="9" width="2" height="6" rx="1"/><rect x="22.5" y="11" width="6" height="2" rx="1"/></svg>';
+
+        // Remove any existing overlay buttons (prevents duplicates on re-render)
+        this.$('.NB-media-overlay-buttons').remove();
+        this.$('.NB-media-youtube-overlay').remove();
+
+        // Add overlay buttons on audio/video elements
+        this.$('.NB-feed-story-content audio, .NB-feed-story-content video').each(function (i) {
+            var $el = $(this);
+            // Find matching media item
+            var src = $el.find('source').attr('src') || $el.attr('src');
+            var item = _.find(media_items, function (m) { return m.media_url === src; });
+            if (!item) return;
+
+            var $buttons = $('<div class="NB-media-overlay-buttons"></div>');
+            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play in Mini Media Player</div>');
+            var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' Play Next</div>');
+            var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' Play Last</div>');
+
+            $buttons.append($play_now).append($play_next).append($play_last);
+            $el.after($buttons);
+
+            $play_now.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                var inline_el = $el[0];
+                var start_position = inline_el.currentTime || 0;
+                if (!inline_el.paused) inline_el.pause();
+                media_player.play_media(item, { start_position: start_position });
+            });
+            $play_next.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.add_to_queue(item, 0);
+            });
+            $play_last.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.add_to_queue(item);
+            });
+        });
+
+        // Add overlay buttons on YouTube iframes
+        this.$('.NB-feed-story-content iframe[src*="youtube.com"], .NB-feed-story-content iframe[src*="youtu.be"]').each(function () {
+            var $iframe = $(this);
+            var src = $iframe.attr('src');
+            var item = _.find(media_items, function (m) {
+                return m.media_type === 'youtube' && m.media_url === src;
+            });
+            if (!item) return;
+
+            var $buttons = $('<div class="NB-media-overlay-buttons"></div>');
+            var $play_now = $('<div class="NB-media-play-btn NB-media-play-now">' + svg_play_now + ' Play in Mini Media Player</div>');
+            var $play_next = $('<div class="NB-media-play-btn NB-media-play-next">' + svg_play_next + ' Play Next</div>');
+            var $play_last = $('<div class="NB-media-play-btn NB-media-play-last">' + svg_play_last + ' Play Last</div>');
+
+            $buttons.append($play_now).append($play_next).append($play_last);
+            $iframe.parent().after($buttons);
+
+            $play_now.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.play_media(item);
+            });
+            $play_next.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.add_to_queue(item, 0);
+            });
+            $play_last.on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                media_player.add_to_queue(item);
+            });
+        });
+
+        // Remove autoplay attributes to prevent automatic playback
+        this.$('.NB-feed-story-content audio, .NB-feed-story-content video').removeAttr('autoplay');
     },
 
     // ==========

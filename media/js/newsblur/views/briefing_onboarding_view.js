@@ -330,7 +330,7 @@ NEWSBLUR.Views.BriefingOnboardingView = Backbone.View.extend({
             $.make('div', { className: 'NB-briefing-section-hint-content' }, [
                 $.make('div', { className: 'NB-briefing-section-hint-title' }, 'Keyword Section'),
                 $.make('div', { className: 'NB-briefing-section-hint-text' },
-                    'Enter keywords to create a section for matching stories. All keywords must appear in the story title.'),
+                    'Enter keywords to create a section for matching stories. Matches exact phrases in story titles and content.'),
                 $.make('div', { className: 'NB-briefing-section-hint-examples-title' }, 'Examples'),
                 $.make('ul', { className: 'NB-briefing-section-hint-examples' }, [
                     $.make('li', 'Claude Code'),
