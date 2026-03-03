@@ -698,6 +698,10 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
                 self.stop_maintaining_scroll();
             }
         );
+        $(document).on('keydown.maintain_scroll', function () {
+            console.log(['maintain_scroll: cancelled by keyboard']);
+            self.stop_maintaining_scroll();
+        });
 
         state.cancel_timeout = setTimeout(function () {
             self.stop_maintaining_scroll();
@@ -762,6 +766,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
 
         NEWSBLUR.reader.$s.$feed_scroll.off('.maintain_scroll');
+        $(document).off('.maintain_scroll');
         this.flags['maintaining_scroll'] = null;
     },
 
