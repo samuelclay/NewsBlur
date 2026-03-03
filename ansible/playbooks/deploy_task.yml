@@ -21,6 +21,8 @@
         dest: /srv/newsblur/
         version: "{{ git_branch }}"
       register: pulled
+      tags:
+        - always
 
     - block:
         - name: Reload celery
