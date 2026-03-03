@@ -145,7 +145,6 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             }).render();
             this.search_view.blur_search();
             $(".NB-search-container", $view).html(this.search_view.$el);
-            }
         } else if (NEWSBLUR.reader.flags['river_view'] &&
             NEWSBLUR.reader.active_folder &&
             NEWSBLUR.reader.active_folder.get('folder_title')) {
