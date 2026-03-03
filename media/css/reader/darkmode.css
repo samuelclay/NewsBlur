@@ -1316,6 +1316,12 @@ color: #a85b40;
     color: #ddd;
 }
 
+.NB-dark .NB-media-player-queue-count,
+.NB-dark .NB-media-player-history-count {
+    color: #aaa;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 .NB-dark .NB-media-player-history-remove svg {
     fill: #888;
 }

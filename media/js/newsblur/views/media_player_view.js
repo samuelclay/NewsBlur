@@ -112,6 +112,8 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.current_position = state.current_position || 0;
         this.current_duration = state.current_duration || 0;
 
+        this.probe_queue_durations();
+
         this.render();
         this.show_player();
         this.create_media_element(this.current_media);
@@ -219,13 +221,13 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         html += '<li class="NB-media-player-tab-queue' + (!this.showing_history ? ' NB-active' : '') + '">';
         html += 'Up Next';
         if (this.queue.length > 0) {
-            html += ' <span class="NB-media-player-queue-count">' + this.queue.length + '</span>';
+            html += '<span class="NB-media-player-queue-count">' + this.queue.length + '</span>';
         }
         html += '</li>';
         html += '<li class="NB-media-player-tab-history' + (this.showing_history ? ' NB-active' : '') + '">';
         html += 'History';
         if (this.history.length > 0) {
-            html += ' <span class="NB-media-player-history-count">' + this.history.length + '</span>';
+            html += '<span class="NB-media-player-history-count">' + this.history.length + '</span>';
         }
         html += '</li>';
         html += '</ul>';
@@ -258,13 +260,18 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             var favicon_html = feed ? $.favicon_html(feed) : '';
             var type_label = item.media_type === 'youtube' ? 'video' : item.media_type;
             var added_label = item.added_at ? this.format_relative_date(item.added_at) : '';
+            var duration_label = item.duration ? this.format_time(item.duration) : '';
             html += '<li class="NB-media-player-queue-item" data-index="' + i + '">';
             html += '<div class="NB-queue-drag-handle" title="Drag to reorder">' + this.SVG_DRAG_HANDLE + '</div>';
             html += '<div class="NB-queue-favicon">' + favicon_html + '</div>';
             html += '<div class="NB-queue-info">';
             html += '<div class="NB-queue-title">' + _.escape(item.media_title) + '</div>';
-            if (added_label) {
-                html += '<div class="NB-queue-date">Added ' + added_label + '</div>';
+            if (added_label || duration_label) {
+                html += '<div class="NB-queue-date">';
+                if (added_label) html += 'Added ' + added_label;
+                if (added_label && duration_label) html += ' &middot; ';
+                if (duration_label) html += duration_label;
+                html += '</div>';
             }
             html += '</div>';
             html += '<div class="NB-queue-type">' + type_label + '</div>';
@@ -316,13 +323,16 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             var $audio = $(this);
             var src = $audio.find('source').attr('src') || $audio.attr('src');
             if (src) {
+                var el = $audio[0];
+                var duration = (el.duration && isFinite(el.duration)) ? el.duration : 0;
                 media_items.push({
                     story_hash: story_hash,
                     media_url: src,
                     media_type: 'audio',
                     media_title: story_title,
                     feed_id: feed_id,
-                    image_url: image_url
+                    image_url: image_url,
+                    duration: duration
                 });
             }
         });
@@ -332,13 +342,16 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             var $video = $(this);
             var src = $video.find('source').attr('src') || $video.attr('src');
             if (src) {
+                var el = $video[0];
+                var duration = (el.duration && isFinite(el.duration)) ? el.duration : 0;
                 media_items.push({
                     story_hash: story_hash,
                     media_url: src,
                     media_type: 'video',
                     media_title: story_title,
                     feed_id: feed_id,
-                    image_url: image_url
+                    image_url: image_url,
+                    duration: duration
                 });
             }
         });
@@ -762,17 +775,126 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
     },
 
     _do_add_to_queue: function (media_item, position) {
+        var self = this;
         var data = _.extend({}, media_item);
         if (position !== undefined) {
             data.position = position;
         }
+
+        var needs_probe = !data.duration;
 
         NEWSBLUR.assets.add_to_media_queue(data, _.bind(function (response) {
             if (response.playback_state) {
                 this.queue = response.playback_state.queue || [];
                 this.render_queue();
             }
+            // Probe for duration after queue is updated
+            if (needs_probe) {
+                var update_duration = function (duration) {
+                    if (duration) {
+                        var item = _.find(self.queue, function (q) {
+                            return q.media_url === data.media_url && q.story_hash === data.story_hash;
+                        });
+                        if (item && !item.duration) {
+                            item.duration = duration;
+                            self.render_queue();
+                        }
+                    }
+                };
+                if (data.media_type === 'youtube') {
+                    var yt_id = data.youtube_id || NEWSBLUR.Views.MediaPlayerView.extract_youtube_id(data.media_url);
+                    if (yt_id) this.probe_youtube_duration(yt_id, update_duration);
+                } else {
+                    this.probe_media_duration(data.media_url, update_duration);
+                }
+            }
         }, this));
+    },
+
+    probe_media_duration: function (url, callback) {
+        var probe = new Audio();
+        probe.preload = 'metadata';
+        probe.addEventListener('loadedmetadata', function () {
+            var duration = (probe.duration && isFinite(probe.duration)) ? probe.duration : 0;
+            callback(duration);
+            probe.src = '';
+            probe = null;
+        });
+        probe.addEventListener('error', function () {
+            callback(0);
+            probe = null;
+        });
+        probe.src = url;
+    },
+
+    probe_youtube_duration: function (video_id, callback) {
+        if (!window.YT || !window.YT.Player) {
+            // YouTube API not loaded yet, try after it loads
+            var self = this;
+            this._load_youtube_api();
+            var check = setInterval(function () {
+                if (window.YT && window.YT.Player) {
+                    clearInterval(check);
+                    self._do_probe_youtube(video_id, callback);
+                }
+            }, 500);
+            setTimeout(function () { clearInterval(check); callback(0); }, 5000);
+            return;
+        }
+        this._do_probe_youtube(video_id, callback);
+    },
+
+    _do_probe_youtube: function (video_id, callback) {
+        var container = document.createElement('div');
+        container.style.display = 'none';
+        document.body.appendChild(container);
+        var probe_el = document.createElement('div');
+        container.appendChild(probe_el);
+
+        var probe_player = new YT.Player(probe_el, {
+            height: '1',
+            width: '1',
+            videoId: video_id,
+            playerVars: { autoplay: 0, controls: 0 },
+            events: {
+                onReady: function (event) {
+                    var duration = event.target.getDuration() || 0;
+                    callback(duration);
+                    probe_player.destroy();
+                    container.parentNode.removeChild(container);
+                },
+                onError: function () {
+                    callback(0);
+                    try { probe_player.destroy(); } catch (e) {}
+                    if (container.parentNode) container.parentNode.removeChild(container);
+                }
+            }
+        });
+    },
+
+    probe_queue_durations: function () {
+        var self = this;
+        _.each(this.queue, function (item) {
+            if (item.duration) return;
+            if (item.media_type === 'youtube') {
+                var yt_id = item.youtube_id || NEWSBLUR.Views.MediaPlayerView.extract_youtube_id(item.media_url);
+                if (yt_id) {
+                    self.probe_youtube_duration(yt_id, function (duration) {
+                        if (duration) {
+                            item.duration = duration;
+                            self.render_queue();
+                        }
+                    });
+                }
+            } else {
+                self.probe_media_duration(item.media_url, function (duration) {
+                    if (duration) {
+                        item.duration = duration;
+                        self.render_queue();
+                    }
+                });
+            }
+        });
     },
 
     remove_queue_item: function (e) {
@@ -900,7 +1022,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         // If something is currently playing, save to history and push to front of queue
         if (this.current_media) {
             this.add_to_history_from_current();
-            this.add_to_queue(_.extend({}, this.current_media), 0);
+            this.add_to_queue(_.extend({}, this.current_media, {duration: this.get_duration()}), 0);
         }
 
         // Play the history item

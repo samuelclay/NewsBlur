@@ -90,6 +90,10 @@ def add_to_media_queue(request):
         "image_url": request.POST.get("image_url", ""),
     }
 
+    duration = request.POST.get("duration")
+    if duration:
+        media_item["duration"] = float(duration)
+
     position = request.POST.get("position")
     if position is not None:
         position = int(position)
