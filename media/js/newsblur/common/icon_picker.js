@@ -49,25 +49,26 @@ NEWSBLUR.IconPicker = {
     ],
 
     // Emojis organized by category
+    // Each emoji entry is [emoji, title]
     EMOJI_CATEGORIES: [
-        { label: 'Files', emojis: ['📁', '📂', '📚', '📖', '📰', '📄', '📑', '📋', '📝', '✏️'] },
-        { label: 'Tech', emojis: ['💻', '📱', '📺', '🎬', '🎵', '🎧', '🎮', '📷', '📹', '🖨️'] },
-        { label: 'Stars', emojis: ['⭐', '🌟', '✨', '💫', '⚡', '🔥', '💥', '❄️', '🌈', '🎇'] },
-        { label: 'Weather', emojis: ['☀️', '🌙', '☁️', '🌧️', '⛈️', '🌪️', '🌊', '💧', '🌤️', '🌥️'] },
-        { label: 'Nature', emojis: ['🌲', '🌳', '🌴', '🌻', '🌺', '🌸', '🌷', '🌹', '🍀', '🌿'] },
-        { label: '', emojis: ['🍂', '🍁', '🌵', '🌾', '🌱', '🪴', '🎋', '🎍', '🍃', '☘️'] },
-        { label: 'Food', emojis: ['☕', '🍵', '🍺', '🍷', '🥤', '🧃', '🍽️', '🍴', '🥢', '🧂'] },
-        { label: '', emojis: ['🍕', '🍔', '🍟', '🌮', '🍜', '🍣', '🍰', '🍩', '🍎', '🍇'] },
-        { label: 'Animals', emojis: ['🐶', '🐱', '🐦', '🐟', '🦋', '🐝', '🦊', '🐼', '🦁', '🐸'] },
-        { label: '', emojis: ['🦄', '🐯', '🐻', '🐨', '🐰', '🦉', '🦅', '🐢', '🐬', '🦈'] },
-        { label: 'Places', emojis: ['🏠', '🏢', '🏫', '🏥', '🏰', '⛪', '🕌', '🗼', '🏛️', '🎪'] },
-        { label: 'Transport', emojis: ['✈️', '🚗', '🚲', '🚀', '⛵', '🚂', '🚁', '🛸', '🏎️', '🚌'] },
-        { label: 'Sports', emojis: ['⚽', '🏀', '🎾', '🎯', '🏆', '🎭', '🎨', '🎸', '🎹', '🏋️'] },
-        { label: 'Hearts', emojis: ['❤️', '💛', '💚', '💙', '💜', '🧡', '🖤', '🤍', '💖', '💝'] },
-        { label: 'Status', emojis: ['✅', '❌', '⚠️', 'ℹ️', '❓', '🔔', '🔒', '🔑', '💡', '🎁'] },
-        { label: 'Objects', emojis: ['💰', '💼', '🎓', '🏅', '💎', '🛒', '🌍', '🌎', '🌏', '🗺️'] },
-        { label: 'Faces', emojis: ['😀', '😊', '🥳', '🤔', '😎', '🤩', '🙄', '😴', '🤗', '🥰'] },
-        { label: 'Gestures', emojis: ['👍', '👎', '👋', '✋', '🤝', '🙏', '👏', '🎉', '🎊', '🔖'] }
+        { label: 'Files', emojis: [['📁', 'Folder'], ['📂', 'Open folder'], ['📚', 'Books'], ['📖', 'Open book'], ['📰', 'Newspaper'], ['📄', 'Document'], ['📑', 'Bookmarks'], ['📋', 'Clipboard'], ['📝', 'Memo'], ['✏️', 'Pencil'], ['🗂️', 'Card dividers'], ['📎', 'Paperclip'], ['📌', 'Pushpin'], ['🗃️', 'Card file box'], ['📓', 'Notebook']] },
+        { label: 'Tech', emojis: [['💻', 'Laptop'], ['📱', 'Phone'], ['📺', 'Television'], ['🎬', 'Clapperboard'], ['🎵', 'Music'], ['🎧', 'Headphones'], ['🎮', 'Game controller'], ['📷', 'Camera'], ['📹', 'Video camera'], ['🖨️', 'Printer'], ['⌨️', 'Keyboard'], ['🖥️', 'Desktop'], ['🖱️', 'Mouse'], ['💾', 'Floppy disk'], ['📡', 'Satellite dish']] },
+        { label: 'Stars', emojis: [['⭐', 'Star'], ['🌟', 'Glowing star'], ['✨', 'Sparkles'], ['💫', 'Dizzy star'], ['⚡', 'Lightning'], ['🔥', 'Fire'], ['💥', 'Explosion'], ['❄️', 'Snowflake'], ['🌈', 'Rainbow'], ['🎇', 'Sparkler'], ['🎆', 'Fireworks'], ['💎', 'Gem'], ['🔮', 'Crystal ball'], ['🪩', 'Disco ball'], ['☄️', 'Comet']] },
+        { label: 'Weather', emojis: [['☀️', 'Sun'], ['🌙', 'Crescent moon'], ['☁️', 'Cloud'], ['🌧️', 'Rain'], ['⛈️', 'Thunderstorm'], ['🌪️', 'Tornado'], ['🌊', 'Wave'], ['💧', 'Droplet'], ['🌤️', 'Mostly sunny'], ['🌥️', 'Mostly cloudy'], ['🌦️', 'Sun and rain'], ['🌬️', 'Wind'], ['☔', 'Umbrella'], ['🌫️', 'Fog'], ['⛅', 'Partly cloudy']] },
+        { label: 'Nature', emojis: [['🌲', 'Evergreen'], ['🌳', 'Deciduous tree'], ['🌴', 'Palm tree'], ['🌻', 'Sunflower'], ['🌺', 'Hibiscus'], ['🌸', 'Cherry blossom'], ['🌷', 'Tulip'], ['🌹', 'Rose'], ['🍀', 'Four leaf clover'], ['🌿', 'Herb'], ['💐', 'Bouquet'], ['🪻', 'Hyacinth'], ['🪷', 'Lotus'], ['🌼', 'Blossom'], ['🏵️', 'Rosette']] },
+        { label: '', emojis: [['🍂', 'Fallen leaf'], ['🍁', 'Maple leaf'], ['🌵', 'Cactus'], ['🌾', 'Sheaf of rice'], ['🌱', 'Seedling'], ['🪴', 'Potted plant'], ['🎋', 'Tanabata tree'], ['🎍', 'Pine decoration'], ['🍃', 'Leaves'], ['☘️', 'Shamrock'], ['🪹', 'Nest'], ['🪸', 'Coral'], ['🍄', 'Mushroom'], ['🪵', 'Wood'], ['🪨', 'Rock']] },
+        { label: 'Food', emojis: [['☕', 'Coffee'], ['🍵', 'Tea'], ['🍺', 'Beer'], ['🍷', 'Wine'], ['🥤', 'Cup with straw'], ['🧃', 'Juice box'], ['🍽️', 'Place setting'], ['🍴', 'Fork and knife'], ['🥢', 'Chopsticks'], ['🧂', 'Salt'], ['🍶', 'Sake'], ['🥂', 'Clinking glasses'], ['🍸', 'Cocktail'], ['🫖', 'Teapot'], ['🥛', 'Milk']] },
+        { label: '', emojis: [['🍕', 'Pizza'], ['🍔', 'Hamburger'], ['🍟', 'French fries'], ['🌮', 'Taco'], ['🍜', 'Noodles'], ['🍣', 'Sushi'], ['🍰', 'Cake'], ['🍩', 'Doughnut'], ['🍎', 'Apple'], ['🍇', 'Grapes'], ['🥑', 'Avocado'], ['🍓', 'Strawberry'], ['🌽', 'Corn'], ['🧁', 'Cupcake'], ['🥐', 'Croissant']] },
+        { label: 'Animals', emojis: [['🐶', 'Dog'], ['🐱', 'Cat'], ['🐦', 'Bird'], ['🐟', 'Fish'], ['🦋', 'Butterfly'], ['🐝', 'Bee'], ['🦊', 'Fox'], ['🐼', 'Panda'], ['🦁', 'Lion'], ['🐸', 'Frog'], ['🐧', 'Penguin'], ['🦜', 'Parrot'], ['🐙', 'Octopus'], ['🐞', 'Ladybug'], ['🦒', 'Giraffe']] },
+        { label: '', emojis: [['🦄', 'Unicorn'], ['🐯', 'Tiger'], ['🐻', 'Bear'], ['🐨', 'Koala'], ['🐰', 'Rabbit'], ['🦉', 'Owl'], ['🦅', 'Eagle'], ['🐢', 'Turtle'], ['🐬', 'Dolphin'], ['🦈', 'Shark'], ['🐘', 'Elephant'], ['🦩', 'Flamingo'], ['🐺', 'Wolf'], ['🦝', 'Raccoon'], ['🐳', 'Whale']] },
+        { label: 'Places', emojis: [['🏠', 'House'], ['🏢', 'Office building'], ['🏫', 'School'], ['🏥', 'Hospital'], ['🏰', 'Castle'], ['⛪', 'Church'], ['🕌', 'Mosque'], ['🗼', 'Tower'], ['🏛️', 'Classical building'], ['🎪', 'Circus tent'], ['🏟️', 'Stadium'], ['🗽', 'Statue of Liberty'], ['⛩️', 'Shrine'], ['🏗️', 'Construction'], ['🏘️', 'Houses']] },
+        { label: 'Transport', emojis: [['✈️', 'Airplane'], ['🚗', 'Car'], ['🚲', 'Bicycle'], ['🚀', 'Rocket'], ['⛵', 'Sailboat'], ['🚂', 'Train'], ['🚁', 'Helicopter'], ['🛸', 'Flying saucer'], ['🏎️', 'Race car'], ['🚌', 'Bus'], ['🛶', 'Canoe'], ['🚢', 'Ship'], ['🛵', 'Scooter'], ['🚃', 'Railway car'], ['🛩️', 'Small airplane']] },
+        { label: 'Sports', emojis: [['⚽', 'Soccer'], ['🏀', 'Basketball'], ['🎾', 'Tennis'], ['🎯', 'Bullseye'], ['🏆', 'Trophy'], ['🎭', 'Performing arts'], ['🎨', 'Art palette'], ['🎸', 'Guitar'], ['🎹', 'Piano'], ['🏋️', 'Weightlifting'], ['🏈', 'Football'], ['🎳', 'Bowling'], ['🏓', 'Ping pong'], ['🥊', 'Boxing'], ['🎺', 'Trumpet']] },
+        { label: 'Hearts', emojis: [['❤️', 'Red heart'], ['💛', 'Yellow heart'], ['💚', 'Green heart'], ['💙', 'Blue heart'], ['💜', 'Purple heart'], ['🧡', 'Orange heart'], ['🖤', 'Black heart'], ['🤍', 'White heart'], ['💖', 'Sparkling heart'], ['💝', 'Heart with ribbon'], ['💗', 'Growing heart'], ['💞', 'Revolving hearts'], ['💕', 'Two hearts'], ['🤎', 'Brown heart'], ['❣️', 'Heart exclamation']] },
+        { label: 'Status', emojis: [['✅', 'Check mark'], ['❌', 'Cross mark'], ['⚠️', 'Warning'], ['ℹ️', 'Info'], ['❓', 'Question'], ['🔔', 'Bell'], ['🔒', 'Lock'], ['🔑', 'Key'], ['💡', 'Light bulb'], ['🎁', 'Gift'], ['🔗', 'Link'], ['⏰', 'Alarm clock'], ['📢', 'Loudspeaker'], ['🚫', 'Prohibited'], ['✳️', 'Sparkle']] },
+        { label: 'Objects', emojis: [['💰', 'Money bag'], ['💼', 'Briefcase'], ['🎓', 'Graduation cap'], ['🏅', 'Medal'], ['💎', 'Gem stone'], ['🛒', 'Shopping cart'], ['🌍', 'Globe Europe'], ['🌎', 'Globe Americas'], ['🌏', 'Globe Asia'], ['🗺️', 'World map'], ['🧲', 'Magnet'], ['🔭', 'Telescope'], ['🧪', 'Test tube'], ['💊', 'Pill'], ['🪙', 'Coin']] },
+        { label: 'Faces', emojis: [['😀', 'Grinning'], ['😊', 'Smiling'], ['🥳', 'Party face'], ['🤔', 'Thinking'], ['😎', 'Cool'], ['🤩', 'Star-struck'], ['🙄', 'Eye roll'], ['😴', 'Sleeping'], ['🤗', 'Hugging'], ['🥰', 'Love face'], ['😂', 'Laughing'], ['🫡', 'Salute'], ['😇', 'Halo'], ['🤓', 'Nerd'], ['😏', 'Smirk']] },
+        { label: 'Gestures', emojis: [['👍', 'Thumbs up'], ['👎', 'Thumbs down'], ['👋', 'Wave'], ['✋', 'Raised hand'], ['🤝', 'Handshake'], ['🙏', 'Pray'], ['👏', 'Clap'], ['🎉', 'Party popper'], ['🎊', 'Confetti'], ['🔖', 'Bookmark'], ['✌️', 'Peace'], ['🤞', 'Crossed fingers'], ['👆', 'Point up'], ['💪', 'Flexed bicep'], ['🫶', 'Heart hands']] }
     ],
 
     // Color palette organized by columns (each column is one hue, rows go light to dark)
@@ -143,8 +144,9 @@ NEWSBLUR.IconPicker = {
                 $.make('div', { className: 'NB-folder-icon-emoji-items' })
             ]);
             var $items = $row.find('.NB-folder-icon-emoji-items');
-            _.each(category.emojis, function (emoji) {
-                var $emoji = $.make('div', { className: 'NB-folder-icon-emoji-option', 'data-emoji': emoji }, emoji);
+            _.each(category.emojis, function (entry) {
+                var emoji = entry[0], title = entry[1];
+                var $emoji = $.make('div', { className: 'NB-folder-icon-emoji-option', 'data-emoji': emoji, title: title }, emoji);
                 $items.append($emoji);
             });
             $container.append($row);

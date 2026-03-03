@@ -1,3 +1,9 @@
+"""S3 storage operations for profile pictures, feed icons, and backups.
+
+Wraps boto3 S3 API for uploading, retrieving, and managing user avatars
+and other assets in S3 buckets, with image resizing via PIL.
+"""
+
 import mimetypes
 import os
 import sys

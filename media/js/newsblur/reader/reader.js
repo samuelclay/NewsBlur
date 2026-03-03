@@ -59,7 +59,8 @@
                 $feedbar: $('.NB-feedbar'),
                 $add_button: $('.NB-task-add'),
                 $taskbar_options: $('.NB-taskbar-options'),
-                $search_header: $('.NB-search-header')
+                $search_header: $('.NB-search-header'),
+                $media_player: $('.NB-media-player')
             };
             this.flags = {
                 'bouncing_callout': false,
@@ -141,10 +142,16 @@
             NEWSBLUR.app.taskbar_info = new NEWSBLUR.Views.ReaderTaskbarInfo().render();
             NEWSBLUR.app.story_titles_header = new NEWSBLUR.Views.StoryTitlesHeader();
             NEWSBLUR.app.search_header = new NEWSBLUR.Views.FeedSearchHeader();
+            NEWSBLUR.app.media_player = new NEWSBLUR.Views.MediaPlayerView();
 
             NEWSBLUR.assets.feeds.bind('reset', _.bind(function () {
                 this.load_dashboard_rivers();
                 this.load_intelligence_slider();
+                // Restore media player state from server (only on initial load)
+                if (NEWSBLUR.app.media_player && !NEWSBLUR.app.media_player.state_restored) {
+                    NEWSBLUR.app.media_player.restore_state();
+                    NEWSBLUR.app.media_player.setup_beforeunload();
+                }
                 // Check for growth prompts after feeds load
                 if (NEWSBLUR.growth_prompts) {
                     NEWSBLUR.growth_prompts.check_on_load();
@@ -1699,6 +1706,7 @@
                 this.show_tryfeed_add_button();
                 this.correct_tryfeed_title();
             }
+            this.check_search_indexing(data);
         },
 
         load_next_after_load: function () {
@@ -2173,6 +2181,12 @@
             this.setup_mousemove_on_views();
             this.make_feed_title_in_stories();
 
+            if (NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'full') {
+                NEWSBLUR.app.story_list.show_loading(options);
+            } else {
+                NEWSBLUR.app.story_titles.show_loading(options);
+            }
+
             this.model.fetch_briefing_stories(
                 _.bind(this.post_open_daily_briefing, this),
                 NEWSBLUR.app.taskbar_info.show_stories_error
@@ -2561,6 +2575,7 @@
                     }
 
                 }
+                this.check_search_indexing(data);
             }
         },
 
@@ -4314,7 +4329,7 @@
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-site-mark-read', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark everything as read'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark everything read / unread'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Choose how many days back')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-trainer', role: "button" }, [
@@ -6034,6 +6049,14 @@
                 this.socket.removeAllListeners('briefing:error');
                 this.socket.on('briefing:error', _.bind(this.handle_briefing_error, this));
 
+                // Media player position sync from other tabs
+                this.socket.removeAllListeners('media:update');
+                this.socket.on('media:update', _.bind(function (data) {
+                    if (NEWSBLUR.app.media_player) {
+                        NEWSBLUR.app.media_player.handle_media_update(data);
+                    }
+                }, this));
+
                 this.socket.on('disconnect', _.bind(function (reason) {
                     NEWSBLUR.log(["Lost connection to real-time pubsub due to:", reason, "at", new Date().toISOString(), "Falling back to polling."]);
                     this.flags.feed_refreshing_in_realtime = false;
@@ -6157,7 +6180,14 @@
                 } else if (_.string.startsWith(message, "reload:")) {
                     if (!NEWSBLUR.reader.flags['reloading_feeds']) {
                         console.log(["Reloading feeds due to server reload", NEWSBLUR.reader.flags['reloading_feeds']]);
-                        NEWSBLUR.assets.load_feeds();
+                        if (NEWSBLUR.reader.flags['waiting_for_mark_unread']) {
+                            NEWSBLUR.reader.flags['waiting_for_mark_unread'] = false;
+                            NEWSBLUR.reader.force_feeds_refresh(function () {
+                                NEWSBLUR.reader.finish_count_unreads_after_import();
+                            }, true);
+                        } else {
+                            NEWSBLUR.assets.load_feeds();
+                        }
                     }
                 } else if (_.string.startsWith(message, 'briefing:')) {
                     try {
@@ -6357,6 +6387,12 @@
                 var total = NEWSBLUR.assets.feeds.length;
                 var progress = Math.ceil(indexed / total * 100);
                 NEWSBLUR.utils.attach_loading_gradient($related_stories_buttons, progress);
+            }
+
+            // Forward to the discover popover if it's open
+            var popover = NEWSBLUR.ReaderPopover._popover;
+            if (popover && popover._open && popover.update_discover_progress) {
+                popover.update_discover_progress(message);
             }
         },
 
@@ -6998,6 +7034,7 @@
             $('.NB-tryfeed-subscribe-banner').remove();
             $('.NB-tryfeed-follow-banner').remove();
             $('.NB-tryfeed-signup-banner').remove();
+            $('.NB-search-indexing-banner').remove();
             this.flags['showing_feed_in_tryfeed_view'] = false;
             this.flags['showing_social_feed_in_tryfeed_view'] = false;
         },
@@ -7095,6 +7132,18 @@
 
         hide_tryout_signup_button: function () {
             $('.NB-tryfeed-signup-banner').remove();
+        },
+
+        check_search_indexing: function (data) {
+            if (!data || !data.user_search || !NEWSBLUR.reader.flags.search || !NEWSBLUR.app.active_search) return;
+
+            var user_search = (typeof data.user_search === 'string') ? JSON.parse(data.user_search) : data.user_search;
+            if (user_search.subscriptions_indexing && !user_search.subscriptions_indexed) {
+                var indexed = NEWSBLUR.assets.feeds.search_indexed();
+                var total = NEWSBLUR.assets.feeds.length;
+                var progress = total ? Math.ceil(indexed / total * 100) : 0;
+                NEWSBLUR.app.active_search.show_search_indexing_banner(progress);
+            }
         },
 
         add_recommended_feed: function (feed_id) {

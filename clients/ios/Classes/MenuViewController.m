@@ -249,7 +249,7 @@ NSString * const MenuHandler = @"handler";
     segmentedControl.selectedSegmentIndex = valueIndex;
 
     // Show white pill for all selections (Auto and color themes)
-    segmentedControl.selectedSegmentTintColor = UIColorFromLightDarkRGB(0xffffff, 0x6f6f75);
+    segmentedControl.selectedSegmentTintColor = UIColorFromLightSepiaMediumDarkRGB(0xdce6f0, 0xFAF5ED, 0xbbbbbb, 0x888890);
 
     [cell.contentView addSubview:segmentedControl];
 

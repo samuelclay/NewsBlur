@@ -15,6 +15,8 @@ from utils.management_functions import daemonize
 
 
 class Command(BaseCommand):
+    help = "Fetch and update multiple feeds using parallel worker threads."
+
     def add_arguments(self, parser):
         parser.add_argument("-f", "--feed", default=None)
         parser.add_argument("-d", "--daemon", dest="daemonize", action="store_true")

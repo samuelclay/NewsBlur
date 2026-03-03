@@ -352,8 +352,10 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)openAskAIDialog:(NSDictionary *)story sourceRect:(NSValue *)sourceRectValue;
 - (void)openDiscoverFeedsDialog:(NSString *)feedId;
 - (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId;
+- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId sourceView:(UIView *)sourceView;
 - (void)openDiscoverFeedsDialogWithFeedIds:(NSArray *)feedIds;
 - (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds;
+- (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds sourceView:(UIView *)sourceView;
 - (void)openAddSiteWithFeedAddress:(NSString *)feedAddress;
 - (void)cleanUpTryFeed;
 - (void)openUserTagsStory:(id)sender;

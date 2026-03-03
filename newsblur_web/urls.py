@@ -43,6 +43,7 @@ urlpatterns = [
     url(r"^archive-assistant/", include("apps.archive_assistant.urls")),
     url(r"^recommendations/", include("apps.recommendations.urls")),
     url(r"^notifications/?", include("apps.notifications.urls")),
+    url(r"^media_player/", include("apps.media_player.urls")),
     url(r"^statistics/", include("apps.statistics.urls")),
     url(r"^social/", include("apps.social.urls")),
     url(r"^search/", include("apps.search.urls")),

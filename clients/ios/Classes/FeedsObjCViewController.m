@@ -1326,13 +1326,8 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
 }
 
 - (IBAction)tapAddSite:(id)sender {
-//    [self.appDelegate.addSiteNavigationController popToRootViewControllerAnimated:NO];
-//    [self.splitViewController showColumn:UISplitViewControllerColumnPrimary];
     [self.appDelegate showFeedsListAnimated:NO];
-    
-    [self.appDelegate showPopoverWithViewController:self.appDelegate.addSiteNavigationController contentSize:CGSizeMake(320, 96) barButtonItem:self.addBarButton];
-    
-    [self.appDelegate.addSiteViewController reload];
+    [self.appDelegate openAddSiteWithFeedAddress:@""];
 }
 
 - (IBAction)showSettingsPopover:(id)sender {
@@ -2272,7 +2267,7 @@ static NSArray<NSString *> *NewsBlurTopSectionNames;
                                     scrollPosition:UITableViewScrollPositionNone];
     } else if (self.currentSection >= 0) {
         FolderTitleView *title = self.folderTitleViews[@(self.currentSection)];
-        UIColor *color = UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xFFFFD2, 0x304050, 0x000022);
+        UIColor *color = UIColorFromLightSepiaMediumDarkRGB(0xFFFFD2, 0xF7E9D8, 0x304050, 0x000022);
         CGFloat hue;
         CGFloat saturation;
         CGFloat brightness;
@@ -3407,7 +3402,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     self.userInfoView = [[UIView alloc]
                          initWithFrame:CGRectMake(0, 0, self.innerView.bounds.size.width, 50)];
-    self.userInfoView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE0E0E0, 0xFFF8CA, 0x4F4F4F, 0x292B2C);
+    self.userInfoView.backgroundColor = UIColorFromLightSepiaMediumDarkRGB(0xE0E0E0, 0xE8DED0, 0x4F4F4F, 0x292B2C);
 #else
     if (!orientation) {
         orientation = self.view.window.windowScene.interfaceOrientation;

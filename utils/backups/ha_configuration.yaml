@@ -1,0 +1,20 @@
+# Add to Home Assistant configuration.yaml
+# The mount_backup_drive command should already exist.
+# Add offsite_backup to the same shell_command: block.
+
+shell_command:
+  mount_backup_drive: "/config/scripts/mount_backup_drive.sh"
+  offsite_backup: "/config/scripts/offsite_pull.sh >> /media/newsblur-backup/backup.log 2>&1"
+
+# Then create an automation in the HA UI or in automations.yaml:
+#
+# - alias: "Weekly NewsBlur off-site backup"
+#   trigger:
+#     - platform: time
+#       at: "06:00:00"
+#   condition:
+#     - condition: time
+#       weekday:
+#         - mon
+#   action:
+#     - service: shell_command.offsite_backup

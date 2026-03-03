@@ -1,3 +1,10 @@
+"""User profile views: account settings, premium billing, login/signup, and preferences.
+
+Manages user authentication (login, signup, logout), profile settings,
+premium subscription management (Stripe/PayPal), notification preferences,
+and account import/export (OPML).
+"""
+
 import datetime
 import json as python_json
 import re

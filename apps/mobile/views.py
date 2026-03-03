@@ -1,3 +1,5 @@
+"""Mobile views: mobile app workspace rendering and asset delivery."""
+
 import base64
 import os
 

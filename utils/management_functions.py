@@ -1,3 +1,9 @@
+"""Process daemonization utility for background management commands.
+
+Provides a daemonize() function that double-forks the current process to
+detach from the terminal and run as a background daemon.
+"""
+
 import errno
 import os
 

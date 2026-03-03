@@ -6,6 +6,8 @@ from django.db.utils import OperationalError
 
 
 class Command(BaseCommand):
+    help = "Wait for the PostgreSQL database to become available (used during container startup)."
+
     def handle(self, *args, **options):
         db_conn = connections["default"]
         connected = False

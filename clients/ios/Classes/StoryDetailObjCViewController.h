@@ -41,6 +41,7 @@ UIActionSheetDelegate, WKNavigationDelegate> {
 @property (nonatomic, assign) BOOL inTextView;
 @property (nonatomic, assign) BOOL isRecentlyUnread;
 @property (nonatomic) BOOL hasStory;
+@property (nonatomic) BOOL lastDragDirectionDown;
 @property (nonatomic,  readonly) BOOL isSinglePage;
 
 @property NSInteger pageIndex;

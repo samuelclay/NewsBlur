@@ -207,9 +207,10 @@ del {
     border-color: rgba(255, 255, 255, .3) rgba(0, 0, 0, .2) rgba(0, 0, 0, .3) rgba(255, 255, 255, .2);
 }
 .NB-button.NB-share-button div {
-    color: rgba(187, 187, 187, 0.6);
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
-    border: 1px solid rgb(255, 255, 255, 0.25);
+    color: rgba(200, 200, 200, 0.6);
+    text-shadow: none;
+    border: 0.5px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
 }
 .NB-button:active div,
 .NB-button.NB-button-active div {
@@ -227,8 +228,9 @@ del {
 
 .NB-button.NB-share-button:active div,
 .NB-button.NB-share-button.NB-button-active div {
-    color: darkgrey;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .2);
+    color: rgba(200, 200, 200, 0.8);
+    background: rgba(255, 255, 255, 0.12);
+    text-shadow: none;
 }
 
 /* Story Comments */

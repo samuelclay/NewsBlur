@@ -6,6 +6,8 @@ from apps.rss_feeds.models import Feed
 
 
 class Command(BaseCommand):
+    help = "Trim old stories from feeds with no active or premium subscribers to save storage."
+
     def add_arguments(self, parser):
         parser.add_argument("-f", "--feed", dest="feed", default=None),
 

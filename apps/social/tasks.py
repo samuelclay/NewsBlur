@@ -1,3 +1,5 @@
+"""Social tasks: sharing, follower notifications, and third-party integrations."""
+
 from bson.objectid import ObjectId
 from django.contrib.auth.models import User
 

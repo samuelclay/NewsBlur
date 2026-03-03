@@ -53,7 +53,7 @@ now=$(date '+%Y-%m-%d-%H-%M')
 for collection in ${collections[@]}; do
     echo "---> Dumping $collection - ${now}"
 
-    docker exec -it mongo mongodump -d newsblur -c $collection -o /backup
+    docker exec -t mongo mongodump -d newsblur -c $collection -o /backup
 done;
 
 echo " ---> Compressing /srv/newsblur/backup/newsblur into /srv/newsblur/backup/backup_mongo_${now}.tgz"

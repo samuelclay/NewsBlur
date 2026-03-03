@@ -357,6 +357,16 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         }, [])));
 
         return all_tags;
+    },
+
+    has_cluster: function () {
+        var cluster = this.get('cluster_stories');
+        return cluster && cluster.length > 0;
+    },
+
+    cluster_count: function () {
+        var cluster = this.get('cluster_stories');
+        return cluster ? cluster.length + 1 : 1;
     }
 
 });
@@ -753,6 +763,8 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
             if (!selected_story.get('read_status')) {
                 this.mark_read(selected_story);
             }
+        } else {
+            clearTimeout(this.read_story_delay);
         }
     }
 

@@ -1,3 +1,9 @@
+"""Structured logging with per-user context, platform detection, and timing.
+
+Wraps Python's logging module with NewsBlur-specific formatters that include
+username, platform (iOS/Android/web), and request duration in log output.
+"""
+
 import logging
 import re
 import string

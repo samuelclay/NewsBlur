@@ -1,3 +1,9 @@
+"""Intelligence trainer views: save and retrieve per-user classifiers for story scoring.
+
+Handles saving classifier rules (by title, author, tag, feed, and AI prompt)
+and populating the trainer modal with current classifier state.
+"""
+
 import redis
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render

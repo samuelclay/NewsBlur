@@ -1,3 +1,5 @@
+"""RSS feed tasks: orchestrate the feed refresh pipeline including fetch, parse, and push."""
+
 import datetime
 import os
 import shutil

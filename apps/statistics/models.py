@@ -1,3 +1,10 @@
+"""Statistics and feedback models stored in MongoDB.
+
+MStatistics stores key-value system metrics (user counts, feed activity,
+load times) with automatic expiration. MFeedback aggregates user-submitted
+feedback. MAnalyticsFetcher and MAnalyticsPageLoad track performance metrics.
+"""
+
 import datetime
 import urllib.error
 import urllib.parse

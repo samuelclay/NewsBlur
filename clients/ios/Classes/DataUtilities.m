@@ -15,7 +15,7 @@
 
 + (NSArray *)updateUserProfiles:(NSArray *)userProfiles withNewUserProfiles:(NSArray *)newUserProfiles {
 
-    NSMutableArray *updatedUserProfiles = [userProfiles mutableCopy];
+    NSMutableArray *updatedUserProfiles = [userProfiles mutableCopy] ?: [NSMutableArray array];
     
     for (int i = 0; i < newUserProfiles.count; i++) {
         BOOL isInUserProfiles = NO;

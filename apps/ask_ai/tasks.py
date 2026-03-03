@@ -1,3 +1,5 @@
+"""Ask AI tasks: process user questions via LLM providers and stream responses."""
+
 import json
 import time
 import uuid

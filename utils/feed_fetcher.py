@@ -1,3 +1,10 @@
+"""Multi-process feed fetcher and story parser.
+
+Dispatches feed update jobs across worker processes, fetches RSS/Atom feeds
+via feedparser, parses and stores new stories, handles feed redirects and
+errors, and computes intelligence scores after each fetch.
+"""
+
 import datetime
 import html
 import multiprocessing

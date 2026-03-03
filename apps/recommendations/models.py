@@ -1,3 +1,5 @@
+"""Recommendation models: feed recommendations with user feedback and approval workflow."""
+
 import datetime
 import os
 import tempfile

@@ -1,3 +1,9 @@
+"""Social views: sharing stories, following users, comments, and blurblog pages.
+
+Handles story sharing/unsharing, comment posting, user follows/unfollows,
+social profile pages, blurblog feeds, and interactions (replies, reshares).
+"""
+
 import datetime
 import random
 import re

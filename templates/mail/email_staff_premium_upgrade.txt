@@ -1,0 +1,31 @@
+{% load utils_tags %}Staff Notification: {{ transition_label }}
+{{ user.username }} upgraded to {{ tier_display }}
+
+== Account ==
+Username:      {{ user.username }}
+Email:         {{ email }}
+Member for:    {{ account_age }} (since {{ date_joined|date:"M j, Y" }})
+Last seen:     {{ last_seen|date:"M j, Y" }}
+Upgrade path:  {{ transition_label }}
+
+== Usage ==
+Feeds:         {{ feed_count|commify }} total, {{ active_feed_count|commify }} active
+Stories read:  {{ stories_read|commify }}
+Feed opens:    {{ feed_opens|commify }}
+Saved stories: {{ starred_count|commify }}
+Shared:        {{ shared_count|commify }}
+Following:     {{ following_count }}
+Followers:     {{ follower_count }}
+
+== Payment History ==
+Total paid:    ${{ total_paid }}
+Payments:      {{ payment_count }}{% if first_payment_date %}
+First payment: {{ first_payment_date|date:"M j, Y" }}{% endif %}
+Stripe:        {{ stripe_id|default:"--" }}
+PayPal:        {{ paypal_sub_id|default:"--" }}
+Auto-renewal:  {% if premium_renewal %}Yes{% else %}No{% endif %}{% if premium_expire %}
+Expires:       {{ premium_expire|date:"M j, Y" }}{% endif %}
+{% if latest_payments %}
+Recent Payments:
+{% for payment in latest_payments %}  {{ payment.payment_date|date:"M j, Y" }}  ${{ payment.payment_amount }}  {{ payment.payment_provider }}  {% if payment.refunded %}REFUNDED{% else %}Paid{% endif %}
+{% endfor %}{% endif %}

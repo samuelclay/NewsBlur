@@ -1,3 +1,5 @@
+"""Notification views: manage push notification settings and device token registration."""
+
 import redis
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required

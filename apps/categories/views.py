@@ -1,3 +1,5 @@
+"""Category views: browse and subscribe to feed categories."""
+
 from apps.categories.models import MCategory
 from apps.reader.models import UserSubscriptionFolders
 from utils import json_functions as json

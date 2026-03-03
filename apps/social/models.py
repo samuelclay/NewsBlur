@@ -1,3 +1,10 @@
+"""Social models: shared stories, comments, follows, interactions, and blurblogs.
+
+MSocialProfile stores user social identity. MSocialSubscription tracks follows.
+MSharedStory stores shared stories with comments. MInteraction and MActivity
+track social events (replies, reshares, follows).
+"""
+
 import datetime
 import hashlib
 import html as pyhtml

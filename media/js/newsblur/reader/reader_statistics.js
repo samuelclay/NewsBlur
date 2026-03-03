@@ -362,7 +362,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 _.map(_.range(24), function (hour) {
                     var count = data.story_hours_history[hour] || data.story_hours_history["" + hour] || 0;
                     var opacity = 1 - (count * 1.0 / max_count);
-                    var theme = NEWSBLUR.assets.theme();
+                    var theme = NEWSBLUR.assets && NEWSBLUR.assets.theme ? NEWSBLUR.assets.theme() : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
                     if (theme == 'light') {
                         return $.make('td', { style: "background-color: rgba(255, 255, 255, " + opacity + ");" });
                     } else if (theme == 'dark') {

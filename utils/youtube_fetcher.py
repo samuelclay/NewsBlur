@@ -80,6 +80,7 @@ class YoutubeFetcher:
             if not thumbnail:
                 thumbnail = video["snippet"]["thumbnails"].get("medium")
             duration = ""
+            duration_sec = 0
             if "duration" in video["contentDetails"]:
                 duration_sec = isodate.parse_duration(video["contentDetails"]["duration"]).seconds
                 duration_min, seconds = divmod(duration_sec, 60)
@@ -125,7 +126,7 @@ class YoutubeFetcher:
                 "link": link,
                 "description": content,
                 "author_name": username or title,
-                "categories": [],
+                "categories": ["short video"] if 0 < duration_sec < 180 else [],
                 "unique_id": "tag:youtube.com,2008:video:%s" % video["id"],
                 "pubdate": dateutil.parser.parse(video["snippet"]["publishedAt"]),
             }

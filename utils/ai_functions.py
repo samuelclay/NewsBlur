@@ -1,3 +1,9 @@
+"""AI/LLM integration for story classification and text analysis.
+
+Sets up OpenAI and Anthropic API clients, provides story classification
+via Claude tool use, and handles token counting with tiktoken.
+"""
+
 import json
 import logging
 import re

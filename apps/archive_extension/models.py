@@ -1,3 +1,5 @@
+"""Archive extension models: store archived web pages from the browser extension."""
+
 import hashlib
 import zlib
 from datetime import datetime
