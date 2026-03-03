@@ -53,8 +53,8 @@ class MediaPlayer(View):
             "total_plays_youtube"
         ] = f'{chart_name}{{metric="total_plays",type="youtube"}} {totals.get("youtube", 0)}'
 
-        # Instantaneous: current active states (row count)
-        active_states = MMediaPlaybackState.objects.count()
+        # Instantaneous: users with something currently loaded
+        active_states = MMediaPlaybackState.objects.filter(current_media_url__ne="").count()
         formatted_data["active_states"] = f'{chart_name}{{metric="active_states"}} {active_states}'
 
         # Unique users by period

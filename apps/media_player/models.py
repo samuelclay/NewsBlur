@@ -224,7 +224,19 @@ class MMediaPlaybackState(mongo.Document):
     def clear_state(cls, user_id):
         state = cls.get_user(user_id)
         if state:
-            state.delete()
+            state.current_story_hash = ""
+            state.current_media_url = ""
+            state.current_media_type = ""
+            state.current_media_title = ""
+            state.current_feed_id = 0
+            state.current_image_url = ""
+            state.current_position = 0
+            state.current_duration = 0
+            state.is_playing = False
+            state.queue = []
+            state.history = []
+            state.updated_at = datetime.datetime.now()
+            state.save()
 
     @classmethod
     def get_state_with_redis_position(cls, user_id):
