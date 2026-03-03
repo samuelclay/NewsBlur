@@ -21,6 +21,8 @@
         dest: /srv/newsblur/
         version: main
       register: pulled
+      tags:
+        - always
 
     - block:
         - name: Reload celery
