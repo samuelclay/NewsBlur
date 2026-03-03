@@ -10147,9 +10147,17 @@ form.opml_import_form input {
 
 .NB-media-player-queue-count,
 .NB-media-player-history-count {
-    font-weight: 500;
-    color: #bbb;
+    font-weight: 600;
+    color: #888;
     font-size: 9px;
+    background-color: rgba(0, 0, 0, 0.08);
+    padding: 1px 5px;
+    border-radius: 8px;
+    margin-left: 3px;
+    display: inline-block;
+    line-height: 1.4;
+    min-width: 14px;
+    text-align: center;
 }
 
 .NB-media-player-queue-clear {
@@ -10271,6 +10279,8 @@ form.opml_import_form input {
     text-transform: uppercase;
     color: #bbb;
     flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 1px;
 }
 
 .NB-media-player-queue-remove {
@@ -10282,6 +10292,8 @@ form.opml_import_form input {
     display: flex;
     align-items: center;
     justify-content: center;
+    align-self: flex-start;
+    margin-top: 1px;
 }
 
 .NB-media-player-queue-remove svg {
@@ -10320,6 +10332,8 @@ form.opml_import_form input {
     display: flex;
     align-items: center;
     justify-content: center;
+    align-self: flex-start;
+    margin-top: 1px;
 }
 
 .NB-media-player-history-remove svg {
