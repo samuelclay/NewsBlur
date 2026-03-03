@@ -48,7 +48,6 @@
                 $river_infrequent_header: $('.NB-feeds-header-river-infrequent'),
                 $river_blurblogs_header: $('.NB-feeds-header-river-blurblogs'),
                 $river_global_header: $('.NB-feeds-header-river-global'),
-                $river_trending_header: $('.NB-feeds-header-river-trending'),
                 $river_briefing_header: $('.NB-feeds-header-river-briefing'),
                 $archive_header: $('.NB-feeds-header-archive'),
                 $add_site_header: $('.NB-feeds-header-add-site'),
@@ -1368,7 +1367,7 @@
                 }
             });
 
-            // Flush read time for the current story before resetting (for trending feeds feature)
+            // Flush read time for the current story before resetting
             if (NEWSBLUR.ReadTimeTracker && this.active_story) {
                 var story_hash = this.active_story.get('story_hash');
                 var read_time = NEWSBLUR.ReadTimeTracker.get_and_reset_read_time(story_hash);
@@ -1443,7 +1442,6 @@
             this.$s.$river_infrequent_header.removeClass('NB-selected');
             this.$s.$river_blurblogs_header.removeClass('NB-selected');
             this.$s.$river_global_header.removeClass('NB-selected');
-            this.$s.$river_trending_header.removeClass('NB-selected');
             this.$s.$river_briefing_header.removeClass('NB-selected');
             this.$s.$archive_header.removeClass('NB-selected');
             if (!options.preserve_tryfeed) {
@@ -1477,12 +1475,6 @@
             this.model.searches_feeds.deselect();
             this.model.folders.deselect();
             this.model.social_feeds.deselect();
-
-            if (this.trending_sites_view) {
-                this.trending_sites_view.close();
-                this.trending_sites_view = null;
-            }
-            this.flags['trending_view'] = false;
 
             if (this.briefing_onboarding_view) {
                 this.briefing_onboarding_view.close();
@@ -1552,8 +1544,6 @@
                 this.active_feed == 'river:global') {
                 options.global = true;
                 this.open_river_blurblogs_stories(options);
-            } else if (this.flags['trending_view']) {
-                this.open_trending_sites(options);
             } else if (this.flags['social_view']) {
                 this.open_social_stories(this.active_feed, options);
             } else if (this.flags['river_view']) {
@@ -2733,40 +2723,6 @@
             }
         },
 
-        // ==================
-        // = Trending Sites =
-        // ==================
-
-        open_trending_sites: function (options) {
-            options = options || {};
-
-            this.reset_feed(options);
-            this.hide_splash_page();
-
-            this.active_feed = 'river:trending';
-            this.active_folder = new Backbone.Model({
-                id: 'river:trending',
-                folder_title: "Trending Sites",
-                fake: true,
-                show_options: false
-            });
-
-            this.flags['trending_view'] = true;
-            this.flags['river_view'] = true;
-
-            this.$s.$river_trending_header.addClass('NB-selected');
-            this.$s.$layout.addClass('NB-view-river');
-
-            // Create and append trending sites view to content pane (covers both story titles and story pane)
-            this.trending_sites_view = new NEWSBLUR.Views.TrendingSitesView();
-            this.$s.$content_pane.append(this.trending_sites_view.$el);
-
-            // Update URL
-            NEWSBLUR.router.navigate('/trending');
-
-            this.make_feed_title_in_stories();
-        },
-
         // ===================
         // = Archive Feature =
         // ===================
@@ -3695,8 +3651,6 @@
                 feed_title = "Infrequent Site Stories";
             } else if (feed_id == 'river:daily-briefing') {
                 feed_title = "Daily Briefing";
-            } else if (feed_id == 'river:trending') {
-                feed_title = "Trending Sites";
             } else if (_.string.startsWith(feed_id, 'river:')) {
                 var feed = NEWSBLUR.assets.get_feed(feed_id);
                 if (!feed) return;
@@ -7568,7 +7522,7 @@
         },
 
         setup_read_time_tracker: function () {
-            // Initialize the read time tracker for trending feeds feature
+            // Initialize the read time tracker
             if (NEWSBLUR.ReadTimeTracker) {
                 NEWSBLUR.ReadTimeTracker.bind_activity_events();
             }
