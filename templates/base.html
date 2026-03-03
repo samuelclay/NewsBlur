@@ -51,7 +51,8 @@
       'email'                   : "{{ user.email|safe }}",
       'MEDIA_URL'               : "{{ MEDIA_URL }}",
       'debug'                   : {{ debug|yesno:"true,false" }},
-      'default_days_of_unread'  : {% settings_value "DAYS_OF_UNREAD" %}
+      'default_days_of_unread'  : {% settings_value "DAYS_OF_UNREAD" %},
+      'default_days_of_unread_free': {% settings_value "DAYS_OF_UNREAD_FREE" %}
     };
     NEWSBLUR.Flags = {
     };

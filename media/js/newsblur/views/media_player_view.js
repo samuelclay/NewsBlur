@@ -383,7 +383,9 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
     // = Playback Abstraction =
     // ========================
 
-    play_media: function (media_item) {
+    play_media: function (media_item, options) {
+        options = options || {};
+
         // If same item is already playing, just toggle
         if (this.is_currently_playing(media_item)) {
             this.toggle_play_pause();
@@ -404,7 +406,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.add_to_history_from_current();
 
         this.current_media = media_item;
-        this.current_position = 0;
+        this.current_position = options.start_position || 0;
         this.current_duration = 0;
         this.is_playing = false;
 
@@ -414,6 +416,12 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.show_player();
 
         this.create_media_element(media_item);
+
+        // Seek to handoff position if provided (e.g. from inline playback)
+        if (this.current_position > 0) {
+            this.seek_to(this.current_position);
+        }
+
         this.play();
 
         // Save durable state
