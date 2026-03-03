@@ -253,7 +253,6 @@ class IPRateTracker:
         threshold = getattr(settings, "IP_RATE_LIMIT_THRESHOLD", self.ABUSE_THRESHOLD)
         return int(count) > threshold
 
-
     def track_would_be_denied(self, request, endpoint):
         """
         Record that a request WOULD have been denied if rate limiting was enforced.

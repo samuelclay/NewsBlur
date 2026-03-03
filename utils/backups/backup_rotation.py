@@ -173,14 +173,18 @@ def cleanup_s3_prefix(bucket_name, prefix, keep=1, dry_run=False):
         return 0, 0
 
     total_size = sum(o[2] for o in objects)
-    print("Found %d objects (%.2f GB) with prefix: %s" % (len(objects), total_size / 1024 / 1024 / 1024, prefix))
+    print(
+        "Found %d objects (%.2f GB) with prefix: %s" % (len(objects), total_size / 1024 / 1024 / 1024, prefix)
+    )
 
     # Keep the N most recent
     to_keep = objects[:keep]
     to_delete = objects[keep:]
 
     delete_size = sum(o[2] for o in to_delete)
-    print("Keeping %d, deleting %d (%.2f GB)" % (len(to_keep), len(to_delete), delete_size / 1024 / 1024 / 1024))
+    print(
+        "Keeping %d, deleting %d (%.2f GB)" % (len(to_keep), len(to_delete), delete_size / 1024 / 1024 / 1024)
+    )
 
     deleted = 0
     for _, key, size in to_delete:
@@ -236,4 +240,6 @@ if __name__ == "__main__":
     elif command == "cleanup-secondary":
         print("\n=== Cleaning up backup_hdb_redis_secondary/ (dead server) ===")
         cleanup_s3_prefix(bucket, "backup_hdb_redis_secondary/", keep=1, dry_run=True)
-        print("\nThis was a dry run. To actually delete, edit this script or call cleanup_s3_prefix() directly.")
+        print(
+            "\nThis was a dry run. To actually delete, edit this script or call cleanup_s3_prefix() directly."
+        )

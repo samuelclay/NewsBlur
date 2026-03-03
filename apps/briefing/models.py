@@ -91,9 +91,11 @@ class MBriefing(mongo.Document):
         Delete the most recent MBriefing slot guard for a user by clearing the
         slot/local_date fields. Used by on-demand regeneration to allow re-generation.
         """
-        latest = cls.objects.filter(
-            user_id=user_id, slot__exists=True, local_date__exists=True
-        ).order_by("-briefing_date").first()
+        latest = (
+            cls.objects.filter(user_id=user_id, slot__exists=True, local_date__exists=True)
+            .order_by("-briefing_date")
+            .first()
+        )
         if latest:
             latest.slot = None
             latest.local_date = None
