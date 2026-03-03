@@ -10,7 +10,7 @@
   
   
 
-  <updated>2026-02-03T19:57:01-05:00</updated>
+  <updated>2026-03-02T19:04:58-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,30 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Time for some free NewsBlur swag!</title>
+    <link href="https://blog.newsblur.com/2012/10/29/free-newsblur-swag-time/" rel="alternate" type="text/html" title="Time for some free NewsBlur swag!" />
+    <published>2012-10-29T15:38:00-04:00</published>
+    <updated>2012-10-29T15:38:00-04:00</updated>
+    <id>https://blog.newsblur.com/2012/10/29/free-newsblur-swag-time</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2012/10/29/free-newsblur-swag-time/">
+      <![CDATA[<p>That’s right, t-shirts, stickers, buttons, and magnets. I’ve got a whole lot of good stuff to send out, so give me some critical info and I’ll get you hooked up with the latest in startup love.</p>
+
+<p><strong>The t-shirt entry form has been taken down as of Thursday, November 29th. Hopefully you’ve ordered your t-shirt by now.</strong></p>
+
+]]>
+    </content>
+    
+    
+    
+    
+    <summary type="html">
+      <![CDATA[That’s right, t-shirts, stickers, buttons, and magnets. I’ve got a whole lot of good stuff to send out, so give me some critical info and I’ll get you hooked up with the latest in startup love.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Extreme makeover: NewsBlur iOS app edition</title>
