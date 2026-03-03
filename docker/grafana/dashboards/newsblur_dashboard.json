@@ -9890,14 +9890,38 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "media_player{metric=\"total_states\"}",
+          "expr": "media_player{metric=\"total_plays\",type=\"audio\"}",
           "interval": "",
-          "legendFormat": "Total States",
+          "legendFormat": "Audio",
           "queryType": "randomWalk",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "media_player{metric=\"total_plays\",type=\"video\"}",
+          "interval": "",
+          "legendFormat": "Video",
+          "queryType": "randomWalk",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "media_player{metric=\"total_plays\",type=\"youtube\"}",
+          "interval": "",
+          "legendFormat": "YouTube",
+          "queryType": "randomWalk",
+          "refId": "C"
         }
       ],
-      "title": "Total Media Players",
+      "title": "Total Media Plays",
       "type": "timeseries"
     },
     {
@@ -9983,9 +10007,9 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "media_player{metric=\"active_users\",period=\"daily\"}",
+          "expr": "media_player{metric=\"active_players\",type=\"audio\"}",
           "interval": "",
-          "legendFormat": "Daily",
+          "legendFormat": "Audio",
           "queryType": "randomWalk",
           "refId": "A"
         },
@@ -9995,9 +10019,9 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "media_player{metric=\"active_users\",period=\"weekly\"}",
+          "expr": "media_player{metric=\"active_players\",type=\"video\"}",
           "interval": "",
-          "legendFormat": "Weekly",
+          "legendFormat": "Video",
           "queryType": "randomWalk",
           "refId": "B"
         },
@@ -10007,26 +10031,14 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "media_player{metric=\"active_users\",period=\"monthly\"}",
+          "expr": "media_player{metric=\"active_players\",type=\"youtube\"}",
           "interval": "",
-          "legendFormat": "Monthly",
+          "legendFormat": "YouTube",
           "queryType": "randomWalk",
           "refId": "C"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "U1-fPO3Mk"
-          },
-          "exemplar": true,
-          "expr": "media_player{metric=\"active_users\",period=\"alltime\"}",
-          "interval": "",
-          "legendFormat": "All Time",
-          "queryType": "randomWalk",
-          "refId": "D"
         }
       ],
-      "title": "Active Media Player Users",
+      "title": "Active Media Players",
       "type": "timeseries"
     },
     {
@@ -10112,9 +10124,9 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "media_player{metric=\"media_type\",type=\"audio\"}",
+          "expr": "media_player{metric=\"active_users\",period=\"daily\"}",
           "interval": "",
-          "legendFormat": "Audio",
+          "legendFormat": "Daily",
           "queryType": "randomWalk",
           "refId": "A"
         },
@@ -10124,9 +10136,9 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "media_player{metric=\"media_type\",type=\"video\"}",
+          "expr": "media_player{metric=\"active_users\",period=\"weekly\"}",
           "interval": "",
-          "legendFormat": "Video",
+          "legendFormat": "Weekly",
           "queryType": "randomWalk",
           "refId": "B"
         },
@@ -10136,14 +10148,26 @@
             "uid": "U1-fPO3Mk"
           },
           "exemplar": true,
-          "expr": "media_player{metric=\"media_type\",type=\"youtube\"}",
+          "expr": "media_player{metric=\"active_users\",period=\"monthly\"}",
           "interval": "",
-          "legendFormat": "YouTube",
+          "legendFormat": "Monthly",
           "queryType": "randomWalk",
           "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "U1-fPO3Mk"
+          },
+          "exemplar": true,
+          "expr": "media_player{metric=\"active_users\",period=\"alltime\"}",
+          "interval": "",
+          "legendFormat": "All Time",
+          "queryType": "randomWalk",
+          "refId": "D"
         }
       ],
-      "title": "Audio vs Video",
+      "title": "Unique Users",
       "type": "timeseries"
     },
     {

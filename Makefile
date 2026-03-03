@@ -436,6 +436,10 @@ test_haproxy:
 	./utils/test_haproxy_toggle.sh
 test_haproxy_staging:
 	./utils/test_haproxy_toggle.sh --staging
+celery_restart:
+	ansible-playbook ansible/deploy.yml -l task --tags restart
+work_restart:
+	ansible-playbook ansible/deploy.yml -l work --tags restart
 celery_stop:
 	ansible-playbook ansible/deploy.yml -l task --tags stop
 deploy_sentry:
