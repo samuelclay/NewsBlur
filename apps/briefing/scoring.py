@@ -445,7 +445,11 @@ def _find_clustered_stories(candidates, stories_by_hash):
     if its cluster has 3+ unique feeds (total cluster members, not just the
     user's candidates). Also falls back to title-based matching.
     """
-    from apps.clustering.models import get_cluster_for_story, get_cluster_members, normalize_title
+    from apps.clustering.models import (
+        get_cluster_for_story,
+        get_cluster_members,
+        normalize_title,
+    )
 
     categorized = {}
 

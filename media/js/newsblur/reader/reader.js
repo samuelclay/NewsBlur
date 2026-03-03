@@ -4413,7 +4413,7 @@
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-site-mark-read', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark everything as read'),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Mark everything read / unread'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Choose how many days back')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-trainer', role: "button" }, [
@@ -6287,7 +6287,14 @@
                 } else if (_.string.startsWith(message, "reload:")) {
                     if (!NEWSBLUR.reader.flags['reloading_feeds']) {
                         console.log(["Reloading feeds due to server reload", NEWSBLUR.reader.flags['reloading_feeds']]);
-                        NEWSBLUR.assets.load_feeds();
+                        if (NEWSBLUR.reader.flags['waiting_for_mark_unread']) {
+                            NEWSBLUR.reader.flags['waiting_for_mark_unread'] = false;
+                            NEWSBLUR.reader.force_feeds_refresh(function () {
+                                NEWSBLUR.reader.finish_count_unreads_after_import();
+                            }, true);
+                        } else {
+                            NEWSBLUR.assets.load_feeds();
+                        }
                     }
                 } else if (_.string.startsWith(message, 'briefing:')) {
                     try {

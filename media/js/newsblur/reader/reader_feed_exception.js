@@ -45,6 +45,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
         this.$modal.bind('input', $.rescope(this.handle_input, this));
+        this.setup_mark_unread_slider();
 
         if (this.options.scroll_to_auto_mark_read) {
             _.delay(_.bind(function () {
@@ -232,6 +233,26 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                         }),
                         $.make('div', { className: 'NB-auto-mark-read-slider-value' })
                     ])
+                ])
+            ]),
+            $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-mark-unread NB-modal-submit NB-settings-only' }, [
+                $.make('h5', [
+                    'Mark Stories as Unread'
+                ]),
+                $.make('div', { className: 'NB-fieldset-fields' }, [
+                    $.make('div', { className: 'NB-mark-unread-slider-container' }, [
+                        $.make('input', {
+                            type: 'range',
+                            className: 'NB-mark-unread-slider',
+                            min: '1',
+                            max: '365',
+                            value: '14'
+                        }),
+                        $.make('div', { className: 'NB-mark-unread-slider-value' })
+                    ]),
+                    $.make('div', { className: 'NB-mark-unread-premium-notice' }),
+                    $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-mark-unread' },
+                        this.folder ? 'Mark folder stories as unread' : 'Mark stories as unread')
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-retry NB-modal-submit NB-exception-block-only' }, [
@@ -553,6 +574,18 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             }
             self.animate_saved();
         });
+        $.targetIs(e, { tagSelector: '.NB-modal-submit-mark-unread' }, function ($t, $p) {
+            e.preventDefault();
+
+            self.mark_stories_as_unread();
+        });
+        $.targetIs(e, { tagSelector: '.NB-mark-unread-upgrade' }, function ($t, $p) {
+            e.preventDefault();
+
+            self.close(function () {
+                NEWSBLUR.reader.open_premium_upgrade_modal();
+            });
+        });
         $.targetIs(e, { tagSelector: '.NB-modal-submit-retry' }, function ($t, $p) {
             e.preventDefault();
 
@@ -683,8 +716,9 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         // Move folder-specific content into the Settings tab
         var $view_settings = $('.NB-exception-option-view', this.$modal).detach();
         var $auto_mark_read = $('.NB-exception-option-auto-mark-read', this.$modal).detach();
+        var $mark_unread = $('.NB-exception-option-mark-unread', this.$modal).detach();
         var $folder_rss = $('.NB-exception-option-feed', this.$modal).detach();
-        $settings_tab.append($view_settings).append($auto_mark_read).append($folder_rss);
+        $settings_tab.append($view_settings).append($auto_mark_read).append($mark_unread).append($folder_rss);
 
         // Initialize auto-mark-read settings
         this.setup_auto_mark_read_for_folder();
@@ -738,12 +772,13 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         // Move all feed-specific content into the Settings tab in correct order
         var $view_settings = $('.NB-exception-option-view', this.$modal).detach();
         var $auto_mark_read = $('.NB-exception-option-auto-mark-read', this.$modal).detach();
+        var $mark_unread = $('.NB-exception-option-mark-unread', this.$modal).detach();
         var $retry_option = $('.NB-exception-option-retry', this.$modal).detach();
         var $feed_option = $('.NB-exception-option-feed', this.$modal).detach();
         var $page_option = $('.NB-exception-option-page', this.$modal).detach();
         var $delete_option = $('.NB-exception-option-delete', this.$modal).detach();
-        // Order: view settings, auto-mark-read, then Option 1 (retry), Option 2 (feed), Option 3 (page), Option 4 (delete)
-        $settings_tab.append($view_settings).append($auto_mark_read).append($retry_option).append($feed_option).append($page_option).append($delete_option);
+        // Order: view settings, auto-mark-read, mark unread, then Option 1 (retry), Option 2 (feed), Option 3 (page), Option 4 (delete)
+        $settings_tab.append($view_settings).append($auto_mark_read).append($mark_unread).append($retry_option).append($feed_option).append($page_option).append($delete_option);
 
         // Initialize auto-mark-read settings for feed
         this.setup_auto_mark_read_for_feed();
@@ -1707,6 +1742,103 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 }, 300);
             }
         });
+    },
+
+    // ========================
+    // = Mark Stories as Unread =
+    // ========================
+
+    get_max_unread_days: function () {
+        if (NEWSBLUR.Globals.is_archive) return 365;
+        if (NEWSBLUR.Globals.is_premium) return NEWSBLUR.Globals.default_days_of_unread;
+        return NEWSBLUR.Globals.default_days_of_unread_free;
+    },
+
+    setup_mark_unread_slider: function () {
+        var self = this;
+        var $slider = $('.NB-mark-unread-slider', this.$modal);
+        var max_days = this.get_max_unread_days();
+
+        $slider.val(Math.min(14, max_days));
+        this.update_mark_unread_slider($slider.val());
+
+        $slider.on('input', function () {
+            self.update_mark_unread_slider(parseInt($(this).val(), 10));
+        });
+    },
+
+    update_mark_unread_slider: function (value) {
+        var $slider = $('.NB-mark-unread-slider', this.$modal);
+        var $slider_value = $('.NB-mark-unread-slider-value', this.$modal);
+        var $notice = $('.NB-mark-unread-premium-notice', this.$modal);
+        var $button = $('.NB-modal-submit-mark-unread', this.$modal);
+        var max_days = this.get_max_unread_days();
+        var min = parseInt($slider.attr('min'), 10) || 1;
+        var max = parseInt($slider.attr('max'), 10) || 365;
+        var percent = ((value - min) / (max - min)) * 100;
+        var limit_percent = ((max_days - min) / (max - min)) * 100;
+
+        if (value > max_days) {
+            $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + limit_percent + '%, #f5a623 ' + limit_percent + '%, #f5a623 ' + percent + '%, #e0e0e0 ' + percent + '%, #e0e0e0 100%)');
+            $slider_value.html('<b>' + value + ' day' + (value !== 1 ? 's' : '') + '</b> &mdash; exceeds your plan limit of ' + max_days + ' days');
+            $button.hide();
+            if (NEWSBLUR.Globals.is_premium) {
+                $notice.html('').append(
+                    $.make('a', { href: '#', className: 'NB-premium-link NB-mark-unread-upgrade' }, [
+                        $.make('span', { className: 'NB-archive-badge' }, 'Upgrade to Premium Archive'),
+                        ' for up to 365 days'
+                    ])
+                ).show();
+            } else {
+                $notice.html('').append(
+                    $.make('a', { href: '#', className: 'NB-premium-link NB-mark-unread-upgrade' }, [
+                        $.make('span', { className: 'NB-premium-badge' }, 'Upgrade to Premium'),
+                        ' for up to ' + NEWSBLUR.Globals.default_days_of_unread + ' days'
+                    ])
+                ).show();
+            }
+        } else {
+            $slider.css('background', 'linear-gradient(to right, #4a90d9 0%, #4a90d9 ' + percent + '%, #e0e0e0 ' + percent + '%, #e0e0e0 100%)');
+            $slider_value.html('Mark stories from the last <b>' + value + ' day' + (value !== 1 ? 's' : '') + '</b> as unread');
+            $notice.hide();
+            $button.show();
+        }
+    },
+
+    mark_stories_as_unread: function () {
+        var self = this;
+        var $button = $('.NB-modal-submit-mark-unread', this.$modal);
+        var $slider = $('.NB-mark-unread-slider', this.$modal);
+        var days = parseInt($slider.val(), 10);
+        var max_days = this.get_max_unread_days();
+        var feed_id = this.feed ? this.feed.id : null;
+        var folder = this.folder ? this.folder_title : null;
+
+        if (days > max_days) return;
+
+        $button.text('Marking as unread...').addClass('NB-disabled').attr('disabled', true);
+
+        NEWSBLUR.assets.mark_stories_as_unread(days, feed_id, folder, _.bind(function (data) {
+            if (data.code === -1) {
+                $button.text(data.message).removeClass('NB-disabled').removeAttr('disabled');
+                return;
+            }
+            $.modal.close();
+            if (data.async) {
+                // Celery task dispatched (folder case). Show progress bar and wait for pubsub.
+                NEWSBLUR.reader.flags['pause_feed_refreshing'] = true;
+                NEWSBLUR.reader.flags['waiting_for_mark_unread'] = true;
+                NEWSBLUR.reader.start_count_unreads_after_import();
+            } else {
+                // Synchronous (single feed). Refresh immediately.
+                NEWSBLUR.reader.force_feeds_refresh(function () {
+                    NEWSBLUR.reader.finish_count_unreads_after_import();
+                }, true);
+                NEWSBLUR.reader.start_count_unreads_after_import();
+            }
+        }, this), _.bind(function () {
+            $button.text('Error. Try again.').removeClass('NB-disabled').removeAttr('disabled');
+        }, this));
     }
 
 });

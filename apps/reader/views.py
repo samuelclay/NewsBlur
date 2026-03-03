@@ -104,6 +104,7 @@ except:
 import tweepy
 
 from apps.categories.models import MCategory
+from apps.reader.tasks import MarkStoriesAsUnread
 from apps.rss_feeds.tasks import ScheduleImmediateFetches
 from apps.social.models import (
     MActivity,
@@ -2721,6 +2722,7 @@ def mark_all_as_read(request):
         feeds = UserSubscription.objects.filter(user=request.user, feed_id__in=feed_ids)
 
     socialsubs = MSocialSubscription.objects.filter(user_id=request.user.pk)
+    updated_feed_ids = []
     for subtype in [feeds, socialsubs]:
         for sub in subtype:
             if days == 0:
@@ -2730,6 +2732,36 @@ def mark_all_as_read(request):
                     sub.needs_unread_recalc = True
                     sub.mark_read_date = read_date
                     sub.save()
+                    if hasattr(sub, "feed_id"):
+                        updated_feed_ids.append(sub.feed_id)
+
+    # Clean up manual unread entries (uU keys) for archive users.
+    # mark_stories_as_unread populates uU for stories beyond unread_cutoff,
+    # but mark_all_as_read needs to clear those that fall before the new read_date.
+    if request.user.profile.is_archive and updated_feed_ids:
+        r_story = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        read_date_ts = int(read_date.strftime("%s"))
+        if infrequent:
+            # Infrequent: read entries first, then remove from per-feed and all-feeds keys
+            read_pipeline = r_story.pipeline()
+            for feed_id in updated_feed_ids:
+                read_pipeline.zrangebyscore(f"uU:{request.user.pk}:{feed_id}", 0, read_date_ts)
+            results = read_pipeline.execute()
+            old_hashes = [h for result in results if result for h in result]
+            if old_hashes:
+                write_pipeline = r_story.pipeline()
+                for feed_id in updated_feed_ids:
+                    write_pipeline.zremrangebyscore(f"uU:{request.user.pk}:{feed_id}", 0, read_date_ts)
+                for h in old_hashes:
+                    write_pipeline.zrem(f"uU:{request.user.pk}", h)
+                write_pipeline.execute()
+        else:
+            # All feeds: blanket cleanup on all-feeds and per-feed keys
+            pipeline_story = r_story.pipeline()
+            pipeline_story.zremrangebyscore(f"uU:{request.user.pk}", 0, read_date_ts)
+            for feed_id in updated_feed_ids:
+                pipeline_story.zremrangebyscore(f"uU:{request.user.pk}:{feed_id}", 0, read_date_ts)
+            pipeline_story.execute()
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "reload:feeds")
@@ -3087,6 +3119,66 @@ def mark_story_hash_as_unread(request):
             datas.append(data)
 
     return datas
+
+
+@ajax_login_required
+@json.json_view
+def mark_stories_as_unread(request):
+    try:
+        days = int(request.POST.get("days", 0))
+    except ValueError:
+        return dict(code=-1, message="Days parameter must be an integer.")
+
+    if days <= 0:
+        return dict(code=-1, message="Days must be a positive integer.")
+
+    profile = request.user.profile
+    if profile.is_archive:
+        max_days = 365
+    elif profile.is_premium:
+        max_days = settings.DAYS_OF_UNREAD
+    else:
+        max_days = settings.DAYS_OF_UNREAD_FREE
+
+    if days > max_days:
+        return dict(code=-1, message="Cannot mark more than %s days as unread on your plan." % max_days)
+
+    feed_id = request.POST.get("feed_id", None)
+    folder = request.POST.get("folder", None)
+
+    is_async = False
+    if feed_id:
+        try:
+            feed_id = int(feed_id)
+        except ValueError:
+            return dict(code=-1, message="Invalid feed_id.")
+        feed_ids = [feed_id]
+        total = UserSubscription.mark_stories_as_unread(request.user.pk, feed_ids, days)
+        logging.user(request, "~FY~SBUnread~SN %s stories in feed %s (%s days)" % (total, feed_id, days))
+    elif folder:
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=request.user)
+            flat_folders = usf.flatten_folders()
+            feed_ids = flat_folders.get(folder, [])
+        except UserSubscriptionFolders.DoesNotExist:
+            feed_ids = []
+        if not feed_ids:
+            return dict(code=-1, message="No feeds found in folder '%s'." % folder)
+        MarkStoriesAsUnread.delay(request.user.pk, feed_ids, days)
+        is_async = True
+        logging.user(
+            request,
+            "~FY~SBUnread~SN stories in folder %s (%s feeds, %s days)" % (folder, len(feed_ids), days),
+        )
+    else:
+        feed_ids = list(UserSubscription.objects.filter(user=request.user).values_list("feed_id", flat=True))
+        if not feed_ids:
+            return dict(code=-1, message="No feeds found.")
+        MarkStoriesAsUnread.delay(request.user.pk, feed_ids, days)
+        is_async = True
+        logging.user(request, "~FY~SBUnread~SN stories in all %s feeds (%s days)" % (len(feed_ids), days))
+
+    return dict(code=1, **{"async": is_async})
 
 
 @ajax_login_required
