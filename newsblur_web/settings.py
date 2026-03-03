@@ -409,7 +409,7 @@ CELERY_TASK_ROUTES = {
     "archive-process-batch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-cleanup-old": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "generate-user-briefing": {"queue": "work_queue", "binding_key": "work_queue"},
-    "compute-story-clusters": {"queue": "work_queue", "binding_key": "work_queue"},
+    "compute-story-clusters": {"queue": "update_feeds", "binding_key": "update_feeds"},
 }
 CELERY_TASK_QUEUES = {
     "work_queue": {
