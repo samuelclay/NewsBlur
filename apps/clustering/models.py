@@ -966,12 +966,8 @@ def attach_cluster_data_to_stories(stories, user):
                     "story_hash": story.story_hash,
                     "story_feed_id": story.story_feed_id,
                     "story_title": story.story_title or "",
-                    "story_date": (
-                        story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else ""
-                    ),
-                    "story_timestamp": (
-                        str(int(story.story_date.timestamp())) if story.story_date else ""
-                    ),
+                    "story_date": (story.story_date.strftime("%Y-%m-%d %H:%M") if story.story_date else ""),
+                    "story_timestamp": (str(int(story.story_date.timestamp())) if story.story_date else ""),
                     "feed_title": feed.feed_title if feed else "",
                     "story_authors": story.story_author_name or "",
                     "intelligence": {"feed": 0, "author": 0, "tags": 0, "title": 0},
