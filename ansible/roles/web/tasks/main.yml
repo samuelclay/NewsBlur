@@ -54,11 +54,12 @@
   tags:
     - static
 
-- name: Install boto3 and botocore with pip3 module
+- name: Install boto3, botocore, and packaging with pip3 module
   pip:
     name:
       - boto3
       - botocore
+      - packaging
   tags:
     - static
 
