@@ -67,6 +67,9 @@ STYLE_INSTRUCTIONS = {
         "Within each section, briefly explain WHY these stories matter to the reader — not just what "
         "they are about. Focus on what makes each story worth reading. "
         "Write in a narrative editorial style with flowing prose that connects stories thematically. "
+        "IMPORTANT: Weave each story link naturally into a sentence — never start a paragraph with the "
+        "story link. Lead with your editorial commentary, then reference the story title mid-sentence or "
+        "at the end. "
         "Wrap each story paragraph in a <p> tag. Do NOT use <ul> or <li> tags."
     ),
     "bullets": (
@@ -520,7 +523,7 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     # --- Phase 4: Style <li> tags — clean spacing, no bottom border ---
 
-    li_style = "margin:0 0 12px 0;padding:0;line-height:1.5;"
+    li_style = "margin:0 0 12px 0;padding:0;line-height:1.5;font-size:18px;"
     summary_html = re.sub(
         r"<li(?P<attrs>[^>]*)>",
         lambda m: '<li%s style="%s">' % (m.group("attrs"), li_style),
@@ -529,7 +532,7 @@ def embed_briefing_icons(summary_html, scored_stories):
 
     # --- Phase 4b: Style <p> tags — consistent spacing for editorial/headlines ---
 
-    p_style = "margin:0 0 12px 0;padding:0 0 0 22px;line-height:1.5;"
+    p_style = "margin:0 0 12px 0;padding:0 0 0 22px;line-height:1.5;font-size:18px;"
     summary_html = re.sub(
         r"<p(?P<attrs>[^>]*)>",
         lambda m: '<p%s style="%s">' % (m.group("attrs"), p_style),
