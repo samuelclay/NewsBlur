@@ -132,7 +132,8 @@ worktree-close:
 			docker run --rm -v "$$WORKTREE_PATH:/workdir" alpine rm -rf /workdir/node /workdir/docker 2>/dev/null || rm -rf node docker 2>/dev/null || true; \
 			cd "$$MAIN_REPO"; \
 			echo "Removing worktree: $$WORKTREE_PATH"; \
-			git worktree remove "$$WORKTREE_PATH" --force; \
+			git worktree remove "$$WORKTREE_PATH" --force 2>/dev/null || \
+				(rm -rf "$$WORKTREE_PATH" && git worktree prune); \
 			echo "✓ Removed worktree. You are now in: $$MAIN_REPO"; \
 		else \
 			echo "⚠ Worktree has uncommitted changes. Commit or stash changes before closing."; \
