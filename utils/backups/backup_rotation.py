@@ -128,11 +128,13 @@ def rotate_s3_backups(bucket_name, key_prefix, key_ext, dry_run=False, daily=7, 
     # 4. Yearly: for all backups older than the monthly window,
     #    keep the most recent per calendar year
     monthly_cutoff = weekly_cutoff - timedelta(days=30 * monthly)
+    yearly_keys = set()
     years_seen = set()
     for backup_date, key in all_backups:
         if backup_date < monthly_cutoff and backup_date.year not in years_seen:
             years_seen.add(backup_date.year)
             keep.add(key)
+            yearly_keys.add(key)
 
     # Delete everything not in keep set
     deleted = 0
@@ -145,9 +147,24 @@ def rotate_s3_backups(bucket_name, key_prefix, key_ext, dry_run=False, daily=7, 
                 print("  Deleted: %s (%s)" % (key, backup_date.strftime("%Y-%m-%d")))
             deleted += 1
 
+    # 5. Archive yearly backups to Glacier Deep Archive for cost savings
+    archived = 0
+    for backup_date, key in all_backups:
+        if key in yearly_keys:
+            obj = bucket.Object(key)
+            obj.load()
+            if obj.storage_class not in ('DEEP_ARCHIVE', 'GLACIER'):
+                if dry_run:
+                    print("  [DRY RUN] Would archive to Glacier: %s" % key)
+                else:
+                    copy_source = {'Bucket': bucket_name, 'Key': key}
+                    obj.copy(copy_source, ExtraArgs={'StorageClass': 'DEEP_ARCHIVE'})
+                    print("  Archived to Glacier Deep Archive: %s" % key)
+                archived += 1
+
     kept = len(keep)
     prefix = "[DRY RUN] " if dry_run else ""
-    print("  %sRotation complete: kept %d, deleted %d" % (prefix, kept, deleted))
+    print("  %sRotation complete: kept %d, deleted %d, archived %d" % (prefix, kept, deleted, archived))
     return kept, deleted
 
 
