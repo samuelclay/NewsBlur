@@ -1499,9 +1499,26 @@ class Feed(models.Model):
 
         return ua
 
-    def fetch_headers(self, fake=False):
+    @property
+    def plain_user_agent(self):
+        """NewsBlur Feed Fetcher UA without the fake browser suffix.
+        Used as a fallback when the browser UA triggers bot challenges (e.g. Anubis)."""
+        ua = "NewsBlur Feed Fetcher - %s subscriber%s - %s" % (
+            self.num_subscribers,
+            "s" if self.num_subscribers != 1 else "",
+            self.permalink,
+        )
+        return ua
+
+    def fetch_headers(self, fake=False, plain=False):
+        if plain:
+            ua = self.plain_user_agent
+        elif fake:
+            ua = self.fake_user_agent
+        else:
+            ua = self.user_agent
         headers = {
-            "User-Agent": self.user_agent if not fake else self.fake_user_agent,
+            "User-Agent": ua,
             "Accept": "application/atom+xml, application/rss+xml, application/xml;q=0.8, text/xml;q=0.6, */*;q=0.2",
             "Accept-Encoding": "gzip, deflate",
         }
