@@ -51,7 +51,6 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         "click .NB-add-site-podcasts-tab .NB-add-site-tab-search-btn": "perform_podcast_search",
         "keypress .NB-add-site-podcasts-search": "handle_podcast_search_keypress",
         // Google News events
-        "click .NB-add-site-google-news-topic": "handle_google_news_topic_click",
         "click .NB-add-site-google-news-subscribe-btn": "handle_google_news_subscribe",
         "input .NB-add-site-google-news-search-input": "handle_google_news_input",
         "keypress .NB-add-site-google-news-search-input": "handle_google_news_search_keypress",
@@ -103,6 +102,56 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         { id: 'SPORTS', name: 'Sports', icon: '/media/img/icons/heroicons-solid/trophy.svg' },
         { id: 'SCIENCE', name: 'Science', icon: '/media/img/icons/heroicons-solid/beaker.svg' },
         { id: 'HEALTH', name: 'Health', icon: '/media/img/icons/heroicons-solid/heart.svg' }
+    ],
+
+    GOOGLE_NEWS_CATEGORIES: [
+        { name: 'Anime & Manga', subcategories: [{name:'Shonen Anime'},{name:'Shojo Manga'},{name:'Seinen Anime'},{name:'Josei Manga'},{name:'Isekai Anime'},{name:'Mecha Anime'},{name:'Slice of Life Anime'},{name:'Romance Manga'},{name:'Horror Manga'},{name:'Sports Anime'},{name:'Fantasy Anime'},{name:'Sci-Fi Anime'},{name:'Magical Girl Anime'},{name:'Anime Film Releases'},{name:'Manga Sales Charts'},{name:'Anime Streaming News'},{name:'Anime Voice Actors'},{name:'Anime Conventions'},{name:'Cosplay'},{name:'Anime Merchandise'},{name:'Manga Adaptations'},{name:'Light Novel Adaptations'},{name:'Anime Studio News'},{name:'Anime Awards'},{name:'Manga Artists'},{name:'Anime Season Preview'},{name:'Webtoon'},{name:'Shonen Jump'},{name:'Anime Dubs'},{name:'Anime Movie Box Office'},{name:'Manga Collectors'},{name:'Anime Figurines'},{name:'Anime Gaming'},{name:'Manhwa'},{name:'Anime Fan Art'},{name:'Anime Industry'},{name:'Anime Soundtrack'}] },
+        { name: 'Architecture', subcategories: [{name:'Sustainable Architecture'},{name:'Brutalist Architecture'},{name:'Gothic Architecture'},{name:'Art Deco Architecture'},{name:'Modernist Architecture'},{name:'Parametric Design'},{name:'Green Building Design'},{name:'Skyscraper Design'},{name:'Residential Architecture'},{name:'Interior Architecture'},{name:'Landscape Architecture'},{name:'Urban Planning'},{name:'Historic Preservation'},{name:'Adaptive Reuse'},{name:'Smart Buildings'},{name:'3D Printed Buildings'},{name:'Mass Timber Construction'},{name:'Passive House Design'},{name:'Biophilic Design'},{name:'Architectural Visualization'},{name:'Building Information Modeling'},{name:'Net Zero Buildings'},{name:'Affordable Housing Design'},{name:'Museum Architecture'},{name:'Sacred Architecture'},{name:'Deconstructivism'},{name:'Prefab Architecture'},{name:'Modular Construction'},{name:'Architectural Photography'},{name:'LEED Certification'},{name:'Vernacular Architecture'},{name:'Floating Architecture'},{name:'Stadium Design'},{name:'Airport Architecture'},{name:'Tiny House Design'}] },
+        { name: 'Arts & Culture', subcategories: [{name:'Contemporary Art'},{name:'Street Art & Graffiti'},{name:'Art Exhibitions'},{name:'Museum News'},{name:'Art Auctions'},{name:'Art Market'},{name:'Sculpture'},{name:'Digital Art & NFTs'},{name:'Film Festivals'},{name:'Theater & Broadway'},{name:'Opera'},{name:'Ballet & Dance'},{name:'Literary Fiction'},{name:'Poetry'},{name:'Cultural Heritage'},{name:'Art Restoration'},{name:'Public Art & Murals'},{name:'Art Theft & Repatriation'},{name:'Ceramics & Pottery'},{name:'Illustration & Comics'},{name:'Art Criticism'},{name:'Performing Arts'},{name:'Folk Art & Crafts'},{name:'Cultural Policy'},{name:'Arts Education'},{name:'Galleries'},{name:'Biennials & Art Fairs'},{name:'Indigenous Art'},{name:'Textile Arts'},{name:'Art History'},{name:'Animation & Motion Graphics'},{name:'Arts Funding & Grants'}] },
+        { name: 'Automotive', subcategories: [{name:'Electric Vehicles'},{name:'Tesla'},{name:'Toyota'},{name:'Ford'},{name:'BMW'},{name:'Mercedes-Benz'},{name:'Honda'},{name:'Hyundai'},{name:'Porsche'},{name:'Ferrari'},{name:'SUVs'},{name:'Pickup Trucks'},{name:'Luxury Cars'},{name:'Budget Cars'},{name:'Formula 1'},{name:'NASCAR'},{name:'Car Reviews'},{name:'Self-Driving Cars'},{name:'Autonomous Vehicles'},{name:'Car Safety Recalls'},{name:'Hybrid Vehicles'},{name:'Car Design'},{name:'Automotive Industry'},{name:'Used Cars'},{name:'Car Maintenance Tips'},{name:'Electric Trucks'},{name:'Motorcycle News'},{name:'Car Technology'},{name:'Connected Cars'},{name:'Fuel Economy'},{name:'Auto Shows'},{name:'Car Insurance'},{name:'Rivian'},{name:'BYD'},{name:'Sports Cars'},{name:'Minivans'},{name:'Off-Road Vehicles'}] },
+        { name: 'Books & Reading', subcategories: [{name:'Science Fiction Books'},{name:'Fantasy Books'},{name:'Mystery Books'},{name:'Romance Books'},{name:'Thriller Books'},{name:'Horror Books'},{name:'Historical Fiction'},{name:'Literary Fiction'},{name:'Young Adult Books'},{name:'Children\'s Books'},{name:'Graphic Novels'},{name:'Poetry'},{name:'Memoir and Autobiography'},{name:'Self-Help Books'},{name:'True Crime Books'},{name:'Nonfiction Books'},{name:'Audiobooks'},{name:'Book Reviews'},{name:'Bestsellers'},{name:'New Book Releases'},{name:'Book Clubs'},{name:'Literary Awards'},{name:'Indie Publishing'},{name:'Self-Publishing'},{name:'Publishing Industry'},{name:'Libraries'},{name:'Bookstores'},{name:'Book Bans and Censorship'},{name:'Author Interviews'},{name:'Book Adaptations'},{name:'Comic Books'},{name:'Book Fairs and Festivals'},{name:'Ebooks and Digital Reading'},{name:'Classic Literature'},{name:'Book Recommendations'},{name:'Reading and Literacy'}] },
+        { name: 'Business', subcategories: [{name:'Corporate Strategy'},{name:'Mergers and Acquisitions'},{name:'IPO'},{name:'Executive Leadership'},{name:'Management'},{name:'Supply Chain'},{name:'Retail'},{name:'E-Commerce'},{name:'Consulting'},{name:'B2B'},{name:'Small Business'},{name:'Franchising'},{name:'Corporate Governance'},{name:'Business Ethics'},{name:'Venture Capital'},{name:'Private Equity'},{name:'Commercial Real Estate'},{name:'Logistics'},{name:'Business Intelligence'},{name:'Human Resources'},{name:'Corporate Finance'},{name:'Branding'},{name:'Market Research'},{name:'Business Analytics'},{name:'Digital Transformation'},{name:'Outsourcing'},{name:'Family Business'},{name:'Bankruptcy'},{name:'Corporate Social Responsibility'},{name:'Business Law'},{name:'Workplace Culture'},{name:'Sales Strategy'},{name:'Revenue Growth'},{name:'Business Development'},{name:'Procurement'},{name:'Risk Management'},{name:'Competitive Analysis'}] },
+        { name: 'Career & Job Market', subcategories: [{name:'Remote Work Trends'},{name:'Job Interview Tips'},{name:'Salary Negotiation'},{name:'Career Change Advice'},{name:'Freelancing Opportunities'},{name:'Workplace Culture'},{name:'Hiring Trends'},{name:'Tech Layoffs'},{name:'Labor Market Data'},{name:'Resume Writing Tips'},{name:'LinkedIn Networking'},{name:'Skills Development'},{name:'Work-Life Balance'},{name:'Job Market Outlook'},{name:'Gig Economy'},{name:'AI Replacing Jobs'},{name:'Diversity Hiring'},{name:'Internship Opportunities'},{name:'Quiet Quitting'},{name:'Return to Office'},{name:'Upskilling and Reskilling'},{name:'Unemployment Rate'},{name:'Job Search Strategies'},{name:'Employee Benefits Trends'},{name:'Workplace Mental Health'},{name:'Career Coaching'},{name:'Side Hustle Ideas'},{name:'Minimum Wage Debate'},{name:'Union Labor News'},{name:'Startup Hiring'},{name:'Workplace Harassment'},{name:'Professional Certifications'},{name:'Industry Job Growth'},{name:'Four Day Work Week'},{name:'Worker Burnout'},{name:'Employment Law Changes'},{name:'Apprenticeship Programs'},{name:'Workplace AI Tools'},{name:'Job Market for Graduates'}] },
+        { name: 'Comedy & Humor', subcategories: [{name:'Stand-Up Comedy'},{name:'Sketch Comedy'},{name:'Improv Comedy'},{name:'Satire'},{name:'Late Night TV'},{name:'Comedy Specials'},{name:'Comedian News'},{name:'Memes'},{name:'Parody'},{name:'Comedy Roasts'},{name:'Comedy Festivals'},{name:'Dark Humor'},{name:'Sitcoms'},{name:'Comic Strips'},{name:'Comedy Movies'},{name:'Comedy Podcasts'},{name:'Romantic Comedy'},{name:'Political Satire'},{name:'Comedy Awards'},{name:'Comedy Clubs'},{name:'Funny Videos'},{name:'Comedy Writing'},{name:'Slapstick Comedy'},{name:'Musical Comedy'},{name:'Comedy Tours'},{name:'Web Comedy Series'},{name:'SNL Saturday Night Live'},{name:'Comedy Streaming'},{name:'Absurdist Humor'},{name:'Comedy Variety Shows'}] },
+        { name: 'Cryptocurrency & Web3', subcategories: [{name:'Bitcoin'},{name:'Ethereum'},{name:'Solana'},{name:'Cardano'},{name:'XRP Ripple'},{name:'Dogecoin'},{name:'Polygon MATIC'},{name:'Avalanche AVAX'},{name:'Chainlink'},{name:'Polkadot'},{name:'DeFi'},{name:'NFT Market'},{name:'Blockchain Technology'},{name:'Crypto Regulation'},{name:'Cryptocurrency Exchange'},{name:'Bitcoin Mining'},{name:'Proof of Stake'},{name:'Stablecoins'},{name:'Layer 2 Scaling'},{name:'Smart Contracts'},{name:'DAO Governance'},{name:'Metaverse Crypto'},{name:'Web3 Development'},{name:'Crypto Wallet Security'},{name:'Central Bank Digital Currency'},{name:'Cryptocurrency Tax'},{name:'Bitcoin ETF'},{name:'Decentralized Exchange'},{name:'Yield Farming'},{name:'Crypto Scam Fraud'},{name:'Meme Coins'},{name:'Bitcoin Halving'},{name:'Ethereum Staking'},{name:'Crypto Venture Capital'},{name:'Tokenization'},{name:'Zero Knowledge Proofs'},{name:'Cross Chain Interoperability'},{name:'Crypto Lending'},{name:'GameFi'},{name:'Airdrop Token Launch'}] },
+        { name: 'DIY & Crafts', subcategories: [{name:'Woodworking'},{name:'Electronics Projects'},{name:'Sewing'},{name:'Knitting'},{name:'Crochet'},{name:'Metalworking'},{name:'3D Printing'},{name:'Home Improvement'},{name:'Upcycling'},{name:'Pottery'},{name:'Ceramics'},{name:'Leatherwork'},{name:'Jewelry Making'},{name:'Paper Crafts'},{name:'Origami'},{name:'Quilting'},{name:'Embroidery'},{name:'Candle Making'},{name:'Soap Making'},{name:'Resin Art'},{name:'Macrame'},{name:'Weaving'},{name:'Stained Glass'},{name:'Mosaic Art'},{name:'Calligraphy'},{name:'Scrapbooking'},{name:'Furniture Building'},{name:'Home Renovation'},{name:'Welding Projects'},{name:'CNC Machining'},{name:'Laser Cutting'},{name:'Cross Stitch'},{name:'Basket Weaving'},{name:'Pyrography'},{name:'Epoxy Projects'},{name:'Gardening DIY'},{name:'Painting Techniques'},{name:'Textile Dyeing'}] },
+        { name: 'Data Science & Analytics', subcategories: [{name:'Machine Learning'},{name:'Deep Learning'},{name:'Natural Language Processing'},{name:'Computer Vision'},{name:'Big Data Analytics'},{name:'Data Engineering'},{name:'Data Visualization'},{name:'Statistical Modeling'},{name:'A/B Testing'},{name:'MLOps'},{name:'Feature Engineering'},{name:'Predictive Analytics'},{name:'Data Mining'},{name:'Neural Networks'},{name:'Reinforcement Learning'},{name:'Time Series Analysis'},{name:'Recommendation Systems'},{name:'Data Warehousing'},{name:'ETL Pipelines'},{name:'Business Intelligence'},{name:'Bayesian Statistics'},{name:'Anomaly Detection'},{name:'Text Mining'},{name:'Speech Recognition'},{name:'Image Recognition'},{name:'Data Governance'},{name:'Generative AI'},{name:'Large Language Models'},{name:'Graph Neural Networks'},{name:'AutoML'},{name:'Data Lakehouse'},{name:'Real-Time Analytics'},{name:'Causal Inference'},{name:'Synthetic Data'},{name:'Federated Learning'},{name:'Edge AI'},{name:'Responsible AI'},{name:'Vector Databases'}] },
+        { name: 'Design', subcategories: [{name:'UI Design'},{name:'UX Design'},{name:'UX Research'},{name:'Graphic Design'},{name:'Industrial Design'},{name:'Product Design'},{name:'Typography'},{name:'Branding'},{name:'Motion Graphics'},{name:'Web Design'},{name:'Interior Design'},{name:'Design Systems'},{name:'Accessibility Design'},{name:'Design Tools'},{name:'Interaction Design'},{name:'Visual Design'},{name:'Logo Design'},{name:'Package Design'},{name:'Fashion Design'},{name:'Game Design'},{name:'Sound Design'},{name:'Service Design'},{name:'Design Thinking'},{name:'Material Design'},{name:'Responsive Design'},{name:'Color Theory'},{name:'Illustration'},{name:'3D Design'},{name:'Animation Design'},{name:'Print Design'},{name:'Environmental Design'},{name:'Automotive Design'},{name:'Furniture Design'},{name:'Sustainable Design'},{name:'Design Leadership'},{name:'Figma'},{name:'Information Architecture'},{name:'Data Visualization'}] },
+        { name: 'Economics', subcategories: [{name:'Macroeconomics'},{name:'Microeconomics'},{name:'Fiscal Policy'},{name:'Monetary Policy'},{name:'Inflation'},{name:'GDP Growth'},{name:'Interest Rates'},{name:'Central Banking'},{name:'Federal Reserve'},{name:'Economic Recession'},{name:'Labor Economics'},{name:'Unemployment'},{name:'Wage Growth'},{name:'Income Inequality'},{name:'Wealth Gap'},{name:'International Trade'},{name:'Trade Policy'},{name:'Tariffs'},{name:'Supply Chain Economics'},{name:'Behavioral Economics'},{name:'Development Economics'},{name:'Emerging Markets'},{name:'Economic Sanctions'},{name:'National Debt'},{name:'Government Spending'},{name:'Tax Policy'},{name:'Consumer Spending'},{name:'Housing Market Economics'},{name:'Gig Economy'},{name:'Cost of Living'},{name:'Economic Forecasting'},{name:'Industrial Policy'},{name:'Antitrust Economics'},{name:'Public Finance'},{name:'Economic Mobility'},{name:'Stagflation'},{name:'Deglobalization'},{name:'Green Economy'}] },
+        { name: 'Education', subcategories: [{name:'K-12 Education'},{name:'Higher Education'},{name:'College Admissions'},{name:'Student Loans'},{name:'EdTech'},{name:'Online Learning'},{name:'STEM Education'},{name:'Special Education'},{name:'Homeschooling'},{name:'Vocational Training'},{name:'Education Policy'},{name:'Charter Schools'},{name:'Public Schools'},{name:'Private Schools'},{name:'Early Childhood Education'},{name:'Curriculum Development'},{name:'Standardized Testing'},{name:'Teacher Shortage'},{name:'School Safety'},{name:'Education Funding'},{name:'Graduate School'},{name:'Community College'},{name:'Education Technology'},{name:'Literacy'},{name:'School Choice'},{name:'Adult Education'},{name:'Distance Learning'},{name:'Education Reform'},{name:'Student Mental Health'},{name:'Classroom Technology'},{name:'Education Equity'},{name:'Teaching Methods'},{name:'School Board'},{name:'University Research'},{name:'Trade Schools'},{name:'Study Abroad'},{name:'Financial Aid'},{name:'Tutoring'}] },
+        { name: 'Entertainment', subcategories: [{name:'Movies'},{name:'TV Shows'},{name:'Streaming'},{name:'Celebrity News'},{name:'Box Office'},{name:'Hollywood'},{name:'Broadway'},{name:'Reality TV'},{name:'Talk Shows'},{name:'Documentaries'},{name:'Film Festivals'},{name:'Awards Shows'},{name:'Oscars'},{name:'Emmy Awards'},{name:'Grammy Awards'},{name:'Golden Globes'},{name:'Netflix'},{name:'Disney Plus'},{name:'HBO'},{name:'Stand-Up Comedy'},{name:'Theme Parks'},{name:'Animation'},{name:'K-Drama'},{name:'Bollywood'},{name:'Music Videos'},{name:'Late Night TV'},{name:'Celebrity Gossip'},{name:'Movie Trailers'},{name:'TV Ratings'},{name:'Entertainment Industry'},{name:'Casting News'},{name:'Movie Reviews'},{name:'Concert Tours'},{name:'Red Carpet'},{name:'Variety Shows'}] },
+        { name: 'Entrepreneurship & Startups', subcategories: [{name:'Venture Capital Funding'},{name:'Bootstrapped Startups'},{name:'SaaS Startups'},{name:'Startup Founder Stories'},{name:'Pitch Deck Tips'},{name:'Startup Accelerators'},{name:'Y Combinator'},{name:'Product-Market Fit'},{name:'Startup Fundraising'},{name:'Startup Culture'},{name:'Startup Pivots'},{name:'Scaling Startups'},{name:'Seed Round Funding'},{name:'Series A Funding'},{name:'Angel Investors'},{name:'Startup Valuations'},{name:'Startup Acquisitions'},{name:'Startup IPO'},{name:'Lean Startup Methodology'},{name:'Startup Incubators'},{name:'Techstars'},{name:'Startup Layoffs'},{name:'Solopreneur'},{name:'Indie Hackers'},{name:'Startup Equity and Vesting'},{name:'Growth Hacking'},{name:'Startup Metrics and KPIs'},{name:'Customer Acquisition'},{name:'Startup Failure Post-Mortems'},{name:'Remote Startup Teams'},{name:'AI Startups'},{name:'Climate Tech Startups'},{name:'Fintech Startups'},{name:'Healthtech Startups'},{name:'Deep Tech Startups'},{name:'Startup Competitions'},{name:'Corporate Venture Capital'},{name:'Startup Exit Strategies'}] },
+        { name: 'Environment & Sustainability', subcategories: [{name:'Climate Change'},{name:'Global Warming'},{name:'Renewable Energy'},{name:'Solar Energy'},{name:'Wind Energy'},{name:'Hydroelectric Power'},{name:'Geothermal Energy'},{name:'Carbon Emissions'},{name:'Carbon Capture'},{name:'Net Zero'},{name:'Deforestation'},{name:'Reforestation'},{name:'Biodiversity'},{name:'Endangered Species'},{name:'Ocean Conservation'},{name:'Coral Reefs'},{name:'Air Pollution'},{name:'Water Pollution'},{name:'Plastic Pollution'},{name:'Recycling'},{name:'Circular Economy'},{name:'Waste Management'},{name:'Environmental Policy'},{name:'Climate Policy'},{name:'Paris Agreement'},{name:'Green Technology'},{name:'Sustainable Agriculture'},{name:'Organic Farming'},{name:'Water Conservation'},{name:'Drought'},{name:'Wildfires'},{name:'Sea Level Rise'},{name:'Arctic Ice'},{name:'Environmental Justice'},{name:'ESG Investing'},{name:'Green Energy Storage'},{name:'Sustainable Fashion'},{name:'Food Waste'}] },
+        { name: 'Fashion & Beauty', subcategories: [{name:'Haute Couture'},{name:'Streetwear'},{name:'Sustainable Fashion'},{name:'Fast Fashion'},{name:'Fashion Week'},{name:'Men\'s Fashion'},{name:'Women\'s Fashion'},{name:'Luxury Fashion Brands'},{name:'Skincare Routine'},{name:'Makeup Trends'},{name:'Hair Care'},{name:'Nail Art'},{name:'Fragrance and Perfume'},{name:'Beauty Tech'},{name:'Clean Beauty'},{name:'K-Beauty'},{name:'Anti-Aging Skincare'},{name:'Jewelry Trends'},{name:'Handbags and Accessories'},{name:'Sneaker Culture'},{name:'Vintage Fashion'},{name:'Plus Size Fashion'},{name:'Athleisure'},{name:'Fashion Designers'},{name:'Celebrity Style'},{name:'Bridal Fashion'},{name:'Denim Trends'},{name:'Sunglasses and Eyewear'},{name:'Watch Collecting'},{name:'Fashion Sustainability'},{name:'Cosmetic Surgery'},{name:'Hair Color Trends'},{name:'Red Carpet Fashion'},{name:'Fashion E-Commerce'},{name:'Thrift and Resale Fashion'},{name:'Beauty Influencers'},{name:'Textile Innovation'},{name:'Fashion Photography'}] },
+        { name: 'Finance', subcategories: [{name:'Stock Market'},{name:'Investing'},{name:'Personal Finance'},{name:'Banking'},{name:'Fintech'},{name:'Credit Cards'},{name:'Mortgages'},{name:'Retirement Planning'},{name:'Hedge Funds'},{name:'Index Funds'},{name:'Day Trading'},{name:'Financial Planning'},{name:'Insurance'},{name:'Taxes'},{name:'Cryptocurrency'},{name:'Venture Capital'},{name:'Private Equity'},{name:'Mergers and Acquisitions'},{name:'IPOs'},{name:'Mutual Funds'},{name:'Real Estate Investing'},{name:'Budgeting'},{name:'Student Loans'},{name:'Interest Rates'},{name:'Federal Reserve'},{name:'Wall Street'},{name:'Bonds'},{name:'ETFs'},{name:'Financial Regulation'},{name:'Wealth Management'},{name:'Estate Planning'},{name:'Small Business Finance'},{name:'Corporate Earnings'},{name:'Inflation'},{name:'Foreign Exchange'},{name:'Commodities'},{name:'Financial Technology'},{name:'Robo-Advisors'},{name:'Credit Scores'},{name:'401k'}] },
+        { name: 'Food & Cooking', subcategories: [{name:'Italian Cuisine'},{name:'Japanese Cuisine'},{name:'Mexican Cuisine'},{name:'Indian Cuisine'},{name:'Thai Cuisine'},{name:'Chinese Cuisine'},{name:'French Cuisine'},{name:'Mediterranean Cuisine'},{name:'Korean Cuisine'},{name:'Middle Eastern Cuisine'},{name:'Baking and Pastry'},{name:'Bread Baking'},{name:'Grilling and BBQ'},{name:'Fermentation and Pickling'},{name:'Food Science'},{name:'Restaurant Industry'},{name:'Food Trucks'},{name:'Meal Prep'},{name:'Plant-Based Cooking'},{name:'Vegan Recipes'},{name:'Cocktails and Mixology'},{name:'Coffee Culture'},{name:'Wine and Sommelier'},{name:'Craft Beer and Brewing'},{name:'Street Food'},{name:'Farm to Table'},{name:'Food Photography'},{name:'Comfort Food'},{name:'Seafood'},{name:'Desserts and Sweets'},{name:'Spices and Seasoning'},{name:'Food Preservation and Canning'},{name:'Sourdough'},{name:'Cheese and Cheesemaking'},{name:'Food Safety and Nutrition'},{name:'Celebrity Chefs'},{name:'Cooking Techniques'},{name:'Chocolate and Confections'},{name:'Tea Culture'}] },
+        { name: 'Gaming', subcategories: [{name:'PC Gaming'},{name:'Console Gaming'},{name:'Mobile Gaming'},{name:'Esports'},{name:'Game Design'},{name:'Indie Games'},{name:'VR Gaming'},{name:'RPGs'},{name:'FPS Games'},{name:'MMOs'},{name:'Nintendo'},{name:'PlayStation'},{name:'Xbox'},{name:'Steam'},{name:'Game Reviews'},{name:'Speedrunning'},{name:'Retro Gaming'},{name:'Game Modding'},{name:'Fighting Games'},{name:'Battle Royale Games'},{name:'Strategy Games'},{name:'Simulation Games'},{name:'Horror Games'},{name:'Open World Games'},{name:'Game Streaming'},{name:'Tabletop RPGs'},{name:'Gaming Hardware'},{name:'Game Soundtracks'},{name:'Free to Play Games'},{name:'Co-op Games'},{name:'Survival Games'},{name:'Racing Games'},{name:'Sports Games'},{name:'Roguelike Games'},{name:'Game Deals'},{name:'Cloud Gaming'},{name:'Gaming Accessories'},{name:'Game Emulation'},{name:'Competitive Gaming'}] },
+        { name: 'Health & Fitness', subcategories: [{name:'Nutrition & Diet'},{name:'Weightlifting'},{name:'Running & Jogging'},{name:'Yoga'},{name:'CrossFit'},{name:'Mental Health & Wellness'},{name:'Sleep & Recovery'},{name:'Supplements & Vitamins'},{name:'Physical Therapy'},{name:'Sports Medicine'},{name:'Weight Loss'},{name:'Intermittent Fasting'},{name:'Plant-Based Diet'},{name:'Marathon Training'},{name:'Pilates'},{name:'HIIT Workouts'},{name:'Meditation & Mindfulness'},{name:'Gut Health & Microbiome'},{name:'Bodybuilding'},{name:'Cardio Fitness'},{name:'Stretching & Mobility'},{name:'Wearable Fitness Technology'},{name:'Functional Fitness'},{name:'Swimming'},{name:'Cycling & Biking'},{name:'Keto Diet'},{name:'Protein & Muscle Recovery'},{name:'Women\'s Health'},{name:'Senior Fitness'},{name:'Heart Health'},{name:'Diabetes Prevention'},{name:'Public Health Policy'},{name:'Clinical Trials'},{name:'Immune System'},{name:'Outdoor Fitness & Hiking'},{name:'Addiction Recovery'}] },
+        { name: 'History', subcategories: [{name:'Ancient Egypt'},{name:'Ancient Greece'},{name:'Ancient Rome'},{name:'Medieval Europe'},{name:'Byzantine Empire'},{name:'Renaissance'},{name:'Ottoman Empire'},{name:'Viking Age'},{name:'Crusades'},{name:'World War I'},{name:'World War II'},{name:'Cold War'},{name:'American Revolution'},{name:'Civil War'},{name:'French Revolution'},{name:'Industrial Revolution'},{name:'Colonial History'},{name:'Ancient China'},{name:'Feudal Japan'},{name:'African Kingdoms'},{name:'Mesoamerican Civilizations'},{name:'Silk Road'},{name:'Age of Exploration'},{name:'Archaeology'},{name:'Art History'},{name:'Military History'},{name:'Naval History'},{name:'History of Science'},{name:'Ancient Mesopotamia'},{name:'British Empire'},{name:'Russian Revolution'},{name:'Korean War'},{name:'Vietnam War'},{name:'Civil Rights Movement'},{name:'Holocaust'},{name:'Oral History'},{name:'Historical Preservation'},{name:'Ancient India'},{name:'Latin American History'},{name:'History of Religion'}] },
+        { name: 'Hobbies & Collections', subcategories: [{name:'Board Games'},{name:'Card Games'},{name:'Model Building'},{name:'Stamp Collecting'},{name:'Coin Collecting'},{name:'Comic Books'},{name:'Jigsaw Puzzles'},{name:'Birdwatching'},{name:'Fishing'},{name:'Hiking'},{name:'Gardening'},{name:'RC Vehicles'},{name:'Tabletop RPGs'},{name:'Miniature Painting'},{name:'Vinyl Records'},{name:'Antique Collecting'},{name:'LEGO Building'},{name:'Train Sets'},{name:'Drone Flying'},{name:'Amateur Radio'},{name:'Geocaching'},{name:'Rock Collecting'},{name:'Metal Detecting'},{name:'Homebrewing'},{name:'Pottery and Ceramics'},{name:'Leatherworking'},{name:'Wargaming'},{name:'Trading Card Games'},{name:'Aquariums and Fishkeeping'},{name:'Beekeeping'},{name:'Pen Collecting'},{name:'Watch Collecting'},{name:'Cosplay'}] },
+        { name: 'Home & Garden', subcategories: [{name:'Home Decor'},{name:'Interior Design'},{name:'Landscaping'},{name:'Smart Home'},{name:'Houseplants'},{name:'Kitchen Remodel'},{name:'Bathroom Renovation'},{name:'Organic Gardening'},{name:'Home Automation'},{name:'Furniture Design'},{name:'Lighting Design'},{name:'Outdoor Living'},{name:'Small Space Living'},{name:'Container Gardening'},{name:'Raised Bed Gardening'},{name:'Home Organization'},{name:'DIY Home Improvement'},{name:'Patio Design'},{name:'Home Energy Efficiency'},{name:'Indoor Herb Garden'},{name:'Home Security Systems'},{name:'Sustainable Living'},{name:'Backyard Design'},{name:'Home Office Design'},{name:'Flooring Ideas'},{name:'Window Treatments'},{name:'Curb Appeal'},{name:'Vegetable Gardening'},{name:'Flower Gardening'},{name:'Home Storage Solutions'},{name:'Deck and Porch'},{name:'Minimalist Home'},{name:'Farmhouse Style'},{name:'Composting'},{name:'Lawn Care'}] },
+        { name: 'Internet Culture & Social Media', subcategories: [{name:'TikTok Trends'},{name:'Instagram Reels'},{name:'YouTube Creators'},{name:'Twitch Streaming'},{name:'Reddit Communities'},{name:'Discord Servers'},{name:'Online Memes'},{name:'Viral Videos'},{name:'Influencer Marketing'},{name:'Content Creation'},{name:'Social Media Marketing'},{name:'Digital Privacy'},{name:'Online Harassment'},{name:'Cancel Culture'},{name:'Internet Celebrities'},{name:'Podcasting'},{name:'Substack Newsletters'},{name:'Threads App'},{name:'Bluesky Social'},{name:'Mastodon Fediverse'},{name:'Livestreaming'},{name:'Creator Economy'},{name:'Social Media Algorithms'},{name:'Deepfakes'},{name:'AI-Generated Content'},{name:'Online Misinformation'},{name:'Digital Wellness'},{name:'Screen Time'},{name:'Social Media Regulation'},{name:'Online Communities'},{name:'Fan Culture'},{name:'Social Media Influencers'},{name:'YouTube Shorts'},{name:'Content Moderation'},{name:'Virtual Influencers'}] },
+        { name: 'Law & Legal', subcategories: [{name:'Constitutional Law'},{name:'Criminal Law'},{name:'Civil Rights Law'},{name:'Supreme Court'},{name:'Intellectual Property'},{name:'Corporate Law'},{name:'Environmental Law'},{name:'Immigration Law'},{name:'International Law'},{name:'Privacy Law'},{name:'Tech Regulation'},{name:'Antitrust Law'},{name:'Family Law'},{name:'Employment Law'},{name:'Tax Law'},{name:'Securities Law'},{name:'Bankruptcy Law'},{name:'Real Estate Law'},{name:'Healthcare Law'},{name:'Election Law'},{name:'First Amendment'},{name:'Criminal Justice Reform'},{name:'Class Action Lawsuits'},{name:'White Collar Crime'},{name:'Cybersecurity Law'},{name:'Data Privacy'},{name:'Patent Law'},{name:'Copyright Law'},{name:'Trademark Law'},{name:'Legal Technology'},{name:'Death Penalty'},{name:'Police Reform'},{name:'Judicial Nominations'},{name:'Trade Law'},{name:'Consumer Protection'},{name:'Human Rights Law'},{name:'Maritime Law'},{name:'Military Law'},{name:'AI Regulation'}] },
+        { name: 'Lifestyle', subcategories: [{name:'Minimalism'},{name:'City Living'},{name:'Rural Living'},{name:'Suburban Living'},{name:'Personal Development'},{name:'Self-Improvement'},{name:'Relationships'},{name:'Dating'},{name:'Decluttering'},{name:'Work-Life Balance'},{name:'Digital Nomad'},{name:'Van Life'},{name:'Tiny Houses'},{name:'Slow Living'},{name:'Intentional Living'},{name:'Home Organization'},{name:'Mindful Living'},{name:'Frugal Living'},{name:'Luxury Lifestyle'},{name:'Expat Life'},{name:'Remote Work Lifestyle'},{name:'Sustainable Living'},{name:'Zero Waste Living'},{name:'Homesteading'},{name:'Cozy Living'},{name:'Morning Routines'},{name:'Life Hacks'},{name:'Hygge'},{name:'Cottagecore'},{name:'Minimalist Wardrobe'},{name:'Simple Living'},{name:'Off-Grid Living'},{name:'Digital Detox'},{name:'Solo Living'},{name:'Retirement Living'},{name:'Downsizing'},{name:'Life Transitions'}] },
+        { name: 'Military & Defense', subcategories: [{name:'Defense Industry News'},{name:'Military Technology'},{name:'NATO Alliance'},{name:'U.S. Army'},{name:'U.S. Navy'},{name:'U.S. Air Force'},{name:'U.S. Marine Corps'},{name:'Space Force'},{name:'Special Operations Forces'},{name:'Military Drones and UAVs'},{name:'Cybersecurity Defense'},{name:'Defense Budget and Spending'},{name:'Arms Trade and Weapons Sales'},{name:'Military Veterans'},{name:'Nuclear Weapons and Deterrence'},{name:'Naval Warfare'},{name:'Air Defense Systems'},{name:'Missile Defense'},{name:'Military Intelligence'},{name:'Defense Policy and Strategy'},{name:'Military Recruitment'},{name:'Pentagon News'},{name:'Homeland Security'},{name:'Coast Guard'},{name:'National Guard'},{name:'Hypersonic Weapons'},{name:'Military Artificial Intelligence'},{name:'Defense Contractors'},{name:'War and Conflict Updates'},{name:'Counter-Terrorism'},{name:'Electronic Warfare'},{name:'Submarines and Undersea Warfare'},{name:'Fighter Jets and Combat Aircraft'},{name:'Military Cyber Operations'},{name:'Veterans Affairs and Benefits'}] },
+        { name: 'Music', subcategories: [{name:'Rock Music'},{name:'Pop Music'},{name:'Hip-Hop Music'},{name:'Jazz Music'},{name:'Classical Music'},{name:'Electronic Music'},{name:'Country Music'},{name:'R&B Music'},{name:'Heavy Metal Music'},{name:'Punk Music'},{name:'Folk Music'},{name:'Indie Music'},{name:'Latin Music'},{name:'K-Pop'},{name:'Reggae Music'},{name:'Blues Music'},{name:'Soul Music'},{name:'Alternative Music'},{name:'World Music'},{name:'Music Festivals'},{name:'Concert Tours'},{name:'Music Streaming'},{name:'Vinyl Records'},{name:'Music Production'},{name:'Songwriting'},{name:'Music Industry News'},{name:'Grammy Awards'},{name:'Music Technology'},{name:'Guitar'},{name:'Piano'},{name:'DJing'},{name:'Music Education'},{name:'Opera'},{name:'Film Scores'},{name:'Album Reviews'},{name:'Music Videos'},{name:'Band Interviews'},{name:'Music Charts'},{name:'New Music Releases'}] },
+        { name: 'News & Politics', subcategories: [{name:'US Politics'},{name:'World News'},{name:'Congress'},{name:'White House'},{name:'Elections'},{name:'Diplomacy'},{name:'Geopolitics'},{name:'Investigative Journalism'},{name:'Media Criticism'},{name:'Local News'},{name:'Policy Analysis'},{name:'Polling'},{name:'Political Campaigns'},{name:'Supreme Court'},{name:'Foreign Policy'},{name:'National Security'},{name:'Immigration'},{name:'Climate Policy'},{name:'Economic Policy'},{name:'Healthcare Policy'},{name:'Education Policy'},{name:'Civil Rights'},{name:'Gun Policy'},{name:'Labor Politics'},{name:'State Politics'},{name:'Political Corruption'},{name:'Government Accountability'},{name:'Intelligence Community'},{name:'Defense Policy'},{name:'Trade Policy'},{name:'Midterm Elections'},{name:'Presidential Elections'},{name:'Senate'},{name:'House of Representatives'},{name:'United Nations'},{name:'NATO'},{name:'Middle East Politics'},{name:'European Politics'},{name:'Asia Pacific Politics'}] },
+        { name: 'Parenting', subcategories: [{name:'Pregnancy and Prenatal Care'},{name:'Newborn Care'},{name:'Breastfeeding'},{name:'Baby Sleep Training'},{name:'Toddler Development'},{name:'Potty Training'},{name:'Preschool Readiness'},{name:'Child Nutrition'},{name:'Childhood Vaccinations'},{name:'School-Age Children'},{name:'Preteen Parenting'},{name:'Teenage Parenting'},{name:'Co-Parenting'},{name:'Single Parenting'},{name:'Adoption and Foster Care'},{name:'Child Development Milestones'},{name:'Screen Time and Kids'},{name:'Homeschooling'},{name:'Discipline and Positive Parenting'},{name:'Family Activities'},{name:'Parental Mental Health'},{name:'Postpartum Depression'},{name:'Child Safety'},{name:'Bullying Prevention'},{name:'Special Needs Parenting'},{name:'ADHD in Children'},{name:'Childhood Anxiety'},{name:'Sibling Rivalry'},{name:'Back to School'},{name:'Kids and Sports'},{name:'Children and Reading'},{name:'Work-Life Balance for Parents'},{name:'Daycare and Childcare'},{name:'Blended Families'},{name:'Child Custody'},{name:'Parenting Teens and Social Media'},{name:'Family Travel with Kids'}] },
+        { name: 'Pets & Animals', subcategories: [{name:'Dogs'},{name:'Cats'},{name:'Pet Birds'},{name:'Freshwater Aquarium Fish'},{name:'Reptiles & Amphibians'},{name:'Horses & Equestrian'},{name:'Small Pets & Rodents'},{name:'Rabbits'},{name:'Animal Welfare'},{name:'Wildlife Conservation'},{name:'Veterinary Medicine'},{name:'Dog Training'},{name:'Cat Behavior'},{name:'Pet Nutrition'},{name:'Animal Rescue & Shelters'},{name:'Exotic Pets'},{name:'Marine Life'},{name:'Endangered Species'},{name:'Pet Adoption'},{name:'Dog Breeds'},{name:'Pet Health'},{name:'Animal Rights'},{name:'Zoos & Aquariums'},{name:'Livestock & Farm Animals'},{name:'Pet Industry & Products'},{name:'Service Animals & Therapy Pets'},{name:'Wildlife Photography'},{name:'Insects & Pollinators'},{name:'Pet Travel'},{name:'Animal Science & Research'},{name:'Backyard Chickens'},{name:'Pet Grooming'},{name:'Coral Reefs & Marine Conservation'},{name:'Pet Insurance'}] },
+        { name: 'Philosophy', subcategories: [{name:'Ethics'},{name:'Epistemology'},{name:'Metaphysics'},{name:'Logic'},{name:'Political Philosophy'},{name:'Existentialism'},{name:'Stoicism'},{name:'Eastern Philosophy'},{name:'Philosophy of Mind'},{name:'AI Ethics'},{name:'Bioethics'},{name:'Aesthetics'},{name:'Phenomenology'},{name:'Philosophy of Science'},{name:'Philosophy of Language'},{name:'Moral Philosophy'},{name:'Ancient Philosophy'},{name:'Continental Philosophy'},{name:'Analytic Philosophy'},{name:'Philosophy of Religion'},{name:'Pragmatism'},{name:'Nihilism'},{name:'Absurdism'},{name:'Utilitarianism'},{name:'Virtue Ethics'},{name:'Social Justice Philosophy'},{name:'Philosophy of Law'},{name:'Philosophy of Education'},{name:'Confucianism'},{name:'Buddhism Philosophy'},{name:'Taoism'},{name:'Feminist Philosophy'},{name:'Hermeneutics'},{name:'Philosophy of Technology'},{name:'Free Will'},{name:'Consciousness Studies'},{name:'Environmental Ethics'},{name:'Postmodernism'},{name:'Critical Theory'},{name:'Philosophy of History'}] },
+        { name: 'Photography', subcategories: [{name:'Portrait Photography'},{name:'Landscape Photography'},{name:'Street Photography'},{name:'Wildlife Photography'},{name:'Sports Photography'},{name:'Wedding Photography'},{name:'Fashion Photography'},{name:'Macro Photography'},{name:'Drone Photography'},{name:'Astrophotography'},{name:'Film Photography'},{name:'Camera Gear'},{name:'Photo Editing'},{name:'Adobe Lightroom'},{name:'Photography Composition'},{name:'Black and White Photography'},{name:'Travel Photography'},{name:'Food Photography'},{name:'Architecture Photography'},{name:'Underwater Photography'},{name:'Night Photography'},{name:'Mobile Photography'},{name:'Documentary Photography'},{name:'Concert Photography'},{name:'Product Photography'},{name:'Fine Art Photography'},{name:'Photojournalism'},{name:'Nature Photography'},{name:'Studio Lighting'},{name:'Mirrorless Cameras'},{name:'DSLR Cameras'},{name:'Analog Photography'},{name:'Darkroom Printing'},{name:'Photography Exhibitions'},{name:'Photo Contests'},{name:'Candid Photography'},{name:'Abstract Photography'}] },
+        { name: 'Productivity & Organization', subcategories: [{name:'Time Management'},{name:'Habit Building'},{name:'Habit Tracking'},{name:'Note-Taking Apps'},{name:'Task Management'},{name:'Personal Automation'},{name:'Focus Techniques'},{name:'Goal Setting'},{name:'Getting Things Done'},{name:'Pomodoro Technique'},{name:'Calendar Management'},{name:'Digital Productivity Tools'},{name:'Notion'},{name:'Obsidian'},{name:'Todoist'},{name:'Bullet Journaling'},{name:'Deep Work'},{name:'Personal Knowledge Management'},{name:'Workflow Automation'},{name:'Zapier'},{name:'Email Management'},{name:'Inbox Zero'},{name:'Project Planning'},{name:'Mind Mapping'},{name:'Second Brain'},{name:'Productivity Apps'},{name:'Morning Routine'},{name:'Weekly Review'},{name:'Digital Minimalism'},{name:'Timeboxing'},{name:'Kanban Board'},{name:'Roam Research'},{name:'Eisenhower Matrix'},{name:'Atomic Habits'}] },
+        { name: 'Psychology & Mental Health', subcategories: [{name:'Anxiety Disorders'},{name:'Depression Treatment'},{name:'Cognitive Behavioral Therapy'},{name:'ADHD Research'},{name:'Autism Spectrum'},{name:'PTSD Recovery'},{name:'Positive Psychology'},{name:'Social Psychology'},{name:'Child Psychology'},{name:'Addiction Recovery'},{name:'Eating Disorders'},{name:'Bipolar Disorder'},{name:'Schizophrenia Research'},{name:'Obsessive Compulsive Disorder'},{name:'Trauma Therapy'},{name:'Mindfulness Meditation'},{name:'Neuroscience Research'},{name:'Behavioral Psychology'},{name:'Developmental Psychology'},{name:'Clinical Psychology'},{name:'Psychotherapy Techniques'},{name:'Mental Health Stigma'},{name:'Personality Disorders'},{name:'Sleep Psychology'},{name:'Grief Counseling'},{name:'Workplace Mental Health'},{name:'Adolescent Mental Health'},{name:'Substance Abuse Treatment'},{name:'Neuropsychology'},{name:'Emotional Intelligence'},{name:'Stress Management'},{name:'Couples Therapy'},{name:'Mental Health Policy'},{name:'Psychopharmacology'},{name:'Burnout Prevention'},{name:'Mental Health Apps'},{name:'Perinatal Mental Health'}] },
+        { name: 'Real Estate', subcategories: [{name:'Housing Market Trends'},{name:'Home Buying Tips'},{name:'Mortgage Rates'},{name:'Rental Market'},{name:'Commercial Real Estate'},{name:'Real Estate Investing'},{name:'REITs'},{name:'Luxury Real Estate'},{name:'Affordable Housing'},{name:'Real Estate Technology'},{name:'House Flipping'},{name:'Property Management'},{name:'Home Prices'},{name:'Real Estate Development'},{name:'Foreclosures'},{name:'Home Appraisal'},{name:'Real Estate Agents'},{name:'Homebuilders'},{name:'Condo Market'},{name:'Vacation Rentals'},{name:'Zoning and Land Use'},{name:'Home Inspections'},{name:'First Time Home Buyers'},{name:'Real Estate Crowdfunding'},{name:'Short Term Rentals'},{name:'Office Real Estate'},{name:'Industrial Real Estate'},{name:'Real Estate Law'},{name:'Property Taxes'},{name:'Home Renovations'},{name:'Multifamily Housing'},{name:'Real Estate Market Forecast'},{name:'Reverse Mortgages'},{name:'Home Insurance'},{name:'Real Estate Auctions'},{name:'Tiny Homes'},{name:'Senior Housing'},{name:'Green Building'}] },
+        { name: 'Religion & Spirituality', subcategories: [{name:'Christianity'},{name:'Catholicism'},{name:'Evangelical Christianity'},{name:'Orthodox Christianity'},{name:'Islam'},{name:'Sunni Islam'},{name:'Shia Islam'},{name:'Sufism'},{name:'Judaism'},{name:'Kabbalah'},{name:'Buddhism'},{name:'Zen Buddhism'},{name:'Tibetan Buddhism'},{name:'Hinduism'},{name:'Sikhism'},{name:'Taoism'},{name:'Jainism'},{name:'Shintoism'},{name:'Atheism & Agnosticism'},{name:'Meditation & Mindfulness'},{name:'Prayer & Devotion'},{name:'Theology'},{name:'Interfaith Dialogue'},{name:'Religious Freedom'},{name:'Church & State'},{name:'Spirituality'},{name:'New Age Spirituality'},{name:'Religious History'},{name:'Biblical Studies'},{name:'Pilgrimage & Holy Sites'},{name:'Religious Leadership'},{name:'Religious Holidays & Festivals'},{name:'Religion & Science'},{name:'Religious Education'},{name:'Indigenous & Folk Religions'}] },
+        { name: 'Science', subcategories: [{name:'Astrophysics'},{name:'Quantum Mechanics'},{name:'Particle Physics'},{name:'Nuclear Physics'},{name:'Organic Chemistry'},{name:'Biochemistry'},{name:'Molecular Biology'},{name:'Genetics'},{name:'Genomics'},{name:'CRISPR Gene Editing'},{name:'Neuroscience'},{name:'Microbiology'},{name:'Virology'},{name:'Immunology'},{name:'Ecology'},{name:'Climate Science'},{name:'Geology'},{name:'Paleontology'},{name:'Marine Biology'},{name:'Botany'},{name:'Zoology'},{name:'Evolutionary Biology'},{name:'Cell Biology'},{name:'Stem Cell Research'},{name:'Materials Science'},{name:'Nanotechnology'},{name:'Biophysics'},{name:'Pharmacology'},{name:'Epidemiology'},{name:'Oceanography'},{name:'Volcanology'},{name:'Seismology'},{name:'Astrobiology'},{name:'Synthetic Biology'},{name:'Computational Biology'}] },
+        { name: 'Space & Astronomy', subcategories: [{name:'NASA'},{name:'SpaceX'},{name:'Blue Origin'},{name:'James Webb Space Telescope'},{name:'Mars Exploration'},{name:'Moon Exploration'},{name:'Artemis Program'},{name:'International Space Station'},{name:'Exoplanets'},{name:'Black Holes'},{name:'Dark Matter'},{name:'Dark Energy'},{name:'Cosmology'},{name:'Rocket Launches'},{name:'Satellite Technology'},{name:'Space Debris'},{name:'Asteroid Mining'},{name:'Solar System'},{name:'Hubble Telescope'},{name:'Gravitational Waves'},{name:'Neutron Stars'},{name:'Space Weather'},{name:'Solar Flares'},{name:'Starship Rocket'},{name:'Lunar Gateway'},{name:'Europa Clipper'},{name:'Space Tourism'},{name:'Radio Astronomy'},{name:'Supernovae'},{name:'Galaxy Formation'},{name:'Space Telescopes'},{name:'Planetary Science'},{name:'Starlink Satellites'},{name:'Indian Space Program ISRO'},{name:'Chinese Space Program'}] },
+        { name: 'Sports', subcategories: [{name:'Football'},{name:'Basketball'},{name:'Baseball'},{name:'Soccer'},{name:'Hockey'},{name:'Tennis'},{name:'Golf'},{name:'Cricket'},{name:'Rugby'},{name:'Volleyball'},{name:'Swimming'},{name:'Gymnastics'},{name:'Track and Field'},{name:'Boxing'},{name:'MMA'},{name:'Wrestling'},{name:'Formula 1'},{name:'NASCAR'},{name:'Cycling'},{name:'Surfing'},{name:'Skiing'},{name:'Snowboarding'},{name:'Figure Skating'},{name:'Table Tennis'},{name:'Badminton'},{name:'Fencing'},{name:'Rowing'},{name:'Sailing'},{name:'Archery'},{name:'Weightlifting'},{name:'Triathlon'},{name:'Marathon Running'},{name:'Horse Racing'},{name:'Polo'},{name:'Lacrosse'},{name:'Field Hockey'},{name:'Water Polo'},{name:'Diving'},{name:'Rock Climbing'},{name:'Skateboarding'},{name:'BMX'},{name:'Motocross'},{name:'Rally Racing'},{name:'IndyCar'},{name:'Esports'},{name:'Pickleball'},{name:'Handball'},{name:'Curling'},{name:'Bobsled'},{name:'CrossFit'}] },
+        { name: 'Technology', subcategories: [{name:'Artificial Intelligence'},{name:'Machine Learning'},{name:'Deep Learning'},{name:'Generative AI'},{name:'Cybersecurity'},{name:'Cloud Computing'},{name:'Smartphones'},{name:'Laptops'},{name:'Wearables'},{name:'Virtual Reality'},{name:'Augmented Reality'},{name:'Robotics'},{name:'5G Networks'},{name:'Internet of Things'},{name:'Semiconductors'},{name:'Open Source Software'},{name:'Linux'},{name:'Programming Languages'},{name:'Web Development'},{name:'Mobile App Development'},{name:'DevOps'},{name:'Quantum Computing'},{name:'Biotechnology'},{name:'Nanotechnology'},{name:'Blockchain'},{name:'Electric Vehicles'},{name:'Self-Driving Cars'},{name:'Drones'},{name:'3D Printing'},{name:'Space Technology'},{name:'Satellite Internet'},{name:'Edge Computing'},{name:'Data Science'},{name:'Big Data'},{name:'Computer Vision'},{name:'Natural Language Processing'},{name:'Software Engineering'},{name:'Tech Startups'},{name:'Fintech'},{name:'Digital Privacy'},{name:'Net Neutrality'},{name:'Smart Home'},{name:'Gaming Technology'},{name:'Streaming Services'},{name:'Social Media Platforms'},{name:'Tech Policy and Regulation'}] },
+        { name: 'Travel', subcategories: [{name:'Adventure Travel'},{name:'Budget Travel'},{name:'Luxury Travel'},{name:'Solo Travel'},{name:'Family Travel'},{name:'Road Trips'},{name:'Backpacking'},{name:'Airlines'},{name:'Hotels'},{name:'Cruises'},{name:'Travel Photography'},{name:'Digital Nomad'},{name:'Van Life'},{name:'Eco Tourism'},{name:'Cultural Tourism'},{name:'Travel Deals'},{name:'Beach Vacations'},{name:'Mountain Travel'},{name:'National Parks'},{name:'Travel Tips'},{name:'Travel Gear'},{name:'Food Tourism'},{name:'Wellness Travel'},{name:'Train Travel'},{name:'Travel Safety'},{name:'Sustainable Travel'},{name:'Weekend Getaways'},{name:'Island Travel'},{name:'Volunteer Travel'},{name:'Travel Hacking'},{name:'Camping'},{name:'Hiking Travel'},{name:'Ski Travel'},{name:'Safari Travel'},{name:'City Breaks'},{name:'Travel Technology'},{name:'Passport and Visa'},{name:'Travel Insurance'},{name:'Accessible Travel'},{name:'Pet Friendly Travel'}] },
+        { name: 'True Crime', subcategories: [{name:'Cold Cases'},{name:'Serial Killers'},{name:'Unsolved Murders'},{name:'Forensic Science'},{name:'Criminal Psychology'},{name:'Wrongful Convictions'},{name:'Missing Persons'},{name:'Cybercrime'},{name:'White Collar Crime'},{name:'Organized Crime'},{name:'Court Trials'},{name:'Criminal Investigations'},{name:'Death Row'},{name:'Prison Life'},{name:'Crime Scene Investigation'},{name:'Criminal Profiling'},{name:'DNA Evidence'},{name:'Police Misconduct'},{name:'Victim Advocacy'},{name:'True Crime Podcasts'},{name:'Heists and Robberies'},{name:'Drug Trafficking'},{name:'Human Trafficking'},{name:'Domestic Violence Cases'},{name:'Gang Violence'},{name:'Arson Investigation'},{name:'Financial Fraud'},{name:'Identity Theft'},{name:'Witness Protection'},{name:'Parole and Probation'},{name:'Jury Trials'},{name:'Crime Statistics'},{name:'Forensic Psychology'},{name:'Evidence Tampering'},{name:'Criminal Appeals'},{name:'Hate Crimes'},{name:'Kidnapping Cases'},{name:'Crime Documentary'},{name:'FBI Investigations'}] },
+        { name: 'Weather & Climate', subcategories: [{name:'Severe Thunderstorms'},{name:'Hurricane Tracking'},{name:'Tornado Outbreaks'},{name:'Climate Change Science'},{name:'Weather Forecasting'},{name:'Meteorology Research'},{name:'Extreme Heat Waves'},{name:'Flash Flooding'},{name:'Drought Conditions'},{name:'Winter Storms'},{name:'Blizzards and Ice Storms'},{name:'Wildfire Weather'},{name:'Tropical Storms'},{name:'Monsoon Season'},{name:'El Nino and La Nina'},{name:'Sea Level Rise'},{name:'Arctic Ice and Polar Weather'},{name:'Weather Radar Technology'},{name:'Climate Policy'},{name:'Atmospheric Science'},{name:'Lightning and Hail'},{name:'Coastal Storm Surge'},{name:'Avalanche Warnings'},{name:'Wind Storms and Derechos'},{name:'Weather Satellites'},{name:'Air Quality and Smog'},{name:'Record Breaking Temperatures'},{name:'Rainfall and Precipitation'},{name:'Climate Data and Records'},{name:'Jet Stream Patterns'},{name:'UV Index and Solar Radiation'},{name:'Weather Emergency Preparedness'},{name:'Seasonal Allergy Forecasts'},{name:'Ocean Temperature Anomalies'},{name:'Weather and Aviation Safety'}] },
+        { name: 'Wellness & Self-Care', subcategories: [{name:'Meditation'},{name:'Yoga'},{name:'Mindfulness'},{name:'Sleep Health'},{name:'Journaling'},{name:'Spa & Wellness'},{name:'Aromatherapy'},{name:'Body Positivity'},{name:'Holistic Health'},{name:'Breathwork'},{name:'Pilates'},{name:'Self-Care Routines'},{name:'Stress Management'},{name:'Mental Health Awareness'},{name:'Sound Healing'},{name:'Ayurveda'},{name:'Tai Chi'},{name:'Gratitude Practice'},{name:'Digital Detox'},{name:'Skin Care Rituals'},{name:'Cold Plunge & Ice Bath'},{name:'Sauna Therapy'},{name:'Forest Bathing'},{name:'Reiki & Energy Healing'},{name:'Gut Health'},{name:'Herbal Remedies'},{name:'Sleep Hygiene'},{name:'Burnout Recovery'},{name:'Emotional Wellness'},{name:'Fitness Recovery'},{name:'Stretching & Mobility'},{name:'Nutrition & Clean Eating'},{name:'Wellness Retreats'},{name:'Positive Psychology'},{name:'Work-Life Balance'},{name:'Acupuncture'},{name:'Chronic Pain Management'},{name:'Wellness Technology'},{name:'Float Therapy'},{name:'Mindful Movement'}] }
     ],
 
     NEWSLETTER_PLATFORMS: {
@@ -166,7 +215,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         'youtube':     { state: 'youtube_state',       render: 'render_youtube_popular' },
         'reddit':      { state: 'reddit_state',        render: 'render_reddit_popular' },
         'newsletters': { state: 'newsletters_state',   render: 'render_newsletters_popular' },
-        'podcasts':    { state: 'podcasts_state',      render: 'render_podcasts_popular' }
+        'podcasts':    { state: 'podcasts_state',      render: 'render_podcasts_popular' },
+        'google-news': { state: 'google_news_state',   render: 'render_google_news_tab' }
     },
 
     // add_site_view.js - TAB_SEARCH_CONFIG: maps tab names to search/state/render config
@@ -347,6 +397,9 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             is_subscribed: false,
             query: '',
             selected_topic: null,
+            selected_category: 'all',
+            selected_subcategory: 'all',
+            grouped_categories: this.GOOGLE_NEWS_CATEGORIES,
             language: 'en',
             feed_url: null,
             feed_id: null
@@ -2378,29 +2431,20 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             $.make('div', { className: 'NB-add-site-tab-results' }, [
                 $.make('div', { className: 'NB-add-site-source-results' }, [
                     $.make('div', { className: 'NB-add-site-google-news-unified' }, [
+                        this.make_category_pills('google-news', state),
                         $.make('div', { className: 'NB-add-site-google-news-input-row' }, [
-                            $.make('input', {
-                                type: 'text',
-                                className: 'NB-add-site-tab-search-input NB-add-site-google-news-search-input',
-                                placeholder: 'Enter a topic or keywords (e.g., "climate change", "AI startups")...',
-                                value: state.query || ''
-                            })
-                        ]),
-                        $.make('div', { className: 'NB-add-site-google-news-topics-label' }, 'Or choose a topic:'),
-                        $.make('div', { className: 'NB-add-site-google-news-topics' },
-                            _.map(this.GOOGLE_NEWS_TOPICS, function (topic) {
-                                var is_selected = state.selected_topic === topic.id;
-                                return $.make('div', {
-                                    className: 'NB-add-site-google-news-topic' + (is_selected ? ' NB-selected' : ''),
-                                    'data-topic-id': topic.id,
-                                    'data-topic-name': topic.name
-                                }, [
-                                    $.make('img', { src: topic.icon, className: 'NB-add-site-topic-icon' }),
-                                    $.make('span', { className: 'NB-add-site-topic-name' }, topic.name)
-                                ]);
-                            })
-                        ),
-                        $.make('div', { className: 'NB-add-site-google-news-subscribe-row' }, [
+                            $.make('div', { className: 'NB-add-site-google-news-search-wrapper' }, [
+                                $.make('img', {
+                                    src: '/media/img/icons/nouns/search.svg',
+                                    className: 'NB-add-site-google-news-search-icon'
+                                }),
+                                $.make('input', {
+                                    type: 'text',
+                                    className: 'NB-add-site-tab-search-input NB-add-site-google-news-search-input',
+                                    placeholder: 'Enter a topic or keywords (e.g., "climate change", "AI startups")...',
+                                    value: state.query || ''
+                                })
+                            ]),
                             this.make_folder_selector(),
                             $.make('select', { className: 'NB-add-site-google-news-language' }, [
                                 $.make('option', { value: 'en' }, 'English'),
@@ -3429,6 +3473,13 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (!source_config) return;
         var state = this[source_config.state];
         var render_method = source_config.render;
+
+        // Source-specific pill click handler
+        var custom_handler = '_handle_' + source.replace(/-/g, '_') + '_pill_click';
+        if (this[custom_handler]) {
+            this[custom_handler]($pill, source, level, category, subcategory, source_config, state);
+            return;
+        }
 
         // Clear top search bar when category pill is clicked (search and category are mutually exclusive)
         this._clear_top_search_for_tab(source);
@@ -4877,33 +4928,68 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     // = Google News Actions =
     // ==========================
 
-    handle_google_news_topic_click: function (e) {
-        var $topic = $(e.currentTarget);
-        var topic_id = $topic.data('topic-id');
-        var topic_name = $topic.data('topic-name');
-        var state = this.google_news_state;
+    // add_site_view.js - _handle_google_news_pill_click: custom two-level pill handler for Google News
+    _handle_google_news_pill_click: function ($pill, source, level, category, subcategory, source_config, state) {
+        var $container = $pill.closest('.NB-add-site-category-pills-container');
 
-        // Toggle selection
-        if ($topic.hasClass('NB-selected')) {
-            // Deselect
-            $topic.removeClass('NB-selected');
-            state.selected_topic = null;
-            state.query = '';
-            this.$('.NB-add-site-google-news-search-input').val('');
-        } else {
-            // Select this topic
-            this.$('.NB-add-site-google-news-topic.NB-selected').removeClass('NB-selected');
-            $topic.addClass('NB-selected');
-            state.selected_topic = topic_id;
-            state.query = topic_name;
-            this.$('.NB-add-site-google-news-search-input').val(topic_name);
-        }
-
-        // Reset subscription state when changing topic
+        // Reset subscription state on any pill click
         state.is_subscribed = false;
         state.feed_url = null;
         state.feed_id = null;
+
+        if (level === 'category') {
+            $container.find('.NB-add-site-cat-pill').removeClass('NB-active');
+            $pill.addClass('NB-active');
+
+            state.selected_category = category || 'all';
+            state.selected_subcategory = 'all';
+
+            var $subcat_row = $container.find('.NB-add-site-subcat-pills-row');
+            if (category && category !== 'all') {
+                state.query = category;
+                this.$('.NB-add-site-google-news-search-input').val(category);
+
+                var grouped = state.grouped_categories || [];
+                var active_group = _.find(grouped, function(g) { return g.name === category; });
+                if (active_group && active_group.subcategories && active_group.subcategories.length > 0) {
+                    this._populate_subcat_row($subcat_row, active_group, source, 'all');
+                    $subcat_row.addClass('NB-visible');
+                } else {
+                    $subcat_row.removeClass('NB-visible').empty();
+                }
+            } else {
+                state.query = '';
+                this.$('.NB-add-site-google-news-search-input').val('');
+                $subcat_row.removeClass('NB-visible').empty();
+            }
+        } else if (level === 'subcategory') {
+            $container.find('.NB-add-site-subcat-pill').removeClass('NB-active');
+            $pill.addClass('NB-active');
+
+            state.selected_subcategory = subcategory || 'all';
+
+            if (subcategory && subcategory !== 'all') {
+                state.query = subcategory;
+                this.$('.NB-add-site-google-news-search-input').val(subcategory);
+            } else {
+                // "All" subcategory - revert to category name
+                state.query = state.selected_category !== 'all' ? state.selected_category : '';
+                this.$('.NB-add-site-google-news-search-input').val(state.query);
+            }
+        }
+
+        this._sync_google_news_topic_from_query(state);
         this.update_google_news_subscribe_button();
+        this.update_url();
+    },
+
+    // add_site_view.js - _sync_google_news_topic_from_query: match query to GOOGLE_NEWS_TOPICS
+    _sync_google_news_topic_from_query: function (state) {
+        var query = (state.query || '').toLowerCase();
+        var matched = _.find(this.GOOGLE_NEWS_TOPICS, function(t) {
+            return t.name.toLowerCase() === query;
+        });
+        state.selected_topic = matched ? matched.id : null;
     },
 
     handle_google_news_input: function (e) {
@@ -4911,14 +4997,25 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var state = this.google_news_state;
 
         state.query = query;
-        // Clear topic selection when user types custom query
-        if (state.selected_topic) {
-            var topic = _.find(this.GOOGLE_NEWS_TOPICS, function(t) { return t.id === state.selected_topic; });
-            if (!topic || topic.name.toLowerCase() !== query.toLowerCase()) {
-                state.selected_topic = null;
-                this.$('.NB-add-site-google-news-topic.NB-selected').removeClass('NB-selected');
+
+        // Check if typed text still matches a pill - if not, reset pills to "All"
+        var matches_category = query && (
+            (state.selected_category !== 'all' && state.selected_category.toLowerCase() === query.toLowerCase()) ||
+            (state.selected_subcategory !== 'all' && state.selected_subcategory.toLowerCase() === query.toLowerCase())
+        );
+
+        if (!matches_category) {
+            var $container = this.$('.NB-add-site-category-pills-container[data-source="google-news"]');
+            if ($container.length) {
+                $container.find('.NB-add-site-cat-pill').removeClass('NB-active');
+                $container.find('.NB-add-site-cat-pill[data-category="all"]').addClass('NB-active');
+                $container.find('.NB-add-site-subcat-pills-row').removeClass('NB-visible').empty();
+                state.selected_category = 'all';
+                state.selected_subcategory = 'all';
             }
         }
+
+        this._sync_google_news_topic_from_query(state);
 
         // Reset subscription state when query changes
         state.is_subscribed = false;
@@ -4961,7 +5058,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
         var query = this.$('.NB-add-site-google-news-search-input').val().trim();
         var language = this.$('.NB-add-site-google-news-language').val();
-        var folder = this.$('.NB-add-site-google-news-subscribe-row .NB-add-site-folder-select').val() || '';
+        var folder = this.$('.NB-add-site-google-news-input-row .NB-add-site-folder-select').val() || '';
 
         if (!query || query.length < 2) {
             return;
@@ -5131,6 +5228,18 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             state.popular_feeds = [];
             state.popular_feeds_collection = null;
             state.popular_offset = 0;
+
+            // Google News: sync query and topic from restored category/subcategory
+            if (target_tab === 'google-news') {
+                if (state.selected_subcategory && state.selected_subcategory !== 'all') {
+                    state.query = state.selected_subcategory;
+                } else if (state.selected_category && state.selected_category !== 'all') {
+                    state.query = state.selected_category;
+                } else {
+                    state.query = '';
+                }
+                this._sync_google_news_topic_from_query(state);
+            }
         }
 
         this.render_active_tab();
@@ -5155,6 +5264,18 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             var deslug_sub = this._deslugify(subcategory);
             state.selected_subcategory = deslug_sub;
             state._pending_subcategory_slug = deslug_sub;
+        }
+
+        // Google News: sync query and topic from initial URL category/subcategory
+        if (tab === 'google-news') {
+            if (state.selected_subcategory && state.selected_subcategory !== 'all') {
+                state.query = state.selected_subcategory;
+            } else if (state.selected_category && state.selected_category !== 'all') {
+                state.query = state.selected_category;
+            } else {
+                state.query = '';
+            }
+            this._sync_google_news_topic_from_query(state);
         }
     }
 
