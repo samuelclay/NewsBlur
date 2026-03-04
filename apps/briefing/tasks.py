@@ -35,7 +35,7 @@ def GenerateBriefings():
 
     DAY_NAME_TO_WEEKDAY = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
     # tasks.py: Fixed delivery times for each slot (user's local timezone)
-    SLOT_TIMES = {"morning": (8, 0), "afternoon": (12, 30), "evening": (17, 0)}
+    SLOT_TIMES = {"morning": (8, 30), "afternoon": (12, 30), "evening": (17, 0)}
     DEFAULT_SLOT = "morning"
 
     now = datetime.datetime.utcnow()
@@ -63,8 +63,8 @@ def GenerateBriefings():
         local_now = datetime.datetime.now(tz)
 
         # tasks.py: Compute generation_time (UTC, naive) — 5 min before preferred delivery.
-        # Parse preferred_time "HH:MM" to determine slot, default to morning (8 AM).
-        TIME_TO_SLOT = {"08:00": "morning", "12:30": "afternoon", "13:00": "afternoon", "17:00": "evening"}
+        # Parse preferred_time "HH:MM" to determine slot, default to morning (8:30 AM).
+        TIME_TO_SLOT = {"08:30": "morning", "12:30": "afternoon", "13:00": "afternoon", "17:00": "evening"}
         slot = TIME_TO_SLOT.get(prefs.preferred_time, DEFAULT_SLOT)
         # tasks.py: For twice_daily, preferred_time stores the second slot.
         # If it resolves to "morning" (legacy bug), default to "afternoon" instead.
