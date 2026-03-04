@@ -114,7 +114,7 @@ def get_partial():
         from datetime import datetime
         start = get_mongo_start_time()
         elapsed = (datetime.now() - start).total_seconds() if start else 0
-        return date_str, format_size(size), elapsed
+        return date_str, size, elapsed
     return None, None, None
 
 
@@ -173,15 +173,24 @@ def print_table():
         # For MongoDB, prepend in-progress partial as the first row
         partial_row = None
         if service_name == "MongoDB":
-            partial_date, partial_size, elapsed = get_partial()
+            partial_date, partial_bytes, elapsed = get_partial()
             if partial_date:
                 progress = get_mongodump_progress()
-                if progress and progress != "complete" and isinstance(progress, float) and progress > 0:
+                partial_size = format_size(partial_bytes)
+                if partial_bytes > 0 and elapsed > 0:
                     elapsed_str = format_duration(elapsed)
-                    remaining = elapsed * (100.0 / progress - 1)
-                    remaining_str = format_duration(remaining)
-                    note = "  \033[33m◀ %.1f%% · %s elapsed · ~%s left\033[0m" % (
-                        progress, elapsed_str, remaining_str)
+                    bw = partial_bytes / elapsed
+                    bw_str = format_size(bw) + "/s"
+                    # Estimate remaining based on previous dump size
+                    prev_size = backups[0][1] if backups else None
+                    if prev_size and prev_size > partial_bytes:
+                        remaining = (prev_size - partial_bytes) / bw
+                        remaining_str = "~%s left" % format_duration(remaining)
+                    else:
+                        remaining_str = ""
+                    pct_str = "%.1f%%" % progress if isinstance(progress, float) else ""
+                    parts = [p for p in [pct_str, elapsed_str + " elapsed", remaining_str, bw_str] if p]
+                    note = "  \033[33m◀ %s\033[0m" % " · ".join(parts)
                 elif progress == "complete":
                     note = "  \033[32m◀ complete, finalizing…\033[0m"
                 else:
