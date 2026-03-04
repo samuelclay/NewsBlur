@@ -15,9 +15,10 @@ sudo docker exec postgres sh -c "/usr/lib/postgresql/13/bin/pg_dump -U newsblur 
 echo $(date -u) " ---> Uploading postgres backup to S3"
 sudo docker run --user 1000:1001 --rm \
     -v /srv/newsblur:/srv/newsblur \
-    --network=host \
+    --network=newsblurnet \
+    --hostname=$(hostname) \
     newsblur/newsblur_python3 \
-    python /srv/newsblur/utils/backups/backup_psql.py $UPLOAD_FILE
+    python /srv/newsblur/utils/backups/backup_psql.py --hostname=hdb-postgres-secondary $UPLOAD_FILE
 
 # Don't delete backup since the backup_mongo.py script will rm them
 ## rm /opt/mongo/newsblur/backup/backup_mongo_${now}.tgz
