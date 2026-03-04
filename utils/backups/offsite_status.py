@@ -10,6 +10,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 BACKUP_DRIVE = "/media/newsblur-backup"
 SHOW_N = 3
@@ -66,6 +67,40 @@ def get_backups(directory, pattern, date_regex):
     return backups[:SHOW_N]
 
 
+def format_duration(seconds):
+    seconds = int(seconds)
+    if seconds < 60:
+        return "%ds" % seconds
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    if hours > 0:
+        return "%dh %dm" % (hours, minutes)
+    return "%dm" % minutes
+
+
+def get_mongo_start_time():
+    """Parse the most recent 'Streaming full mongodump' timestamp from backup.log."""
+    log_file = os.path.join(BACKUP_DRIVE, "backup.log")
+    if not os.path.exists(log_file):
+        return None
+    try:
+        result = subprocess.run(
+            ["grep", "-n", "Streaming full mongodump", log_file],
+            capture_output=True, text=True
+        )
+        lines = result.stdout.strip().split("\n")
+        if lines and lines[-1]:
+            # "2026-03-04 08:26:25 Streaming full mongodump from ..."
+            match = re.match(r"(\d+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", lines[-1])
+            if match:
+                ts_str = match.group(1).split(":", 1)[1]
+                from datetime import datetime
+                return datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S")
+    except Exception:
+        pass
+    return None
+
+
 def get_partial():
     partials = glob.glob(os.path.join(BACKUP_DRIVE, "mongo_full", "*.partial"))
     if partials:
@@ -74,11 +109,17 @@ def get_partial():
         # Extract date from mongodump_full_2026-03-04.gz.partial
         match = re.search(r"mongodump_full_(\d{4}-\d{2}-\d{2})\.gz\.partial", basename)
         date_str = match.group(1) if match else None
-        return date_str, format_size(os.path.getsize(f))
-    return None, None
+        size = os.path.getsize(f)
+        # Elapsed time from mongodump start in backup.log
+        from datetime import datetime
+        start = get_mongo_start_time()
+        elapsed = (datetime.now() - start).total_seconds() if start else 0
+        return date_str, format_size(size), elapsed
+    return None, None, None
 
 
 def get_mongodump_progress():
+    """Returns progress as a float (0-100), 'complete', or None."""
     run_log = os.path.join(BACKUP_DRIVE, "backup_run.log")
     if not os.path.exists(run_log):
         return None
@@ -92,7 +133,7 @@ def get_mongodump_progress():
             if "newsblur.stories" in line and "%" in line:
                 match = re.search(r"\((\d+\.\d+)%\)", line)
                 if match:
-                    return match.group(1) + "%"
+                    return float(match.group(1))
         # Check for "done dumping"
         for line in reversed(lines):
             if "done dumping newsblur.stories" in line:
@@ -132,13 +173,20 @@ def print_table():
         # For MongoDB, prepend in-progress partial as the first row
         partial_row = None
         if service_name == "MongoDB":
-            partial_date, partial_size = get_partial()
+            partial_date, partial_size, elapsed = get_partial()
             if partial_date:
                 progress = get_mongodump_progress()
-                if progress and progress != "complete":
-                    note = "  \033[33m◀ %s\033[0m" % progress
+                if progress and progress != "complete" and isinstance(progress, float) and progress > 0:
+                    elapsed_str = format_duration(elapsed)
+                    remaining = elapsed * (100.0 / progress - 1)
+                    remaining_str = format_duration(remaining)
+                    note = "  \033[33m◀ %.1f%% · %s elapsed · ~%s left\033[0m" % (
+                        progress, elapsed_str, remaining_str)
+                elif progress == "complete":
+                    note = "  \033[32m◀ complete, finalizing…\033[0m"
                 else:
-                    note = "  \033[33m◀ streaming…\033[0m"
+                    elapsed_str = format_duration(elapsed) if elapsed else ""
+                    note = "  \033[33m◀ starting… · %s elapsed\033[0m" % elapsed_str
                 partial_row = (partial_date, partial_size, note)
 
         if not backups and not partial_row:
