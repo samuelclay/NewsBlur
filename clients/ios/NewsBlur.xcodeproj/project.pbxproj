@@ -32,6 +32,12 @@
 		171904B62BBC8D4E004CCC96 /* TrainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171904B42BBC8D4E004CCC96 /* TrainerView.swift */; };
 		171904B82BBCA712004CCC96 /* TrainerCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171904B72BBCA712004CCC96 /* TrainerCapsule.swift */; };
 		171904B92BBCA712004CCC96 /* TrainerCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171904B72BBCA712004CCC96 /* TrainerCapsule.swift */; };
+		17A5CA2DCDCDCDCDCD000001 /* TrainerRegexInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A5CA2DCDCDCDCDCD000003 /* TrainerRegexInput.swift */; };
+		17A5CA2DCDCDCDCDCD000002 /* TrainerRegexInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17A5CA2DCDCDCDCDCD000003 /* TrainerRegexInput.swift */; };
+		17SCOPE01AAAA00000000001 /* ClassifierScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17SCOPE01AAAA00000000003 /* ClassifierScope.swift */; };
+		17SCOPE01AAAA00000000002 /* ClassifierScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17SCOPE01AAAA00000000003 /* ClassifierScope.swift */; };
+		17SCOPE02BBBB00000000001 /* ScopeToggleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17SCOPE02BBBB00000000003 /* ScopeToggleView.swift */; };
+		17SCOPE02BBBB00000000002 /* ScopeToggleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17SCOPE02BBBB00000000003 /* ScopeToggleView.swift */; };
 		171B3E1E2D94C8080056DA9A /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171B3E1D2D94C8080056DA9A /* Request.swift */; };
 		171B3E1F2D94C8080056DA9A /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171B3E1D2D94C8080056DA9A /* Request.swift */; };
 		171B6FFD25C4C7C8008638A9 /* StoryPagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 171B6FFC25C4C7C8008638A9 /* StoryPagesViewController.swift */; };
@@ -117,6 +123,7 @@
 		175790722930605500490924 /* GothamNarrow-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = FF3A3DFB1BFBBAC600ADC01A /* GothamNarrow-Medium.otf */; };
 		175790732930605500490924 /* accessory_disclosure.png in Resources */ = {isa = PBXBuildFile; fileRef = 17876BA21C99137B0055DD15 /* accessory_disclosure.png */; };
 		175790742930605500490924 /* fitvid.js in Resources */ = {isa = PBXBuildFile; fileRef = FF265F10187B6B230080C332 /* fitvid.js */; };
+		17A5CA2DABABABABAB000001 /* mark.js in Resources */ = {isa = PBXBuildFile; fileRef = 17A5CA2DABABABABAB000003 /* mark.js */; };
 		175790752930605500490924 /* storyDetailView.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BE168A708D0057A7DA /* storyDetailView.js */; };
 		175790762930605500490924 /* theme_color_sepia-sel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C69B1C1110BA005EA453 /* theme_color_sepia-sel@2x.png */; };
 		175790772930605500490924 /* theme_color_medium@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1740C68E1C110665005EA453 /* theme_color_medium@2x.png */; };
@@ -1130,6 +1137,7 @@
 		FF22FE7616E557D80046165A /* toolbar_tall_background.png in Resources */ = {isa = PBXBuildFile; fileRef = FF22FE7416E557D80046165A /* toolbar_tall_background.png */; };
 		FF22FE7716E557D80046165A /* toolbar_tall_background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF22FE7516E557D80046165A /* toolbar_tall_background@2x.png */; };
 		FF265F12187B6D4F0080C332 /* fitvid.js in Resources */ = {isa = PBXBuildFile; fileRef = FF265F10187B6B230080C332 /* fitvid.js */; };
+		17A5CA2DABABABABAB000002 /* mark.js in Resources */ = {isa = PBXBuildFile; fileRef = 17A5CA2DABABABABAB000003 /* mark.js */; };
 		FF28C5B8278603750033D2A2 /* discourse.png in Resources */ = {isa = PBXBuildFile; fileRef = FF28C5B7278603750033D2A2 /* discourse.png */; };
 		FF28C5BA278604940033D2A2 /* discourse@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF28C5B9278604940033D2A2 /* discourse@2x.png */; };
 		FF28C5BD27860F3C0033D2A2 /* calendar.png in Resources */ = {isa = PBXBuildFile; fileRef = FF28C5BB27860F3C0033D2A2 /* calendar.png */; };
@@ -1516,6 +1524,9 @@
 		17179E282BD6F86C006B18D5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		171904B42BBC8D4E004CCC96 /* TrainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerView.swift; sourceTree = "<group>"; };
 		171904B72BBCA712004CCC96 /* TrainerCapsule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerCapsule.swift; sourceTree = "<group>"; };
+		17A5CA2DCDCDCDCDCD000003 /* TrainerRegexInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainerRegexInput.swift; sourceTree = "<group>"; };
+		17SCOPE01AAAA00000000003 /* ClassifierScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassifierScope.swift; sourceTree = "<group>"; };
+		17SCOPE02BBBB00000000003 /* ScopeToggleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeToggleView.swift; sourceTree = "<group>"; };
 		171B3E1D2D94C8080056DA9A /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		171B6FFC25C4C7C8008638A9 /* StoryPagesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryPagesViewController.swift; sourceTree = "<group>"; };
 		1721C9D02497F91900B0EDC4 /* mute_gray.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mute_gray.png; sourceTree = "<group>"; };
@@ -2003,6 +2014,7 @@
 		FF22FE7516E557D80046165A /* toolbar_tall_background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toolbar_tall_background@2x.png"; sourceTree = "<group>"; };
 		FF26125318C00FEC0055FF4D /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		FF265F10187B6B230080C332 /* fitvid.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = fitvid.js; path = static/fitvid.js; sourceTree = SOURCE_ROOT; };
+		17A5CA2DABABABABAB000003 /* mark.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = mark.js; path = static/mark.js; sourceTree = SOURCE_ROOT; };
 		FF28C5B7278603750033D2A2 /* discourse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = discourse.png; sourceTree = "<group>"; };
 		FF28C5B9278604940033D2A2 /* discourse@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discourse@2x.png"; sourceTree = "<group>"; };
 		FF28C5BB27860F3C0033D2A2 /* calendar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = calendar.png; sourceTree = "<group>"; };
@@ -2938,6 +2950,9 @@
 				175DC6AE2BBB87D200B3708F /* TrainerViewController.swift */,
 				171904B42BBC8D4E004CCC96 /* TrainerView.swift */,
 				171904B72BBCA712004CCC96 /* TrainerCapsule.swift */,
+				17A5CA2DCDCDCDCDCD000003 /* TrainerRegexInput.swift */,
+				17SCOPE01AAAA00000000003 /* ClassifierScope.swift */,
+				17SCOPE02BBBB00000000003 /* ScopeToggleView.swift */,
 				17BC56A62BBE4A5600A30C41 /* TrainerWord.swift */,
 				FF6282131A11613900271FDB /* UserTagsViewController.h */,
 				FF6282141A11613900271FDB /* UserTagsViewController.m */,
@@ -3319,6 +3334,7 @@
 				FF67D3C6168A71B30057A7DA /* fastTouch.js */,
 				FF67D3C4168A71870057A7DA /* trainer.js */,
 				FF265F10187B6B230080C332 /* fitvid.js */,
+				17A5CA2DABABABABAB000003 /* mark.js */,
 			);
 			name = js;
 			sourceTree = "<group>";
@@ -4089,6 +4105,7 @@
 				175790722930605500490924 /* GothamNarrow-Medium.otf in Resources */,
 				175790732930605500490924 /* accessory_disclosure.png in Resources */,
 				175790742930605500490924 /* fitvid.js in Resources */,
+				17A5CA2DABABABABAB000001 /* mark.js in Resources */,
 				175790752930605500490924 /* storyDetailView.js in Resources */,
 				17A5CA1DEBEBEBEB000002 /* prompt.svg in Resources */,
 				175790762930605500490924 /* theme_color_sepia-sel@2x.png in Resources */,
@@ -4577,6 +4594,7 @@
 				FF3A3E0F1BFBBB6400ADC01A /* GothamNarrow-Medium.otf in Resources */,
 				17876BA41C99137B0055DD15 /* accessory_disclosure.png in Resources */,
 				FF265F12187B6D4F0080C332 /* fitvid.js in Resources */,
+				17A5CA2DABABABABAB000002 /* mark.js in Resources */,
 				FF67D3CC168A73380057A7DA /* storyDetailView.js in Resources */,
 				17A5CA1DEBEBEBEB000003 /* prompt.svg in Resources */,
 				1740C6A31C1110BA005EA453 /* theme_color_sepia-sel@2x.png in Resources */,
@@ -5144,6 +5162,9 @@
 				1757926A2930605500490924 /* MBProgressHUD.m in Sources */,
 				1757926B2930605500490924 /* NSString+HTML.m in Sources */,
 				171904B92BBCA712004CCC96 /* TrainerCapsule.swift in Sources */,
+				17A5CA2DCDCDCDCDCD000002 /* TrainerRegexInput.swift in Sources */,
+				17SCOPE01AAAA00000000002 /* ClassifierScope.swift in Sources */,
+				17SCOPE02BBBB00000000002 /* ScopeToggleView.swift in Sources */,
 				1757926D2930605500490924 /* UserTagsViewController.m in Sources */,
 				1757926E2930605500490924 /* StringHelper.m in Sources */,
 				1757926F2930605500490924 /* TransparentToolbar.m in Sources */,
@@ -5370,6 +5391,9 @@
 				43A4C3DD15B00966008787B5 /* MBProgressHUD.m in Sources */,
 				43A4C3E115B00966008787B5 /* NSString+HTML.m in Sources */,
 				171904B82BBCA712004CCC96 /* TrainerCapsule.swift in Sources */,
+				17A5CA2DCDCDCDCDCD000001 /* TrainerRegexInput.swift in Sources */,
+				17SCOPE01AAAA00000000001 /* ClassifierScope.swift in Sources */,
+				17SCOPE02BBBB00000000001 /* ScopeToggleView.swift in Sources */,
 				FF6282151A11613900271FDB /* UserTagsViewController.m in Sources */,
 				43A4C3E315B00966008787B5 /* StringHelper.m in Sources */,
 				43A4C3E415B00966008787B5 /* TransparentToolbar.m in Sources */,

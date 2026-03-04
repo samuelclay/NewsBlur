@@ -1444,20 +1444,29 @@
     if (!self.isPhone) {
         [self showPopoverWithViewController:self.trainerViewController contentSize:CGSizeMake(500, 630) sender:sender];
     } else {
-        if (self.trainNavigationController == nil) {
-            self.trainNavigationController = [[UINavigationController alloc]
-                                              initWithRootViewController:self.trainerViewController];
+        // Dismiss any existing presented controller (e.g. font settings popover adapted to modal on iPhone)
+        void (^presentTrainer)(void) = ^{
+            if (self.trainNavigationController == nil) {
+                self.trainNavigationController = [[UINavigationController alloc]
+                                                  initWithRootViewController:self.trainerViewController];
+            }
+            self.trainNavigationController.navigationBarHidden = YES;
+            self.trainNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
+            UISheetPresentationController *sheet = self.trainNavigationController.sheetPresentationController;
+            sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
+            sheet.prefersGrabberVisible = YES;
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
+            sheet.preferredCornerRadius = 12.0;
+
+            [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
+        };
+
+        if (navController.presentedViewController) {
+            [navController.presentedViewController dismissViewControllerAnimated:NO completion:presentTrainer];
+        } else {
+            presentTrainer();
         }
-        self.trainNavigationController.navigationBarHidden = YES;
-        self.trainNavigationController.modalPresentationStyle = UIModalPresentationPageSheet;
-
-        UISheetPresentationController *sheet = self.trainNavigationController.sheetPresentationController;
-        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
-        sheet.prefersGrabberVisible = YES;
-        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
-        sheet.preferredCornerRadius = 12.0;
-
-        [navController presentViewController:self.trainNavigationController animated:YES completion:nil];
     }
 }
 
@@ -1535,46 +1544,6 @@
     if (@available(iOS 15.0, *)) {
         UINavigationController *navController = self.feedsNavigationController;
         DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
-        UINavigationController *discoverNavController = [[UINavigationController alloc] initWithRootViewController:discoverVC];
-
-        discoverNavController.modalPresentationStyle = UIModalPresentationPageSheet;
-        discoverNavController.navigationBarHidden = YES;
-
-        UISheetPresentationController *sheet = discoverNavController.sheetPresentationController;
-        sheet.detents = @[UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent];
-        sheet.prefersGrabberVisible = YES;
-        sheet.prefersScrollingExpandsWhenScrolledToEdge = YES;
-        sheet.preferredCornerRadius = 12.0;
-
-        [navController presentViewController:discoverNavController animated:YES completion:nil];
-    }
-}
-
-- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId {
-    [self openDiscoverFeedsDialogFromSettingsButton:feedId sourceView:self.feedDetailViewController.storyTitlesHeaderBar.discoverPill];
-}
-
-- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId sourceView:(UIView *)sourceView {
-    if (@available(iOS 15.0, *)) {
-        if (!self.isPhone) {
-            DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
-
-            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:sourceView sourceRect:sourceView.bounds];
-        } else {
-            [self openDiscoverFeedsDialog:feedId];
-        }
-    }
-}
-
-- (void)openDiscoverFeedsDialogWithFeedIds:(NSArray *)feedIds {
-    if (@available(iOS 15.0, *)) {
-        NSMutableArray *feedIdStrings = [NSMutableArray array];
-        for (id feedId in feedIds) {
-            [feedIdStrings addObject:[NSString stringWithFormat:@"%@", feedId]];
-        }
-
-        UINavigationController *navController = self.feedsNavigationController;
-        DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedIds:feedIdStrings];
         UINavigationController *discoverNavController = [[UINavigationController alloc] initWithRootViewController:discoverVC];
 
         discoverNavController.modalPresentationStyle = UIModalPresentationPageSheet;
@@ -4439,6 +4408,10 @@
 }
 
 - (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId {
+    [self toggleAuthorClassifier:author feedId:feedId scope:@"feed" folderName:@""];
+}
+
+- (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName {
     int authorScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                          objectForKey:@"authors"]
                         objectForKey:author] intValue];
@@ -4459,7 +4432,7 @@
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [self.storyPagesViewController refreshHeaders];
     [self.trainerViewController reload];
-    
+
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            self.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -4468,7 +4441,13 @@
      authorScore <= -1 ? @"dislike_author" :
      @"remove_like_author"];
     [params setObject:feedId forKey:@"feed_id"];
-    
+    if (scope && ![scope isEqualToString:@"feed"]) {
+        [params setObject:scope forKey:@"scope"];
+        if ([scope isEqualToString:@"folder"] && folderName.length > 0) {
+            [params setObject:folderName forKey:@"folder_name"];
+        }
+    }
+
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -4477,15 +4456,18 @@
 
     [self recalculateIntelligenceScores:feedId];
     [self.feedDetailViewController reload];
-//    [self.feedDetailViewController.feedCollectionView reloadData];
 }
 
 - (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId {
+    [self toggleTagClassifier:tag feedId:feedId scope:@"feed" folderName:@""];
+}
+
+- (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName {
     NSLog(@"toggleTagClassifier: %@", tag);
     int tagScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                       objectForKey:@"tags"]
                      objectForKey:tag] intValue];
-    
+
     if (tagScore > 0) {
         tagScore = -1;
     } else if (tagScore < 0) {
@@ -4493,7 +4475,7 @@
     } else {
         tagScore = 1;
     }
-    
+
     NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
     if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
@@ -4504,7 +4486,7 @@
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [self.storyPagesViewController refreshHeaders];
     [self.trainerViewController reload];
-    
+
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            self.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -4513,24 +4495,33 @@
      tagScore <= -1 ? @"dislike_tag" :
      @"remove_like_tag"];
     [params setObject:feedId forKey:@"feed_id"];
-    
+    if (scope && ![scope isEqualToString:@"feed"]) {
+        [params setObject:scope forKey:@"scope"];
+        if ([scope isEqualToString:@"folder"] && folderName.length > 0) {
+            [params setObject:folderName forKey:@"folder_name"];
+        }
+    }
+
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self failedClassifierSave:task];
     }];
-    
+
     [self recalculateIntelligenceScores:feedId];
     [self.feedDetailViewController reload];
-//    [self.feedDetailViewController.feedCollectionView reloadData];
 }
 
 - (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score {
+    [self toggleTitleClassifier:title feedId:feedId score:score scope:@"feed" folderName:@""];
+}
+
+- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(NSInteger)score scope:(NSString *)scope folderName:(NSString *)folderName {
     NSLog(@"toggle Title: %@ (%@) / %ld", title, feedId, (long)score);
     NSInteger titleScore = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
                               objectForKey:@"titles"]
                              objectForKey:title] intValue];
-    
+
     if (score) {
         titleScore = score;
     } else {
@@ -4542,7 +4533,7 @@
             titleScore = 1;
         }
     }
-    
+
     NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
                                             mutableCopy];
     if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
@@ -4553,7 +4544,7 @@
     [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [self.storyPagesViewController refreshHeaders];
     [self.trainerViewController reload];
-    
+
     NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save",
                            self.url];
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -4562,7 +4553,13 @@
      titleScore <= -1 ? @"dislike_title" :
      @"remove_like_title"];
     [params setObject:feedId forKey:@"feed_id"];
-    
+    if (scope && ![scope isEqualToString:@"feed"]) {
+        [params setObject:scope forKey:@"scope"];
+        if ([scope isEqualToString:@"folder"] && folderName.length > 0) {
+            [params setObject:folderName forKey:@"folder_name"];
+        }
+    }
+
     [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         [self.feedsViewController refreshFeedList:feedId];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -4570,7 +4567,6 @@
     }];
 
     [self recalculateIntelligenceScores:feedId];
-//    [self.feedDetailViewController.feedCollectionView reloadData];
     [self.feedDetailViewController reload];
 }
 
@@ -4614,6 +4610,308 @@
 
     [self recalculateIntelligenceScores:feedId];
 //    [self.feedDetailViewController.feedCollectionView reloadData];
+    [self.feedDetailViewController reload];
+}
+
+- (void)toggleTitleRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId {
+    [self toggleTitleRegexClassifier:pattern feedId:feedId scope:@"feed" folderName:@""];
+}
+
+- (void)toggleTitleRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName {
+    int score = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
+                   objectForKey:@"title_regex"]
+                  objectForKey:pattern] intValue];
+    if (score > 0) {
+        score = -1;
+    } else if (score < 0) {
+        score = 0;
+    } else {
+        score = 1;
+    }
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
+    NSMutableDictionary *items = [[feedClassifiers objectForKey:@"title_regex"] mutableCopy];
+    if (!items) items = [NSMutableDictionary dictionary];
+    [items setObject:[NSNumber numberWithInt:score] forKey:pattern];
+    [feedClassifiers setObject:items forKey:@"title_regex"];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.storyPagesViewController refreshHeaders];
+    [self.trainerViewController reload];
+
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save", self.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:pattern
+               forKey:score >= 1 ? @"like_title_regex" :
+     score <= -1 ? @"dislike_title_regex" :
+     @"remove_like_title_regex"];
+    [params setObject:feedId forKey:@"feed_id"];
+    if (scope && ![scope isEqualToString:@"feed"]) {
+        [params setObject:scope forKey:@"scope"];
+        if ([scope isEqualToString:@"folder"] && folderName.length > 0) {
+            [params setObject:folderName forKey:@"folder_name"];
+        }
+    }
+
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
+    }];
+
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController reload];
+}
+
+- (void)toggleTextClassifier:(NSString *)text feedId:(NSString *)feedId {
+    [self toggleTextClassifier:text feedId:feedId scope:@"feed" folderName:@""];
+}
+
+- (void)toggleTextClassifier:(NSString *)text feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName {
+    int score = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
+                   objectForKey:@"texts"]
+                  objectForKey:text] intValue];
+    if (score > 0) {
+        score = -1;
+    } else if (score < 0) {
+        score = 0;
+    } else {
+        score = 1;
+    }
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
+    NSMutableDictionary *items = [[feedClassifiers objectForKey:@"texts"] mutableCopy];
+    if (!items) items = [NSMutableDictionary dictionary];
+    [items setObject:[NSNumber numberWithInt:score] forKey:text];
+    [feedClassifiers setObject:items forKey:@"texts"];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.storyPagesViewController refreshHeaders];
+    [self.trainerViewController reload];
+
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save", self.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:text
+               forKey:score >= 1 ? @"like_text" :
+     score <= -1 ? @"dislike_text" :
+     @"remove_like_text"];
+    [params setObject:feedId forKey:@"feed_id"];
+    if (scope && ![scope isEqualToString:@"feed"]) {
+        [params setObject:scope forKey:@"scope"];
+        if ([scope isEqualToString:@"folder"] && folderName.length > 0) {
+            [params setObject:folderName forKey:@"folder_name"];
+        }
+    }
+
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
+    }];
+
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController reload];
+}
+
+- (void)toggleTextRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId {
+    [self toggleTextRegexClassifier:pattern feedId:feedId scope:@"feed" folderName:@""];
+}
+
+- (void)toggleTextRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName {
+    int score = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
+                   objectForKey:@"text_regex"]
+                  objectForKey:pattern] intValue];
+    if (score > 0) {
+        score = -1;
+    } else if (score < 0) {
+        score = 0;
+    } else {
+        score = 1;
+    }
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
+    NSMutableDictionary *items = [[feedClassifiers objectForKey:@"text_regex"] mutableCopy];
+    if (!items) items = [NSMutableDictionary dictionary];
+    [items setObject:[NSNumber numberWithInt:score] forKey:pattern];
+    [feedClassifiers setObject:items forKey:@"text_regex"];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.storyPagesViewController refreshHeaders];
+    [self.trainerViewController reload];
+
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save", self.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:pattern
+               forKey:score >= 1 ? @"like_text_regex" :
+     score <= -1 ? @"dislike_text_regex" :
+     @"remove_like_text_regex"];
+    [params setObject:feedId forKey:@"feed_id"];
+    if (scope && ![scope isEqualToString:@"feed"]) {
+        [params setObject:scope forKey:@"scope"];
+        if ([scope isEqualToString:@"folder"] && folderName.length > 0) {
+            [params setObject:folderName forKey:@"folder_name"];
+        }
+    }
+
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
+    }];
+
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController reload];
+}
+
+- (void)toggleUrlClassifier:(NSString *)url feedId:(NSString *)feedId {
+    [self toggleUrlClassifier:url feedId:feedId scope:@"feed" folderName:@""];
+}
+
+- (void)toggleUrlClassifier:(NSString *)url feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName {
+    int score = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
+                   objectForKey:@"urls"]
+                  objectForKey:url] intValue];
+    if (score > 0) {
+        score = -1;
+    } else if (score < 0) {
+        score = 0;
+    } else {
+        score = 1;
+    }
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
+    NSMutableDictionary *items = [[feedClassifiers objectForKey:@"urls"] mutableCopy];
+    if (!items) items = [NSMutableDictionary dictionary];
+    [items setObject:[NSNumber numberWithInt:score] forKey:url];
+    [feedClassifiers setObject:items forKey:@"urls"];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.storyPagesViewController refreshHeaders];
+    [self.trainerViewController reload];
+
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save", self.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:url
+               forKey:score >= 1 ? @"like_url" :
+     score <= -1 ? @"dislike_url" :
+     @"remove_like_url"];
+    [params setObject:feedId forKey:@"feed_id"];
+    if (scope && ![scope isEqualToString:@"feed"]) {
+        [params setObject:scope forKey:@"scope"];
+        if ([scope isEqualToString:@"folder"] && folderName.length > 0) {
+            [params setObject:folderName forKey:@"folder_name"];
+        }
+    }
+
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
+    }];
+
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController reload];
+}
+
+- (void)toggleUrlRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId {
+    [self toggleUrlRegexClassifier:pattern feedId:feedId scope:@"feed" folderName:@""];
+}
+
+- (void)toggleUrlRegexClassifier:(NSString *)pattern feedId:(NSString *)feedId scope:(NSString *)scope folderName:(NSString *)folderName {
+    int score = [[[[storiesCollection.activeClassifiers objectForKey:feedId]
+                   objectForKey:@"url_regex"]
+                  objectForKey:pattern] intValue];
+    if (score > 0) {
+        score = -1;
+    } else if (score < 0) {
+        score = 0;
+    } else {
+        score = 1;
+    }
+    NSMutableDictionary *feedClassifiers = [[storiesCollection.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    if (!feedClassifiers) feedClassifiers = [NSMutableDictionary dictionary];
+    NSMutableDictionary *items = [[feedClassifiers objectForKey:@"url_regex"] mutableCopy];
+    if (!items) items = [NSMutableDictionary dictionary];
+    [items setObject:[NSNumber numberWithInt:score] forKey:pattern];
+    [feedClassifiers setObject:items forKey:@"url_regex"];
+    [storiesCollection.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.storyPagesViewController refreshHeaders];
+    [self.trainerViewController reload];
+
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save", self.url];
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    [params setObject:pattern
+               forKey:score >= 1 ? @"like_url_regex" :
+     score <= -1 ? @"dislike_url_regex" :
+     @"remove_like_url_regex"];
+    [params setObject:feedId forKey:@"feed_id"];
+    if (scope && ![scope isEqualToString:@"feed"]) {
+        [params setObject:scope forKey:@"scope"];
+        if ([scope isEqualToString:@"folder"] && folderName.length > 0) {
+            [params setObject:folderName forKey:@"folder_name"];
+        }
+    }
+
+    [self POST:urlString parameters:params success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [self.feedsViewController refreshFeedList:feedId];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
+    }];
+
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController reload];
+}
+
+- (void)changeClassifierScope:(NSString *)classifierType value:(NSString *)value
+                       feedId:(NSString *)feedId score:(NSInteger)score
+                     oldScope:(NSString *)oldScope oldFolderName:(NSString *)oldFolderName
+                        scope:(NSString *)scope folderName:(NSString *)folderName {
+    NSString *urlString = [NSString stringWithFormat:@"%@/classifier/save", self.url];
+
+    NSString *likeKey;
+    if (score >= 1) {
+        likeKey = [NSString stringWithFormat:@"like_%@", classifierType];
+    } else if (score <= -1) {
+        likeKey = [NSString stringWithFormat:@"dislike_%@", classifierType];
+    } else {
+        return;
+    }
+
+    // Step 1: Remove classifier at old scope
+    NSString *removeKey = [NSString stringWithFormat:@"remove_%@", likeKey];
+    NSMutableDictionary *removeParams = [NSMutableDictionary dictionary];
+    [removeParams setObject:value forKey:removeKey];
+    [removeParams setObject:feedId forKey:@"feed_id"];
+    if (oldScope && ![oldScope isEqualToString:@"feed"]) {
+        [removeParams setObject:oldScope forKey:@"scope"];
+        if ([oldScope isEqualToString:@"folder"] && oldFolderName.length > 0) {
+            [removeParams setObject:oldFolderName forKey:@"folder_name"];
+        }
+    }
+
+    [self POST:urlString parameters:removeParams success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        // Step 2: Add classifier at new scope after remove succeeds
+        NSMutableDictionary *addParams = [NSMutableDictionary dictionary];
+        [addParams setObject:value forKey:likeKey];
+        [addParams setObject:feedId forKey:@"feed_id"];
+        if (scope && ![scope isEqualToString:@"feed"]) {
+            [addParams setObject:scope forKey:@"scope"];
+            if ([scope isEqualToString:@"folder"] && folderName.length > 0) {
+                [addParams setObject:folderName forKey:@"folder_name"];
+            }
+        }
+
+        [self POST:urlString parameters:addParams success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            [self.feedsViewController refreshFeedList:feedId];
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            [self failedClassifierSave:task];
+        }];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        [self failedClassifierSave:task];
+    }];
+
+    [self recalculateIntelligenceScores:feedId];
     [self.feedDetailViewController reload];
 }
 
