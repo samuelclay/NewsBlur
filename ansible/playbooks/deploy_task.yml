@@ -19,8 +19,10 @@
       git:
         repo: https://github.com/samuelclay/NewsBlur.git
         dest: /srv/newsblur/
-        version: main
+        version: "{{ git_branch }}"
       register: pulled
+      tags:
+        - always
 
     - block:
         - name: Reload celery
@@ -66,3 +68,14 @@
       tags:
         - never
         - start
+
+    - name: Restart celery
+      become: yes
+      command: "docker restart --time 120 {{ item.service_name }}"
+      when: item.service_name in inventory_hostname
+      with_items:
+        - service_name: task-celery
+        - service_name: task-work
+      tags:
+        - never
+        - restart

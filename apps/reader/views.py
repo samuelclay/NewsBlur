@@ -104,6 +104,7 @@ except:
 import tweepy
 
 from apps.categories.models import MCategory
+from apps.reader.tasks import MarkStoriesAsUnread
 from apps.rss_feeds.tasks import ScheduleImmediateFetches
 from apps.social.models import (
     MActivity,
@@ -557,6 +558,10 @@ def load_feeds(request):
     folder_auto_mark_read = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
     folder_auto_mark_read_dict = {fs.folder_title: fs.to_json() for fs in folder_auto_mark_read}
 
+    from apps.media_player.models import MMediaPlaybackState
+
+    playback_state = MMediaPlaybackState.get_state_with_redis_position(user.pk)
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB feeds/socials%s"
@@ -580,6 +585,7 @@ def load_feeds(request):
         "folder_icons": folder_icons_dict,
         "feed_icons": feed_icons_dict,
         "folder_auto_mark_read": folder_auto_mark_read_dict,
+        "playback_state": playback_state,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -694,6 +700,10 @@ def load_feeds_flat(request):
     folder_auto_mark_read = MFolderAutoMarkRead.get_folder_settings_for_user(user.pk)
     folder_auto_mark_read_dict = {fs.folder_title: fs.to_json() for fs in folder_auto_mark_read}
 
+    from apps.media_player.models import MMediaPlaybackState
+
+    playback_state = MMediaPlaybackState.get_state_with_redis_position(user.pk)
+
     logging.user(
         request,
         "~FB~SBLoading ~FY%s~FB/~FM%s~FB/~FR%s~FB feeds/socials/inactive ~FMflat~FB%s%s"
@@ -729,6 +739,7 @@ def load_feeds_flat(request):
         "folder_icons": folder_icons_dict,
         "feed_icons": feed_icons_dict,
         "folder_auto_mark_read": folder_auto_mark_read_dict,
+        "playback_state": playback_state,
         "share_ext_token": user.profile.secret_token,
     }
     return data
@@ -946,6 +957,27 @@ def load_single_feed(request, feed_id):
     if page > 400:
         logging.user(request, "~BR~FK~SBOver page 400 on single feed: %s" % page)
         raise Http404
+
+    # Synchronous insta-fetch for try-feed mode, triggered by the frontend poll.
+    # First request returns fast (showing banners / "fetching" indicator), then
+    # poll_for_fetch_completion sends insta_fetch=1 to trigger the actual fetch.
+    insta_fetch = is_true(request.GET.get("insta_fetch", False))
+    if insta_fetch and not usersub and (
+        not feed.fetched_once
+        or feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    ):
+        original_title = feed.feed_title
+        feed = feed.update(force=True, compute_scores=False, verbose=True)
+        feed = Feed.get_by_id(feed.pk if feed else feed_id)
+        # RSS fetch may overwrite a good title (from PopularFeed) with a generic
+        # one like "search results". Restore from PopularFeed if available.
+        if feed and feed.feed_title != original_title:
+            from apps.discover.models import PopularFeed as PopularFeedModel
+
+            pf = PopularFeedModel.objects.filter(feed_id=feed.pk).first()
+            if pf and pf.title:
+                feed.feed_title = pf.title
+                feed.save(update_fields=["feed_title"])
 
     if query:
         if user.profile.is_premium:
@@ -1297,6 +1329,24 @@ def load_single_feed(request, feed_id):
         data["dupe_feed_id"] = dupe_feed_id
     if not usersub:
         data.update(feed.canonical())
+        # Override bad DB title with PopularFeed title for try-feeds
+        if not data.get("feed_title") or data["feed_title"] in ("[Untitled]", "Untitled"):
+            from apps.discover.models import PopularFeed as PopularFeedModel
+
+            pf = PopularFeedModel.objects.filter(feed_id=feed.pk).first()
+            if pf and pf.title:
+                data["feed_title"] = pf.title
+                if feed.feed_title != pf.title:
+                    feed.feed_title = pf.title
+                    feed.save(update_fields=["feed_title"])
+    # Signal frontend to poll for fetch completion on stale/unfetched try-feeds
+    if not usersub and (
+        not feed.fetched_once
+        or feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    ):
+        data["not_yet_fetched"] = True
+        data["fetched_once"] = False
+        data["stories"] = []
     # if not usersub and feed.num_subscribers <= 1:
     #     data = dict(code=-1, message="You must be subscribed to this feed.")
 
@@ -2672,6 +2722,7 @@ def mark_all_as_read(request):
         feeds = UserSubscription.objects.filter(user=request.user, feed_id__in=feed_ids)
 
     socialsubs = MSocialSubscription.objects.filter(user_id=request.user.pk)
+    updated_feed_ids = []
     for subtype in [feeds, socialsubs]:
         for sub in subtype:
             if days == 0:
@@ -2681,6 +2732,36 @@ def mark_all_as_read(request):
                     sub.needs_unread_recalc = True
                     sub.mark_read_date = read_date
                     sub.save()
+                    if hasattr(sub, "feed_id"):
+                        updated_feed_ids.append(sub.feed_id)
+
+    # Clean up manual unread entries (uU keys) for archive users.
+    # mark_stories_as_unread populates uU for stories beyond unread_cutoff,
+    # but mark_all_as_read needs to clear those that fall before the new read_date.
+    if request.user.profile.is_archive and updated_feed_ids:
+        r_story = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        read_date_ts = int(read_date.strftime("%s"))
+        if infrequent:
+            # Infrequent: read entries first, then remove from per-feed and all-feeds keys
+            read_pipeline = r_story.pipeline()
+            for feed_id in updated_feed_ids:
+                read_pipeline.zrangebyscore(f"uU:{request.user.pk}:{feed_id}", 0, read_date_ts)
+            results = read_pipeline.execute()
+            old_hashes = [h for result in results if result for h in result]
+            if old_hashes:
+                write_pipeline = r_story.pipeline()
+                for feed_id in updated_feed_ids:
+                    write_pipeline.zremrangebyscore(f"uU:{request.user.pk}:{feed_id}", 0, read_date_ts)
+                for h in old_hashes:
+                    write_pipeline.zrem(f"uU:{request.user.pk}", h)
+                write_pipeline.execute()
+        else:
+            # All feeds: blanket cleanup on all-feeds and per-feed keys
+            pipeline_story = r_story.pipeline()
+            pipeline_story.zremrangebyscore(f"uU:{request.user.pk}", 0, read_date_ts)
+            for feed_id in updated_feed_ids:
+                pipeline_story.zremrangebyscore(f"uU:{request.user.pk}:{feed_id}", 0, read_date_ts)
+            pipeline_story.execute()
 
     r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
     r.publish(request.user.username, "reload:feeds")
@@ -3038,6 +3119,66 @@ def mark_story_hash_as_unread(request):
             datas.append(data)
 
     return datas
+
+
+@ajax_login_required
+@json.json_view
+def mark_stories_as_unread(request):
+    try:
+        days = int(request.POST.get("days", 0))
+    except ValueError:
+        return dict(code=-1, message="Days parameter must be an integer.")
+
+    if days <= 0:
+        return dict(code=-1, message="Days must be a positive integer.")
+
+    profile = request.user.profile
+    if profile.is_archive:
+        max_days = 365
+    elif profile.is_premium:
+        max_days = settings.DAYS_OF_UNREAD
+    else:
+        max_days = settings.DAYS_OF_UNREAD_FREE
+
+    if days > max_days:
+        return dict(code=-1, message="Cannot mark more than %s days as unread on your plan." % max_days)
+
+    feed_id = request.POST.get("feed_id", None)
+    folder = request.POST.get("folder", None)
+
+    is_async = False
+    if feed_id:
+        try:
+            feed_id = int(feed_id)
+        except ValueError:
+            return dict(code=-1, message="Invalid feed_id.")
+        feed_ids = [feed_id]
+        total = UserSubscription.mark_stories_as_unread(request.user.pk, feed_ids, days)
+        logging.user(request, "~FY~SBUnread~SN %s stories in feed %s (%s days)" % (total, feed_id, days))
+    elif folder:
+        try:
+            usf = UserSubscriptionFolders.objects.get(user=request.user)
+            flat_folders = usf.flatten_folders()
+            feed_ids = flat_folders.get(folder, [])
+        except UserSubscriptionFolders.DoesNotExist:
+            feed_ids = []
+        if not feed_ids:
+            return dict(code=-1, message="No feeds found in folder '%s'." % folder)
+        MarkStoriesAsUnread.delay(request.user.pk, feed_ids, days)
+        is_async = True
+        logging.user(
+            request,
+            "~FY~SBUnread~SN stories in folder %s (%s feeds, %s days)" % (folder, len(feed_ids), days),
+        )
+    else:
+        feed_ids = list(UserSubscription.objects.filter(user=request.user).values_list("feed_id", flat=True))
+        if not feed_ids:
+            return dict(code=-1, message="No feeds found.")
+        MarkStoriesAsUnread.delay(request.user.pk, feed_ids, days)
+        is_async = True
+        logging.user(request, "~FY~SBUnread~SN stories in all %s feeds (%s days)" % (len(feed_ids), days))
+
+    return dict(code=1, **{"async": is_async})
 
 
 @ajax_login_required
@@ -3720,6 +3861,61 @@ def load_features(request):
         for f in features
     ]
     return features
+
+
+@json.json_view
+def find_story_by_permalink(request):
+    user = get_user(request)
+    url = request.GET.get("story_url", "").strip()
+
+    if not url:
+        return dict(code=-1, message="No URL provided.")
+
+    parsed = urllib.parse.urlparse(url)
+    if not parsed.scheme or not parsed.netloc:
+        return dict(code=-1, message="Invalid URL.")
+
+    from apps.archive_extension.matching import _get_url_variants
+
+    domain = parsed.netloc.lower()
+    if domain.startswith("www."):
+        domain = domain[4:]
+
+    # Find the canonical feed: both feed_address and feed_link must match the domain
+    feed = (
+        Feed.objects.filter(feed_address__icontains=domain, feed_link__icontains=domain)
+        .exclude(feed_address__icontains="/social/rss/")
+        .order_by("-num_subscribers")
+        .first()
+    )
+    if not feed:
+        return dict(code=-1, message="No feed found for this URL.")
+
+    # Search for the story in this single feed
+    story = None
+    url_variants = _get_url_variants(url)
+    for variant in url_variants:
+        story = MStory.objects(story_permalink=variant, story_feed_id=feed.pk).first()
+        if story:
+            break
+    if not story:
+        for variant in url_variants:
+            story = MStory.objects(story_guid=variant, story_feed_id=feed.pk).first()
+            if story:
+                break
+
+    if not story:
+        return dict(code=-1, message="Story not found.")
+
+    is_subscribed = UserSubscription.objects.filter(user=user, feed_id=feed.pk, active=True).exists()
+
+    return dict(
+        code=1,
+        story_hash=story.story_hash,
+        story_feed_id=feed.pk,
+        is_subscribed=is_subscribed,
+        feed=feed.canonical(),
+    )
 
 
 @ajax_login_required

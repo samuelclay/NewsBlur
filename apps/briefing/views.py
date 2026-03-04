@@ -8,7 +8,6 @@ import redis
 from django.conf import settings
 from django.utils.encoding import smart_str
 
-from apps.briefing.activity import RUserActivity
 from apps.briefing.models import (
     BRIEFING_SECTION_DEFINITIONS,
     DEFAULT_SECTIONS,
@@ -200,7 +199,12 @@ def load_briefing_stories(request):
             get_briefing_models_for_frontend,
         )
 
-        TIME_DISPLAY_MAP = {"08:00": "morning", "12:30": "afternoon", "13:00": "afternoon", "17:00": "evening"}
+        TIME_DISPLAY_MAP = {
+            "08:30": "morning",
+            "12:30": "afternoon",
+            "13:00": "afternoon",
+            "17:00": "evening",
+        }
         preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
         result["preferences"] = {
             "frequency": prefs.frequency,
@@ -244,7 +248,7 @@ def briefing_preferences(request):
         if preferred_time == "auto":
             prefs.preferred_time = None
         elif preferred_time in ("morning", "afternoon", "evening"):
-            time_map = {"morning": "08:00", "afternoon": "12:30", "evening": "17:00"}
+            time_map = {"morning": "08:30", "afternoon": "12:30", "evening": "17:00"}
             prefs.preferred_time = time_map[preferred_time]
         elif preferred_time:
             try:
@@ -336,7 +340,7 @@ def briefing_preferences(request):
         prefs.read_filter = "focus"
         prefs.save()
 
-    TIME_DISPLAY_MAP = {"08:00": "morning", "12:30": "afternoon", "13:00": "afternoon", "17:00": "evening"}
+    TIME_DISPLAY_MAP = {"08:30": "morning", "12:30": "afternoon", "13:00": "afternoon", "17:00": "evening"}
     preferred_time_display = TIME_DISPLAY_MAP.get(prefs.preferred_time, prefs.preferred_time) or "morning"
 
     from apps.ask_ai.providers import (
@@ -372,45 +376,6 @@ def briefing_preferences(request):
         "briefing_model": prefs.briefing_model or DEFAULT_BRIEFING_MODEL,
         "briefing_models": get_briefing_models_for_frontend(),
         "folders": folders,
-    }
-
-
-@ajax_login_required
-@json.json_view
-def briefing_status(request):
-    """
-    GET /briefing/status — Return briefing generation status and activity data.
-    """
-    user = request.user
-    if not user.is_staff:
-        return {"code": -1, "message": "Daily Briefing is currently staff-only."}
-    prefs = MBriefingPreferences.get_or_create(user.pk)
-
-    typical_hour = RUserActivity.get_typical_reading_hour(user.pk)
-    histogram = RUserActivity.get_activity_histogram(user.pk)
-
-    latest_briefing = MBriefing.latest_for_user(user.pk, limit=1)
-    last_generated = None
-    if latest_briefing:
-        last_generated = (
-            latest_briefing[0].generated_at.isoformat() if latest_briefing[0].generated_at else None
-        )
-
-    next_generation = None
-    if prefs.enabled:
-        next_gen_utc = RUserActivity.get_briefing_generation_time(user.pk, user.profile.timezone)
-        if next_gen_utc:
-            next_generation = next_gen_utc.isoformat()
-
-    return {
-        "enabled": prefs.enabled,
-        "frequency": prefs.frequency,
-        "preferred_time": prefs.preferred_time,
-        "typical_reading_hour": typical_hour,
-        "activity_histogram": histogram,
-        "last_generated": last_generated,
-        "next_generation": next_generation,
-        "briefing_feed_id": prefs.briefing_feed_id,
     }
 
 

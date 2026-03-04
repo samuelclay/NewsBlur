@@ -297,7 +297,8 @@ class FetchFeed:
                 )
             self.fpf = feedparser.parse(processed_facebook_feed)
         elif self.feed.is_forbidden:
-            # 10% chance to turn off is_forbidden flag before fetching
+            # 10% chance to turn off is_forbidden flag and fetch normally,
+            # ensuring we constantly re-check whether is_forbidden is still necessary
             if random.random() <= 0.1:
                 logging.debug(
                     "   ---> [%-30s] ~FG~SBTurning off forbidden flag (~FB10%%~FG chance) and fetching normally"
@@ -306,7 +307,6 @@ class FetchFeed:
                 self.feed.is_forbidden = False
                 self.feed = self.feed.save()
                 # Skip this branch and continue with normal fetch flow
-                # We don't need to do anything else here - just let the normal fetch flow continue
             else:
                 # Regular forbidden feed fetch
                 forbidden_status, forbidden_feed = self.fetch_forbidden()
@@ -402,6 +402,30 @@ class FetchFeed:
                             headers=self.feed.fetch_headers(fake=True),
                             timeout=15,
                         )
+
+                # Detect bot challenge pages (e.g., Anubis) that return 200 + text/html
+                # instead of RSS/XML. The fake browser UA in our default User-Agent
+                # triggers these challenges, so retry with just the plain NewsBlur UA.
+                if raw_feed and raw_feed.status_code == 200:
+                    response_ct = raw_feed.headers.get("Content-Type", "").lower()
+                    if "text/html" in response_ct:
+                        body_preview = raw_feed.text[:2000].lower()
+                        is_bot_challenge = (
+                            "not a bot" in body_preview
+                            or "anubis" in body_preview
+                            or "checking your browser" in body_preview
+                            or "cf-browser-verification" in body_preview
+                        )
+                        if is_bot_challenge:
+                            logging.debug(
+                                "   ***> [%-30s] ~FRBot challenge page detected, retrying without browser UA suffix"
+                                % (self.feed.log_title[:30])
+                            )
+                            raw_feed = requests.get(
+                                self.feed.feed_address,
+                                headers=self.feed.fetch_headers(plain=True),
+                                timeout=15,
+                            )
 
                 json_feed_content_type = any(
                     json_feed in raw_feed.headers.get("Content-Type", "")
@@ -715,6 +739,28 @@ class FetchFeed:
             return None, None
 
     def fetch_forbidden(self, js_scrape=False):
+        # First, try plain UA without browser suffix. Feeds may have been
+        # incorrectly marked forbidden because the browser UA triggered a
+        # bot challenge (e.g., Anubis), while the plain feed fetcher UA works fine.
+        try:
+            plain_resp = requests.get(
+                self.feed.feed_address,
+                headers=self.feed.fetch_headers(plain=True),
+                timeout=15,
+            )
+            if plain_resp and plain_resp.status_code == 200:
+                content_type = plain_resp.headers.get("Content-Type", "").lower()
+                if "xml" in content_type or "rss" in content_type or "atom" in content_type:
+                    logging.debug(
+                        "   ---> [%-30s] ~FGPlain UA fetch succeeded for forbidden feed, clearing forbidden flag"
+                        % (self.feed.log_title[:30])
+                    )
+                    self.feed.is_forbidden = False
+                    self.feed = self.feed.save()
+                    return plain_resp.status_code, smart_str(plain_resp.content)
+        except Exception:
+            pass
+
         # Try ScrapingBee first
         status_code, body = self.fetch_scrapingbee(js_scrape=js_scrape)
         if status_code and (body or status_code == 304):
@@ -786,16 +832,20 @@ class ProcessFeed:
 
         self.feed_entries = self.fpf.entries
 
-        # Check if this is a high-volume feed that can handle more stories
+        # Check if caller requested a specific max_stories limit (e.g. bootstrap_popular_feeds)
         max_entries = MAX_ENTRIES_TO_PROCESS
-        feed_address_lower = self.feed.feed_address.lower()
-        for high_volume_url in HIGH_VOLUME_FEED_URLS:
-            if high_volume_url in feed_address_lower:
-                max_entries = MAX_ENTRIES_HIGH_VOLUME
-                logging.debug(
-                    f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {max_entries} stories"
-                )
-                break
+        if self.options.get("max_stories"):
+            max_entries = self.options["max_stories"]
+        else:
+            # Check if this is a high-volume feed that can handle more stories
+            feed_address_lower = self.feed.feed_address.lower()
+            for high_volume_url in HIGH_VOLUME_FEED_URLS:
+                if high_volume_url in feed_address_lower:
+                    max_entries = MAX_ENTRIES_HIGH_VOLUME
+                    logging.debug(
+                        f"   ---> [{self.feed.log_title[:30]:<30}] High-volume feed detected ({high_volume_url}), allowing up to {max_entries} stories"
+                    )
+                    break
 
         # If there are more than max_entries, we should sort the entries in date descending order and cut them off
         if len(self.feed_entries) > max_entries:

@@ -641,6 +641,10 @@
     }];
 }
 
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+    NSLog(@" -> Failed to register for APNS: %@", error);
+}
+
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
     return [self openURL:url];
 }
@@ -1583,6 +1587,22 @@
         sheet.preferredCornerRadius = 12.0;
 
         [navController presentViewController:discoverNavController animated:YES completion:nil];
+    }
+}
+
+- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId {
+    [self openDiscoverFeedsDialogFromSettingsButton:feedId sourceView:self.feedDetailViewController.storyTitlesHeaderBar.discoverPill];
+}
+
+- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId sourceView:(UIView *)sourceView {
+    if (@available(iOS 15.0, *)) {
+        if (!self.isPhone) {
+            DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
+
+            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:sourceView sourceRect:sourceView.bounds];
+        } else {
+            [self openDiscoverFeedsDialog:feedId];
+        }
     }
 }
 

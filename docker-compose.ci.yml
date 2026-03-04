@@ -2,11 +2,13 @@
 # ES 8.x requires proper ownership of its data directory, which is problematic
 # with bind mounts in CI. Use a different data path that doesn't have a bind mount.
 
+
 services:
   newsblur_db_elasticsearch:
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms384m -Xmx384m"
+      - "CLI_JAVA_OPTS="
       - cluster.routing.allocation.disk.threshold_enabled=false
       - xpack.security.enabled=false
       - bootstrap.memory_lock=false

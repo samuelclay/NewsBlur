@@ -46,11 +46,13 @@ jobs:
           mkdir -p docker/volumes/db_mongo
           mkdir -p docker/volumes/db_postgres
           mkdir -p docker/volumes/db_redis
+          mkdir -p docker/volumes/elasticsearch
           chmod -R 777 docker/volumes
 
       - name: Start services
         run: |
           # Retry docker compose up in case of transient network issues
+          # Use CI override to remove ARM-specific JVM flags (UseSVE) that crash on x86_64
           for i in 1 2 3; do
             docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d && break
             echo "Retry $i for docker compose up..."
@@ -66,6 +68,8 @@ jobs:
           docker ps -a
           echo "MongoDB logs:"
           docker logs newsblur_db_mongo || true
+          echo "Elasticsearch logs:"
+          docker logs newsblur_db_elasticsearch || true
 
       - name: Wait for services to be ready
         run: |
@@ -76,7 +80,7 @@ jobs:
           echo "Waiting for Redis..."
           timeout 60 bash -c 'until docker exec newsblur_db_redis redis-cli -p 6579 ping; do sleep 2; done'
           echo "Waiting for Elasticsearch..."
-          timeout 120 bash -c 'until curl -s http://localhost:9200/_cluster/health | grep -q "status"; do sleep 2; done'
+          timeout 120 bash -c 'until docker exec newsblur_db_elasticsearch curl -s http://localhost:9200/_cluster/health | grep -q status; do sleep 3; done'
           echo "All services ready"
 
       - name: Run migrations

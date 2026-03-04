@@ -69,6 +69,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.folder_icons = {};
         this.feed_icons = {};
         this.folder_auto_mark_read = {};
+        this.playback_state = null;
         this.flags = {
             'favicons_fetching': false,
             'has_chosen_feeds': false
@@ -403,6 +404,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         $.isFunction(callback) && callback();
     },
 
+    mark_stories_as_unread: function (days, feed_id, folder, callback, error_callback) {
+        var data = { days: days };
+        if (feed_id) data.feed_id = feed_id;
+        if (folder) data.folder = folder;
+        this.make_request('/reader/mark_stories_as_unread', data, callback, error_callback);
+    },
+
     mark_story_as_starred: function (story_id, callback) {
         var self = this;
         var story = this.get_story(story_id);
@@ -670,6 +678,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.folder_icons = subscriptions.folder_icons || {};
             self.feed_icons = subscriptions.feed_icons || {};
             self.folder_auto_mark_read = subscriptions.folder_auto_mark_read || {};
+            self.playback_state = subscriptions.playback_state || null;
 
             if (selected && self.feeds.get(selected)) {
                 self.feeds.get(selected).set('selected', true);
@@ -796,11 +805,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.feed_authors = data.feed_authors || {};
                 this.active_feed = this.get_feed(feed_id);
                 if (this.active_feed) {
-                    this.active_feed.set({
+                    var feed_updates = {
                         feed_title: data.feed_title || this.active_feed.get('feed_title'),
                         updated: data.updated || this.active_feed.get('updated'),
                         feed_address: data.feed_address || this.active_feed.get('feed_address')
-                    });
+                    };
+                    if ('not_yet_fetched' in data) {
+                        feed_updates.not_yet_fetched = data.not_yet_fetched;
+                        feed_updates.fetched_once = data.fetched_once;
+                    }
+                    this.active_feed.set(feed_updates);
                 }
                 this.feed_id = feed_id;
                 this.starred_stories = data.starred_stories;
@@ -1564,6 +1578,38 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
 
+    analyze_webfeed: function (url, request_id, callback, story_hint) {
+        var params = {
+            'url': url,
+            'request_id': request_id
+        };
+        if (story_hint) {
+            params['story_hint'] = story_hint;
+        }
+        this.make_request('/webfeed/analyze', params, callback, function (data) {
+            callback({ 'code': -1, 'message': data.message || 'Failed to analyze page.' });
+        });
+    },
+
+    subscribe_webfeed: function (url, variant_index, folder, options, callback) {
+        this.make_request('/webfeed/subscribe', _.extend({
+            'url': url,
+            'variant_index': variant_index,
+            'folder': folder
+        }, options), callback, function (data) {
+            callback({ 'code': -1, 'message': data.message || 'Failed to subscribe to web feed.' });
+        });
+    },
+
+    reanalyze_webfeed: function (feed_id, request_id, callback) {
+        this.make_request('/webfeed/reanalyze', {
+            'feed_id': feed_id,
+            'request_id': request_id
+        }, callback, function (data) {
+            callback({ 'code': -1, 'message': data.message || 'Failed to re-analyze web feed.' });
+        });
+    },
+
     save_add_url: function (url, folder, callback, options) {
         options = _.extend({ 'auto_active': true }, options);
         this.make_request('/reader/add_url/', {
@@ -1759,6 +1805,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
     get_features_page: function (page, callback, error_callback) {
         this.make_request('/reader/features', { 'page': page }, callback, error_callback, {
+            'ajax_group': 'queue',
+            request_type: 'GET'
+        });
+    },
+
+    find_story_by_permalink: function (story_url, callback, error_callback) {
+        this.make_request('/reader/find_story_by_permalink', {
+            'story_url': story_url
+        }, callback, error_callback, {
             'ajax_group': 'queue',
             request_type: 'GET'
         });
@@ -2071,7 +2126,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     search_for_feeds: function (query, callback) {
-        this.make_request('/rss_feeds/feed_autocomplete', {
+        this.make_request('/discover/autocomplete', {
             'query': query,
             'format': 'full',
             'v': 2
@@ -2558,6 +2613,97 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
             story.set('intelligence', intelligence, options);
         }, this));
+    },
+
+    // ===================
+    // = Media Playback  =
+    // ===================
+
+    save_playback_state: function (state_data, callback, error_callback) {
+        this.make_request('/media_player/save_playback_state', state_data, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    add_to_media_queue: function (media_item, callback, error_callback) {
+        this.make_request('/media_player/add_to_media_queue', media_item, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    remove_from_media_queue: function (story_hash, media_url, callback, error_callback) {
+        this.make_request('/media_player/remove_from_media_queue', {
+            story_hash: story_hash,
+            media_url: media_url
+        }, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    reorder_media_queue: function (queue_order, callback, error_callback) {
+        this.make_request('/media_player/reorder_media_queue', {
+            queue_order: JSON.stringify(queue_order)
+        }, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    clear_playback_state: function (callback, error_callback) {
+        this.make_request('/media_player/clear_playback_state', {}, _.bind(function (response) {
+            this.playback_state = null;
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    clear_media_queue: function (callback, error_callback) {
+        this.make_request('/media_player/clear_media_queue', {}, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    add_to_media_history: function (media_item, callback, error_callback) {
+        this.make_request('/media_player/add_to_media_history', media_item, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    remove_from_media_history: function (story_hash, media_url, callback, error_callback) {
+        this.make_request('/media_player/remove_from_media_history', {
+            story_hash: story_hash,
+            media_url: media_url
+        }, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
+    },
+
+    clear_media_history: function (callback, error_callback) {
+        this.make_request('/media_player/clear_media_history', {}, _.bind(function (response) {
+            if (response.playback_state) {
+                this.playback_state = response.playback_state;
+            }
+            callback && callback(response);
+        }, this), error_callback);
     }
 
 });

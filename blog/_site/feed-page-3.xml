@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-02-03T19:57:01-05:00</updated>
+  <updated>2026-03-04T12:33:56-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,72 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">A heavier lifting Android app</title>
+    <link href="https://blog.newsblur.com/2016/04/09/a-heavier-lifting-android-app/" rel="alternate" type="text/html" title="A heavier lifting Android app" />
+    <published>2016-04-09T12:56:12-04:00</published>
+    <updated>2016-04-09T12:56:12-04:00</updated>
+    <id>https://blog.newsblur.com/2016/04/09/a-heavier-lifting-android-app</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/04/09/a-heavier-lifting-android-app/">
+      <![CDATA[<p>As performance updates go, this month’s upgrade to v4.8.0 of the NewsBlur Android app is a doozy. This one’s specifically made for those users with a heavier load of feeds.</p>
+
+<p>If you have over a hundred feeds, everything will suddenly feel smooth, just like it already does for those with only a few dozen subscriptions. And if you find yourself climbing up to several hundred feeds from only a dozen, you’ll be in good company.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android_heavy_lifting.png" alt="" /></p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[As performance updates go, this month’s upgrade to v4.8.0 of the NewsBlur Android app is a doozy. This one’s specifically made for those users with a heavier load of feeds.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Tracking story changes with NewsBlur</title>
+    <link href="https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur/" rel="alternate" type="text/html" title="Tracking story changes with NewsBlur" />
+    <published>2016-03-03T12:55:11-05:00</published>
+    <updated>2016-03-03T12:55:11-05:00</updated>
+    <id>https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/03/03/tracking-story-changes-with-newsblur/">
+      <![CDATA[<p>NewsBlur has been tracking story changes for a long, long time now (first mentioned <a href="http://blog.newsblur.com/2021/06/21/2012-01-16-2011-year-in-review.html">on the blog five years ago in April 2011</a>). But I felt it was time for an upgrade and today I’m pleased to launch some changes to the story tracker.</p>
+
+<p>If you use a third-party client to read NewsBlur, like Reeder, ReadKit, or Unread, you may have noticed strange <ins style="text-decoration: underline;color: #006600">revision</ins> change highlighters that cross out what gets edited out by a publisher and highlights what gets added.</p>
+
+<p>This is great, except you probably don’t want this turned on for every single story.</p>
+
+<p>By default you will now only see the final edit of the story. And if you are on the web you will see a new Show Story Changes button in the heading of any story that has seen changes.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/show_changes_button.png" alt="" /></p>
+
+<p>You can also toggle back and forth between showing and hiding story changes, so you can take a peek behind the curtains and still come back to the read the story in its final, finished form.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/show_changes.png" alt="" /></p>
+
+<p>This should relieve the burden of having to implement a story change tracker in third-party clients when almost no other news readers have this feature. So third-party reading app makers neglected to include support, leading to a less than ideal NewsBlur reading experience. No longer!</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[NewsBlur has been tracking story changes for a long, long time now (first mentioned on the blog five years ago in April 2011). But I felt it was time for an upgrade and today I’m pleased to launch some changes to the story tracker.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Story thumbnails for story titles</title>
@@ -933,66 +999,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[Like it says on the tin, you can now go back and see what you’ve read with the Recently Read Stories feed. It’s on the bottom of your feed list, just above the saved stories.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Temporarily mute sites</title>
-    <link href="https://blog.newsblur.com/2014/06/17/temporarily-mute-sites/" rel="alternate" type="text/html" title="Temporarily mute sites" />
-    <published>2014-06-17T12:09:59-04:00</published>
-    <updated>2014-06-17T12:09:59-04:00</updated>
-    <id>https://blog.newsblur.com/2014/06/17/temporarily-mute-sites</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/06/17/temporarily-mute-sites/">
-      <![CDATA[<p>You can now temporarily turn off sites by going to Manage &gt; Mute Sites. This is for those feeds you want to keep but ignore for a while.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/mute_sites.png" alt="" /></p>
-
-<p>I use this to mute craigslist feeds that I no longer want to see in my unread stories list, but I want to keep just in case I need to perform a specific craigslist search without having to go through the whole process of recreating the RSS feed.</p>
-
-<p>It’s also useful for subscribing to high volume sites and only reading them when you want to know what’s happening but without having to remember to re-subscribe. Such a simple feature but with a ton of utility.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[You can now temporarily turn off sites by going to Manage &gt; Mute Sites. This is for those feeds you want to keep but ignore for a while.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Use the new Saved Stories view to find saved stories by site</title>
-    <link href="https://blog.newsblur.com/2014/06/03/use-the-new-saved-stories-view-to-find-saved/" rel="alternate" type="text/html" title="Use the new Saved Stories view to find saved stories by site" />
-    <published>2014-06-03T15:40:00-04:00</published>
-    <updated>2014-06-03T15:40:00-04:00</updated>
-    <id>https://blog.newsblur.com/2014/06/03/use-the-new-saved-stories-view-to-find-saved</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/06/03/use-the-new-saved-stories-view-to-find-saved/">
-      <![CDATA[<p>After launching <a href="http://blog.newsblur.com/2021/06/21/2014-01-14-saved-story-tagging.html">Saved Story Tagging</a> earlier this year, I realized that there is an inherent categorization to every saved story: the site. But instead of just allowing you to search by site, I created a new view that you can now use to see stories saved by site.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/saved_stories_view.png" alt="" /></p>
-
-<p>The neat thing about this new view is that it works for folders, too. If you click on a containing folder, you’ll see the saved stories from all of the sites inside that folder. And thanks to last month’s full text search, you can search all of these saved stories.</p>
-
-<p>And you should expect that these features will eventually make their way to iOS and Android.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[After launching Saved Story Tagging earlier this year, I realized that there is an inherent categorization to every saved story: the site. But instead of just allowing you to search by site, I created a new view that you can now use to see stories saved by site.
 ]]>
     </summary>
     

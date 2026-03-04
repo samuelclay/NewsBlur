@@ -14,7 +14,6 @@ from apps.analyzer.models import (
     MClassifierTag,
     MClassifierTitle,
 )
-from apps.briefing.activity import RUserActivity
 from apps.briefing.models import (
     BRIEFING_SECTION_DEFINITIONS,
     DEFAULT_SECTIONS,
@@ -1591,10 +1590,10 @@ class Test_Views(BriefingTestCase):
         data = json.decode(response.content)
         self.assertEqual(data["preferred_time"], "morning")
         prefs = MBriefingPreferences.objects.get(user_id=self.user.pk)
-        self.assertEqual(prefs.preferred_time, "08:00")
+        self.assertEqual(prefs.preferred_time, "08:30")
 
     def test_post_preferred_time_auto(self):
-        self.make_prefs(preferred_time="08:00")
+        self.make_prefs(preferred_time="08:30")
         response = self.client.post(reverse("briefing-preferences"), {"preferred_time": "auto"})
         data = json.decode(response.content)
         self.assertEqual(data["preferred_time"], "morning")
@@ -1710,48 +1709,6 @@ class Test_Views(BriefingTestCase):
         response = self.client.get(reverse("briefing-preferences"))
         data = json.decode(response.content)
         self.assertEqual(data["preferred_time"], "afternoon")
-
-    # --- briefing_status ---
-
-    @patch("apps.briefing.views.RUserActivity")
-    def test_status_returns_all_fields(self, mock_activity):
-        mock_activity.get_typical_reading_hour.return_value = 9
-        mock_activity.get_activity_histogram.return_value = {9: 15, 10: 8}
-        mock_activity.get_briefing_generation_time.return_value = datetime.datetime(2025, 1, 15, 13, 30)
-
-        self.make_prefs(enabled=True)
-        response = self.client.get(reverse("briefing-status"))
-        data = json.decode(response.content)
-        self.assertIn("enabled", data)
-        self.assertIn("frequency", data)
-        self.assertIn("typical_reading_hour", data)
-        self.assertIn("activity_histogram", data)
-        self.assertIn("next_generation", data)
-
-    @patch("apps.briefing.views.RUserActivity")
-    def test_status_last_generated_from_briefing(self, mock_activity):
-        mock_activity.get_typical_reading_hour.return_value = None
-        mock_activity.get_activity_histogram.return_value = {}
-        mock_activity.get_briefing_generation_time.return_value = None
-
-        gen_time = datetime.datetime(2025, 1, 15, 10, 0, 0)
-        self.make_briefing(generated_at=gen_time)
-        self.make_prefs(enabled=False)
-
-        response = self.client.get(reverse("briefing-status"))
-        data = json.decode(response.content)
-        self.assertIsNotNone(data["last_generated"])
-        self.assertIn("2025-01-15", data["last_generated"])
-
-    @patch("apps.briefing.views.RUserActivity")
-    def test_status_next_generation_none_when_disabled(self, mock_activity):
-        mock_activity.get_typical_reading_hour.return_value = None
-        mock_activity.get_activity_histogram.return_value = {}
-
-        self.make_prefs(enabled=False)
-        response = self.client.get(reverse("briefing-status"))
-        data = json.decode(response.content)
-        self.assertIsNone(data["next_generation"])
 
     # --- generate_briefing ---
 
@@ -2249,113 +2206,3 @@ class Test_Tasks(BriefingTestCase):
 
 
 # ---------------------------------------------------------------------------
-# 6. Test_Activity — apps/briefing/activity.py
-# ---------------------------------------------------------------------------
-
-
-class Test_Activity(TestCase):
-    """Tests for apps/briefing/activity.py (Redis-backed activity tracking)."""
-
-    @patch("apps.briefing.activity.redis.Redis")
-    def test_record_increments_correct_hour(self, mock_redis_cls):
-        mock_r = MagicMock()
-        mock_redis_cls.return_value = mock_r
-
-        RUserActivity.record_activity(42, "America/New_York")
-        mock_r.hincrby.assert_called_once()
-        call_args = mock_r.hincrby.call_args[0]
-        self.assertEqual(call_args[0], "uAct:42")
-        self.assertTrue(call_args[1].startswith("hour_"))
-
-    @patch("apps.briefing.activity.redis.Redis")
-    def test_record_key_format(self, mock_redis_cls):
-        mock_r = MagicMock()
-        mock_redis_cls.return_value = mock_r
-
-        RUserActivity.record_activity(123, "UTC")
-        call_args = mock_r.hincrby.call_args[0]
-        self.assertEqual(call_args[0], "uAct:123")
-
-    @patch("apps.briefing.activity.redis.Redis")
-    def test_histogram_basic(self, mock_redis_cls):
-        mock_r = MagicMock()
-        mock_redis_cls.return_value = mock_r
-        mock_r.hgetall.return_value = {
-            b"hour_9": b"15",
-            b"hour_10": b"8",
-            b"hour_14": b"12",
-        }
-
-        histogram = RUserActivity.get_activity_histogram(42)
-        self.assertEqual(histogram[9], 15)
-        self.assertEqual(histogram[10], 8)
-        self.assertEqual(histogram[14], 12)
-
-    @patch("apps.briefing.activity.redis.Redis")
-    def test_histogram_empty(self, mock_redis_cls):
-        mock_r = MagicMock()
-        mock_redis_cls.return_value = mock_r
-        mock_r.hgetall.return_value = {}
-
-        histogram = RUserActivity.get_activity_histogram(42)
-        self.assertEqual(histogram, {})
-
-    @patch("apps.briefing.activity.redis.Redis")
-    def test_typical_hour_returns_peak(self, mock_redis_cls):
-        mock_r = MagicMock()
-        mock_redis_cls.return_value = mock_r
-        mock_r.hgetall.return_value = {
-            b"hour_8": b"5",
-            b"hour_9": b"20",
-            b"hour_10": b"3",
-        }
-
-        hour = RUserActivity.get_typical_reading_hour(42)
-        self.assertEqual(hour, 9)
-
-    @patch("apps.briefing.activity.redis.Redis")
-    def test_typical_hour_insufficient_data(self, mock_redis_cls):
-        mock_r = MagicMock()
-        mock_redis_cls.return_value = mock_r
-        mock_r.hgetall.return_value = {b"hour_9": b"3"}
-
-        hour = RUserActivity.get_typical_reading_hour(42)
-        self.assertIsNone(hour)
-
-    @patch("apps.briefing.activity.redis.Redis")
-    def test_typical_hour_empty(self, mock_redis_cls):
-        mock_r = MagicMock()
-        mock_redis_cls.return_value = mock_r
-        mock_r.hgetall.return_value = {}
-
-        hour = RUserActivity.get_typical_reading_hour(42)
-        self.assertIsNone(hour)
-
-    @patch("apps.briefing.activity.RUserActivity.get_typical_reading_hour")
-    @patch("apps.briefing.activity.redis.Redis")
-    def test_generation_time_with_typical(self, mock_redis_cls, mock_typical):
-        mock_typical.return_value = 9
-
-        result = RUserActivity.get_briefing_generation_time(42, "America/New_York")
-        # tests.py: Should be 30 min before 9 AM ET, converted to UTC
-        self.assertIsInstance(result, datetime.datetime)
-        self.assertIsNone(result.tzinfo)
-
-    @patch("apps.briefing.activity.RUserActivity.get_typical_reading_hour")
-    @patch("apps.briefing.activity.redis.Redis")
-    def test_generation_time_default(self, mock_redis_cls, mock_typical):
-        mock_typical.return_value = None
-
-        result = RUserActivity.get_briefing_generation_time(42, "America/New_York")
-        # tests.py: Should fall back to DEFAULT_HOUR (7 AM) minus 30 min
-        self.assertIsInstance(result, datetime.datetime)
-
-    @patch("apps.briefing.activity.RUserActivity.get_typical_reading_hour")
-    @patch("apps.briefing.activity.redis.Redis")
-    def test_generation_time_timezone(self, mock_redis_cls, mock_typical):
-        mock_typical.return_value = 9
-
-        result_ny = RUserActivity.get_briefing_generation_time(42, "America/New_York")
-        result_tokyo = RUserActivity.get_briefing_generation_time(42, "Asia/Tokyo")
-        # tests.py: Same local hour (9 AM) in different timezones should produce different UTC times
-        self.assertNotEqual(result_ny, result_tokyo)
