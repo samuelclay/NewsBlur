@@ -1590,6 +1590,22 @@
     }
 }
 
+- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId {
+    [self openDiscoverFeedsDialogFromSettingsButton:feedId sourceView:self.feedDetailViewController.storyTitlesHeaderBar.discoverPill];
+}
+
+- (void)openDiscoverFeedsDialogFromSettingsButton:(NSString *)feedId sourceView:(UIView *)sourceView {
+    if (@available(iOS 15.0, *)) {
+        if (!self.isPhone) {
+            DiscoverFeedsViewController *discoverVC = [[DiscoverFeedsViewController alloc] initWithFeedId:feedId];
+
+            [self showPopoverWithViewController:discoverVC contentSize:CGSizeMake(500, 550) sourceView:sourceView sourceRect:sourceView.bounds];
+        } else {
+            [self openDiscoverFeedsDialog:feedId];
+        }
+    }
+}
+
 - (void)openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:(NSArray *)feedIds {
     [self openDiscoverFeedsDialogFromSettingsButtonWithFeedIds:feedIds sourceView:self.feedDetailViewController.storyTitlesHeaderBar.discoverPill];
 }

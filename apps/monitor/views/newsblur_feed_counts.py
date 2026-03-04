@@ -35,6 +35,11 @@ class FeedCounts(View):
             push_feeds = PushSubscription.objects.filter(verified=True).count()
             MStatistics.set("munin:push_feeds", push_feeds, 60 * 60 * 12)
 
+        forbidden_feeds = MStatistics.get("munin:forbidden_feeds")
+        if not forbidden_feeds:
+            forbidden_feeds = Feed.objects.filter(is_forbidden=True).count()
+            MStatistics.set("munin:forbidden_feeds", forbidden_feeds, 60 * 60 * 12)
+
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
 
         data = {
@@ -44,6 +49,7 @@ class FeedCounts(View):
             "duplicate_feeds": duplicate_feeds,
             "active_feeds": active_feeds,
             "push_feeds": push_feeds,
+            "forbidden_feeds": forbidden_feeds,
         }
         chart_name = "feed_counts"
         chart_type = "counter"
