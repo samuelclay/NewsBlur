@@ -6989,15 +6989,13 @@
 
         open_story_by_permalink: function (url) {
             var self = this;
-            var fallback_window = window.open('', '_blank');
 
             this.model.find_story_by_permalink(url, function (data) {
                 if (data.code !== 1) {
-                    fallback_window.location = url;
+                    window.open(url, '_blank');
                     return;
                 }
 
-                fallback_window.close();
                 var feed_id = data.story_feed_id;
                 var story_hash = data.story_hash;
 
@@ -7010,7 +7008,7 @@
                     });
                 }
             }, function () {
-                fallback_window.location = url;
+                window.open(url, '_blank');
             });
         },
 
