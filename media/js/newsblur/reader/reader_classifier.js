@@ -102,7 +102,9 @@ var classifier_prototype = {
         this.make_trainer_intro();
         this.get_feeds_trainer();
         this.handle_cancel();
-        this.open_modal();
+        this.open_modal(_.bind(function () {
+            this.resize_modal();
+        }, this));
 
         this.model.preference('has_trained_intelligence', true);
         NEWSBLUR.reader.check_hide_getting_started();
@@ -128,6 +130,7 @@ var classifier_prototype = {
         this.handle_cancel();
         this.open_modal(_.bind(function () {
             this.fit_classifiers();
+            this.resize_modal();
         }, this));
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
 
@@ -159,6 +162,7 @@ var classifier_prototype = {
         this.handle_cancel();
         this.open_modal(_.bind(function () {
             this.fit_classifiers();
+            this.resize_modal();
             // Initialize Tipsy tooltips for help icons (now that modal is in DOM)
             this.$modal.find('.NB-classifier-help-icon').tipsy({
                 gravity: 's',
@@ -270,6 +274,7 @@ var classifier_prototype = {
                 this.$modal.parent().scrollTop(0);
                 callback && callback();
                 this.fit_classifiers();
+                this.resize_modal();
             }
         }, this), 125);
     },
@@ -277,6 +282,17 @@ var classifier_prototype = {
     fit_classifiers: function () {
         // CSS flexbox now handles the layout - this function is kept for compatibility
         // but doesn't need to manually calculate heights anymore
+    },
+
+    resize_modal: function () {
+        var MAX_HEIGHT = 800;
+        var available_height = window.innerHeight - 80;
+        var target_height = Math.min(MAX_HEIGHT, available_height);
+        var $container = this.$modal.closest('#simplemodal-container.NB-classifier-container');
+        if ($container.length) {
+            $container.css('height', target_height);
+        }
+        this.resize();
     },
 
     get_feeds_trainer: function () {
