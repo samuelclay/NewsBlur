@@ -3863,6 +3863,61 @@ def load_features(request):
     return features
 
 
+@json.json_view
+def find_story_by_permalink(request):
+    user = get_user(request)
+    url = request.GET.get("story_url", "").strip()
+
+    if not url:
+        return dict(code=-1, message="No URL provided.")
+
+    parsed = urllib.parse.urlparse(url)
+    if not parsed.scheme or not parsed.netloc:
+        return dict(code=-1, message="Invalid URL.")
+
+    from apps.archive_extension.matching import _get_url_variants
+
+    domain = parsed.netloc.lower()
+    if domain.startswith("www."):
+        domain = domain[4:]
+
+    # Find the canonical feed for this domain (highest subs, non-social)
+    feed = (
+        Feed.objects.filter(feed_address__icontains=domain)
+        .exclude(feed_address__icontains="/social/rss/")
+        .order_by("-num_subscribers")
+        .first()
+    )
+    if not feed:
+        return dict(code=-1, message="No feed found for this URL.")
+
+    # Search for the story in this single feed
+    story = None
+    url_variants = _get_url_variants(url)
+    for variant in url_variants:
+        story = MStory.objects(story_permalink=variant, story_feed_id=feed.pk).first()
+        if story:
+            break
+    if not story:
+        for variant in url_variants:
+            story = MStory.objects(story_guid=variant, story_feed_id=feed.pk).first()
+            if story:
+                break
+
+    if not story:
+        return dict(code=-1, message="Story not found.")
+
+    is_subscribed = UserSubscription.objects.filter(user=user, feed_id=feed.pk, active=True).exists()
+
+    return dict(
+        code=1,
+        story_hash=story.story_hash,
+        story_feed_id=feed.pk,
+        is_subscribed=is_subscribed,
+        feed=feed.canonical(),
+    )
+
+
 @ajax_login_required
 @json.json_view
 def save_feed_order(request):

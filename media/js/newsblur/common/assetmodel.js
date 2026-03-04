@@ -1810,6 +1810,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
 
+    find_story_by_permalink: function (story_url, callback, error_callback) {
+        this.make_request('/reader/find_story_by_permalink', {
+            'story_url': story_url
+        }, callback, error_callback, {
+            'ajax_group': 'queue',
+            request_type: 'GET'
+        });
+    },
+
     load_recommended_feed: function (page, refresh, unmoderated, callback, error_callback) {
         this.make_request('/recommendations/load_recommended_feed', {
             'page': page,

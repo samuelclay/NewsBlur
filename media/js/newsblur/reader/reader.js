@@ -6987,6 +6987,33 @@
             });
         },
 
+        open_story_by_permalink: function (url) {
+            var self = this;
+            var fallback_window = window.open('', '_blank');
+
+            this.model.find_story_by_permalink(url, function (data) {
+                if (data.code !== 1) {
+                    fallback_window.location = url;
+                    return;
+                }
+
+                fallback_window.close();
+                var feed_id = data.story_feed_id;
+                var story_hash = data.story_hash;
+
+                if (data.is_subscribed) {
+                    self.open_feed(feed_id, { story_id: story_hash });
+                } else {
+                    self.load_feed_in_tryfeed_view(feed_id, {
+                        feed: data.feed,
+                        story_id: story_hash
+                    });
+                }
+            }, function () {
+                fallback_window.location = url;
+            });
+        },
+
         setup_howitworks_hovers: function () {
             var $page_indicators = $('.NB-module-howitworks .NB-module-page-indicator');
             $page_indicators.bind('mouseenter', _.bind(function (e) {
@@ -8466,6 +8493,13 @@
             $.targetIs(e, { tagSelector: '.NB-progress-close' }, function ($t, $p) {
                 e.preventDefault();
                 self.hide_unfetched_feed_progress(true);
+            });
+            $.targetIs(e, { tagSelector: 'a', childOf: '.NB-module-features' }, function ($t, $p) {
+                var href = $t.attr('href');
+                if (href && href.indexOf('blog.newsblur.com') !== -1) {
+                    e.preventDefault();
+                    self.open_story_by_permalink(href);
+                }
             });
             $.targetIs(e, { tagSelector: '.NB-module-next-page', childOf: '.NB-module-features' }, function ($t, $p) {
                 e.preventDefault();
