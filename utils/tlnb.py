@@ -40,14 +40,26 @@ def main(hostnames=None, roles=None, command=None, path=None):
         return
     hosts = json.loads(hosts)
 
+    NODE_ROLES = ["node", "node-page", "node-text", "node-favicons", "node-socket", "node-images"]
+    if hostnames in ["app", "task", "push", "work", "staging"] + NODE_ROLES:
+        roles = hostnames
+        hostnames = None
+
+    if roles and (roles in NODE_ROLES or (isinstance(roles, list) and any(r in NODE_ROLES for r in roles))):
+        if not command:
+            command = "docker logs -f --tail 10"
+        if not path:
+            path = "node"
+        # Ansible groups use underscores (node_page), not hyphens
+        if isinstance(roles, list):
+            roles = [r.replace("-", "_") for r in roles]
+        else:
+            roles = roles.replace("-", "_")
+
     if not path:
         path = "/srv/newsblur/logs/newsblur.log"
     if not command:
         command = "tail -f"
-
-    if hostnames in ["app", "task", "push", "work", "staging"]:
-        roles = hostnames
-        hostnames = None
 
     if hostnames:
         roles = hosts
@@ -124,6 +136,10 @@ def follow_host(hosts, streams, found, hostname, command=None, path=None):
         print(" ---> Following %s \t[%s]" % (hostname, address))
     if hostname in found:
         return
+    # Node images servers use "imageproxy" container instead of "node"
+    host_path = path
+    if "images" in hostname and command and "docker" in command:
+        host_path = "imageproxy"
     s = subprocess.Popen(
         [
             "ssh",
@@ -132,7 +148,7 @@ def follow_host(hosts, streams, found, hostname, command=None, path=None):
             "-i",
             os.path.expanduser("/srv/secrets-newsblur/keys/docker.key"),
             address,
-            "%s %s" % (command, path),
+            "%s %s" % (command, host_path),
         ],
         stdout=subprocess.PIPE,
     )
