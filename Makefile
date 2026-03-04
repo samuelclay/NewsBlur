@@ -542,6 +542,7 @@ offsite-backup-install:
 	ssh $(HA_HOST) "mkdir -p $(HA_SCRIPTS)"
 	cat utils/backups/offsite_pull.sh | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_pull.sh"
 	ssh $(HA_HOST) "chmod +x $(HA_SCRIPTS)/offsite_pull.sh"
+	cat utils/backups/offsite_status.py | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/offsite_status.py"
 	cat /srv/secrets-newsblur/keys/docker.key | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/docker.key"
 	ssh $(HA_HOST) "chmod 600 $(HA_SCRIPTS)/docker.key"
 	@awk -F= '/aws_access_key_id/{print $$2}' /srv/secrets-newsblur/keys/aws.s3.token | ssh $(HA_HOST) "cat > $(HA_SCRIPTS)/aws_s3_credentials"
@@ -556,12 +557,8 @@ offsite-backup:
 	@$(call log,~FB---> Running off-site backup pull~ST)
 	ssh $(HA_HOST) "$(HA_SCRIPTS)/offsite_pull.sh"
 
-offsite-backup-dry-run:
-	@$(call log,~FB---> Running off-site backup pull (dry run)~ST)
-	ssh $(HA_HOST) "$(HA_SCRIPTS)/offsite_pull.sh --dry-run"
-
 offsite-backup-status:
-	@ssh $(HA_HOST) "echo '=== Backup log ==='; tail -20 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; ls -lh /media/newsblur-backup/mongo_full/ 2>/dev/null; echo; echo '=== Disk usage ==='; du -sh /media/newsblur-backup/mongo_full/ /media/newsblur-backup/postgres/ 2>/dev/null; du -sh /media/newsblur-backup/redis/*/ 2>/dev/null; echo '---'; df -h /media/newsblur-backup"
+	@ssh $(HA_HOST) "echo '=== Backup log ==='; tail -15 /media/newsblur-backup/backup.log 2>/dev/null; echo; echo '=== Mongo stream ==='; tail -5 /media/newsblur-backup/backup_run.log 2>/dev/null; echo; /config/scripts/venv/bin/python3 /config/scripts/offsite_status.py"
 
 offsite-backup-uninstall:
 	@$(call log,~FY---> Removing off-site backup from HA box~ST)

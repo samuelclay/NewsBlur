@@ -5,7 +5,7 @@
 # - MongoDB full dump: streamed directly via SSH (mongodump --archive --gzip)
 # - PostgreSQL + Redis: download latest from S3 (small files)
 #
-# Usage: ./offsite_pull.sh [--dry-run]
+# Usage: ./offsite_pull.sh
 
 set -euo pipefail
 
@@ -50,11 +50,6 @@ REDIS_KEEP=8
 
 # --- End Configuration ---
 
-DRY_RUN=false
-if [[ "${1:-}" == "--dry-run" ]]; then
-    DRY_RUN=true
-fi
-
 LOG_FILE="${BACKUP_DRIVE}/backup.log"
 SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR -i ${SSH_KEY}"
 
@@ -76,36 +71,8 @@ mkdir -p "${BACKUP_DRIVE}/redis"
 
 log "=== Starting NewsBlur off-site backup pull ==="
 
-# --- 1. Full MongoDB Dump (stream directly via SSH) ---
-# Streams mongodump --archive --gzip over SSH directly to the backup drive.
-# Uses zero disk space on the mongo server.
-# NOTE: No -t flag on docker exec — TTY mangles binary streams.
-log "--- MongoDB full dump (streaming from server) ---"
-
-DUMP_DATE=$(date '+%Y-%m-%d')
-DUMP_FILE="${BACKUP_DRIVE}/mongo_full/mongodump_full_${DUMP_DATE}.gz"
-DUMP_TMP="${DUMP_FILE}.partial"
-
-if [[ -f "${DUMP_FILE}" ]]; then
-    log "MongoDB dump already exists for today: $(basename ${DUMP_FILE}). Skipping."
-elif [[ -f "${DUMP_TMP}" ]]; then
-    log "MongoDB dump already in progress: $(basename ${DUMP_TMP}). Skipping."
-else
-    log "Streaming full mongodump from ${MONGO_SECONDARY}..."
-    if [[ "${DRY_RUN}" == "false" ]]; then
-        # Write to .partial first, rename on success to avoid keeping truncated dumps
-        ssh ${SSH_OPTS} ${SSH_USER}@${MONGO_SECONDARY} \
-            "docker exec mongo mongodump -d newsblur --gzip --archive" \
-            > "${DUMP_TMP}"
-        mv "${DUMP_TMP}" "${DUMP_FILE}"
-        DUMP_SIZE=$(du -sh "${DUMP_FILE}" | cut -f1)
-        log "MongoDB dump complete: $(basename ${DUMP_FILE}) (${DUMP_SIZE})"
-    else
-        log "[DRY RUN] Would stream mongodump to ${DUMP_FILE}"
-    fi
-fi
-
-# --- 2. PostgreSQL + Redis (download from S3) ---
+# --- 1. PostgreSQL + Redis (download from S3) ---
+# Done first since they're fast; mongo dump takes 12+ hours.
 # Uses python (from venv with boto3) to find and download the latest backup.
 
 s3_download_latest() {
@@ -148,10 +115,6 @@ if os.path.exists(local_path):
 size_mb = latest['Size'] / 1024 / 1024
 print('Downloading: %s (%.1f MB)' % (filename, size_mb))
 
-if '${DRY_RUN}' == 'true':
-    print('[DRY RUN] Would download %s' % key)
-    sys.exit(0)
-
 s3.download_file(bucket, key, local_path)
 print('Downloaded: %s' % local_path)
 " 2>&1
@@ -169,48 +132,72 @@ for redis_prefix in "${S3_REDIS_PREFIXES[@]}"; do
     s3_download_latest "${redis_prefix}" "${BACKUP_DRIVE}/redis/${redis_name}" | while read line; do log "  $line"; done
 done
 
+# --- 2. Full MongoDB Dump (stream directly via SSH) ---
+# Streams mongodump --archive --gzip over SSH directly to the backup drive.
+# Uses zero disk space on the mongo server. Takes 12+ hours.
+# NOTE: No -t flag on docker exec — TTY mangles binary streams.
+log "--- MongoDB full dump (streaming from server) ---"
+
+DUMP_DATE=$(date '+%Y-%m-%d')
+DUMP_FILE="${BACKUP_DRIVE}/mongo_full/mongodump_full_${DUMP_DATE}.gz"
+DUMP_TMP="${DUMP_FILE}.partial"
+
+if [[ -f "${DUMP_FILE}" ]]; then
+    log "MongoDB dump already exists for today: $(basename ${DUMP_FILE}). Skipping."
+elif [[ -f "${DUMP_TMP}" ]]; then
+    log "MongoDB dump already in progress: $(basename ${DUMP_TMP}). Skipping."
+else
+    log "Streaming full mongodump from ${MONGO_SECONDARY}..."
+    # Write to .partial first, rename on success to avoid keeping truncated dumps
+    # mongodump progress (stderr) flows through to the caller's stderr (backup_run.log via nohup)
+    ssh ${SSH_OPTS} ${SSH_USER}@${MONGO_SECONDARY} \
+        "docker exec mongo mongodump -d newsblur --gzip --archive" \
+        > "${DUMP_TMP}"
+    mv "${DUMP_TMP}" "${DUMP_FILE}"
+    DUMP_SIZE=$(du -sh "${DUMP_FILE}" | cut -f1)
+    log "MongoDB dump complete: $(basename ${DUMP_FILE}) (${DUMP_SIZE})"
+fi
+
 # --- 3. Local Retention Cleanup ---
 log "--- Running local retention cleanup ---"
 
-if [[ "${DRY_RUN}" == "false" ]]; then
-    # Mongo full dumps: keep N most recent files
-    cd "${BACKUP_DRIVE}/mongo_full"
-    MONGO_FILES=$(ls -t mongodump_full_*.gz 2>/dev/null || true)
-    MONGO_COUNT=$(echo "${MONGO_FILES}" | grep -c "mongodump_full_" 2>/dev/null || true)
-    if [[ ${MONGO_COUNT} -gt ${MONGO_FULL_KEEP} ]]; then
-        echo "${MONGO_FILES}" | tail -n +$((MONGO_FULL_KEEP + 1)) | while read f; do
-            log "  Removing old mongo dump: ${f}"
-            rm -f "${f}"
-        done
-    fi
-    # Clean up stale .partial files older than 24h (failed dumps, not in-progress)
-    find "${BACKUP_DRIVE}/mongo_full/" -name "*.partial" -mmin +1440 -delete 2>/dev/null || true
-
-    # Postgres dumps: keep N most recent files
-    cd "${BACKUP_DRIVE}/postgres"
-    PG_FILES=$(ls -t backup_postgresql_*.sql 2>/dev/null || true)
-    PG_COUNT=$(echo "${PG_FILES}" | grep -c "backup_postgresql_" 2>/dev/null || true)
-    if [[ ${PG_COUNT} -gt ${POSTGRES_KEEP} ]]; then
-        echo "${PG_FILES}" | tail -n +$((POSTGRES_KEEP + 1)) | while read f; do
-            log "  Removing old postgres backup: ${f}"
-            rm -f "${f}"
-        done
-    fi
-
-    # Redis dumps: keep N most recent per instance
-    for redis_dir in "${BACKUP_DRIVE}"/redis/backup_hdb_redis_*/; do
-        if [[ ! -d "${redis_dir}" ]]; then continue; fi
-        cd "${redis_dir}"
-        REDIS_FILES=$(ls -t *.rdb.gz 2>/dev/null || true)
-        REDIS_COUNT=$(echo "${REDIS_FILES}" | grep -c ".rdb.gz" 2>/dev/null || true)
-        if [[ ${REDIS_COUNT} -gt ${REDIS_KEEP} ]]; then
-            echo "${REDIS_FILES}" | tail -n +$((REDIS_KEEP + 1)) | while read f; do
-                log "  Removing old redis backup: $(basename ${redis_dir})/${f}"
-                rm -f "${f}"
-            done
-        fi
+# Mongo full dumps: keep N most recent files
+cd "${BACKUP_DRIVE}/mongo_full"
+MONGO_FILES=$(ls -t mongodump_full_*.gz 2>/dev/null || true)
+MONGO_COUNT=$(echo "${MONGO_FILES}" | grep -c "mongodump_full_" 2>/dev/null || true)
+if [[ ${MONGO_COUNT} -gt ${MONGO_FULL_KEEP} ]]; then
+    echo "${MONGO_FILES}" | tail -n +$((MONGO_FULL_KEEP + 1)) | while read f; do
+        log "  Removing old mongo dump: ${f}"
+        rm -f "${f}"
     done
 fi
+# Clean up stale .partial files older than 24h (failed dumps, not in-progress)
+find "${BACKUP_DRIVE}/mongo_full/" -name "*.partial" -mmin +1440 -delete 2>/dev/null || true
+
+# Postgres dumps: keep N most recent files
+cd "${BACKUP_DRIVE}/postgres"
+PG_FILES=$(ls -t backup_postgresql_*.sql 2>/dev/null || true)
+PG_COUNT=$(echo "${PG_FILES}" | grep -c "backup_postgresql_" 2>/dev/null || true)
+if [[ ${PG_COUNT} -gt ${POSTGRES_KEEP} ]]; then
+    echo "${PG_FILES}" | tail -n +$((POSTGRES_KEEP + 1)) | while read f; do
+        log "  Removing old postgres backup: ${f}"
+        rm -f "${f}"
+    done
+fi
+
+# Redis dumps: keep N most recent per instance
+for redis_dir in "${BACKUP_DRIVE}"/redis/backup_hdb_redis_*/; do
+    if [[ ! -d "${redis_dir}" ]]; then continue; fi
+    cd "${redis_dir}"
+    REDIS_FILES=$(ls -t *.rdb.gz 2>/dev/null || true)
+    REDIS_COUNT=$(echo "${REDIS_FILES}" | grep -c ".rdb.gz" 2>/dev/null || true)
+    if [[ ${REDIS_COUNT} -gt ${REDIS_KEEP} ]]; then
+        echo "${REDIS_FILES}" | tail -n +$((REDIS_KEEP + 1)) | while read f; do
+            log "  Removing old redis backup: $(basename ${redis_dir})/${f}"
+            rm -f "${f}"
+        done
+    fi
+done
 
 # --- 4. Summary ---
 log "=== Backup pull complete ==="

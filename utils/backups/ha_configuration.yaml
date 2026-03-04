@@ -4,7 +4,7 @@
 
 shell_command:
   mount_backup_drive: "/config/scripts/mount_backup_drive.sh"
-  offsite_backup: "/config/scripts/offsite_pull.sh >> /media/newsblur-backup/backup.log 2>&1"
+  offsite_backup: "/config/scripts/offsite_pull.sh >> /media/newsblur-backup/backup_run.log 2>&1"
 
 # Then create an automation in the HA UI or in automations.yaml:
 #
