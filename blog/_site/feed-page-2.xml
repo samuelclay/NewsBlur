@@ -12,7 +12,7 @@
   <link href="/feed-page-3.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-02T19:07:42-05:00</updated>
+  <updated>2026-03-04T12:33:56-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,62 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Catch the news in a glimpse with the new NewsBlur Today View widget on iOS</title>
+    <link href="https://blog.newsblur.com/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur/" rel="alternate" type="text/html" title="Catch the news in a glimpse with the new NewsBlur Today View widget on iOS" />
+    <published>2020-02-26T08:53:22-05:00</published>
+    <updated>2020-02-26T08:53:22-05:00</updated>
+    <id>https://blog.newsblur.com/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2020/02/26/catch-the-news-in-a-glimpse-with-the-new-newsblur/">
+      <![CDATA[<p>Most of the time when we release a new feature, it finds immediate use. But every so often a new feature comes along that changes how NewsBlur gets used. I consider offline stories part of this exclusive club. Same with the Text view, which shows you the full text of a story. And push notifications are right up there.</p>
+
+<p>Today, I’m pleased to announce the launch of our new Today View widget on iOS.</p>
+
+<figure class="tmblr-full" data-orig-height="889" data-orig-width="500" data-orig-src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-widget.png"><img data-orig-height="889" data-orig-width="500" src="https://s3.amazonaws.com/static.newsblur.com/blog/ios-widget.png" /></figure>
+
+<p>Instead of having to open up the app to see what’s new, the stories come to you in the Today View, adjacent to the notification center. Personally I find myself checking this Today View widget a dozen times more than I open the NewsBlur app. It’s so incredibly useful to have NewsBlur come to me.</p>
+
+<p>Additionally, in version 10.0 of the iOS app, we have a bunch of new features:</p>
+
+<ul>
+  <li>A new iOS widget shows the latest stories in your Notification Center and on your iPad dashboard</li>
+  <li>Statistics visualization for every site</li>
+  <li>Automatic downloading of the original story full text for offline reading</li>
+  <li>Unsubscribe from a feed directly from a story</li>
+  <li>Preferences import &amp; export</li>
+</ul>
+
+<p>And tons of bugs were fixed along with other small improvements:</p>
+
+<ul>
+  <li>Fixed crash on start for a few users</li>
+  <li>Fixed highlighting issue</li>
+  <li>Fixed settings with stories on bottom</li>
+  <li>Tweaked dark theme colors to be darker</li>
+  <li>Fixed wonky behavior on iPad</li>
+  <li>Clearing offline now clears the cached stories, text, and images from the database</li>
+  <li>Manually changing the theme now turns off the preference to follow the system appearance</li>
+  <li>Turning on following the system appearance immediately updates the theme appropriately</li>
+  <li>Fixed crash on feed load list</li>
+  <li>Fixed crash on start</li>
+</ul>
+
+<p>And if you’re an Android user, I just want you to know that we intended to ship this feature first on Android (and in fact, it is 90% built) but then our Android developer bailed. I’ll be hiring for another Android devleoper soon, but if that interests you, <a href="mailto:samuel@newsblur.com">please reach out</a>!</p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="iOS" />
+    
+    
+    <summary type="html">
+      <![CDATA[Most of the time when we release a new feature, it finds immediate use. But every so often a new feature comes along that changes how NewsBlur gets used. I consider offline stories part of this exclusive club. Same with the Text view, which shows you the full text of...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Secure images for everybody</title>
@@ -1113,34 +1169,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[It’s like a whole new app. There’s so much to tell you about in the latest release of the NewsBlur iOS app. This is the release of all releases.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">A heavier lifting Android app</title>
-    <link href="https://blog.newsblur.com/2016/04/09/a-heavier-lifting-android-app/" rel="alternate" type="text/html" title="A heavier lifting Android app" />
-    <published>2016-04-09T12:56:12-04:00</published>
-    <updated>2016-04-09T12:56:12-04:00</updated>
-    <id>https://blog.newsblur.com/2016/04/09/a-heavier-lifting-android-app</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2016/04/09/a-heavier-lifting-android-app/">
-      <![CDATA[<p>As performance updates go, this month’s upgrade to v4.8.0 of the NewsBlur Android app is a doozy. This one’s specifically made for those users with a heavier load of feeds.</p>
-
-<p>If you have over a hundred feeds, everything will suddenly feel smooth, just like it already does for those with only a few dozen subscriptions. And if you find yourself climbing up to several hundred feeds from only a dozen, you’ll be in good company.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android_heavy_lifting.png" alt="" /></p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="android" />
-    
-    
-    <summary type="html">
-      <![CDATA[As performance updates go, this month’s upgrade to v4.8.0 of the NewsBlur Android app is a doozy. This one’s specifically made for those users with a heavier load of feeds.
 ]]>
     </summary>
     

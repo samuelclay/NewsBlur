@@ -13,6 +13,7 @@ from collections import defaultdict
 from urllib.parse import urlparse
 
 import redis
+import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -41,34 +42,6 @@ from utils.ratelimit import ratelimit
 from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import get_argument_or_404, is_true, required_params
 from vendor.timezones.utilities import localtime_for_timezone
-
-IGNORE_AUTOCOMPLETE = [
-    "facebook.com/feeds/notifications.php",
-    "inbox",
-    "secret",
-    "password",
-    "latitude",
-]
-
-
-@ajax_login_required
-@json.json_view
-def search_feed(request):
-    address = request.GET.get("address")
-    offset = int(request.GET.get("offset", 0))
-    if not address:
-        return dict(code=-1, message="Please provide a URL/address.")
-
-    logging.user(request.user, "~FBFinding feed (search_feed): %s" % address)
-    ip = request.META.get("HTTP_X_FORWARDED_FOR", None) or request.META["REMOTE_ADDR"]
-    logging.user(request.user, "~FBIP: %s" % ip)
-    aggressive = request.user.is_authenticated
-    feed = Feed.get_feed_from_url(address, create=False, aggressive=aggressive, offset=offset)
-    if feed:
-        return feed.canonical()
-    else:
-        return dict(code=-1, message="No feed found matching that XML or website address.")
-
 
 @json.json_view
 def load_single_feed(request, feed_id):
@@ -188,6 +161,7 @@ def feed_autocomplete(request):
         }
     else:
         return feeds
+
 
 
 @ratelimit(minutes=1, requests=30)

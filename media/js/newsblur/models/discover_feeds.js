@@ -14,12 +14,12 @@ NEWSBLUR.Collections.DiscoverFeeds = Backbone.Collection.extend({
 
     url: function () {
         if (this.similar_to_feed_id) {
-            var url = '/rss_feeds/discover/' + this.similar_to_feed_id + '/';
+            var url = '/discover/similar/' + this.similar_to_feed_id + '/';
             if (this.feed_ids && this.feed_ids.length > 0) {
                 url += '?feed_id=' + this.feed_ids.join("&feed_id=");
             }
         } else if (this.similar_to_feed_ids) {
-            var url = '/rss_feeds/discover/feeds/';
+            var url = '/discover/similar/feeds/';
         }
         return url;
     },

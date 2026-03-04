@@ -958,6 +958,27 @@ def load_single_feed(request, feed_id):
         logging.user(request, "~BR~FK~SBOver page 400 on single feed: %s" % page)
         raise Http404
 
+    # Synchronous insta-fetch for try-feed mode, triggered by the frontend poll.
+    # First request returns fast (showing banners / "fetching" indicator), then
+    # poll_for_fetch_completion sends insta_fetch=1 to trigger the actual fetch.
+    insta_fetch = is_true(request.GET.get("insta_fetch", False))
+    if insta_fetch and not usersub and (
+        not feed.fetched_once
+        or feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    ):
+        original_title = feed.feed_title
+        feed = feed.update(force=True, compute_scores=False, verbose=True)
+        feed = Feed.get_by_id(feed.pk if feed else feed_id)
+        # RSS fetch may overwrite a good title (from PopularFeed) with a generic
+        # one like "search results". Restore from PopularFeed if available.
+        if feed and feed.feed_title != original_title:
+            from apps.discover.models import PopularFeed as PopularFeedModel
+
+            pf = PopularFeedModel.objects.filter(feed_id=feed.pk).first()
+            if pf and pf.title:
+                feed.feed_title = pf.title
+                feed.save(update_fields=["feed_title"])
+
     if query:
         if user.profile.is_premium:
             user_search = MUserSearch.get_user(user.pk)
@@ -1308,6 +1329,24 @@ def load_single_feed(request, feed_id):
         data["dupe_feed_id"] = dupe_feed_id
     if not usersub:
         data.update(feed.canonical())
+        # Override bad DB title with PopularFeed title for try-feeds
+        if not data.get("feed_title") or data["feed_title"] in ("[Untitled]", "Untitled"):
+            from apps.discover.models import PopularFeed as PopularFeedModel
+
+            pf = PopularFeedModel.objects.filter(feed_id=feed.pk).first()
+            if pf and pf.title:
+                data["feed_title"] = pf.title
+                if feed.feed_title != pf.title:
+                    feed.feed_title = pf.title
+                    feed.save(update_fields=["feed_title"])
+    # Signal frontend to poll for fetch completion on stale/unfetched try-feeds
+    if not usersub and (
+        not feed.fetched_once
+        or feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    ):
+        data["not_yet_fetched"] = True
+        data["fetched_once"] = False
+        data["stories"] = []
     # if not usersub and feed.num_subscribers <= 1:
     #     data = dict(code=-1, message="You must be subscribed to this feed.")
 
