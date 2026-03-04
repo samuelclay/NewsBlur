@@ -12,7 +12,7 @@
   <link href="/feed-page-4.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-03-02T19:07:42-05:00</updated>
+  <updated>2026-03-04T12:33:56-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -22,6 +22,34 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">A heavier lifting Android app</title>
+    <link href="https://blog.newsblur.com/2016/04/09/a-heavier-lifting-android-app/" rel="alternate" type="text/html" title="A heavier lifting Android app" />
+    <published>2016-04-09T12:56:12-04:00</published>
+    <updated>2016-04-09T12:56:12-04:00</updated>
+    <id>https://blog.newsblur.com/2016/04/09/a-heavier-lifting-android-app</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2016/04/09/a-heavier-lifting-android-app/">
+      <![CDATA[<p>As performance updates go, this month’s upgrade to v4.8.0 of the NewsBlur Android app is a doozy. This one’s specifically made for those users with a heavier load of feeds.</p>
+
+<p>If you have over a hundred feeds, everything will suddenly feel smooth, just like it already does for those with only a few dozen subscriptions. And if you find yourself climbing up to several hundred feeds from only a dozen, you’ll be in good company.</p>
+
+<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/android_heavy_lifting.png" alt="" /></p>
+
+]]>
+    </content>
+    
+    
+    
+    <category term="android" />
+    
+    
+    <summary type="html">
+      <![CDATA[As performance updates go, this month’s upgrade to v4.8.0 of the NewsBlur Android app is a doozy. This one’s specifically made for those users with a heavier load of feeds.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Tracking story changes with NewsBlur</title>
@@ -971,36 +999,6 @@ A new sound of an old instrument.
     
     <summary type="html">
       <![CDATA[Like it says on the tin, you can now go back and see what you’ve read with the Recently Read Stories feed. It’s on the bottom of your feed list, just above the saved stories.
-]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Temporarily mute sites</title>
-    <link href="https://blog.newsblur.com/2014/06/17/temporarily-mute-sites/" rel="alternate" type="text/html" title="Temporarily mute sites" />
-    <published>2014-06-17T12:09:59-04:00</published>
-    <updated>2014-06-17T12:09:59-04:00</updated>
-    <id>https://blog.newsblur.com/2014/06/17/temporarily-mute-sites</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2014/06/17/temporarily-mute-sites/">
-      <![CDATA[<p>You can now temporarily turn off sites by going to Manage &gt; Mute Sites. This is for those feeds you want to keep but ignore for a while.</p>
-
-<p><img src="https://s3.amazonaws.com/static.newsblur.com/blog/mute_sites.png" alt="" /></p>
-
-<p>I use this to mute craigslist feeds that I no longer want to see in my unread stories list, but I want to keep just in case I need to perform a specific craigslist search without having to go through the whole process of recreating the RSS feed.</p>
-
-<p>It’s also useful for subscribing to high volume sites and only reading them when you want to know what’s happening but without having to remember to re-subscribe. Such a simple feature but with a ton of utility.</p>
-
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[You can now temporarily turn off sites by going to Manage &gt; Mute Sites. This is for those feeds you want to keep but ignore for a while.
 ]]>
     </summary>
     
