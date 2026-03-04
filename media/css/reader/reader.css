@@ -8833,7 +8833,7 @@ form.opml_import_form input {
 }
 
 #simplemodal-container.NB-full-container.NB-classifier-container {
-    height: 800px !important;
+    max-height: 800px;
 }
 
 .NB-modal.NB-modal-classifiers {
