@@ -199,6 +199,45 @@ def extract_story_date(entry):
     return publish_date
 
 
+EMBEDDABLE_IFRAME_DOMAINS = [
+    "youtube.com",
+    "youtube-nocookie.com",
+    "youtu.be",
+    "player.vimeo.com",
+    "www.google.com",
+    "w.soundcloud.com",
+    "open.spotify.com",
+    "bandcamp.com",
+]
+
+
+def strip_non_embeddable_iframes(content):
+    """Strip iframes from story content whose domains block cross-origin embedding.
+
+    Many sites (e.g. Slashdot) include iframes in their RSS feeds that set
+    X-Frame-Options: SAMEORIGIN, causing them to render as empty boxes.
+    Only keep iframes from domains known to allow cross-origin embedding.
+    """
+    if not content or "<iframe" not in content.lower():
+        return content
+
+    def replace_iframe(match):
+        iframe_html = match.group(0)
+        src_match = re.search(r'src=["\']([^"\']+)["\']', iframe_html)
+        if not src_match:
+            return ""
+        src = src_match.group(1)
+        try:
+            domain = urllib.parse.urlparse(src).hostname or ""
+        except Exception:
+            return ""
+        if any(domain == d or domain.endswith("." + d) for d in EMBEDDABLE_IFRAME_DOMAINS):
+            return iframe_html
+        return ""
+
+    return re.sub(r"<iframe\b[^>]*>.*?</iframe>", replace_iframe, content, flags=re.IGNORECASE | re.DOTALL)
+
+
 def pre_process_story(entry, encoding):
     entry["published"] = extract_story_date(entry)
 
@@ -289,6 +328,7 @@ def pre_process_story(entry, encoding):
         entry["author"] = strip_tags(entry.get("credit"))
 
     entry["story_content"] = attach_media_scripts(entry["story_content"])
+    entry["story_content"] = strip_non_embeddable_iframes(entry["story_content"])
 
     return entry
 
