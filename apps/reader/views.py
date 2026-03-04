@@ -3881,9 +3881,9 @@ def find_story_by_permalink(request):
     if domain.startswith("www."):
         domain = domain[4:]
 
-    # Find the canonical feed for this domain (highest subs, non-social)
+    # Find the canonical feed: both feed_address and feed_link must match the domain
     feed = (
-        Feed.objects.filter(feed_address__icontains=domain)
+        Feed.objects.filter(feed_address__icontains=domain, feed_link__icontains=domain)
         .exclude(feed_address__icontains="/social/rss/")
         .order_by("-num_subscribers")
         .first()
