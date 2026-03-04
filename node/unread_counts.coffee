@@ -3,6 +3,7 @@ redis  = require 'redis'
 log    = require './log.js'
 ask_ai = require './ask_ai.js'
 archive_assistant = require './archive_assistant.js'
+webfeed = require './webfeed.js'
 briefing = require './briefing.js'
 
 unread_counts = (server) =>
@@ -191,6 +192,12 @@ unread_counts = (server) =>
                     handled = archive_assistant.handle_archive_assistant_message(socket, channel, message)
                     if handled
                         log.debug username, "Archive Assistant handler processed message"
+                        return
+
+                # Route webfeed messages to dedicated handler
+                if message.startsWith?('webfeed:')
+                    handled = webfeed.handle_webfeed_message(socket, channel, message)
+                    if handled
                         return
 
                 # Handle standard feed/user update messages

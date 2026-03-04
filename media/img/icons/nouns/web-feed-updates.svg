@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150px" height="150px" viewBox="0 0 150 150" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>web-feed-updates</title>
+    <g id="web-feed-updates" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(8, 8)" fill-rule="nonzero">
+            <!-- Feed list panel -->
+            <path d="M12,0 C5.373,0 0,5.373 0,12 L0,122 C0,128.627 5.373,134 12,134 L72,134 C78.627,134 84,128.627 84,122 L84,12 C84,5.373 78.627,0 72,0 L12,0 Z M12,7 L72,7 C74.761,7 77,9.239 77,12 L77,122 C77,124.761 74.761,127 72,127 L12,127 C9.239,127 7,124.761 7,122 L7,12 C7,9.239 9.239,7 12,7 Z" fill="#95968E"/>
+
+            <!-- Feed item 1 (with unread dot) -->
+            <circle cx="21" cy="28" r="7" fill="#95968E"/>
+            <rect x="34" y="24" width="32" height="5" rx="2.5" fill="#95968E"/>
+            <rect x="34" y="32" width="22" height="4" rx="2" fill="#95968E" opacity="0.4"/>
+            <circle cx="72" cy="28" r="4" fill="#5C89C9"/>
+
+            <!-- Feed item 2 (with unread dot) -->
+            <circle cx="21" cy="54" r="7" fill="#95968E"/>
+            <rect x="34" y="50" width="32" height="5" rx="2.5" fill="#95968E"/>
+            <rect x="34" y="58" width="22" height="4" rx="2" fill="#95968E" opacity="0.4"/>
+            <circle cx="72" cy="54" r="4" fill="#5C89C9"/>
+
+            <!-- Feed item 3 -->
+            <circle cx="21" cy="80" r="7" fill="#95968E"/>
+            <rect x="34" y="76" width="32" height="5" rx="2.5" fill="#95968E"/>
+            <rect x="34" y="84" width="22" height="4" rx="2" fill="#95968E" opacity="0.4"/>
+
+            <!-- Feed item 4 -->
+            <circle cx="21" cy="106" r="7" fill="#95968E"/>
+            <rect x="34" y="102" width="32" height="5" rx="2.5" fill="#95968E"/>
+            <rect x="34" y="110" width="22" height="4" rx="2" fill="#95968E" opacity="0.4"/>
+
+            <!-- Clock face (filled gray) -->
+            <circle cx="118" cy="67" r="20" fill="#95968E" opacity="0.15"/>
+            <circle cx="118" cy="67" r="20" fill="none" stroke="#95968E" stroke-width="4"/>
+            <!-- Clock hands -->
+            <path d="M118,57 L118,67 L126,72" stroke="#5C89C9" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Clock tick marks -->
+            <rect x="116.5" y="50" width="3" height="5" rx="1.5" fill="#95968E"/>
+            <rect x="116.5" y="80" width="3" height="5" rx="1.5" fill="#95968E"/>
+            <rect x="101" y="65.5" width="5" height="3" rx="1.5" fill="#95968E"/>
+            <rect x="132" y="65.5" width="5" height="3" rx="1.5" fill="#95968E"/>
+
+            <!-- Small downward arrow below clock suggesting delivery -->
+            <path d="M118,94 L118,110" stroke="#5C89C9" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M112,104 L118,112 L124,104" stroke="#5C89C9" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+    </g>
+</svg>

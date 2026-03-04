@@ -12,7 +12,6 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         "click .NB-feedbar-mark-feed-read-expand": "expand_mark_read",
         "click .NB-feedbar-mark-feed-read-time": "mark_folder_as_read_days",
         "click .NB-story-title-indicator": "show_hidden_story_titles",
-        "click .NB-trending-time-option": "change_trending_time_window",
         "click .NB-briefing-preferences-icon": "open_briefing_preferences"
     },
 
@@ -80,10 +79,8 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 folder_title: NEWSBLUR.reader.feed_title()
             }));
         } else if (this.showing_fake_folder) {
-            var is_trending = NEWSBLUR.reader.active_feed == "river:trending";
             $view = $(_.template('\
                 <div class="NB-folder NB-no-hover NB-folder-<%= all_stories ? "river" : "fake" %>">\
-                    <% if (!is_trending) { %>\
                     <div class="NB-feedbar-mark-feed-read-container">\
                         <div class="NB-feedbar-mark-feed-read"><div class="NB-icon"></div></div>\
                         <div class="NB-feedbar-mark-feed-read-time" data-days="1">1d</div>\
@@ -93,16 +90,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                         <div class="NB-feedbar-mark-feed-read-expand"></div>\
                     </div>\
                     <div class="NB-search-container"></div>\
-                    <% } %>\
-                    <% if (is_trending) { %>\
-                        <div class="NB-trending-time-selector-container">\
-                            <ul class="segmented-control NB-trending-time-selector">\
-                                <li class="NB-trending-time-option" data-days="1" role="button">1 day</li>\
-                                <li class="NB-trending-time-option NB-active" data-days="7" role="button">7 days</li>\
-                                <li class="NB-trending-time-option" data-days="30" role="button">30 days</li>\
-                            </ul>\
-                        </div>\
-                    <% } else if (show_options) { %>\
+                    <% if (show_options) { %>\
                         <div class="NB-feedbar-options-container">\
                             <span class="NB-feedbar-options">\
                                 <div class="NB-icon"></div>\
@@ -133,12 +121,10 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                             </span>\
                         </div>\
                     <% } %>\
-                    <% if (!is_trending) { %>\
                     <div class="NB-story-title-indicator">\
                         <div class="NB-story-title-indicator-count"></div>\
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
                     </div>\
-                    <% } %>\
                     <div class="NB-folder-icon">\
                         <%= $.favicon_html(folder_id) %>\
                     </div>\
@@ -151,17 +137,14 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 all_stories: NEWSBLUR.reader.active_feed == "river:" || NEWSBLUR.reader.active_feed == "river:infrequent",
                 infrequent_stories: NEWSBLUR.reader.active_feed == "river:infrequent",
                 infrequent_freq: NEWSBLUR.assets.preference('infrequent_stories_per_month'),
-                is_trending: is_trending,
                 show_options: !NEWSBLUR.reader.active_folder.get('fake') ||
                     NEWSBLUR.reader.active_folder.get('show_options')
             }));
-            if (!is_trending) {
-                this.search_view = new NEWSBLUR.Views.FeedSearchView({
-                    feedbar_view: this
-                }).render();
-                this.search_view.blur_search();
-                $(".NB-search-container", $view).html(this.search_view.$el);
-            }
+            this.search_view = new NEWSBLUR.Views.FeedSearchView({
+                feedbar_view: this
+            }).render();
+            this.search_view.blur_search();
+            $(".NB-search-container", $view).html(this.search_view.$el);
         } else if (NEWSBLUR.reader.flags['river_view'] &&
             NEWSBLUR.reader.active_folder &&
             NEWSBLUR.reader.active_folder.get('folder_title')) {
@@ -384,23 +367,5 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
         NEWSBLUR.Views.FeedTitleView.prototype.expand_mark_read.call(this);
     },
 
-    change_trending_time_window: function (e) {
-        var $option = $(e.currentTarget);
-        var new_days = parseInt($option.data('days'), 10);
-
-        // Update active state
-        this.$('.NB-trending-time-option').removeClass('NB-active');
-        $option.addClass('NB-active');
-
-        if (NEWSBLUR.reader.trending_sites_view) {
-            NEWSBLUR.reader.trending_sites_view.days = new_days;
-            NEWSBLUR.reader.trending_sites_view.page = 1;
-            NEWSBLUR.reader.trending_sites_view.has_more_results = true;
-            NEWSBLUR.reader.trending_sites_view.trending_feeds_model.reset();
-            NEWSBLUR.reader.trending_sites_view.shown_feed_titles.clear();
-            NEWSBLUR.reader.trending_sites_view.fetch_data();
-        }
-    }
-
-
 });
+

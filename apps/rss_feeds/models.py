@@ -235,6 +235,10 @@ class Feed(models.Model):
         )
 
     @property
+    def is_webfeed(self):
+        return self.feed_address.startswith("webfeed:")
+
+    @property
     def is_daily_briefing(self):
         return self.feed_address.startswith("daily-briefing:")
 
@@ -249,7 +253,7 @@ class Feed(models.Model):
             "updated_seconds_ago": seconds_timesince(self.last_update),
             "fs_size_bytes": self.fs_size_bytes,
             "archive_count": self.archive_count,
-            "last_story_date": self.last_story_date,
+            "last_story_date": self.last_story_date.isoformat() if self.last_story_date else None,
             "last_story_seconds_ago": seconds_timesince(self.last_story_date),
             "stories_last_month": self.stories_last_month,
             "average_stories_per_month": self.average_stories_per_month,
@@ -257,6 +261,7 @@ class Feed(models.Model):
             "subs": self.num_subscribers,
             "is_push": self.is_push,
             "is_newsletter": self.is_newsletter,
+            "is_webfeed": self.is_webfeed,
             "is_daily_briefing": self.is_daily_briefing,
             "fetched_once": self.fetched_once,
             "search_indexed": self.search_indexed,
@@ -379,7 +384,7 @@ class Feed(models.Model):
         min_subscribers = 1
         if settings.DEBUG:
             min_subscribers = 0
-        if self.num_subscribers > min_subscribers and not self.branch_from_feed and not self.is_newsletter:
+        if self.num_subscribers > min_subscribers and not self.branch_from_feed and not self.is_newsletter and not self.is_webfeed:
             SearchFeed.index(
                 feed_id=self.pk,
                 title=self.feed_title,
@@ -458,12 +463,10 @@ class Feed(models.Model):
 
     @classmethod
     def autocomplete(cls, prefix, limit=10):
-        # Fast text search first
-        results = SearchFeed.query(prefix, max_results=limit)
-
-        # Fall back to hybrid (semantic) search if no text results
-        if not results:
-            results = SearchFeed.hybrid_query(prefix, max_results=limit)
+        # Use hybrid search to combine text matching with semantic similarity
+        # This returns both exact matches (e.g., "cooking" in title) and
+        # semantically related feeds (e.g., "smitten kitchen" for "cooking")
+        results = SearchFeed.hybrid_query(prefix, max_results=limit)
 
         feed_ids = [result["_source"]["feed_id"] for result in results[:limit]]
         return feed_ids
@@ -539,7 +542,15 @@ class Feed(models.Model):
 
     @classmethod
     def get_feed_from_url(
-        cls, url, create=True, aggressive=False, fetch=True, offset=0, user=None, interactive=False
+        cls,
+        url,
+        create=True,
+        aggressive=False,
+        fetch=True,
+        offset=0,
+        user=None,
+        interactive=False,
+        max_stories=None,
     ):
         feed = None
         without_rss = False
@@ -550,6 +561,13 @@ class Feed(models.Model):
                 return cls.objects.get(feed_address=url)
             except cls.MultipleObjectsReturned:
                 return cls.objects.filter(feed_address=url)[0]
+        if url and url.startswith("webfeed:"):
+            try:
+                return cls.objects.get(feed_address=url)
+            except cls.MultipleObjectsReturned:
+                return cls.objects.filter(feed_address=url)[0]
+            except cls.DoesNotExist:
+                return None
         if url and re.match("(https?://)?twitter.com/\w+/?", url):
             without_rss = True
         if url and re.match(r"(https?://)?(www\.)?facebook.com/\w+/?$", url):
@@ -573,6 +591,8 @@ class Feed(models.Model):
         if url and "youtube.com/feeds" in url:
             without_rss = True
         if url and "youtube.com/playlist" in url:
+            without_rss = True
+        if url and "reddit.com/r/" in url and url.endswith(".rss"):
             without_rss = True
 
         def criteria(key, value):
@@ -654,12 +674,12 @@ class Feed(models.Model):
                 if feed and len(feed) > offset:
                     feed = feed[offset]
                     logging.debug(" ---> Feed exists (%s), updating..." % (feed))
-                    feed = feed.update()
+                    feed = feed.update(max_stories=max_stories)
                 elif create:
                     logging.debug(" ---> Feed doesn't exist, creating: %s" % (feed_finder_url))
                     try:
                         feed = cls.objects.create(feed_address=feed_finder_url)
-                        feed = feed.update()
+                        feed = feed.update(max_stories=max_stories)
                     except IntegrityError:
                         feed = by_url(feed_finder_url)
                         feed = feed[offset] if feed and len(feed) > offset else None
@@ -667,7 +687,7 @@ class Feed(models.Model):
                 logging.debug(" ---> Found without_rss feed: %s / %s" % (url, original_url))
                 try:
                     feed = cls.objects.create(feed_address=url, feed_link=original_url)
-                    feed = feed.update(requesting_user_id=user.pk if user else None)
+                    feed = feed.update(requesting_user_id=user.pk if user else None, max_stories=max_stories)
                 except IntegrityError:
                     feed = by_url(url)
                     feed = feed[offset] if feed and len(feed) > offset else None
@@ -681,7 +701,7 @@ class Feed(models.Model):
             if r and "application/json" in r.headers.get("Content-Type"):
                 try:
                     feed = cls.objects.create(feed_address=url)
-                    feed = feed.update()
+                    feed = feed.update(max_stories=max_stories)
                 except IntegrityError:
                     feed = by_url(url)
                     feed = feed[offset] if feed and len(feed) > offset else None
@@ -718,7 +738,7 @@ class Feed(models.Model):
             if not feed and create:
                 try:
                     feed = cls.objects.create(feed_address=feed_finder_url)
-                    feed = feed.update()
+                    feed = feed.update(max_stories=max_stories)
                 except IntegrityError:
                     feed = by_url(feed_finder_url)
                     feed = feed[offset] if feed and len(feed) > offset else None
@@ -1553,6 +1573,7 @@ class Feed(models.Model):
             "feed_xml": kwargs.get("feed_xml"),
             "requesting_user_id": kwargs.get("requesting_user_id", None),
             "archive_page": kwargs.get("archive_page", None),
+            "max_stories": kwargs.get("max_stories"),
         }
 
         if getattr(settings, "TEST_DEBUG", False) and "NEWSBLUR_DIR" in self.feed_address:
@@ -1571,6 +1592,8 @@ class Feed(models.Model):
             if not feed.fetched_once:
                 feed.fetched_once = True
                 feed.save(update_fields=["fetched_once"])
+        elif self.is_webfeed:
+            feed = self.update_webfeed()
         else:
             disp = feed_fetcher.Dispatcher(options, 1)
             disp.add_jobs([[self.pk]])
@@ -1600,6 +1623,28 @@ class Feed(models.Model):
 
         icon_importer = IconImporter(self)
         icon_importer.save()
+
+        return self
+
+    def update_webfeed(self):
+        from utils.webfeed_fetcher import WebFeedFetcher
+
+        # Only fetch if at least one archive subscriber exists
+        if self.archive_subscribers <= 0:
+            logging.debug(
+                "   ---> [%-30s] ~FYWeb Feed: Skipping fetch, no archive subscribers"
+                % (self.log_title[:30],)
+            )
+            return self
+
+        fetcher = WebFeedFetcher(self)
+        fpf = fetcher.fetch()
+
+        if fpf:
+            from utils.feed_fetcher import ProcessFeed
+
+            processor = ProcessFeed(self.pk, fpf, {"verbose": False, "updates_off": False, "force": True})
+            processor.process()
 
         return self
 
@@ -1803,9 +1848,7 @@ class Feed(models.Model):
         # If there are no premium archive subscribers, don't index stories for discover.
         if discover_story_ids:
             if self.archive_subscribers and self.archive_subscribers > 0:
-                # IndexDiscoverStories.apply_async(
-                # Run immediately
-                IndexDiscoverStories.apply(
+                IndexDiscoverStories.apply_async(
                     kwargs=dict(story_ids=discover_story_ids),
                     queue="discover_indexer",
                     time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
