@@ -82,6 +82,7 @@ urlpatterns = [
     url(r"^add_url", views.add_url),
     url(r"^add_folder", views.add_folder),
     url(r"^add_feature", views.add_feature, name="add-feature"),
+    url(r"^find_story_by_permalink", views.find_story_by_permalink, name="find-story-by-permalink"),
     url(r"^features", views.load_features, name="load-features"),
     url(r"^save_feed_order", views.save_feed_order, name="save-feed-order"),
     url(r"^feeds_trainer", views.feeds_trainer, name="feeds-trainer"),
